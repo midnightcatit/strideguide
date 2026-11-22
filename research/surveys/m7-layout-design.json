@@ -1,0 +1,152 @@
+{
+  "generated_at": "2026-11-22T22:07:39Z",
+  "carousel": {
+    "wire": "390x844   gutter 16   card 322   gap 12   peek 40\n\nT O D A Y                                   22 NOV\nTODAY'S SESSION                       2 SESSIONS / 78 MIN\n+-----------------------------+------------------\n|01| RUNNING                  | |02| RUNNING\n|  | HARD             (|| )   | |  | HARD\n|  |--------------------------| |  |--------\n|  | Threshold 5 x 1 km       | |  |\n|  |--------------------------| |  |\n|  | 5.0 km         52 min    | |  |\n|  | prescribed     target    | |  |\n|  |--------------------------| |  |\n|  | 4:35-4:50 /km    Z4      | |  |\n|  |--------------------------| |  |\n|  | [   Start   ] [ Log ]    | |  |\n+-----------------------------+------------------\n  ====  ==                            01 / 02\n\npeek = 24px spine + 16px body pad; never a clipped word\nrail + index are unmounted when the day has 1 session",
+    "spec": {
+      "applies_when": "day.sessions.length >= 2. n == 1 renders the existing single SessionCard full-width (gutter to gutter, ~358px at 390) with no rail, no index, no scroll container. n == 0 renders the rest block only.",
+      "geometry": {
+        "page_gutter": "16px (existing px-4); card text aligns to the same 16px optical gutter",
+        "card_width": "calc(100vw - 68px) = viewport - 16 left gutter - 12 gap - 40 peek; clamp(264px, calc(100vw - 68px), 420px). 320->264 (peek 28), 390->322 (peek 40), 430->362 (peek 40).",
+        "peek": "40px at >=360px, 28px at 320px. The peek exposes the next card's 24px spine + 16px body padding: an edge and a hanging dossier tab, never a truncated word or half glyph.",
+        "gap": "12px (intra-group token) \u2014 flex gap and scroll-snap gutter at once",
+        "card": "12px radius, 1px --hairline, --paper ground, no shadow, no elevation, no scale on snap",
+        "row_height": "equal height set by the tallest card (flex row, align-items:stretch; card flex:0 0 auto; display:flex column). Equal height is what keeps the action row on one baseline across snaps.",
+        "full_bleed": "scroll container margin-inline:-16px; padding-inline:16px; scroll-padding-inline:16px. Never width:100vw (scrollbar overflow), never a transform track.",
+        "trailing_space": "padding-inline-end:16px so the last card can rest at the gutter"
+      },
+      "snap": {
+        "type": "scroll-snap-type:x mandatory",
+        "align": "scroll-snap-align:start on every card",
+        "stop": "scroll-snap-stop:always (one session per gesture, no fly-through)",
+        "padding": "scroll-padding-inline:16px so snapped cards land on the page gutter",
+        "overflow": "overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain \u2014 the page never scrolls sideways and vertical page scroll still wins on diagonal gestures",
+        "touch_action": "leave default (pan-x pan-y). Do NOT set touch-action:pan-x: it locks vertical scrolling inside the region on Android.",
+        "scrollbar": "hidden (scrollbar-width:none; ::-webkit-scrollbar{display:none}) \u2014 the tick rail is the honest position read",
+        "engine": "native overflow scrolling, no JS carousel, no transform track, no pointer capture",
+        "n1_fallback": "one card: display:block, no overflow, no snap, no tabindex, no rail"
+      },
+      "card_anatomy": {
+        "spine": "24px fixed left column, 1px --hairline right edge, 2px modality bar on the outer left edge (--signal running / --steel strength = mark and edge only, never a fill). Vertical mono ordinal 01/02, 10px, --steel, writing-mode:vertical-rl, aria-hidden (the ordinal lives in the accessible name).",
+        "body_padding": "16px top/right/left; 0 bottom (the action row owns its 16px)",
+        "row_1": "eyebrow: mono 10px/12px uppercase, letter-spacing .12em, --steel; modality + intensity ladder. Right: session type + logged tick, mono, --signal-ink.",
+        "row_2": "title: Space Grotesk 17px/22px, weight 500, --ink, wraps to 2 lines maximum, no ellipsis on session names.",
+        "rule": "1px --hairline across the body, 12px above and below",
+        "row_3": "two data cells: mono 22px/22px numeral + mono 10px/12px --steel caption (prescribed / target). Fixed 2 columns, never 3 at <=360px.",
+        "row_4": "one detail line, mono 12px/16px: pace band / zone / RPE, --steel; amber only via --signal-ink for 'at goal pace'.",
+        "row_5": "action row (below)",
+        "density_guard": "no exercise list inside the card. Strength shows '5 machines / 3 x 10' and the full list lives in the sheet after Start or Log. This is what keeps cards equal height."
+      },
+      "action_row": {
+        "position": "inside the card, pinned bottom by margin-top:auto, separated by a 1px --hairline 12px above it. Never sticky, never floating, never overlapping the peek, never duplicated outside the snapped card.",
+        "baseline": "identical y across cards because of equal card height \u2014 the primary does not jump when snapping",
+        "primary": "one filled --ink button, 44px tall, radius 8px, --paper label, 14px/500 IBM Plex Sans, flex:1, label 'Start'. Only when prescription.workout exists.",
+        "secondary": "'Log' ghost: 44px, 1px --hairline-strong, --ink label, radius 8px, min-width 88px. Becomes 'Edit log' when a log exists.",
+        "gap": "12px",
+        "logged_state": "replaces the row: mono 12px logged line ('Logged \u00b7 5.0 km \u00b7 4:41 /km') left, 'Edit log' ghost right. No Start on a completed session, no dimmed-but-tappable ghost of one.",
+        "no_workout": "single full-width 'Log' \u2014 never an empty Start slot",
+        "press": "background/opacity change only, 90ms; no scale, no ripple"
+      },
+      "indicators": {
+        "honesty_rule": "a position read exists only at n>=2. At n==1 rail and index are unmounted, not hidden with opacity or visibility.",
+        "rail": "12px below the card row, aligned to the 16px gutter. One tick per session: inactive 12x2px --hairline-strong, active 24x2px --signal (mark, not fill, not text). 2px between ticks. Ticks are not buttons.",
+        "index": "right-aligned, mono 10px/12px, letter-spacing .12em, --steel, '01 / 02', aria-hidden.",
+        "state_source": "active index = scrollLeft rounded to the nearest snap point; the rail reflects position, it does not decorate it.",
+        "why_not_dots": "dots imply a gallery and lie at n==1; a tick rail reads as a scale, matches the instrument language, and encodes count as length."
+      },
+      "focus": {
+        "ring": "2px --ink, offset 2px on --paper; inside ink-filled buttons a 2px --paper inner outline keeps the ring visible",
+        "scroll": "focusin on any card -> scrollIntoView({inline:'start', block:'nearest'}) so keyboard users never operate an off-screen card",
+        "order": "DOM order == visual order == plan order (run before strength). Never reorder by logged state."
+      }
+    },
+    "desktop": ">=720px: the carousel is deleted, not restyled.\n- the track becomes a grid on the page gutter (no full-bleed margins): repeat(2, minmax(0,1fr)); gap 12px; content max 672px (page max-w-2xl) -> 314px cards.\n- 3+ sessions: the same 2-column grid wraps (never 3-up before 1080px; at >=1080 repeat(auto-fit, minmax(300px,1fr)) up to 3).\n- no peek, no negative margin, no overflow, no snap, no tabindex, no rail, no index counter \u2014 the whole set is visible, so a position read would be noise.\n- single session at >=720: do not stretch the card to 672px of body text; cap it at 420px and leave the second column empty.\n- equal height within a row (grid stretch); action rows stay bottom-aligned; no hover lift \u2014 hover only darkens the 1px border to --hairline-strong.\n- the day header (MONDAY / 2 SESSIONS / 50 MIN) stays above the set at both breakpoints and is the only place the count is stated in words.",
+    "a11y": [
+      "Wrapper at n>=2: role='region' aria-roledescription='carousel' aria-label=\"Today's sessions, 2 of 2\". At n==1 there is no wrapper role.",
+      "Each card: role='group' aria-roledescription='slide' aria-label='1 of 2: Running, Threshold 5 x 1 km'. The 01/02 spine is aria-hidden so it is not read twice.",
+      "Track tabindex='0' only at n>=2; ArrowRight/Left move one card, Home/End first/last via scrollTo, with snap doing the landing. No custom track.",
+      "Polite live region announces 'Session 2 of 2' once after settle (scrollend, or a 120ms debounce fallback) \u2014 never per frame or per pixel.",
+      "Off-screen cards stay in the DOM and the tab order (not aria-hidden); focus is followed by a scroll, so the focused card is always the snapped one.",
+      "No horizontal page scroll: body overflow-x:clip; the full-bleed effect is margin+padding, never width:100vw; overscroll-behavior-x:contain on the track.",
+      "Vertical page scroll is preserved: default touch-action, no wheel hijack, no pointer capture, no drag listeners.",
+      "prefers-reduced-motion: programmatic moves use behavior:'auto'; native swipe still snaps because snap is layout, not animation.",
+      "Targets inside the card are 44px tall; the Log ghost is >=88px wide; no icon-only control in the carousel.",
+      "200% text zoom: card width is viewport-derived so the peek ratio holds; height grows (no fixed height); the 2 data cells may stack at <=280px content width.",
+      "Contrast: --steel on --paper 5.47:1, --steel on --sunken 5.13:1, --signal-ink on --paper 5.30:1, --hairline-strong on --paper 3.11:1 (non-text edges only). --signal is only ever a 2px mark (edge, tick, notch) \u2014 never text, never a button fill, never a selected fill.",
+      "RTL: scroll-snap-align:start plus logical padding flips without a second stylesheet; the peek stays on the inline-end side."
+    ]
+  },
+  "tabbar": {
+    "wire": "ruler, not an app bar: one hairline, three ticks, one notch\n\n+------------------------------------------------+\n|        ====                                    |\n|        |                .-.              |     |\n|        |--             ( o )            |||    |\n|      TODAY            COACH          PROGRESS  |\n|................................................|\n|          safe area: env(safe-area-inset-bottom)|\n+------------------------------------------------+\n\nmarks 20x20 / stroke 1.5 / square caps; labels mono 10 caps\nthe 32x2 --signal notch straddles the top hairline and slides",
+    "spec": {
+      "structure": "<nav aria-label='Primary'> > ul (3 li) > a href. Fixed order Today / Coach / Progress. aria-current='page' on the active link; the nav is the only fixed element in the app.",
+      "bar": "fixed inset-inline:0; bottom:0; z-index:20. 1px --hairline top edge; background color-mix(in oklab, var(--paper) 93%, transparent) + backdrop-filter: blur(12px). No shadow, no floating capsule, no rounded top corners, no border on the sides.",
+      "row_height": "56px content row + env(safe-area-inset-bottom). Each tab is 1/3 of the width and the whole cell (mark + label) is the hit target: ~130x56 at 390, ~106x56 at 320 \u2014 above 44x44 everywhere.",
+      "label": "IBM Plex Mono 10px/12px, uppercase, letter-spacing .12em, weight 400, one line, no truncation. Active --ink, inactive --steel (5.47:1 light / 7.07:1 dark on paper). Labels always visible: this bar is never icon-only.",
+      "mark_size": "20x20 inline SVG, viewBox 0 0 20 20, stroke currentColor 1.5, fill none, stroke-linecap:square, stroke-linejoin:miter. Square caps read as instrument; rounded caps read as consumer app.",
+      "marks": {
+        "today": "day notch: M10 4 V16 + M10 6.5 H16. Silhouette = line; reads as a marker on a rule.",
+        "coach": "reticle: circle(10,10,6.25) + ticks M10 1.5V3.75, M10 16.25V18.5, M1.5 10H3.75, M16.25 10H18.5. Silhouette = circle.",
+        "progress": "ladder: three 2px bars, x=4 y=12..16, x=9 y=8..16, x=14 y=4..16, fill currentColor no stroke. Reuses the IntensityLadder vocabulary already in the product. Silhouette = bars."
+      },
+      "mark_color": "currentColor only: --ink active, --steel inactive. Never --signal on a mark except the notch.",
+      "layout": "flex column, align-items:center, gap:4px, padding:7px 0 5px. No dividers between tabs \u2014 the ruler reads continuous; the notch is the only separator.",
+      "page_clearance": "main padding-bottom: calc(56px + env(safe-area-inset-bottom) + 24px). Delete the footer domain line that currently sits under the fixed bar."
+    },
+    "active": "Active state = position on a scale, not a pill:\n- a 32x2px --signal bar centred on the bar's top hairline (top:-0.5px, covering the 1px --hairline), square ends.\n- it slides horizontally to the active tab: 140ms cubic-bezier(.2,.7,.2,1); the only amber on the bar.\n- mark and label go --ink; inactive stay --steel. Weight does not change (mono 400 both) so nothing reflows.\n- never colour-only: aria-current='page' + notch + ink label.\n- no filled tab, no label underline, no badge dot, no icon scale.\n- on SPA route change the notch moves; no page fade, no cross-fade of tab content.",
+    "safe_area": "- <meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover'> is required or env() is always 0 and the bar collides with the home indicator.\n- the bar's background (paper/93 + blur) paints through the inset: padding-bottom: env(safe-area-inset-bottom, 0px); the inner row stays 56px, so the indicator floats on the same ground rather than a separate strip.\n- nothing interactive in the inset: no 4th control, no handle, no drag affordance.\n- landscape: pad the inner row by max(0px, env(safe-area-inset-left)) and right so the outer tabs clear the notch.\n- sheets (LogSheet, SessionPlayer, Settings) render above the bar; while one is open the nav gets inert + aria-hidden so focus cannot land behind the scrim. When a sheet has an input the bar is hidden, so visualViewport resizing never moves it.\n- PWA standalone: same insets. Verify 0 / 0 / 34px.",
+    "a11y": [
+      "nav aria-label='Primary' wrapping a 3-item list; aria-current='page' on the active link. Marks are aria-hidden with no <title>; the visible label is the accessible name.",
+      "Three targets at 1/3 width x 56px; 106px wide at 320px \u2014 no target below 44x44.",
+      "Labels are always shown; no icon-only mode, no tooltip dependency.",
+      "The notch is decorative (aria-hidden). State is carried by aria-current and ink-vs-steel, never by amber alone.",
+      "Focus: 2px --ink ring, offset 2px, visible on both themes; only :focus-visible is styled.",
+      "The bar is a sibling of main, never inside it, and main reserves its height so no card action row is ever clipped.",
+      "No announce on tab press: navigation moves focus to the page h1. No 'tab 2 of 3' chatter, no live region.",
+      "Reduced motion: the notch jumps instead of sliding.",
+      "Forced colors: 1px hairline becomes CanvasText, notch becomes Highlight, blur/backdrop is dropped.",
+      "Press feedback: opacity .7 over 90ms; no scale, no ripple."
+    ]
+  },
+  "week": {
+    "wire": "+------------------------------------------------+\n\n          |     |                 |\n    |     |     |                 |\n    |     |     |    --     |     |    --\n|________==______________________________________|\n   MO    TU    WE    TH    FR    SA    SU\n   45    60    50    -     30    62    -\n   x     x     x*          *\n+------------------------------------------------+\n\nWE selected: cell returns to --paper inside the well\nTU today: 2px --signal rule on the cell bottom (==)\n-- rest: 2px --hairline tick, never an empty cell\nx logged / * planned / x* one of two done",
+    "keep": [
+      "Week pager semantics (Week N of M, prev/next, disabled at the ends) \u2014 collapsed from its own band into the header line as mono 'W3/12  < >' with 44px hit areas.",
+      "The week focus line (Space Grotesk 24px) and ONE 14px --steel summary line (summaryText) \u2014 never a card.",
+      "The week strip as the primary control \u2014 it becomes the 7-cell ledger, day initial as the tab label.",
+      "Logged ticks, intensity/load encoding and today marking \u2014 restated in the ledger grammar (mark row, load mark, 2px --signal today rule).",
+      "The selected day's session set \u2014 SessionCard(s), now via the carousel at narrow widths.",
+      "Deep links: /week?day=3 selects on load; the '\u2039 Today' back link stays."
+    ],
+    "delete": [
+      "The entire 'This week' section at apps/web/src/routes/week/+page.svelte:111-130 (SectionHeader + Card + 7-row ul). It repeats the strip's days, sessions, intensity ladders and distances and costs ~200-260px on the exact screen that reads too vertical.",
+      "The standalone week-pager row (lines 78-84): two bordered 40px buttons plus a whole line for one number. The pager moves into the header line.",
+      "The three-row back/title block (lines 72-76): '\u2039 Today' becomes the top-left mono link on the pager line; PLAN becomes the eyebrow on the title line.",
+      "The global footer domain line under the fixed tab bar (unreachable, duplicates the install origin).",
+      "The bordered-chip chevron styling on the week pager \u2014 replaced by mono text controls with a hairline underline on hover/press.",
+      "The vertical space-y-3 stack of per-session cards on multi-session days (replaced by the carousel below 720px)."
+    ],
+    "replace": "One object replaces both the strip and the list: a 7-cell 'week ledger' inside a single --sunken well.\nEach cell (1/7 width, min 48x64, roving tabindex, role='tab'):\n  L1  mono 10px day initial (MO..SU), --steel; --ink when selected\n  L2  a 2px load mark, 4-28px tall, height = day minutes / week max; rest day = a 2px --hairline tick (no empty hole, no zero-height bar)\n  L3  mono 9px total ('45' / '-' on rest), --steel\n  L4  marks: x logged (--signal-ink), * planned (--ink), x* = one of two done; two sessions render two marks side by side\nSelected: cell returns to --paper + 1px --hairline-strong (raised out of the sunken well) + --ink text. Today: 2px --signal rule on the cell's bottom edge and '(today)' in the accessible name; the two can co-exist.\nBelow: ONE selected day, never seven \u2014 'WEDNESDAY / 2 SESSIONS / 50 MIN' then carousel (n>=2), single card (n==1), or the rest block (n==0).\nWhole screen: header (2 rows) -> ledger (1 band) -> selected day (1 block). No second list.\nThe deleted list's content still exists for screen readers as the tabpanel description: 'Wednesday: 2 sessions, 50 minutes, 1 of 2 logged \u2014 Threshold 5 x 1 km, Upper body A.' Announced once, not drawn as seven duplicate rows.",
+    "tab_or_view": "A focused VIEW, not a fourth tab.\n- Keep three tabs. A 4th would break the act / ask / measure rhythm, give a scan surface the same standing as the day's action, and squeeze each tab to ~97px at 390 (forcing contractions or smaller mono).\n- Enter from Today: the Today header's mono 'W3 / 12' line and the mini week strip link to /week?day=<day>. The view keeps '\u2039 Today' and the back stack.\n- On /week no tab is current: all three read --steel (inactive). That is honest \u2014 the view sits above the tabs. Do not fake-select Today and do not add a 4th mark."
+  },
+  "motion": [
+    "Carousel: no authored animation. Native scroll + CSS snap only. Cards never scale, fade, or parallax on snap \u2014 a scaling 'active' card changes type size mid-gesture and reads as a gallery, not an instrument.",
+    "Keyboard / programmatic carousel move: scrollTo smooth, 240ms cubic-bezier(.2,.8,.2,1); behavior:'auto' under prefers-reduced-motion.",
+    "Tick rail: active tick 12->24px, 120ms cubic-bezier(.2,.7,.2,1). The '01 / 02' index never animates (cross-fading digits is noise).",
+    "Tab notch: 140ms transform cubic-bezier(.2,.7,.2,1), x only; no width morph, no spring, no bounce. Colour changes 120ms linear.",
+    "Week ledger selection: 120ms background-color / border-color (sunken -> paper); load marks never animate on week change. Day change below: opacity .6->1 and translateY 2px->0 over 120ms ease-out, removed entirely under reduced motion.",
+    "Press: 90ms opacity/background, no scale, no ripple. Sheets keep their existing 180ms translateY + 160ms scrim; do not add a spring.",
+    "Nothing animates on scroll, in the tab bar, or on route change. prefers-reduced-motion removes every authored transform; colour changes become instant."
+  ],
+  "self_critique": [
+    "The risk was answering 'too vertical' by adding a third horizontal band (strip + overview + carousel). I merged strip and overview into one ledger, so the fix deletes a row instead of relocating it. Cost: 7 cells must carry initial, load, minutes and state at ~48px. If that fails legibility, drop the minutes line \u2014 never reintroduce the list.",
+    "Rejected the stock carousel vocabulary: dots (lie at n=1, encode nothing), a scaled active card (type size shifts mid-snap), card shadows and a blurred floating pill tab bar. This system is paper + hairline on a ground; elevation would contradict both the no-shadow rule and the sunken/paper meaning.",
+    "The 40px peek shows only the next card's spine and gutter \u2014 never a clipped word. That is less inviting than a content peek and can look like a bug in a screenshot; the 2px modality edge and hairline must make it read as a second card. At 320px the peek drops to 28px and gets tight.",
+    "Equal-height cards leave dead space in a short strength card. Accepted: a stable action-row baseline is worth more than a tight card, otherwise Start jumps vertically on every snap.",
+    "The ruler tab bar risks reading as under-designed at first glance. Intentional, but the three 20px marks must stay distinguishable with square caps; if Today's notch blurs into Progress's ladder, add a fourth bar to Progress rather than thickening strokes.",
+    "Mono 10px labels with .12em tracking contradict platform tab bars (11-12px sans). It buys the instrument voice and clears 4.5:1 in both themes, at a small cost in glance recognition that always-visible labels offset.",
+    "Week as a focused view means no tab reads current on /week. Honest but visually unanchored; '\u2039 Today', the title and the URL carry location. Faking a current tab would misreport the page.",
+    "Amber discipline: notch, carousel tick and today rule are the only amber on these three surfaces; amber never fills a button and never sets text. Three amber marks on one screen could read as decoration \u2014 they sit on different surfaces and each maps to one state, but audit this first in build.",
+    "The carousel keeps off-screen cards focusable, so tabbing can pull the strip sideways under a user who never intended to swipe. The focusin scroll keeps semantics honest; the alternative (aria-hidden off-screen cards) hides reachable content from AT and is worse.",
+    "I did not touch the Today page's own stacked sections beyond the session set; if Today still reads long after this, the next lever is the week-progress widget and the WhyCard, not more compression here."
+  ]
+}
