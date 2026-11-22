@@ -128,6 +128,15 @@ export const api = {
 	putSettings: (body: Partial<Prefs>) =>
 		req<{ prefs: Prefs }>('/settings', { method: 'PUT', body: JSON.stringify(body) }),
 
+	explanation: (type: string) =>
+		req<{
+			ref: string;
+			summary: string;
+			claims: { topic: string; claim: string; evidence?: string; confidence?: string; source?: string }[];
+			sources: { title: string; authors?: string; year?: number; venue?: string; doiUrl?: string }[];
+			kbVersion?: string;
+		}>(`/explanations?type=${encodeURIComponent(type)}`),
+
 	chat: (message: string, context?: string) =>
 		req<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, context }) }),
 };

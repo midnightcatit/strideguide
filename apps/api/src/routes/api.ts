@@ -4,6 +4,7 @@ import { requireAuth } from '../middleware/auth';
 import type { AppBindings } from '../types';
 import ai from './ai';
 import exercises from './exercises';
+import explanations from './explanations';
 import goals from './goals';
 import health from './health';
 import logs from './logs';
@@ -25,6 +26,7 @@ secured.route('/logs', logs);
 secured.route('/exercises', exercises);
 secured.route('/ai', ai);
 secured.route('/settings', settings);
+secured.route('/explanations', explanations);
 
 api.route('/', secured);
 

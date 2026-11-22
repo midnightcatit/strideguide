@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-11-22T20:42:09Z",
+  "scope": "M5 design exploration — card system + a richer Today view. Design only, no app code changed. World: precision instrument + field notebook. Token rules honoured: amber is a MARK (never text, never CTA fill); amber text uses signal-ink; amber/paper contrast is 1.97:1 so it can never carry meaning on its own.",
+  "wires": [
+    {
+      "screen": "1. Today — populated (2 sessions, mid-block)",
+      "ascii": "┌────────────────────────────────────────────┐\n│TODAY                        SUN 22 NOV · W5│\n│HALF MARATHON                 BLOCK 1 · BASE│\n├────────────────────────────────────────────┤\n│TODAY'S SESSION          2 SESSIONS · 34 MIN│\n┃ TEMPO RUN                              RUN │\n┃ 8.0 km · 5:12–5:22 /km · RPE 6–7           │\n┃ at goal pace                               │\n┃ [ Start ]                       [ Log it ] │\n│──────────────── inset rule ────────────────│\n┃ STRENGTH B                        STRENGTH │\n┃ 4 machines · 3 × 10             [ Log it ] │\n├────────────────────────────────────────────┤\n│WEEK SO FAR                        W5 · BASE│\n│▓▓▓▓▓▓▓▓░░                       4 of 5 done│\n│▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░              24.0 / 30.0 km│\n│1 block = 1 session            plan cap 30.0│\n├────────────────────────────────────────────┤\n│WHY THIS SESSION                            │\n│Tempo at goal pace builds the               │\n│lactate clearance you need at mile 10.      │\n│                                   Details ▾│\n├────────────────────────────────────────────┤\n│QUICK                                       │\n│[ Log a run ]   [ Log strength ]            │\n│[ Full week → ]                             │\n└────────────────────────────────────────────┘",
+      "notes": {
+        "intent": "Four bands stacked top-to-bottom, each a distinct weight: page header (no card), today's work (paper cards, amber edge), the week ledger (one sunken well), the reason (paper card), then quick actions. The page reads like the top of a field-notes page: what today is, what to do, how the week is going, why.",
+        "header": "Date eyebrow (mono, steel) + right meta 'W5'. Goal name is the only display line. Third line carries block/phase. No card, no rule, no art — it is the masthead, deliberately lighter than the work below it.",
+        "session_cards": "One card per session, in plan order. A 2px amber edge runs down the LEFT of an active run card (moved from the current right edge so the eye finds the day's work without hunting the right gutter). Strength cards use a steel edge. Rows inside: title+modality, the mono prescription line, the 'at goal pace' mark (signal-ink text), then an inset hairline and the two actions. The secondary session renders as a compact card: title, one mono metric line, single action.",
+        "week_so_far": "A sunken well, not a card, because it is data at rest. Adherence is a tick row ('1 block = 1 session') — it encodes real completed vs planned sessions, never a percentage ring. Volume is a bar against the plan cap with the cap printed as text, so a bar that ends short is legible as a shortfall rather than decoration.",
+        "why": "Collapsed by default so the page stays scannable; the one-line claim is useful on its own and the '[1]' marker tells you it is sourced before you expand.",
+        "quick": "Three 44px targets in one card. Primary actions are outlined (ink text), not amber-filled — amber is never a CTA fill. 'Full week →' is navigation, kept visually lighter than the two logging actions.",
+        "honesty": "Every mark maps to a real value: the adherence ticks, the volume bar, '[1]'. No progress ring, no fake sparkline, no placeholder axis. Where a value is unknown the card says so in a steel sentence."
+      }
+    },
+    {
+      "screen": "2. Today — rest day (sparse)",
+      "ascii": "┌────────────────────────────────────────────┐\n│TODAY                        WED 26 NOV · W5│\n│HALF MARATHON                 BLOCK 1 · BASE│\n├────────────────────────────────────────────┤\n│TODAY                           REST · 0 MIN│\n│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│\n│Nothing scheduled. Recovery is part         │\n│of the plan, not a gap in it.               │\n│                                            │\n│NEXT SESSION                             THU│\n│Easy 6.0 km · 5:45–6:05 /km                 │\n│                                  [ Peek → ]│\n│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│\n├────────────────────────────────────────────┤\n│WEEK SO FAR                        W5 · BASE│\n│▓▓▓▓▓▓░░░░                       3 of 5 done│\n│▓▓▓▓▓▓▓▓▓▓▓▓░░░░              18.0 / 30.0 km│\n├────────────────────────────────────────────┤\n│QUICK                                       │\n│[ Log a run ]   [ Full week → ]             │\n└────────────────────────────────────────────┘",
+      "notes": {
+        "intent": "The same page on a rest day. Nothing grows to fill space. The session slot becomes a sunken state block with a sentence, and where a session card would sit we instead show the next real session as a single-plaintext promise with a peek action.",
+        "rest_state": "'Nothing scheduled. Recovery is part of the plan, not a gap in it.' — sunken, steel, no amber. The missing amber edge on this day is itself the signal that today is not a training day.",
+        "next_session": "Borrowed from the week ledger (THU, Easy 6.0 km) so the page still has a forward direction without inventing work for today.",
+        "same_rhythm": "Header, work band, ledger, quick actions — identical rhythm to screen 1 so the layout does not reflow between training and rest days."
+      }
+    },
+    {
+      "screen": "3. Card anatomy + section rhythm (the system, dimensioned)",
+      "ascii": "── SECTION EYEBROW ──────── RIGHT META   (mono 12 / steel)\n     │ 8px\n┌──────────────────────────────────────┐        radius 12 · 1px hairline · NO shadow\n│CARD HEADER ROW               meta    │\n├────────────────hairline inset 16──────┤        (rules never full-bleed inside)\n│BODY                                  │        16px padding  (20px ≥720px)\n│             sunken well              │        paper card may hold ONE sunken well\n└──────────────────────────────────────┘\n     │ 12px  card-to-card gap (intra-group)\n┌──────────────────────────────────────┐\n│                                      │\n└──────────────────────────────────────┘\n     │ 28px  section-to-section gap\n── NEXT SECTION EYEBROW ──────",
+      "notes": {
+        "intent": "One card shape, reused everywhere. The only variables are ground (paper vs sunken), the content inside, and whether the header's right slot holds meta text or a chip.",
+        "divider": "Dividers are hairlines inset by the card padding (16px), so they align with the text block and read as instrument rules. A divider is never full-bleed inside a card — full-bleed edges belong to the card's outer boundary only.",
+        "rhythm": "12px between sibling cards (they belong together), 28px between sections (they do not). That 12/28 ratio is the whole 'not flat' argument: grouping is expressed by tight gaps, separation by a wide one, instead of uniform spacing everywhere.",
+        "radius": "Two radii only: 12px for a card, 8px for an inner row/well, plus a pill for mono chips. Outer radius = inner radius + 4px, so nested corners stay concentric."
+      }
+    },
+    {
+      "screen": "4. Why-this-session card — collapsed vs expanded",
+      "ascii": "════════════════════════════════════════════\nCOLLAPSED  (default — one inline summary)\n════════════════════════════════════════════\n┌────────────────────────────────────────────┐\n│WHY THIS SESSION                            │\n│Tempo at goal pace builds the lactate       │\n│clearance you need at mile 10. [1]          │\n│                                   Details ▾│\n└────────────────────────────────────────────┘\n\n════════════════════════════════════════════\nEXPANDED  (per-claim one-liners + sources)\n════════════════════════════════════════════\n┌────────────────────────────────────────────┐\n│WHY THIS SESSION                   Details ▴│\n│Tempo at goal pace builds the lactate       │\n│clearance you need at mile 10. [1]          │\n├────────────────────────────────────────────┤\n│• 4 × 8 min at 5:12–5:22 lifts              │\n│  lactate threshold ~8% in 6 wk       [1][2]│\n│• Spares glycogen vs a hard 8 km         [1]│\n│• RPE 6–7 keeps it repeatable            [3]│\n├────────────────────────────────────────────┤\n│SOURCES                                     │\n│1  Seiler 2010 — interval intensity        ↗│\n│2  Billat 2001 — vVO2max intervals         ↗│\n│3  Esteve-Lanao 2007 — polarized           ↗│\n│KB v1.2 · not medical advice                │\n└────────────────────────────────────────────┘",
+      "notes": {
+        "collapsed": "One inline summary sentence (Tier A voice, M3) plus its first citation marker, and a 'Details ▾' control in amber text (signal-ink). No card-in-card, no chrome. The summary alone answers most questions.",
+        "expanded": "The same sentence is kept at the top (the claim), then a hairline, then one line per claim with its own citation markers right-aligned, then a second hairline and a compact SOURCES list. Claims are bullets, one sentence each, mono markers — not paragraphs, not a nested panel.",
+        "citations": "Markers are steel mono superscripts, NOT amber (amber is a mark, and 1.97:1 is not readable). Gaps in the numbering are honest: if [2] is dropped from a claim the number is not reused for a different claim. The source list is an ordered list; each row's link text is the real citation (author + year + topic), never 'read more'. An '↗' glyph sits in the meta column for external links. The footer prints the KB version so the user knows which research snapshot they are reading.",
+        "state": "One boolean. aria-expanded on the toggle, the body is a region the toggle controls, and expanding does not reflow the session card above it (the card grows downward within its own group)."
+      }
+    },
+    {
+      "screen": "5. Card system at a glance (paper vs sunken, and the rules)",
+      "ascii": "PAPER   (act here)      ┌────────┐   today's session\n                        │ ────── │   quick actions\n                        └────────┘   expanded why\n\nSUNKEN  (read here)     ░░░░░░░░░   week-so-far wells\n                        ░░░░░░░░░   source list\n                        ░░░░░░░░░   rest state / log rows\n\nRADIUS  12 card · 8 inner · 999 pill  (nothing else)\nGAP     12 intra-group · 28 section · 8 eyebrow→content\nAMBER   mark only: active edge, today rule, 2px bar cap\nSTEEL   captions, units, mono meta · INK for values",
+      "notes": {
+        "intent": "A one-glance key for implementers: what is a paper card, what is a sunken well, and the four rules that keep the system from drifting.",
+        "rule": "A card is paper and may contain exactly one sunken well. A sunken well never contains a paper card. Never paper-in-paper. This single nesting rule prevents the 'flat' look (everything the same surface) and the 'busy' look (surfaces fighting each other)."
+      }
+    }
+  ],
+  "card_system": {
+    "radius": {
+      "card": "12px",
+      "inner": "8px",
+      "pill": "999px (mono chips only)",
+      "rule": "Three values total. Never a fourth. Outer radius = inner + 4px so nested corners are concentric."
+    },
+    "padding": {
+      "card": "16px mobile → 20px at ≥720px",
+      "dense_well_row": "12px vertical",
+      "header_to_body": "8px",
+      "rule": "Padding is a function of container size, not of content, so two cards side by side stay aligned."
+    },
+    "gap": {
+      "intra_group": "12px (cards that belong together)",
+      "section": "28px (between sections)",
+      "eyebrow_to_content": "8px",
+      "grid_720": "16px at ≥720px",
+      "rule": "The 12/28 ratio is the rhythm. Grouping is tight gaps; separation is one wide gap. Never uniform spacing everywhere."
+    },
+    "divider": {
+      "spec": "1px hairline (#D8DBD6 / #2A2F38)",
+      "inset": "16px left and right, aligned to the card padding",
+      "strong": "hairline-strong (#848C96 / #6B7484) — reserved for DATA marks (bars, ticks, axes, plotted markers), never for chrome",
+      "rule": "Rules inside a card are inset; the card's own outer edge is the only full-bleed line."
+    },
+    "when_sunken": "Read-only data at rest, or a state you do not act on: the week-so-far metric well, the when-expanded source list, the rest-day state block, log history rows, the collapsed-why body when it is long. Anything you read but do not act on. No inset shadow, ever — a sunken well is flat and is defined by an inset hairline plus a steel caption, so it survives light mode where the paper/sunken delta is quiet.",
+    "when_paper": "Actionable surfaces: today's session card(s), quick actions, the expanded why card, any card carrying a control. A paper card may contain exactly one sunken well; a sunken well never contains a paper card.",
+    "ground_note": "In light mode paper (#F4F5F2) and sunken (#ECEEEA) are close by design — the difference must be felt, not shouted. The well is disambiguated by its inset hairline and its steel caption, so it still reads on a dim screen or in bright sun."
+  },
+  "section_header": {
+    "pattern": "eyebrow (left) + right-aligned meta",
+    "eyebrow": "IBM Plex Mono, 12px, uppercase, letter-spacing 0.14em, color steel. The section's name — e.g. TODAY'S SESSION, WEEK SO FAR, WHY THIS SESSION, QUICK.",
+    "right_meta": "IBM Plex Mono, 12px, steel for labels ('2 SESSIONS · 34 MIN', 'W5 · BASE'); ink for bare values. May be a mono pill chip when the value is a status ('2 OF 2') rather than a count.",
+    "rule": "No rule under the header. The card below supplies the edge; a second line here is noise.",
+    "spacing": "28px above (from the previous section), 8px to its content.",
+    "semantics": "The header is the accessible name of the section. Render each section as region[aria-labelledby=eyebrow-id], so the eyebrow is both the visual and the programmatic label.",
+    "variants": "Optional leading 8px glyph in steel for a scannable type (bar, clock, question) — decorative only, aria-hidden. Never amber."
+  },
+  "why_card": {
+    "collapsed": {
+      "layout": "One sentence (the headline claim from the M3 Tier-A explanation) + the first citation marker + a 'Details ▾' toggle in signal-ink amber text.",
+      "why": "The claim is useful without the evidence, so the default state is the claim. Expanding is opt-in and never required to act on the session.",
+      "a11y": "Toggle is a button with aria-expanded and aria-controls; text is 'Details' + state, not an icon alone."
+    },
+    "expanded": {
+      "layout": [
+        "claim sentence (unchanged, so the reader keeps their place)",
+        "1px inset hairline",
+        "one line per claim: bullet + one-sentence claim + right-aligned citation markers",
+        "1px inset hairline",
+        "SOURCES: compact ordered list",
+        "foot: KB version + 'not medical advice'"
+      ],
+      "claims": "Bullets, one sentence each. No paragraph blocks, no nested card. Each claim carries only the markers it actually relies on — markers are not decorative and are not reused.",
+      "motion": "Height reveal, 180ms, content fades in ~60ms behind it. Reduced-motion: instant."
+    },
+    "citations": {
+      "marker": "Steel mono superscript, e.g. [1]. Never amber (amber is a mark; amber on paper is 1.97:1 and unreadable as text).",
+      "gaps": "Numbering is stable per explanation. If a claim drops [2], the number is retired, not reassigned — so a reader who remembers [2] is never misled.",
+      "source_list": "ol with one row per source: index, real citation text (author, year, topic), external-link glyph in the meta column. Link text is the citation; never 'read more' / 'here'.",
+      "provenance": "KB version is printed so the reader knows which snapshot of research the claim belongs to. Unverifiable claims are absent by construction (M3 gate), and where a claim is unverified it is labelled, not hidden.",
+      "boundary": "'not medical advice' sits in the foot, in steel, once."
+    }
+  },
+  "a11y": [
+    "Contrast (measured, WCAG): steel #5A6473 on paper #F4F5F2 = 5.11:1 (AA text) and on sunken #ECEEEA = 4.85:1 (AA text). signal-ink #8A5C12 on paper = 5.30:1 (AA text). hairline-strong #848C96 on paper = 3.11:1 (AA non-text marks). amber #E8A33D on paper = 1.97:1 — so amber is structurally barred from text and from CTA fills; it is used only as a 2px edge, a today rule, and a bar cap, all of which also carry a text or shape cue.",
+    "Dark mode: steel #98A0AE on paper #101318 = 7.07:1; ink #E9EAE6 far above AA. Re-check the sunken well's inset hairline (#2A2F38) against sunken (#0B0E12) — it is decorative only, so it may sit below 3:1, but the well's steel caption is AA on the sunken ground.",
+    "Amber is never the sole carrier of meaning: the active-session edge is paired with the section label 'TODAY'S SESSION' and the 'at goal pace' text; the 'today' rule in the ledger is paired with the printed day.",
+    "Every card is region[aria-labelledby=<eyebrow>] so the eyebrow is the accessible name; walking a screen reader down Today yields exactly the visual band order.",
+    "Targets are ≥44×44px: Start / Log it / Details / quick actions all meet it; the inset divider adds no hit area.",
+    "The why toggle is a real button with aria-expanded + aria-controls; the collapsed and expanded states are the same control, so focus never moves on expand.",
+    "Adherence tick row is role=img with a sentence ('4 of 5 sessions done, W5, counted to today') and the same figures are available as text next to it — the bar is never the only copy of the number.",
+    "Volume well states its n and the plan cap in text beside the bar; a screen reader gets '24.0 of 30.0 km planned for week 5'.",
+    "Citation markers are not focusable (they are superscript text); the SOURCES list is the real, focusable, ordered navigation, with descriptive link text.",
+    "Reduced motion honoured; nothing relies on hover; focus ring uses ink (2px offset) so it is visible on both paper and sunken.",
+    "Zoom to 200% and 320px width: single column, no horizontal scroll, mono data lines wrap rather than truncate."
+  ],
+  "motion": [
+    "Why card expand/collapse: 180ms height + opacity, ease-out. Reduced-motion: instant, no height animation.",
+    "Card first-paint reveal: 120ms opacity, 40ms stagger max, once per day view — not on every navigation back to Today.",
+    "Week-so-far bar: grows once on first paint (200ms) to its real value only; a bar that is already full or empty does not animate.",
+    "No scroll-linked animation, no parallax, no counting-number tickers, no shadow-on-scroll. The instrument does not perform.",
+    "Log success: the session card's edge settles to full and the logged line cross-fades in (120ms) — a small state change, not a celebration.",
+    "prefers-reduced-motion: reduce → all of the above become instant state changes; the layout never depends on an animation having run."
+  ],
+  "self_critique": {
+    "against_templated_defaults": [
+      "Default card = white surface + 16px radius + drop shadow + uniform 16px everything. Rejected: edges are 1px hairlines, there is no shadow anywhere, and the flatness is broken by the 12/28 gap ratio and by paper-vs-sunken contrast rather than by elevation.",
+      "Default 'dashboard' = a row of 3 stat tiles with giant numbers and a coloured icon chip. Rejected: Today has ONE metric well, numbers are mono, the plan cap is printed as text, and the ticks encode real sessions — no ring, no icon chip, no colour-coded tile.",
+      "Default hero = gradient / illustration / emoji + a big greeting. Rejected: the masthead is three plain lines of type; hierarchy does the work and the visual weight is spent on today's work, not on a banner.",
+      "Default accent behaviour = amber on badges, links, CTAs, icons. Rejected: amber is capped at three sanctioned uses, all marks. Text that needs to feel 'amber' uses signal-ink, which is a genuinely different token and passes AA.",
+      "Default spacing = same 16px everywhere, which is exactly why the current app reads flat. Rejected: the design has a written rhythm (8 / 12 / 28) and a nesting rule (paper may hold one sunken well, never paper-in-paper).",
+      "Default dividers = full-bleed rules between everything. Rejected: dividers are inset to the padding so they align with the text, and full-bleed lines belong only to a card's outer edge."
+    ],
+    "risks": [
+      "Light-mode paper (#F4F5F2) vs sunken (#ECEEEA) is a ~3% delta and could read as 'nothing' on a cheap panel or in sunlight. Mitigation: every sunken well carries an inset hairline and a steel caption, so it is identified by structure, not by fill; verify on a real phone before shipping.",
+      "Two radii and no shadows is a discipline risk — the first 'just one more radius' or a single shadow added for emphasis will make the system read as inconsistent. The three-value radius rule and the shadow ban are the guardrails.",
+      "The why card is empty until M3 ships (today it says sources arrive with the knowledge base). Until then the collapsed card must still be honest: it shows the purpose sentence and says the sourced deep-dive is not yet available, rather than showing a dead 'Details' control.",
+      "Hairline-strong for data marks at exactly 3.11:1 is over AA's 3:1 line but only just; thin 1px ticks on a low-DPI screen can visually drop below it. Mitigation: ticks are ≥2px and are always accompanied by the printed number.",
+      "Mono for all data is a strong voice; if it spreads to prose the page will read as a terminal rather than a notebook. Rule: mono is for values, units, eyebrows and meta — never for sentences."
+    ]
+  }
+}

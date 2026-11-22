@@ -63,6 +63,19 @@
 			<p class="mt-2 text-xs text-steel">Distances and paces update across the app.</p>
 		</section>
 
+		<!-- Plan -->
+		<section class="mt-5 border-t border-hairline pt-5">
+			<h2 class="text-xs uppercase tracking-widest text-steel">Plan</h2>
+			<a
+				href="/onboarding"
+				onclick={onClose}
+				class="mt-2 inline-block rounded-md border border-hairline px-4 py-2 text-sm hover:border-signal hover:text-signal-ink"
+			>
+				Rebuild plan
+			</a>
+			<p class="mt-2 text-xs text-steel">Builds a fresh plan from your goal and current race paces.</p>
+		</section>
+
 		<!-- Account -->
 		<section class="mt-5 border-t border-hairline pt-5">
 			<h2 class="text-xs uppercase tracking-widest text-steel">Account</h2>
