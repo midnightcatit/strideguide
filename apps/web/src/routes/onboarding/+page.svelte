@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { api, type GeneratePlanInput } from '$lib/api';
+	import { prefs, distanceUnit } from '$lib/prefs.svelte';
 	import { DAY_INITIALS } from '$lib/plan';
+	import { milesToKm } from '@strideguide/shared/units';
 
 	interface ProfileLite {
 		slug: string;
@@ -57,7 +59,14 @@
 			baseline: {
 				experience,
 				...(Object.keys(recentTimes).length ? { recentTimes } : {}),
-				...(weeklyKm.trim() ? { weeklyKm: Number(weeklyKm) } : {}),
+				...(weeklyKm.trim()
+					? {
+							weeklyKm:
+								prefs.units === 'imperial'
+									? Math.round(milesToKm(Number(weeklyKm)) * 10) / 10
+									: Number(weeklyKm),
+						}
+					: {}),
 			},
 			...(needsRaceDate && targetDate ? { targetDate } : {}),
 		};
@@ -129,7 +138,7 @@
 				/>
 			</div>
 			<div>
-				<label for="km" class="text-xs text-steel">Typical weekly km</label>
+				<label for="km" class="text-xs text-steel">Typical weekly {distanceUnit()}</label>
 				<input
 					id="km"
 					type="number"
