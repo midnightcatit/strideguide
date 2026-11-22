@@ -759,6 +759,21 @@ introduced through build/peak and scale by race distance — half `2→3 × 3 km
   expanded adds per-claim lines with markers and a real SOURCES list (DOI links, KB version in the foot).
 - **Week** and **Progress** moved onto the same primitives.
 
+### M6 — AI layer (done, live)
+
+- **Grounded coach chat**: `POST /api/ai/chat` builds context server-side (goal, this week's sessions,
+  a knowledge-base reference for the session type, recent logs) so answers cite the user's own plan.
+  Runs on Workers AI with an OpenRouter fallback, is rate-limited, and records an `ai_jobs` row. The
+  style prompt bans em dashes and markdown. UI: a **Coach** tab with instrument-style rows, starters and
+  loading/error states.
+- **Adaptive suggestions** (`packages/shared/plan/adapt`, 5 tests): pure rules from the adaptive-rules
+  research — missed sessions (absorb vs rebuild), volume under/over plan, three consecutive high-RPE
+  sessions, and a single run that jumps over 10%. Surfaced as a **Suggested adjustments** card on Today
+  with dismiss and a rebuild prompt. The plan is **never changed silently**.
+- **Coach notes**: nightly + weekly cron jobs write a short note per active runner (AI text with a
+  deterministic fallback) into a `summaries` table (migration 0003), shown as a Coach note card on Today.
+- Navigation is now **Today | Coach | Progress**.
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
