@@ -2,6 +2,7 @@
 import type { GoalProfileData } from '@strideguide/shared';
 import type { Prefs } from '@strideguide/shared/units';
 import type { CurrentPlan } from './plan';
+import { cachePlan, cachedPlan, isOnline, outbox, queueLog, removeFromOutbox } from './offline';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
 	const res = await fetch(`/api${path}`, {
@@ -61,7 +62,17 @@ export const api = {
 
 	profiles: () => req<{ profiles: GoalProfileData[] }>('/goals/profiles'),
 
-	currentPlan: () => req<CurrentPlan>('/plans/current'),
+	currentPlan: async (): Promise<CurrentPlan> => {
+		try {
+			const plan = await req<CurrentPlan>('/plans/current');
+			cachePlan(plan);
+			return plan;
+		} catch (e) {
+			const cached = cachedPlan<CurrentPlan>();
+			if (cached) return cached;
+			throw e;
+		}
+	},
 
 	generatePlan: (body: GeneratePlanInput) =>
 		req<{ planId: string; goalId: string; weeks: number; usedAi: boolean }>('/plans/generate', {
@@ -71,7 +82,46 @@ export const api = {
 
 	logs: () => req<{ logs: unknown[] }>('/logs'),
 
-	log: (body: unknown) => req<{ log: unknown }>('/logs', { method: 'POST', body: JSON.stringify(body) }),
+	/** Save a log; if offline, queue it and return an optimistic (pending) log. */
+	log: async (body: unknown): Promise<{ log: unknown }> => {
+		try {
+			return await req<{ log: unknown }>('/logs', { method: 'POST', body: JSON.stringify(body) });
+		} catch (e) {
+			if (!isOnline()) {
+				const item = queueLog(body);
+				const b = (body ?? {}) as Record<string, unknown>;
+				return {
+					log: {
+						id: `local-${item.id}`,
+						sessionId: (b.sessionId as string) ?? null,
+						runStats: b.runStats ?? null,
+						strengthSets: b.strengthSets ?? null,
+						rpe: b.rpe ?? null,
+						notes: b.notes ?? null,
+						pending: true,
+					},
+				};
+			}
+			throw e;
+		}
+	},
+
+	pendingCount: () => outbox().length,
+
+	/** Flush queued offline logs. Stops on the first failure (still offline). */
+	flushOutbox: async (): Promise<{ sent: number; remaining: number }> => {
+		let sent = 0;
+		for (const item of outbox()) {
+			try {
+				await req('/logs', { method: 'POST', body: JSON.stringify(item.body) });
+				removeFromOutbox([item.id]);
+				sent++;
+			} catch {
+				break;
+			}
+		}
+		return { sent, remaining: outbox().length };
+	},
 
 	getSettings: () => req<{ prefs: Prefs }>('/settings'),
 

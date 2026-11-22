@@ -38,14 +38,15 @@
 
 	const loggedLine = $derived.by(() => {
 		if (!logged) return null;
+		const sync = logged.pending ? ' · syncing' : '';
 		if (isStrength && logged.strengthSets?.length) {
-			return `Logged · ${logged.strengthSets.length} machines`;
+			return `Logged · ${logged.strengthSets.length} machines${sync}`;
 		}
 		if (logged.runStats?.distanceKm) {
 			const pace = logged.runStats.avgPaceSecPerKm ? ` · ${fmtPace(logged.runStats.avgPaceSecPerKm)}` : '';
-			return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}`;
+			return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}${sync}`;
 		}
-		return 'Logged';
+		return `Logged${sync}`;
 	});
 </script>
 
