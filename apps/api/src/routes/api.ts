@@ -8,6 +8,7 @@ import goals from './goals';
 import health from './health';
 import logs from './logs';
 import plans from './plans';
+import settings from './settings';
 
 const api = new Hono<AppBindings>();
 
@@ -23,6 +24,7 @@ secured.route('/plans', plans);
 secured.route('/logs', logs);
 secured.route('/exercises', exercises);
 secured.route('/ai', ai);
+secured.route('/settings', settings);
 
 api.route('/', secured);
 

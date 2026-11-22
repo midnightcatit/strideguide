@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ClientSession } from '$lib/plan';
-	import { formatDuration, formatKm, paceBand, modalityLabel } from '$lib/plan';
+	import { formatDuration, modalityLabel } from '$lib/plan';
+	import { fmtDistance, fmtPaceBand } from '$lib/prefs.svelte';
 
 	let { session, eyebrow = '', active = false }: { session: ClientSession; eyebrow?: string; active?: boolean } =
 		$props();
@@ -12,10 +13,10 @@
 	const isStrength = $derived(session.modality === 'strength');
 	const machines = $derived(p.blocks ?? []);
 	const reps = $derived(machines[0]?.sets?.[0]?.reps ?? 0);
-	const band = $derived(paceBand(p.targetPaceSecPerKm));
+	const band = $derived(fmtPaceBand(p.targetPaceSecPerKm));
 	const primary = $derived(
 		isRun && p.targetDistanceKm != null
-			? formatKm(p.targetDistanceKm)
+			? fmtDistance(p.targetDistanceKm)
 			: isStrength
 				? `${machines.length} machines`
 				: (formatDuration(session.durationMin) ?? '—'),

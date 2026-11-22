@@ -1,5 +1,6 @@
 /** Thin typed client for the Hono API. Same-origin: /api/* on the Worker. */
 import type { GoalProfileData } from '@strideguide/shared';
+import type { Prefs } from '@strideguide/shared/units';
 import type { CurrentPlan } from './plan';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
@@ -71,6 +72,11 @@ export const api = {
 	logs: () => req<{ logs: unknown[] }>('/logs'),
 
 	log: (body: unknown) => req<{ log: unknown }>('/logs', { method: 'POST', body: JSON.stringify(body) }),
+
+	getSettings: () => req<{ prefs: Prefs }>('/settings'),
+
+	putSettings: (body: Partial<Prefs>) =>
+		req<{ prefs: Prefs }>('/settings', { method: 'PUT', body: JSON.stringify(body) }),
 
 	chat: (message: string, context?: string) =>
 		req<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, context }) }),

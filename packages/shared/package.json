@@ -10,7 +10,8 @@
     "./db": "./src/db/schema.ts",
     "./tokens": "./src/tokens.ts",
     "./profiles": "./src/goal-profiles.ts",
-    "./plan": "./src/plan/index.ts"
+    "./plan": "./src/plan/index.ts",
+    "./units": "./src/units.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
