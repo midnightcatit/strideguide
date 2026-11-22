@@ -53,6 +53,7 @@
 <div class="min-h-dvh flex flex-col">
 	<header
 		class="flex items-center justify-between border-b border-hairline px-4 py-3 sticky top-0 bg-paper/90 backdrop-blur"
+		style="padding-top: calc(0.75rem + env(safe-area-inset-top))"
 	>
 		<a href="/" class="font-display text-lg font-bold tracking-tight">Stride Guide</a>
 		<div class="flex items-center gap-2">
@@ -126,7 +127,7 @@
 		</div>
 	</nav>
 
-	<footer class="border-t border-hairline px-4 py-3 text-center text-xs text-steel">
+	<footer class="border-t border-hairline px-4 py-3 pb-20 text-center text-xs text-steel">
 		<span class="tabular">run.midnightcatit.com</span>
 	</footer>
 </div>

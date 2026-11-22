@@ -1,0 +1,268 @@
+{
+  "generated_at": "2026-11-22T22:52:00Z",
+  "scope": "Mobile-first UX research for Stride Guide (running + strength PWA). Two questions: (1) how a mobile user knows a card/row is tappable without heavy decoration, plus the a11y rules; (2) subtle micro-animations that improve affordance and perceived liveness without feeling clunky, with concrete durations/easings and reduced-motion rules. Research only; no app code changed. WebFetch used first, Firecrawl only for JS-rendered pages (Material 3). Units: CSS px / pt / dp are treated as equivalent (~1 CSS px); 44pt (Apple) and 48dp (Material) are the touch-target baselines.",
+  "affordance": [
+    {
+      "pattern": "Whole-card tap target (card = one linked entry point)",
+      "when": "Any summary card/row that opens a detail view and whose purpose is browsing rather than precise comparison.",
+      "guidance": "Make the entire card surface the hit area, not just the title. A card is defined as a linked, short representation of one conceptual unit; clicking/tapping anywhere on it should open the detail. This enlarges the touch zone and improves usability on touch and mouse (Fitts' Law). If the card is not obviously interactive, an explicit but decorative 'read more'/'Open' affordance may be added to advertise interactivity.",
+      "a11y": "The card must be ONE tab stop, not several. Keep the real interactive element as the primary link (usually the title/heading) and make the card surface a proxy for it, so keyboard and screen-reader users get a single, descriptively named link. Do not turn the card into a miniature page of controls.",
+      "source": "NN/g — Cards: UI-Component Definition; Inclusive Components — Cards"
+    },
+    {
+      "pattern": "Elevation / drop shadow as clickability signifier",
+      "when": "Cards on a flat canvas where the whole surface is tappable and you want the tappability to read without a chevron.",
+      "guidance": "A slight drop shadow (and/or border + background that differs from the canvas) is a well-established signifier of clickability on cards ('flat design 2.0' reintroduced depth as a signifier). The shadow also communicates grouping via the common-region principle: content inside the boundary is read as one unit. Keep it subtle; it signals, it does not shout.",
+      "a11y": "Never let shadow alone carry meaning; pair it with a clear label/heading. Ensure the card's border/background contrast is adequate and that the card still reads as a group in dark mode and at increased-contrast settings.",
+      "source": "NN/g — Cards: UI-Component Definition"
+    },
+    {
+      "pattern": "Press state / state layers (pressed, hover, focus)",
+      "when": "Every custom tappable card, row, or button. Non-negotiable on touch.",
+      "guidance": "Always include a press (pressed/active) state — without one, a button or card feels unresponsive and users wonder whether their tap registered. Implement interaction states as an overlay (state layer) using the same color as the content: Material 3 uses state-layer opacities of roughly hover 8%, focus/pressed 10%, dragged 16%. On touch, the pressed state should appear essentially instantly on touch-down and clear on release.",
+      "a11y": "Press feedback must be perceivable without relying on color alone where it matters; states (enabled/disabled/hover/focused/pressed) should be distinguishable by more than a subtle tint. Focus must be visually distinct from hover and must not be lost behind a hover style.",
+      "source": "Apple HIG — Buttons; Material 3 — States / State layers; NN/g — Button States 101"
+    },
+    {
+      "pattern": "Visible focus style lifted to the whole card (:focus-within)",
+      "when": "Tappable cards/rows that also must be keyboard-navigable (desktop/tablet, switch/assistive tech).",
+      "guidance": "Give the inner link a basic focus style, then use :focus-within on the card container to apply the same card-sized emphasis you give :hover, so sighted keyboard users see the same affordance mouse users do. Keep hover and :focus-within rules in separate blocks so an unsupported :focus-within does not kill the hover style.",
+      "a11y": "Focus indicator must meet WCAG 2.2 SC 2.4.11 Focus Appearance (min 2px thick perimeter and 3:1 contrast change) and SC 2.4.7 visible focus. Never remove the outline without an equivalent visible replacement.",
+      "source": "Inclusive Components — Cards; W3C WCAG 2.2 — 2.4.11 Focus Appearance"
+    },
+    {
+      "pattern": "Pointer cursor as a web-only affordance",
+      "when": "Web PWA on devices with a mouse/trackpad; add only when the surface really is clickable.",
+      "guidance": "Set cursor:pointer on the whole card when the whole card is clickable. On the pseudo-content/stretched-link approach the cursor comes for free; with a JS proxy click handler add it explicitly. Add it with the same mechanism that makes the card clickable, so the cursor never lies when JS/behaviour fails.",
+      "a11y": "Cursor is a mouse-only cue; it does nothing for touch or screen readers, so it must never be the only affordance. Ensure the underlying control is a real link/button with an accessible name.",
+      "source": "Inclusive Components — Cards"
+    },
+    {
+      "pattern": "Hit area / minimum target size (44pt / 48dp / 24px min, 44px enhanced)",
+      "when": "All interactive elements, especially icon buttons, close/dismiss controls, and small rows.",
+      "guidance": "Make the tappable area, not the visible glyph, large enough. Baselines: Apple 44x44 pt (iOS/iPadOS default control size), Material 48x48 dp (~9mm, recommended 7-10mm), WCAG 2.5.8 AA minimum 24x24 CSS px, WCAG 2.5.5 AAA 44x44 CSS px. A 24px icon can sit inside a 48px target via padding. Also add >=8px spacing between adjacent targets so a finger cannot straddle two.",
+      "a11y": "Undersized targets are allowed only via WCAG 2.5.8 exceptions (sufficient spacing, equivalent control, inline text). For frequently used, hard-to-undo, or edge-of-screen controls, go larger than the minimum.",
+      "source": "Apple HIG — Accessibility; Material 3 — Designing: Structure (Target sizes); W3C WCAG 2.2 — 2.5.8 / 2.5.5; web.dev — Accessible tap targets"
+    },
+    {
+      "pattern": "Chevron / directional indicator as an explicit signifier",
+      "when": "Rows that drill into a detail view where shadow/elevation is unavailable or inappropriate (e.g. flat list rows).",
+      "guidance": "A trailing chevron ('>') is a learned, platform-standard signifier that the row navigates somewhere; it is the lightest explicit cue when the surface itself carries no elevation. Use it consistently for navigation rows only, and never for rows that expand in place or toggle a value.",
+      "a11y": "A chevron is decorative, not content: hide it from assistive tech (aria-hidden) or express it in the link's accessible name, so screen-reader users are not read a meaningless '>' glyph. Keep one tab stop per row.",
+      "source": "NN/g — Cards: UI-Component Definition (signifiers); Apple HIG — Buttons (symbols as familiar cues)"
+    },
+    {
+      "pattern": "Nested interactive elements inside a tappable card (avoid)",
+      "when": "Any card that both links somewhere AND contains its own buttons/links (e.g. a session card with Start + Log it).",
+      "guidance": "Do not nest an <a> inside an <a> or put multiple controls inside a stretched link. Choose one: (a) make only the title the link and leave secondary controls as siblings, or (b) stretch the primary link over the card with the ::after pseudo-content trick and raise secondary controls above it (position:relative), accepting a gap in the clickable area, or (c) use a JS proxy click with a ~200ms down/up threshold so text selection still works. Keep decorative CTAs as spans with aria-hidden.",
+      "a11y": "Nested interactive content is invalid/confusing: some screen readers announce only the first element of a 'block link', hiding inner controls. Ensure a logical, single tab stop per card, correct focus order, and that inner controls remain reachable. See WCAG 4.1.2 (name/role/value) and 2.4.3 (focus order).",
+      "source": "Inclusive Components — Cards; W3C WCAG 2.2 — 2.4.3 Focus Order"
+    },
+    {
+      "pattern": "List markup + headings for card collections",
+      "when": "Any repeated set of cards/rows (Today's sessions, plan weeks, etc.).",
+      "guidance": "Group cards in list markup (<ul>/<li>) and give each card a heading so screen-reader users can jump between items and hear how many exist. Headings must begin their section (place them before the card's other content in source order; use flex order/visual tricks if the image must appear first).",
+      "a11y": "Headings should not skip levels and should be based on content hierarchy, not visual size. Source order must match the intended reading order for screen readers.",
+      "source": "Inclusive Components — Cards; Material 3 — Designing: Structure (headings/landmarks)"
+    }
+  ],
+  "motion": [
+    {
+      "pattern": "Press / state-change feedback (button, toggle, checkbox, chip)",
+      "duration_ms": 100,
+      "easing": "ease-out (CSS) / Material 'standard' cubic-bezier(0.2, 0, 0, 1)",
+      "when": "Immediate confirmation that a tap registered. Simple feedback should be ~100ms total, at the lower edge of perceivable motion — enough to be noticed, short enough to feel like direct manipulation.",
+      "restraint": "Very frequent interactions need the shortest, subtlest feedback. No motion-only feedback: pair with a static state change and respect reduced motion.",
+      "source": "NN/g — Executing UX Animations; Material 3 — Easing and duration"
+    },
+    {
+      "pattern": "Ripple / touch-down feedback on tappable rows and cards",
+      "duration_ms": "150-200",
+      "easing": "Material 'standard' cubic-bezier(0.2, 0, 0, 1); ripple grows then fades",
+      "when": "Material-style surfaces where a touch-down overlay communicates that the row is live. Keep the state-layer press opacity modest (~10%) so it reads as acknowledgement, not a color change.",
+      "restraint": "Skip the ripple entirely for very high-frequency lists if it becomes visual noise; a plain ~100ms press tint is often enough. Honor reduced motion by shortening to an instant tint.",
+      "source": "Material 3 — States / Easing and duration"
+    },
+    {
+      "pattern": "Screen / page transition (route change)",
+      "duration_ms": "200-300",
+      "easing": "Material 'emphasized' cubic-bezier(0.2, 0, 0, 1) for entering; 'emphasized decelerate' cubic-bezier(0.05, 0.7, 0.1, 1) when entering from a gesture",
+      "when": "Navigating between views where a short transition preserves spatial context (especially on mobile where context is easily lost). 300ms is the sweet spot for substantial screen changes.",
+      "restraint": "Cap at 300ms; longer feels sluggish. Do not block interaction on the animation; let users cancel. Replace slide/zoom with a short fade under prefers-reduced-motion.",
+      "source": "NN/g — Executing UX Animations; Material 3 — Easing and duration"
+    },
+    {
+      "pattern": "Enter vs exit asymmetry (sheets, modals, menus)",
+      "duration_ms": "enter 300 / exit 200-250",
+      "easing": "enter ease-out ('emphasized decelerate' 0.05, 0.7, 0.1, 1); exit ease-in ('emphasized accelerate' 0.3, 0, 0.8, 0.15)",
+      "when": "Anything that appears then disappears. Entering elements need a slightly longer duration than exiting ones: an object slowing as it comes to rest lets the eye predict where it stops, while an exiting object should accelerate away.",
+      "restraint": "Keep exits about half the entrance length. Avoid bounce/overshoot on frequently seen elements; under reduced motion replace axis movement with fades.",
+      "source": "NN/g — Executing UX Animations; Material 3 — Easing and duration"
+    },
+    {
+      "pattern": "Expand / collapse (accordion, disclosure, inline detail)",
+      "duration_ms": "200-300",
+      "easing": "Material 'standard' cubic-bezier(0.2, 0, 0, 1)",
+      "when": "Revealing inline content such as a session's detail or a plan-week breakdown. Animating the expansion (rather than snapping) prevents users thinking a new page loaded and reaching for Back.",
+      "restraint": "Keep it under ~300ms; animate height/opacity only. Under reduced motion, show the content instantly (or with a fade) rather than growing the box.",
+      "source": "NN/g — Timing Guidelines for Exposing Hidden Content; The Role of Animation and Motion in UX"
+    },
+    {
+      "pattern": "Skeleton placeholder (content loading)",
+      "duration_ms": "1000-2000 (loop)",
+      "easing": "linear (shimmer/glare sweep)",
+      "when": "Loading structured content (Today's sessions, progress charts) where a placeholder showing the shape of the coming content reduces perceived wait and prevents layout shift.",
+      "restraint": "One animated element per region — avoid stacking shimmer + spinner + count-up simultaneously (competing animations cancel each other's pull). Under prefers-reduced-motion, render the skeleton static (no sweep).",
+      "source": "NN/g — The Role of Animation and Motion in UX; NN/g — Microinteractions in User Experience"
+    },
+    {
+      "pattern": "Progress 'breathing' pulse / indeterminate indicator",
+      "duration_ms": "1000-1500 (loop)",
+      "easing": "ease-in-out (smooth opacity/scale oscillation)",
+      "when": "System is working but duration is unknown (syncing, generating a plan). A gentle pulse communicates liveness and 'still working' without a determinate percentage.",
+      "restraint": "Avoid sustained oscillation near ~0.2 Hz (people are especially sensitive to it) and keep amplitude low. Do not animate depth in z. Under reduced motion, use a static or fading (not scaling) indicator.",
+      "source": "Apple HIG — Motion (visionOS oscillation note); NN/g — Microinteractions in User Experience"
+    },
+    {
+      "pattern": "Micro-interaction confirmation (heart/star toggle, checkmark, added-to-list)",
+      "duration_ms": "100-200",
+      "easing": "ease-out",
+      "when": "Confirming a discrete action (log a session, favourite, add). A short, bounded animation makes state change noticeable where a static change may be missed (change blindness) and signals the action can be undone.",
+      "restraint": "Must be short and non-permanent so it stays a micro-interaction. Avoid full-screen travel animations (e.g. a checkmark arcing across the screen) — those become annoying with repetition.",
+      "source": "NN/g — Microinteractions in User Experience; NN/g — The Role of Animation and Motion in UX"
+    },
+    {
+      "pattern": "Material 3 easing curve set",
+      "duration_ms": "n/a (curves)",
+      "easing": "standard cubic-bezier(0.2, 0, 0, 1); standard decelerate cubic-bezier(0, 0, 0, 1); standard accelerate cubic-bezier(0.3, 0, 1, 1); emphasized cubic-bezier(0.2, 0, 0, 1); emphasized decelerate cubic-bezier(0.05, 0.7, 0.1, 1); emphasized accelerate cubic-bezier(0.3, 0, 0.8, 0.15)",
+      "when": "Default to a decelerate/ease-out curve for elements coming to rest (entering); use an accelerate/ease-in curve for elements leaving the screen. Linear only for continuous loops (shimmer, spinners).",
+      "restraint": "Linear motion looks unnatural for anything that starts/stops. Do not ease-in on entrance (feels unresponsive). Keep one curve language across the app.",
+      "source": "Material 3 — Easing and duration; NN/g — Executing UX Animations"
+    },
+    {
+      "pattern": "Response-time budget (when animation/feedback is even needed)",
+      "duration_ms": "0.1s / 1s / 10s thresholds",
+      "easing": "n/a",
+      "when": "0.1s: feel of direct manipulation — any feedback (state change, press) must appear within this. 1s: flow of thought stays intact — beyond this, show the system is working. 10s: attention limit — show a percent-done indicator and a way to interrupt.",
+      "restraint": "If the app can respond within 0.1s, do not add a filler animation. Only add progress/liveness motion when the wait is real and otherwise unexplained.",
+      "source": "NN/g — Response Times: The 3 Important Limits"
+    },
+    {
+      "pattern": "prefers-reduced-motion handling",
+      "duration_ms": "0 (instant) or short fade ~150-200",
+      "easing": "linear or ease-out fade",
+      "when": "Whenever the user has asked the OS/browser to reduce motion. Replace movement (translate/scale/rotate/parallax/zoom) with a short opacity fade or an instant state change; keep only what carries essential meaning.",
+      "restraint": "Don't over-reduce: keep non-triggering, meaning-carrying cues. Concretely: tighten animation springs to remove bounce, track animations to the user's gesture, avoid animating blur and z-axis depth, and swap axis transitions for fades.",
+      "source": "MDN — prefers-reduced-motion; WebKit — Responsive Design for Motion; Apple HIG — Accessibility"
+    }
+  ],
+  "anti_patterns": [
+    {
+      "pattern": "Motion as the ONLY way feedback is communicated",
+      "why": "Not everyone can or wants motion; if a state change is only expressed by an animation it becomes invisible to some users. Apple: make motion optional and supplement it with haptics/audio or a static state change. Provide a non-motion alternative."
+    },
+    {
+      "pattern": "Noticeable animation on frequently repeated UI interactions",
+      "why": "The system already provides subtle motion for standard elements; adding custom motion to something users do constantly makes them spend time watching unnecessary animation every time (Apple: generally avoid motion on frequent interactions). Frequent motion must be shorter and subtler, or omitted."
+    },
+    {
+      "pattern": "Long or linear micro-animations (>500ms; linear for start/stop motion)",
+      "why": "At 500ms animations start to feel like a drag; linear motion looks unnatural for anything that starts and stops. Most animations should sit in 100-400ms, with ease-out on entrance. It is far more common for animations to be too long than too short."
+    },
+    {
+      "pattern": "Nested interactive elements inside a tappable card",
+      "why": "A link inside a link / multiple controls inside a stretched link breaks the single tab stop, confuses screen readers (some announce only the first element of a block link, hiding inner controls), and makes tapping the inner control activate the wrong target. Use one primary link plus siblings raised above the overlay."
+    },
+    {
+      "pattern": "Continuous / peripheral / oscillating animation and gratuitous motion",
+      "why": "Human vision is drawn to motion, so irrelevant animation distracts and can degrade the experience; scaling, spinning, parallax and peripheral motion can trigger vestibular discomfort. Avoid sustained oscillation near ~0.2 Hz and motion at the edges of the field of view; keep decorative motion stationary under reduced motion."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Apple Human Interface Guidelines — Motion",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/motion"
+    },
+    {
+      "title": "Apple Human Interface Guidelines — Buttons",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/buttons"
+    },
+    {
+      "title": "Apple Human Interface Guidelines — Accessibility",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility"
+    },
+    {
+      "title": "Material Design 3 — Easing and duration (tokens and specs)",
+      "url": "https://m3.material.io/styles/motion/easing-and-duration/tokens-specs"
+    },
+    {
+      "title": "Material Design 3 — States (overview)",
+      "url": "https://m3.material.io/foundations/interaction/states/overview"
+    },
+    {
+      "title": "Material Design 3 — State layers",
+      "url": "https://m3.material.io/foundations/interaction/states/state-layers"
+    },
+    {
+      "title": "Material Design 3 — Designing: Structure (Target sizes)",
+      "url": "https://m3.material.io/foundations/designing/structure"
+    },
+    {
+      "title": "NN/g — Response Times: The 3 Important Limits (Nielsen, 1993/2014)",
+      "url": "https://www.nngroup.com/articles/response-times-3-important-limits/"
+    },
+    {
+      "title": "NN/g — The Role of Animation and Motion in UX (Laubheimer, 2020)",
+      "url": "https://www.nngroup.com/articles/animation-purpose-ux/"
+    },
+    {
+      "title": "NN/g — Executing UX Animations: Duration and Motion Characteristics (Laubheimer, 2020)",
+      "url": "https://www.nngroup.com/articles/animation-duration/"
+    },
+    {
+      "title": "NN/g — Timing Guidelines for Exposing Hidden Content (Harley, 2015)",
+      "url": "https://www.nngroup.com/articles/timing-exposing-content/"
+    },
+    {
+      "title": "NN/g — Cards: UI-Component Definition (Laubheimer, 2016)",
+      "url": "https://www.nngroup.com/articles/cards-component/"
+    },
+    {
+      "title": "NN/g — Microinteractions in User Experience (Kendrick, 2018)",
+      "url": "https://www.nngroup.com/articles/microinteractions/"
+    },
+    {
+      "title": "NN/g — Button States 101 (video, 2025)",
+      "url": "https://www.nngroup.com/videos/button-states-101/"
+    },
+    {
+      "title": "W3C WCAG 2.2 — Understanding SC 2.5.8 Target Size (Minimum), Level AA",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html"
+    },
+    {
+      "title": "W3C WCAG 2.2 — Understanding SC 2.5.5 Target Size (Enhanced), Level AAA",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html"
+    },
+    {
+      "title": "W3C WCAG 2.2 — Understanding SC 2.4.11 Focus Appearance",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html"
+    },
+    {
+      "title": "MDN — prefers-reduced-motion CSS media feature",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+    },
+    {
+      "title": "WebKit — Responsive Design for Motion (Craig, 2017)",
+      "url": "https://webkit.org/blog/7551/responsive-design-for-motion/"
+    },
+    {
+      "title": "web.dev — Accessible tap targets",
+      "url": "https://web.dev/articles/accessible-tap-targets"
+    },
+    {
+      "title": "Inclusive Components — Cards (Heydon Pickering, 2018)",
+      "url": "https://inclusive-components.design/cards/"
+    }
+  ],
+  "notes": "Material 3's own site is JS-rendered; token/easing values and the 48dp target guidance were read via Firecrawl. The M3 state-layer opacities (~8% hover, ~10% focus/pressed, ~16% dragged) are the widely published M3 values and are corroborated by community discussion; verify against the live M3 State layers page before hard-coding. Design implication for Stride Guide: a session card that both links and carries Start/Log it actions must not nest interactive elements — use one primary link (title) plus sibling controls raised above a stretched-link overlay, one tab stop per card, and a ~100ms press tint rather than a heavy ripple."
+}

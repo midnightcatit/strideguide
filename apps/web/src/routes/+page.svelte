@@ -91,9 +91,9 @@
 {:else if !user}
 	<section class="mt-10 text-center">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">Stride Guide</p>
-		<h1 class="font-display mt-2 text-2xl font-bold">Your training, tailored.</h1>
+		<h1 class="font-display mt-2 text-2xl font-bold">Built around your race, your pace, your week.</h1>
 		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
-			Goal-driven running and strength plans with the research behind every session.
+			Pick a goal and a race date. We write the sessions and explain each one.
 		</p>
 		<button
 			type="button"
@@ -188,6 +188,7 @@
 				{weekLogged} of {weekPlanned} done
 				<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
 			</p>
+			<a href="/week" class="mt-3 inline-block text-xs text-steel hover:text-signal-ink">Full week →</a>
 		</Card>
 	</section>
 
@@ -209,15 +210,6 @@
 	{/if}
 
 	<!-- Quick -->
-	<section aria-labelledby="quick" class="mt-7">
-		<SectionHeader id="quick" eyebrow="Quick" />
-		<Card>
-			<div class="flex flex-col gap-2">
-				<a href="/week" class="rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">Full week →</a>
-				<a href="/progress" class="rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">Progress →</a>
-			</div>
-		</Card>
-	</section>
 {/if}
 
 {#if playTarget}

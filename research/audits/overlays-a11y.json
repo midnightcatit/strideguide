@@ -1,0 +1,187 @@
+{
+  "findings": [
+    {
+      "id": "OVL-PLAYER-1",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:149",
+      "issue": "Full-screen workout overlay is a plain <div class=\"fixed inset-0 z-30 overflow-y-auto bg-paper\"> with no role=\"dialog\", no aria-modal and no accessible name. Assistive tech treats it as ordinary page content, so the modal state is never announced and focus is never moved in. It also sits at z-30 over the primary nav (z-20), so the nav is hidden but still present in the accessibility tree.",
+      "fix": "Use a real modal. Svelte 5 preferred: make the root a native <dialog bind:this={dlg} class=\"fixed inset-0 z-30 ...\" onclose={onClose} aria-labelledby=\"player-title\">, open it from onMount with dlg.showModal(), and give the <h1> (line 155) id=\"player-title\". showModal() supplies the inert background, focus trap and Escape handling for free. If the div must stay, add role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"player-title\" and implement the focus/Escape pattern below."
+    },
+    {
+      "id": "OVL-PLAYER-2",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:149",
+      "issue": "No focus management: no initial focus on open, no focus trap while open, and no focus return on close. Sessions are opened from a card/secondary button (e.g. routes/+page.svelte:216), so focus remains on the page behind the overlay. Tab then walks into the header, nav and footer underneath instead of staying in the workout view.",
+      "fix": "Shared Svelte 5 pattern for all four overlays: (1) initial focus + return: onMount(() => { const prev = document.activeElement as HTMLElement; root.querySelector<HTMLElement>('[data-autofocus]')?.focus(); return () => prev?.focus(); }) and mark the ✕ button data-autofocus; (2) trap: in a keydown handler, on Tab query root.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex=\"-1\"])') and wrap from last to first (and first to last on Shift+Tab) with e.preventDefault(); (3) add <svelte:window onkeydown={onKeydown} />."
+    },
+    {
+      "id": "OVL-PLAYER-3",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:149",
+      "issue": "Escape does not close the overlay. There is no keydown or <svelte:window> handler anywhere in the component (repo-wide search finds none). Escape is the expected keyboard dismissal for a dialog; without it a keyboard user must Tab to the ✕ button, whose target is also under-sized (see OVL-PLAYER-5).",
+      "fix": "Add <svelte:window onkeydown={(e) => { if (e.key === 'Escape') onClose(); }} />. This is automatic if the native <dialog> + showModal() approach from OVL-PLAYER-1 is used (onclose fires and the parent clears playTarget)."
+    },
+    {
+      "id": "OVL-PLAYER-4",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:149",
+      "issue": "No body scroll lock and no inert on the app behind the overlay. The overlay covers the viewport visually, but document.body still scrolls underneath (touch scroll chains to the page on iOS Safari), so a screen-reader or touch user can move the document behind the modal.",
+      "fix": "Lock scroll for the overlay lifetime: $effect(() => { const prev = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = prev; }; }). For full correctness also set the app container (the <div class=\"min-h-dvh ...\"> in routes/+layout.svelte:53) inert while any overlay is open, or rely on native <dialog> showModal() which makes the rest of the document inert automatically."
+    },
+    {
+      "id": "OVL-PLAYER-5",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:153",
+      "issue": "Touch targets below the 44px minimum: ✕ close (line 153) uses px-2 py-1, the +30s and Skip rest buttons (lines 175-176) use px-4 py-2, and the ‹ / Next › step buttons (lines 203-204) use px-4 py-3. None reach the 44px both-dimensions target declared by --tap-min (app.css:19).",
+      "fix": "Apply the tap minimum: for the icon-only ✕ use class=\"grid h-11 w-11 place-items-center\" (44px); for the other small buttons add min-h-[44px] or py-3 and horizontal padding so the hit area is at least 44x44. A reusable Tailwind utility or a .tap-target class mapped to var(--tap-min) keeps this consistent across overlays."
+    },
+    {
+      "id": "OVL-PLAYER-6",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:188",
+      "issue": "The live countdown and automatic step transitions are not announced. The clock (line 189) updates every second and advance() changes the step label silently, so a screen-reader user gets no notification that a timed step ended, rest started, or the workout completed.",
+      "fix": "Wrap the current step label and the completion message in a polite live region: <p aria-live=\"polite\" aria-atomic=\"true\">{current.step.label}</p>, and use a role=\"status\" for the finished card (line 159-160) and the rest card (line 166). Do not make the every-second clock a live region; announce only step/phase changes to avoid an announcement storm."
+    },
+    {
+      "id": "OVL-DETAIL-1",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:32",
+      "issue": "No focus management. The root div (line 62) correctly declares role=\"dialog\" aria-modal=\"true\", but onMount only fetches the explanation; nothing is focused on open and focus is not trapped or returned on close (onClose clears detailTarget in routes/+page.svelte:243 and week/+page.svelte:216). Keyboard focus stays on the triggering card and Tab escapes into the page behind.",
+      "fix": "Apply the shared pattern: capture document.activeElement on mount, focus the ✕ button (line 67, add data-autofocus) or the <h1>, trap Tab within the root, and restore focus in the onMount cleanup. Alternatively convert the root to native <dialog> + showModal() as in OVL-PLAYER-1."
+    },
+    {
+      "id": "OVL-DETAIL-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:62",
+      "issue": "Escape does not close the detail overlay; no keydown handler exists. The only in-app dismissal controls are the ✕ button (line 67) and the hard-nav link <a href=\"/\"> (line 66); the latter navigates away instead of closing the dialog.",
+      "fix": "Add <svelte:window onkeydown={(e) => { if (e.key === 'Escape') onClose(); }} />."
+    },
+    {
+      "id": "OVL-DETAIL-3",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:62",
+      "issue": "No body scroll lock behind the overlay. The root is fixed inset-0 with its own scrolling inner region (line 74), but document.body still scrolls underneath on touch devices, leaking scroll to the page behind the modal.",
+      "fix": "Add the $effect scroll-lock shown in OVL-PLAYER-4, scoped to mount/unmount of this component."
+    },
+    {
+      "id": "OVL-DETAIL-4",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:62",
+      "issue": "The dialog's accessible name is set with a hard-coded aria-label={sessionLabel(session)} while a real <h1> with the same text exists at line 69. The two can drift, and the heading is not associated with the dialog.",
+      "fix": "Give the heading id=\"detail-title\" (line 69) and replace aria-label with aria-labelledby=\"detail-title\" so the visible heading is the authoritative name."
+    },
+    {
+      "id": "OVL-DETAIL-5",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:67",
+      "issue": "The ✕ close button uses px-2 py-1, below the 44px tap target (app.css:19 --tap-min) and one of only two dismiss controls in the dialog.",
+      "fix": "Use class=\"grid h-11 w-11 place-items-center\" (or min-h-[44px] min-w-[44px]) so the close target meets the minimum."
+    },
+    {
+      "id": "OVL-LOG-1",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:117",
+      "issue": "No focus management. role=\"dialog\" and aria-modal=\"true\" are present, but there is no initial focus, no trap and no focus return. The first focusable in DOM order is the invisible full-screen backdrop <button aria-label=\"Close\"> (line 118), so a Tab lands on an unlabelled-looking, screen-covering control before any field.",
+      "fix": "Focus the first meaningful control on open (e.g. the Distance input at line 139) and restore focus to the trigger on close; trap Tab within the sheet. Add the initial-focus + return + trap pattern from OVL-PLAYER-2, or use native <dialog> + showModal()."
+    },
+    {
+      "id": "OVL-LOG-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:117",
+      "issue": "Escape does not close the log sheet; there is no keydown handler. Users must find the ✕ (line 128) or the invisible backdrop button.",
+      "fix": "Add <svelte:window onkeydown={(e) => { if (e.key === 'Escape') onClose(); }} />."
+    },
+    {
+      "id": "OVL-LOG-3",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:117",
+      "issue": "No body scroll lock. The sheet caps its own height (max-h-[90vh] overflow-y-auto, line 120) but the page behind remains scrollable on touch devices while the modal is open.",
+      "fix": "Add the $effect scroll-lock from OVL-PLAYER-4."
+    },
+    {
+      "id": "OVL-LOG-4",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:118",
+      "issue": "The dismiss backdrop is a full-viewport <button>. As a native button it is in the tab order first and is reachable by keyboard, which is unusual for a scrim; keyboard users can land on a control whose only purpose is mouse dismissal, and it sits before the error/status region flow.",
+      "fix": "Keep the scrim click-to-dismiss but remove it from the tab order: either add tabindex=\"-1\" and rely on the ✕ + Escape (OVL-LOG-2) as the keyboard paths, or use native <dialog> where clicks on the ::backdrop dismiss without adding a tab stop. If it stays focusable, keep the aria-label but move it after the header in DOM order."
+    },
+    {
+      "id": "OVL-LOG-5",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:117",
+      "issue": "aria-label=\"Log session\" is hard-coded and does not reference the visible <h2> (line 126), which shows session.title. The dialog name can be generic or drift from the heading.",
+      "fix": "Give the <h2> id=\"log-title\" (line 126) and use aria-labelledby=\"log-title\"."
+    },
+    {
+      "id": "OVL-LOG-6",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:196",
+      "issue": "The per-set controls ↻ same (line 196), + set (line 199) and − set (line 200) are text buttons with no padding, well under the 44px tap target.",
+      "fix": "Give them min-h-[44px] and horizontal padding, or wrap in a 44px hit area; keep the visible text size for aesthetics but enlarge the touch box."
+    },
+    {
+      "id": "OVL-SETTINGS-1",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/SettingsModal.svelte:16",
+      "issue": "No focus management. role=\"dialog\" and aria-modal=\"true\" are present, but nothing is focused on open, Tab is not trapped, and focus is not returned when settingsOpen is set false (routes/+layout.svelte:135). The settings trigger button (routes/+layout.svelte:64) is where focus should return.",
+      "fix": "Apply the OVL-PLAYER-2 pattern: focus the ✕ (line 22) or a heading on mount, trap Tab, restore focus on cleanup, or convert to native <dialog> + showModal()."
+    },
+    {
+      "id": "OVL-SETTINGS-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SettingsModal.svelte:16",
+      "issue": "Escape does not close the settings dialog; no keydown handler is present. The dialog is opened from the persistent header on every route, so the expected keyboard dismissal is missing app-wide.",
+      "fix": "Add <svelte:window onkeydown={(e) => { if (e.key === 'Escape') onClose(); }} />."
+    },
+    {
+      "id": "OVL-SETTINGS-3",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SettingsModal.svelte:19",
+      "issue": "The panel has no max-height and no overflow. Unlike LogSheet (max-h-[90vh] overflow-y-auto), this panel relies on items-end and its natural height. On a short viewport (small phone in landscape) the top sections become unreachable because the container cannot scroll and cannot move off the bottom edge.",
+      "fix": "Add overflow-y-auto and a viewport cap: class=\"relative w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-t-2xl ...\" (use dvh so the mobile URL bar is accounted for), and keep the bottom safe-area padding."
+    },
+    {
+      "id": "OVL-SETTINGS-4",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SettingsModal.svelte:16",
+      "issue": "No body scroll lock behind the settings modal, and the app behind stays interactive to assistive tech despite aria-modal. The open modal also does not add safe-area padding at the top in landscape, but the main gap is background scroll leakage.",
+      "fix": "Add the $effect scroll-lock from OVL-PLAYER-4 while the modal is mounted."
+    },
+    {
+      "id": "OVL-SETTINGS-5",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SettingsModal.svelte:21",
+      "issue": "aria-label=\"Settings\" duplicates the visible <h1>Settings</h1> but is not associated with it; the backdrop <button> (line 17) is the first tab stop, same pattern as LogSheet.",
+      "fix": "Give the h1 id=\"settings-title\" and use aria-labelledby=\"settings-title\". For the backdrop, apply tabindex=\"-1\" (see OVL-LOG-4) so keyboard users reach the real ✕ and Escape."
+    },
+    {
+      "id": "NAV-1",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/+layout.svelte:129",
+      "issue": "The footer (line 129-131) sits in normal flow at the bottom of the document while the nav (line 82) is fixed inset-x-0 bottom-0 z-20. main has pb-24 (line 78) to clear the 56px nav, but the footer has no bottom padding, so its text is rendered underneath the fixed nav and is effectively hidden and untappable.",
+      "fix": "Either move the footer above the nav in the DOM and give it padding-bottom: calc(4rem + env(safe-area-inset-bottom)), or add that same bottom padding to the footer so it clears the fixed nav. Confirm both nav and footer respect env(safe-area-inset-bottom)."
+    },
+    {
+      "id": "NAV-2",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:123",
+      "issue": "Tab labels are 10px (text-[10px]) uppercase tracked text. They are the only accessible name for each tab (the SVG is aria-hidden at line 106), so an unusually small label reduces legibility, though contrast of text-steel on paper is within AA.",
+      "fix": "Raise the label to at least 11-12px or increase letter spacing, keeping 44px+ tap targets. The icon-only case is avoided by keeping the text label, which is correct."
+    },
+    {
+      "id": "NAV-3",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:78",
+      "issue": "No skip link and no id on <main>. Keyboard users must Tab through the header brand link and the settings button on every route before reaching page content, and there is no anchor to jump to main.",
+      "fix": "Add id=\"main\" to <main> and a visually-hidden-until-focused skip link as the first element in the layout: <a href=\"#main\" class=\"sr-only focus:not-sr-only ...\">Skip to content</a>. Low effort, removes repeated tab stops on every navigation."
+    },
+    {
+      "id": "NAV-4",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:83",
+      "issue": "The nav itself is correct: it has aria-label=\"Primary\", each link sets aria-current=\"page\" only when active (line 90), icons are aria-hidden, labels provide the name, cells are h-14 (56px) and the bar applies env(safe-area-inset-bottom) (line 86). Noting as verified so it is not re-flagged; the only caveat is that while a full-screen overlay is open the nav is visually covered but not removed from the tab order (covered by the trap findings).",
+      "fix": "No change required for the nav semantics/targets. When adding overlay focus traps (OVL-PLAYER-2), set the app shell inert while an overlay is open so the nav cannot be tabbed into behind the modal."
+    }
+  ],
+  "summary": "Four full-screen overlays (SessionPlayer, SessionDetail, LogSheet, SettingsModal) all lack focus management: none sets initial focus, traps Tab, or restores focus on close, so keyboard/AT users stay on the page behind the modal and are dumped to the document start after closing. None handles Escape. None locks background scroll or marks the app shell inert, so the page (including the nav) stays scrollable and tabbable behind the overlay. SessionPlayer is the worst: its root div has no role=\"dialog\"/aria-modal/aria-label at all (SessionPlayer.svelte:149), while the other three set the attributes correctly but wire no aria-labelledby to their visible headings. SettingsModal also has no max-height/overflow, so its top sections can be unreachable on short viewports (SettingsModal.svelte:19). Several dismiss/steps controls are below the 44px --tap-min target. The bottom nav is largely sound (aria-label, aria-current=\"page\", 56px cells, safe-area) but its sibling footer is rendered under the fixed nav (NAV-1) and there is no skip link. No overlay hard-traps the user: all four are dismissible and SessionDetail/SessionPlayer add a \"/\" link, but the missing Escape plus the covered nav is the practical risk. Recommended shared fix: convert each overlay to native <dialog> + showModal() (free trap, Escape and inert background), or add one reusable Svelte 5 focus-trap + scroll-lock pattern with aria-labelledby and 44px targets."
+}

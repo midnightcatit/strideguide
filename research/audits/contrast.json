@@ -1,0 +1,125 @@
+{
+  "ratios": {
+    "meta": {
+      "method": "WCAG 2.1 relative luminance, computed from the token hex values in apps/web/src/app.css; alpha utilities composited over their parent surface first.",
+      "thresholds": { "text": 4.5, "non_text": 3.0 }
+    },
+    "text.steel_on_paper": { "light": 5.47, "dark": 7.07 },
+    "text.steel_on_sunken": { "light": 5.13, "dark": 7.34 },
+    "text.steel_on_signal_wash": { "light": 5.01, "dark": 5.17 },
+    "text.signal_ink_on_paper": { "light": 5.3, "dark": 10.12 },
+    "text.signal_ink_on_sunken": { "light": 4.97, "dark": 10.52 },
+    "text.signal_ink_on_signal_wash": { "light": 4.85, "dark": 7.4 },
+    "text.ink_on_paper": { "light": 15.59, "dark": 15.4 },
+    "text.paper_on_ink": { "light": 15.59, "dark": 15.4 },
+    "mark.signal_on_paper": { "light": 1.97, "dark": 10.12 },
+    "mark.signal_on_sunken": { "light": 1.85, "dark": 10.52 },
+    "mark.signal_on_signal_wash": { "light": 1.8, "dark": 7.4 },
+    "mark.signal_ink_on_paper": { "light": 5.3, "dark": 10.12 },
+    "mark.signal_ink_on_sunken": { "light": 4.97, "dark": 10.52 },
+    "mark.hairline_strong_on_paper": { "light": 3.11, "dark": 3.95 },
+    "mark.hairline_strong_on_sunken": { "light": 2.91, "dark": 4.1 },
+    "mark.hairline_strong_40_on_paper": { "light": 1.49, "dark": 1.62 },
+    "mark.hairline_strong_40_on_sunken": { "light": 1.46, "dark": 1.61 },
+    "mark.hairline_on_paper": { "light": 1.28, "dark": 1.38 },
+    "mark.hairline_on_sunken": { "light": 1.2, "dark": 1.44 },
+    "mark.signal_50_on_paper": { "light": 1.4, "dark": 3.37 },
+    "mark.signal_wash_vs_paper": { "light": 1.09, "dark": 1.37 },
+    "mark.paper_30_on_ink": { "light": 2.58, "dark": 1.95 },
+    "mark.paper_40_on_ink": { "light": 3.58, "dark": 2.52 },
+    "mark.ink_50_on_sunken": { "light": 3.18, "dark": 4.61 }
+  },
+  "findings": [
+    {
+      "id": "C1",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/progress/+page.svelte:140",
+      "pair": "fill-signal #E8A33D on bg-sunken #ECEEEA (light)",
+      "ratio": 1.85,
+      "issue": "The pace-trend chart encodes 'fast' sessions only with amber dots (fill-signal) against sunken. 1.85:1 in light fails the 3:1 non-text threshold and colour is the only cue; dark passes at 10.52:1.",
+      "fix": "Use fill-signal-ink (#8A5C12, 4.97:1 on sunken) or fill-ink with a distinct ring/shape for fast points, and add a legend so speed is not encoded by colour alone."
+    },
+    {
+      "id": "C2",
+      "severity": "low",
+      "file_line": "apps/web/src/components/SessionCard.svelte:67",
+      "pair": "bg-signal #E8A33D on bg-paper #F4F5F2 (light)",
+      "ratio": 1.97,
+      "issue": "The run-modality edge stripe is 1.97:1 in light. It is redundant with the session-type text, so meaning is not lost, but the mark itself fails 3:1. Same pattern at SessionPlayer.svelte:181.",
+      "fix": "Use bg-signal-ink (#8A5C12, 5.30:1 on paper) for the edge in light, or keep raw signal only for purely decorative accents."
+    },
+    {
+      "id": "C3",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/week/+page.svelte:158",
+      "pair": "bg-signal #E8A33D on bg-sunken #ECEEEA (light)",
+      "ratio": 1.85,
+      "issue": "The today marker under the day tab is 1.85:1 in light and is aria-hidden; the tab's accessible label does not say 'today'. Sighted users rely on a low-contrast amber mark for a state cue.",
+      "fix": "Use bg-signal-ink (4.97:1 on sunken) and add 'today' to the tab's aria-label or show a short text cue so the state is not colour-only."
+    },
+    {
+      "id": "C4",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:96",
+      "pair": "bg-signal #E8A33D on bg-paper/95 #F4F5F2 (light)",
+      "ratio": 1.97,
+      "issue": "The active-nav underline is 1.97:1 in light. It is redundant with text-ink and aria-current, so it is decorative reinforcement, but it still fails 3:1 as a graphical mark.",
+      "fix": "Use bg-signal-ink (5.30:1) or accept it as decoration only and keep the aria-current/text cue as the primary indicator."
+    },
+    {
+      "id": "C5",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/onboarding/+page.svelte:127",
+      "pair": "border-signal #E8A33D on signal-wash #F2EAD9 (light)",
+      "ratio": 1.8,
+      "issue": "The selected goal option uses border-signal plus a wash fill. The border is 1.80:1 and the wash differs from paper by only 1.09:1, so the selected state is nearly invisible in light. Dark wash vs paper is 1.37:1 and the border 7.40:1.",
+      "fix": "Use border-signal-ink (#8A5C12, 4.85:1 on wash) or border-ink for the selected option, and strengthen the wash or add a checkmark so selection does not depend on a faint fill."
+    },
+    {
+      "id": "C6",
+      "severity": "low",
+      "file_line": "apps/web/src/components/SessionCard.svelte:64",
+      "pair": "border-signal/50 #E8A33D at 50% over #F4F5F2 (light)",
+      "ratio": 1.4,
+      "issue": "The active-session card outline composites to 1.40:1 in light (3.37:1 dark). The outline is the only card-level cue that the session is active, and it fails 3:1.",
+      "fix": "Use border-signal-ink (5.30:1) or border-ink for the active outline, or add a non-colour cue such as a thicker outline or label."
+    },
+    {
+      "id": "C7",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/progress/+page.svelte:89",
+      "pair": "border-hairline-strong #848C96 on bg-sunken #ECEEEA (light)",
+      "ratio": 2.91,
+      "issue": "The 'planned' volume tick uses hairline-strong on sunken at 2.91:1 in light, just under 3:1. It carries planned-vs-actual meaning in the chart; dark passes at 4.10:1.",
+      "fix": "Use border-steel (#5A6473, 5.13:1 on sunken) or border-ink at reduced weight for the planned tick; keep hairline-strong for dividers only."
+    },
+    {
+      "id": "C8",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/progress/+page.svelte:73",
+      "pair": "bg-hairline-strong/40 over #ECEEEA (light) and bg-hairline #D8DBD6 on #ECEEEA",
+      "ratio": 1.46,
+      "issue": "Empty-state ticks encode 'not logged' (copy at progress:77 says grey means not logged) but composite to 1.46:1 light / 1.61:1 dark; bg-hairline empty ticks are 1.20:1 light / 1.44:1 dark. Same pattern at progress:115, +page.svelte:184, IntensityLadder.svelte:21. Filled ticks are ink (14.62:1), so only the empty state is lost.",
+      "fix": "Use bg-ink/50 in light (3.18:1) and bg-paper/50 in dark (4.61:1) for empty ticks, or bg-steel solid (5.13:1 light / 7.34:1 dark); keep filled ticks ink."
+    },
+    {
+      "id": "C9",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/week/+page.svelte:174",
+      "pair": "border-hairline #D8DBD6 on bg-paper #F4F5F2 (light)",
+      "ratio": 1.28,
+      "issue": "Interactive controls whose only boundary is border-hairline (about 54 uses, e.g. Peek, Today, Log, close buttons) sit at 1.28:1 light / 1.38:1 dark. A hairline boundary is fine for dividers but fails 3:1 when it identifies a control.",
+      "fix": "Use border-hairline-strong for interactive controls (3.11:1 light / 3.95:1 dark) and keep border-hairline for non-interactive dividers."
+    },
+    {
+      "id": "C10",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+page.svelte:119",
+      "pair": "border-signal #E8A33D on bg-paper #F4F5F2 (light)",
+      "ratio": 1.97,
+      "issue": "The stale-plan banner border is 1.97:1 in light. The banner also has text and a wash fill, so the border is not the only cue, but it fails 3:1 as a graphical mark.",
+      "fix": "Use border-signal-ink (5.30:1 on paper) if the border must carry the alert, or keep raw signal as decoration only."
+    }
+  ],
+  "summary": "No WCAG AA text failures: steel on paper 5.47/7.07, steel on sunken 5.13/7.34, signal-ink on paper 5.30/10.12, all pass in both themes. No bare text-signal is used; text-signal-ink is used throughout. Failures are light-theme non-text marks: raw signal 1.97 on paper and 1.85 on sunken (dark passes at 10.12), empty-state ticks 1.20-1.49, planned tick 2.91, and hairline control borders 1.28. Fixes: use signal-ink for meaningful amber marks, ink/50 or steel for empty ticks, hairline-strong for control borders."
+}

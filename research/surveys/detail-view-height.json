@@ -1,0 +1,131 @@
+{
+  "generated_at": "2026-11-22T22:47:47Z",
+  "topic": "Mobile full-screen detail view that fills but never exceeds the screen height",
+  "viewport_units": [
+    {
+      "unit": "vh",
+      "when": "Legacy default. Equals lvh (the large viewport). On mobile with browser toolbars expanded, an element sized 100vh is taller than the visible area, so its bottom (and anything pinned there, e.g. a footer) is pushed below the fold on first load. Avoid for full-height shells.",
+      "support": "Baseline everywhere since ~2015. All current browsers resolve vh to the large viewport size."
+    },
+    {
+      "unit": "lvh",
+      "when": "Large viewport: assumes all retractable UA chrome (address bar, toolbar) is retracted, i.e. the tallest possible viewport. Stable (does not change on scroll). Good for backgrounds that should extend behind chrome, never for content that must stay visible.",
+      "support": "Chrome/Edge 108+, Firefox 101+, Safari 15.4+. Widely available."
+    },
+    {
+      "unit": "svh",
+      "when": "Small viewport: assumes all retractable UA chrome is expanded, i.e. the shortest viewport. Stable. Safest choice when you must guarantee nothing is clipped and can tolerate empty space when toolbars retract. Use when 'never exceeds' matters more than 'exactly fills'.",
+      "support": "Chrome/Edge 108+, Firefox 101+, Safari 15.4+. Widely available."
+    },
+    {
+      "unit": "dvh",
+      "when": "Dynamic viewport: tracks the current visible area, swapping between svh and lvh as toolbars show/hide. Use for a full-screen shell that should exactly fill whatever is visible now. Caveat: the value changes while scrolling, which can reflow content and cost performance, and updates are throttled (not 60fps). In a shell whose body scrolls internally the page itself never scrolls, so chrome never retracts and dvh stays effectively stable.",
+      "support": "Chrome/Edge 108+, Firefox 101+, Safari 15.4+. Widely available."
+    },
+    {
+      "unit": "dvw / svw / lvw",
+      "when": "Width equivalents. Use only for horizontal measurements; none include the scrollbar width, so 100vw is slightly too wide on systems with classic scrollbars. Prefer percentage/inline sizing for width.",
+      "support": "Same browser gates as the matching height units (Chrome/Edge 108+, Firefox 101+, Safari 15.4+)."
+    }
+  ],
+  "structure": {
+    "recommended_css": "/* In <head>: <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\"> */\n\n*, *::before, *::after { box-sizing: border-box; }\n\n/* The route shell: exactly the visible viewport, never taller. */\n.detail-screen {\n  height: 100vh;   /* fallback for engines without dvh */\n  height: 100dvh;  /* preferred; overrides the fallback where supported */\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;                 /* the shell itself never scrolls */\n  overscroll-behavior: none;        /* no page bounce / pull-to-refresh behind it */\n  background: var(--paper);\n}\n\n/* Fixed header: in flow, never position:fixed. */\n.detail-header {\n  flex: 0 0 auto;\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  /* Safe-area: top, and side notches in landscape. */\n  padding-top: max(12px, env(safe-area-inset-top));\n  padding-left: max(16px, env(safe-area-inset-left));\n  padding-right: max(16px, env(safe-area-inset-right));\n  padding-bottom: 12px;\n  border-bottom: 1px solid var(--hairline);\n}\n\n/* Scrolling body: the only scroller. min-height:0 lets it shrink below content size. */\n.detail-body {\n  flex: 1 1 auto;\n  min-height: 0;                    /* the critical flex primitive */\n  overflow-y: auto;\n  overflow-x: hidden;\n  overscroll-behavior: contain;     /* stop scroll chaining to the page */\n  padding: 16px;\n  padding-left: max(16px, env(safe-area-inset-left));\n  padding-right: max(16px, env(safe-area-inset-right));\n}\n\n/* Pinned footer: in flow, pinned by flex, never overlapping the scroller. */\n.detail-footer {\n  flex: 0 0 auto;\n  display: flex;\n  gap: 12px;\n  padding: 12px 16px;\n  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));\n  border-top: 1px solid var(--hairline);\n}\n\n/* If the detail view is a MODAL (<dialog>) instead of a route: */\ndialog.detail-sheet {\n  width: 100%;\n  max-width: 100%;\n  height: 100dvh;\n  max-height: 100dvh;\n  margin: 0;\n  border: 0;\n  padding: 0;\n  overscroll-behavior: contain;\n  overflow: hidden;                 /* makes it a scroll container (needed for older engines) */\n}\ndialog.detail-sheet::backdrop { background: rgba(0,0,0,.4); }\n/* Lock page scroll behind the dialog without JS (modern): */\nbody:has(dialog.detail-sheet[open]) { overflow: hidden; }\n\n:root {\n  --paper: #fff;\n  --hairline: rgba(0,0,0,.12);\n}",
+    "notes": "Primitive: a flex column shell of exact viewport height, with flex:0 0 auto header and footer and a single flex:1 1 auto; min-height:0 scrolling body. The min-height:0 (or overflow on the flex item) is what allows the body to become shorter than its content and scroll internally instead of forcing the shell taller than the screen; without it a flex item refuses to shrink below its content size and the footer gets pushed off-screen. Keep header and footer in normal flow (flex), not position:fixed: fixed elements are excluded from layout, can be obscured by the on-screen keyboard, and are laid out against the layout viewport. Height choice: 100dvh exactly fills the visible area and keeps a pinned footer on-screen; add 100vh first as a fallback and override with 100dvh where supported. Use svh instead of dvh if you prefer guaranteed no-clip over perfect fill and can accept a small gap when toolbars retract. Because the body scrolls internally rather than the page, the URL bar typically never retracts, so dvh behaves like a stable value and you avoid the resize/reflow cost. Do not chain height:100% up from html/body; it depends on every ancestor having an explicit height and breaks inside flex/grid. For the modal variant, use the native <dialog> element (built-in focus management, ::backdrop, showModal()) and block background scroll with overscroll-behavior:contain plus overflow:hidden on the dialog and body:has(dialog[open]){overflow:hidden}; only fall back to the JS body-scroll-lock (position:fixed + top = -scrollY, restore scrollY on close) when you must support engines where overscroll-behavior on a non-scrollable container does not apply. To make the on-screen keyboard shrink content instead of overlaying it, add interactive-widget=resizes-content to the viewport meta (Chrome 108+); env(keyboard-inset-*) is available via the VirtualKeyboard API."
+  },
+  "pitfalls": [
+    {
+      "issue": "100vh is taller than the visible viewport on mobile when the address bar/toolbar are showing, so the bottom of the full-screen view (and any pinned footer or button) is clipped below the fold on load.",
+      "fix": "Size the shell with 100dvh (or 100svh), keeping 100vh only as a fallback: `height:100vh; height:100dvh;`."
+    },
+    {
+      "issue": "A flex column with a scrolling body still overflows and pushes the footer off-screen, because flex items default to min-height:auto and refuse to shrink below their content.",
+      "fix": "Set `min-height: 0` (or `overflow: hidden`) on the flex body item so it can shrink and become the internal scroller; give header/footer `flex: 0 0 auto`."
+    },
+    {
+      "issue": "Reaching the end of the inner scroll area chains the scroll to the page: the page behind scrolls, or pull-to-refresh fires, and the layout shifts.",
+      "fix": "Put `overscroll-behavior: contain` on the inner scroll container, and `overscroll-behavior: none` on the shell to kill bounce/pull-to-refresh."
+    },
+    {
+      "issue": "Dynamic viewport (dvh) changes value as toolbars show/hide during scroll, causing reflow/jank; it also updates on a throttled schedule, not every frame.",
+      "fix": "Prefer an internal-scroller shell (page never scrolls, chrome never retracts, dvh stays stable). If the page itself scrolls, use svh for stability or accept dvh's reflow. Never animate or measure from dvh on every scroll frame."
+    },
+    {
+      "issue": "position:fixed header/footer gets obscured by the on-screen keyboard, moves when the layout viewport resizes, or overlaps content because it is out of flow.",
+      "fix": "Use flex layout for header/footer (in-flow, flex:0 0 auto). If you must use fixed, opt the viewport meta into interactive-widget=resizes-content (Chrome 108+) or read env(keyboard-inset-*)."
+    },
+    {
+      "issue": "Content sits under the notch, home indicator, or rounded corners; safe-area insets read as 0 and do nothing.",
+      "fix": "Add viewport-fit=cover to the viewport meta, then pad with env(safe-area-inset-*): header padding-top, footer padding-bottom via calc(base + env(safe-area-inset-bottom)). Always provide a fallback, e.g. env(safe-area-inset-bottom, 0px)."
+    },
+    {
+      "issue": "A modal/overlay lets the page behind it scroll (scroll chaining), especially on iOS where overflow:hidden on html/body alone is ignored.",
+      "fix": "Use native <dialog> + overscroll-behavior:contain + overflow:hidden on the dialog and `body:has(dialog[open]){overflow:hidden}`. Legacy fallback only: lock the body with position:fixed and top:-scrollY, restoring position and scrollTo on close (JS)."
+    },
+    {
+      "issue": "Expecting -webkit-overflow-scrolling: touch to enable momentum scrolling, or using it to disable the iOS bounce.",
+      "fix": "Drop it. It is non-standard and a no-op since iOS 13 (momentum is default and the property still parses but has no effect). Use standard overscroll-behavior for bounce/chaining instead."
+    },
+    {
+      "issue": "Reliance on height:100% chains (html, body { height:100% }) to fill the screen, which silently collapses when an ancestor lacks an explicit height or inside flex/grid.",
+      "fix": "Use 100dvh / 100svh on the shell rather than a percentage chain. Reserve percentages for within-flex sizing where the parent height is definite."
+    },
+    {
+      "issue": "100vw causes horizontal overflow because viewport width units ignore the scrollbar width; combined with a vertical scroller this produces sideways scroll.",
+      "fix": "Do not size full-bleed width with 100vw. Use width:100% / inline sizing and negative margins for bleeding; keep overflow-x hidden on the shell."
+    },
+    {
+      "issue": "Choosing a full-screen route vs a modal is treated as purely visual, but they differ in history, back-gesture, focus, and scroll-lock behavior.",
+      "fix": "Route: real URL, working back button / Android back / iOS swipe, deep-linkable, no scroll lock or focus trap needed, better for PWA detail pages (the usual choice for a list-item detail on mobile). Modal (<dialog>): preserves underlying context and animates, but needs focus trapping (native <dialog> gives it), inert/scroll-locked background, and history handling (pushState) so the back gesture closes it. Use a route for full detail views, a dialog for confirmations and short tasks."
+    }
+  ],
+  "sources": [
+    {
+      "title": "CSS <length> type: viewport-percentage units (svh, lvh, dvh, dhv defaults) - MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/length"
+    },
+    {
+      "title": "New CSS units that account for mobile viewports with dynamic toolbars (100dvh/svh/lvh) - web.dev",
+      "url": "https://web.dev/blog/viewport-units"
+    },
+    {
+      "title": "overscroll-behavior CSS property - MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overscroll-behavior"
+    },
+    {
+      "title": "Take control of your scroll: overscroll-behavior (pull-to-refresh, chaining, overlay under-scroll) - Chrome for Developers",
+      "url": "https://developer.chrome.com/blog/overscroll-behavior"
+    },
+    {
+      "title": "env() CSS function: safe-area-inset-* and env() footer pattern - MDN",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/env"
+    },
+    {
+      "title": "Viewport resize behavior and the on-screen keyboard (interactive-widget, position:fixed side-effects) - Chrome for Developers",
+      "url": "https://developer.chrome.com/blog/viewport-resize-behavior"
+    },
+    {
+      "title": "The trick to viewport units on mobile (100vh iOS toolbar problem, min-height:-webkit-fill-available) - CSS-Tricks",
+      "url": "https://css-tricks.com/the-trick-to-viewport-units-on-mobile/"
+    },
+    {
+      "title": "Prevent page scrolling when a modal is open (body scroll lock, position:fixed + scrollY) - CSS-Tricks",
+      "url": "https://css-tricks.com/prevent-page-scrolling-when-a-modal-is-open/"
+    },
+    {
+      "title": "Prevent a page from scrolling while a dialog is open (overscroll-behavior on <dialog> and ::backdrop) - CSS-Tricks",
+      "url": "https://css-tricks.com/prevent-a-page-from-scrolling-while-a-dialog-is-open/"
+    },
+    {
+      "title": "MDN browser-compat-data PR #10542: -webkit-overflow-scrolling no longer supported in iOS 13+",
+      "url": "https://github.com/mdn/browser-compat-data/pull/10542"
+    },
+    {
+      "title": "CSS: Disable bounce effect for scroll on iOS 13 (Safari 13 release notes: -webkit-overflow-scrolling no longer needed) - Stack Overflow",
+      "url": "https://stackoverflow.com/questions/58684546"
+    },
+    {
+      "title": "Safari 13 release notes - Apple Developer",
+      "url": "https://developer.apple.com/documentation/safari-release-notes/safari-13-release-notes"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "findings": [
+    {
+      "id": "CARD-1",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:62-76",
+      "issue": "The card is clickable (an invisible stretched button at line 70 covers it) but the article gives no affordance: no cursor change and no hover styling. Default UA button cursor is the arrow, so neither pointer users nor glance-only users can tell the card opens the session detail. This is an 'acts clickable but does not look clickable' case.",
+      "fix": "Only when onOpen is set, style the container as interactive: on the <article> (line 62) add cursor-pointer and a hover cue such as hover:border-steel, and on the overlay button (line 70) add cursor-pointer. Keep the action buttons (Start/Log) visually distinct, which they already are."
+    },
+    {
+      "id": "CARD-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:63,70-75",
+      "issue": "The stretched overlay button is inset-0 and the article uses overflow-hidden (line 63). The global :focus-visible outline (app.css:88) draws at outline-offset:2px outside the button's box, which is clipped by overflow-hidden, so keyboard focus on a card has little or no visible indicator.",
+      "fix": "Give the overlay button an inset focus ring instead of an outside one: add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal-ink focus-visible:ring-inset (Tailwind v4 ring-inset) so the ring stays inside the clipped box. Alternatively drop overflow-hidden and clip only the left accent bar."
+    },
+    {
+      "id": "CARD-3",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:70-76,89",
+      "issue": "DOM order puts the whole-card 'Open {session} details' button before the session heading and stats. A screen reader reads 'Open ... details, button' before the session name, so the primary label arrives before the context it refers to.",
+      "fix": "Move the overlay button after the content div in DOM order (it is absolutely positioned, so visual order is unchanged) so the heading is announced first. Optionally give the heading an id and use aria-labelledby on the button."
+    },
+    {
+      "id": "CARD-4",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:114,123",
+      "issue": "The Start and Log it buttons use py-2.5 with text-sm, giving roughly a 40px height, just under the 44px target declared by --tap-min (app.css:19).",
+      "fix": "Use py-3 or add min-h-11 so both buttons reach 44px."
+    },
+    {
+      "id": "CARD-5",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:70-76,78,109",
+      "issue": "Verified: the stretched-link overlay is implemented without nested interactive elements. The content wrapper is pointer-events-none relative z-10 (line 78), the action row is relative z-20 (line 109), and the overlay button is z-0. Clicks on Start/Log hit the real buttons and clicks elsewhere hit the overlay, so the 'button inside a clickable card' conflict is resolved by z-layering and there is no button-in-button markup.",
+      "fix": "No structural change needed. Keep this z-layering in mind if the content ever gains its own interactive controls, since they must also sit above z-0 and re-enable pointer events."
+    },
+    {
+      "id": "CAROUSEL-1",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionCarousel.svelte:27-43",
+      "issue": "The carousel is not keyboard operable. The scroll container (line 27) is a plain overflow-x-auto div with no tabindex, no arrow-key handling, and no visible next/prev controls. The position dots (lines 39-43) are aria-hidden and non-interactive. A keyboard-only user on mobile width cannot move between cards or even reliably know more exist (the group label at line 30 is the only hint).",
+      "fix": "Add explicit controls: prev/next buttons (min-h-11 min-w-11) that call scrollBy, and make the container focusable (tabindex=0) with a keydown handler for ArrowLeft/ArrowRight that scrolls one card and updates active. Keep the dots as a visual indicator driven by the same state."
+    },
+    {
+      "id": "CAROUSEL-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionCarousel.svelte:27-31",
+      "issue": "The scroll region only carries role=\"group\" with an aria-label. It is a carousel, so assistive tech gets no carousel semantics, no slide count, and no current-slide announcement.",
+      "fix": "Use the standard pattern: role=\"region\" aria-roledescription=\"carousel\" aria-label=... on the container, each card wrapper as role=\"group\" aria-roledescription=\"slide\" aria-label=\"i of n\", and a visually hidden aria-live=\"polite\" element that announces the active slide on change."
+    },
+    {
+      "id": "CAROUSEL-3",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCarousel.svelte:30",
+      "issue": "The accessible name is hard-coded as '{n} sessions today, scroll for more', but the component is also used on /week (week/+page.svelte:178) for a selected day that is not necessarily today, so the label is inaccurate there.",
+      "fix": "Add a label or scope prop (for example label=\"Sessions for Wednesday\") and pass it from the call sites instead of the fixed 'today' string."
+    },
+    {
+      "id": "CAROUSEL-4",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCarousel.svelte:15-19,39-43",
+      "issue": "The active index is only recomputed from a scroll event, so a keyboard or screen-reader user who changes the visible card gets no feedback and the dots are aria-hidden.",
+      "fix": "Once prev/next controls exist (CAROUSEL-1), update active from them too and surface it via the aria-live region from CAROUSEL-2."
+    },
+    {
+      "id": "TABS-1",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/week/+page.svelte:126-161",
+      "issue": "The 7-cell day selector declares role=\"tablist\" with role=\"tab\" buttons and aria-selected, but implements none of the tabs pattern: no aria-controls to the day-sessions section (line 165), no role=\"tabpanel\", no roving tabindex, and no ArrowLeft/ArrowRight handling. Announcing tabs that do not behave as tabs misleads keyboard and AT users.",
+      "fix": "Either implement the full pattern (each tab gets id and aria-controls=\"day-sessions-panel\", the section becomes role=\"tabpanel\" tabindex=0, keys 1-7/Arrows move selection and focus) or drop the roles and use a group of toggle buttons with aria-pressed, which matches the current click-only behaviour."
+    },
+    {
+      "id": "TABS-2",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/WeekStrip.svelte:33-72",
+      "issue": "WeekStrip repeats the same role=\"tablist\"/role=\"tab\" misuse without tabpanel, aria-controls or arrow keys, and it is dead code: no file imports it (search finds no references). Shipping an unused a11y-faulty component risks it being reintroduced.",
+      "fix": "Remove WeekStrip.svelte if it is superseded by the week grid, or fix it with the same remediation as TABS-1 before reusing it."
+    },
+    {
+      "id": "FOCUS-1",
+      "severity": "high",
+      "file_line": "apps/web/src/routes/onboarding/+page.svelte:125-133",
+      "issue": "Each goal-profile card is a <label> wrapping an sr-only radio (input at line 130). The global :focus-visible outline (app.css:88) applies to the clipped input, so when a keyboard user Tabs through the goal options there is no visible focus indicator on the card they are on.",
+      "fix": "Reflect focus onto the visible label: add focus-within:ring-2 focus-within:ring-signal-ink (or has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-signal-ink) plus rounded corners to the <label> at line 125. This keeps the sr-only input pattern and the click target."
+    },
+    {
+      "id": "FOCUS-2",
+      "severity": "low",
+      "file_line": "apps/web/src/app.css:88-92",
+      "issue": "Verified: a global :focus-visible rule provides a 2px signal-ink outline app-wide, and no component uses outline-none or focus:outline-none to suppress it (search finds none). So most controls already show focus; the gaps are the sr-only radio (FOCUS-1) and the clipped overlay (CARD-2).",
+      "fix": "Keep the global rule. When adding new custom controls, avoid outline-none; if a custom ring is needed use ring-inset so it survives overflow-hidden ancestors."
+    },
+    {
+      "id": "TAP-1",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/week/+page.svelte:115,117,172,174",
+      "issue": "The previous/next week chevrons (lines 115,117) and the previous/next day chevrons (lines 172,174) are px-2 py-1, roughly 28x24px, well below the 44px --tap-min (app.css:19). These are the primary week/day navigation controls and are frequently tapped.",
+      "fix": "Make each an icon button meeting the minimum: class=\"grid h-11 w-11 place-items-center text-steel ...\" (or min-h-11 min-w-11), keeping the aria-labels already present."
+    },
+    {
+      "id": "TAP-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:67; apps/web/src/lib/components/SessionPlayer.svelte:153; apps/web/src/lib/components/LogSheet.svelte:128; apps/web/src/lib/components/SettingsModal.svelte:22",
+      "issue": "Every close ✕ control uses px-2 py-1, about 28px tall, below the 44px target, and in several overlays the ✕ is the only reliable keyboard/pointer dismissal once Escape is absent.",
+      "fix": "Use class=\"grid h-11 w-11 place-items-center\" for each ✕ (they already carry aria-label=\"Close\"). This also improves the pointer target on touch."
+    },
+    {
+      "id": "TAP-3",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/week/+page.svelte:170; apps/web/src/routes/+page.svelte:170",
+      "issue": "The Today button (week line 170, px-2.5 py-1) is about 26px tall, and the Peek link (+page line 170, px-3 py-2) is about 36px tall, both under 44px.",
+      "fix": "Add min-h-11 (and px-3) so both clear the tap minimum."
+    },
+    {
+      "id": "TAP-4",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/AdjustmentsCard.svelte:53-59; apps/web/src/lib/components/SessionDetail.svelte:154-161; apps/web/src/lib/components/LogSheet.svelte:196-202; apps/web/src/lib/components/SettingsModal.svelte:84-95; apps/web/src/routes/+page.svelte:191; apps/web/src/routes/progress/+page.svelte:50,63",
+      "issue": "Several text-only actions have no padding and fall far below 44px: Dismiss (AdjustmentsCard), View all sources (SessionDetail), the ↻ same / + set / - set per-set controls (LogSheet), Switch account and Sign out (SettingsModal), and inline links like Full week → and Build one → . Small hit areas make these error-prone on touch.",
+      "fix": "Give each an explicit hit box, for example min-h-11 inline-flex items-center px-2, or a shared .tap-target utility bound to var(--tap-min). Keep the small visual text size if desired; only the touch box needs to grow."
+    },
+    {
+      "id": "TAP-5",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:64-68",
+      "issue": "The header settings gear button is px-2 py-1 around an 18px icon, roughly 34px, below the 44px target, and it is the persistent entry point to settings on every route.",
+      "fix": "Use class=\"grid h-11 w-11 place-items-center\" so the icon button meets the minimum."
+    },
+    {
+      "id": "TAP-6",
+      "severity": "low",
+      "file_line": "apps/web/src/app.css:19",
+      "issue": "The design token --tap-min: 44px is declared but never referenced anywhere in the app (search finds no usage), so no control is actually held to it. The RPE grid (LogSheet:217) and onboarding day buttons (onboarding:213) correctly use h-11, but most small controls do not.",
+      "fix": "Wire the token into a utility (for example a .tap-target { min-height: var(--tap-min); min-width: var(--tap-min) } class, or a Tailwind theme entry) and apply it to icon-only and text-only controls listed in TAP-1 through TAP-5."
+    },
+    {
+      "id": "ARIA-1",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:154-161; apps/web/src/lib/components/SessionPlayer.svelte:209-212",
+      "issue": "The disclosure toggles set aria-expanded correctly, but neither uses aria-controls to point at the region it shows or hides (the sources list in SessionDetail, the form block in SessionPlayer), so the relationship is not programmatically exposed.",
+      "fix": "Give the controlled region an id (for example sources-list and form-details) and add aria-controls to the toggle button when that region is rendered."
+    },
+    {
+      "id": "ARIA-2",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:235",
+      "issue": "The current stage in the Workout stages list is distinguished only by text colour (text-signal-ink when i === idx). Colour alone is not an accessible state indicator and is not announced.",
+      "fix": "Add aria-current=\"step\" (or aria-pressed) to the current stage button so the active item is exposed non-visually, in addition to the colour change."
+    },
+    {
+      "id": "OVERLAY-1",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:62; apps/web/src/lib/components/SessionPlayer.svelte:149; apps/web/src/lib/components/LogSheet.svelte:117; apps/web/src/lib/components/SettingsModal.svelte:16",
+      "issue": "None of the four overlays sets initial focus, traps Tab, restores focus to the trigger on close, or marks the app behind inert. Focus stays on the page under the overlay and Tab walks into the header, nav and footer behind it. Cross-reference: overlays-a11y.json already details this per component (OVL-PLAYER-2, OVL-DETAIL-1, OVL-LOG-1, OVL-SETTINGS-1).",
+      "fix": "Adopt one shared pattern: capture document.activeElement on mount, focus the dialog or first control, trap Tab among focusables within the root, restore focus in the onMount cleanup, and set the app shell (routes/+layout.svelte:53) inert while any overlay is open. Converting each overlay to a native <dialog> with showModal() supplies the trap, inert background and Escape for free."
+    },
+    {
+      "id": "OVERLAY-2",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:62; apps/web/src/lib/components/SessionPlayer.svelte:149; apps/web/src/lib/components/LogSheet.svelte:117; apps/web/src/lib/components/SettingsModal.svelte:16",
+      "issue": "No overlay handles Escape to close: no keydown or svelte:window handler exists in any of them. Combined with under-sized ✕ targets (TAP-2), keyboard dismissal is awkward. Cross-reference: overlays-a11y.json (OVL-PLAYER-3, OVL-DETAIL-2, OVL-LOG-2, OVL-SETTINGS-2).",
+      "fix": "Add <svelte:window onkeydown={(e) => { if (e.key === 'Escape') onClose(); }} /> to each, or use native <dialog> + showModal() whose onclose wires back to onClose."
+    },
+    {
+      "id": "OVERLAY-3",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:149",
+      "issue": "The workout overlay root is a plain div with no role=\"dialog\", no aria-modal and no accessible name, unlike the other three overlays. AT treats it as ordinary page content and the modal state is never announced. Cross-reference: overlays-a11y.json (OVL-PLAYER-1).",
+      "fix": "Add role=\"dialog\" aria-modal=\"true\" and aria-labelledby pointing at the <h1> (line 155, give it id=\"player-title\"), or convert to native <dialog> + showModal()."
+    },
+    {
+      "id": "NAV-VERIFIED",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:82-127",
+      "issue": "Verified: aria-current is correct on the primary nav. Each tab link sets aria-current=\"page\" only when active (line 90), the nav has aria-label=\"Primary\" (line 84), icons are aria-hidden and the text label supplies the name, cells are h-14 (56px) and the bar applies env(safe-area-inset-bottom).",
+      "fix": "No change needed here. The only caveat is that while an overlay is open the nav is covered visually but not removed from the tab order, which OVERLAY-1 addresses."
+    }
+  ],
+  "summary": "Affordance and accessibility audit of apps/web components and routes. The strongest actionable gaps: (1) SessionCard's whole-card stretched-link overlay is clickable with no cursor or hover cue, and its inset focus ring is clipped by overflow-hidden (CARD-1, CARD-2); the layered z-index overlay itself is implemented correctly with no nested-interactive markup (CARD-5). (2) The SessionCarousel is not keyboard operable at all: no focusable scroll region, no arrow keys, no prev/next controls, dots aria-hidden, and only role=group instead of carousel semantics (CAROUSEL-1, CAROUSEL-2). (3) The /week day selector and WeekStrip misuse role=tablist/role=tab without tabpanel, aria-controls, roving tabindex or arrow keys (TABS-1, TABS-2; WeekStrip is also dead code). (4) The onboarding goal radios are sr-only with no visible focus on their label cards (FOCUS-1); the global :focus-visible rule is otherwise sound (FOCUS-2). (5) Widespread sub-44px hit areas: week/day chevrons, all four close x buttons, Today, Peek, the settings gear, and many unpadded text buttons; the --tap-min token exists but is never applied (TAP-1..TAP-6). (6) aria-expanded toggles lack aria-controls, and the current workout stage is conveyed by colour only (ARIA-1, ARIA-2). (7) All four overlays still lack focus trap/return and Escape-to-close, and SessionPlayer lacks dialog semantics; these are cross-referenced with the deeper overlays-a11y.json audit rather than duplicated (OVERLAY-1..3). aria-current on the primary nav is correct (NAV-VERIFIED)."
+}

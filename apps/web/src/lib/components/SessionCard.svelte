@@ -69,7 +69,7 @@
 	{#if onOpen}
 		<button
 			type="button"
-			class="absolute inset-0 z-0"
+			class="absolute inset-0 z-0 cursor-pointer rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-signal-ink"
 			aria-label="Open {sessionLabel(session)} details"
 			onclick={onOpen}
 		></button>

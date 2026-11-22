@@ -1,0 +1,166 @@
+{
+  "covered": [
+    "engine.generatePlan: week count equals meta.totalWeeks and is >= 4 (engine.test.ts:17)",
+    "engine.generatePlan: phase ordering starts 'base' and ends 'taper' (engine.test.ts:22)",
+    "engine.generatePlan: every session lands on one of the availableDays (engine.test.ts:27)",
+    "engine.generatePlan: plan includes long, a quality (tempo/interval), easy and strength sessions (engine.test.ts:33)",
+    "engine.generatePlan: final taper week volume < peak volume (engine.test.ts:41)",
+    "engine.generatePlan: VDOT assigned (30..70) when a baseline race time is given (engine.test.ts:46)",
+    "engine.generatePlan: structured workout for a rep session has warmup/work/recovery/cooldown kinds and a repeat>1 block (engine.test.ts:51)",
+    "engine.generatePlan: every session has a workout with at least one block/step (engine.test.ts:67)",
+    "engine.generatePlan: whole-fitness uses profile defaultWeeks, no VDOT without times, includes strength (engine.test.ts:76)",
+    "engine.intensityFor: easy->easy and interval->hard, and every session carries an easy/steady/hard band (engine.test.ts:103)",
+    "engine: race-pace sessions appear in build/peak with a plausible pace band (engine.test.ts:117)",
+    "vdot.vdotFromRace: ~49 for a 20:00 5K (sanity band) (vdot.test.ts:5)",
+    "vdot.pacesFromVdot: pace ordering easy > marathon > threshold > interval > repetition (vdot.test.ts:11)",
+    "vdot.parseTime / formatPace: '1:45:00', '24:30' parsed; 245 -> '4:05' (vdot.test.ts:19)",
+    "vdot.vdotFromBaseline: derives a VDOT > 40 from a 10k time (vdot.test.ts:25)",
+    "adapt.suggestAdjustments: 3+ missed sessions -> warn (adapt.test.ts:23)",
+    "adapt.suggestAdjustments: big volume drop (<60%) -> volume-under warning (adapt.test.ts:28)",
+    "adapt.suggestAdjustments: 3 consecutive RPE>=8 -> fatigue warning (adapt.test.ts:36)",
+    "adapt.suggestAdjustments: single run >10% over recent longest -> run-spike (adapt.test.ts:46)",
+    "adapt.suggestAdjustments: returns nothing when everything is on track (adapt.test.ts:55)",
+    "units: km<->mi, pace /km->/mi, formatPace metric/imperial, formatDistance, formatPaceBand (units.test.ts:13)",
+    "analytics.computeProgress: overall + most-recent-week adherence counts (analytics.test.ts:28)",
+    "analytics.computeProgress: per-week planned/actual volume and totals (analytics.test.ts:35)",
+    "analytics.computeProgress: completed sessions counted by intensity band (analytics.test.ts:44)",
+    "analytics.computeProgress: fastest pace and PRs (longest run, biggest week) (analytics.test.ts:48)",
+    "analytics.computeProgress: average RPE (analytics.test.ts:55)",
+    "analytics.computeProgress: pace trend only with 4+ points, sign of change (analytics.test.ts:59, 77)",
+    "analytics.computeProgress: week-over-week volume changePct (analytics.test.ts:83)"
+  ],
+  "missing": [
+    {
+      "module": "packages/shared/src/plan/engine.ts (phaseSequence)",
+      "behaviour": "Phase allocation when totalWeeks does not equal the sum of progressionRules weeks (targetDate-driven lengths, e.g. 30 weeks for a 5k whose rules total ~10): counts must be rebalanced to exactly totalWeeks and phases array length must equal totalWeeks.",
+      "failure_it_would_catch": "The redistribution loop produces fewer entries than totalWeeks, so phases[w] is undefined; volumeCurve then falls back to a default rule and weeks get an undefined/wrong phase (crash or silently wrong plan). Only a base->taper smoke case is tested today.",
+      "priority": "high"
+    },
+    {
+      "module": "packages/shared/src/plan/adapt.ts (volume-over rules)",
+      "behaviour": "ratio > 1.3 -> warn 'back off', ratio > 1.1 -> info 'hold'.",
+      "failure_it_would_catch": "The over-volume branch is inverted or its thresholds wrong, so a runner ramping 30%+ per week gets no warning (injury risk). Only the under-volume path is tested.",
+      "priority": "high"
+    },
+    {
+      "module": "apps/api/src/lib/session.ts (signSession/verifySession)",
+      "behaviour": "Round-trip sign then verify returns the payload; verify rejects a tampered token, a token signed with a different secret, and an expired token; sessionKey throws when SESSION_SECRET is shorter than 32 bytes.",
+      "failure_it_would_catch": "A forged or expired session cookie is accepted (auth bypass), or the secret-length guard is dropped so a weak/empty SESSION_SECRET is silently used to sign sessions.",
+      "priority": "high"
+    },
+    {
+      "module": "apps/api/src/lib/auth.ts (verifyGoogleIdToken)",
+      "behaviour": "Nonce mismatch is rejected and identity mapping enforces emailVerified; identityFromClaims maps sub/email/name/picture.",
+      "failure_it_would_catch": "OIDC id_token replay is accepted (nonce not enforced) or an unverified email is trusted, enabling account takeover.",
+      "priority": "high"
+    },
+    {
+      "module": "packages/shared/src/plan/engine.ts (volumeCurve deload + taper)",
+      "behaviour": "deload weeks (rule.deload && (idx+1)%4===0) step to 0.7x; taper weeks step down monotonically from the peak.",
+      "failure_it_would_catch": "The deload condition is inverted or applied every week, so volume climbs unchecked through build (overtraining) or the plan collapses; the taper becomes non-monotonic so it does not freshen the runner.",
+      "priority": "medium"
+    },
+    {
+      "module": "packages/shared/src/plan/engine.ts (baseWeeklyKm)",
+      "behaviour": "When baseline.weeklyKm is absent, base volume derives from experience (beginner 0.55 / intermediate 1 / advanced 1.5) and profile factor.",
+      "failure_it_would_catch": "A beginner is handed advanced-tier weekly volume (or vice versa) because the experience factor table regressed; only whole-fitness/beginner is exercised indirectly.",
+      "priority": "medium"
+    },
+    {
+      "module": "packages/shared/src/plan/engine.ts (goalPaceFor)",
+      "behaviour": "Goal pace per profile: marathon=marathon pace, half=(marathon+threshold)/2, 10k=threshold, 5k=(threshold+interval)/2.",
+      "failure_it_would_catch": "Race-pace targets are computed from the wrong anchor (e.g. 10k goal pace not threshold), so race-pace workouts and targetPaceSecPerKm are wrong.",
+      "priority": "medium"
+    },
+    {
+      "module": "packages/shared/src/plan/adapt.ts (run-spike 30-day window)",
+      "behaviour": "Spike compares a run against the max distance in the trailing 30-day window (not all-time).",
+      "failure_it_would_catch": "The window is wrong (all-time or unbounded), so normal progressive long runs are flagged as spikes, or genuine >10% jumps are missed.",
+      "priority": "medium"
+    },
+    {
+      "module": "packages/shared/src/plan/adapt.ts (recent-week selection)",
+      "behaviour": "Volume feedback uses the most recent completed week that has actual volume > 0, not simply the last plan week.",
+      "failure_it_would_catch": "A zero-volume week short-circuits the volume check, so the runner never gets hold/rebuild/back-off guidance after a skipped week.",
+      "priority": "medium"
+    },
+    {
+      "module": "apps/api/src/lib/rate-limit.ts (checkRateLimit)",
+      "behaviour": "Fixed-window counter increments within a window and resets to 1 once now - window_start >= windowSec; ok is count <= limit.",
+      "failure_it_would_catch": "The window never resets (permanent lockout after the limit) or always resets (no effective limiting), from a regression in the CASE expression.",
+      "priority": "medium"
+    },
+    {
+      "module": "apps/api/src/lib/cache.ts (cacheKey)",
+      "behaviour": "cacheKey is deterministic: identical {type,model,input} yields the same key; different input yields a different key.",
+      "failure_it_would_catch": "Non-deterministic or colliding cache keys, so AI answers are re-billed on every request or a stale response is served for different input.",
+      "priority": "medium"
+    },
+    {
+      "module": "apps/api/src/lib/narration.ts (extractJsonArray + templateWeekSummary)",
+      "behaviour": "extractJsonArray pulls a JSON array out of noisy model text and returns null when the array length does not match weeks.length; templateWeekSummary is the deterministic fallback.",
+      "failure_it_would_catch": "Model prose containing brackets is misparsed, or a partial array is accepted, so weekly summaries are misaligned to the wrong weeks or an unusable string is persisted.",
+      "priority": "medium"
+    },
+    {
+      "module": "apps/api/src/routes/plans.ts (chunk)",
+      "behaviour": "chunk splits inserts into batches under D1's 100 bound-parameter cap (weeks of 10, sessions of 8).",
+      "failure_it_would_catch": "A larger batch exceeds D1's bound-parameter limit, so plan generation 500s on longer plans.",
+      "priority": "medium"
+    },
+    {
+      "module": "apps/api/src/middleware/auth.ts (requireSameOrigin)",
+      "behaviour": "State-changing requests are rejected unless Origin is in the WEB_ORIGIN/APP_ORIGIN allowlist (plus localhost in non-production); safe methods pass through.",
+      "failure_it_would_catch": "A wrong allowlist lets cross-origin POST/PUT/DELETE through (CSRF), or blocks legitimate same-origin writes.",
+      "priority": "medium"
+    },
+    {
+      "module": "packages/shared/src/db/schema.ts (serialization + cascades)",
+      "behaviour": "JSON-mode columns round-trip their objects and user_goals delete cascades to plans -> plan_weeks -> sessions_plan (account deletion leaves no orphans).",
+      "failure_it_would_catch": "A migration drifts the JSON/timestamp serialization or drops a cascade, so account deletion leaves orphaned plan/session rows (leaked data), which AGENTS.md names as in-scope.",
+      "priority": "medium"
+    },
+    {
+      "module": "apps/api/src/routes/explanations.ts (parseClaims)",
+      "behaviour": "parseClaims parses '### topic' blocks from the assembled full text into topic/claim/evidence/confidence/source.",
+      "failure_it_would_catch": "Malformed KB full text yields dropped or mis-attributed claims shown to the user as research evidence.",
+      "priority": "low"
+    },
+    {
+      "module": "apps/api/src/routes/ai.ts (current-week selection)",
+      "behaviour": "Coach context picks the week whose start/end brackets today, else falls back to the first week.",
+      "failure_it_would_catch": "The wrong week is chosen (e.g. off-by-one on date comparison), so coach replies reference the wrong sessions.",
+      "priority": "low"
+    },
+    {
+      "module": "packages/shared/src/units.ts (formatClock hours branch)",
+      "behaviour": "formatClock renders 'h:mm:ss' once total seconds reach one hour.",
+      "failure_it_would_catch": "A duration >= 1h renders as '75:00' instead of '1:15:00'.",
+      "priority": "low"
+    },
+    {
+      "module": "packages/shared/src/plan/vdot.ts (parseTime / formatPace edge cases)",
+      "behaviour": "parseTime returns undefined for non-numeric parts (and a sane value for empty/garbage), and formatPace carries a rounded 60 seconds into the minute.",
+      "failure_it_would_catch": "formatPace(299.6) renders '4:60' (no carry), and a garbage time string is parsed as 0, so a bogus VDOT could be derived from baseline times. Note: this formatPace export is currently unused by the app (web uses units.formatPace).",
+      "priority": "low"
+    }
+  ],
+  "violations": [
+    {
+      "module": "packages/shared/src/units.test.ts:13-24",
+      "issue": "Asserts the identity/metric branch and the conversion constant directly rather than user-visible output: expect(convertPace(300,'metric')).toBe(300) and the kmToMiles/milesToKm/pacePerKmToPerMile assertions mirror the implementation (they restate KM_PER_MILE and the formula). The formatPace/formatDistance/formatPaceBand assertions in the same file do carry real value.",
+      "recommendation": "Drop the identity-branch and raw-formula assertions; keep the formatting assertions that protect displayed strings."
+    },
+    {
+      "module": "packages/shared/src/plan/engine.test.ts:103-107",
+      "issue": "The 'labels every session easy / steady / hard' test only asserts membership in a 3-value enum and is near-trivial; it largely duplicates 'maps archetypes to the expected band' (lines 109-115).",
+      "recommendation": "Replace with the specific archetype->band mapping that matters (e.g. tempo/threshold->steady, race->hard) or fold into the existing mapping test."
+    },
+    {
+      "module": "packages/shared/src/plan/vdot.test.ts:11-17",
+      "issue": "Borderline: the pace-ordering test asserts the anchor ordering rather than a computed user-facing pace. It encodes a genuine invariant (harder work is faster), so it is acceptable, but it is close to mirroring the anchors.",
+      "recommendation": "Optionally assert an absolute pace value for a known VDOT to pin the anchors, or leave as-is."
+    }
+  ],
+  "summary": "5 test files, all in packages/shared (346 lines); apps/api has no test script or runner at all, so the whole API layer is untested. Well covered: engine smoke/phase/volume-shape invariants, VDOT sanity + pace ordering, units formatting, adapt happy paths, analytics aggregation. Highest-value gaps: phaseSequence when totalWeeks != sum of rule weeks (undefined phase/crash), the untested volume-over adaptive rule (injury risk), and the entire auth/session/rate-limit security surface (session forgery/expiry, OIDC nonce, rate-limit window reset). Medium gaps cluster on plan-engine branch logic (deload, taper monotonicity, baseWeeklyKm, goalPaceFor), adapt windows, and API helpers (cache key, narration JSON extraction, plans chunking, CSRF origin check, schema cascades). Violations are minor: a few unit assertions mirror the implementation and one engine test is a near-trivial enum-membership check."
+}

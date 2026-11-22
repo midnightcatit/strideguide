@@ -3,7 +3,7 @@
 	import { api } from '$lib/api';
 	import { fmtPace, prefs } from '$lib/prefs.svelte';
 	import { milesToKm } from '@strideguide/shared/units';
-
+	import { modal } from '$lib/actions';
 	let {
 		session,
 		eyebrow,
@@ -114,17 +114,18 @@
 	}
 </script>
 
-<div
-	class="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-2xl rounded-t-2xl border border-hairline bg-paper p-4 shadow-lg"
-	role="dialog"
-	aria-label="Log session"
->
+<div class="fixed inset-0 z-40 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Log session" use:modal={onClose}>
+	<button type="button" aria-label="Close" onclick={onClose} class="absolute inset-0 bg-ink/30"></button>
+	<div
+		class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
+		style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))"
+	>
 	<div class="flex items-center justify-between">
 		<div>
 			<p class="text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 			<h2 class="font-display text-lg font-medium">{session.title ?? 'Log session'}</h2>
 		</div>
-		<button type="button" onclick={onClose} class="px-2 py-1 text-steel hover:text-ink" aria-label="Close">
+		<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">
 			✕
 		</button>
 	</div>
@@ -244,11 +245,5 @@
 	>
 		{saving ? 'Saving…' : 'Save session'}
 	</button>
+	</div>
 </div>
-
-<button
-	type="button"
-	aria-label="Close log sheet"
-	onclick={onClose}
-	class="fixed inset-0 z-10 bg-ink/20"
-></button>

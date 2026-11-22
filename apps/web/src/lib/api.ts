@@ -140,6 +140,8 @@ export const api = {
 	latestSummary: () =>
 		req<{ summary: { id: string; kind: string; body: string; createdAt: string } | null }>('/summaries'),
 
+	clearData: () => req<{ ok: boolean }>('/me/data', { method: 'DELETE' }),
+
 	chat: (message: string) =>
 		req<{ reply: string; model?: string }>('/ai/chat', {
 			method: 'POST',

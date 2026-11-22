@@ -1,0 +1,54 @@
+{
+  "findings": [
+    {
+      "id": "units-engine-summary-long",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/engine.ts:495",
+      "issue": "Stored prescription.summary hardcodes metric distance: `Long run ${longKm} km, easy and even.` The 'km' unit is baked into the JSON persisted to sessions_plan.prescription. An imperial user's stored/generated data is metric-only, so any consumer reading `summary` shows km regardless of prefs. The web UI currently renders session labels via sessionLabel()/fmtDistance(targetDistanceKm), so this is a latent leak, not yet displayed.",
+      "fix": "Drop the unit from the stored summary (e.g. `Long run, easy and even.`) and let the client format distance from the unit-free targetDistanceKm field via fmtDistance(); never embed km/mi in generated strings."
+    },
+    {
+      "id": "units-engine-summary-racepace",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/engine.ts:539",
+      "issue": "Stored prescription.summary embeds metric: `${reps} x ${shape.distanceM / 1000} km at goal pace.` 'km' is baked into persisted JSON (sessions_plan.prescription).",
+      "fix": "Remove the unit and the pre-converted value from the stored string; keep reps/shape as structured fields and let the client build '6 x 1.00 km' / '6 x 0.62 mi' via sessionLabel()/fmtStepDistance()."
+    },
+    {
+      "id": "units-engine-summary-interval",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/engine.ts:558",
+      "issue": "Stored prescription.summary embeds metric: `${reps} x 800 m at interval pace, equal-time recovery.` '800 m' is baked into persisted JSON.",
+      "fix": "Store unit-neutral text (e.g. `${reps} reps at interval pace`) and derive the per-rep distance label at the edge from the workout step distanceM via fmtStepDistance()."
+    },
+    {
+      "id": "units-engine-summary-tempo",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/engine.ts:576",
+      "issue": "Stored prescription.summary embeds metric: `${qualityKm} km continuous at threshold pace.` 'km' is baked into persisted JSON.",
+      "fix": "Drop the unit from the stored summary; render the distance on the client from targetDistanceKm with fmtDistance()."
+    },
+    {
+      "id": "units-engine-summary-easy",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/engine.ts:602",
+      "issue": "Stored prescription.summary embeds metric: `Easy run ${easyPer} km, conversational.` 'km' is baked into persisted JSON.",
+      "fix": "Drop the unit from the stored summary; render distance on the client from targetDistanceKm with fmtDistance()."
+    },
+    {
+      "id": "units-cron-fallback-body",
+      "severity": "medium",
+      "file_line": "apps/api/src/cron.ts:45",
+      "issue": "The deterministic fallback note body bakes metric into user-visible stored data: `...this week, about ${km} km`. This body is written to summaries.body and is rendered on the home page (apps/web/src/routes/+page.svelte:83 -> note). Imperial users see 'km' in their coach note. The `km` value is summed from logs.runStats.distanceKm (metric storage, which is fine), but the unit is embedded in the generated string.",
+      "fix": "Keep unit-free in the stored body (e.g. omit the distance clause, or store the raw number in structured form) and format at the edge using the user's prefs.units; never embed km/mi in generated text."
+    },
+    {
+      "id": "units-cron-ai-prompt",
+      "severity": "medium",
+      "file_line": "apps/api/src/cron.ts:61",
+      "issue": "The AI user prompt instructs the model to produce metric text: `Write a short ${kind} note for a runner: ${done} sessions logged in the last week, ${km} km.` The model output is stored in summaries.body and shown on the home page, so an imperial user gets a note stated in km. The system prompt forbids em dashes and markdown but does NOT tell the model to avoid distances/units, unlike narration.ts which correctly requires it.",
+      "fix": "Match narration.ts:40 and add 'Do not mention distances or units, since units vary by user' to the system prompt (and drop `${km} km` from the user prompt), so the stored note stays unit-free and unit rendering happens at the edge."
+    }
+  ],
+  "summary": "The schema is clean: no unit columns; settings store prefs only in settings.prefs JSON (settings.ts:19-49), and prefs.units/prefs.weekStart drive all conversions at the web edge (prefs.svelte.ts:33-56). Invariant violations are all in generated strings: engine.ts bakes 'km'/'800 m' into the persisted prescription.summary at lines 495, 539, 558, 576, 602 (currently unrendered, so latent), and cron.ts bakes 'km' into the fallback note body (line 45) and the AI prompt (line 61), which are stored in summaries.body and displayed on the home page, so imperial users read km. narration.ts is the model to follow: its system prompt (line 40) already says 'Do not mention distances or units, since units vary by user'. Fix pattern: remove units from every stored/generated string and let the client format from the metric fields (targetDistanceKm, targetPaceSecPerKm, step distanceM) via fmtDistance/fmtPace/fmtStepDistance."
+}

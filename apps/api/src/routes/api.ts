@@ -3,6 +3,7 @@ import { GOAL_PROFILES } from '@strideguide/shared';
 import { requireAuth } from '../middleware/auth';
 import type { AppBindings } from '../types';
 import ai from './ai';
+import account from './account';
 import exercises from './exercises';
 import explanations from './explanations';
 import goals from './goals';
@@ -29,6 +30,7 @@ secured.route('/ai', ai);
 secured.route('/settings', settings);
 secured.route('/explanations', explanations);
 secured.route('/summaries', summaries);
+secured.route('/me', account);
 
 api.route('/', secured);
 

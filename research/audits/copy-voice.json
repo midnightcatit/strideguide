@@ -1,0 +1,109 @@
+{
+  "findings": [
+    {
+      "id": "voice-001",
+      "severity": "high",
+      "file_line": "apps/web/src/routes/+page.svelte:94",
+      "current": "Your training, tailored.",
+      "why": "Alliterative marketing tagline. Passes the skill's any-app test: no specifics, could headline a dozen fitness apps. Opens with style instead of information.",
+      "rewrite": "Train for your race, not a template."
+    },
+    {
+      "id": "voice-002",
+      "severity": "high",
+      "file_line": "apps/web/src/routes/+page.svelte:95-97",
+      "current": "Goal-driven running and strength plans with the research behind every session.",
+      "why": "Vague claim with no evidence. \"Goal-driven\" and \"the research behind every session\" are abstractions any app could claim. Does not say what is actually specific: paces set from your race, and each session citing studies.",
+      "rewrite": "Paces set from your race, and every session shows the study behind it."
+    },
+    {
+      "id": "voice-003",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/coach/+page.svelte:44",
+      "current": "Ask anything",
+      "why": "Generic chatbot headline. Says nothing about what this coach knows. Could be any assistant screen.",
+      "rewrite": "Ask about your training"
+    },
+    {
+      "id": "voice-004",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/coach/+page.svelte:45",
+      "current": "Answers use your plan, your logged runs and our research. Not medical advice.",
+      "why": "\"our research\" is vague and self-referential. The skill's fix is to name the concrete source: the studies already cited in each session.",
+      "rewrite": "Answers use your plan and logged runs, and cite the same studies as each session. Not medical advice."
+    },
+    {
+      "id": "voice-005",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:246",
+      "current": "Advances automatically. Timed steps count down, and strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.",
+      "why": "Robotic feature-list in a wall of prose. \"strength sets rest and move on by themselves\" is clumsy, and stacking four flat statements reads like generated help text.",
+      "rewrite": "Timed steps count down on their own, and strength sets rest and advance by themselves. Tap any stage to jump ahead."
+    },
+    {
+      "id": "voice-006",
+      "severity": "medium",
+      "file_line": "apps/api/src/lib/narration.ts:12-15",
+      "current": "templateWeekSummary -> \"Week ${weekNumber}: ${focus}.\" (e.g. \"Week 3: add quality work on top of the base.\")",
+      "why": "Robotic stub that repeats the phase line verbatim as a \"summary\" and adds no specifics about the week. Reads like a placeholder, not a coach note.",
+      "rewrite": "Fuse the phase intent with the week's shape, e.g. \"Week 3: quality returns while volume climbs slowly.\""
+    },
+    {
+      "id": "voice-007",
+      "severity": "low",
+      "file_line": "apps/api/src/cron.ts:47",
+      "current": "${done} session${done === 1 ? '' : 's'} logged recently. Check tomorrow's plan and keep the routine.",
+      "why": "\"keep the routine\" is vague filler, and \"Check tomorrow's plan\" states the obvious. No specifics, no coaching.",
+      "rewrite": "${done} session${done === 1 ? '' : 's'} logged. Tomorrow's session is in your plan; keep the easy days genuinely easy."
+    },
+    {
+      "id": "voice-008",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+page.svelte:111",
+      "current": "Let's build your plan.",
+      "why": "Generic transition-style opener. \"Let's ...\" is exactly the conversational padding the skill says to cut; leads with enthusiasm instead of the two things the user actually provides.",
+      "rewrite": "Start with your race and your training days."
+    },
+    {
+      "id": "voice-009",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+page.svelte:200",
+      "current": "The reasoning behind this session.",
+      "why": "Generic fallback caption with no specifics; could sit under any card in any app.",
+      "rewrite": "What this session trains, and why."
+    },
+    {
+      "id": "voice-010",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/coach/+page.svelte:50",
+      "current": "Try one of these to start:",
+      "why": "Generic transition the skill says to delete. The three starter questions already make the intent obvious.",
+      "rewrite": "Common questions:"
+    },
+    {
+      "id": "voice-011",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:161",
+      "current": "Nice work. Log how it went.",
+      "why": "Generic praise opener (\"Nice work\") followed by a flat instruction. Says nothing a coach would actually say about finishing the session.",
+      "rewrite": "That's the session done. Log how it felt."
+    },
+    {
+      "id": "voice-012",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/adapt.ts:179-181",
+      "current": "title: \"A run jumped over 10%\"; detail: \"One run was >10% longer than your recent longest. Keep increases under 10%.\"",
+      "why": "\">\" as a symbol inside prose reads like a log line, not spoken guidance. The title is also imprecise about what jumped.",
+      "rewrite": "title: \"Long run jumped too far\"; detail: \"One run was more than 10% longer than your recent longest. Keep increases under 10%.\""
+    },
+    {
+      "id": "voice-013",
+      "severity": "low",
+      "file_line": "packages/shared/src/plan/engine.ts:47",
+      "current": "race: 'Rehearsal at goal effort. Treat as a hard, purposeful effort.'",
+      "why": "\"purposeful effort\" is a vague abstraction that adds nothing; the line repeats \"effort\" and gives no concrete instruction. Sits among otherwise strong PURPOSE strings.",
+      "rewrite": "race: 'Rehearsal at goal effort. Go hard, but hold back the last 10% for race day.'"
+    }
+  ],
+  "summary": "Reviewed voice across apps/web routes + components, packages/shared plan copy (PURPOSE/FOCUS, machines cues, mobility, adjustment strings), and apps/api generated text (narration, cron, coach prompts). Soul of the copy is strong: PURPOSE strings, machine form cues, adjustment details, and progress captions are specific, plain, and confident, and every AI prompt already forbids em dashes. Main problems are surface taglines fixed in two high-severity spots (landing headline + subtitle) plus a generic coach headline; medium issues are a robotic SessionPlayer help sentence and a stub week-summary fallback. Remaining lows are generic openers/transitions, a \"Nice work\" filler, and a \"%\" symbol leaking into prose. 13 findings total (2 high, 4 medium, 7 low); all rewrites keep strings short and specific."
+}

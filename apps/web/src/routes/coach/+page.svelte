@@ -41,7 +41,7 @@
 
 <header class="mb-7">
 	<p class="tabular text-xs uppercase tracking-widest text-steel">Coach</p>
-	<h1 class="font-display mt-1 text-2xl font-bold">Ask anything</h1>
+	<h1 class="font-display mt-1 text-2xl font-bold">Ask about your training</h1>
 	<p class="mt-0.5 text-sm text-steel">Answers use your plan, your logged runs and our research. Not medical advice.</p>
 </header>
 

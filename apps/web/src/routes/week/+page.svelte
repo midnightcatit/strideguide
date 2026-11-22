@@ -69,6 +69,31 @@
 			: (w.sessions[0]?.day ?? todayIndex);
 	}
 
+	function stepDay(delta: number) {
+		const d = selectedDay + delta;
+		if (d < 0) {
+			if (weekIndex > 0) {
+				weekIndex -= 1;
+				selectedDay = 6;
+			}
+		} else if (d > 6) {
+			if (weekIndex < weeks.length - 1) {
+				weekIndex += 1;
+				selectedDay = 0;
+			}
+		} else {
+			selectedDay = d;
+		}
+	}
+
+	function goToday() {
+		const idx = weeks.findIndex(
+			(w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate,
+		);
+		weekIndex = idx >= 0 ? idx : 0;
+		selectedDay = todayIndex;
+	}
+
 	onMount(async () => {
 		await ensurePlan();
 		const idx = weeks.findIndex(
@@ -138,7 +163,17 @@
 	</Card>
 
 	<section aria-labelledby="day-sessions" class="mt-7">
-		<SectionHeader id="day-sessions" eyebrow={DAY_NAMES[selectedDay] ?? ''} meta={`${daySessions.length} ${daySessions.length === 1 ? 'session' : 'sessions'}`} />
+		<div class="mb-2 flex items-center justify-between gap-3">
+			<h2 id="day-sessions" class="tabular text-xs uppercase tracking-widest text-steel">{DAY_NAMES[selectedDay]}</h2>
+			<div class="flex items-center gap-1">
+				{#if selectedDay !== todayIndex || !currentWeekIsToday}
+					<button type="button" onclick={goToday} class="mr-1 rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal">Today</button>
+				{/if}
+				<button type="button" onclick={() => stepDay(-1)} aria-label="Previous day" class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink">‹</button>
+				<span class="tabular text-xs text-steel">{selectedDay + 1} / 7</span>
+				<button type="button" onclick={() => stepDay(1)} aria-label="Next day" class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink">›</button>
+			</div>
+		</div>
 		{#if daySessions.length}
 			<SessionCarousel sessions={daySessions} {card} />
 		{:else}

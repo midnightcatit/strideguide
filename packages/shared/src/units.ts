@@ -11,7 +11,7 @@ export interface Prefs {
 	weekStart: 0 | 1;
 }
 
-export const DEFAULT_PREFS: Prefs = { units: 'metric', weekStart: 0 };
+export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };
 
 const KM_PER_MILE = 1.609344;
 

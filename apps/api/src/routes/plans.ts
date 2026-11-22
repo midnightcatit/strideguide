@@ -74,7 +74,7 @@ plans.get('/current', async (c) => {
 	});
 });
 
-/** POST generate — create a goal + a generated, narrated plan. */
+/** POST generate: create a goal plus a generated, narrated plan. */
 plans.post(
 	'/generate',
 	zValidator(

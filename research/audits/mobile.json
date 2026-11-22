@@ -1,0 +1,145 @@
+{
+  "findings": [
+    {
+      "id": "MOB-001",
+      "severity": "high",
+      "file_line": "apps/web/src/routes/+layout.svelte:129",
+      "issue": "The page <footer> ('run.midnightcatit.com') is the last in-flow child of the flex column, after <main>. The bottom nav is position:fixed (h-14 + env(safe-area-inset-bottom)), so it overlays the footer. <main>'s pb-24 (96px) protects main content only; the footer sits below main and is fully covered by the nav (~40px tall vs 56px+ nav). The footer text is effectively never visible.",
+      "fix": "Add the nav clearance to the footer (or the wrapper) instead of only to main: give <footer> style=\"padding-bottom: calc(3.5rem + env(safe-area-inset-bottom))\" (and keep main's pb-24, or reduce it to ~pb-6 once the wrapper owns the clearance)."
+    },
+    {
+      "id": "MOB-002",
+      "severity": "high",
+      "file_line": "apps/web/src/lib/components/SettingsModal.svelte:19",
+      "issue": "The settings sheet has no max-height and no overflow-y-auto. Its content (appearance, units, plan, account sections + sign-out) is tall; on short viewports (landscape phone, small screens, on-screen keyboard) the bottom sections are clipped and unreachable. The bottom-sheet variant (items-end) also has no safe-area padding, so the last row can sit under the home indicator.",
+      "fix": "Add 'max-h-[90vh] overflow-y-auto' to the panel and style=\"padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))\"."
+    },
+    {
+      "id": "MOB-003",
+      "severity": "high",
+      "file_line": "apps/web/src/routes/+layout.svelte:54",
+      "issue": "app.html sets viewport-fit=cover, but the sticky <header> has no top safe-area inset. In an installed PWA (or landscape with a notch) the 'Stride Guide' title and the settings button render under the status bar / notch, partly obscured and hard to tap.",
+      "fix": "Add style=\"padding-top: env(safe-area-inset-top)\" to the <header> (keep py-3 for the visual padding)."
+    },
+    {
+      "id": "MOB-004",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/+layout.svelte:64",
+      "issue": "Header settings button is px-2 py-1 around an 18x18 svg, giving a ~34x26px hit area, under the 44px minimum (tokens define --tap-min: 44px).",
+      "fix": "Use 'p-3' or 'min-h-11 min-w-11 flex items-center justify-center'."
+    },
+    {
+      "id": "MOB-005",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:128",
+      "issue": "Sheet close button (X) is px-2 py-1 (~26px tall) and the same pattern is repeated in SessionDetail.svelte:67, SessionPlayer.svelte:153 and SettingsModal.svelte:22. All are under the 44px tap-target minimum.",
+      "fix": "Give each close button 'min-h-11 min-w-11 flex items-center justify-center' (or p-3)."
+    },
+    {
+      "id": "MOB-006",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/week/+page.svelte:115",
+      "issue": "Week/day/prev-next chevrons and the 'Today' chip are px-2 py-1 / px-2.5 py-1 (~26-30px), under 44px. Lines 115, 117, 170, 172, 174 all share this. These are primary week-navigation controls on mobile.",
+      "fix": "Raise to 'min-h-11 min-w-11' (or p-3) for the chevrons and 'min-h-11 px-3' for the Today chip."
+    },
+    {
+      "id": "MOB-007",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:196",
+      "issue": "Strength set controls ('same', '+ set', '- set') at 196-201 are text-xs with no padding (~16-20px hit area), well under 44px, and sit close together so mis-taps are likely.",
+      "fix": "Add 'min-h-11 px-2 py-2' (or inline-flex items-center) to each button and increase gap."
+    },
+    {
+      "id": "MOB-008",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/AdjustmentsCard.svelte:53",
+      "issue": "'Dismiss' button is text-xs with no padding (~16px hit area), under 44px, on a card a user will act on.",
+      "fix": "Add 'min-h-11 px-2' and keep shrink-0."
+    },
+    {
+      "id": "MOB-009",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:142",
+      "issue": "Source list rows (142-150) put a possibly long source title / bare DOI / URL inside flex-1 spans with no min-w-0 or break-words. A long unbroken title or URL (e.g. '10.1016/j....') overflows the max-w-2xl column horizontally at narrow widths.",
+      "fix": "Add 'min-w-0 break-words' to the flex-1 span; for the link use 'break-all' (URLs) so long tokens wrap."
+    },
+    {
+      "id": "MOB-010",
+      "severity": "medium",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:235",
+      "issue": "Workout-stage rows (235-241) use justify-between with a 'shrink-0' stepTarget column (e.g. '800 m @ 4:55-5:05') and a flex-1 label without min-w-0. A wide target string cannot shrink and pushes the row past the container edge at 320px.",
+      "fix": "Add 'min-w-0' to the left flex-1 span and allow the right column to wrap or truncate (e.g. 'max-w-[45%] truncate'), or drop shrink-0."
+    },
+    {
+      "id": "MOB-011",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/onboarding/+page.svelte:142",
+      "issue": "Race-distance <select> plus time <input> in a flex row. The input only has flex-1 with default min-width:auto (its intrinsic ~20-char default size ~170px) and the select is unconstrained (longest option 'Half marathon'). At 320px the row can exceed the container and cause horizontal overflow.",
+      "fix": "Add 'min-w-0' to the input and cap the select (e.g. 'max-w-[45%]' or 'shrink'), or stack the two fields below 360px."
+    },
+    {
+      "id": "MOB-012",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:174",
+      "issue": "Strength set row uses fixed widths (w-6 index + w-16 reps + w-20 weight + 'reps x'/'kg' labels, gaps) which sums to ~263px inside a p-3 card inside the sheet's p-4, i.e. ~1px of headroom at a 320px viewport. Minor font/metric variation causes horizontal overflow inside the sheet.",
+      "fix": "Reduce fixed widths (e.g. w-14/w-16) or make the inputs 'flex-1 min-w-0' so the row can compress."
+    },
+    {
+      "id": "MOB-013",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:108",
+      "issue": "Circuit rows use 'flex justify-between py-2' with no gap or min-w-0 between the machine name and the 'reps x sets' mono value. Long machine names can push the row wider than the column at 320px.",
+      "fix": "Add 'gap-3' and 'min-w-0' with 'truncate' on the machine-name span."
+    },
+    {
+      "id": "MOB-014",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:114",
+      "issue": "Card CTA buttons (Start / Log it') are py-2.5 (~40px), just under the 44px minimum, on the app's most-tapped controls.",
+      "fix": "Bump to 'py-3' (matches SessionDetail footer buttons)."
+    },
+    {
+      "id": "MOB-015",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:106",
+      "issue": "Mono meta line uses 'truncate' (single line) at ~256px card width; the joined machine list or run bits (pace band, zone, RPE range) silently truncate with no way to read the rest on the card. Intentional for equal card heights, but data is hidden.",
+      "fix": "Allow a 2-line clamp ('line-clamp-2') or ensure the full value is available via the card's detail (onOpen) view; at minimum keep truncation only where the detail is one tap away."
+    },
+    {
+      "id": "MOB-016",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCarousel.svelte:34",
+      "issue": "'w-[calc(100vw-68px)] max-w-[322px]' with '-mx-4 px-4' couples the card width to a magic 68px (container px-4 + a 36px peek). It is correct today and is overridden at sm: (>=640px), but any change to the container's px-4 or the peek distance silently breaks the snap alignment, and 100vw includes scrollbar width where the base rule applies.",
+      "fix": "Express the peek as a token (e.g. calc(100vw - 2rem - 2.25rem)) or derive width from the container via negative-margin + percentage; keep the sm: overrides."
+    },
+    {
+      "id": "MOB-017",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+layout.svelte:78",
+      "issue": "Single-column max-w-2xl is applied consistently in layout, SessionDetail, SessionPlayer and LogSheet, so >=720px behavior is correct (content centered at 672px). Note the carousel switches to a 2-column grid at sm (640px), so between 640-704px two cards split a still-sub-720px column; not a bug, but the two breakpoints (640 for grid, ~704 for full width) are not aligned.",
+      "fix": "If the intent is 'two cards only once the column is full width', gate the grid on a min-[704px] custom breakpoint rather than sm."
+    }
+  ],
+  "summary": {
+    "scope": "apps/web/src mobile layout and responsiveness audit (read-only).",
+    "high": 3,
+    "medium": 8,
+    "low": 6,
+    "total": 17,
+    "key_themes": [
+      "Content hidden / clipped behind fixed chrome: page footer fully covered by the fixed bottom nav (MOB-001); SettingsModal has no max-height or scroll and no bottom safe-area (MOB-002).",
+      "Safe-area handling is partial: nav uses env(safe-area-inset-bottom) and LogSheet/SessionDetail footers do too, but the sticky header lacks env(safe-area-inset-top) despite viewport-fit=cover (MOB-003).",
+      "Tap targets under 44px in icon-only and text controls: header settings, all modal/sheet close buttons, week chevrons and Today chip, LogSheet set controls, Adjustments Dismiss (MOB-004..008), plus card CTAs at 40px (MOB-014).",
+      "320px horizontal overflow risk from non-shrinking flex rows: SessionDetail source titles/DOIs and circuit rows, SessionPlayer stage rows, onboarding race select+input, LogSheet strength set row (MOB-009..013).",
+      "Mono data truncation (SessionCard meta line) hides pace/zone/RPE details (MOB-015); carousel card math is correct but brittle with a magic 68px and a 640 vs 720 breakpoint mismatch (MOB-016, MOB-017)."
+    ],
+    "confirmed_ok": [
+      "Bottom nav includes env(safe-area-inset-bottom) on its inner grid (apps/web/src/routes/+layout.svelte:86).",
+      "<main> reserves pb-24 for the fixed nav (apps/web/src/routes/+layout.svelte:78).",
+      "LogSheet and SessionDetail footers include bottom safe-area padding (LogSheet.svelte:121, SessionDetail.svelte:171).",
+      "WeekStrip day buttons and onboarding day toggles use min-h-11 / h-11 (44px).",
+      "Full-screen overlays sit above the nav (nav z-20; SessionPlayer z-30; LogSheet/SessionDetail/SettingsModal z-40).",
+      "max-w-2xl single-column is applied consistently across layout and detail overlays."
+    ]
+  }
+}
