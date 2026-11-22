@@ -10,6 +10,7 @@ on:
       - 'pnpm-workspace.yaml'
       - 'package.json'
       - '.github/workflows/deploy-api.yml'
+      - '.github/workflows/gate.yml'
   workflow_dispatch:
 
 concurrency:
@@ -18,7 +19,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Deploy is chained to the gate: it cannot run unless install/typecheck/test/build all pass.
+  gate:
+    uses: ./.github/workflows/gate.yml
+
   deploy:
+    needs: gate
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_ACCOUNT_ID: 3f513e4b8539944bdbbf5e1ff45f3af9
@@ -31,8 +37,6 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Typecheck
-        run: pnpm --filter @strideguide/api typecheck
       - name: Apply remote migrations
         run: pnpm --filter @strideguide/api run db:migrate:remote
         env:
