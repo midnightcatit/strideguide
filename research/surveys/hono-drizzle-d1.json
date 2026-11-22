@@ -1,0 +1,154 @@
+{
+  "topic": "Hono API on Cloudflare Workers + D1 via Drizzle ORM (2026 best practices)",
+  "generated_at": "2026-11-22T14:27:42Z",
+  "versions": {
+    "hono": "4.13.20",
+    "hono_next_tag": "5.0.0-rc.1",
+    "drizzle_orm": "0.45.4",
+    "drizzle_orm_rc_tag": "1.0.0-rc.6",
+    "drizzle_kit": "0.31.11",
+    "drizzle_kit_rc_tag": "1.0.0-rc.6",
+    "wrangler": "4.166.0",
+    "cloudflare_workers_types": "5.20261121.1",
+    "cloudflare_vitest_pool_workers": "0.23.0",
+    "hono_zod_validator": "0.9.1",
+    "zod": "4.6.7",
+    "node_local_detected": "22.16.0",
+    "npm_local_detected": "11.15.0",
+    "notes": [
+      "Hono v5 exists only on the 'next' dist-tag (5.0.0-rc.1). Pin ^4.13.20 for stability.",
+      "drizzle-orm/drizzle-kit v1 is on 'rc' dist-tag and the official docs now write installs as `drizzle-orm@rc` / `drizzle-kit@rc`. Latest STABLE is 0.45.4 / 0.31.11. v1 changes the on-disk migration layout (nested dirs) which affects D1 config.",
+      "@cloudflare/workers-types is now date-versioned major 5.x. Cloudflare increasingly prefers generated types via `wrangler types` (worker-configuration.d.ts) over hand-pinned workers-types; keep workers-types only if you want the ambient global types."
+    ]
+  },
+  "config_snippets": {
+    "package_json_deps": {
+      "dependencies": {
+        "hono": "^4.13.20",
+        "drizzle-orm": "^0.45.4",
+        "zod": "^4.6.7",
+        "@hono/zod-validator": "^0.9.1"
+      },
+      "devDependencies": {
+        "drizzle-kit": "^0.31.11",
+        "wrangler": "^4.166.0",
+        "@cloudflare/workers-types": "^5.20261121.1",
+        "typescript": "^5.9.0"
+      },
+      "scripts": {
+        "dev": "wrangler dev",
+        "deploy": "wrangler deploy",
+        "types": "wrangler types --env-interface CloudflareBindings",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate:local": "wrangler d1 migrations apply strideguide-db --local",
+        "db:migrate:remote": "wrangler d1 migrations apply strideguide-db --remote",
+        "db:studio": "drizzle-kit studio"
+      },
+      "note_if_using_v1_rc": {
+        "dependencies": { "drizzle-orm": "^1.0.0-rc.6" },
+        "devDependencies": { "drizzle-kit": "^1.0.0-rc.6" }
+      }
+    },
+    "wrangler_jsonc": {
+      "$schema": "node_modules/wrangler/config-schema.json",
+      "name": "strideguide-api",
+      "main": "src/index.ts",
+      "compatibility_date": "2026-11-22",
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "strideguide-db",
+          "database_id": "<UUID from `wrangler d1 create`>",
+          "migrations_dir": "drizzle",
+          "migrations_pattern": "drizzle/*/migration.sql"
+        }
+      ],
+      "ai": {
+        "binding": "AI",
+        "remote": true
+      },
+      "vars": {
+        "APP_ENV": "production",
+        "DEFAULT_UNITS": "metric"
+      },
+      "triggers": {
+        "crons": ["*/15 * * * *", "0 6 * * *"]
+      }
+    },
+    "hono_entry_src_index_ts": "import { Hono } from 'hono'\nimport { cors } from 'hono/cors'\nimport { logger } from 'hono/logger'\nimport { secureHeaders } from 'hono/secure-headers'\nimport { drizzle } from 'drizzle-orm/d1'\nimport * as schema from './db/schema'\n\ntype Bindings = {\n  DB: D1Database\n  AI: Ai\n  APP_ENV: string\n  DEFAULT_UNITS: string\n  API_TOKEN: string // secret from .dev.vars / wrangler secret\n}\n\nconst app = new Hono<{ Bindings: Bindings }>()\n\napp.use('*', logger())\napp.use('*', secureHeaders())\napp.use('/api/*', cors({ origin: ['https://strideguide.app'], allowMethods: ['GET','POST','PATCH','DELETE'] }))\n\napp.get('/health', (c) => c.json({ ok: true, env: c.env.APP_ENV }))\n\napp.get('/api/runs', async (c) => {\n  const db = drizzle(c.env.DB, { schema })\n  const rows = await db.select().from(schema.runs)\n  return c.json(rows)\n})\n\napp.post('/api/coach', async (c) => {\n  const answer = await c.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {\n    prompt: 'Summarize this training week'\n  })\n  return c.json(answer)\n})\n\n// Module worker: Hono fetch + scheduled cron handler\nexport default {\n  fetch: app.fetch,\n  async scheduled(controller: ScheduledController, env: Bindings, ctx: ExecutionContext) {\n    const db = drizzle(env.DB, { schema })\n    ctx.waitUntil(/* nightly rollup job */ Promise.resolve())\n  }\n}\n\n// Optional: also export app for tests (app.request(...))\nexport { app }",
+    "drizzle_schema_src_db_schema_ts": "import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core'\n\nexport const runs = sqliteTable('runs', {\n  id: integer('id').primaryKey({ autoIncrement: true }),\n  userId: text('user_id').notNull(),\n  distanceKm: real('distance_km').notNull(),\n  durationSec: integer('duration_sec').notNull(),\n  notes: text('notes'),\n  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().defaultNow()\n})",
+    "drizzle_config_ts": "import { defineConfig } from 'drizzle-kit'\n\nexport default defineConfig({\n  dialect: 'sqlite',\n  schema: './src/db/schema.ts',\n  out: './drizzle',\n  // `driver: 'd1-http'` + dbCredentials are only needed for `drizzle-kit migrate|push|studio`\n  // against the REMOTE D1 database (reads CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_DATABASE_ID / CLOUDFLARE_D1_TOKEN).\n  // Use Cloudflare's own account/database IDs, not the D1 binding name.\n  driver: 'd1-http',\n  dbCredentials: {\n    accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,\n    databaseId: process.env.CLOUDFLARE_DATABASE_ID!,\n    token: process.env.CLOUDFLARE_D1_TOKEN!\n  }\n})",
+    "dev_vars": "API_TOKEN=dev-secret-token\nCLOUDFLARE_ACCOUNT_ID=xxxxxxxxxxxxxxxx\nCLOUDFLARE_DATABASE_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\nCLOUDFLARE_D1_TOKEN=xxxxxxxxxxxxxxxx",
+    "tsconfig_json": {
+      "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "lib": ["ESNext"],
+        "types": ["@cloudflare/workers-types"],
+        "strict": true,
+        "skipLibCheck": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "hono/jsx",
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+      },
+      "include": ["src/**/*.ts", "worker-configuration.d.ts"]
+    },
+    "tsconfig_alternative_generated_types": {
+      "note": "Preferred by Cloudflare: run `wrangler types` to emit worker-configuration.d.ts and use `types: []` from tsconfig, then type Hono as new Hono<{ Bindings: CloudflareBindings }>(). Drop @cloudflare/workers-types to avoid duplicate/conflicting global type declarations."
+    }
+  },
+  "commands": [
+    "npm create hono@latest strideguide-api   # choose the 'cloudflare-workers' template",
+    "npx wrangler d1 create strideguide-db    # prints database_id to paste into wrangler.jsonc",
+    "npx wrangler types --env-interface CloudflareBindings   # generate worker-configuration.d.ts",
+    "npx drizzle-kit generate                 # schema -> drizzle/<timestamp>_<name>/migration.sql",
+    "npx wrangler d1 migrations apply strideguide-db --local    # apply to local D1 (.wrangler/state)",
+    "npx wrangler dev                          # local server on http://127.0.0.1:8787",
+    "npx wrangler d1 migrations apply strideguide-db --remote   # apply to production D1",
+    "npx wrangler deploy",
+    "ALTERNATIVE single-step REMOTE migrate without wrangler: npx drizzle-kit migrate   # needs driver:'d1-http' + CLOUDFLARE_* env vars",
+    "npx drizzle-kit studio                    # optional GUI (needs d1-http creds for remote)"
+  ],
+  "gotchas": [
+    "Migration layout changed in the v1 RC line: `drizzle-kit generate` now writes NESTED dirs, e.g. drizzle/20261122125510_init/migration.sql + snapshot.json. Older drizzle-kit wrote flat drizzle/0000_name.sql. Cloudflare's wrangler default glob is `migrations/*.sql`, which MISSES the nested layout, so set `migrations_pattern: \"drizzle/*/migration.sql\"` (must be prefixed by migrations_dir, and both must be set).",
+    "Because of the nested layout, `wrangler d1 migrations create` is not usable for Drizzle projects (it only writes top-level files). Always author migrations with `drizzle-kit generate` (or `generate --custom` for hand-written SQL).",
+    "Two different migration ledgers exist and must not be mixed on the same DB: wrangler records applied files in `d1_migrations`; drizzle-kit migrate records in `__drizzle_migrations`. Pick ONE path per database. Recommended for D1: `drizzle-kit generate` + `wrangler d1 migrations apply`. Only use `drizzle-kit migrate` if you deliberately skip wrangler.",
+    "`wrangler d1 migrations apply|execute|list|export` now expect an explicit `--local` or `--remote` flag; without it wrangler prompts (and CI/non-interactive runs behave differently). Always pass the flag explicitly in scripts.",
+    "drizzle-kit needs the flat `breakpoints: true` (default) so generated SQL contains `--> statement-breakpoint` separators; SQLite/D1 cannot run multiple DDL statements in one transaction. Do not disable breakpoints for D1.",
+    "D1 local data is persisted by default under `.wrangler/state/v3/d1`. Change the location with `wrangler dev --persist-to=...`; the same dir is used by `wrangler d1 migrations apply --local` (pass `--persist-to` to both to keep them in sync).",
+    "Workers AI has no local simulation and ALWAYS runs remotely. Set `\"ai\": { \"binding\": \"AI\", \"remote\": true }`; omitting `remote` logs a warning and `remote: false` is an ERROR.",
+    "`.dev.vars` (dotenv syntax) supplies local secrets/vars for `wrangler dev` and is auto-loaded; it is NOT uploaded. Production secrets need `wrangler secret put <NAME>` (or dashboard). `process.env` is unavailable unless you enable the `nodejs_compat_populate_process_env` flag; read config via `c.env` in Hono.",
+    "Cron Triggers: `triggers.crons` drives the `scheduled(controller, env, ctx)` export and runs on UTC using 5-field, Quartz-style expressions (weekday 1=Sun..7=Sat). To disable, set `crons: []`; commenting it out leaves deployed crons in place. Test locally with `curl 'http://localhost:8787/cdn-cgi/local/scheduled?cron=*+*+*+*+*'`.",
+    "Keep D1 binding name stable but prefer the DATABASE NAME for `wrangler d1 ...` commands (binding names can be renamed; DB names cannot) to avoid migrating the wrong database.",
+    "Set `compatibility_date` to a recent date (e.g. today) and only add `compatibility_flags: [\"nodejs_compat\"]` if a dependency needs Node built-ins; Hono + Drizzle do not require it.",
+    "Drizzle with D1 driver: use `drizzle-orm/d1` (takes the raw `D1Database` binding). Prefer `.all()`/`.get()`/`.run()`/`.values()`-style returns and note D1 has no interactive transactions — use `db.batch([...])` for atomic multi-statement writes.",
+    "Hono's built-in `Env` type name collides with Cloudflare's generated `Env` interface — pass `--env-interface CloudflareBindings` to `wrangler types` and use `new Hono<{ Bindings: CloudflareBindings }>()`.",
+    "Hono v5 is only on the `next` tag; and Drizzle v1 is only on `rc`. Pin stable (`hono@^4.13.20`, `drizzle-orm@^0.45.4`, `drizzle-kit@^0.31.11`) unless you explicitly want the RCs; if you take Drizzle v1, adopt the nested migrations layout consistently."
+  ],
+  "sources": [
+    "https://registry.npmjs.org/hono (latest 4.13.20)",
+    "https://registry.npmjs.org/drizzle-orm (latest 0.45.4, rc 1.0.0-rc.6)",
+    "https://registry.npmjs.org/drizzle-kit (latest 0.31.11, rc 1.0.0-rc.6)",
+    "https://registry.npmjs.org/wrangler (latest 4.166.0)",
+    "https://registry.npmjs.org/@cloudflare%2Fworkers-types (latest 5.20261121.1)",
+    "https://hono.dev/docs/getting-started/cloudflare-workers",
+    "https://orm.drizzle.team/docs/sqlite/connect-cloudflare-d1",
+    "https://orm.drizzle.team/docs/sqlite/drizzle-kit-generate",
+    "https://orm.drizzle.team/docs/sqlite/drizzle-config-file",
+    "https://orm.drizzle.team/docs/sqlite/migrations",
+    "https://developers.cloudflare.com/workers/wrangler/configuration/",
+    "https://developers.cloudflare.com/d1/reference/migrations/",
+    "https://developers.cloudflare.com/workers/wrangler/commands/d1/",
+    "https://developers.cloudflare.com/d1/best-practices/local-development/",
+    "https://developers.cloudflare.com/workers/local-development/",
+    "https://developers.cloudflare.com/workers-ai/configuration/bindings/",
+    "https://developers.cloudflare.com/workers/configuration/cron-triggers/"
+  ]
+}

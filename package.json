@@ -1,0 +1,29 @@
+{
+  "name": "strideguide",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.21.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @strideguide/api --filter @strideguide/web dev",
+    "dev:api": "pnpm --filter @strideguide/api dev",
+    "dev:web": "pnpm --filter @strideguide/web dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write .",
+    "db:generate": "pnpm --filter @strideguide/api db:generate",
+    "db:migrate:local": "pnpm --filter @strideguide/api db:migrate:local",
+    "db:migrate:remote": "pnpm --filter @strideguide/api db:migrate:remote",
+    "db:seed:local": "pnpm --filter @strideguide/api db:seed:local",
+    "deploy:api": "pnpm --filter @strideguide/api deploy",
+    "deploy:web": "pnpm --filter @strideguide/web deploy"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,286 @@
+{
+  "workstream": "Workout-type mechanics",
+  "subtopic": "Quality/hard sessions",
+  "generated_at": "2026-11-22T14:27:42Z",
+  "claims": [
+    {
+      "topic": "Tempo / lactate-threshold run - physiological purpose",
+      "claim": "Running near the lactate threshold (roughly 2-4.5 mmol/L blood lactate, an intensity sustainable for about an hour of racing) targets the maximal lactate steady state: it improves lactate clearance and the ability to hold a faster pace before fatigue. Threshold work is the primary driver of aerobic/threshold gains for half-marathon to marathon goals.",
+      "evidence": "Casado et al. describe lactate-guided threshold interval training (LGTIT) in world-class middle- and long-distance runners: pace is dictated by a blood-lactate target of 2-4.5 mmol/L, performed 3-4 sessions/week within a high-volume, low-intensity program. They propose the interval character allows high absolute speeds (more motor-unit recruitment) at relatively low metabolic intensity, and that the model drives mitochondrial proliferation via calcium and AMPK signaling.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Does Lactate-Guided Threshold Interval Training within a High-Volume Low-Intensity Approach Represent the \"Next Step\" in the Evolution of Distance Running Training?",
+        "authors": "Casado A, Foster C, Bakken M, Tjelta LI",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/ijerph20053782",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Tempo / threshold run - evidence of benefit and intensity",
+      "claim": "Training at or just above the metabolic threshold produces larger threshold adaptations than training below it; supra-threshold work gives the largest improvements in aerobic- and anaerobic-threshold outcomes.",
+      "evidence": "Pre-registered systematic review and meta-analysis (13 studies, 24 intervention groups, 338 participants) found training intensity relative to the metabolic threshold was the most consistent moderator of adaptation. For the aerobic threshold, supra-threshold training improved +38.7% vs at-threshold +14.7% and sub-threshold +18.4% (p=0.017). For the anaerobic threshold, supra-threshold exceeded sub-threshold (p=0.010) with a graded pattern (below +2.6%, at ~+7%, above +12.2%). Substantial heterogeneity remained (I2 ~89% AeT, ~53% AnT), so results warrant caution.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Moderators of metabolic threshold adaptations: a systematic review and meta-analysis",
+        "authors": "Peric R, Nikolovski Z, Vrdoljak D, Ivisic AK, Chavez-Guevara IA, Vriese J, Ferri Marini C",
+        "year": 2026,
+        "venue": "PeerJ",
+        "type": "meta-analysis",
+        "doi_or_url": "10.7717/peerj.21806",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Tempo run - how to pace it",
+      "claim": "Threshold sessions are best guided by an internal-load target (blood lactate or RPE) rather than a fixed external pace, because the pace that sits at threshold drifts day to day with fatigue and conditions.",
+      "evidence": "Casado et al. prescribe threshold intervals by a blood-lactate target measured every 1-3 repetitions (2-4.5 mmol/L), explicitly using internal rather than external load. They argue this intensity allows more rapid recovery between hard sessions, enabling a greater weekly volume of specific threshold work than higher intensities would permit.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Does Lactate-Guided Threshold Interval Training within a High-Volume Low-Intensity Approach Represent the \"Next Step\" in the Evolution of Distance Running Training?",
+        "authors": "Casado A, Foster C, Bakken M, Tjelta LI",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/ijerph20053782",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - purpose and benefit",
+      "claim": "High-intensity aerobic intervals raise VO2max more than the same total work performed at moderate or lactate-threshold intensity, and the gains track increases in stroke volume.",
+      "evidence": "Randomized trial (40 moderately trained men, 8 weeks, four groups matched for total oxygen consumption and frequency): interval groups (15/15 s and 4x4 min at 90-95% HRmax) increased VO2max by 5.5% and 7.2% respectively, significantly more than long slow distance (70% HRmax) or lactate-threshold (85% HRmax) training (P<0.01). Stroke volume increased ~10% after interval training, corresponding to the VO2max changes.",
+      "confidence": "high",
+      "citation": {
+        "title": "Aerobic high-intensity intervals improve VO2max more than moderate training",
+        "authors": "Helgerud J, Hoydal K, Wang E, Karlsen T, Berg P, Bjerkaas M, Simonsen T, Helgesen C, Hjorth N, Bach R, Hoff J",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0b013e3180304570",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - meta-analytic evidence",
+      "claim": "Across controlled trials, high-intensity interval training (HIT) yields greater VO2max improvements than moderate-intensity continuous endurance training in healthy adults.",
+      "evidence": "Systematic review and meta-analysis of 28 controlled trials (723 participants, mean age 25 y, baseline VO2max 40.8 mL/kg/min): endurance training had a possibly large beneficial effect on VO2max (4.9 mL/kg/min vs no-exercise), while HIT had a likely large effect (5.5 mL/kg/min) and a possibly small additional benefit over endurance training (1.2 mL/kg/min). Additional HIT gains were larger with longer intervals and higher work/rest ratios.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effectiveness of High-Intensity Interval Training (HIT) and Continuous Endurance Training for VO2max Improvements: A Systematic Review and Meta-Analysis of Controlled Trials",
+        "authors": "Milanovic Z, Sporis G, Weston M",
+        "year": 2015,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-015-0365-0",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - why trained athletes need them",
+      "claim": "For already well-trained endurance athletes, adding more submaximal/volume training does not further improve performance or VO2peak; high-intensity interval training is the main lever left for further adaptation.",
+      "evidence": "Review of training adaptations: in highly trained individuals, additional submaximal (volume) training does not appear to further enhance endurance performance or physiological markers such as VO2peak or oxidative enzyme activity. Improvements appear achievable only through HIT; because oxidative/glycolytic enzyme activity does not change with HIT in this population, increased skeletal-muscle buffering capacity is proposed as a candidate mechanism.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The scientific basis for high-intensity interval training: optimising training programmes and maximising performance in highly trained endurance athletes",
+        "authors": "Laursen PB, Jenkins DG",
+        "year": 2002,
+        "venue": "Sports Medicine",
+        "type": "coaching",
+        "doi_or_url": "10.2165/00007256-200232010-00003",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - pacing and duration",
+      "claim": "A common VO2max-interval prescription is to run at the velocity that elicits VO2max (vVO2max) for fractions (roughly 50-75%) of the time to exhaustion at that velocity; vVO2max combines VO2max and running economy into a single performance-relevant factor.",
+      "evidence": "Billat & Koralsztein report vVO2max better explains individual performance differences than VO2max or running economy alone; time to exhaustion at vVO2max averages ~6 min but varies widely between individuals (CV ~25%), with lactate threshold partly explaining that variability. Subsequent HIT optimisation work (Laursen & Jenkins 2002) used Vmax as interval intensity and 50-75% of time to exhaustion at Vmax as interval duration to improve performance in long-distance runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Significance of the velocity at VO2max and time to exhaustion at this velocity",
+        "authors": "Billat LV, Koralsztein JP",
+        "year": 1996,
+        "venue": "Sports Medicine",
+        "type": "coaching",
+        "doi_or_url": "10.2165/00007256-199622020-00004",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Interval training - programming variables and common error (overload)",
+      "claim": "Interval prescription is multi-dimensional (work/relief intensity and duration, repetitions, series, recovery), and high-speed work carries a large neuromuscular/musculoskeletal cost that must be managed within the weekly load to avoid overload and injury.",
+      "evidence": "Review of HIT programming: prescription requires manipulating at least nine variables, each affecting the acute response; contrasting formats with similar cardiorespiratory responses differ markedly in anaerobic-glycolytic contribution. Running at >=95% vVO2max can accumulate up to 6-8 km of high-intensity work per session and significant neuromuscular/musculoskeletal strain; this added strain must be balanced against other sessions to avoid overload and minimize injury risk.",
+      "confidence": "medium",
+      "citation": {
+        "title": "High-intensity interval training, solutions to the programming puzzle. Part II: anaerobic energy, neuromuscular load and practical applications",
+        "authors": "Buchheit M, Laursen PB",
+        "year": 2013,
+        "venue": "Sports Medicine",
+        "type": "coaching",
+        "doi_or_url": "10.1007/s40279-013-0066-5",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Training intensity distribution - polarized model",
+      "claim": "Successful endurance athletes typically distribute training ~80% at low intensity (~2 mmol/L lactate) and ~20% as high-intensity work (interval training near 90% VO2max); intensification does not show convincing long-term gains in already-trained athletes.",
+      "evidence": "Seiler reviews descriptive studies of nationally/internationally competitive endurance athletes training 10-13 times/week, which converge on ~80% of sessions at low intensity (2 mM blood lactate) with ~20% dominated by high-intensity intervals at ~90% VO2max. Training-intensification studies in well-trained athletes provide no convincing evidence that a greater HIT emphasis yields long-term performance gains; low-intensity volume plus fewer highly intensive bouts may optimize adaptive signaling and technical mastery.",
+      "confidence": "medium",
+      "citation": {
+        "title": "What is best practice for training intensity and duration distribution in endurance athletes?",
+        "authors": "Seiler S",
+        "year": 2010,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "coaching",
+        "doi_or_url": "10.1123/ijspp.5.3.276",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Polarized distribution - meta-analytic evidence",
+      "claim": "Polarized training improves VO2peak more than other intensity distributions - especially in short interventions and highly trained athletes - but time-trial and threshold outcomes are similar across models.",
+      "evidence": "Systematic review with meta-analysis (17 studies, n=437): pooled estimates favored polarized training for VO2peak (SMD 0.24, 95% CI 0.01-0.48, high certainty), with superiority only for interventions <12 weeks (SMD 0.40) and highly trained athletes (SMD 0.46). Effects were similar to other distributions for time-trial (SMD -0.01), time to exhaustion (SMD 0.30, ns), and speed/power at VT2/LT2 (SMD 0.04).",
+      "confidence": "high",
+      "citation": {
+        "title": "Comparison of Polarized Versus Other Types of Endurance Training Intensity Distribution on Athletes' Endurance Performance: A Systematic Review with Meta-analysis",
+        "authors": "Silva Oliveira P, Boppre G, Fonseca H",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-024-02034-z",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Hill reps - purpose and evidence",
+      "claim": "Uphill interval running is used to build strength/power and aerobic capacity at lower absolute impact speeds; it improves run-to-exhaustion at vVO2max, but level-grade interval training may produce equal or greater gains.",
+      "evidence": "Randomized trial (32 well-trained distance runners, 12 interval + 12 continuous sessions over 6 weeks): both uphill and level-grade interval groups significantly improved time to exhaustion at the speed associated with VO2max (p<0.05), but traditional level-grade training produced greater gains. The authors note uphill running is widely prescribed yet was largely uninvestigated before this work.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The effects of uphill vs. level-grade high-intensity interval training on VO2max, Vmax, V(LT), and Tmax in well-trained distance runners",
+        "authors": "Ferley DD, Osborn RW, Vukovich MD",
+        "year": 2013,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0b013e3182736923",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Hill reps - meta-analytic evidence and typical dose",
+      "claim": "Pooled evidence for uphill running on strength, jump performance, and aerobic capacity is inconclusive; narrative benefits (running economy, repeated-sprint ability, lactate clearance) are not confirmed by meta-analysis.",
+      "evidence": "Systematic review/meta-analysis (13 RCTs, n=308, low certainty of evidence) found no significant pooled effects on isokinetic knee strength (SMD 0.09), jumping performance (SMD 0.15), or aerobic capacity (SMD 0.31). Typical protocols were 10-14 uphill sprints of ~30 s at ~10% gradient, 2-3 times/week for 2-8 weeks. Narrative synthesis showed improvements in running economy, repeated-sprint ability, ventilatory threshold, and lactate clearance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of uphill running on muscle strength, jumping performance, running time, and aerobic capacity outcomes in athletes and recreational adults: A systematic review and meta-analysis",
+        "authors": "Tham SK, Shager K, Murugiah M, Nguyen M, Wibawa JC, Ahmad MA",
+        "year": 2026,
+        "venue": "Medicine (Baltimore)",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1097/MD.0000000000049977",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Strides - purpose and mechanism",
+      "claim": "Short fast strides in a warm-up act as neuromuscular 'priming', acutely improving leg stiffness and running economy and thereby peak running speed.",
+      "evidence": "Crossover trial (11 well-trained distance runners): a warm-up including six 10-s strides with a weighted vest (20% body mass) produced a very-large enhancement of peak running speed (2.9%), a moderate increase in leg stiffness (20.4%), and a large improvement in running economy (6.0%) versus the control warm-up. Change-score relationships indicated the leg-stiffness changes could explain all the performance and economy improvements.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Warm-up with a weighted vest improves running performance via leg stiffness and running economy",
+        "authors": "Barnes KR, Hopkins WG, McGuigan MR, Kilding AE",
+        "year": 2015,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "rct",
+        "doi_or_url": "10.1016/j.jsams.2013.12.005",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Strides / plyometrics - running economy",
+      "claim": "Plyometric (jump) training as an adjunct improves running economy by a small amount (notably at slower speeds), but heavy resistance training with near-maximal loads appears superior for both running economy and time-trial performance.",
+      "evidence": "Systematic review/meta-analysis (22 studies) comparing adjunct training: heavy resistance training improved running economy (g=-0.32, small) and time-trial performance (g=-0.24, small) more than plyometric training (g=-0.13 and -0.17, trivial). Near-maximal loads (>=90% 1RM) and longer programs (10-14 weeks) produced larger effects.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Terada M, Kanehisa H, Isaka T",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Strength training - running economy",
+      "claim": "Strength training (high loads, plyometric, or combined methods) improves running economy in middle- and long-distance runners, with high-load effects larger at faster running speeds and in athletes with higher VO2max.",
+      "evidence": "Systematic review with meta-analysis (moderate certainty for high-load, submaximal, plyometric, and isometric methods): high-load (ES=-0.27, p=0.039) and combined methods (ES=-0.43, p=0.018) improved running economy; plyometric training improved it at speeds <=12 km/h (ES=-0.31, p=0.028). Submaximal-load and isometric methods showed no improvement. Running speed and VO2max moderated the high-load effect (greater gains at higher speeds and higher VO2max).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Saez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-023-01978-y",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Fartlek and interval training - purpose and origin",
+      "claim": "Fartlek ('speed play') and structured interval training let an athlete perform a large volume of race-specific high-intensity work while controlling fatigue; adding interval training to continuous training adds roughly 2-4% to performance.",
+      "evidence": "Historical review: interval training was developed for athletes in the early 20th century, systematized as Fartlek in Sweden and as the 'interval method' in Germany in the 1930s, and most contemporary interval formats evolved from these. Adding interval training to low-intensity continuous training done by athletes adds about 2-4% to achievable performance (e.g., 4:25 vs 4:00 over 1 mile), a competitively meaningful difference.",
+      "confidence": "medium",
+      "citation": {
+        "title": "History and perspectives on interval training in sport, health, and disease",
+        "authors": "Foster C, Casado A, Bok D, Hofmann P, Bakken M, Tjelta A, Manso J, Boullosa D, de Koning J",
+        "year": 2025,
+        "venue": "Applied Physiology, Nutrition, and Metabolism",
+        "type": "coaching",
+        "doi_or_url": "10.1139/apnm-2023-0611",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Interval pacing - RPE prescription",
+      "claim": "RPE can validly prescribe long-format high-intensity intervals; an RPE of about 7 on the Borg CR-10 scale maximizes time near VO2max while limiting ventilatory stress.",
+      "evidence": "Study (n=17 current/former physical-education students): three 3-min intervals prescribed at RPE 6, 7, or 8 with 2-min passive rest. Time >=90% VO2max, >=90% HRmax, running speed, VO2, and blood lactate were all lower at RPE 6 than at RPE 7 and 8, with no significant difference between RPE 7 and 8. RPE 7 was deemed optimal (similar cardiovascular/metabolic response to RPE 8 but lower ventilatory stress); ventilation was the main perceptual cue regulating running speed.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Rating of Perceived Exertion as Prescription Tool to Maximize Oxygen Uptake Response during High-Intensity Interval Training",
+        "authors": "Bok D, Turk E, Gulin J, Rakovac M, Foster C",
+        "year": 2026,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000003917",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "RPE / internal load - measurement and feel cues",
+      "claim": "Session-RPE is a valid measure of internal training load in runners and can be split into leg-exertion and breathlessness ratings to separate peripheral from central exertion; ratings are most valid when recorded at session completion.",
+      "evidence": "Validation study (15 adolescent distance runners): session-RPE, differential RPE-leg, and differential RPE-breathlessness all maintained their strongest correlations with HR-based internal-load criteria (r=.74-.89) when reported at session completion (0 min) versus 15 or 30 min later; all scores declined when reported 30 min post-session. Differential ratings discriminated central (breathlessness) from peripheral (leg) exertion.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Validation of Session Rating of Perceived Exertion for Quantifying Internal Training Load in Adolescent Distance Runners",
+        "authors": "Mann RH, Williams CA, Clift BC, Barker AR",
+        "year": 2019,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2018-0120",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Quality sessions work by training distinct physiological targets: threshold (tempo) running raises the lactate threshold and maximal lactate steady state for half-marathon-to-marathon goals, while VO2max intervals at vVO2max raise aerobic power and stroke volume and are the main lever for further gains in already-trained runners. Meta-analyses show HIIT beats moderate continuous training for VO2max and that polarized (~80/20) distribution aids VO2peak, especially in short blocks and highly trained athletes, though time-trial outcomes are similar across models. Hill reps and strides/plyometrics mainly serve neuromuscular and running-economy goals, with the strongest economy evidence for heavy strength work rather than hills alone. Pacing is best anchored to internal load (blood lactate ~2-4.5 mmol/L, or RPE ~7/10 for long intervals), and high-speed volume must be managed against neuromuscular overload.",
+  "unverified": [
+    "The exact 80/20 low/high session split as an optimal prescription for recreational runners is not established; the ~80/20 pattern comes from descriptive studies of elite athletes (Seiler 2010) and does not prove causation for amateurs.",
+    "That strides and plyometric work directly improve race performance (rather than acute surrogate measures such as running economy and leg stiffness) is not established; the strides evidence (Barnes 2015) used peak treadmill speed and economy, and the plyometric meta (Eihara 2022) showed trivial effects on time-trial performance.",
+    "A single 'correct' threshold pace as a fixed % of race pace or HR is not supported; sources recommend individualizing by blood lactate or RPE because threshold pace varies day to day.",
+    "Specific percent improvements in race performance attributable to hill reps are unverified; the hill meta-analysis (Tham 2026) found no significant pooled effects on strength, jump, or aerobic capacity.",
+    "Exact RPE values to prescribe threshold versus VO2max sessions in recreational runners are extrapolated from small lab studies (Bok 2026, n=17) rather than validated field prescription."
+  ],
+  "notes": "Sources retrieved via the NCBI E-utilities API (efetch/esummary) on 2026-11-22; all citations are peer-reviewed, indexed articles with DOIs/PMIDs. Type mapping caveat: the schema has no 'narrative review' value, so peer-reviewed narrative/expert review articles (Seiler 2010 IJSPP; Laursen & Jenkins 2002 Sports Med; Billat & Koralsztein 1996 Sports Med; Buchheit & Laursen 2013 Sports Med; Casado 2023 IJERPH; Foster 2025 APNM) are labeled 'coaching' here for schema compliance - they are indexed journal reviews, not popular coaching media. No position stands or textbooks were located for this subtopic; evidence is dominated by meta-analyses/systematic reviews plus a few landmark RCTs. Confidence is capped at 'medium' for single trials, small crossover studies, and high-heterogeneity meta-analyses. RPE/feel-cue guidance rests on small studies and should be presented in-app as practical heuristics, not precise prescriptions."
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "strideguide-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "strideguide-db",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "APP_ORIGIN": "https://run.midnightcatit.com",
+    "WEB_ORIGIN": "https://run.midnightcatit.com"
+  },
+  "triggers": {
+    "crons": ["0 7 * * *", "0 8 * * 1"]
+  },
+  "routes": [
+    {
+      "pattern": "run.midnightcatit.com/api/*",
+      "zone_name": "midnightcatit.com"
+    }
+  ]
+}

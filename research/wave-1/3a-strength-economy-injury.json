@@ -1,0 +1,329 @@
+{
+  "workstream": "Strength for runners",
+  "subtopic": "Running economy & injury prevention evidence",
+  "generated_at": "2026-11-22T14:27:50Z",
+  "claims": [
+    {
+      "topic": "Heavy/resistance training -> running economy",
+      "claim": "Strength training produces a large, beneficial effect on running economy in highly trained middle- and long-distance runners (pooled SMD = -1.42, 95% CI -2.23 to -0.60 across 5 controlled trials, n=93).",
+      "evidence": "Systematic review with meta-analysis of controlled trials in competitive runners (VO2max >60 mL/kg/min); programmes used low-to-high intensity resistance plus plyometrics, 2-3x/week for 8-12 weeks. Authors conclude this is an appropriate strategy to improve running economy.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on Running Economy in Highly Trained Runners: A Systematic Review With Meta-Analysis of Controlled Trials",
+        "authors": "Balsalobre-Fernández C, Santos-Concejero J, Grivas GV",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000001316",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Heavy/resistance training -> running economy",
+      "claim": "Strength training generally improves running economy by ~2-8% versus a running-only control, and also tends to improve time-trial performance (1.5-10 km) and anaerobic speed qualities, without negatively affecting body composition.",
+      "evidence": "Systematic review of 24 studies (PEDro internal validity 4-6). RE was measured in 20 studies and generally improved 2-8%; VO2max, velocity at VO2max, blood lactate and body composition were typically unaffected. Improvement was not universal across all studies.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Heavy/resistance training -> running economy",
+      "claim": "Both explosive and heavy-weight (high-load) concurrent training improve running economy in endurance runners (pooled ~-3.9%; explosive ~-4.8%, heavy ~-3.7%), whereas isometric training did not significantly improve RE; longer programme duration produced larger RE gains.",
+      "evidence": "Systematic review with meta-analysis (16 studies, 20 effects). Random-effects model plus meta-regression; magnitude of RE change larger with longer training duration (beta=-0.83, p=0.02).",
+      "confidence": "high",
+      "citation": {
+        "title": "Explosive Training and Heavy Weight Training are Effective for Improving Running Economy in Endurance Athletes: A Systematic Review and Meta-Analysis",
+        "authors": "Denadai BS, de Aguiar RA, de Lima LC, Greco CC, Caputo F",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-016-0604-z",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Heavy/resistance training -> running economy",
+      "claim": "Maximal strength training (half-squats, 4 sets x 4RM, 3x/week for 8 weeks) improved running economy by ~5% and time to exhaustion at maximal aerobic speed by ~21% in well-trained runners, with no change in VO2max or body weight.",
+      "evidence": "Randomised controlled trial, 17 well-trained runners (intervention vs control). 1RM +33.2%, rate of force development +26.0%; control group unchanged.",
+      "confidence": "high",
+      "citation": {
+        "title": "Maximal strength training improves running economy in distance runners",
+        "authors": "Støren O, Helgerud J, Støa EM, Hoff J",
+        "year": 2008,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e318168da2f",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Plyometrics & neuromuscular adaptations",
+      "claim": "Short-term plyometric training (3x30 min/week for 9 weeks) improved running economy by ~4.1% at 18 km/h in highly trained distance runners, with trends for increased muscle power and a lower VO2-speed slope, but no change in VO2max.",
+      "evidence": "Randomised controlled trial (7 plyometric vs 8 control, VO2max ~71 mL/kg/min). Improvement was significant only at the fastest tested speed (18 km/h), not 14 or 16 km/h; proposed mechanisms are muscle-based or improved running mechanics.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Short-term plyometric training improves running economy in highly trained middle and long distance runners",
+        "authors": "Saunders PU, Telford RD, Pyne DB, Peltola EM, Cunningham RB, Gore CJ, Hawley JA",
+        "year": 2006,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/R-18235.1",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Plyometrics & neuromuscular adaptations",
+      "claim": "Six weeks of plyometric training improved running economy in regular (but not highly trained) distance runners; the mechanism was not identified and elastic energy storage/return indices did not change.",
+      "evidence": "Randomised controlled trial (18 runners). Economy improved (p<0.05); VO2max unchanged; jump-height and efficiency variables did not improve, so the mechanism 'must still be determined'. Supports plyometrics as a RE stimulus but with an unresolved mechanism and population-specific effect.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Improvement in running economy after 6 weeks of plyometric training",
+        "authors": "Turner AM, Owings M, Schwane JA",
+        "year": 2003,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/1533-4287(2003)017<0060:IIREAW>2.0.CO;2",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Plyometrics & neuromuscular adaptations",
+      "claim": "When strength-training methods are compared for running performance, high-load training (moderate effect) and combined methods (large effect) improve time-trial / time-to-exhaustion performance, while plyometric training alone was not a significant method; none of the methods improved VO2max, vVO2max, maximal metabolic steady state or sprint capacity.",
+      "evidence": "Systematic review with meta-analysis, 2024 (GRADE certainty very low to moderate; 324 moderately, 272 well, 298 highly trained athletes; 6-40 weeks, 1-4 sessions/week). High-load ES=-0.469 (p=0.029); combined ES=-1.035 (p=0.036); plyometric ES=-0.210 (p=0.064).",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Effect of Strength Training Methods on Middle-Distance and Long-Distance Runners' Athletic Performance: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Sáez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-024-02018-z",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Plyometrics & neuromuscular adaptations",
+      "claim": "For running economy specifically, high-load (small effect) and combined (moderate effect) strength training improve RE, and plyometric training improves RE at speeds <=12 km/h; submaximal-load and isometric training were not effective. High-load gains were larger at higher running speeds and in runners with higher VO2max.",
+      "evidence": "Systematic review with meta-analysis, 2024 (GRADE moderate for high-load/submaximal/plyometric/isometric, low for combined; 195 moderately, 272 well, 185 highly trained athletes; 6-24 weeks, 1-4 sessions/week). High-load ES=-0.266 (p=0.039); combined ES=-0.426 (p=0.018); plyometric ES=-0.307 (p=0.028).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Sáez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-023-01978-y",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Heavy/resistance training -> performance",
+      "claim": "Strength training added to an endurance programme improves time-trial performance, economy and endurance-specific muscle power (vMART) in competitive endurance athletes (running, cycling, swimming, skiing).",
+      "evidence": "Systematic review of 26 studies of trained endurance athletes (>=6 months training, >=6 h/week or VO2max >=50 mL/min/kg; interventions >=5 weeks with control groups; PEDro-assessed). Authors call for longer-term (>6 months) and velocity-specific investigations.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effect of strength training on performance in endurance athletes",
+        "authors": "Beattie K, Kenny IC, Lyons M, Carson BP",
+        "year": 2014,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-014-0157-y",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Mechanisms (neuromuscular / tendon stiffness)",
+      "claim": "Proposed mechanisms by which concurrent strength training improves endurance performance include delayed activation of less efficient type II fibres, improved neuromuscular efficiency, conversion of type IIX to more fatigue-resistant type IIA fibres, and improved musculo-tendinous stiffness.",
+      "evidence": "Narrative review of running and cycling endurance training combined with heavy or explosive strength training. Running economy improved with either heavy or explosive strength training; heavy strength training recommended for cycling economy.",
+      "confidence": "high",
+      "citation": {
+        "title": "Optimizing strength training for running and cycling endurance performance: A review",
+        "authors": "Rønnestad BR, Mujika I",
+        "year": 2014,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1111/sms.12104",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Mechanisms (neuromuscular / tendon stiffness)",
+      "claim": "Concurrent strength and endurance training robustly increases lower-limb strength (knee flexion, ankle plantarflexion, squat, and knee extension) in distance runners versus running alone, but there is no evidence that these strength adaptations transfer to changes in running biomechanics or neuromuscular behaviour during running.",
+      "evidence": "Systematic review with meta-analysis of 25 studies. Strong evidence for increased knee flexion (SMD 0.89), ankle plantarflexion (SMD 0.74) and squat (SMD 0.63) strength; moderate for knee extension (SMD 0.69). Very limited evidence on stride parameters; no studies examined running-time neuromuscular variables.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effect of Strength Training on Biomechanical and Neuromuscular Variables in Distance Runners: A Systematic Review and Meta-Analysis",
+        "authors": "Trowell D, Vicenzino B, Saunders N, Fox A, Bonacci J",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-019-01184-9",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Plyometrics & neuromuscular adaptations",
+      "claim": "Replacing ~19% of endurance training volume with explosive strength training for 8 weeks improved anaerobic and selected neuromuscular performance (maximal anaerobic running speed +3.0%, 30-m speed +1.1%, force-time characteristics, rapid neural activation) in young distance runners without decreasing aerobic capacity or running economy.",
+      "evidence": "Randomised controlled trial (13 experimental vs 12 control, ages 16-18). Improvements attributed primarily to neural adaptations. Note RE and VO2max were unchanged in this young cohort.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Concurrent endurance and explosive type strength training improves neuromuscular and anaerobic characteristics in young distance runners",
+        "authors": "Mikkola J, Rusko H, Nummela A, Pollari T, Häkkinen K",
+        "year": 2007,
+        "venue": "International Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1055/s-2007-964849",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Eccentric training",
+      "claim": "In well-trained male runners, eccentric leg-press peak force, the eccentric:concentric force ratio, reactive strength index and leg stiffness were each significantly correlated with better running economy (r = -0.42 to -0.76), whereas maximal squat strength and concentric peak force were not.",
+      "evidence": "Cross-sectional study, 28 well-trained male collegiate runners. Eccentric strength, elastic energy utilisation and stiffer lower limbs related to superior RE; maximal muscle strength per se was not. Observational, so causality is not established.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Correlation of Eccentric Strength, Reactive Strength, and Leg Stiffness With Running Economy in Well-Trained Distance Runners",
+        "authors": "Li F, Newton RU, Shi Y, Sutton D, Ding H",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000003446",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Mechanisms (neuromuscular / tendon stiffness)",
+      "claim": "Tendons adapt to mechanical loading in a strain-magnitude-dependent manner: high-magnitude cyclic Achilles tendon strain increased tendon-aponeurosis stiffness, elastic modulus and region-specific hypertrophy, whereas low-magnitude strain did not, indicating a strain threshold for adaptation.",
+      "evidence": "Controlled trial (11 experimental vs 10 control); each participant trained one leg at low (2.85%) and the other at high (4.55%) tendon strain for 14 weeks. Establishes a mechanism (tendon stiffening) by which loading may alter the stretch-shortening cycle, though it did not measure running performance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Adaptational responses of the human Achilles tendon by modulation of the applied cyclic strain magnitude",
+        "authors": "Arampatzis A, Karamanidis K, Albracht K",
+        "year": 2007,
+        "venue": "Journal of Experimental Biology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1242/jeb.003814",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Injury prevention",
+      "claim": "Strength training reduces overall sports injuries to less than one third (RR 0.315, 95% CI 0.207-0.480) and almost halves overuse injuries (RR 0.527, 95% CI 0.373-0.746); stretching had no preventive effect.",
+      "evidence": "Systematic review and meta-analysis of 25 RCTs (26,610 participants, 3,464 injuries) with stratified exposure analysis and intention-to-treat sensitivity analysis. Strength training, proprioception and multi-exposure programmes were protective.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "authors": "Lauersen JB, Bertelsen DM, Andersen LB",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2013-092538",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Injury prevention",
+      "claim": "Strength training is a superior, dose-dependent and safe primary prevention of acute and overuse sports injuries: cluster-adjusted intention-to-treat RR = 0.338 (95% CI 0.238-0.480), and each 10% increase in strength-training volume reduced injury risk by more than four percentage points.",
+      "evidence": "Systematic review, qualitative analysis and meta-analysis of strength-training injury-prevention RCTs (6 studies, 7,738 participants aged 12-40, 177 injuries; PROSPERO CRD42015006970). Result robust across tests; strength of evidence high; no publication bias detected.",
+      "confidence": "high",
+      "citation": {
+        "title": "Strength training as superior, dose-dependent and safe prevention of acute and overuse sports injuries: a systematic review, qualitative analysis and meta-analysis",
+        "authors": "Lauersen JB, Andersen TE, Andersen LB",
+        "year": 2018,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2018-099078",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Injury prevention (eccentric / hamstring)",
+      "claim": "Programmes that include the Nordic hamstring exercise (an eccentric hamstring exercise) roughly halve the rate of hamstring injuries across multiple sports and athlete groups (injury risk ratio 0.49, 95% CI 0.32-0.74).",
+      "evidence": "Systematic review and meta-analysis of 15 studies (8,459 athletes); secondary analysis of the 8 randomised controlled studies remained favourable (RR 0.52, 95% CI 0.32-0.85), and remained so after removing high-risk-of-bias studies (RR 0.55). PROSPERO CRD42018106150.",
+      "confidence": "high",
+      "citation": {
+        "title": "Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: a systematic review and meta-analysis of 8459 athletes",
+        "authors": "van Dyk N, Behan FP, Whiteley R",
+        "year": 2019,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2018-100045",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Injury prevention (running-specific caveat)",
+      "claim": "General multifactorial online running-injury prevention programmes did NOT reduce the number of running-related injuries in recreational runners, and higher compliance was paradoxically associated with slightly higher injury counts.",
+      "evidence": "Two large randomised controlled trials: Fokkema et al. 2019 (2,378 runners; OR 1.08, 95% CI 0.90-1.30) and Cloosterman et al. 2022 SPRINT (4,050 runners; OR 1.03, 95% CI 0.90-1.17). Important caveat that running-specific injury-prevention evidence is weaker than the general sports-injury (Lauersen/van Dyk) literature.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Online multifactorial prevention programme has no effect on the number of running-related injuries: a randomised controlled trial",
+        "authors": "Fokkema T, de Vos RJ, van Ochten JM, Verhaar JAN, Davis IS, Bindels PJE, Bierma-Zeinstra SMA, van Middelkoop M",
+        "year": 2019,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2018-099744",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Concurrent-training interference",
+      "claim": "The interference effect of endurance training on strength/hypertrophy/power outcomes depends on the modality, frequency and duration of endurance work; resistance training performed concurrently with RUNNING (but not cycling) produced significant decrements in hypertrophy and strength, and longer/more frequent endurance sessions worsened outcomes.",
+      "evidence": "Meta-analysis of 21 studies (422 effect sizes). Running modality was detrimental while cycling was not; significant negative correlations of endurance frequency (-0.26 to -0.35) and duration (-0.29 to -0.75) with hypertrophy, strength and power. Practical implication: control endurance modality, frequency and duration.",
+      "confidence": "high",
+      "citation": {
+        "title": "Concurrent training: a meta-analysis examining interference of aerobic and resistance exercises",
+        "authors": "Wilson JM, Marin PJ, Rhea MR, Wilson SM, Loenneke JP, Anderson JC",
+        "year": 2012,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0b013e31823a3e2d",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Concurrent-training interference",
+      "claim": "Seminal demonstration of the interference effect: simultaneously training for strength and endurance reduced the capacity to develop strength (strength gains levelled off and declined in weeks 9-10) but did not reduce the increase in VO2max (~20-25%).",
+      "evidence": "Controlled training study (strength vs endurance vs combined groups, 10 weeks). Combined training matched strength-only gains for the first ~7 weeks then plateaued; VO2max increases were preserved. Historical origin of the 'interference effect' concept.",
+      "confidence": "high",
+      "citation": {
+        "title": "Interference of strength development by simultaneously training for strength and endurance",
+        "authors": "Hickson RC",
+        "year": 1980,
+        "venue": "European Journal of Applied Physiology and Occupational Physiology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1007/BF00421333",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    },
+    {
+      "topic": "Concurrent-training interference",
+      "claim": "Interference is not an all-or-nothing phenomenon and is modulated by individual training variables: within-session exercise order, between-mode recovery, and endurance training volume, intensity and modality; the molecular 'interference' seen in signalling has not been consistently reproduced in human acute concurrent-exercise studies.",
+      "evidence": "Narrative review of molecular and performance-based concurrent-training evidence. The roles of individual variables in acute vs chronic interference are described as not fully elucidated. Practical implication: manage these variables to minimise interference.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Interference between concurrent resistance and endurance exercise: molecular bases and the role of individual training variables",
+        "authors": "Fyfe JJ, Bishop DJ, Stepto NK",
+        "year": 2014,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-014-0162-1",
+        "retrieved_at": "2026-11-22T14:27:50Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Strength training reliably improves running economy in trained runners, with meta-analytic pooled effects ranging from small (~-0.27 SMD, high-load) to large (~-1.42 SMD in highly trained cohorts), plus improved time-trial performance; heavy/high-load and combined (heavy + plyometric) methods are best supported, with plyometrics improving economy mainly at lower speeds (<=12 km/h) and heavy loads at higher speeds. Strength training also reduces sports injuries substantially (roughly two-thirds overall, ~half of overuse injuries; Nordic hamstring exercise ~halves hamstring injuries), though running-specific multifactorial prevention RCTs have shown no benefit. The concurrent-training interference effect is real but variable-dependent, being driven mainly by endurance modality (running > cycling), frequency and duration, and can be managed by controlling those variables and session order/recovery.",
+  "unverified": [
+    "Direct causal evidence that ECCENTRIC training interventions (as a standalone modality) improve running economy in runners is limited: the strongest eccentric evidence is cross-sectional (eccentric strength correlates with better RE, Li 2021), and an acute eccentric-damage study found no RE change 48 h post-exercise (Paschalis et al. 2008, J Strength Cond Res, https://doi.org/10.1519/JSC.0b013e318173da21). Treat 'eccentric training improves running economy' as unverified.",
+    "Specific practical interference-avoidance prescriptions for runners (e.g., exact minimum hours between strength and endurance sessions, optimal within-session order) are extrapolated from variable-level analyses and mechanism reviews (Wilson 2012; Fyfe 2014) rather than direct running-specific RCTs testing those protocols.",
+    "The mechanism by which plyometric training improves running economy remains unresolved; Turner 2003 explicitly stated the mechanism 'must still be determined' and found no change in elastic-energy indices, and Saunders 2006 found benefits only at 18 km/h."
+  ],
+  "notes": "Retrieval policy: WebFetch only; PubMed direct pages were blocked by a cookie wall, so Europe PMC REST (resultType=core) was used to obtain titles, abstracts, journals, years and DOIs. All 21 claims map to real indexed records with DOIs verified via Europe PMC metadata. Confidence reflects study design (meta-analysis/systematic review/RCT), consistency, and directness to runners. Key caveats for the app: (1) most running-economy evidence is in trained/well-trained runners, not beginners; (2) GRADE certainty in the 2024 meta-analyses was 'very low to moderate', so effect sizes should be presented as ranges not precise numbers; (3) injury-prevention effect sizes are large in general sport but not confirmed in running-specific prevention RCTs, so 'strength reduces running injury' should be framed cautiously (evidence for overuse-injury reduction is indirect). Suggested app framing: strength training is a performance multiplier for economy/time-trial performance (strong evidence) and a plausible but less directly proven overuse-injury reducer for runners."
+}

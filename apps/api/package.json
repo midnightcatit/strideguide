@@ -1,0 +1,33 @@
+{
+  "name": "@strideguide/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local --port 8787 --var ENVIRONMENT:development --var APP_ORIGIN:http://localhost:8787 --var WEB_ORIGIN:http://localhost:5173",
+    "build": "wrangler deploy --dry-run --outdir=dist",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply strideguide-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply strideguide-db --remote",
+    "db:seed:local": "wrangler d1 execute strideguide-db --local --file=./seed/seed.sql",
+    "db:seed:remote": "wrangler d1 execute strideguide-db --remote --file=./seed/seed.sql"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.9.1",
+    "@strideguide/shared": "workspace:*",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.13.20",
+    "jose": "^6.2.18",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261121.1",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.166.0"
+  }
+}

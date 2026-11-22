@@ -1,0 +1,302 @@
+{
+  "workstream": "Running physiology & principles",
+  "subtopic": "Intensity zones & metrics",
+  "generated_at": "2026-11-22T14:40:00Z",
+  "claims": [
+    {
+      "topic": "Domain framework (moderate/heavy/severe)",
+      "claim": "Exercise intensity is best described by physiological domains demarcated by submaximal thresholds, not by fixed percentages of maximal anchors. LT1/GET/VT1 separates moderate from heavy; CP/CS (and to a lesser degree LT2/RCP) separates heavy from severe. Prescribing by a fixed % of VO2max, HRmax or maximal work rate has little merit for eliciting domain-specific homeostatic responses.",
+      "evidence": "Critical review of construct validity of intensity-prescription methods. Evidence supports LT1, GET and VT for the moderate/heavy boundary, but little support for most common methods at the heavy/severe boundary except CP and CS. Authors note acute responses may not predict chronic adaptations and call for training studies.",
+      "confidence": "high",
+      "citation": {
+        "title": "An Examination and Critique of Current Methods to Determine Exercise Intensity",
+        "authors": "Jamnick NA, Pettitt RW, Granata C, Pyne DB, Bishop DJ",
+        "year": 2020,
+        "venue": "Sports Medicine 50(10):1729-1756",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-020-01322-8",
+        "retrieved_at": "2026-11-22T14:31:00Z"
+      }
+    },
+    {
+      "topic": "HRmax prediction",
+      "claim": "HRmax is predicted largely by age alone and is independent of sex and habitual activity. The meta-analytic equation is HRmax = 208 - 0.7 x age; the traditional 220 - age underestimates HRmax in older adults.",
+      "evidence": "Meta-analysis of 351 studies (492 groups, 18,712 subjects) plus cross-validation in 514 healthy subjects. HRmax vs age r = -0.90; laboratory regression 209 - 0.7 x age was virtually identical to the meta-analytic 208 - 0.7 x age. Authors state the validity of 220 - age had never been established in a sample with sufficient older adults.",
+      "confidence": "high",
+      "citation": {
+        "title": "Age-predicted maximal heart rate revisited",
+        "authors": "Tanaka H, Monahan KD, Seals DR",
+        "year": 2001,
+        "venue": "Journal of the American College of Cardiology 37(1):153-156",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/S0735-1097(00)01054-8",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "%HRmax zones and RPE bands (ACSM)",
+      "claim": "ACSM's position stand defines moderate-intensity aerobic exercise as 46-63% VO2R (64-76% HRmax; RPE 12-13) and vigorous-intensity exercise as 64-90% VO2R (77-95% HRmax; RPE 14-17), within an overall aerobic range of 30-89% VO2R.",
+      "evidence": "ACSM position stand, Table 2 intensity classification for cardiorespiratory exercise. Moderate = 46-63% VO2R or 64-76% HRmax, RPE 12-13; vigorous = 64-90% VO2R or 77-95% HRmax, RPE 14-17. These bands are the standard basis for consumer %HRmax zone models.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults: guidance for prescribing exercise",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, Nieman DC, Swain DP; American College of Sports Medicine",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise 43(7):1334-1359",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e318213fefb",
+        "retrieved_at": "2026-11-22T14:31:00Z"
+      }
+    },
+    {
+      "topic": "Karvonen / heart-rate reserve method",
+      "claim": "The Karvonen (heart-rate reserve) method prescribes target HR as HRrest + intensity x (HRmax - HRrest), expressing intensity relative to reserve rather than as an absolute percentage of HRmax.",
+      "evidence": "Original longitudinal training study by Karvonen, Kentala and Mustala (1957), 'The effects of training on heart rate; a longitudinal study', Ann Med Exp Biol Fenn 35(3):307-315 (PMID 13470504). The reserve formula uses the resting-to-maximal HR range as the denominator.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effects of training on heart rate; a longitudinal study",
+        "authors": "Karvonen MJ, Kentala E, Mustala O",
+        "year": 1957,
+        "venue": "Annales Medicinae Experimentalis et Biologiae Fenniae 35(3):307-315",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/13470504/",
+        "retrieved_at": "2026-11-22T14:33:00Z"
+      }
+    },
+    {
+      "topic": "%HRR vs %VO2max equivalence",
+      "claim": "%Heart-rate reserve is equivalent to %VO2 reserve, not to %VO2max. Treating %HRR as %VO2max overestimates the metabolic intensity, and the error is larger in fitter individuals.",
+      "evidence": "63 adults, cycle ergometry: %HRR vs %VO2max regression intercept -11.6 +/- 1.0 and slope 1.12 +/- 0.01 (both differ from identity); %HRR vs %VO2R intercept -0.1 +/- 0.6 and slope 1.00 +/- 0.01 (not distinguishable from identity). Discrepancy between %HRR and %VO2max was inversely related to VO2max. Treadmill replication (Swain et al. 1998, MSSE 30(2):318-321, doi:10.1097/00005768-199802000-00022) found intercept -6.1 and slope 1.10.",
+      "confidence": "high",
+      "citation": {
+        "title": "Heart rate reserve is equivalent to %VO2 reserve, not to %VO2max",
+        "authors": "Swain DP, Leutholtz BC",
+        "year": 1997,
+        "venue": "Medicine & Science in Sports & Exercise 29(3):410-414",
+        "type": "rct",
+        "doi_or_url": "10.1097/00005768-199703000-00018",
+        "retrieved_at": "2026-11-22T14:31:00Z"
+      }
+    },
+    {
+      "topic": "Five-zone intensity table (VO2max / HRmax / lactate)",
+      "claim": "A widely used five-zone endurance scale maps VO2max%, HRmax% and blood lactate to session durations. App-ready rows: Z1 VO2 45-65%, HR 55-75%, La 0.8-1.5 mM, 1-6 h; Z2 VO2 66-80%, HR 75-85%, La 1.5-2.5 mM, 1-3 h; Z3 VO2 81-87%, HR 85-90%, La 2.5-4 mM, 50-90 min; Z4 VO2 88-93%, HR 90-95%, La 4-6 mM, 30-60 min; Z5 VO2 94-100%, HR 95-100%, La 6-10 mM, 15-30 min.",
+      "evidence": "Seiler & Tonnessen (2009), Table 1, 'A typical five-zone scale to prescribe and monitor training of endurance athletes'; described as the scale used by all endurance sports in Norway. The authors caution that the 5-zone scheme is not based on clearly defined physiological markers and is a simplified version of the Norwegian Olympic Federation scale.",
+      "confidence": "high",
+      "citation": {
+        "title": "Intervals, Thresholds, and Long Slow Distance: the Role of Intensity and Duration in Endurance Training",
+        "authors": "Seiler S, Tonnessen E",
+        "year": 2009,
+        "venue": "Sportscience 13:32-53",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.sportsci.org/2009/ss.htm",
+        "retrieved_at": "2026-11-22T14:29:00Z"
+      }
+    },
+    {
+      "topic": "Three-zone model (VT1/VT2) and time-in-zone bias",
+      "claim": "The three-zone model is bounded by the first and second ventilatory turnpoints (VT1, VT2); five-zone Zone 3 coincides reasonably well with three-zone Zone 2. Heart-rate time-in-zone software overestimates low-intensity time and underestimates high-intensity work relative to session-goal or session-RPE quantification.",
+      "evidence": "Seiler & Tonnessen (2009) describe the 3-zone scheme used by Esteve-Lanao, Seiler & Kjerland and others, and state the 5-zone and 3-zone systems are 'reasonably super-imposable' with 5-zone Z3 matching 3-zone Z2. They also report that typical software-based time-in-zone analysis overestimates low-intensity time and underestimates very high workloads compared with athlete perception (see also Seiler & Kjerland 2006).",
+      "confidence": "high",
+      "citation": {
+        "title": "Intervals, Thresholds, and Long Slow Distance: the Role of Intensity and Duration in Endurance Training",
+        "authors": "Seiler S, Tonnessen E",
+        "year": 2009,
+        "venue": "Sportscience 13:32-53",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.sportsci.org/2009/ss.htm",
+        "retrieved_at": "2026-11-22T14:29:00Z"
+      }
+    },
+    {
+      "topic": "Polarized intensity distribution (~80/20)",
+      "claim": "Well-trained endurance athletes typically perform about 75-80% of sessions at low intensity (below VT1 / <=2 mM lactate), little at threshold, and 15-20% at high intensity. In junior national-team cross-country skiers the distribution was 75/8/17% by HR and 76/6/18% by session RPE.",
+      "evidence": "11 male junior national-level cross-country skiers, 32 consecutive days, 318 endurance sessions: HR-based distribution 75 +/- 3% Zone 1, 8 +/- 3% Zone 2, 17 +/- 4% Zone 3; session-RPE-based 76 +/- 4%, 6 +/- 5%, 18 +/- 7%. Blood lactate in 60 sessions: 71% <=2.0 mM, 7% 2-4 mM, 22% >4 mM (mean 9.5 +/- 2.8 mM). Authors conclude a polarized pattern with surprisingly little training at lactate-threshold intensity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Quantifying training intensity distribution in elite endurance athletes: is there evidence for an \"optimal\" distribution?",
+        "authors": "Seiler KS, Kjerland GO",
+        "year": 2006,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports 16(1):49-56",
+        "type": "rct",
+        "doi_or_url": "10.1111/j.1600-0838.2004.00418.x",
+        "retrieved_at": "2026-11-22T14:34:00Z"
+      }
+    },
+    {
+      "topic": "Polarized vs threshold: meta-analysis",
+      "claim": "A meta-analysis of randomized trials in endurance-trained athletes found a moderate effect favoring polarized over threshold intensity distribution for time-trial performance (ES -0.66, 95% CI -1.17 to -0.15), but the evidence base is small (4 RCTs, 3 pooled).",
+      "evidence": "PROSPERO-registered systematic review (CRD42016050942) of RCTs with endurance-trained athletes (VO2max/peak >50 mL/kg/min). Four studies met inclusion; PEDro scores 4-5/10. Pooled time-trial analysis: ES -0.66 (95% CI -1.17 to -0.15) favoring polarized training.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Polarized vs. Threshold Training Intensity Distribution on Endurance Sport Performance: A Systematic Review and Meta-Analysis of Randomized Controlled Trials",
+        "authors": "Rosenblat MA, Perrotta AS, Vicenzino B",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research 33(12):3491-3500",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1519/JSC.0000000000002618",
+        "retrieved_at": "2026-11-22T14:34:00Z"
+      }
+    },
+    {
+      "topic": "Lactate threshold concepts",
+      "claim": "Blood lactate thresholds fall into three families: fixed lactate values, the first rise above baseline (LT1), and the maximal lactate steady state or an accelerated/distinct rise (LT2, Dmax). LT is strongly correlated with endurance performance, especially in running, and some LT concepts estimate MLSS, but individual variability around MLSS is rarely reported.",
+      "evidence": "Review located 25 different LT concepts and grouped them into 3 categories. The 'aerobic-anaerobic transition' model has two breakpoints: the intensity at which blood lactate begins to rise above baseline, and the highest intensity at which production and elimination are in equilibrium (MLSS). 32 studies relating LT to (simulated) endurance performance mostly showed strong linear correlations.",
+      "confidence": "high",
+      "citation": {
+        "title": "Lactate threshold concepts: how valid are they?",
+        "authors": "Faude O, Kindermann W, Meyer T",
+        "year": 2009,
+        "venue": "Sports Medicine 39(6):469-490",
+        "type": "systematic-review",
+        "doi_or_url": "10.2165/00007256-200939060-00003",
+        "retrieved_at": "2026-11-22T14:28:00Z"
+      }
+    },
+    {
+      "topic": "Fixed 4 mmol/L vs Dmax thresholds",
+      "claim": "A fixed 4 mmol/L lactate threshold is a practical approximation of MLSS and performs almost as well as the best geometric method, though Dmax-modified had the best repeatability and predictive value in trained cyclists.",
+      "evidence": "48 well-trained male cyclists, 5 maximal graded tests 2 weeks apart, 8 threshold concepts. Repeatability good to excellent (Cronbach alpha 0.89-0.96; intra-subject CV 3.4-8.1%). Predictive correlations 0.65-0.94 for 45-min time trial and 0.53-0.76 for a mountain road race. Dmax-modified was best on both criteria; fixed 4 mmol/L was the recommended easier alternative.",
+      "confidence": "high",
+      "citation": {
+        "title": "Repeatability and predictive value of lactate threshold concepts in endurance sports",
+        "authors": "Heuberger JAAC, Gal P, Stuurman FE, de Muinck Keizer WAS, Mejia Miranda Y, Cohen AF",
+        "year": 2018,
+        "venue": "PLoS ONE 13(11):e0206846",
+        "type": "rct",
+        "doi_or_url": "10.1371/journal.pone.0206846",
+        "retrieved_at": "2026-11-22T14:28:00Z"
+      }
+    },
+    {
+      "topic": "Critical power concept",
+      "claim": "The power-duration relationship is hyperbolic (P = W'/t + CP). Critical power (CP) is the asymptote that separates intensities at which physiological responses can be stabilized (<CP) from those at which they cannot (>CP); above CP, W' is expended, VO2max is reached and intolerance follows.",
+      "evidence": "Review of the CP concept across species, exercise modes and muscle groups. CP integrates respiratory, metabolic and contractile responses and predicts tolerable duration above CP. Authors argue CP is preferable to anchoring intensity to metabolically distant parameters such as lactate threshold or VO2max, and call CP a 'fatigue threshold'.",
+      "confidence": "high",
+      "citation": {
+        "title": "Critical Power: An Important Fatigue Threshold in Exercise Physiology",
+        "authors": "Poole DC, Burnley M, Vanhatalo A, Rossiter HB, Jones AM",
+        "year": 2016,
+        "venue": "Medicine & Science in Sports & Exercise 48(11):2320-2334",
+        "type": "systematic-review",
+        "doi_or_url": "10.1249/MSS.0000000000000939",
+        "retrieved_at": "2026-11-22T14:29:00Z"
+      }
+    },
+    {
+      "topic": "Critical speed field test (running)",
+      "claim": "Critical speed (CS) can be estimated from three maximal runs of 3600, 2400 and 1200 m in a single visit. Field CS agrees with treadmill time-to-exhaustion CS and is highly repeatable, but the anaerobic distance component D' is not reliably estimated from field trials.",
+      "evidence": "10 male distance runners. No difference between treadmill CS and field CS with 30- or 60-min recovery. Correlations r = .89 (30-min) and .82 (60-min). Typical error of CS estimate 0.14 m/s (95% CL 0.09-0.26); CV 0.4% (95% CL 0.3-0.8%). D' showed no correlation with treadmill D' (r = .13/.33) and CV 13%.",
+      "confidence": "high",
+      "citation": {
+        "title": "A single-visit field test of critical speed",
+        "authors": "Galbraith A, Hopker J, Lelliott S, Diddams L, Passfield L",
+        "year": 2014,
+        "venue": "International Journal of Sports Physiology and Performance 9(6):931-935",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2013-0507",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Borg 6-20 and CR10 scales",
+      "claim": "Borg's 6-20 scale is a category scale with ratio properties running from 6 ('no exertion at all') to 20 ('maximal exertion'); the CR10 scale combines category and ratio properties (0 = nothing at all, 10 = maximal). The 6-20 scale was constructed so that RPE x 10 approximates heart rate in young adults during steady-state exercise, an approximation that degrades with age, fitness, exercise mode and environment.",
+      "evidence": "Borg (1982) presents ratio-scaling methods, category methods (especially the 6-20 RPE scale) and 'a new method that combines the category method with ratio properties' (CR10). The 6-20 scale's anchoring to a nominal 60-200 bpm range is why RPE x 10 is used as a rough HR estimate; the paper stresses that perceptual ratings are complements to, not replacements for, physiological measures.",
+      "confidence": "high",
+      "citation": {
+        "title": "Psychophysical bases of perceived exertion",
+        "authors": "Borg GA",
+        "year": 1982,
+        "venue": "Medicine & Science in Sports & Exercise 14(5):377-381",
+        "type": "systematic-review",
+        "doi_or_url": "10.1249/00005768-198205000-00012",
+        "retrieved_at": "2026-11-22T14:32:00Z"
+      }
+    },
+    {
+      "topic": "Validity of RPE vs physiological criteria",
+      "claim": "Borg RPE is a valid but only moderately accurate marker of exercise intensity: weighted mean correlations are ~0.62 with heart rate, 0.64 with %VO2max, 0.57 with blood lactate and 0.61 with ventilation, lower than the previously assumed 0.80-0.90.",
+      "evidence": "Meta-analysis of the RPE literature. Weighted mean validity coefficients: HR 0.62, blood lactate 0.57, %VO2max 0.64, VO2 0.63, ventilation 0.61, respiration rate 0.72. Validity was moderated by fitness, sex, exercise type, protocol, RPE mode and scale (15-point vs other). Highest correlations occurred in maximal tests, unusual tasks (e.g., swimming) and with the 15-point scale for lactate.",
+      "confidence": "high",
+      "citation": {
+        "title": "Criterion-related validity of the Borg ratings of perceived exertion scale in healthy individuals: a meta-analysis",
+        "authors": "Chen MJ, Fan X, Moe ST",
+        "year": 2002,
+        "venue": "Journal of Sports Sciences 20(11):873-899",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1080/026404102320761787",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "RPE at the ventilatory threshold",
+      "claim": "The ventilatory threshold corresponds to about RPE 12-13 on the Borg 6-20 scale, and this anchor is independent of aerobic fitness. A fixed RPE of 12-13 can therefore stand in for VT1 when laboratory testing is unavailable.",
+      "evidence": "Retrospective analysis of 863 exercise tests across the VO2peak spectrum: mean RPE at VT was 12.5 +/- 0.93 and did not vary with VO2peak, although VT expressed as %VO2R varied widely (nadir ~43% VO2R at VO2peak ~40 mL/kg/min, rising to ~75% at extremes). A separate treadmill study of 32 active men found no significant difference between VT and a fixed RPE 12-13 threshold (Stojiljkovic et al. 2004, Srp Arh Celok Lek 132(11-12):409-413).",
+      "confidence": "high",
+      "citation": {
+        "title": "Ventilatory Threshold Related to VO2 reserve, Heart Rate Reserve, and Rating of Perceived Exertion in a Large Varied Sample",
+        "authors": "Gaskill SE, Skinner JS, Quindry J",
+        "year": 2023,
+        "venue": "Medicine & Science in Sports & Exercise 55(10):1876-1885",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000003220",
+        "retrieved_at": "2026-11-22T14:33:00Z"
+      }
+    },
+    {
+      "topic": "Session RPE for load monitoring",
+      "claim": "Session RPE (session RPE x duration) is a valid, mode-independent way to quantify training load; it tracks heart-rate-derived load across steady-state and interval cycling and team sport, though absolute scores run higher than the HR method.",
+      "evidence": "Two-part study including steady-state and interval cycle exercise and basketball practice. Regression relationships between session-RPE load and HR-based load were highly consistent and nearly overlapping across the two parts despite different subjects; absolute session-RPE scores were significantly greater. Authors propose session RPE as a mode- and intensity-independent method for quantifying periodization.",
+      "confidence": "high",
+      "citation": {
+        "title": "A new approach to monitoring exercise training",
+        "authors": "Foster C, Florhaug JA, Franklin J, Gottschall L, Hrovatin LA, Parker S, Doleshal P, Dodge C",
+        "year": 2001,
+        "venue": "Journal of Strength and Conditioning Research 15(1):109-115",
+        "type": "rct",
+        "doi_or_url": "10.1519/1533-4287(2001)015<0109:ANATME>2.0.CO;2",
+        "retrieved_at": "2026-11-22T14:32:00Z"
+      }
+    },
+    {
+      "topic": "LTHR-based HR and pace zones",
+      "claim": "Lactate-threshold heart rate (LTHR) can anchor zones as percentages of the measured threshold rather than of HRmax. Friel's run HR zones are Z1 <85%, Z2 85-89%, Z3 90-94%, Z4 95-99%, Z5a 100-102%, Z5b 103-106%, Z5c >106% of LTHR, with LTHR approximated by the last-20-min average of a 30-min time trial; threshold pace zones are Z1 >129%, Z2 114-129%, Z3 106-113%, Z4 99-105%, Z5a 97-100%, Z5b 90-96%, Z5c <90% of threshold pace (time per distance, so higher % = slower).",
+      "evidence": "Friel (TrainingPeaks, originally TrainingBible.com, 2009/2012) explicitly advises against 220 - age and prescribes a 30-min self-paced TT with the last 20 min averaged for LTHR. HR at lactate threshold is mode-specific (Larson 2006, J Strength Cond Res 20(4):855-860, doi:10.1519/R-16424.1, found differences in elite cross-country skiers), so LTHR must be set separately for run and bike. These cutoffs are coaching convention, not physiologically validated boundaries.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Joe Friel's Quick Guide to Setting Training Zones",
+        "authors": "Friel J",
+        "year": 2012,
+        "venue": "TrainingPeaks Education Center (originally TrainingBible.com, 2009)",
+        "type": "coaching",
+        "doi_or_url": "https://www.trainingpeaks.com/blog/joe-friel-s-quick-guide-to-setting-zones/",
+        "retrieved_at": "2026-11-22T14:36:00Z"
+      }
+    },
+    {
+      "topic": "Jack Daniels VDOT and training paces",
+      "claim": "VDOT is a performance-derived index: a race time is converted to an equivalent VO2max (VDOT) via Daniels' oxygen-power tables, and that value generates training paces. Commonly published VDOT pace bands are E 59-74% VO2max, M 75-84%, T 83-88%, I 97-100% and R 105-110%, with E/M continuous, T near 60-min race pace, I near 3-5 km race pace and R near 1.5 km pace.",
+      "evidence": "Daniels' Running Formula (Human Kinetics; 4th ed. 2021) and the original Daniels & Gilbert oxygen-power tables (1979) define VDOT and the E/M/T/I/R pace system. Bands are approximate and edition-dependent; VDOT is a performance-equivalent index, not a laboratory VO2max measurement, and assumes adequate endurance and comparable race conditions.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Daniels' Running Formula (4th edition)",
+        "authors": "Daniels J",
+        "year": 2021,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "https://us.humankinetics.com/products/daniels-running-formula-4th-edition",
+        "retrieved_at": "2026-11-22T14:37:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Intensity can be anchored to maximal references (HRmax, VO2max) or submaximal thresholds (LT1/VT1, LT2/MLSS, CP/CS); fixed percentages of maximal anchors poorly separate physiological domains, whereas LT1 and CP/CS do so better. ACSM maps moderate exercise to 64-76% HRmax / RPE 12-13 and vigorous to 77-95% HRmax / RPE 14-17, and %HRR tracks %VO2R rather than %VO2max. Practical schemes include Seiler's 5-zone VO2/HR/lactate table, the 3-zone VT1/VT2 model, Friel's %LTHR and threshold-pace zones, and Daniels' VDOT paces, with an ~80/20 polarized distribution dominant in elite endurance cohorts. RPE is a valid but moderate-accuracy adjunct (r ~0.62 with HR), with VT consistently near RPE 12-13.",
+  "unverified": [
+    "Exact correspondence between the 5-zone and 3-zone models: Seiler states 5-zone Zone 3 'coincides well' with 3-zone Zone 2, but no validated transformation between the schemes was located.",
+    "RPE values for zones between the VT1 anchor (~12-13) and maximal (~19-20) are interpolations; no study was located validating each intermediate band (e.g., 14-15 for tempo, 16-17 for threshold).",
+    "Daniels' exact %VO2max bands for E/M/T/I/R differ across editions and secondary summaries; verify against the specific edition shipped in the app.",
+    "Applying the ~80/20 polarized distribution to novice or recreational runners is an extrapolation from elite and competitive cohorts.",
+    "The magnitude of cardiovascular drift, heat, dehydration, caffeine and altitude effects on HR-based zones was not quantified in the sources reviewed.",
+    "Whether CS corresponds to a specific sustainable duration (commonly quoted as ~30-60 min) is not stated in the cited Poole 2016 or Galbraith 2014 abstracts; treat any fixed duration claim as unverified."
+  ],
+  "notes": "Retrieval: PubMed blocked (cookie wall), so Europe PMC REST API was used for metadata/abstracts; Sportscience and TrainingPeaks were fetched directly. Schema's citation.type enum lacks 'observational'/'cross-sectional'/'narrative-review', so primary validation and cross-sectional studies are tagged 'rct' and narrative reviews 'systematic-review'; see each 'evidence' field for the true design. App-data tables are encoded as semicolon-delimited rows inside the 'evidence' strings of the five-zone (Seiler Table 1), LTHR/pace-zone (Friel) and VDOT (Daniels) claims. Key caveats for product copy: (1) %HRmax zones are population conventions, not individual physiological boundaries; (2) %HRR should be labeled as %VO2R, not %VO2max; (3) 220-age should be replaced by 208-0.7xage or a measured HRmax; (4) HR zones lag during intervals, so session-RPE or pace should complement HR for short reps; (5) threshold and CS tests require maximal efforts and are unsuitable for unsupervised beginners without screening."
+}

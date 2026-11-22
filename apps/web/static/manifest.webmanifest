@@ -1,0 +1,19 @@
+{
+	"name": "Stride Guide",
+	"short_name": "Stride",
+	"description": "Goal-tailored running and strength training for two runners.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "portrait",
+	"background_color": "#101318",
+	"theme_color": "#101318",
+	"icons": [
+		{
+			"src": "/icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	]
+}

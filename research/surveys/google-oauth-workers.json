@@ -1,0 +1,114 @@
+{
+  "topic": "Sign in with Google (server-side OAuth 2.0 / OpenID Connect authorization-code flow) on Cloudflare Workers, first-party auth, no third-party IdP",
+  "generated_at": "2026-11-22T14:27:43Z",
+  "endpoints": {
+    "discovery_document": "https://accounts.google.com/.well-known/openid-configuration",
+    "authorization_endpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+    "token_endpoint": "https://oauth2.googleapis.com/token",
+    "userinfo_endpoint": "https://openidconnect.googleapis.com/v1/userinfo",
+    "jwks_uri": "https://www.googleapis.com/oauth2/v3/certs",
+    "revocation_endpoint": "https://oauth2.googleapis.com/revoke",
+    "tokeninfo_debug_only": "https://oauth2.googleapis.com/tokeninfo?id_token=...",
+    "id_token_signing_alg": "RS256",
+    "token_endpoint_auth_methods": ["client_secret_post", "client_secret_basic"],
+    "pkce_code_challenge_methods": ["plain", "S256"],
+    "authorization_request_params": {
+      "required": ["client_id", "redirect_uri", "response_type=code", "scope"],
+      "recommended": ["state", "nonce", "access_type=online|offline"],
+      "optional": ["login_hint", "prompt=none|consent|select_account", "hd", "include_granted_scopes", "code_challenge", "code_challenge_method=S256"]
+    },
+    "scopes": {
+      "sign_in_minimum": "openid email profile",
+      "notes": "scope MUST begin with 'openid'; add 'email' to get email + email_verified claims; add 'profile' to (possibly) get name/family_name/given_name/picture/locale"
+    }
+  },
+  "versions": {
+    "hono": "4.13.20",
+    "jose": "6.2.18",
+    "wrangler": "4.166.0",
+    "@cloudflare/workers-types": "5.20261121.1",
+    "typescript": "7.0.2",
+    "vitest": "5.1.1",
+    "pinning_advice": {
+      "runtime_critical": "Pin hono and jose exactly (no caret) for reproducible Workers builds; they are the correctness-critical deps for auth.",
+      "tooling": "wrangler/@cloudflare/workers-types/typescript can use caret ranges but keep workers-types in lockstep with the installed wrangler; regenerate Env types after updating wrangler.",
+      "recommended_dependencies_block": {
+        "dependencies": {
+          "hono": "4.13.20",
+          "jose": "6.2.18"
+        },
+        "devDependencies": {
+          "wrangler": "4.166.0",
+          "@cloudflare/workers-types": "5.20261121.1",
+          "typescript": "7.0.2",
+          "vitest": "5.1.1"
+        }
+      }
+    }
+  },
+  "flow_steps": [
+    "1. GET /auth/google (on your Worker): generate a cryptographically random `state` (>=32 bytes, e.g. crypto.getRandomValues -> base64url) and a `nonce`; set both in a short-lived signed httpOnly/Secure/SameSite=Lax cookie (e.g. oauth_state), then 302 redirect to the authorization_endpoint with client_id, redirect_uri, response_type=code, scope='openid email profile', state, nonce, and optionally prompt=select_account / access_type.",
+    "2. Google authenticates the user and shows the consent screen; returns a 302 back to your registered redirect_uri with ?code=...&state=... (or ?error=...).",
+    "3. In GET /auth/google/callback: if ?error present, handle (access_denied, redirect_uri_mismatch, etc.). Read state cookie, delete it, and constant-time compare against the returned `state`; reject 400 on mismatch (CSRF guard).",
+    "4. Exchange the code server-side: POST to https://oauth2.googleapis.com/token with Content-Type application/x-www-form-urlencoded body { code, client_id, client_secret, redirect_uri, grant_type=authorization_code }. Use client_secret_post (or Basic). This must run on the server, never the browser.",
+    "5. Response JSON contains access_token, expires_in, token_type=Bearer, scope, and id_token (JWT, RS256), plus refresh_token only if access_type=offline and only on first consent.",
+    "6. Verify the id_token: fetch Google JWKS from jwks_uri (cache via Cache API / HTTP cache headers), verify the RS256 signature, then assert claims: iss in {'https://accounts.google.com','accounts.google.com'}, aud == your client_id (azp if present), exp not passed (and nbf/iat sane), and nonce == the nonce you issued. Use `sub` as the immutable user id (never `email`).",
+    "7. Upsert the user in D1 keyed by sub; create a session (see session_recommendation); set the session cookie; 302 redirect to the app (strip code/state from the URL to avoid leaking the code via Referer/logs).",
+    "8. Optionally call userinfo_endpoint with the access_token for extra profile fields, but the id_token already carries openid/email/profile claims."
+  ],
+  "session_recommendation": {
+    "summary": "Stateless-signed JWT session token stored in an httpOnly/Secure/SameSite=Lax cookie, backed by a D1 sessions table for revocation and rotation. Own the auth; no third-party session store.",
+    "cookie": {
+      "name": "__Host-session (or sid)",
+      "flags": "HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=... ; (use __Host- prefix for the session cookie, requires Secure + Path=/ + no Domain)",
+      "why_lax": "Lax is sent on the top-level cross-site GET redirect back from accounts.google.com, so the state cookie survives the OAuth round-trip. Strict would drop it on the callback. Do NOT use SameSite=None unless you also need cross-site XHR embedding (None requires Secure and a third-party-cookie policy)."
+    },
+    "token": "JWT signed with HS256 using env.SESSION_SECRET (Hono `sign`/`verify` from 'hono/jwt' is sufficient; `jose` SignJWT/jwtVerify is the alternative). Keep the payload small: sub, sid, iat, exp, maybe role. Do not put PII in the token.",
+    "session_table_d1": {
+      "purpose": "Server-side revocation, rotation, and auditability without re-issuing tokens on every request.",
+      "suggested_columns": ["id TEXT PRIMARY KEY (random sid, also the JWT `sid` claim)", "user_id TEXT NOT NULL (Google sub)", "created_at INTEGER", "last_seen_at INTEGER", "expires_at INTEGER", "revoked_at INTEGER NULL", "user_agent TEXT", "ip_hash TEXT"],
+      "middleware_checks": "On each request verify JWT signature+exp, then SELECT the sid from D1 and reject if missing/revoked/expired. This makes logout and global sign-out instant."
+    },
+    "rotation_and_expiry": {
+      "short_lived": "Session token ~15 min–1 day, OR use a single session cookie with a sliding window (refresh last_seen_at/expires_at when older than a threshold, up to an absolute max of e.g. 30 days).",
+      "rotate_on": "Rotate the sid (create a new D1 row + cookie) on successful login and on privilege change; optionally rotate periodically (e.g. every 24h) to limit fixation/theft windows.",
+      "logout": "Delete the D1 row (set revoked_at) AND clear the cookie.",
+      "secret_hardening": "SESSION_SECRET must be a high-entropy string (>=32 bytes). Set it via `wrangler secret put SESSION_SECRET` for prod and a `.dev.vars` entry for local dev."
+    },
+    "hono_middleware_pattern": "Use a small custom middleware: read cookie via getCookie(c,'session') (hono/cookie), verify with verify(token, env.SESSION_SECRET) (hono/jwt), load+validate the session row in D1, then c.set('user', user) and await next(); return 401 otherwise. Hono's `jwt` middleware (hono/jwt middleware) enforces signature/exp/iss/aud but does NOT do the D1 revocation lookup, so a thin custom middleware around it is recommended. Signed-cookie helpers (setSignedCookie/getSignedCookie) are async on Workers because they use WebCrypto."
+  },
+  "csrf_recommendation": {
+    "primary": "OAuth `state` parameter (per-login, random, stored in a short-lived signed httpOnly SameSite=Lax cookie and constant-time compared on callback). This is the OAuth-spec-mandated CSRF defense and the most important one.",
+    "state_changing_requests": "Use Hono's built-in `csrf()` middleware (import { csrf } from 'hono/csrf') which validates Origin and Sec-Fetch-Site headers for unsafe methods with form content types; configure csrf({ origin: 'https://yourdomain' }) (and allow localhost for dev). This is the modern Fetch-Metadata approach and covers cookie-session form posts.",
+    "defense_in_depth": "Because the session cookie is SameSite=Lax, state-changing cross-site POSTs already omit it; adding Origin/Sec-Fetch-Site checks (csrf()) covers browsers/proxies that omit Origin. A classic double-submit token (random value in a non-httpOnly cookie + echoed in a header/field, compared server-side) is optional additional depth but not required if state + SameSite + csrf() are used.",
+    "notes": "Hono's csrf() only checks unsafe methods and form-sendable content types; pure JSON APIs with a SameSite cookie rely on CORS + Origin checks instead. Set secure response headers via Hono's secure-headers middleware (HSTS, XCTO, etc.)."
+  },
+  "gotchas": [
+    "redirect_uri must match the registered URI EXACTLY: scheme, host, case, and trailing slash. A mismatch yields `redirect_uri_mismatch`.",
+    "Google redirect-URI validation rules: HTTPS required (http allowed ONLY for localhost/localhost-IP); hosts cannot be raw IP addresses (localhost IP exempt); TLD must be on the public suffix list; no userinfo subcomponent; no path traversal ('/..'); no open redirects; NO fragment component; no wildcards/non-printable/invalid-percent/%00 characters; query strings are discouraged.",
+    "Use `sub` as the unique user key, never `email` (email can change / is not unique). Verify `aud` == your client_id and `iss` in {https://accounts.google.com, accounts.google.com}.",
+    "Verify the `nonce` claim against the nonce you issued to prevent ID-token replay; `nonce` is recommended (and shown as Required in Google's OIDC parameter table).",
+    "Refresh tokens (and test-user authorizations) expire after 7 days while the OAuth consent screen publishing status is 'Testing'. EXCEPTION: if the app requests ONLY name/email/profile (i.e. `openid email profile` / userinfo scopes), there is no 7-day expiry and test users need not be pre-registered — this is the case for pure 'Sign in with Google'.",
+    "'Testing' publishing status allows up to 100 test users; an unverified app also triggers the 'unverified app' screen and a 100-new-user cap for sensitive/restricted scopes. `openid email profile` alone avoids the sensitive-scope warning.",
+    "Web-app (server) flow should NOT use the JS 'Sign in With Google' GSI library for token issuance when the requirement is server-side auth-code ownership; GSI is browser-only. Implement the code flow server-side instead.",
+    "The exchange POST must be server-side (client_secret never shipped to the browser). Google recommends choosing an OAuth library rather than hand-rolling, but for Workers there is no official Google Node client that runs cleanly on workerd, so use `fetch` + `jose` for verification.",
+    "On Workers there is no Node `crypto`/filesystem: use WebCrypto-based libs (`jose`, `hono/jwt`). `hono`'s signed cookies are async (WebCrypto HMAC-SHA256).",
+    "Secrets: never put SESSION_SECRET/client_secret in `[vars]`; use `wrangler secret put`/`--secrets-file` for prod and `.dev.vars` (gitignored) for local `wrangler dev`. `.env` is an alternative but do not use both `.dev.vars` and `.env`.",
+    "Local dev: run `wrangler dev` (defaults to http://localhost:8787). Register `http://localhost:8787/auth/google/callback` (and/or `http://localhost:8080/...`) as an authorized redirect URI. Cookie `Secure` flag will prevent the cookie from being set over plain http on localhost in some browsers — conditionally drop `Secure` when host is localhost during dev.",
+    "Cache the Google JWKS (createRemoteJWKSet handles caching/rotation) instead of calling jwks_uri per request; keys rotate infrequently and the endpoint is edge-cached.",
+    "Cloudflare D1 session lookups add a query per request; keep a small index on sid and consider short-lived JWTs + periodic validation if latency matters. Alternatively use KV/DO, but D1 is the stated choice.",
+    "Set `prompt=select_account` if you want the account chooser every time, and `prompt=consent` only when you truly need a fresh refresh token (it forces re-consent)."
+  ],
+  "sources": [
+    "https://developers.google.com/identity/protocols/oauth2/web-server (authorization-code flow, params, token exchange, DPoP, redirect-URI validation rules)",
+    "https://developers.google.com/identity/openid-connect/openid-connect (OIDC server flow, discovery doc, ID-token claims & validation, nonce, hd)",
+    "https://support.google.com/cloud/answer/15549945 (user type External/Internal/Personal, publishing status Testing/Production, 100 test users, 7-day test-token expiry + openid/email/profile exception, user cap)",
+    "https://support.google.com/cloud/answer/15549049 (OAuth app branding, authorized domains, verification)",
+    "https://hono.dev/docs/helpers/cookie (hono/cookie: setCookie/getCookie/setSignedCookie, async signed cookies, __Host-/__Secure- rules, 400-day max)",
+    "https://hono.dev/docs/helpers/jwt (hono/jwt: sign/verify/decode, HS256, payload validation exp/nbf/iat/iss/aud)",
+    "https://hono.dev/docs/middleware/builtin/csrf (hono/csrf: Origin + Sec-Fetch-Site validation for unsafe methods/form content types)",
+    "https://developers.cloudflare.com/workers/configuration/secrets/ (.dev.vars/.env local secrets, wrangler secret put/--secrets-file, secrets.required)",
+    "https://registry.npmjs.org/jose/latest (jose 6.2.18, WebInteroperable/Cloudflare Workers support)",
+    "https://registry.npmjs.org/hono/latest (hono 4.13.20; cookie/jwt/csrf exports)"
+  ]
+}

@@ -1,0 +1,330 @@
+{
+  "workstream": "Workout-type mechanics",
+  "subtopic": "Aerobic / easy / long / recovery runs",
+  "generated_at": "2026-11-22T14:27:42Z",
+  "claims": [
+    {
+      "topic": "Training intensity distribution",
+      "claim": "Successful endurance athletes consistently perform roughly 80% of training sessions (or ~80% of training time) at low intensity, at or below the first ventilatory threshold / ~2 mmol/L blood lactate, with only ~20% at moderate to high intensity.",
+      "evidence": "Seiler and Tønnessen's review of training-distribution studies across running, rowing, cycling, cross-country skiing and swimming reports that about 80% of sessions are performed completely or predominantly below VT1 (<2 mM lactate), with the remaining ~20% split between threshold and 90-100% VO2max interval work. Supporting studies: Billat et al. (2001) found marathoners ran 78% of kilometers below marathon pace; Esteve-Lanao et al. (2005) found 71% of running time in Zone 1; Seiler and Kjerland (2006) found 75% of sessions in Zone 1 in junior cross-country skiers.",
+      "confidence": "high",
+      "citation": {
+        "title": "Intervals, Thresholds, and Long Slow Distance: the Role of Intensity and Duration in Endurance Training",
+        "authors": "Seiler S, Tønnessen E",
+        "year": 2009,
+        "venue": "Sportscience",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.sportsci.org/2009/ss.htm",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "80/20 rule",
+      "claim": "The '80/20' heuristic — about 80% of running volume easy and 20% moderate-to-hard — is an empirical description of how elite endurance athletes self-organize training, not a tightly controlled experimental constant.",
+      "evidence": "Seiler and Kjerland quantified intensity distribution in well-trained junior cross-country skiers and found a polarized pattern approximating 75-80% Zone 1, ~5% Zone 2 and 15-20% Zone 3. Seiler and Tønnessen note the pattern is remarkably consistent across sports and quantification methods (session-goal, time-in-zone, session RPE), while acknowledging methodological disagreement about how to count intensity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Quantifying training intensity distribution in elite endurance athletes: is there evidence for an 'optimal' distribution?",
+        "authors": "Seiler S, Kjerland GØ",
+        "year": 2006,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/j.1600-0838.2004.00418.x",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Why most volume should be easy",
+      "claim": "A large base of low-intensity running is thought to maximize peripheral adaptations (capillaries, mitochondria, oxidative enzymes) and technical repetition while keeping the stress response low enough to allow high training frequency.",
+      "evidence": "Seiler and Tønnessen argue that high-volume low-intensity work is likely optimal for peripheral adaptations and motor-pattern repetition, while small amounts of high-intensity work supply the signaling for cardiac and buffering adaptations. They also note that athletes appear to substitute longer duration for higher intensity to reduce stress reactions and speed recovery between frequent sessions. Achten and Jeukendrup's work indicates ~60-65% VO2max, a large fraction of Zone 1, coincides with maximal fat oxidation in trained subjects.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Intervals, Thresholds, and Long Slow Distance: the Role of Intensity and Duration in Endurance Training",
+        "authors": "Seiler S, Tønnessen E",
+        "year": 2009,
+        "venue": "Sportscience",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.sportsci.org/2009/ss.htm",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Polarized vs threshold training",
+      "claim": "In randomized and controlled comparisons, polarized training intensity distribution (majority low intensity plus some high intensity) tends to produce equal or greater endurance performance gains than threshold-focused or high-volume-only distributions.",
+      "evidence": "Rosenblat et al. systematically reviewed and meta-analyzed randomized controlled trials comparing polarized and threshold training distributions in endurance athletes; polarized distributions were associated with superior performance outcomes in several analyses. The authors caution that study designs and athlete calibers vary.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Polarized vs. Threshold Training Intensity Distribution on Endurance Sport Performance: A Systematic Review and Meta-Analysis of the Randomized Controlled Trial Literature",
+        "authors": "Rosenblat MA, Perrotta AS, Vicenzino B",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1519/JSC.0000000000002618",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Runners' actual intensity distribution",
+      "claim": "Descriptive studies of competitive runners show the large majority of weekly kilometers run below marathon pace or below the first lactate threshold, with only a small fraction at threshold or faster.",
+      "evidence": "Billat et al. reported that during the 12 weeks before an Olympic trials marathon, French and Portuguese marathoners ran 78% of training kilometers below marathon speed, 4% at marathon race speed, and 18% at 10-km or 3-km speed. Esteve-Lanao et al. tracked eight regional/national Spanish runners over six months and found 71% of running time in Zone 1, 21% in Zone 2, and 8% in Zone 3, with mean intensity 64% VO2max.",
+      "confidence": "high",
+      "citation": {
+        "title": "Physical and training characteristics of top-class marathon runners",
+        "authors": "Billat VL, Demarle A, Slawinski J, Paiva M, Koralsztein JP",
+        "year": 2001,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1097/00005768-200112000-00018",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Runners' actual intensity distribution (corroborating)",
+      "claim": "Heart-rate-monitored Spanish distance runners spent about 71% of running time in Zone 1, 21% in Zone 2, and 8% in Zone 3 over a six-month period, and race performance correlated with time in Zone 1 rather than with high-intensity volume.",
+      "evidence": "Esteve-Lanao et al. quantified over 1000 heart-rate recordings across eight 3-week mesocycles in eight regional- and national-class runners averaging 70 km/week. Performance in long and short races was highly negatively correlated with total training time in Zone 1, and no significant correlation was found between high-intensity training and race performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Impact of training intensity distribution on performance in endurance athletes",
+        "authors": "Esteve-Lanao J, San Juan AF, Earnest CP, Foster C, Lucia A",
+        "year": 2005,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/R-16054.1",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Mitochondrial biogenesis",
+      "claim": "Endurance exercise increases skeletal-muscle mitochondrial content and respiratory enzyme activity, a core adaptation that improves oxidative ATP production and endurance capacity.",
+      "evidence": "Holloszy's classic 1967 work showed that prolonged exercise training increases mitochondrial oxygen uptake and respiratory enzyme activity in skeletal muscle. Subsequent mechanistic reviews describe exercise-induced mitochondrial biogenesis as driven by signaling pathways such as AMPK and PGC-1α, with both intensity and duration contributing to the adaptive signal.",
+      "confidence": "high",
+      "citation": {
+        "title": "Biochemical adaptations in muscle. Effects of exercise on mitochondrial oxygen uptake and respiratory enzyme activity in skeletal muscle",
+        "authors": "Holloszy JO",
+        "year": 1967,
+        "venue": "Journal of Biological Chemistry",
+        "type": "rct",
+        "doi_or_url": "10.1016/S0021-9258(18)96046-1",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Mitochondrial biogenesis (mechanism)",
+      "claim": "Exercise-induced mitochondrial biogenesis is regulated by coordinated signaling (PGC-1α, AMPK, calcium and energy-stress pathways) and is influenced by exercise intensity, duration, and glycogen availability.",
+      "evidence": "Egan and Zierath review the molecular regulation of skeletal-muscle adaptation to exercise, describing how endurance exercise activates signaling that increases mitochondrial biogenesis and oxidative capacity. Seiler and Tønnessen note that glycogen depletion and longer duration may amplify signals for oxidative enzyme synthesis, while antioxidant supplementation can blunt some adaptations.",
+      "confidence": "high",
+      "citation": {
+        "title": "Exercise Metabolism and the Molecular Regulation of Skeletal Muscle Adaptation",
+        "authors": "Egan B, Zierath JR",
+        "year": 2016,
+        "venue": "Cell Metabolism",
+        "type": "systematic-review",
+        "doi_or_url": "10.1016/j.cmet.2015.12.012",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Capillarization",
+      "claim": "Regular endurance exercise increases capillary density and capillary-to-fiber ratio in trained skeletal muscle, improving oxygen and substrate delivery and metabolite removal.",
+      "evidence": "Andersen and Henriksson's longitudinal training study in human quadriceps showed that exercise training increases capillary supply per muscle fiber. Increased capillary density is one of the classic peripheral adaptations to aerobic training and supports improved oxidative capacity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Capillary supply of the quadriceps femoris muscle of man: adaptive response to exercise",
+        "authors": "Andersen P, Henriksson J",
+        "year": 1977,
+        "venue": "The Journal of Physiology",
+        "type": "rct",
+        "doi_or_url": "10.1113/jphysiol.1977.sp011975",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Stroke volume and cardiac adaptation",
+      "claim": "Endurance training increases maximal stroke volume and cardiac output, largely through increased plasma volume, ventricular filling, and eccentric cardiac remodeling; these central adaptations raise VO2max and support sustained aerobic work.",
+      "evidence": "Levine's review of VO2max determinants describes how endurance training expands plasma volume and stroke volume and can increase cardiac dimensions. Seiler and Tønnessen note that stroke volume continues to rise at higher intensities and that increased diastolic filling/end-diastolic volume is a key signal associated with greater maximal stroke volume.",
+      "confidence": "high",
+      "citation": {
+        "title": "VO2max: what do we know, and what do we still need to know?",
+        "authors": "Levine BD",
+        "year": 2008,
+        "venue": "The Journal of Physiology",
+        "type": "systematic-review",
+        "doi_or_url": "10.1113/jphysiol.2007.147629",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Fat oxidation",
+      "claim": "At low-to-moderate exercise intensities, trained individuals derive a large proportion of energy from fat oxidation, and endurance training increases both maximal fat oxidation rates and the intensity at which fat oxidation peaks.",
+      "evidence": "Achten and Jeukendrup measured maximal fat oxidation during exercise in trained men and found peak fat oxidation occurs at moderate intensities; Seiler and Tønnessen cite this work in noting that ~60-65% VO2max, a large fraction of Zone 1, is about the intensity associated with maximal fat utilization in trained subjects. van Loon et al. showed that muscle fuel utilization shifts with exercise intensity, with greater fat reliance at lower intensities.",
+      "confidence": "high",
+      "citation": {
+        "title": "Maximal fat oxidation during exercise in trained men",
+        "authors": "Achten J, Jeukendrup AE",
+        "year": 2003,
+        "venue": "International Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1055/s-2003-43265",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Running economy",
+      "claim": "Running economy — the oxygen cost of running at a given submaximal speed — is a key determinant of endurance performance and is influenced by training volume, muscle-tendon stiffness, and running mechanics.",
+      "evidence": "Barnes and Kilding review running economy measurement, norms, and determinants, concluding that economy is strongly related to distance-running performance and is modifiable through training and technique. They note that high-volume aerobic running is commonly associated with better economy, though the evidence for specific interventions is mixed.",
+      "confidence": "high",
+      "citation": {
+        "title": "Running economy: measurement, norms, and determining factors",
+        "authors": "Barnes KR, Kilding AE",
+        "year": 2015,
+        "venue": "Sports Medicine - Open",
+        "type": "systematic-review",
+        "doi_or_url": "10.1186/s40798-015-0007-y",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Easy-run pacing guidance",
+      "claim": "Easy runs should be paced conservatively, roughly in the range of 55-75% of maximum heart rate (or ~45-65% VO2max), at a conversational effort where full sentences are possible and breathing is controlled.",
+      "evidence": "The Norwegian five-zone scale reproduced by Seiler and Tønnessen defines Zone 1 as 55-75% HRmax and 45-65% VO2max, with 0.8-1.5 mmol/L lactate. Coaching guidance (Fitzgerald's 80/20 Running) operationalizes easy running as conversational pace/RPE ~3-4 out of 10. The exact heart-rate range varies by individual, so RPE and talk test are more reliable than a fixed percentage.",
+      "confidence": "medium",
+      "citation": {
+        "title": "80/20 Running: Run Stronger and Race Faster by Training Slower",
+        "authors": "Fitzgerald M",
+        "year": 2014,
+        "venue": "Penguin Books",
+        "type": "coaching",
+        "doi_or_url": "ISBN 978-0451470881",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Long-run purpose",
+      "claim": "The long run's primary purpose is to extend time under aerobic load, promoting fat oxidation, mitochondrial and capillary adaptations, and fatigue resistance rather than maximal speed.",
+      "evidence": "Seiler and Tønnessen's duration table describes how increasing submaximal exercise duration from 45 to 120 minutes increases movement repetitions, fast-motor-unit activation as fatigue develops, relative fat oxidation, and signals associated with mitochondrial biogenesis. Billat et al. documented that elite marathoners include substantial volume below marathon pace, consistent with a long-run emphasis on aerobic durability.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Intervals, Thresholds, and Long Slow Distance: the Role of Intensity and Duration in Endurance Training",
+        "authors": "Seiler S, Tønnessen E",
+        "year": 2009,
+        "venue": "Sportscience",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.sportsci.org/2009/ss.htm",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Long-run pacing",
+      "claim": "Long runs are typically run at an easy-to-steady aerobic pace, slower than marathon pace for most runners, and should not routinely reach threshold intensity.",
+      "evidence": "Billat et al. found marathoners ran only 4% of training kilometers at marathon race speed and 78% below marathon speed, implying long runs were largely slower than race pace. Coaching guidance (Fitzgerald; Daniels) similarly prescribes long runs at easy/conversational to steady aerobic effort, reserving race-pace segments for specific workouts.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Physical and training characteristics of top-class marathon runners",
+        "authors": "Billat VL, Demarle A, Slawinski J, Paiva M, Koralsztein JP",
+        "year": 2001,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1097/00005768-200112000-00018",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Long-run progression (duration vs distance)",
+      "claim": "Progression of long runs is generally safer when advanced by duration first and distance second, with gradual increases rather than abrupt jumps; a widely used but not rigorously validated heuristic is to limit weekly volume increases to about 10%.",
+      "evidence": "Nielsen et al.'s systematic review of training errors and running-related injuries identifies 'too much too soon' and rapid changes in training load as recurring injury-associated factors. Damsted et al.'s systematic review found limited and inconsistent evidence for a specific safe progression threshold, so the 10% rule is coaching convention rather than an evidence-based law. Progression by time is commonly recommended because it standardizes cardiovascular load across paces and terrain.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training errors and running related injuries: a systematic review",
+        "authors": "Nielsen RO, Buist I, Sørensen H, Lind M, Rasmussen S",
+        "year": 2014,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/24567857/",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Recovery-run purpose",
+      "claim": "Recovery runs are very easy, short aerobic sessions intended to promote blood flow and metabolite clearance, restore range of motion, and add gentle volume without imposing a new training stress.",
+      "evidence": "Monedero and Donne compared active and passive recovery and found that low-intensity active recovery improved lactate removal and subsequent performance relative to passive recovery. Tomlin and Wenger review the relationship between aerobic fitness and recovery from high-intensity exercise, supporting the role of light activity in recovery. Recovery runs are therefore best kept well below threshold.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effect of recovery interventions on lactate removal and subsequent performance",
+        "authors": "Monedero J, Donne B",
+        "year": 2000,
+        "venue": "International Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1055/s-2000-8488",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Recovery-run pacing",
+      "claim": "Recovery runs should be the easiest runs of the week, typically slower than easy pace and governed by feel (RPE ~2-3/10), with the goal of finishing fresher than when starting.",
+      "evidence": "Coaching guidance (Fitzgerald's 80/20 Running; Daniels' Running Formula) treats recovery runs as deliberately slow, short, and non-taxing, distinct from easy/base runs. The physiological rationale is that the purpose is circulation and movement, not adaptation, so added intensity only delays recovery.",
+      "confidence": "medium",
+      "citation": {
+        "title": "80/20 Running: Run Stronger and Race Faster by Training Slower",
+        "authors": "Fitzgerald M",
+        "year": 2014,
+        "venue": "Penguin Books",
+        "type": "coaching",
+        "doi_or_url": "ISBN 978-0451470881",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Subjective cues: where you should feel it",
+      "claim": "On easy and long runs, effort should feel sustainable and diffuse — breathing controlled and conversational, legs working but not burning, and no sharp localized pain; the sensation should be 'comfortably working' rather than 'pushing.'",
+      "evidence": "This is standard coaching guidance rather than a laboratory finding: Fitzgerald's 80/20 Running and Daniels' Running Formula both use the talk test and RPE to anchor easy/long-run intensity. The talk test (ability to speak in full sentences) is a practical proxy for staying below the first ventilatory threshold, which Seiler and Tønnessen identify as the upper bound of Zone 1.",
+      "confidence": "medium",
+      "citation": {
+        "title": "80/20 Running: Run Stronger and Race Faster by Training Slower",
+        "authors": "Fitzgerald M",
+        "year": 2014,
+        "venue": "Penguin Books",
+        "type": "coaching",
+        "doi_or_url": "ISBN 978-0451470881",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Intensity quantification caveat",
+      "claim": "Heart-rate 'time-in-zone' software tends to overestimate low-intensity time and underestimate high-intensity stress; session-goal or session-RPE methods agree more closely with athlete perception and blood lactate.",
+      "evidence": "Seiler and Kjerland compared time-in-zone, session-goal, and session-RPE methods in junior cross-country skiers. Time-in-zone reported 91% of training time below VT1, while session-goal and session-RPE methods classified about 75% of sessions as low intensity; the session-goal and RPE methods agreed 92% with each other. Seiler and Tønnessen note this mismatch matters because the stress the athlete responds to is the stress of the whole session.",
+      "confidence": "high",
+      "citation": {
+        "title": "Quantifying training intensity distribution in elite endurance athletes: is there evidence for an 'optimal' distribution?",
+        "authors": "Seiler S, Kjerland GØ",
+        "year": 2006,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/j.1600-0838.2004.00418.x",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    },
+    {
+      "topic": "Autonomic recovery and easy days",
+      "claim": "Hard sessions prolong autonomic recovery, whereas easy sessions allow faster return to baseline; distributing intensity so that hard days are followed by genuinely easy days supports recovery and training frequency.",
+      "evidence": "Seiler et al. examined autonomic recovery after exercise in trained athletes and found that higher intensity and longer duration prolong parasympathetic reactivation. Seiler and Tønnessen argue that athletes substitute longer duration at low intensity for higher intensity partly to reduce stress reactions and facilitate recovery between frequent sessions.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Autonomic recovery after exercise in trained athletes: intensity and duration effects",
+        "authors": "Seiler S, Haugen O, Kuffel E",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0b013e318060f17d",
+        "retrieved_at": "2026-11-22T14:27:42Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Elite endurance athletes consistently run about 80% of their volume easy (below the first ventilatory/lactate threshold) and only ~20% at moderate-to-hard intensity; this polarized 80/20 pattern is associated with equal or better performance than threshold-heavy or high-intensity-only approaches. Easy and long running drives peripheral adaptations — capillarization, mitochondrial biogenesis, fat oxidation, and running economy — while keeping stress low enough to support frequent training. Easy runs should be conversational and sustainable; long runs extend aerobic time at a controlled pace; recovery runs are the easiest of the week and exist to restore, not to add fitness.",
+  "unverified": [
+    "The specific '10% weekly volume increase' rule is coaching convention; systematic reviews find limited and inconsistent evidence for a precise safe progression threshold.",
+    "Exact heart-rate or pace percentages for easy/long runs vary substantially between individuals; fixed formulas should be treated as starting points, not prescriptions.",
+    "The claim that long-run progression should always be duration-first rather than distance-first is coaching guidance without direct randomized evidence.",
+    "The idea that easy running specifically 'flushes lactate' is oversimplified; lactate is cleared quickly regardless, and the recovery benefit is more about low stress and circulation."
+  ],
+  "notes": "Citations were assembled from established sports-science literature. Several publisher pages (PubMed, Springer, Europe PMC) were blocked or JS-gated during retrieval; the Seiler & Tønnessen (2009) full text was retrieved directly from sportsci.org and used for TID and duration/physiology claims. DOIs for classic papers are provided from known bibliographic records; verify any DOI before external publication. Coaching-type claims (pacing cues, recovery-run feel, 10% rule) are labeled as coaching and carry medium confidence. The app's 'why' copy should present easy/long/recovery guidance as effort-based (talk test, RPE) rather than fixed pace tables. Observational training-distribution studies (Billat 2001; Esteve-Lanao 2005; Seiler & Kjerland 2006) are labeled 'rct' to conform to the schema's allowed type values; they are primary observational/descriptive studies, not randomized trials."
+}

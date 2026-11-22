@@ -1,0 +1,330 @@
+{
+  "workstream": "Running physiology & principles",
+  "subtopic": "Periodization & volume progression",
+  "generated_at": "2026-11-22T14:29:23Z",
+  "claims": [
+    {
+      "topic": "Periodization models (linear/traditional)",
+      "claim": "Traditional (linear) periodization divides the season into macro/meso/micro cycles and progressively shifts emphasis from general, high-volume preparation toward more competition-specific, lower-volume work as the target race approaches; this remains the dominant framework used by world-class endurance coaches.",
+      "evidence": "Qualitative multi-case study of 12 Norwegian world-class endurance coaches (including long-distance running): all adhered to a traditional periodization model with a gradual shift toward lower overall training volume and more competition-specific training as the competitive period approached, while emphasizing a high volume of low-intensity training plus 2-3 weekly 'key workout' days.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Best-Practice Training Characteristics Within Olympic Endurance Sports as Described by Norwegian World-Class Coaches",
+        "authors": "Sandbakk Ø, Tønnessen E, Sandbakk SB, Losnegard T, Seiler S, Haugen T",
+        "year": 2025,
+        "venue": "Sports Medicine - Open",
+        "type": "coaching",
+        "doi_or_url": "10.1186/s40798-025-00848-3",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Periodization models (block)",
+      "claim": "Block periodization sequences highly concentrated training blocks focused on a minimal number of target abilities, and is proposed as an alternative to traditional 'mixed' periodization because it may reduce conflicting training responses and better allow multi-peak seasons.",
+      "evidence": "Narrative review by Issurin argues that traditional periodization has limitations (conflicting physiological responses from mixed training, excessive fatigue, insufficient stimulation, inability to produce multi-peak performances) and describes block periodization as an alternative revamped approach based on sequencing specialized training blocks.",
+      "confidence": "medium",
+      "citation": {
+        "title": "New horizons for the methodology and physiology of training periodization",
+        "authors": "Issurin VB",
+        "year": 2010,
+        "venue": "Sports Medicine",
+        "type": "textbook",
+        "doi_or_url": "10.2165/11319770-000000000-00000",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Periodization models (block vs traditional) — endurance evidence",
+      "claim": "For endurance athletes, block periodization produces small favourable effects over traditional training on VO2max (SMD 0.40, 95% CI 0.02-0.79) and maximal power output (SMD 0.28, 95% CI 0.01-0.54), with moderate-to-large effects for threshold-related measures, but the evidence base is small and low quality.",
+      "evidence": "First meta-analysis of block-periodized endurance training (20 eligible records; 6 pooled for meta-analysis). Favourable SMDs for BP vs TRAD on VO2max and Wmax; authors caution results must be interpreted cautiously due to small studies with low methodological quality (mean PEDro 3.7/10).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Block periodization of endurance training - a systematic review and meta-analysis",
+        "authors": "Mølmen KS, Øfsteng SJ, Rønnestad BR",
+        "year": 2019,
+        "venue": "Open Access Journal of Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.2147/OAJSM.S180408",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Periodization models (undulating vs linear)",
+      "claim": "When training volume is equated, periodized training produces greater maximal-strength gains than non-periodized training, and undulating periodization produces greater 1RM gains than linear periodization in already-trained individuals (but not in untrained individuals).",
+      "evidence": "Systematic review and meta-analysis of 35 studies: periodized vs non-periodized favoured periodized for 1RM (ES 0.31, 95% CI 0.04-0.57); undulating vs linear favoured undulating for 1RM (ES 0.31, 95% CI 0.02-0.61), with the effect confined to trained participants. Hypertrophy did not differ.",
+      "confidence": "low",
+      "citation": {
+        "title": "Effects of Periodization on Strength and Muscle Hypertrophy in Volume-Equated Resistance Training Programs: A Systematic Review and Meta-analysis",
+        "authors": "Moesgaard L, Beck MM, Christiansen L, Aagaard P, Lundbye-Jensen J",
+        "year": 2022,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-021-01636-1",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Base/build/peak/taper — taper structure",
+      "claim": "For competitive athletes, the most effective taper is roughly a 2-week taper in which training volume is reduced exponentially by 41-60% while training intensity and frequency are largely maintained; this yields a large performance benefit (overall effect ~0.72).",
+      "evidence": "Meta-analysis of 27 studies in competitive athletes. Optimal strategy: 2-week taper with exponential volume reduction of 41-60% (overall effect 0.72 +/- 0.36, P<0.001) without modifying intensity (0.33) or frequency (0.35).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Base/build/peak/taper — taper in other sports",
+      "claim": "Tapering also improves maximal power, maximal oxygen uptake, repeated-sprint ability and change-of-direction speed in team-sport athletes with small-to-moderate effects, though the literature lacks studies directly comparing different taper strategies to give evidence-based recommendations.",
+      "evidence": "Systematic review and meta-analysis of 14 articles: moderate taper-induced improvements in repeated sprint ability (SMD 0.41), maximal power (SMD 0.44), change of direction (SMD 0.38) and VO2max (SMD 0.76); authors note a lack of comparative strategy studies.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of tapering on neuromuscular and metabolic fitness in team sports: a systematic review and meta-analysis",
+        "authors": "Vachon A, Berryman N, Mujika I, Paquet JB, Arvisais D, Bosquet L",
+        "year": 2021,
+        "venue": "European Journal of Sport Science",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1080/17461391.2020.1736183",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Intensity distribution — polarized vs pyramidal vs threshold",
+      "claim": "When intensity distribution models are compared directly, there is no clear overall difference between polarized and pyramidal training for VO2max or time-trial performance; the best distribution may depend on athlete level, with competitive athletes possibly favouring polarized and recreational athletes possibly favouring pyramidal.",
+      "evidence": "Systematic review and network meta-analysis of individual participant data (13 studies, 348 endurance athletes): no difference in VO2max (SMD -0.06, p=0.68) or TT performance (SMD -0.05, p=0.34) between POL and PYR, and no significant differences between POL and any other TID. Subgroup analysis suggested competitive athletes benefit more from POL and recreational athletes more from PYR for VO2max.",
+      "confidence": "high",
+      "citation": {
+        "title": "Which Training Intensity Distribution Intervention will Produce the Greatest Improvements in Maximal Oxygen Uptake and Time-Trial Performance in Endurance Athletes? A Systematic Review and Network Meta-analysis of Individual Participant Data",
+        "authors": "Rosenblat MA, Watt JA, Arnold JI, Treff G, Sandbakk ØB, Esteve-Lanao J, et al.",
+        "year": 2025,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-024-02149-3",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Intensity distribution — polarized vs threshold (meta-analysis)",
+      "claim": "An earlier meta-analysis of RCTs in endurance-trained athletes found a moderate pooled effect favouring polarized over threshold training for time-trial performance, but this was based on only 3 pooled studies of low methodological quality.",
+      "evidence": "Systematic review and meta-analysis of RCTs (4 studies qualitative, 3 meta-analysed): pooled ES = -0.66 (95% CI -1.17 to -0.15) favouring POL over THR for time-trial performance; included studies scored 4-5/10 on the PEDro scale.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Polarized vs. Threshold Training Intensity Distribution on Endurance Sport Performance: A Systematic Review and Meta-Analysis of Randomized Controlled Trials",
+        "authors": "Rosenblat MA, Perrotta AS, Vicenzino B",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1519/JSC.0000000000002618",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Intensity distribution — polarized training response",
+      "claim": "In well-trained endurance athletes, a 9-week polarized training block (high volume low intensity plus more high-intensity than threshold work) produced larger gains in VO2peak, time to exhaustion and peak velocity/power than high-volume, threshold, or high-intensity-interval-only training.",
+      "evidence": "RCT of 48 well-trained runners, cyclists, triathletes and cross-country skiers randomly assigned to four groups over 9 weeks. POL showed the greatest increase in VO2peak (+11.7%), time to exhaustion (+17.4%) and peak velocity/power (+5.1%); THR and HVT produced no further effects on measured performance variables.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Polarized training has greater impact on key endurance variables than threshold, high intensity, or high volume training",
+        "authors": "Stöggl T, Sperlich B",
+        "year": 2014,
+        "venue": "Frontiers in Physiology",
+        "type": "rct",
+        "doi_or_url": "10.3389/fphys.2014.00033",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Intensity distribution — 10K runners",
+      "claim": "In recreational runners training for 10K, a polarized distribution (about 77% low / 3% moderate / 20% high) and a between-thresholds distribution both improved 10K time, with no significant between-group difference in the full sample; a subset analysis of runners who most closely followed their prescribed distribution favoured polarized training.",
+      "evidence": "RCT of 30 endurance runners over 10 weeks (PET +/-77/3/20 vs BThET 46/35/19). Both groups significantly improved 10K time (5.0% vs 3.6%); difference not significant overall, but subset analysis showed greater improvement in PET by 1.29 Cohen's d (90% CI 0.31-2.27, P=0.038).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Does polarized training improve performance in recreational runners?",
+        "authors": "Muñoz I, Seiler S, Bautista J, España J, Larumbe E, Esteve-Lanao J",
+        "year": 2014,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2012-0350",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Intensity distribution — sequencing pyramidal then polarized",
+      "claim": "In well-trained endurance runners, changing from a pyramidal to a polarized intensity distribution mid-block produced the largest performance and VO2peak improvements, indicating that sequencing distributions may matter more than choosing one distribution for the whole block.",
+      "evidence": "RCT of 60 well-trained male runners over 16 weeks across four periodizations (PYR, POL, PYR->POL, POL->PYR) with training load held constant. The PYR->POL group showed the largest improvements (~3.0% relative VO2peak, ~1.5% 5-km time-trial performance).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of 16 weeks of pyramidal and polarized training intensity distributions in well-trained endurance runners",
+        "authors": "Filipas L, Bonato M, Gallo G, Codella R",
+        "year": 2022,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/sms.14101",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Intensity distribution — elite practice",
+      "claim": "Elite endurance training is dominated by low-intensity work: world-class coaches emphasise a high volume of low-intensity training combined with 2-3 weekly 'key workout' days, and generally more moderate- than high-intensity sessions across the annual cycle.",
+      "evidence": "Two complementary interview/training-log studies with successful Norwegian coaches (responsible for hundreds of international medals): best-practice pattern is high-volume low-intensity training plus 2-3 weekly key workout days; the session-model study reports more MIT than HIT sessions across the year and that interval sessions are generally more voluminous and less exhaustive than laboratory recommendations.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training Session Models in Endurance Sports: A Norwegian Perspective on Best Practice Recommendations",
+        "authors": "Tønnessen E, Sandbakk Ø, Sandbakk SB, Seiler S, Haugen T",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "coaching",
+        "doi_or_url": "10.1007/s40279-024-02067-4",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "The '10% rule' — evidence",
+      "claim": "The popular '10% rule' for weekly mileage progression has weak direct empirical support: in novice runners, injury rates did not differ significantly across progression groups (<10%, 10-30%, >30%), although those increasing weekly distance by more than 30% over two weeks showed a non-significant trend toward more distance-related injuries.",
+      "evidence": "One-year prospective cohort of 874 novice runners (GPS-monitored). Cox regression found no statistically significant differences in injury rates across the three exposure groups. Greater-than-30% progression vs less-than-10%: hazard ratio 1.59 (95% CI 0.96-2.66; P=0.07) for distance-related injuries. Authors advise novice runners to progress by less than 30% per week over a two-week period.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury",
+        "authors": "Nielsen RØ, Parner ET, Nohr EA, Sørensen H, Lind M, Rasmussen S",
+        "year": 2014,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "rct",
+        "doi_or_url": "10.2519/jospt.2014.5164",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "The '10% rule' — systematic review of training-load change",
+      "claim": "A systematic review of the association between changes in training load and running-related injury found very limited evidence: of four eligible studies, three suggested increases in load raise injury risk, but no difference was found between a 10% and a 24% average weekly increase in volume.",
+      "evidence": "Systematic review (4 included articles) of prospective/cohort/case-control evidence. Findings mixed: one cohort showed predicted injury from recent load changes (p=0.037); >30% vs <10% increase HR 1.59 (95% CI 0.96-2.66); a third showed a mean 86% higher distance the week before injury origin, while no difference occurred between 10% and 24% weekly volume increase (HR 0.8, 95% CI 0.6-1.3). Conclusion: very limited evidence.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Is There Evidence for an Association Between Changes in Training Load and Running-Related Injuries? A Systematic Review",
+        "authors": "Damsted C, Glad S, Nielsen RO, Sørensen H, Malisoux L",
+        "year": 2018,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "10.26603/ijspt20180931",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Volume progression — half-marathon schedule",
+      "claim": "When half-marathon runners increased their weekly running distance by 20-60% versus less than 20%, significantly more were injured 21 days into a 14-week schedule, but the difference was not significant at later time points (56 and 98 days).",
+      "evidence": "Prospective cohort of 261 healthy runners over 14 weeks (ProjectRun21), standardised half-marathon schedule, GPS-measured. At 21 days, risk difference 22.6% (95% CI 0.9-44.3%, P=0.041) for a 20-60% weekly distance increase vs <20%; no significant difference at 56 or 98 days; no effect modification by schedule.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Association Between Changes in Weekly Running Distance and Running-Related Injury: Preparing for a Half Marathon",
+        "authors": "Damsted C, Parner ET, Sørensen H, Malisoux L, Hulme A, Nielsen RØ",
+        "year": 2019,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "rct",
+        "doi_or_url": "10.2519/jospt.2019.8541",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Volume progression — training errors",
+      "claim": "A systematic review of training characteristics (volume, duration, frequency, intensity) and running-related injury could not identify which specific 'training errors' relate to injury, reporting conflicting results across studies of generally low methodological quality.",
+      "evidence": "Systematic review of 4561 titles, 63 potentially relevant articles, and 31 included studies (9 retrospective cohort, 13 prospective cohort, 6 case-control, 3 RCTs); mean quality score 44.1%. Results were conflicting for relationships between volume, duration, intensity and frequency and running-related injury; authors state it was not possible to identify which training errors related to injury.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training errors and running related injuries: a systematic review",
+        "authors": "Nielsen RO, Buist I, Sørensen H, Lind M, Rasmussen S",
+        "year": 2012,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "https://europepmc.org/article/MED/22389869",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Weekly mileage — marathon (elite)",
+      "claim": "Among U.S. Olympic Marathon Trials qualifiers there is little consensus on preparation beyond running most mileage slower than race pace; however, higher weekly training distance was associated with better marathon performance, particularly for women.",
+      "evidence": "Survey of 93 responders among 255 qualifiers. Men ran 145.3 +/- 25.6 km/wk and women 116.0 +/- 26.5 km/wk; 75% (men) and 68% (women) of weekly distance was below marathon race pace. Marathon performance correlated with average and peak weekly distance, number of weekly runs, and number of runs >=32 km for women.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training characteristics of qualifiers for the U.S. Olympic Marathon Trials",
+        "authors": "Karp JR",
+        "year": 2007,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "coaching",
+        "doi_or_url": "10.1123/ijspp.2.1.72",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Weekly mileage — marathon (top-class)",
+      "claim": "Across top-class and high-level marathon runners, those who ran more total kilometres per week and at higher relative velocities tended to perform better, with VO2peak inversely correlated with marathon performance time.",
+      "evidence": "Study of 20 marathon runners (5 top-class and 5 high-level per gender). Marathon performance time inversely correlated with VO2peak (r=-0.73) and, independent of gender, top-class runners trained for more total kilometres per week and at higher velocities over 3000 m and 10,000 m.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Physical and training characteristics of top-class marathon runners",
+        "authors": "Billat VL, Demarle A, Slawinski J, Paiva M, Koralsztein JP",
+        "year": 2001,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "coaching",
+        "doi_or_url": "10.1097/00005768-200112000-00018",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Weekly mileage — recreational marathon runners",
+      "claim": "Among recreational marathon runners, higher weekly training volumes and greater accrued long-distance racing experience were associated with smaller second-half pace declines and more even pacing; training frequency and absolute training speed were the discriminating variables across finish-time bands.",
+      "evidence": "Two studies of recreational marathoners: (1) questionnaire+split-time study (n=139) found higher weekly training volumes and more long-distance racing experience strongly associated with less pace decline; (2) physiological/training profiling of 97 runners showed training frequency and absolute training speed were the discriminating variables across finish-time bands.",
+      "confidence": "low",
+      "citation": {
+        "title": "Marathon pacing ability: Training characteristics and previous experience",
+        "authors": "Swain P, Biggins J, Gordon D",
+        "year": 2020,
+        "venue": "European Journal of Sport Science",
+        "type": "coaching",
+        "doi_or_url": "10.1080/17461391.2019.1688396",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "Deload / recovery need",
+      "claim": "Successful training requires overload balanced with adequate recovery; excessive overload without sufficient recovery leads to non-functional overreaching and, in severe cases, overtraining syndrome, so planned lighter/recovery periods are physiologically justified even though a fixed deload cadence is not directly tested.",
+      "evidence": "Joint consensus statement (ECSS/ACSM) defines the continuum from functional overreaching (performance improves after recovery) to non-functional overreaching and overtraining syndrome (prolonged maladaptation); notes no single generally accepted marker exists for OTS.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Prevention, diagnosis, and treatment of the overtraining syndrome: joint consensus statement of the European College of Sport Science and the American College of Sports Medicine",
+        "authors": "Meeusen R, Duclos M, Foster C, Fry A, Gleeson M, Nieman D, et al.",
+        "year": 2013,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/mss.0b013e318279a10a",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    },
+    {
+      "topic": "General exercise progression guidance",
+      "claim": "The ACSM recommends that most adults accumulate at least 150 minutes/week of moderate-intensity or 75 minutes/week of vigorous-intensity aerobic exercise, with gradual progression of exercise intensity and volume, plus resistance training on 2-3 days/week.",
+      "evidence": "American College of Sports Medicine Position Stand (supersedes the 1998 stand) on quantity and quality of exercise for apparently healthy adults: >=150 min/wk moderate or >=75 min/wk vigorous aerobic activity, resistance exercise 2-3 d/wk, and explicit advice on a gradual progression of intensity and volume.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults: guidance for prescribing exercise",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, et al.",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/mss.0b013e318213fefb",
+        "retrieved_at": "2026-11-22T14:29:23Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Running periodization evidence supports a traditional base-to-competition-specific progression, with block and undulating variants showing small, low-quality advantages that are context-dependent. The most robust evidence is for tapering (a ~2-week exponential volume cut of 41-60% while keeping intensity), and for high-volume low-intensity training as the backbone of endurance programs, with polarized and pyramidal distributions performing similarly overall and the best choice likely depending on athlete level. The ubiquitous '10% rule' is only weakly supported: prospective cohort and systematic-review data suggest keeping weekly mileage increases below about 20-30% (especially early in a plan), but no study confirms 10% as a magic threshold, and a fixed deload cadence is not directly tested.",
+  "unverified": [
+    "The exact origin of the '10% rule' and any primary empirical source establishing 10% as a specific safe threshold (widely attributed to coaching lore rather than a study).",
+    "A fixed deload/recovery-week cadence (e.g., one lighter week every 3rd or 4th week). No RCT directly tests this cadence; it is inferred from periodization practice, block-periodization 'restitution' blocks and overtraining consensus, not directly demonstrated.",
+    "Distinct optimal weekly mileage-start and progression numbers for 5K, 10K and half-marathon plans aimed at recreational runners; most quantitative volume data come from elite or single-cohort samples rather than comparative RCTs by race distance.",
+    "Base vs build vs peak phase durations (e.g., typical week counts) as evidence-based prescriptions; these are practice conventions and were not located in peer-reviewed comparative trials."
+  ],
+  "notes": "Sourcing policy used: peer-reviewed meta-analyses/systematic reviews and RCTs first, then position stands (ACSM, ECSS/ACSM consensus), then coaching/practice-derived studies clearly labelled. Real DOIs were confirmed via the Europe PMC REST API. Confidence is downgraded where the underlying literature is small, low-quality (e.g., low PEDro scores), or observational. Nielsen 2014 and Damsted 2019 are prospective cohorts (not RCTs) despite the schema's available 'type' options; they are labelled 'rct' only because no cohort option exists in the schema, and their observational design is stated in the evidence field. The Nielsen 2012 systematic review is cited by stable Europe PMC record rather than DOI because no DOI is indexed. Key tension to flag for the app: direct comparisons show polarized and pyramidal distributions are broadly equivalent in aggregate, so program design should not overclaim one model."
+}

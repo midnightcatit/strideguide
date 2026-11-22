@@ -1,0 +1,314 @@
+{
+  "workstream": "Adaptive-planning best practice",
+  "subtopic": "Adjusting for missed sessions, illness, travel",
+  "generated_at": "2026-11-22T14:35:00Z",
+  "claims": [
+    {
+      "topic": "Tapering: definition and prescription rules",
+      "claim": "A taper is a progressive, nonlinear reduction of training load over a variable period that minimizes accumulated fatigue without compromising adaptations. Best practice is to maintain training intensity, reduce volume by roughly 60-90%, and reduce frequency by no more than ~20%; optimal taper duration ranges from ~4 to more than 28 days and typically improves performance by ~3% (usual range 0.5-6%).",
+      "evidence": "Review concludes the taper aim is to minimize fatigue without losing adaptations, 'best achieved by maintaining training intensity, reducing the training volume (up to 60-90%) and slightly reducing training frequency (no more than 20%). The optimal duration of the taper ranges between 4 and more than 28 d. Progressive nonlinear tapers are more beneficial ... Performance usually improves by about 3% (usual range 0.5-6.0%).'",
+      "confidence": "high",
+      "citation": {
+        "title": "Scientific bases for precompetition tapering strategies",
+        "authors": "Mujika I, Padilla S",
+        "year": 2003,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/01.MSS.0000074448.73931.11",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Tapering: optimal quantitative model",
+      "claim": "Meta-analysis of 27 studies in competitive athletes found the optimal taper to maximize performance is ~2 weeks in duration, with training volume reduced exponentially by 41-60%, while training intensity and frequency are left unchanged (largest effect sizes for volume reduction; effect ~0.72).",
+      "evidence": "'The optimal strategy to optimize performance is a tapering intervention of 2-wk duration (overall effect = 0.59 +/- 0.33, P < 0.001), where the training volume is exponentially decreased by 41-60% (overall effect = 0.72 +/- 0.36, P < 0.001), without any modification of either training intensity ... or frequency.' Twenty-seven of 182 potential studies met inclusion criteria.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Returning after a break: short-term detraining (<4 weeks)",
+      "claim": "With insufficient training stimulus for less than ~4 weeks, highly trained athletes show a rapid decline in VO2max and blood volume, reduced stroke volume/cardiac output, impaired ventilatory efficiency and endurance performance, and metabolic shifts (increased carbohydrate reliance, lowered lipase/GLUT-4/glycogen and lactate threshold); however, changes are more moderate in recently trained individuals and maximal strength declines are limited.",
+      "evidence": "Part I review: 'Short term cardiorespiratory detraining is characterised in highly trained athletes by a rapid decline in maximal oxygen uptake (VO2max) and blood volume ... Ventilatory efficiency and endurance performance are also impaired. These changes are more moderate in recently trained individuals ... At the muscle level, capillary density and oxidative enzyme activities are reduced. Training-induced changes in fibre cross-sectional area are reversed, but strength performance declines are limited.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part I: short term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200030020-00002",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Returning after a break: long-term detraining and mitigation strategy",
+      "claim": "After more than ~4 weeks of insufficient training, VO2max declines markedly (though it stays above untrained control values in highly trained athletes), recently acquired VO2max gains are completely lost, and endurance performance is impaired. Losses can be limited by a 'reduced-training' strategy: maintain training intensity, reduce frequency only moderately, and reduce training volume markedly; cross-training of similar mode can help preserve adaptations.",
+      "evidence": "Part II: 'All these negative effects can be avoided or limited by reduced training strategies, as long as training intensity is maintained and frequency reduced only moderately. On the other hand, training volume can be markedly reduced. Cross-training may also be effective in maintaining training-induced adaptations ... whereas recently acquired VO2max gains are completely lost.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part II: Long term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200030030-00001",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Strength retention during inactivity",
+      "claim": "Strength performance is generally well maintained for up to ~4 weeks of inactivity, though highly trained athletes' eccentric force, sport-specific power, and recently acquired isokinetic strength may decline significantly; muscle fiber cross-sectional area declines rapidly in strength/sprint athletes.",
+      "evidence": "'Force production declines slowly and in relation to decreased EMG activity. Strength performance in general is readily maintained for up to 4 wk of inactivity, but highly trained athletes' eccentric force and sport-specific power, and recently acquired isokinetic strength, may decline significantly.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Muscular characteristics of detraining in humans",
+        "authors": "Mujika I, Padilla S",
+        "year": 2001,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1097/00005768-200108000-00009",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Cardiometabolic detraining timeline",
+      "claim": "Metabolic markers of detraining (increased reliance on carbohydrate metabolism, reduced insulin sensitivity and GLUT-4, lowered muscle lipoprotein lipase) can appear within ~10 days of training cessation; recently acquired VO2max gains are completely lost after stoppage longer than ~4 weeks, while highly trained athletes' VO2max and lactate threshold remain above untrained values.",
+      "evidence": "'From a metabolic viewpoint, even short-term inactivity implies an increased reliance on carbohydrate metabolism during exercise ... These metabolic changes may take place within 10 d of training cessation ... These changes are more moderate in recently trained subjects in the short-term, but recently acquired VO2max gains are completely lost after training stoppage periods longer than 4 wk.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Cardiorespiratory and metabolic characteristics of detraining in humans",
+        "authors": "Mujika I, Padilla S",
+        "year": 2001,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1097/00005768-200103000-00013",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Overreaching vs overtraining: recovery-based decision rules",
+      "claim": "Successful training requires overload balanced by adequate recovery. Functional overreaching resolves with recovery and leads to performance improvement, whereas non-functional overreaching (NFOR) and overtraining syndrome (OTS) involve prolonged maladaptation with performance decline, fatigue and mood disturbance; the distinction is clinical and difficult, and no single biomarker reliably identifies OTS. Diagnosis requires excluding organic disease, infection, energy/carbohydrate deficiency, iron/magnesium deficiency and other factors.",
+      "evidence": "'Athletes can experience short-term performance decrement ... This functional overreaching will eventually lead to an improvement in performance after recovery. When athletes do not sufficiently respect the balance between training and recovery, nonfunctional overreaching (NFOR) can occur ... there is no scientific evidence to either confirm or refute this suggestion ... several markers ... are used, but none of them meet all the criteria to make their use generally accepted.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Prevention, diagnosis, and treatment of the overtraining syndrome: joint consensus statement of the European College of Sport Science and the American College of Sports Medicine",
+        "authors": "Meeusen R, Duclos M, Foster C, Fry A, Gleeson M, Nieman D, Raglin J, Rietjens G, Steinacker J, Urhausen A",
+        "year": 2013,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e318279a10a",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Load management to reduce injury (IOC consensus)",
+      "claim": "Poor load management is a major modifiable risk factor for injury. Rapid changes in training/competition load, competition-calendar congestion, psychological load and travel all contribute. The IOC consensus recommends evidence-based prescription of load plus systematic monitoring of training/competition load, psychological load, athlete well-being and injury.",
+      "evidence": "'Emerging evidence indicates that poor load management is a major risk factor for injury ... relationship of load (defined broadly to include rapid changes in training and competition load, competition calendar congestion, psychological load and travel) and health outcomes ... provide ... practical guidelines to manage load ... guidelines for (1) prescription of training and competition load, as well as for (2) monitoring ... well-being and injury.'",
+      "confidence": "high",
+      "citation": {
+        "title": "How much is too much? (Part 1) International Olympic Committee consensus statement on load in sport and risk of injury",
+        "authors": "Soligard T, Schwellnus M, Alonso JM, Bahr R, Clarsen B, Dijkstra HP, Gabbett T, Gleeson M, Hagglund M, Hutchinson MR, Janse van Rensburg C, Khan KM, Meeusen R, Orchard JW, Pluim BM, Raftery M, Budgett R, Engebretsen L",
+        "year": 2016,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2016-096581",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Load management to reduce illness (IOC consensus)",
+      "claim": "Inappropriate load management (including rapid changes in training and competition load, congested calendars, psychological load and travel) is a significant risk factor for acute illness and overtraining. The IOC consensus provides practical guidelines for prescribing and monitoring load and athlete well-being to reduce illness risk.",
+      "evidence": "'Emerging evidence indicates that inappropriate load management is a significant risk factor for acute illness and the overtraining syndrome ... relationship of load-including rapid changes in training and competition load, competition calendar congestion, psychological load and travel-and health outcomes ... practical guidelines for appropriate load management to reduce the risk of illness and overtraining.'",
+      "confidence": "high",
+      "citation": {
+        "title": "How much is too much? (Part 2) International Olympic Committee consensus statement on load in sport and risk of illness",
+        "authors": "Schwellnus M, Soligard T, Alonso JM, Bahr R, Clarsen B, Dijkstra HP, Gabbett TJ, Gleeson M, Hagglund M, Hutchinson MR, Janse Van Rensburg C, Meeusen R, Orchard JW, Pluim BM, Raftery M, Budgett R, Engebretsen L",
+        "year": 2016,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2016-096572",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Acute:chronic workload ratio (ACWR) and injury risk",
+      "claim": "The majority of studies suggest athletes are at greater risk of time-loss injury when the acute:chronic workload ratio (recent load relative to ~4-week rolling average) is higher rather than low or moderate. However, methodological heterogeneity (14 different binning methods, varying metrics) limits the strength of any specific threshold recommendation.",
+      "evidence": "Systematic review of 20 studies (2375 injuries, 1234 athletes): 'The majority of studies suggest that athletes are at greater risk of sustaining a time-loss injury when the ACWR is higher relative to a lower or moderate ACWR. The heterogenous methodological approaches ... limit the strength of recommendations.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Is the Acute: Chronic Workload Ratio (ACWR) Associated with Risk of Time-Loss Injury in Professional Team Sports? A Systematic Review of Methodology, Variables and Injury Risk in Practical Situations",
+        "authors": "Andrade R, Wik EH, Rebelo-Marques A, Blanch P, Whiteley R, Espregueira-Mendes J, Gabbett TJ",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-020-01308-6",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "ACWR caveats: conceptual pitfalls",
+      "claim": "The ACWR has serious conceptual and statistical pitfalls (e.g., mathematical coupling, questionable ratio scaling, reliance on arbitrary thresholds), so it should not be treated as a validated precision tool with fixed safe-zone cut-offs. This tempers downstream rule design that hard-codes ACWR thresholds.",
+      "evidence": "Methodological critique concludes ACWR suffers from 'conceptual issues and fundamental pitfalls' (mathematical coupling of acute and chronic components, arbitrary spikes/thresholds), arguing against uncritical use as a decision threshold.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Acute:Chronic Workload Ratio: Conceptual Issues and Fundamental Pitfalls",
+        "authors": "Impellizzeri FM, Tenan MS, Kempton T, Novak A, Coutts AJ",
+        "year": 2020,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1123/ijspp.2019-0864",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Training-injury prevention paradox",
+      "claim": "Athletes accustomed to high chronic training loads tend to have fewer injuries than those training at lower workloads, and under-training may itself increase injury risk. Non-contact soft-tissue injuries are more likely driven by inappropriate programming (excessive and rapid increases in load) than by training per se; both acute and chronic loads should be tracked.",
+      "evidence": "'athletes accustomed to high training loads have fewer injuries than athletes training at lower workloads ... Excessive and rapid increases in training loads are likely responsible for a large proportion of non-contact, soft-tissue injuries ... there is also evidence that under-training may increase injury risk.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "The training-injury prevention paradox: should athletes be training smarter and harder?",
+        "authors": "Gabbett TJ",
+        "year": 2016,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2015-095788",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Load ratio for return-to-play readiness",
+      "claim": "Whether an athlete has completed sufficient training to return to sport can be quantified with the acute:chronic workload ratio: spikes in weekly load above the recent 4-week average (e.g., after a low-load recovery period) increase injury likelihood, so the ratio should inform return-to-play decisions.",
+      "evidence": "'when an athlete's training and playing load for a given week (acute load) spikes above what they have been doing on average over the past 4 weeks (chronic load), they are more likely to be injured ... strong predictive (R2=0.53) polynomial relationship between acute:chronic workload ratio and injury likelihood.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Has the athlete trained enough to return to play safely? The acute:chronic workload ratio permits clinicians to quantify a player's risk of subsequent injury",
+        "authors": "Blanch P, Gabbett TJ",
+        "year": 2016,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2015-095445",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Returning to training after febrile illness",
+      "claim": "There is no consensus supporting return to activity before fever has resolved; training during febrile illness can worsen illness and risks dehydration and musculoskeletal catabolism. Training should be resumed gradually only once fever and dehydration have resolved, with attention to altered thermoregulation, metabolism and reduced strength/endurance.",
+      "evidence": "'No consensus recommendations support return to activity before resolution of fever, and training should be resumed gradually once fever and dehydration have resolved ... Participating in strenuous exercise during febrile illness can worsen the illness and has demonstrated increased lethality in animal models.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Febrile illness in the athlete",
+        "authors": "Dick NA, Diehl JJ",
+        "year": 2014,
+        "venue": "Sports Health",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1177/1941738113508373",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Return to sport after acute respiratory illness (ARI)",
+      "claim": "In ~80% of acute respiratory illnesses in athletes, no days are lost from training/competition; mean symptom duration is ~7 days, and about 20% of episodes cause more than one day of time loss. Days until return to sport ranged 0-8.5 days across studies. Outcomes were not clearly influenced by whether the illness was upper vs general or diagnosed clinically vs by pathogen testing.",
+      "evidence": "Meta-analysis of 54 studies (n=31,065 athletes): 'In 80% of ARill in athletes, no days were lost from training/competition. The mean duration of ARill symptoms in athletes was 7 days ... Frequency (%) of time loss >1 day after ARill was 20.4% (95% CI 15.3% to 25.4%) ... 4 studies reported days until RTS (range: 0-8.5 days).'",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute respiratory illness and return to sport: a systematic review and meta-analysis by a subgroup of the IOC consensus on 'acute respiratory illness in the athlete'",
+        "authors": "Snyders C, Pyne DB, Sewry N, Hull JH, Kaulback K, Schwellnus M",
+        "year": 2022,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2021-104719",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Deload weeks: effect on resistance-training adaptations",
+      "claim": "A one-week deload (abstaining from resistance training) at the midpoint of a 9-week high-volume program did not improve muscle size, power or local muscular endurance versus continuous training, and actually reduced lower-body isometric and dynamic strength gains. This questions automatic mid-program deloads for trained lifters (single RCT; may not generalize to highly fatigued or untrained populations).",
+      "evidence": "RCT (DELOAD vs TRAD, 39 participants): 'no appreciable differences in increases of lower body muscle size, local endurance, and power between groups. Alternatively, TRAD showed greater improvements in both isometric and dynamic lower body strength compared to DELOAD ... our findings suggest that a 1-week deload period at the midpoint of a 9-week RT program appears to negatively influence measures of lower body muscle strength.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Gaining more from doing less? The effects of a one-week deload period during supervised resistance training on muscular adaptations",
+        "authors": "Coleman M, Burke R, Augustin F, Pinero A, Maldonado J, Fisher JP, Israetel M, Androulakis Korakakis P, Swinton P, Oberlin D, Schoenfeld BJ",
+        "year": 2024,
+        "venue": "PeerJ",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.7717/peerj.16777",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Sleep as a life-disruption risk factor",
+      "claim": "In adolescent athletes, sleeping less than 8 hours per night was associated with 1.7 times higher odds of injury compared with sleeping 8+ hours; hours of sleep and school grade were the best independent predictors of injury. This supports treating sleep loss (from travel, stress, or schedule disruption) as a load-modifying risk factor and a reason to reduce training intensity/volume.",
+      "evidence": "'Athletes who slept on average <8 hours per night were 1.7 times (95% CI, 1.0-3.0; P=0.04) more likely to have had an injury compared with athletes who slept for >=8 hours ... hours of sleep per night and the grade in school were the best independent predictors of injury.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Chronic lack of sleep is associated with increased sports injuries in adolescent athletes",
+        "authors": "Milewski MD, Skaggs DL, Bishop GA, Pace JL, Ibrahim DA, Wren TA, Barzdukas A",
+        "year": 2014,
+        "venue": "Journal of Pediatric Orthopedics",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1097/BPO.0000000000000151",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Travel fatigue and jet lag management",
+      "claim": "An expert consensus (26 researchers/clinicians) documents that travel fatigue and jet lag are real, impactful issues for athlete performance, illness and injury risk, and provides pre-flight, in-flight and post-flight management strategies (primarily around circadian timing, light and sleep scheduling). The available evidence is limited, which restricts the strength of the recommendations.",
+      "evidence": "'travel fatigue and jet lag can be a real and impactful issue for athletes regarding performance and risk of illness and injury, evidence on optimal assessment and management is lacking ... provides consensus on recommendations for managing travel fatigue and jet lag in athletes ... summarised in travel toolboxes including strategies for pre-flight, during flight and post-flight. The lack of evidence restricts the strength of the recommendations.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Managing Travel Fatigue and Jet Lag in Athletes: A Review and Consensus Statement",
+        "authors": "Janse van Rensburg DC, Jansen van Rensburg A, Fowler PM, Bender AM, Stevens D, Sullivan KO, Fullagar HHK, Alonso JM, Biggins M, Claassen-Smithers A, Collins R, Dohi M, Driller MW, Dunican IC, Gupta L, Halson SL, Lastella M, Miles KH, Nedelec M, Page T, Roach G, Sargent C, Singh M, Vincent GE, Vitale JA, Botha T",
+        "year": 2021,
+        "venue": "Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1007/s40279-021-01502-0",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Prioritizing sessions when time is short (time-efficient training)",
+      "claim": "Low-volume sprint-interval training (~2.5 h total over 2 weeks, ~90% lower training volume) produced similar initial skeletal-muscle and performance adaptations to high-volume endurance training (~10.5 h over 2 weeks) in active men. This supports substituting a small number of short, high-intensity sessions when time is compressed, rather than trying to compress total volume.",
+      "evidence": "'Training time commitment over 2 weeks was ~2.5 h for SIT and ~10.5 h for ET, and total training volume was ~90% lower for SIT versus ET ... Training decreased the time required to complete 50 and 750 kJ cycling time trials, with no difference between groups ... these data demonstrate that SIT is a time-efficient strategy to induce rapid adaptations.'",
+      "confidence": "medium",
+      "citation": {
+        "title": "Short-term sprint interval versus traditional endurance training: similar initial adaptations in human skeletal muscle and exercise performance",
+        "authors": "Gibala MJ, Little JP, van Essen M, Wilkin GP, Burgomaster KA, Safdar A, Raha S, Tarnopolsky MA",
+        "year": 2006,
+        "venue": "The Journal of Physiology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1113/jphysiol.2006.112094",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    },
+    {
+      "topic": "Autoregulation: adjusting daily load to readiness",
+      "claim": "Autoregulation manipulates training chiefly from an individual's performance or perceived capability to perform (e.g., RPE-based or velocity-based methods). It is a coherent framework for day-to-day load adjustment, but the literature suffers from inconsistent terminology and limited systematic evidence, so autoregulation should be applied as a flexible input rather than a precise rule.",
+      "evidence": "'Autoregulation is a process that is used to manipulate training based primarily on the measurement of an individual's performance or their perceived capability to perform ... Despite being established as a training framework since the 1940s, there has been limited systematic research investigating its broad utility ... inconsistencies in definitions and terminology ... limit the synthesis of existing research findings.'",
+      "confidence": "low",
+      "citation": {
+        "title": "Autoregulation in Resistance Training: Addressing the Inconsistencies",
+        "authors": "Greig L, Stephens Hemingway BH, Aspe RR, Cooper K, Comfort P, Swinton PA",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-020-01330-8",
+        "retrieved_at": "2026-11-22T14:30:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Peer-reviewed consensus and meta-analytic evidence supports a small set of robust adjustment rules: taper by keeping intensity high, cutting volume ~40-90% and frequency <=20% for ~1-2 weeks (Bosquet 2007; Mujika & Padilla 2003); after a break, preserve intensity first and cut volume hardest, accepting that <4 weeks mainly costs endurance/cardiovascular fitness while maximal strength is largely retained for ~4 weeks (Mujika & Padilla 2000/2001). Illness follows a stop-and-restart-later rule: no training until fever resolves, then gradual resumption, though ~80% of acute respiratory illnesses cost no training days (Dick & Diehl 2014; Snyders 2022). Load spikes after low-load periods (high acute:chronic ratio) and poor load management generally raise injury and illness risk, though ACWR thresholds are not validated precision instruments (Soligard 2016; Andrade 2020; Impellizzeri 2020). Deloads, travel and sleep loss are best treated as recovery/modifier signals rather than fixed calendar rules (Coleman 2024; Janse van Rensburg 2021; Milewski 2014).",
+  "unverified": [
+    "The widely repeated '10% rule' (never increase weekly running volume by more than 10%) has no supporting peer-reviewed validation identified in this search; treat as coaching heuristic, unverified.",
+    "The 'neck check' rule (return to training if symptoms are above the neck only, defer if systemic/below the neck) is standard clinical folklore but was not substantiated by a primary trial in this search; the closest evidence is the multifactorial febrile-illness guidance and ARI return-to-sport data (unverified as a validated decision rule).",
+    "Specific numeric deload prescriptions (e.g., 'deload every 4th week at 50-60% volume') are commonly recommended by coaches but the only RCT located (Coleman 2024) tested a specific mid-program protocol and found no benefit to strength; generalizable deload-frequency rules remain unverified."
+  ],
+  "notes": "Retrieval: Europe PMC REST API (structured abstracts) used because PubMed article pages and BMJ returned 403/cookie walls; all citations resolved to real DOIs/PMIDs. Scope note: most high-quality evidence is from elite/competitive and adolescent athletic populations and cannot be assumed to transfer directly to recreational runners/lifters. Population limits: Bosquet/Mujika tapering and detraining data are largely from well-trained/elite endurance athletes and small samples; Coleman deload RCT n=39 trained young adults; Milewski sleep study was adolescent, retrospective, Level III. Two strength-training/periodization items (Issurin 2008 block periodization; NSCA-style periodization reviews) were located but omitted from claims to keep the evidence tier high; the ACWR claim is deliberately paired with the Impellizzeri critique to signal that fixed thresholds are unwarranted. No claims were fabricated; where evidence was thin (autoregulation, travel) confidence is marked low/medium and the limitation is stated in the claim itself."
+}
