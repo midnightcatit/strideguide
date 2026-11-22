@@ -1,0 +1,316 @@
+{
+  "workstream": "Goal-specific training: 10K & half marathon",
+  "subtopic": "10K and half marathon specifics: distance-specific blocks, key workouts, pacing strategy, and strength support",
+  "generated_at": "2026-11-22T14:58:00Z",
+  "claims": [
+    {
+      "topic": "Half marathon - physiological demand",
+      "claim": "Recreational runners race a half marathon at roughly 79% of VO2max, and the running speed at a 4 mmol/L blood lactate concentration predicts half-marathon time better than VO2max itself (r = -0.88 vs -0.81).",
+      "evidence": "Ten recreational runners (8 men, 2 women) were tested around a half marathon; mean race speed was 223 m/min, equal to 79 +/- 5% VO2max. Speed at 4 mmol/L lactate correlated more strongly with finish time than VO2max, supporting threshold/steady-state capacity as the key half-marathon target. Small, dated sample.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Some physiological demands of a half-marathon race on recreational runners",
+        "authors": "Williams C, Nute ML",
+        "year": 1983,
+        "venue": "British Journal of Sports Medicine",
+        "type": "observational",
+        "doi_or_url": "10.1136/bjsm.17.3.152",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "10K - physiological determinants",
+      "claim": "10K performance is governed mainly by VO2max and the running velocity at lactate threshold, not by running economy: in highly trained women, velocity at LT explained about 60% of 10K variance at ages 23-47, while VO2max explained about 74% at ages 37-56.",
+      "evidence": "Thirty-one highly trained female 10K runners aged 23-56 were tested for 10K race pace, VO2max, lactate threshold and running economy. 10K performance correlated with VO2max and with velocity/O2 uptake at LT but not with running economy, implying 10K blocks should develop both maximal aerobic power and threshold velocity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Physiological determinants of 10-km performance in highly trained female runners of different ages",
+        "authors": "Evans SL, Davy KP, Stevenson ET, Seals DR",
+        "year": 1995,
+        "venue": "Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "10.1152/jappl.1995.78.5.1931",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "10K pacing - performance level",
+      "claim": "Faster 10K runners deliberately start above average pace (first 400 m near 18.8 km/h), settle into a steady mid-race pace, then re-accelerate over the final 400 m; slower runners start near their average pace and fade slightly, so a fast start only works when it is matched by a controlled middle and a strong finish.",
+      "evidence": "Twenty-four male runners completed a self-paced 10K treadmill trial and were split into performance tertiles. The high-performing group peaked in the first 400 m and was still faster than average, then held pace to 9,600 m before an endspurt; the low-performing group ran the first 400 m at about its average race velocity and slowed non-significantly until the final surge. Lab simulation, not a race.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effect of performance level on pacing strategy during a 10-km running race",
+        "authors": "Lima-Silva AE, Bertuzzi RC, Pires FO, Barros RV, Gagliardi JF, Hammond J, Kiss MA, Bishop DJ",
+        "year": 2010,
+        "venue": "European Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "10.1007/s00421-009-1300-6",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "10K pacing - mass participation",
+      "claim": "Most recreational 10K runners use positive pacing: across 16,315 mass-event 10K finishers, speed declined by about 3.4% (men) and 4.0% (women) from the first to the last segment, so even pacing is a trainable skill rather than the default behaviour.",
+      "evidence": "Official Oslo Marathon and 10K results from 2015-2018 were analysed. Both 10K and marathon runners showed positive pacing; the 10K slowdown was smaller than the marathon's but still consistent, and did not differ meaningfully by sex. Large observational dataset but no intervention.",
+      "confidence": "high",
+      "citation": {
+        "title": "Pacing in Long-Distance Running: Sex and Age Differences in 10-km Race and Marathon",
+        "authors": "Cuk I, Nikolaidis PT, Villiger E, Knechtle B",
+        "year": 2021,
+        "venue": "Medicina (Kaunas)",
+        "type": "observational",
+        "doi_or_url": "10.3390/medicina57040389",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Half marathon pacing vs marathon",
+      "claim": "Half marathons are paced more evenly than marathons: across 7,258 half-marathon and 1,853 marathon finishers, average change in speed was 4.10% in the half versus 5.71% in the marathon, and the half showed a steady positive split with no true endspurt.",
+      "evidence": "Pacing was compared across five race segments in the Ljubljana 2017 events. Half-marathon runners slowed in every segment without an endspurt, whereas the marathon showed a larger overall decline. Women and men paced the half similarly. The practical implication is to target even effort rather than a big negative split.",
+      "confidence": "high",
+      "citation": {
+        "title": "Pacing of Women and Men in Half-Marathon and Marathon Races",
+        "authors": "Nikolaidis PT, Cuk I, Knechtle B",
+        "year": 2019,
+        "venue": "Medicina (Kaunas)",
+        "type": "observational",
+        "doi_or_url": "10.3390/medicina55010014",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Pacing prescription - evidence limits",
+      "claim": "Even or slightly negative pacing is associated with better long-distance outcomes, but the association is observational and performance level is the strongest correlate: faster runners pace more stably, so pacing advice should be framed as a target behaviour, not a proven causal fix.",
+      "evidence": "A narrative review of 37 pacing studies concluded that more even or slightly negative pacing is generally associated with favourable performance, while explicitly cautioning that this is an observed association rather than a prescriptive recommendation. Slower runners show greater variability and a larger pace decline. Sex and age effects are secondary and inconsistent.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Pacing Profiles in Half-Marathon and Marathon Running Based on Performance Level, Sex, and Age: A Narrative Review",
+        "authors": "Ristanovic L, Stojiljkovic S, Cuk I, Weiss K, Rosemann T, Knechtle B",
+        "year": 2026,
+        "venue": "Medicina (Kaunas)",
+        "type": "narrative-review",
+        "doi_or_url": "10.3390/medicina62081503",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Plan length - recreational 10K and half",
+      "claim": "Most recreational runners prepare for a 10K or half marathon over about 3-4 months: 52% of 245 surveyed runners reported a 3-4 month build-up, 20% used 1-2 months and 21% used 4-6 months, with 76% training unsupervised.",
+      "evidence": "The NURMI Step 2 cross-sectional survey compared 10K (n=91), half-marathon (n=89) and marathon/ultra (n=65) runners. Training timespan did not differ significantly by race distance, so a 12-16 week block is a realistic default for recreational 10K and half-marathon plans. Self-reported, European, mostly experienced sample.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Differences in training characteristics of recreational endurance runners by race distance - results from the NURMI Study (Step 2)",
+        "authors": "Knechtle B, Tanous D, Thuany M, Motevalli M, Wirnitzer G, Leitzmann C, Weiss K, Rosemann T, Wirnitzer K",
+        "year": 2023,
+        "venue": "Frontiers in Psychology",
+        "type": "observational",
+        "doi_or_url": "10.3389/fpsyg.2023.1269374",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Training volume - 10K vs half marathon",
+      "claim": "Weekly volume scales with race distance: during the specific preparation phase, recreational 10K runners averaged about 30 km/week over 3 sessions, half-marathon runners about 33 km/week over 3 sessions, and marathon/ultra runners about 53 km/week over 4 sessions.",
+      "evidence": "NURMI Step 2 periodization table (n=245) reported weekly sessions, kilometres and hours across four preparation conditions. 10K runners consistently trained the least distance and time; half-marathon volume was only modestly higher than 10K, while marathon/ultra volume was substantially higher. Means with large SDs; self-reported.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Differences in training characteristics of recreational endurance runners by race distance - results from the NURMI Study (Step 2)",
+        "authors": "Knechtle B, Tanous D, Thuany M, Motevalli M, Wirnitzer G, Leitzmann C, Weiss K, Rosemann T, Wirnitzer K",
+        "year": 2023,
+        "venue": "Frontiers in Psychology",
+        "type": "observational",
+        "doi_or_url": "10.3389/fpsyg.2023.1269374",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Half marathon - volume and long run",
+      "claim": "Half-marathon runners who averaged more than 32 km/week finished about 4 minutes faster, and those whose longest run exceeded 21 km finished about 4 minutes faster, with less pace decline during the race and no increase in running-related injury.",
+      "evidence": "In 556 half-marathon participants followed through preparation and race, higher weekly volume (beta -4.19 min, 95% CI -6.52 to -1.85) and a longer long run (beta -3.87 min, 95% CI -6.31 to -1.44) were associated with faster finish times; both were also related to less decline in pace. No training characteristic was associated with injury. Observational, so reverse causation is possible.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training for a (half-)marathon: Training volume and longest endurance run related to performance and running injuries",
+        "authors": "Fokkema T, van Damme AADN, Fornerod MWJ, de Vos RJ, Bierma-Zeinstra SMA, van Middelkoop M",
+        "year": 2020,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "observational",
+        "doi_or_url": "10.1111/sms.13725",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Threshold / tempo work",
+      "claim": "Threshold training is the central quality stimulus for the half marathon: running at or just around the maximal lactate steady state improves the speed that can be sustained for roughly an hour, and threshold intervals let runners accumulate more time at that intensity than a single continuous tempo run.",
+      "evidence": "A systematic review of lactate-guided threshold interval training within a high-volume, low-intensity programme argues that threshold intervals place a large, repeatable stimulus on lactate clearance and threshold velocity with less accumulating fatigue than continuous work at the same pace. The evidence base is heterogeneous and largely from trained runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Does Lactate-Guided Threshold Interval Training within a High-Volume Low-Intensity Approach Represent the \"Next Step\" in the Evolution of Distance Running Training?",
+        "authors": "Casado A, Foster C, Bakken M, Tjelta LI",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/ijerph20053782",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Cruise intervals - prescription",
+      "claim": "Cruise intervals are threshold-pace repetitions with short recoveries: typically 3-6 reps of 5-15 minutes at roughly one-hour race pace (about 85-90% HRmax) with 1-minute easy jogs, accumulating 20-40 minutes of threshold work per session.",
+      "evidence": "Jack Daniels' coaching system defines T pace as the pace sustainable for about an hour of racing and recommends \"cruise intervals\" (e.g., 3-4 x 1 mile at T pace with 1-minute recoveries) to accumulate threshold volume with less fatigue than one continuous run. The physiological rationale (more time near MLSS, controlled acidosis) is supported by interval-training reviews, but the specific cruise-interval format has not been tested in dedicated RCTs.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Daniels' Running Formula (3rd ed.)",
+        "authors": "Daniels J",
+        "year": 2014,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "https://openlibrary.org/isbn/9781450431835",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - 10K",
+      "claim": "Short aerobic intervals at about 90-95% HRmax (classically 4 x 4 minutes with 3-minute recoveries, 3 times weekly for 8 weeks) raise VO2max and stroke volume substantially more than steady moderate-intensity training, making them a primary 10K session.",
+      "evidence": "A randomised controlled trial in moderately trained men compared aerobic high-intensity intervals with moderate continuous training over 8 weeks. The interval groups increased VO2max and stroke volume significantly more, with the largest gains in the 4 x 4-minute group. This supports I-pace work for 10K, though the trial was not conducted in 10K specialists.",
+      "confidence": "high",
+      "citation": {
+        "title": "Aerobic high-intensity intervals improve VO2max more than moderate training",
+        "authors": "Helgerud J, Hoydal K, Wang E, Karlsen T, Berg P, Bjerkaas M, Simonsen T, Helgesen C, Hjorth N, Bach R, Hoff J",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0b013e3180304570",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Race-pace training - prescription",
+      "claim": "Prescribing endurance sessions by race pace is effective in recreational runners: a 6-week race-pace-based programme improved 7-km time-trial performance (effect size 1.07) and produced the smallest inter-individual variation in performance change, despite training load similar to heart-rate and HRV-guided groups.",
+      "evidence": "Twenty-eight recreational runners were randomised to heart-rate, race-pace or HRV-guided training for 6 weeks. All groups improved physiological markers and 7-km time trial, but the race-pace group showed the clearest time-trial improvement and lowest coefficient of variation. Small sample and short duration limit certainty.",
+      "confidence": "low",
+      "citation": {
+        "title": "Performance and Physiological Effects of Race Pace-Based Versus Heart Rate Variability-Guided Training Prescription in Runners",
+        "authors": "Ranieri LE, Casado A, Martin D, Trujillo-Colmena D, Gil-Arias A, Kenneally M, Jimenez A",
+        "year": 2025,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0000000000003671",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Taper - 10K and half marathon",
+      "claim": "A 2-week taper that reduces training volume by 41-60% while keeping intensity and frequency unchanged is the best-supported pre-race strategy, improving performance by roughly 0.5-0.7 standardised units.",
+      "evidence": "A meta-analysis of 27 taper studies found the optimal taper lasted 2 weeks, cut volume exponentially by 41-60%, and did not change intensity or frequency. A 2023 meta-analysis of 14 studies confirmed improved time-trial performance with volume reductions of 41-60% and maintained intensity, with tapers up to 21 days effective. Applies across endurance sports; not specific to 10K/half.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Volume progression - injury risk",
+      "claim": "Large week-to-week jumps are only weakly linked to injury: novice runners who increased weekly distance by more than 30% over a 2-week period had a non-significant trend toward more distance-type injuries (HR 1.59, p = 0.07) than those increasing under 10%, so a rigid 10% rule is not strongly evidence-based.",
+      "evidence": "In a 1-year prospective cohort of 874 novice runners using GPS, 202 sustained a running-related injury. Injury rates did not differ significantly across progression groups; the >30% group showed a trend for distance-related injuries such as patellofemoral pain and medial tibial stress syndrome. Exploratory, not randomised.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury",
+        "authors": "Nielsen RO, Parner ET, Nohr EA, Sorensen H, Lind M, Rasmussen S",
+        "year": 2014,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "cohort",
+        "doi_or_url": "10.2519/jospt.2014.5164",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Progression - volume vs intensity",
+      "claim": "Progressing training volume and progressing training intensity carry similar injury risk: in a randomised trial of 447 recreational runners over 16 weeks, injury incidence was not significantly different between volume-focused and intensity-focused progression schedules.",
+      "evidence": "The Run Clever trial preconditioned 839 runners for 8 weeks, then randomised 447 to 16 weeks of volume-focused or intensity-focused progression with GPS and real-time feedback. Cumulative injury incidence at 16 weeks was 28.0% in the volume group, with a non-significant risk difference of -14.0% (95% CI -36.9% to 8.9%) for the intensity group. Supports flexible progression rather than one fixed rule.",
+      "confidence": "high",
+      "citation": {
+        "title": "Run Clever - No difference in risk of injury when comparing progression in running volume and running intensity in recreational runners: A randomised trial",
+        "authors": "Ramskov D, Rasmussen S, Sorensen H, Parner ET, Lind M, Nielsen RO",
+        "year": 2018,
+        "venue": "BMJ Open Sport & Exercise Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1136/bmjsem-2017-000333",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Strength training - running economy and performance",
+      "claim": "Heavy-load strength training and combined strength methods improve running economy and running performance in middle- and long-distance runners, with greater economy gains at faster running speeds and in runners with higher VO2max; plyometrics help mainly at speeds at or below 12 km/h.",
+      "evidence": "A systematic review with meta-analysis found small improvements in running economy with high loads (ES -0.27) and moderate improvements with combined methods (ES -0.43); plyometrics improved economy only at speeds <=12 km/h. A companion meta-analysis found high-load (ES -0.47) and combined (ES -1.04) training improved time-trial/time-to-exhaustion performance without changing VO2max, vVO2max or maximal metabolic steady state. GRADE certainty low to moderate.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Saez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-023-01978-y",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Strength - 10K fatigue resistance",
+      "claim": "Eight weeks of strength training improved 10K time-trial performance by 2.5% versus -0.7% in controls, almost entirely by raising speed over the final 2,800 m, without changing VO2max, running economy or anaerobic power.",
+      "evidence": "Eighteen endurance runners were allocated to strength training or control. The strength group improved 1RM by 23%, drop jump by 12.7% and peak treadmill speed by 2.9%, and gained more 10K time-trial improvement, concentrated in the last seven laps. The result supports strength work as a fatigue-resistance/endspurt intervention for 10K rather than an aerobic development tool. Small sample.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of resistance training on neuromuscular characteristics and pacing during 10-km running time trial",
+        "authors": "Damasceno MV, Lima-Silva AE, Pasqua LA, Tricoli V, Duarte M, Bishop DJ, Bertuzzi R",
+        "year": 2015,
+        "venue": "European Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "10.1007/s00421-015-3130-z",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Strength - half marathon durability",
+      "claim": "Ten weeks of maximal strength plus plyometric training improved running-economy durability during 90 minutes at about 80% VO2max and increased high-intensity time to exhaustion at the end of that run by 35%, directly supporting late-race fatigue resistance for half marathoners.",
+      "evidence": "Twenty-eight well-trained male runners (10K ~39:02) were matched and randomised to running-only or running plus twice-weekly strength/plyometrics for 10 weeks. The strength group's running economy improved by 2.1% at 90 minutes while controls worsened by 0.6%, and post-fatigue time to exhaustion at 95% VO2max rose 35% versus an 8% fall in controls. Small but well-controlled trial.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Strength Training Improves Running Economy Durability and Fatigued High-Intensity Performance in Well-Trained Male Runners: A Randomized Control Trial",
+        "authors": "Zanini M, Folland JP, Wu H, Blagrove RC",
+        "year": 2025,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000003685",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    },
+    {
+      "topic": "Strength - dosing and response variability",
+      "claim": "Effective strength programmes for distance runners typically use 2-3 sessions per week of 3-4 sets of 4-6 repetitions at heavy loads for 8-12 weeks, but responses are not universal: one 11-week trial in well-trained women found no change in running economy or 40-minute all-out distance.",
+      "evidence": "A classic trial added half-squats (4 x 4RM, 3 times weekly, 8 weeks) and improved running economy by 5.0% and time to exhaustion at maximal aerobic speed by 21.3%. By contrast, 11 weeks of twice-weekly heavy leg training in well-trained women increased strength and muscle fibre area but did not change running economy or 40-minute performance. Programme design, training status and individual responsiveness moderate the effect.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Maximal strength training improves running economy in distance runners",
+        "authors": "Storen O, Helgerud J, Stoa EM, Hoff J",
+        "year": 2008,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0b013e318168da2f",
+        "retrieved_at": "2026-11-22T14:58:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "10K and half marathon share a large aerobic base but differ in emphasis. The half is raced near ~79% VO2max in recreational runners and is limited by threshold/steady-state capacity, so threshold volume, long runs (evidence supports >21 km) and weekly volume above ~32 km are associated with faster times. The 10K depends more on VO2max and velocity at lactate threshold and rewards VO2max intervals plus race-pace work, with strength training improving the final 2-3 km. Pacing evidence is observational but consistent: 10K runners typically go out too fast and slow 3-4%, while the half is paced more evenly than the marathon; even or slightly negative pacing is associated with better outcomes but is not proven causal. A 2-week, 41-60% volume-reduction taper with intensity maintained is well supported. Strength training (2-3x/week, heavy loads, 8-12 weeks, often combined with plyometrics) improves running economy, fatigue resistance and performance without changing VO2max, though individual response varies.",
+  "unverified": [
+    "Exact intensity anchors often quoted for these distances (10K ~90-95% VO2max, half marathon ~85% VO2max) were not confirmed from a single primary source in this review; the verified recreational half-marathon value is ~79% VO2max.",
+    "No controlled trial was found showing that 'marathon-pace' or 'half-marathon-pace' long runs improve half-marathon performance; this remains coaching practice supported indirectly by race-pace and long-run evidence.",
+    "No dedicated RCT of the named 'cruise interval' protocol was found; the prescription rests on textbook/coaching sources plus general threshold-interval physiology.",
+    "The widely used '10% weekly mileage rule' is not supported by strong evidence; the best available cohort found only a non-significant trend for increases above 30% per 2 weeks.",
+    "Optimal training-intensity distribution (polarized vs pyramidal vs threshold-heavy) specifically for 10K and half marathon recreational runners is not settled; evidence is mixed and population-dependent."
+  ],
+  "notes": "Sources retrieved 2026-11-22 via the Europe PMC REST API (which indexes PubMed/MEDLINE) after PubMed's web search rate-limited. All cited items are peer-reviewed and DOI-verified; the two textbook entries were verified via OpenLibrary metadata (Human Kinetics). Type values follow the project allowlist. Several claims are observational (pacing, training-volume surveys) and should not be read as causal. The NURMI survey is cross-sectional and self-reported (n=245), the Williams & Nute half-marathon sample is only 10 runners, and the Damasceno and Zanini strength trials are small (n=18 and n=28). Duplicate citations with wave-1 files are intentional where the same source supports a different distance-specific claim. Where a claim draws on a companion paper (e.g., Llanos-Lagos 2024 performance meta alongside the 2024 economy meta), the companion is named in the evidence text and the primary citation field points to the source that most directly supports the stated claim."
+}

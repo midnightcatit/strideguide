@@ -1,0 +1,315 @@
+{
+  "workstream": "Pacing & zone tools",
+  "subtopic": "VDOT equivalence tables & training paces (Daniels)",
+  "generated_at": "2026-11-22T14:48:00Z",
+  "claims": [
+    {
+      "topic": "VDOT definition",
+      "claim": "VDOT is an 'effective' or 'pseudo' VO2max: a single fitness index derived from a recent race performance, used to (a) predict equivalent race times at other distances and (b) prescribe training paces. It is not the same as a laboratory VO2max. It is defined as the VO2max of a hypothetical runner with average running economy who could race that performance, so two runners with the same VDOT may have different true VO2max values.",
+      "evidence": "Daniels and Gilbert examined race performances and known VO2max of elite middle- and long-distance runners; equally performing runners were assigned equal aerobic profiles ('pseudoVO2max'/VDOT). Daniels states VDOT is 'an adjusted VO2max (which may or may not match a laboratory-generated VO2max)'. Because it is a holistic performance-derived measure it is claimed to be more useful for setting training paces than a lab VO2max.",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Determining your current level of fitness (Jack Daniels series, Part 4)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-nov-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Derivation method (Daniels-Gilbert equations)",
+      "claim": "The VDOT tables were generated from two Daniels-Gilbert equations: a 'drop dead' all-out duration-intensity relation (the percentage of VO2max sustainable for a given race duration) plus a running oxygen-cost equation. Together they map a race time to a VO2max and then to equivalent times at other distances. The printed book gives only the resulting tables, not the equations.",
+      "evidence": "Larry Simpson documents that the tables come from Daniels and Gilbert's 'Oxygen Power' pamphlet (Univ. of Arizona, c.1980), combining an oxygen-cost formula first published in Daniels' The Conditioning for Distance Running (Wiley, 1978) with an unpublished 'drop dead' intensity-duration formula. Simpson: the tables 'predict a person's all-out best running time for a given distance'.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Daniels/Gilbert Formula",
+        "authors": "Simpson L",
+        "year": 2000,
+        "venue": "Simpson Associates (runningmath1)",
+        "type": "coaching",
+        "doi_or_url": "http://www.simpsonassociatesinc.com/runningmath1.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Table 1 - VDOT vs equivalent race times (full table, VDOT 30-85)",
+      "claim": "Table 1 assigns a VDOT to a recent race time and gives the equivalent performance at other distances. Rows are whole VDOT values from 30 to 85 (VDOT 30-76 in steps of 2, then every integer 77-85). Times are hh:mm:ss (or mm:ss for <60 min). The 400 m and 800 m columns are NOT in the original table; they are derived from Daniels' time associations between 400/800/1500/mile applied to each row's 1500 m time and are less reliable than a 1500 m-or-longer race. The app can encode this table directly and linearly interpolate between whole VDOT values.",
+      "evidence": "Transcribed from the source table (Daniels' own article) which typed the original printed tables and corrected three misprints (VDOT 68 15,000 printed 38:44 -> 48:44; VDOT 66 E/L per mile 6:53 -> 6:35; VDOT 69 R 400 62 -> 66). Columns below: VDOT | 1500m | Mile | 3000m | 2-mile | 5K | 10K | 15K | Half | Marathon.\n30 | 8:30 | 9:11 | 17:56 | 19:19 | 30:40 | 63:46 | 98:14 | 2:21:04 | 4:49:17\n32 | 8:02 | 8:41 | 16:59 | 18:18 | 29:05 | 60:26 | 93:07 | 2:13:49 | 4:34:59\n34 | 7:37 | 8:14 | 16:09 | 17:24 | 27:39 | 57:26 | 88:30 | 2:07:16 | 4:22:03\n36 | 7:14 | 7:49 | 15:23 | 16:34 | 26:22 | 54:44 | 84:20 | 2:01:19 | 4:10:19\n38 | 6:54 | 7:27 | 14:41 | 15:49 | 25:12 | 52:17 | 80:33 | 1:55:55 | 3:59:35\n40 | 6:35 | 7:07 | 14:03 | 15:08 | 24:08 | 50:03 | 77:06 | 1:50:59 | 3:49:45\n42 | 6:19 | 6:49 | 13:28 | 14:31 | 23:09 | 48:01 | 73:56 | 1:46:27 | 3:40:43\n44 | 6:03 | 6:32 | 12:55 | 13:56 | 22:15 | 46:09 | 71:02 | 1:42:17 | 3:32:23\n45 | 5:56 | 6:25 | 12:40 | 13:40 | 21:50 | 45:16 | 69:40 | 1:40:20 | 3:28:26\n46 | 5:49 | 6:17 | 12:26 | 13:25 | 21:25 | 44:25 | 68:22 | 1:38:27 | 3:24:39\n47 | 5:42 | 6:10 | 12:12 | 13:10 | 21:02 | 43:36 | 67:06 | 1:36:38 | 3:21:00\n48 | 5:36 | 6:03 | 11:58 | 12:55 | 20:39 | 42:50 | 65:53 | 1:34:53 | 3:17:29\n49 | 5:30 | 5:56 | 11:45 | 12:41 | 20:18 | 42:04 | 64:44 | 1:33:12 | 3:14:06\n50 | 5:24 | 5:50 | 11:33 | 12:28 | 19:57 | 41:21 | 63:36 | 1:31:35 | 3:10:49\n51 | 5:18 | 5:44 | 11:21 | 12:15 | 19:36 | 40:39 | 62:31 | 1:30:02 | 3:07:39\n52 | 5:13 | 5:38 | 11:09 | 12:02 | 19:17 | 39:59 | 61:29 | 1:28:31 | 3:04:36\n53 | 5:07 | 5:32 | 10:58 | 11:50 | 18:58 | 39:20 | 60:28 | 1:27:04 | 3:01:39\n54 | 5:02 | 5:27 | 10:47 | 11:39 | 18:40 | 38:42 | 59:30 | 1:25:40 | 2:58:47\n55 | 4:57 | 5:21 | 10:37 | 11:28 | 18:22 | 38:06 | 58:33 | 1:24:18 | 2:56:01\n56 | 4:53 | 5:16 | 10:27 | 11:17 | 18:05 | 37:31 | 57:39 | 1:23:00 | 2:53:20\n57 | 4:48 | 5:11 | 10:17 | 11:06 | 17:49 | 36:57 | 56:46 | 1:21:43 | 2:50:45\n58 | 4:44 | 5:06 | 10:08 | 10:56 | 17:33 | 36:24 | 55:55 | 1:20:30 | 2:48:14\n59 | 4:39 | 5:02 | 9:58 | 10:46 | 17:17 | 35:52 | 55:06 | 1:19:18 | 2:45:47\n60 | 4:35 | 4:57 | 9:50 | 10:37 | 17:03 | 35:22 | 54:18 | 1:18:09 | 2:43:25\n61 | 4:31 | 4:53 | 9:41 | 10:27 | 16:48 | 34:52 | 53:32 | 1:17:02 | 2:41:08\n62 | 4:27 | 4:49 | 9:33 | 10:18 | 16:34 | 34:23 | 52:47 | 1:15:57 | 2:38:54\n63 | 4:24 | 4:45 | 9:25 | 10:10 | 16:20 | 33:55 | 52:03 | 1:14:54 | 2:36:44\n64 | 4:20 | 4:41 | 9:17 | 10:01 | 16:07 | 33:28 | 51:21 | 1:13:53 | 2:34:38\n65 | 4:16 | 4:37 | 9:09 | 9:53 | 15:54 | 33:01 | 50:40 | 1:12:53 | 2:32:35\n66 | 4:13 | 4:33 | 9:02 | 9:45 | 15:42 | 32:35 | 50:00 | 1:11:56 | 2:30:36\n67 | 4:10 | 4:30 | 8:55 | 9:37 | 15:29 | 32:11 | 49:22 | 1:11:00 | 2:28:40\n68 | 4:06 | 4:26 | 8:48 | 9:30 | 15:18 | 31:46 | 48:44 | 1:10:05 | 2:26:47\n69 | 4:03 | 4:23 | 8:41 | 9:23 | 15:06 | 31:23 | 48:08 | 1:09:12 | 2:24:57\n70 | 4:00 | 4:19 | 8:34 | 9:16 | 14:55 | 31:00 | 47:32 | 1:08:21 | 2:23:10\n71 | 3:57 | 4:16 | 8:28 | 9:09 | 14:44 | 30:38 | 46:58 | 1:07:31 | 2:21:26\n72 | 3:54 | 4:13 | 8:22 | 9:02 | 14:33 | 30:16 | 46:24 | 1:06:42 | 2:19:44\n73 | 3:52 | 4:10 | 8:16 | 8:55 | 14:23 | 29:55 | 45:51 | 1:05:54 | 2:18:05\n74 | 3:49 | 4:07 | 8:10 | 8:49 | 14:13 | 29:34 | 45:19 | 1:05:08 | 2:16:29\n75 | 3:46 | 4:04 | 8:04 | 8:43 | 14:03 | 29:14 | 44:48 | 1:04:23 | 2:14:55\n76 | 3:44 | 4:02 | 7:58 | 8:37 | 13:54 | 28:55 | 44:18 | 1:03:39 | 2:13:23\n77 | 3:41 | 3:58 | 7:53 | 8:31 | 13:44 | 28:36 | 43:49 | 1:02:56 | 2:11:54\n78 | 3:38.8 | 3:56.2 | 7:48 | 8:25 | 13:35 | 28:17 | 43:20 | 1:02:15 | 2:10:27\n79 | 3:36.5 | 3:53.7 | 7:43 | 8:20 | 13:26 | 27:59 | 42:52 | 1:01:34 | 2:09:02\n80 | 3:34.2 | 3:51.2 | 7:37.5 | 8:14.2 | 13:17.8 | 27:41.2 | 42:25 | 1:00:54 | 2:07:38\n81 | 3:31.9 | 3:48.7 | 7:32.5 | 8:08.9 | 13:09.3 | 27:24 | 41:58 | 1:00:15 | 2:06:17\n82 | 3:29.7 | 3:46.4 | 7:27.8 | 8:03.7 | 13:01.1 | 27:07 | 41:32 | 59:38 | 2:04:57\n83 | 3:27.6 | 3:44.1 | 7:23.1 | 7:58.7 | 12:53.0 | 26:51 | 41:06 | 59:01 | 2:03:40\n84 | 3:25.5 | 3:41.8 | 7:18.5 | 7:53.7 | 12:45.2 | 26:34 | 40:42 | 58:25 | 2:02:24\n85 | 3:23.5 | 3:39.6 | 7:14.1 | 7:48.9 | 12:37.4 | 26:19 | 40:17 | 57:50 | 2:01:10",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Determining your current level of fitness (Table 1: VDOT values associated with times raced over some popular distances)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com (tables from Daniels' Running Formula)",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-nov-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Table 2 - VDOT vs training paces (full table, VDOT 30-85)",
+      "claim": "Table 2 maps each VDOT to the five Daniels training intensities. Columns: Easy/Long pace given per km and per mile; Marathon pace per mile; Threshold (T) given as time for 400 m, 1000 m and 1 mile; Interval (I) given as time for 400 m, 1000 m, 1200 m and 1 mile; Repetition (R) given as time for 200 m, 400 m and 800 m. Blank cells mean that value is not tabulated for that VDOT. Times under two minutes are printed as seconds (e.g. 98 = 1:38). The app should store these as durations and convert to pace.",
+      "evidence": "Transcribed from the source Table 2 (VDOT 30-85). Column order below: VDOT | E/km | E/mile | M/mile | T400 | T1000 | T-mile | I400 | I1000 | I1200 | I-mile | R200 | R400 | R800. A dash (-) marks a blank cell in the source.\n30 | 7:37 | 12:16 | 11:02 | 2:33 | 6:24 | 10:18 | 2:22 | - | - | - | 67 | 2:16 | -\n32 | 7:16 | 11:41 | 10:29 | 2:26 | 6:05 | 9:47 | 2:14 | - | - | - | 63 | 2:08 | -\n34 | 6:56 | 11:09 | 10:00 | 2:19 | 5:48 | 9:20 | 2:08 | - | - | - | 60 | 2:02 | -\n36 | 6:38 | 10:40 | 9:33 | 2:13 | 5:33 | 8:55 | 2:02 | 5:07 | - | - | 57 | 1:55 | -\n38 | 6:22 | 10:14 | 9:08 | 2:07 | 5:19 | 8:33 | 1:56 | 4:54 | - | - | 54 | 1:50 | -\n40 | 6:07 | 9:50 | 8:46 | 2:02 | 5:06 | 8:12 | 1:52 | 4:42 | - | - | 52 | 1:46 | -\n42 | 5:53 | 9:28 | 8:25 | 1:57 | 4:54 | 7:52 | 1:48 | 4:31 | - | - | 50 | 1:42 | -\n44 | 5:40 | 9:07 | 8:06 | 1:53 | 4:43 | 7:33 | 1:44 | 4:21 | - | - | 48 | 98 | -\n45 | 5:34 | 8:58 | 7:57 | 1:51 | 4:38 | 7:25 | 1:42 | 4:16 | - | - | 47 | 96 | -\n46 | 5:28 | 8:48 | 7:48 | 1:49 | 4:33 | 7:17 | 1:40 | 4:12 | 5:00 | - | 46 | 94 | -\n47 | 5:23 | 8:39 | 7:40 | 1:47 | 4:29 | 7:10 | 98 | 4:07 | 4:54 | - | 45 | 92 | -\n48 | 5:17 | 8:31 | 7:32 | 1:45 | 4:24 | 7:02 | 96 | 4:03 | 4:49 | - | 44 | 90 | -\n49 | 5:12 | 8:22 | 7:24 | 1:43 | 4:20 | 6:55 | 95 | 3:59 | 4:45 | - | 44 | 89 | -\n50 | 5:07 | 8:14 | 7:17 | 1:42 | 4:15 | 6:51 | 93 | 3:55 | 4:41 | - | 43 | 87 | -\n51 | 5:02 | 8:07 | 7:09 | 1:40 | 4:11 | 6:44 | 92 | 3:51 | 4:36 | - | 42 | 86 | -\n52 | 4:58 | 7:59 | 7:02 | 98 | 4:07 | 6:38 | 91 | 3:48 | 4:33 | - | 42 | 85 | -\n53 | 4:53 | 7:52 | 6:56 | 97 | 4:04 | 6:32 | 90 | 3:44 | 4:29 | - | 41 | 84 | -\n54 | 4:49 | 7:45 | 6:49 | 95 | 4:00 | 6:26 | 88 | 3:41 | 4:25 | - | 40 | 82 | -\n55 | 4:45 | 7:38 | 6:43 | 94 | 3:56 | 6:20 | 87 | 3:37 | 4:21 | - | 40 | 81 | -\n56 | 4:40 | 7:31 | 6:37 | 93 | 3:53 | 6:15 | 86 | 3:34 | 4:18 | - | 39 | 80 | -\n57 | 4:36 | 7:25 | 6:31 | 91 | 3:50 | 6:09 | 85 | 3:31 | 4:15 | - | 39 | 79 | -\n58 | 4:33 | 7:19 | 6:25 | 90 | 3:45 | 6:04 | 83 | 3:28 | 4:10 | - | 38 | 77 | -\n59 | 4:29 | 7:13 | 6:19 | 89 | 3:43 | 5:59 | 82 | 3:25 | 4:07 | - | 37 | 76 | -\n60 | 4:25 | 7:07 | 6:14 | 88 | 3:40 | 5:54 | 81 | 3:23 | 4:03 | - | 37 | 75 | 2:30\n61 | 4:22 | 7:01 | 6:09 | 86 | 3:37 | 5:50 | 80 | 3:20 | 4:00 | - | 36 | 74 | 2:28\n62 | 4:18 | 6:56 | 6:04 | 85 | 3:34 | 5:45 | 79 | 3:17 | 3:57 | - | 36 | 73 | 2:26\n63 | 4:15 | 6:50 | 5:59 | 84 | 3:32 | 5:41 | 78 | 3:15 | 3:54 | - | 35 | 72 | 2:24\n64 | 4:12 | 6:45 | 5:54 | 83 | 3:29 | 5:36 | 77 | 3:12 | 3:51 | - | 35 | 71 | 2:22\n65 | 4:09 | 6:40 | 5:49 | 82 | 3:26 | 5:32 | 76 | 3:10 | 3:48 | - | 34 | 70 | 2:20\n66 | 4:05 | 6:35 | 5:45 | 81 | 3:24 | 5:28 | 75 | 3:08 | 3:45 | 5:00 | 34 | 69 | 2:18\n67 | 4:02 | 6:30 | 5:40 | 80 | 3:21 | 5:24 | 74 | 3:05 | 3:42 | 4:57 | 33 | 68 | 2:16\n68 | 4:00 | 6:26 | 5:36 | 79 | 3:19 | 5:20 | 73 | 3:03 | 3:39 | 4:53 | 33 | 67 | 2:14\n69 | 3:57 | 6:21 | 5:32 | 78 | 3:16 | 5:16 | 72 | 3:01 | 3:36 | 4:50 | 32 | 66 | 2:12\n70 | 3:54 | 6:17 | 5:28 | 77 | 3:14 | 5:13 | 71 | 2:59 | 3:34 | 4:46 | 32 | 65 | 2:10\n71 | 3:51 | 6:12 | 5:24 | 76 | 3:12 | 5:09 | 70 | 2:57 | 3:31 | 4:43 | 31 | 64 | 2:08\n72 | 3:49 | 6:08 | 5:20 | 76 | 3:10 | 5:05 | 69 | 2:55 | 3:29 | 4:40 | 31 | 63 | 2:06\n73 | 3:46 | 6:04 | 5:16 | 75 | 3:08 | 5:02 | 69 | 2:53 | 3:27 | 4:37 | 31 | 62 | 2:05\n74 | 3:44 | 6:00 | 5:12 | 74 | 3:06 | 4:59 | 68 | 2:51 | 3:25 | 4:34 | 30 | 62 | 2:04\n75 | 3:41 | 5:56 | 5:09 | 74 | 3:04 | 4:56 | 67 | 2:49 | 3:22 | 4:31 | 30 | 61 | 2:03\n76 | 3:39 | 5:52 | 5:05 | 73 | 3:02 | 4:52 | 66 | 2:48 | 3:20 | 4:28 | 29 | 60 | 2:02\n77 | 3:36 | 5:48 | 5:01 | 72 | 3:00 | 4:49 | 65 | 2:46 | 3:18 | 4:25 | 29 | 59 | 2:00\n78 | 3:34 | 5:45 | 4:58 | 71 | 2:58 | 4:46 | 65 | 2:44 | 3:16 | 4:23 | 29 | 59 | 1:59\n79 | 3:32 | 5:41 | 4:55 | 70 | 2:56 | 4:43 | 64 | 2:42 | 3:14 | 4:20 | 28 | 58 | 1:58\n80 | 3:30 | 5:38 | 4:52 | 70 | 2:54 | 4:41 | 64 | 2:41 | 3:12 | 4:17 | 28 | 58 | 1:56\n81 | 3:28 | 5:34 | 4:49 | 69 | 2:53 | 4:38 | 63 | 2:39 | 3:10 | 4:15 | 28 | 57 | 1:55\n82 | 3:26 | 5:31 | 4:46 | 68 | 2:51 | 4:35 | 62 | 2:38 | 3:08 | 4:12 | 27 | 56 | 1:54\n83 | 3:24 | 5:28 | 4:43 | 68 | 2:49 | 4:32 | 62 | 2:36 | 3:07 | 4:10 | 27 | 56 | 1:53\n84 | 3:22 | 5:25 | 4:40 | 67 | 2:48 | 4:30 | 61 | 2:35 | 3:05 | 4:08 | 27 | 55 | 1:52\n85 | 3:20 | 5:21 | 4:37 | 66 | 2:46 | 4:27 | 61 | 2:33 | 3:03 | 4:05 | 27 | 55 | 1:51",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Determining your current level of fitness (Table 2: Training intensities based on current VDOT)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com (tables from Daniels' Running Formula)",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-nov-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Intensity definitions by %VO2max / %HRmax (E, M, T, I, R)",
+      "claim": "Daniels' five intensities correspond to these physiological ranges (official V.O2 calculator): Easy 59-74% VO2max / 65-79% HRmax; Marathon 75-84% VO2max / 80-90% HRmax; Threshold 83-88% VO2max / 88-92% HRmax; Interval 97-100% VO2max / 98-100% HRmax; Repetition = fast, ~1500 m or mile race pace (not set by a fixed %VO2max). Daniels' article separately quotes E ~70% VO2max, T ~88% VO2max, I = vVO2max.",
+      "evidence": "Official VDOT calculator training-definition text gives the %VO2max and %HRmax bands per zone. Daniels' own 'Goals of Training' article states E ~70% VO2max (corresponding to ~75% vVO2max and ~75% HRmax), T ~88% of VO2max (comfortably hard), I at ~98-100% HRmax (vVO2max), and that R pace is not based on VO2max but on the target race. These anchors let the app compute pace bands from VDOT.",
+      "confidence": "high",
+      "citation": {
+        "title": "V.O2 Running Calculator - Training Definitions (Easy, Marathon, Threshold, Interval, Rep, Fast Reps)",
+        "authors": "Run SMART Project (Daniels J)",
+        "year": 2026,
+        "venue": "vdoto2.com",
+        "type": "coaching",
+        "doi_or_url": "https://runsmartproject.com/calculator/",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Easy / Long (E/L) pace",
+      "claim": "Easy/Long pace is 59-74% VO2max (65-79% HRmax; Daniels also cites ~70% VO2max = ~75% HRmax), conversational, and may legitimately vary by up to ~20 s/mile faster or slower on a given day. The benefit is driven mainly by time spent, not intensity; most weekly mileage should be at E pace.",
+      "evidence": "Official VDOT calculator: Easy pace 59-74% VO2max or 65-79% HRmax, 'up to 20 seconds per mile slower or faster than the specified pace on a given day'; purpose is to build the base. Daniels' article: benefits of E pace are 'more a function of time spent exercising than intensity', and 70% VO2max is sufficient.",
+      "confidence": "high",
+      "citation": {
+        "title": "V.O2 Running Calculator - Easy Pace definition",
+        "authors": "Run SMART Project (Daniels J)",
+        "year": 2026,
+        "venue": "vdoto2.com",
+        "type": "coaching",
+        "doi_or_url": "https://runsmartproject.com/calculator/",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Marathon (M) pace",
+      "claim": "Marathon pace is 75-84% VO2max (80-90% HRmax) and equals the pace the runner intends to race the marathon. It is used for marathon-specific steady runs or long repeats (e.g. 60-90 min at M), and in Daniels' article is described as ~20-30 s/mile slower than Threshold pace.",
+      "evidence": "Official VDOT calculator: Marathon pace 75-84% VO2max / 80-90% HRmax; sample workout '10 min E, 60-90 min M'. Daniels' 'Goals of Training': MP is 'about 20 to 30 seconds per mile slower than T pace' and is limited to marathon training (non-marathoners can ignore it).",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Goals of Training (Jack Daniels series, Part 3)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-aug-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Threshold (T) pace",
+      "claim": "Threshold pace is 83-88% VO2max (88-92% HRmax; ~88% VO2max), 'comfortably hard', sustainable in a race for roughly 60 min. It is performed as continuous tempo runs (20 min+) or cruise intervals (e.g. 5-15 min reps with 1-3 min rest). For elites T pace approximates half-marathon pace; for less-trained runners it is closer to 10K pace. Long T bouts (>20 min) may be run slightly slower.",
+      "evidence": "Official VDOT calculator: Threshold 83-88% VO2max / 88-92% HRmax, comfortably hard for a steady 3-4 mi or reps of 5-15 min with 1-3 min rest. Daniels' article: T ~88% VO2max, ~24 s/mile slower than current 5K pace, importance of holding exactly the prescribed speed; no more than 10% of weekly miles at T.",
+      "confidence": "high",
+      "citation": {
+        "title": "V.O2 Running Calculator - Threshold Pace definition",
+        "authors": "Run SMART Project (Daniels J)",
+        "year": 2026,
+        "venue": "vdoto2.com",
+        "type": "coaching",
+        "doi_or_url": "https://runsmartproject.com/calculator/",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Interval (I) pace",
+      "claim": "Interval pace targets 97-100% VO2max (98-100% HRmax; ~vVO2max) and stresses aerobic power. Reps should be 3-5 min each (800-1000 m common) with jog recoveries of similar duration; no single rep should exceed 5 min. Sample: 6 x 2 min I (1 min jog), 5 x 3 min I (2 min jog), 4 x 4 min I (3 min jog).",
+      "evidence": "Official VDOT calculator: Interval 97-100% VO2max / 98-100% HRmax, best in 3-5 min reps with similar-duration recoveries, and 'not to go past 5-minutes' to limit anaerobic involvement. Daniels' article: no single interval run should exceed 5 minutes; I ~98-100% HRmax.",
+      "confidence": "high",
+      "citation": {
+        "title": "V.O2 Running Calculator - Interval Pace definition",
+        "authors": "Run SMART Project (Daniels J)",
+        "year": 2026,
+        "venue": "vdoto2.com",
+        "type": "coaching",
+        "doi_or_url": "https://runsmartproject.com/calculator/",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Repetition (R) pace",
+      "claim": "Repetition pace is fast but not 'hard': short workbouts (200-400 m typical, up to ~2 min) with full recoveries, aimed at improving speed and running economy, not VO2max or lactate threshold. It is anchored to race pace (roughly current 1500 m or mile race pace), not to a fixed %VO2max, so two runners with the same vVO2max but different target races have the same T/I paces but different R paces.",
+      "evidence": "Official VDOT calculator: Reps are fast, relatively short with long recoveries (recoveries long enough that each rep feels no harder than the last), 'similar to current 1500m or mile race pace', purpose = speed and economy. Daniels' article: R pace is not based on VO2max but on the race being trained for; T and I are set by vVO2max and thus identical for equal-vVO2max runners, while R differs.",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Goals of Training (Jack Daniels series, Part 3)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-aug-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Weekly volume caps by intensity",
+      "claim": "Weekly quality volume is capped as a fraction of weekly mileage: Threshold no more than ~10% (or up to 10% as cruise intervals), Interval no more than ~8% (and no more than ~6 miles or 10 km of fast running), Repetition no more than ~5% (and no more than ~4 miles). Daniels also gives per-session caps: E up to ~2.5 h steady, T 20 min steady or cruise intervals, I up to 5 min per bout, R up to 2 min per bout.",
+      "evidence": "Daniels' 'Goals of Training' figure summary: 'E - up to 2.5 hours steady; T - 20 min steady or up to 10% cruise intervals; I - up to 5 min per workout & lesser of 8% or 6 miles total; R - up to 2 min per workout & lesser of 5% or 4 miles total.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Goals of Training (Jack Daniels series, Part 3)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-aug-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Deriving VDOT from a recent race or time trial",
+      "claim": "VDOT is looked up from a recent race/time-trial performance: find the distance row, read across to the VDOT column, then read that VDOT's row for equivalent race times and its Table 2 row for training paces. Performances must be run under similar conditions (terrain, wind, temperature, altitude), and a longer race (15K-25K) is a better marathon predictor than a 1-mile or 5K race.",
+      "evidence": "Daniels' article (Part 4): 'look up a time associated with a distance you have recently run and read across to the column headed by VDOT'; 'make sure you use performances run under similar conditions (terrain, wind, temperature and altitude)'; 'a longer race (15K to 25K) will usually be a better marathon predictor than a 1-mile or 5K race.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Determining your current level of fitness (Jack Daniels series, Part 4)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-nov-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Interpolation and 'do not exceed' rule",
+      "claim": "Between whole VDOT values the calculator interpolates linearly. Training paces are a ceiling: runners should not train faster than the pace assigned to their current VDOT; to train faster they must first justify a higher VDOT with a better race performance. VDOT should be re-derived from a new race result, not from faster training.",
+      "evidence": "Daniels' article: 'in between whole VDOT values, they are interpolated'; 'Don't try to beat the assigned training intensities; to train faster, you first must justify a higher VDOT by performing better in a race situation.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Running Training: Determining your current level of fitness (Jack Daniels series, Part 4)",
+        "authors": "Daniels J",
+        "year": 2000,
+        "venue": "CoachesEducation.com",
+        "type": "coaching",
+        "doi_or_url": "https://www.coacheseducation.com/endur/jack-daniels-nov-00.htm",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Riegel formula (simple race-time equivalence)",
+      "claim": "A simpler alternative to VDOT for race-time equivalence is Riegel's power law: T2 = T1 x (D2/D1)^1.06, where b = 1.06 over the endurance range (roughly 3.5-230 min of exercise). It is widely used but over-predicts speed (under-predicts time) as distance grows, especially for the marathon.",
+      "evidence": "Riegel proposed the formula in Runner's World (1977) and expanded it in American Scientist (1981), stating t = a x D^b for activities lasting ~3.5-230 min across running, swimming and walking. The exponent 1.06 is the widely quoted value; secondary sources note it yields 'seemingly unachievable predictions for longer distances'.",
+      "confidence": "high",
+      "citation": {
+        "title": "Athletic Records and Human Endurance",
+        "authors": "Riegel PS",
+        "year": 1981,
+        "venue": "American Scientist 69(3):285-290",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/7235349/",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Physiological model behind VDOT (VO2max, threshold, economy)",
+      "claim": "The model underlying VDOT is that marathon/endurance performance is set by three interacting factors: VO2max (upper limit for aerobic metabolism), the fraction of VO2max that can be sustained (lactate threshold), and running economy. Joyner's modeling shows plausible elite combinations predict faster-than-world-record marathon times, i.e. the factors are necessary but not fully deterministic.",
+      "evidence": "Joyner MJ (1991) modeled marathon times from VO2max, lactate threshold and running economy in elite runners; the fastest predicted time was 1:57:58 in a hypothetical runner with VO2max 84 ml/kg/min, LT 85% VO2max and exceptional economy - faster than the then world record (2:06:50), leading the author to conclude either large improvements are physiologically possible or the limiting-factor concepts need refinement.",
+      "confidence": "high",
+      "citation": {
+        "title": "Modeling: optimal marathon performance on the basis of physiological factors",
+        "authors": "Joyner MJ",
+        "year": 1991,
+        "venue": "Journal of Applied Physiology 70(2):683-687",
+        "type": "observational",
+        "doi_or_url": "10.1152/jappl.1991.70.2.683",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "VO2max sets the ceiling; speed at LT is the best single predictor",
+      "claim": "VO2max sets the upper limit for endurance performance, but running economy and the fractional utilisation of VO2max (i.e. lactate threshold) also determine performance; the speed at lactate threshold integrates all three and is the best single physiological predictor of distance-running performance. This justifies prescribing paces from a performance-derived VDOT rather than from VO2max alone.",
+      "evidence": "Bassett & Howley (2000) review: VO2max is limited by O2 delivery and 'sets the upper limit for endurance performance (an athlete cannot operate above 100% VO2max for extended periods)'; running economy and fractional utilisation also affect performance; 'the speed at lactate threshold ... integrates all three of these variables and is the best physiological predictor of distance running performance.'",
+      "confidence": "high",
+      "citation": {
+        "title": "Limiting factors for maximum oxygen uptake and determinants of endurance performance",
+        "authors": "Bassett DR Jr, Howley ET",
+        "year": 2000,
+        "venue": "Medicine & Science in Sports & Exercise 32(1):70-84",
+        "type": "narrative-review",
+        "doi_or_url": "10.1097/00005768-200001000-00012",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Limit: running economy varies (same VDOT != same VO2max)",
+      "claim": "VDOT assumes average running economy, so it can misestimate an individual's true VO2max. Among highly trained runners with comparable VO2max, running economy explains a large share of performance differences, so two runners with the same VDOT can differ markedly in true VO2max and in how their paces translate.",
+      "evidence": "Conley & Krahenbuhl (1980) studied 12 elite 10K runners (mean 32.1 min, VO2max 71.7 ml/kg/min). VO2max correlated weakly with 10K time (r = -0.12, ns), whereas steady-state VO2 correlated strongly (r = 0.79-0.83); 65.4% of the variance in 10K time was explained by running economy. VDOT is therefore explicitly a performance-based 'effective VO2max', not a lab value.",
+      "confidence": "high",
+      "citation": {
+        "title": "Running economy and distance running performance of highly trained athletes",
+        "authors": "Conley DL, Krahenbuhl GS",
+        "year": 1980,
+        "venue": "Medicine & Science in Sports & Exercise 12(5):357-360",
+        "type": "observational",
+        "doi_or_url": "10.1249/00005768-198012050-00010",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Limit: power-law/VDOT equivalence under-predicts long-race times",
+      "claim": "Simple race-time equivalence (Riegel/VDOT-style scaling) is well-calibrated up to the half-marathon but systematically under-predicts marathon times. In a large recreational cohort the Riegel formula was at least 10 min too fast for half of runners at the marathon, so the app should treat VDOT-derived marathon equivalents as optimistic and prefer longer races (or a dedicated marathon model) for marathon prediction.",
+      "evidence": "Vickers & Vertosick (2016), N = 2303 recreational endurance runners: 'The commonly used Riegel formula for race time prediction was well-calibrated for races up to a half-marathon, but dramatically underestimated marathon time, giving times at least 10 min too fast for half of runners.' Mean squared error for Riegel was 381 vs 228 (one prior race) and 208 (two prior races) for their models.",
+      "confidence": "high",
+      "citation": {
+        "title": "An empirical study of race times in recreational endurance runners",
+        "authors": "Vickers AJ, Vertosick EA",
+        "year": 2016,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation 8:26",
+        "type": "observational",
+        "doi_or_url": "10.1186/s13102-016-0052-y",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Modern validation: race performances can estimate the metabolic-stability boundary",
+      "claim": "Recent work supports deriving the boundary speed for metabolic stability (MS_lim, i.e. the heavy/severe boundary akin to threshold/critical speed) directly from race performances when laboratory testing is unavailable. This provides independent, peer-reviewed support for the practice of inferring training zones from race times rather than only from lab tests.",
+      "evidence": "Cheuvront et al. (2026), N = 19 runners with race times from 1.5 to 42 km, estimated MS_lim from race times via regression equations; runners self-selecting ~79% of estimated MS_lim and at 90% both showed metabolic stability (zero VO2 slope, RER < 0.90), while 110% did not. Keywords include 'Vdot', 'Critical Speed', 'Maximal Metabolic Steady State'. Small sample; authors call for use when metabolic testing is not possible.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Rapid method to identify the boundary speed for metabolic stability from race performances",
+        "authors": "Cheuvront SN, Ferris J, Hazelwood B, Bearden SE, Gottschall JS",
+        "year": 2026,
+        "venue": "Open Access Journal of Sports Medicine 17:2613468",
+        "type": "observational",
+        "doi_or_url": "10.1080/11791543.2026.2613468",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    },
+    {
+      "topic": "Limit: component-specific training rationale is contested",
+      "claim": "The physiological rationale that each Daniels intensity uniquely improves one of six components lacks strong published support; critics argue maximal performance is regulated centrally (central-governor model) rather than by the cardiorespiratory limit alone. The training methods themselves are nonetheless acknowledged as effective, so the app should present the paces as effective heuristics rather than as proven mechanism.",
+      "evidence": "Noakes (Lore of Running, 4th ed., 2003, pp. 311-312) challenges the explanatory power of Daniels' cardiovascular/anaerobic model, noting lack of published evidence that each intensity improves only one component, and that the component list is incomplete (e.g. omits impact tolerance for the marathon); Noakes acknowledges the efficacy of the methods while disputing the mechanism.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lore of Running (4th ed.), pp. 311-312",
+        "authors": "Noakes TD",
+        "year": 2003,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "ISBN 0-87322-959-2",
+        "retrieved_at": "2026-11-22T14:40:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "VDOT is a performance-derived 'effective VO2max' (Daniels-Gilbert): from a recent race/time trial you look up a VDOT, which gives equivalent race times at other distances (Table 1) and the five training paces Easy/Long, Marathon, Threshold, Interval and Repetition (Table 2). Intensities are Easy 59-74% VO2max, Marathon 75-84%, Threshold 83-88%, Interval 97-100%, and Repetition ~1500m/mile race pace (not a %VO2max). Reps are short (200-400m) with full recovery; intervals are 3-5 min; weekly caps are ~10% T, ~8% I, ~5% R of mileage. Paces are a ceiling: train no faster than your current VDOT and re-derive VDOT from a new race. Limits: VDOT assumes average running economy (same VDOT can mean different true VO2max), needs a maximal effort under similar conditions, and simple race-time scaling under-predicts marathon times (Riegel was >=10 min too fast for half of runners in a 2303-runner cohort), so longer races are better marathon predictors.",
+  "unverified": [
+    "Exact temperature and altitude correction factors in the V.O2 calculator (the calculator offers temp/altitude inputs, but the numeric adjustment coefficients were not retrievable from the page and are not encoded here).",
+    "The precise coefficients of the Daniels-Gilbert 'drop dead' intensity-duration equation and oxygen-cost equation are not published in Daniels' book or the cited article; only the derived tables are available, so the app should encode the tables (or reproduce them) rather than the equations unless the primary 'Oxygen Power' pamphlet is obtained.",
+    "The claim that each of Daniels' six training components is improved uniquely by one specific intensity is contested (Noakes) and was not independently substantiated by a controlled training study in this pass.",
+    "The exact %VO2max anchors reported differ slightly across sources (e.g. E cited as ~70% in Daniels' 2000 article vs 59-74% band on the official calculator; T ~88% in the article vs 83-88% band); both are from Daniels-affiliated sources but are not fully consistent."
+  ],
+  "notes": "Scope: Jack Daniels VDOT equivalence tables and training paces as encodable data. PRIMARY SOURCE: the tables were transcribed from the Coaches Education reprint of Daniels' own article ('Running Training: Determining your current level of fitness'), which states the tables were typed from the original printed tables and lists three corrections (VDOT 68 15,000: 38:44->48:44; VDOT 66 E/L per mile: 6:53->6:35; VDOT 69 R 400: 62->66). The canonical printed source is Daniels' Running Formula (Human Kinetics; 1st 1998, 2nd 2005, 3rd 2014). ENCODING GUIDANCE: (1) Store Table 1 (VDOT 30-85) and Table 2 (VDOT 30-85) as lookup tables keyed by integer VDOT; interpolate linearly between whole VDOT values. (2) Blank cells in Table 2 (marked '-') are not tabulated in the source for that VDOT; do not fabricate them. (3) In Table 2, T/I/R values are DURATIONS for the labelled distance, not paces; values under 2:00 are printed as seconds (98 = 1:38). (4) The 400 m and 800 m columns of Table 1 are NOT in the original table (derived from 1500 m via Daniels' time associations) and should be flagged as lower reliability in the UI. (5) R and 'Fast Reps' pace depend on the target race (1500 m/mile and 800 m respectively), not only on VDOT. INTEGRATION: this file pairs with wave-3/12b-hr-zones-rpe.json (HR/RPE zones); VDOT paces are the pace-domain counterpart and can be cross-validated against the HR zones there. Also relevant: wave-1/1b-intensity-zones.json (LT1/LT2, CP/CS domain framework) for the physiological underpinning. DISCREPANCY: the official V.O2 calculator's zone bands (e.g. Easy 59-74% VO2max) differ modestly from the round figures in Daniels' 2000 article (~70% E, ~88% T); treat bands as ranges. Both tables were re-checked for internal consistency (e.g. T1000 time vs T-mile pace; I400 vs I1000 vs I1200 paces; R200 vs R400 vs R800 paces agree within rounding) before encoding. OPTIONAL SIXTH PACE (not in Table 2): the official V.O2 calculator adds 'Fast Reps' (F) at ~800 m race pace, 200-600 m reps with full recovery kept under ~90 s each (type: coaching, vdoto2.com); this is an extension beyond the classic five Daniels intensities."
+}

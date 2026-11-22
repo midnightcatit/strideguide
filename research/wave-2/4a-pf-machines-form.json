@@ -1,0 +1,318 @@
+{
+  "workstream": "Strength for runners",
+  "subtopic": "Planet Fitness machine form and muscles: seated row, leg curl, leg extension, triceps extension, leg press, biceps curl, back extension, shoulder press",
+  "generated_at": "2026-11-22T15:05:00Z",
+  "claims": [
+    {
+      "topic": "General: machines vs free weights",
+      "claim": "Selectorized machines are a legitimate way to build muscle and strength. A meta-analysis of 13 studies (n=1016) found no significant difference between free-weight and machine training for directly compared dynamic strength, isometric strength or hypertrophy; strength gains were specific to the modality used for testing. For an app aimed at Planet Fitness members, machine-based programming should not be framed as inferior to barbell training.",
+      "evidence": "Haugen et al. 2023 pooled 13 studies (5 hypertrophy outcomes, 1016 participants). Direct comparison: dynamic strength SMD 0.084 (95% CI -0.184 to 0.351), isometric strength and hypertrophy also non-significant; strength was specific to the test modality (free-weight tests favoured free weights, machine tests trended toward machines).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of free-weight vs. machine-based strength training on maximal strength, hypertrophy and jump performance: a systematic review and meta-analysis",
+        "authors": "Haugen ME, Vårvik FT, Bjørnsen T, et al.",
+        "year": 2023,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s13102-023-00713-4",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Seated row: muscles worked",
+      "claim": "The seated row is a horizontal pull. The prime movers are the latissimus dorsi, rhomboids, middle and lower trapezius, posterior deltoid and teres major, with the biceps brachii and brachialis assisting elbow flexion. Clients should feel tension between the shoulder blades and along the side of the back (lats), not mainly in the arms; if the biceps dominate, the load is too heavy or the scapulae are not retracting.",
+      "evidence": "ExRx lists the general back as the target and the middle/lower trapezius, latissimus dorsi, posterior deltoid, teres major and brachialis as synergists for the lever seated row. Padovan et al. 2025 recorded high-density EMG from the upper/middle/lower trapezius, latissimus dorsi, lateral/posterior deltoid, biceps brachii, triceps brachii and erector spinae during the seated row, confirming these as active contributors.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Seated Row",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/BackGeneral/LVSeatedRow",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Seated row: setup, form and common mistakes",
+      "claim": "Set the chest pad so the arms can reach forward and the scapulae can protract at the start, and set the seat or grip so the wrists follow the elbows. Pull the handles toward the lower chest while retracting the scapulae and keeping the chest against the pad; return until the arms are straight and the shoulder blades spread. Common mistakes: rocking the torso, shrugging the shoulders toward the ears, pulling to the chin/upper chest, and cutting the return short.",
+      "evidence": "ExRx technique for the lever seated row: chest pad adjusted so the shoulders can stretch forward; seat or grip adjusted so the wrists follow the elbows; lift the chest slightly and pull the shoulder blades together while keeping the lower chest on the pad; let the shoulders roll forward as the arms extend. The row is shoulder extension/adduction with scapular retraction, so shrugging and torso rocking reduce the intended pull.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Seated Row",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/BackGeneral/LVSeatedRow",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Seated row: grip width, scapular position and coaching",
+      "claim": "Grip and scapular choices change emphasis but not the fundamental movement. A narrower grip and a lower shoulder-abduction angle have each been associated with greater latissimus dorsi EMG in separate studies; fixing or freeing the scapulae produces similar overall excitation but slightly different upper-back distribution. Verbal 'mind-muscle' cues have only a small, short-lived effect on EMG, so teach setup and tempo rather than relying on a cue to 'feel the lats'.",
+      "evidence": "Di Fonza et al. 2026 narrative review of 23 studies: in the seated row, a narrower grip and a lower shoulder-abduction angle were each associated with greater latissimus dorsi amplitude in separate studies (not tested in combination). Padovan et al. 2025 crossover: fixed vs free scapular rowing gave comparable overall excitation, with greater middle-trapezius and latissimus dorsi amplitude in the fixed condition during the eccentric phase. Fujita et al. 2020: verbal instruction increased latissimus dorsi EMG by about 15% only in the first repetitions and reduced posterior deltoid EMG; effects disappeared over a set to failure.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Electromyographic Analysis of Latissimus Dorsi Activation During Common Resistance Training Exercises: A Narrative Review",
+        "authors": "Di Fonza D, Di Claudio G, Colantuono G, et al.",
+        "year": 2026,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.3390/jfmk11030315",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg curl: muscles worked",
+      "claim": "The leg curl is a knee-flexion isolation movement. The target is the hamstring group (biceps femoris, semitendinosus, semimembranosus), with the gastrocnemius, gracilis, sartorius and popliteus assisting. Clients should feel it in the back of the thigh; keeping the ankles dorsiflexed (toes pulled up) reduces gastrocnemius contribution and helps keep the effort on the hamstrings.",
+      "evidence": "ExRx lists the hamstrings as the target and the gastrocnemius, gracilis, sartorius and popliteus as synergists for the lever seated leg curl. The same source notes that dorsiflexion reduces gastrocnemius active insufficiency/contribution during knee flexion.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Seated Leg Curl",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/Hamstrings/LVSeatedLegCurl",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg curl: setup, form and common mistakes",
+      "claim": "Align the knee with the machine pivot and set the pad just above the ankles (not on the calf). Pull the pad toward the thighs by flexing the knees, keep the hips down and the back against the seat, then return to near-full knee extension under control. Common mistakes: hips lifting off the seat, using momentum to swing the pad, placing the pad too low on the calf, and stopping short of full extension.",
+      "evidence": "ExRx setup and execution: knees aligned with the lever fulcrum; pad contacts the lower leg just above the ankles; pull the padded lever toward the thighs and return until the knees are nearly extended. The hip position is stabilised by the seat and pad, so hip lifting changes the movement toward hip extension rather than knee flexion.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Seated Leg Curl",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/Hamstrings/LVSeatedLegCurl",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg curl: regional hamstring emphasis",
+      "claim": "The leg curl does not load all hamstring heads equally. It is a knee-flexion exercise and tends to emphasise the medial hamstrings more than the biceps femoris long head; hip-extension exercises such as the Romanian deadlift or 45-degree hip extension bias the long head. Clients who want balanced hamstring development should not rely on leg curls alone.",
+      "evidence": "Bourne et al. 2017 tested 24 recreationally active men across 10 exercises: concentrically, the leg curl had one of the lowest biceps femoris/medial hamstring EMG ratios, while the lunge and 45-degree hip extension had the highest; functional MRI showed greater biceps femoris long-head activation in 45-degree hip extension than in the Nordic curl. McAllister et al. 2014 also found hamstring activity was highest in the Romanian deadlift and glute-ham raise, with the leg curl lower.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Impact of exercise selection on hamstring muscle activation",
+        "authors": "Bourne MN, Williams MD, Opar DA, et al.",
+        "year": 2017,
+        "venue": "British Journal of Sports Medicine",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2015-095739",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg extension: muscles worked",
+      "claim": "The leg extension is a single-joint knee-extension movement that isolates the quadriceps (rectus femoris, vastus lateralis, vastus medialis, vastus intermedius). It is the most direct way to train the rectus femoris, which grows little from the leg press. Clients should feel the effort across the front of the thigh, with the rectus femoris contribution being the head most dependent on knee extension because it crosses both the hip and the knee.",
+      "evidence": "ExRx lists the quadriceps as the sole target for the lever leg extension. Kinoshita et al. 2026, a 12-week contralateral-leg training study in 17 untrained adults, found rectus femoris volume increased substantially with knee extension but not with leg press (+1.1%, p=0.379), while vasti and whole-quadriceps gains were comparable between exercises.",
+      "confidence": "high",
+      "citation": {
+        "title": "Hypertrophic Effects of Single- versus Multi-Joint Exercise: A Direct Comparison between Knee Extension and Leg Press",
+        "authors": "Kinoshita M, Maeo S, Kobayashi Y, et al.",
+        "year": 2026,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000003957",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg extension: setup, form and safety",
+      "claim": "Set the seat so the knee is near the machine pivot and the shin pad sits just above the ankle; extend the knees to near-lockout without snapping into it, then lower under control. Safety: open-chain knee extension loads the ACL more than weight-bearing exercise, and ACL strain peaks near 10-30 degrees of knee flexion; moving the resistance pad more proximally (away from the ankle) reduces ACL load. Clients with ACL reconstruction or patellofemoral pain should use a partial range, lighter load and proximal pad placement.",
+      "evidence": "Escamilla et al. 2012 reviewed biomechanical studies: ACL loading is greater in non-weight-bearing (open-chain) than weight-bearing exercise and peaks between 10 and 30 degrees of knee flexion; during seated knee extension, a more proximal pad position on the lower leg reduces ACL loading. ExRx execution cues: extend the knees and return under control; the seat and pad stabilise the thigh.",
+      "confidence": "high",
+      "citation": {
+        "title": "ACL Strain and Tensile Forces for Weight Bearing and Non-Weight-Bearing Exercises After ACL Reconstruction: A Guide to Exercise Selection",
+        "authors": "Escamilla RF, Macleod TD, Wilk KE, et al.",
+        "year": 2012,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2519/jospt.2012.3768",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Triceps extension: muscles worked and shoulder position",
+      "claim": "The triceps extension targets the three heads of the triceps brachii (long, lateral and medial). The long head crosses the shoulder, so an overhead position lengthens it and is often used to emphasise it; a pushdown or machine extension with the upper arm at the side keeps the long head relatively shortened. Clients should feel it at the back of the upper arm, not in the elbow joint.",
+      "evidence": "ExRx lists the triceps brachii as the target for the lever triceps extension and cable pushdown. Alves et al. 2018 compared overhead and lying dumbbell elbow extensions in 21 resistance-trained men and found similar activation patterns between the long and lateral heads, with concentric activity higher than eccentric; the authors concluded the two shoulder positions should not be treated as distinct exercises in the same routine.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effect of shoulder position on triceps brachii heads activity in dumbbell elbow extension exercises",
+        "authors": "Alves D, Matta T, Oliveira L",
+        "year": 2018,
+        "venue": "Journal of Sports Medicine and Physical Fitness",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.23736/S0022-4707.17.06849-9",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Triceps extension: setup, form and common mistakes",
+      "claim": "On the machine, set the seat so the upper arms rest on the pad and the elbows line up with the pivot; extend the elbows until the arms are straight, then return until the forearms are near the upper arms. On a cable pushdown, stand close to the stack, pin the elbows to the sides and extend without leaning over the weight. Common mistakes: seat too high (shoulders rise at lockout), elbows drifting forward or flaring, and using torso momentum.",
+      "evidence": "ExRx lever triceps extension: back pad and seat positioned so the upper arms rest on the pad and the elbows align with the pivot; seat too high makes the shoulders rise at lockout and seat too low compromises the start position. ExRx cable pushdown: keep the elbows in and the body close to the stack; the movement is elbow extension with the upper arm fixed.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Triceps Extension",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/Triceps/LVTriExt",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg press: muscles worked and foot placement",
+      "claim": "The leg press is a multi-joint lower-body push. The target is the quadriceps, with the gluteus maximus, adductor magnus and soleus as synergists and the hamstrings and gastrocnemius as stabilisers. Foot placement shifts emphasis: a higher foot position increases glute and hamstring involvement, while a lower position increases quadriceps involvement. Clients should feel the effort in the front of the thigh and glutes, not in the lower back.",
+      "evidence": "ExRx lists the quadriceps as the target and the gluteus maximus, adductor magnus and soleus as synergists for the lever seated leg press; the comments note that higher foot placement emphasises the glutes and lower placement emphasises the quadriceps. Escamilla et al. 2001 also reported greater hamstring activity with a wide-stance high-foot leg press than with a narrow stance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Lever Seated Leg Press",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/Quadriceps/LVSeatedLegPress",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg press: setup, form and safety",
+      "claim": "Set the seat and back support so the hips can reach near-full flexion without the pelvis rolling under (avoid a deep butt-wink), keep the knees tracking over the toes, and keep the whole foot on the platform. Lower under control and stop before the tailbone tucks or the heels lift. Safety: the leg press produces no ACL tensile force, but tibiofemoral and patellofemoral compression rise with knee flexion; a 0-50 degree knee range is the lower-force zone, so very deep pressing is not necessary for general fitness.",
+      "evidence": "Escamilla et al. 2001 tested 10 experienced lifters in squat and high/low foot leg press: no ACL forces were produced in any leg press variation, while tibiofemoral compression, PCL tension and patellofemoral compression generally increased with knee flexion; the authors suggested training in the functional 0-50 degree range to limit knee forces. ExRx setup cues: seat/back adjusted for near-full range without the hips rolling under; knees track over the feet; keep the heels down.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of technique variations on knee biomechanics during the squat and leg press",
+        "authors": "Escamilla RF, Fleisig GS, Zheng N, et al.",
+        "year": 2001,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1097/00005768-200109000-00020",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Leg press: hypertrophy value",
+      "claim": "The leg press is a time-efficient quadriceps and glute builder. In a 12-week trial it produced comparable vasti and whole-quadriceps growth as knee extension and also increased gluteus maximus and adductor magnus volume, which knee extension did not. It is a good choice for clients who want lower-body muscle mass with less spinal loading than a barbell squat, but it should be paired with a knee-extension or squat pattern for rectus femoris and single-leg work.",
+      "evidence": "Kinoshita et al. 2026: 17 untrained adults trained one leg with knee extension and the other with leg press for 12 weeks. Leg press increased gluteus maximus and adductor magnus volume; vasti and whole-quadriceps gains were comparable to knee extension; rectus femoris did not grow with leg press (+1.1%, p=0.379).",
+      "confidence": "high",
+      "citation": {
+        "title": "Hypertrophic Effects of Single- versus Multi-Joint Exercise: A Direct Comparison between Knee Extension and Leg Press",
+        "authors": "Kinoshita M, Maeo S, Kobayashi Y, et al.",
+        "year": 2026,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000003957",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Biceps curl: muscles worked and setup",
+      "claim": "The biceps curl machine targets the biceps brachii, with the brachialis and brachioradialis assisting. The preacher/lever position keeps the upper arm fixed and emphasises the long (lateral) head of the biceps, while the short head is relatively shortened. Setup: set the seat so the armpits sit at the top of the pad, keep the backs of the upper arms on the pad, and curl the handles toward the shoulders without the elbows drifting forward. Common mistakes: elbows flaring or sliding forward, upper arms lifting off the pad, swinging the torso, and partial reps.",
+      "evidence": "ExRx lever preacher curl: target brachialis with biceps brachii and brachioradialis as synergists; seat height set so the armpits are at the top of the pad; the upper arm stays on the pad; the long head of the biceps is significantly activated while the short head is shortened (active insufficiency). The same setup cues apply to the isolateral lever curl.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Preacher Curl",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/Brachialis/LVPreacherCurl",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Biceps curl: technique evidence",
+      "claim": "Small changes in bar and arm position change biceps and anterior-deltoid excitation. A straight bar produced slightly greater biceps EMG than an EZ bar when the arms were not flexed, and flexing the arms at the shoulder increased biceps EMG by about 18-20% versus not flexing. For machine curls, this means the preacher position is a stable, elbow-fixed variation; clients should still use full elbow flexion and a controlled return rather than partial reps.",
+      "evidence": "Coratella et al. 2023: 10 competitive bodybuilders performed bilateral curls with straight vs EZ bars and with vs without arm flexion at 8RM. Biceps brachii nRMS was higher with the straight bar in the no-flexion condition (+1.8%, ES 0.74) and higher with arm flexion (+17.7% straight, +20.3% EZ); anterior deltoid excitation differed by flexion condition.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Bilateral Biceps Curl Shows Distinct Biceps Brachii and Anterior Deltoid Excitation Comparing Straight vs. EZ Barbell Coupled with Arms Flexion/No-Flexion",
+        "authors": "Coratella G, Tornatore G, Longo S, et al.",
+        "year": 2023,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.3390/jfmk8010013",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Back extension: muscles worked and specificity",
+      "claim": "The back extension machine targets the lumbar erector spinae (iliocostalis, longissimus) and multifidus. If the pelvis is not restrained, the gluteus maximus and hamstrings can dominate the movement and the lumbar extensors receive less specific load. Clients should feel the effort along the lower spine, not only in the glutes or hamstrings.",
+      "evidence": "Steele et al. 2015 reviewed acute activation and chronic adaptation studies: benches, roman chairs and machines without pelvic restraint activate the lumbar extensors but are less effective for chronic lumbar-extensor adaptation because hip extensors contribute; machines with appropriate pelvic restraint best isolate the lumbar extensors. ExRx lists the erector spinae as the target and the gluteus maximus, hamstrings and adductor magnus as stabilisers.",
+      "confidence": "high",
+      "citation": {
+        "title": "A review of the specificity of exercises designed for conditioning the lumbar extensors",
+        "authors": "Steele J, Bruce-Low S, Smith D",
+        "year": 2015,
+        "venue": "British Journal of Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2013-092197",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Back extension: setup, form and common mistakes",
+      "claim": "Set the foot platform and pad so there is a small gap between the seat edge and the back of the lower thigh, and use the thigh/hip restraint to keep the pelvis against the seat. Push the feet into the platform and drive the hips back into the seat throughout; extend the spine smoothly and return without collapsing. Common mistakes: using the hips/glutes to swing up, setting the pad too low so the pelvis lifts, bouncing into end-range hyperextension, and loading too heavy for the lumbar extensors.",
+      "evidence": "ExRx lever back extension: push the hips back into the seat by pushing the feet into the platform; position the platform so a small gap remains between the seat edge and the back of the lower thigh; use the seat belt/thigh restraint if the hips are hard to stabilise. Steele et al. 2015 support pelvic restraint as the key to isolating the lumbar extensors.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Back Extension",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/ErectorSpinae/LVBackExtension",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Shoulder press: muscles worked and setup",
+      "claim": "The shoulder press machine targets the anterior deltoid, with the lateral deltoid, supraspinatus, clavicular pectoralis major, triceps brachii, coracobrachialis, middle/lower trapezius and serratus anterior assisting. Set the seat so the handles start at about shoulder height, use a grip that keeps the wrists over the elbows, brace the trunk and press overhead without arching the lower back. Common mistakes: grip too wide (shortens range), shrugging, flaring the ribs, and pressing from a half-range start.",
+      "evidence": "ExRx lever shoulder press: anterior deltoid target; synergists include lateral deltoid, supraspinatus, clavicular pectoralis, triceps, coracobrachialis, middle/lower trapezius and serratus anterior; range of motion is compromised if the grip is too wide. The machine fixes the bar path, so the main stability demand is trunk bracing.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Lever Shoulder Press",
+        "authors": "ExRx.net",
+        "year": 2026,
+        "venue": "ExRx.net Exercise Library",
+        "type": "coaching",
+        "doi_or_url": "https://exrx.net/WeightExercises/DeltoidAnterior/LVShoulderPress",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    },
+    {
+      "topic": "Shoulder press: machine vs barbell evidence",
+      "claim": "Machine shoulder press is a stable way to load the deltoids, but it is not equivalent to a barbell press. In competitive bodybuilders, barbell overhead press produced greater shoulder-muscle excitation than the machine version, and front vs back variants shifted emphasis (back press favoured medial/posterior deltoid; front press favoured pectoralis major). The machine is a reasonable choice for beginners or clients who need to reduce balance demands, but it should not be assumed to maximise deltoid hypertrophy.",
+      "evidence": "Coratella et al. 2022: 8 competitive bodybuilders performed front/back barbell military press and front/back machine shoulder press. During the ascending phase, anterior deltoid was greater in back barbell than back machine (ES 1.42); medial deltoid was greater in back barbell than front barbell (ES 3.68) and back machine (ES 7.51); pectoralis major was greater in front barbell than back barbell and in front machine than back machine. The authors concluded barbell overhead press excites shoulder muscles more than machine because the machine stabilises the load path.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Front vs Back and Barbell vs Machine Overhead Press: An Electromyographic Analysis and Implications For Resistance Training",
+        "authors": "Coratella G, Tornatore G, Longo S, et al.",
+        "year": 2022,
+        "venue": "Frontiers in Physiology",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.3389/fphys.2022.825880",
+        "retrieved_at": "2026-11-22T15:05:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Tier A (high-confidence) findings: (1) machine and free-weight training produce similar hypertrophy and directly compared strength, with strength gains specific to the test modality (Haugen 2023 meta-analysis); (2) the leg press and leg extension produce comparable vasti and whole-quadriceps growth, but only knee extension grows the rectus femoris and only leg press grows gluteus maximus and adductor magnus (Kinoshita 2026); (3) open-chain knee extension loads the ACL more than weight-bearing exercise, peaks near 10-30 degrees of knee flexion, and a more proximal pad reduces ACL load (Escamilla 2012); (4) the leg press produces no ACL tensile force, while knee compressive forces rise with flexion and are lower in the 0-50 degree range (Escamilla 2001); (5) back-extension machines with pelvic restraint isolate the lumbar extensors better than benches or unrestrained machines (Steele 2015). These are the claims suitable for the app's highest evidence badge. The seated-row, leg-curl, triceps, biceps and shoulder-press claims are moderate-confidence because they rest on acute EMG or coaching technique sources rather than longitudinal trials.",
+  "unverified": [
+    "The exact Planet Fitness machine models, pad-adjustment ranges and placard instructions could not be verified: planetfitness.com returned HTTP 403 to automated retrieval and the blog did not expose machine-specific how-to pages. Setup cues here are for standard lever/selectorized machines and may need per-club confirmation.",
+    "The 'common mistakes' lists are coaching consensus and inverse of the correct technique cues; no study quantified the prevalence or injury risk of each mistake. Treat them as teaching points, not measured risk factors.",
+    "No peer-reviewed trial has directly tested the Planet Fitness-branded back-extension or triceps-extension machines; the claims rely on equivalent lever-machine evidence and ExRx technique descriptions.",
+    "The statement that the preacher position emphasises the biceps long head is based on anatomy/active-insufficiency reasoning and ExRx coaching content, not a dedicated EMG trial of the preacher machine.",
+    "The claim that machine shoulder press is inferior for deltoid hypertrophy is an extrapolation from acute EMG in 8 bodybuilders; no longitudinal trial compared machine vs barbell shoulder press hypertrophy.",
+    "The seated-row 'feel it in the lats' cue is a coaching heuristic; EMG cannot establish where a client perceives effort, and mind-muscle cueing effects were small and short-lived in novices.",
+    "The leg-press foot-placement emphasis (higher = glutes, lower = quads) is based on ExRx coaching and biomechanics, not a dedicated foot-placement EMG trial at Planet Fitness-style machines."
+  ],
+  "notes": "Research-only synthesis; no app code or architecture decisions. Retrieval: PubMed E-utilities for abstracts and metadata; Crossref API for DOI verification; ExRx.net exercise pages via a reader proxy because direct ExRx and Planet Fitness requests returned HTTP 403. All DOIs were checked against Crossref on 2026-11-22. ExRx pages are undated, so the year 2026 reflects the access year. The eight machines are treated as standard lever/selectorized equipment; Planet Fitness clubs vary by model and brand, so pad/pin positions should be confirmed against the machine placard. Acute EMG evidence shows which muscles are active and how technique shifts emphasis, but it does not prove long-term hypertrophy or injury outcomes; the high-confidence claims are those backed by the meta-analysis, the 12-week training trial, and the ACL/knee biomechanics reviews. The seated row, leg curl, triceps, biceps and shoulder press claims are deliberately rated medium because they rely on acute EMG or coaching sources. Cross-reference 4b-pf-machines-programming.json for programming (sets, reps, order) and 7a/7b for general beginner progression."
+}

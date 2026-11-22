@@ -1,0 +1,318 @@
+{
+  "workstream": "Supporting practices",
+  "subtopic": "Warm-up, cooldown and mobility: dynamic vs static stretching, warm-up protocols before running and lifting, hip/ankle/thoracic mobility, and cooldown practices",
+  "generated_at": "2026-11-22T14:42:00Z",
+  "claims": [
+    {
+      "topic": "Warm-up: effect on performance",
+      "claim": "A structured warm-up improves subsequent physical performance in most controlled comparisons: warm-up improved performance in 79% of the performance criteria examined across 32 studies, with little evidence that warming up is detrimental.",
+      "evidence": "Systematic review with meta-analysis of 32 studies, all rated high quality on the PEDro scale (6.5-9, mean 7.6). Warm-up had to include activities other than stretching. Authors note that few well-conducted randomised controlled trials exist and call for more.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of warming-up on physical performance: a systematic review with meta-analysis",
+        "authors": "Fradkin AJ, Zazryn TR, Smoliga JM",
+        "year": 2010,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0b013e3181c643a0",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Warm-up: physiological mechanisms and caveats",
+      "claim": "Active warm-up raises muscle and core temperature and can improve short-term (<10 s) performance more than passive heating, and improves intermediate and longer performance when the athlete begins the task relatively non-fatigued with an elevated baseline oxygen consumption; however, an overly intense warm-up or insufficient recovery can reduce high-energy phosphate availability and impair short-term performance, and endurance performance may be impaired when the warm-up causes substantial thermoregulatory strain.",
+      "evidence": "Narrative review of active, passive and task-specific warm-up studies. The author notes that many early studies were poorly controlled, used few participants and often omitted statistical analysis, so conclusions are drawn cautiously.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Warm up II: performance changes following active warm up and how to structure the warm up",
+        "authors": "Bishop D",
+        "year": 2003,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200333070-00002",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Warm-up: sequencing and structure",
+      "claim": "A performance-oriented warm-up should progress from submaximal aerobic activity to large-amplitude dynamic stretching and then to sport-specific dynamic activities; if static stretching is included, it should be short duration (roughly <90 s total per muscle group) and below the point of discomfort.",
+      "evidence": "Narrative review of acute static and dynamic stretching studies. Recommends this sequence to minimise performance impairment while retaining range-of-motion benefits; notes that short-duration, low-intensity static stretching in trained people is less likely to impair performance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "A review of the acute effects of static and dynamic stretching on performance",
+        "authors": "Behm DG, Chaouachi A",
+        "year": 2011,
+        "venue": "European Journal of Applied Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1007/s00421-011-1879-2",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Static vs dynamic stretching: acute performance effects",
+      "claim": "Immediately after stretching, static stretching (-3.7%) and proprioceptive neuromuscular facilitation (PNF) (-4.4%) produce small performance decrements while dynamic stretching produces a small improvement (+1.3%); static-stretch deficits are larger with at least 60 s per muscle group (-4.6%) than with less than 60 s (-1.1%), and when dynamic activity follows the stretching the performance effect is no longer clear.",
+      "evidence": "Systematic review comparing static, dynamic and PNF stretching on performance, range of motion and injury. Testing was performed on average 3-5 min after stretching; most studies did not include post-stretching dynamic activity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute effects of muscle stretching on physical performance, range of motion, and injury incidence in healthy active individuals: a systematic review",
+        "authors": "Behm DG, Blazevich AJ, Kay AD, McHugh M",
+        "year": 2016,
+        "venue": "Applied Physiology, Nutrition, and Metabolism",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1139/apnm-2015-0235",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Static stretching before strength training",
+      "claim": "Pre-exercise static stretching reduces maximal strength by about 5.4% (95% CI -6.6% to -4.2%), with a non-significant change in power (-1.9%) and a small reduction in explosive performance (-2.0%); effects are smallest when total stretch duration is 45 s or less per muscle group and are more pronounced in isometric than dynamic tests.",
+      "evidence": "Meta-analysis of 104 studies yielding 61 strength, 12 power and 57 explosive-performance data points. Pooled standardised effects were -0.10 (strength), -0.04 (power) and -0.03 (explosive). Effects were not related to age, sex or fitness level.",
+      "confidence": "high",
+      "citation": {
+        "title": "Does pre-exercise static stretching inhibit maximal muscular performance? A meta-analytical review",
+        "authors": "Simic L, Sarabon N, Markovic G",
+        "year": 2013,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1111/j.1600-0838.2012.01444.x",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Warm-up: post-activation performance enhancement",
+      "claim": "Adding a post-activation performance enhancement (PAPE) conditioning activity to a general warm-up acutely improves countermovement jump by about 2.4 cm (95% CI 1.2 to 3.6) in trained and competitive athletes, with preliminary low-certainty benefit for change of direction but no significant pooled effect on sprint performance.",
+      "evidence": "Systematic review and meta-analysis; 33 studies included qualitatively and 12 contributed to at least one meta-analysis. CMJ mean difference 2.41 cm (I2=26%); change-of-direction SMD -0.75 based on only 3 studies; sprint SMD 0.29 (95% CI -0.35 to 0.94). Certainty was uneven across outcomes.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of post-activation performance enhancement added to general warm-up on jump, sprint, and change-of-direction performance in competitive athletes: a systematic review and meta-analysis",
+        "authors": "Zheng Z, Gao X, Song Z",
+        "year": 2026,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s13102-026-01758-x",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Warm-up in runners: static stretching vs isometric holds",
+      "claim": "In running-sport athletes, static stretching within the warm-up has been associated with worse sprint and countermovement/drop-jump performance, whereas isometric holds produced no significant performance decrement and reduced soreness; neither modality changed running economy.",
+      "evidence": "Systematic review of 9 studies in running athletes comparing isometric exercise/muscle activation with static stretching. Authors describe heterogeneous evidence with risk of bias and call for better-controlled dose and timing studies.",
+      "confidence": "low",
+      "citation": {
+        "title": "Effects of isometric exercises versus static stretching in warm-up regimens for running sport athletes: a systematic review",
+        "authors": "Ullman ZJ, Fernandez MB, Klein M",
+        "year": 2021,
+        "venue": "International Journal of Exercise Science",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.70252/fdtw6296",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Stretching and running economy",
+      "claim": "Meta-analysed evidence does not support the common belief that pre-running stretching worsens running economy: across 15 studies (181 participants, low certainty) no stretching type (dynamic, static or PNF) significantly changed running economy acutely.",
+      "evidence": "Systematic review with meta-analysis using robust variance estimation and PRISMA 2020. Acute effects were non-significant (p=0.21-0.65) for all stretching types; chronic effects were evaluated only qualitatively because too few studies existed. Mean PEDro score 4.88 (fair), and GRADE certainty was low.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Acute and chronic effects of stretching on running economy: a systematic review with meta-analysis",
+        "authors": "Warneke K, Zechner M, Siegel SD, Jochum D, Brunssen L, Konrad A",
+        "year": 2025,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s40798-025-00859-0",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Injury prevention: stretching",
+      "claim": "Stretching does not reduce sports injury risk (RR 0.963, 95% CI 0.846 to 1.095), in contrast to strength training, proprioception training and multi-component programmes.",
+      "evidence": "Systematic review and meta-analysis of 25 randomised controlled trials including 26,610 participants and 3,464 injuries, with stratified analysis by intervention type and adjustment for clustering.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "authors": "Lauersen JB, Bertelsen DM, Andersen LB",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2013-092538",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Injury prevention: strength training",
+      "claim": "Strength training is the strongest single exercise-based injury-prevention measure identified, reducing sports injuries to less than one third (RR 0.315, 95% CI 0.207 to 0.480); multi-exposure programmes (RR 0.655) and proprioception training (RR 0.550) are also effective, and overuse injuries can be roughly halved.",
+      "evidence": "Same meta-analysis of 25 randomised controlled trials (26,610 participants). Estimates are pooled across sports rather than runners specifically, but strength training is the best-supported exercise lever for injury reduction.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "authors": "Lauersen JB, Bertelsen DM, Andersen LB",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2013-092538",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Injury prevention: warm-up",
+      "claim": "Evidence that warm-up prevents injury is limited: of five randomised controlled trials, three found a significant reduction in injury risk and two did not, so there is insufficient evidence to endorse or discontinue routine warm-up for injury prevention, although the weight of evidence favours a reduced risk.",
+      "evidence": "Systematic review of randomised controlled trials investigating warm-up (excluding stretching-only interventions) and injury risk; all five included studies were rated high quality (mean 8/11).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Does warming up prevent injury in sport? The evidence from randomised controlled trials?",
+        "authors": "Fradkin AJ, Gabbe BJ, Cameron PA",
+        "year": 2006,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1016/j.jsams.2006.03.026",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Injury prevention: dynamic stretching",
+      "claim": "Direct evidence that dynamic stretching reduces injury is sparse: one study found no difference in injury incidence between a dynamic-stretching-only group and a combined dynamic plus static stretching group, whereas warm-up programmes that include dynamic activity and some dynamic stretching consistently show positive effects on injury incidence.",
+      "evidence": "Narrative review examining acute and training effects of dynamic stretching on injury incidence and moderating variables (range of motion, strength, balance, proprioception, muscle morphology, psycho-physiological responses). Authors conclude the literature is conflicting and much thinner than for static stretching.",
+      "confidence": "low",
+      "citation": {
+        "title": "Potential effects of dynamic stretching on injury incidence of athletes: a narrative review of risk factors",
+        "authors": "Behm DG, Alizadeh S, Daneshjoo A, Konrad A",
+        "year": 2023,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-023-01847-8",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Mobility: acute range-of-motion gains",
+      "claim": "A single bout of stretching acutely increases range of motion by a small amount (standardised mean difference -0.555, 95% CI -0.677 to -0.434) with moderate certainty; the effect is similar for static, dynamic/ballistic and PNF techniques and is not moderated by stretch intensity, trained state or sex.",
+      "evidence": "Systematic review with meta-analysis of 47 studies (110 effect sizes, 1,658 participants, mean age 23.2 years). Significant range-of-motion gains for sit-and-reach, hamstring and triceps surae tests but not hip adductor tests. Evidence was downgraded for publication bias but rated moderate confidence overall.",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute effects of various stretching techniques on range of motion: a systematic review with meta-analysis",
+        "authors": "Behm DG, Alizadeh S, Daneshjoo A, Anvar SH, Graham A, Zahiri A, Goudini R, Edwards C, Culleton R, Scharf C, Konrad A",
+        "year": 2023,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s40798-023-00652-x",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Mobility: ankle and hip range of motion as injury risk factors",
+      "claim": "Best-evidence synthesis in long-distance runners found strong evidence only for previous injury and high weekly training distance (in men) as injury risk factors; range-of-motion restrictions were not established as independent risk factors.",
+      "evidence": "Systematic review of incidence and determinants studies using best-evidence synthesis; injury incidence ranged from 19.4% to 79.3%, with the knee the most common site. Two reviewers independently assessed study quality.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Incidence and determinants of lower extremity running injuries in long distance runners: a systematic review",
+        "authors": "van Gent RN, Siem D, van Middelkoop M, van Os AG, Bierma-Zeinstra SM, Koes BW",
+        "year": 2007,
+        "venue": "British Journal of Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1136/bjsm.2006.033548",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Mobility: prospective cohort findings",
+      "claim": "In a 24-week prospective cohort of 98 runners, greater hip external-rotator strength was protective against running injury (OR 0.84, 95% CI 0.71 to 0.99); among the measured baseline biomechanical factors, only this strength variable was reported as significantly associated with injury risk, while ankle dorsiflexion range and passive hip internal rotation did not emerge as significant predictors.",
+      "evidence": "Prospective cohort with bi-monthly online injury questionnaires. Injury incidence was 8.1 per 1,000 hours of running; the knee accounted for 28.4% of injuries. Baseline measures included plantar pressure, hip and knee strength, core stability, dorsiflexion, passive hip internal rotation, leg length, Q-angle and shank-forefoot alignment, analysed with logistic regression.",
+      "confidence": "low",
+      "citation": {
+        "title": "Incidence and biomechanical risk factors for running-related injuries: a prospective cohort study",
+        "authors": "Moreira PF, Veras PM, Oliveira TMD, Souza MA, Catharino LL, Borel WP, Barbosa AC, Fonseca DS, Felício DC",
+        "year": 2024,
+        "venue": "Journal of Clinical Orthopaedics and Trauma",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.1016/j.jcot.2024.102562",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Mobility: foam rolling before exercise",
+      "claim": "Foam rolling before exercise produces small improvements in sprint performance (+0.7%) and flexibility (+4.0%) but negligible effects on jump (-1.9%) and strength (+1.8%); post-exercise rolling slightly attenuates performance loss and reduces muscle pain (+6.0%), so overall effects are minor.",
+      "evidence": "Meta-analysis of 21 studies (14 pre-rolling, 7 post-rolling). Effect sizes were small (g 0.06-0.47). Authors conclude the effects are rather minor and partly negligible, but can be relevant for sprint performance, flexibility or pain sensation, and justify foam rolling as a warm-up activity more than as a recovery tool.",
+      "confidence": "high",
+      "citation": {
+        "title": "A meta-analysis of the effects of foam rolling on performance and recovery",
+        "authors": "Wiewelhove T, Döweling A, Schneider C, Hottenrott L, Meyer T, Kellmann M, Pfeiffer M, Ferrauti A",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Cooldown: delayed-onset muscle soreness",
+      "claim": "A cool-down after unaccustomed eccentric exercise did not reduce delayed-onset muscle soreness (mean effect 0 mm on a 100-mm scale, 95% CI -11 to 11), whereas a warm-up immediately before the same exercise produced a small reduction (13 mm, 95% CI 2 to 24).",
+      "evidence": "Randomised controlled trial with factorial design, concealed allocation and intention-to-treat analysis; 52 healthy adults performed backward downhill treadmill walking to induce soreness.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Warm-up reduces delayed onset muscle soreness but cool-down does not: a randomised controlled trial",
+        "authors": "Law RY, Herbert RD",
+        "year": 2007,
+        "venue": "Australian Journal of Physiotherapy",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1016/S0004-9514(07)70041-7",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Cooldown: stretching for soreness",
+      "claim": "Stretching before, after, or both before and after exercise does not produce clinically important reductions in delayed-onset muscle soreness; pooled effects were about 0.5-1 point on a 100-point scale, and even the largest field-trial effect was only about 4 points.",
+      "evidence": "Cochrane systematic review and meta-analysis of 12 randomised or quasi-randomised studies, including one field trial of 2,377 participants. Evidence quality was low to moderate and all studies carried moderate or high risk of bias.",
+      "confidence": "high",
+      "citation": {
+        "title": "Stretching to prevent or reduce muscle soreness after exercise",
+        "authors": "Herbert RD, de Noronha M, Kamper SJ",
+        "year": 2011,
+        "venue": "Cochrane Database of Systematic Reviews",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1002/14651858.CD004577.pub3",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Cooldown: active recovery and lactate clearance",
+      "claim": "Active recovery clears accumulated blood lactate faster than passive recovery in an intensity-dependent manner, with the fastest clearance at intensities close to the lactate threshold (about 80-100% of threshold) rather than at low intensities.",
+      "evidence": "Controlled laboratory study in 10 males. Repeated 5-min runs at 90% VO2max raised blood lactate from about 1.0 to 3.9 mmol/L; recovery at 0-100% of lactate threshold showed faster clearance with active than passive recovery, and shorter time constants plus higher peak clearance rates at 80-100% than at 40% of threshold.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Blood lactate clearance during active recovery after an intense running bout depends on the intensity of the active recovery",
+        "authors": "Menzies P, Menzies C, McIntyre L, Paterson P, Wilson J, Kemi OJ",
+        "year": 2010,
+        "venue": "Journal of Sports Sciences",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2010.481721",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    },
+    {
+      "topic": "Cooldown: recovery modalities vs passive recovery",
+      "claim": "In competitive endurance athletes, no physical recovery modality (including active recovery) has been shown to outperform passive recovery for muscle soreness, creatine kinase or subsequent sport-specific performance; compression garments do not improve performance, and certainty of evidence is mostly very low.",
+      "evidence": "Systematic review and network meta-analysis of 16 randomised controlled trials (273 participants) with 47 contrasts against passive recovery. No contrast was robust; 64% of network nodes rested on a single trial, and a thermoneutral-immersion sham ranked at or above every active modality, suggesting expectancy effects in this unblinded literature.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Physical recovery modalities in competitive and elite endurance athletes: a systematic review and network meta-analysis finding limited evidence of benefit over passive recovery",
+        "authors": "Jin Y, Pan D, Li M, Zhu D, Wen J",
+        "year": 2026,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.3389/fspor.2026.1876924",
+        "retrieved_at": "2026-11-22T14:42:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Warm-up reliably improves performance when it is progressive and not fatiguing, and a dynamic warm-up is preferred before both running and lifting: static stretching and PNF immediately before activity cause small strength and power decrements, whereas dynamic stretching is neutral to slightly positive. Stretching does not prevent running injuries and does not meaningfully reduce soreness; strength training is the better-supported injury-prevention tool. Mobility work acutely increases range of motion regardless of technique, but low ankle or hip range of motion is not an established injury cause, and cool-downs have no proven recovery benefit beyond comfort and routine.",
+  "unverified": [
+    "Thoracic spine mobility drills improve running mechanics, running economy or injury risk in runners: no running-specific prospective or intervention studies were located. The rationale (trunk rotation, arm swing, posture) is extrapolated from general biomechanics and coaching practice.",
+    "Specific mobility-screen thresholds (for example a wall ankle-dorsiflexion test distance or hip-extension angle) predict running injury: no validated cut-offs were found in the reviewed literature, and prospective cohort evidence does not establish range of motion as an independent risk factor.",
+    "The RAMP (Raise, Activate, Mobilise, Potentiate) sequence is superior to other warm-up structures: no comparative trials testing RAMP against alternative protocols in runners were located; it is a coaching framework consistent with general warm-up principles rather than an evidence-tested protocol.",
+    "Hip-flexor or calf stretching increases stride length or improves running economy in runners: no studies isolating this effect were found; running-economy meta-analyses show no acute stretching effect.",
+    "Foam rolling 'breaks up adhesions' or alters fascia: this mechanistic claim was not substantiated by the retrieved evidence; measured effects are small and consistent with reduced stiffness and increased stretch tolerance.",
+    "A cool-down prevents blood pooling or dizziness after hard efforts: no controlled evidence was retrieved for this specific claim.",
+    "Dynamic warm-up specifically reduces running injury in runners: the positive injury data come from other sports and mixed neuromuscular warm-up programmes, not from runner-specific trials."
+  ],
+  "notes": "Retrieval: PubMed returned a cookie wall, so all metadata and abstracts were pulled from the Europe PMC REST API (resultType=core) and cross-checked against DOI records; no Firecrawl fallback was needed. Schema type values used: meta-analysis, systematic-review, rct, observational, cohort, narrative-review. Key caveats for product copy: (1) the warm-up and stretching-injury literature is dominated by non-running sports, lab-based performance tests and small samples; runner-specific warm-up RCTs are scarce. (2) 'Static stretching is bad before running' is overstated: acute strength/power decrements are real but small, dose-dependent (<60 s per muscle group is minor), and attenuated when dynamic activity follows; the running-economy meta-analysis found no acute harm. (3) The practical message should be sequencing and dose (aerobic raise -> dynamic mobility -> sport-specific drills; save prolonged static stretching for separate sessions), not a blanket ban. (4) Stretching is not an injury-prevention intervention; strength training and load management have far better support. (5) Mobility work is best framed as 'temporarily increases range of motion and may improve comfort/mechanics', not as correcting deficits that cause injury. (6) Cooldown should be optional and framed as promoting comfort and routine, since neither cool-down nor most recovery modalities beat passive recovery in controlled trials; active recovery does speed lactate clearance but lactate is not the cause of soreness or impaired adaptation. (7) The 2026 Zheng and Jin papers are recent and have not yet accumulated replication; treat their pooled estimates as provisional."
+}

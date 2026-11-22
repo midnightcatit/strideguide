@@ -35,21 +35,6 @@
       }
     },
     {
-      "topic": "Training characteristics as modifiable risk factors",
-      "claim": "Training-related variables (e.g., volume/mileage, frequency, intensity, and the way training is progressed) are modifiable factors repeatedly implicated in RRI risk, though the quality of evidence is limited and study methods vary.",
-      "evidence": "Umbrella review identifies running/training characteristics among the large-effect contributors to RRI. A separate living systematic review of trail running (19 studies) found extrinsic factors such as no specialised training plan, negating warm-up, double sessions/day and training on asphalt associated with injury. Overall evidence quality remains low.",
-      "confidence": "moderate",
-      "citation": {
-        "title": "Risk factors for running-related injuries: An umbrella systematic review",
-        "authors": "Correia CK, Machado JM, Dominski FH, de Castro MP, de Brito Fontana H, Ruschel C",
-        "year": 2024,
-        "venue": "Journal of Sport and Health Science",
-        "type": "systematic-review",
-        "doi_or_url": "https://doi.org/10.1016/j.jshs.2024.04.011",
-        "retrieved_at": "2026-11-22"
-      }
-    },
-    {
       "topic": "Trail-running specific risk factors",
       "claim": "In trail running, both intrinsic factors (more running experience, higher level, prior cramping/muscle-damage markers) and extrinsic/logistical factors (no specialised plan, neglecting warm-up, training surface, twice-daily sessions, physically demanding occupations) are associated with injury.",
       "evidence": "Living systematic review of 19 studies; 10 investigated risk factors in 2,785 participants. Injury incidence reported 0.7–61.2 injuries/1000 h and prevalence 1.3–90%, with heterogeneous definitions. The lower limb (especially foot/toe blisters) was the most common region.",
@@ -91,36 +76,6 @@
         "venue": "Journal of Orthopaedic & Sports Physical Therapy",
         "type": "cohort",
         "doi_or_url": "https://doi.org/10.2519/jospt.2014.5164",
-        "retrieved_at": "2026-11-22"
-      }
-    },
-    {
-      "topic": "Change in training load and injury: very limited evidence",
-      "claim": "Very limited evidence supports the common assumption that a sudden change (increase or decrease) in training load is associated with increased RRI risk. Of the few eligible studies, most suggested an association but the overall body of evidence is small and of limited quality.",
-      "evidence": "Systematic review that identified only 4 eligible articles. Three reported an association between increased training load and higher RRI risk: (i) recent change in velocity/distance/frequency (p=0.037); (ii) >30% vs <10% increases in weekly distance (HR 1.59, 95% CI 0.96–2.66); (iii) significantly greater running distance in the week before injury onset (mean difference 86%, 95% CI 12–159%). No difference between 10% and 24% average weekly volume increases (HR 0.8, 95% CI 0.6–1.3). Conclusion: very limited evidence.",
-      "confidence": "moderate",
-      "citation": {
-        "title": "Is there evidence for an association between changes in training load and running-related injuries? A systematic review",
-        "authors": "Damsted C, Glad S, Nielsen RO, Sørensen H, Malisoux L",
-        "year": 2018,
-        "venue": "International Journal of Sports Physical Therapy",
-        "type": "systematic-review",
-        "doi_or_url": "https://doi.org/10.26603/ijspt20180931",
-        "retrieved_at": "2026-11-22"
-      }
-    },
-    {
-      "topic": "Combined volume + pace progression is not clearly synergistic",
-      "claim": "Simultaneously progressing both running volume and running pace did not show a statistically significant positive (additive-scale) interaction on injury risk, despite being a widely held coaching concern.",
-      "evidence": "Secondary analysis of 586 injury-free recreational runners over 24 weeks: relative progression >10% in volume plus pace (risk difference 8.1%, 95% CI -9.3 to 25.6%) and absolute progression >5 km plus pace (RD 5.2%, 95% CI -12.0 to 22.5%) were not statistically significant. 133 runners sustained an RRI.",
-      "confidence": "low",
-      "citation": {
-        "title": "Interactions Between Running Volume and Running Pace and Injury Occurrence in Recreational Runners: A Secondary Analysis",
-        "authors": "Ramskov D, Rasmussen S, Sørensen H, Parner ET, Lind M, Nielsen R",
-        "year": 2022,
-        "venue": "Journal of Athletic Training",
-        "type": "cohort",
-        "doi_or_url": "https://doi.org/10.4085/1062-6050-0165.21",
         "retrieved_at": "2026-11-22"
       }
     },
@@ -200,7 +155,7 @@
       }
     },
     {
-      "topic": "Strength training for runners: performance benefit, no body-composition penalty",
+      "topic": "Strength training for runners: performance benefit without body-composition penalty",
       "claim": "For distance runners, adding strength training (heavy resistance, explosive, and/or plyometric) improves running economy (typically 2–8%) and time-trial/sprint performance, and does not adversely affect body composition or VO2max. Two to three sessions per week with varied modalities are likely beneficial.",
       "evidence": "Systematic review of 24 studies (PEDro internal validity 4–6). Running economy improved ~2–8% in most (not all) studies; time-trial and anaerobic qualities tended to improve; VO2max, velocity at VO2max, lactate and body composition were largely unaffected. Methodological limitations noted.",
       "confidence": "moderate",
@@ -305,51 +260,6 @@
       }
     },
     {
-      "topic": "Footwear does not clearly reduce injury",
-      "claim": "There is no clear evidence that any particular running-shoe type or shoe prescribed by static foot posture reduces lower-limb running injury in adults. Runners should be cautious about footwear marketing claims of injury prevention.",
-      "evidence": "Cochrane systematic review of 12 trials (11,240 participants). Neutral/cushioned vs minimalist, motion control vs neutral, soft vs hard midsoles and stability shoes showed little or no difference (low/very-low certainty). Prescribing shoes by foot posture made little or no difference to injury (moderate certainty; military populations).",
-      "confidence": "moderate",
-      "citation": {
-        "title": "Running shoes for preventing lower limb running injuries in adults",
-        "authors": "Relph N, Greaves H, Armstrong R, Prior TD, Spencer S, Griffiths IB, Dey P, Langley B",
-        "year": 2022,
-        "venue": "Cochrane Database of Systematic Reviews",
-        "type": "systematic-review",
-        "doi_or_url": "https://doi.org/10.1002/14651858.CD013368.pub2",
-        "retrieved_at": "2026-11-22"
-      }
-    },
-    {
-      "topic": "Biomechanical risk factors: minimal predictive evidence",
-      "claim": "Alterations in running biomechanics have minimal evidence supporting an association with running injury; among many variables studied, only peak hip adduction angle was associated with injury, and that finding was driven by a small number of studies from one group. Biomechanics should not be over-interpreted as a stand-alone injury cause.",
-      "evidence": "Systematic review with meta-analysis: 82 studies, 5,465 runners; meta-analysis of 11 biomechanical variables from 51 articles (n=2,395). Only peak hip adduction was associated with injury (0.57, 95% CI 0.21–0.94) and was highly influenced by two studies by the same authors.",
-      "confidence": "moderate",
-      "citation": {
-        "title": "Are alterations in running biomechanics associated with running injuries? A systematic review with meta-analysis",
-        "authors": "Lopes AD, Mascarinas A, Hespanhol L",
-        "year": 2023,
-        "venue": "Brazilian Journal of Physical Therapy",
-        "type": "systematic-review",
-        "doi_or_url": "https://doi.org/10.1016/j.bjpt.2023.100538",
-        "retrieved_at": "2026-11-22"
-      }
-    },
-    {
-      "topic": "Overtraining syndrome / under-recovery",
-      "claim": "Excessive training without adequate recovery can progress from functional overreaching to non-functional overreaching and chronic overtraining syndrome (OTS), characterised by sustained performance decline and multi-system disturbance. Balanced training and recovery are central to prevention.",
-      "evidence": "Narrative review of OTS hypotheses (glycogen depletion, dysregulated cytokine response, oxidative stress, autonomic changes) and its systemic effects on multiple organ systems and immune function; emphasises that balanced training and recovery are crucial to prevent OTS. Diagnosis is challenging and clinical.",
-      "confidence": "moderate",
-      "citation": {
-        "title": "Beyond physical exhaustion: Understanding overtraining syndrome through the lens of molecular mechanisms and clinical manifestation",
-        "authors": "Fiala O, Hanzlova M, Borska L, Fiala Z, Holmannova D",
-        "year": 2025,
-        "venue": "Sports Medicine and Health Science",
-        "type": "narrative-review",
-        "doi_or_url": "https://doi.org/10.1016/j.smhs.2025.01.006",
-        "retrieved_at": "2026-11-22"
-      }
-    },
-    {
       "topic": "RED FLAG — focal bone pain and high-risk sites: see a professional",
       "claim": "Educational red flags warranting prompt professional assessment (not self-management) include: pain that is focal/pinpoint over a bone, provoked by impact/running and increasingly persistent or present at rest or at night, especially at recognised higher-risk sites (e.g. anterior tibia, navicular/midfoot, base of the 5th metatarsal, hip/groin — femoral neck, pelvis/sacrum). These features can indicate a bone stress injury that may worsen with continued loading.",
       "evidence": "Clinical guidance in narrative reviews of bone stress injury: activity-related, localised early symptoms with high clinical suspicion warrant advanced imaging if radiographs are negative; high-risk fracture sites require greater caution and specialist/surgical consideration; early symptom reporting and load reduction are core prevention/management messages. Note: non-diagnostic; not a substitute for clinical assessment.",
@@ -365,8 +275,8 @@
       }
     },
     {
-      "topic": "RED FLAG — menstrual dysfunction / recurrent injuries / low energy: see a professional",
-      "claim": "Educational red flags warranting professional review include: menstrual dysfunction (e.g. missing/irregular periods), recurrent or multiple bone stress injuries, and signs of low energy availability (persistent fatigue, unexplained underperformance, restrictive eating). These suggest RED-S / low bone health and indicate a need for clinical and nutritional assessment.",
+      "topic": "RED FLAG — menstrual dysfunction / recurrent bone stress injury / low energy: see a professional",
+      "claim": "Educational red flags warranting professional review include: menstrual dysfunction (e.g. missing/irregular periods), recurrent or multiple bone stress injuries, and signs of low energy availability (persistent fatigue, unexplained underperformance, restrictive eating). These suggest RED-S / compromised bone health and indicate a need for clinical and nutritional assessment.",
       "evidence": "IOC RED-S consensus statement identifies these features and their multi-system consequences. A systematic review of female off-road runners identified disrupted menstruation, previous BSI, higher female-athlete-triad risk and low calcium/vitamin D/calorie intake as significant BSI risk factors. Non-diagnostic; prompt to seek professional care.",
       "confidence": "moderate",
       "citation": {
@@ -395,12 +305,12 @@
       }
     }
   ],
-  "summary_tier_a": "Strongest (Tier A) evidence for an educational running-injury module: (1) RRI is multifactorial, with PREVIOUS INJURY the most consistent and strongest predictor of future injury (high-quality evidence for prior injury in short-distance runners; moderate for long-distance). (2) TRAINING CHARACTERISTICS/LOAD are modifiable contributors but the specific 'training error' (volume, pace, frequency) link is weaker and less certain than commonly assumed — evidence for sudden load changes is 'very limited', and a widely-cited >30%/2-week distance progression finding was non-significant (HR 1.59; 95% CI 0.96–2.66). (3) STRENGTH TRAINING reduces sports injury risk substantially in pooled RCTs (RR ~0.32; overuse ~halved) and improves running economy (~2–8%) without harming body composition in runners. (4) The ACWR is conceptually/statistically contested and should not be presented as an established causality-based tool; prefer a load-capacity, all-activity view of training. (5) SCREENING cannot reliably predict individual injury, so individualised, supported, multifactorial approaches (strength, graduated progression, recovery, education) are favoured over one-off tests. (6) NON-DIAGNOSTIC RED FLAGS for professional review: focal/impact-provoked bone pain (especially at high-risk sites), menstrual dysfunction, recurrent bone stress injuries, low energy availability, and non-mechanical/systemic features (night/rest pain, unexplained swelling, fever, weight loss, neurological symptoms). All content is educational, not diagnostic.",
+  "summary_tier_a": "Strongest (Tier A) evidence for an educational running-injury module: (1) RRI is multifactorial, with PREVIOUS INJURY the most consistent and strongest predictor of future injury (high-quality evidence for prior injury in short-distance runners; moderate for long-distance). (2) TRAINING CHARACTERISTICS/LOAD are modifiable contributors, but the specific 'training error' (volume, pace, frequency) link is weaker and less certain than commonly assumed — evidence for sudden load changes is 'very limited', and a widely-cited >30%/2-week distance progression finding was non-significant (HR 1.59; 95% CI 0.96–2.66). (3) STRENGTH TRAINING reduces sports injury risk substantially in pooled RCTs (RR ~0.32; overuse ~halved) and improves running economy (~2–8%) without harming body composition in runners. (4) The ACWR is conceptually/statistically contested and should not be presented as an established causality-based tool; prefer a load-capacity, all-activity view of training. (5) SCREENING cannot reliably predict individual injury, so individualised, supported, multifactorial approaches (strength, graduated progression, recovery, education) are favoured over one-off tests. (6) NON-DIAGNOSTIC RED FLAGS for professional review: focal/impact-provoked bone pain (especially at high-risk sites), menstrual dysfunction, recurrent bone stress injuries, low energy availability, and non-mechanical/systemic features (night/rest pain, unexplained swelling, fever, weight loss, neurological symptoms). All content is educational, not diagnostic.",
   "unverified": [
-    "A single universal 'safe' weekly mileage or a specific mandatory ≤10% rule could not be validated as a threshold that reliably distinguishes injured from uninjured runners (no robust evidence identified; Bertelsen 2017; Damsted 2018).",
+    "A single universal 'safe' weekly mileage or a specific mandatory ≤10% rule could not be validated as a threshold that reliably distinguishes injured from uninjured runners (no robust evidence identified; Bertelsen 2017; Harper-Hanigan 2022).",
     "Claims that a particular foot-strike pattern, cadence target, or 'correct running form' prevents running injury are not substantiated by the identified evidence (Lopes 2023 found minimal biomechanical predictive evidence; Relph 2022 found footwear effects on injury unclear).",
     "The exact magnitude by which 'training errors' cause injury in recreational runners remains uncertain; the specific error(s) most responsible could not be identified (Nielsen 2012).",
     "Run-science online claims that ACWR or acute:chronic 'spikes' of a given magnitude predict injury are not supported as causal (Impellizzeri 2020)."
   ],
-  "notes": "Scope: educational only; not medical diagnosis, advice or treatment. Red-flag claims are deliberately non-diagnostic prompts to seek professional assessment. Impact/strength of evidence varies: several key RRI sources are of low methodological quality (Correia 2024 umbrella review) and many associations are observational, so effects should be presented cautiously. Strength-training injury-prevention effect sizes (Lauersen 2014) come from mixed sport RCTs, not runner-only trials; the runner-specific evidence (Blagrove 2018) supports performance/running-economy benefits and two-to-three sessions/week but not a direct injury-prevention RCT in runners. The systemic 'red flag' claim relies on general musculoskeletal red-flag literature (neck/elbow) extrapolated to runners — flagged low confidence. Retrieval used Europe PMC REST API (PubMed direct pages were blocked by cookie/JS walls). Prefer patient-friendly framing: strength + sensible progression + recovery + attention to energy availability, and 'seek professional assessment' for the listed red flags."
+  "notes": "Scope: educational only; not medical diagnosis, advice or treatment. Red-flag claims are deliberately non-diagnostic prompts to seek professional assessment. Impact/strength of evidence varies: several key RRI sources are of low methodological quality (Correia 2024 umbrella review) and many associations are observational, so effects should be presented cautiously. Strength-training injury-prevention effect sizes (Lauersen 2014) come from mixed sport RCTs, not runner-only trials; the runner-specific evidence (Blagrove 2018) supports performance/running-economy benefits at two-to-three sessions/week but is not a direct injury-prevention RCT in runners. The systemic 'red flag' claim relies on general musculoskeletal red-flag literature (neck/elbow) extrapolated to runners — flagged low confidence. Retrieval used the Europe PMC REST API (PubMed direct pages were blocked by cookie/JS walls); DOIs/PMIDs verified via Europe PMC metadata where available. Prefer patient-friendly framing: strength + sensible progression + recovery + attention to energy availability, and 'seek professional assessment' for the listed red flags."
 }

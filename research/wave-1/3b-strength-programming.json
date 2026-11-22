@@ -5,7 +5,7 @@
   "claims": [
     {
       "topic": "Frequency",
-      "claim": "Distance runners should perform 2-3 strength sessions per week; two sessions per week is likely sufficient for running-economy gains, while three sessions per week is reasonable for off-season or novice strength development.",
+      "claim": "Distance runners should perform 2-3 strength sessions per week; two sessions per week is likely sufficient for running-economy gains, while three sessions per week may be superior for novice or non-strength-trained runners.",
       "evidence": "Systematic review of 24 studies: most interventions that improved running physiology used 2-3 sessions/week; a weak relationship was found between weekly strength frequency and running-economy improvement in 311 runners, suggesting 2 sessions/week is sufficient. The review also notes 3 sessions/week may be superior for non-strength-trained individuals.",
       "confidence": "high",
       "citation": {
@@ -20,7 +20,7 @@
     },
     {
       "topic": "Program duration",
-      "claim": "Strength programs should last at least 6-10 weeks; 10-14-week programs produce larger running-economy effects than 6-8-week programs.",
+      "claim": "Strength programs should last at least 6 weeks; 10-14-week programs produce larger running-economy effects than 6-8-week programs.",
       "evidence": "Meta-analysis of 22 studies in runners: heavy resistance training for 10-14 weeks produced a larger running-economy effect (g = -0.45, 95% CI -0.83 to -0.08) than 6-8 weeks (g = -0.21, 95% CI -0.56 to 0.15); the review of 24 studies found running-economy benefits after 6-20 weeks, with larger time-trial effects in 8-11-week programs than in 6-week programs.",
       "confidence": "high",
       "citation": {
@@ -80,7 +80,7 @@
     },
     {
       "topic": "Session volume",
-      "claim": "Keep strength sessions to about 2-4 lower-body exercises plus 1-2 core or upper-body accessories, with 2-4 sets per exercise; strength work should be added to running rather than substituted for it.",
+      "claim": "Keep strength sessions to about 2-4 lower-body exercises plus 1-2 core or upper-body accessories, with 2-4 working sets per exercise (within the 2-6 set range used in successful programs); strength work should be added to running rather than substituted for it.",
       "evidence": "Systematic review of 24 studies: typical programs used 2-4 lower-body exercises and 2-6 sets per exercise; strength training was added to unchanged running training in all included studies. The meta-analysis in highly trained runners similarly used 2-4 lower-body exercises per session.",
       "confidence": "medium",
       "citation": {
@@ -170,8 +170,8 @@
     },
     {
       "topic": "Machine-based programs in runners",
-      "claim": "Machine-based lower-body programs in runners show mixed results: one machine-only program did not improve running economy, while machine-based programs using leg press, leg curl, leg extension, calf raise, and cable hip flexion improved strength and performance; combine machines with free-weight or bodyweight multi-joint work.",
-      "evidence": "Systematic review: one study used only resistance machines for lower-limb heavy resistance training and was among the studies showing no running-economy improvement; other machine-based programs (leg press, knee extension/flexion, hip extension, ankle extension, cable hip flexion, calf raise) improved strength and performance. The review notes most studies combined machines with free weights or bodyweight.",
+      "claim": "Machine-based lower-body programs in runners show mixed results: two studies using only resistance machines did not improve running economy, while machine-based programs using leg press, leg curl, leg extension, calf raise, and cable hip flexion improved strength and performance; combine machines with free-weight or bodyweight multi-joint work.",
+      "evidence": "Systematic review: two studies used only resistance machines for lower-limb heavy resistance training and failed to improve running economy; the review attributes this to insufficient overload or lack of movement-pattern specificity and lower session frequency. Other machine-based programs (leg press, knee extension/flexion, hip extension, ankle extension, cable hip flexion, calf raise) improved strength and performance. Most studies combined machines with free weights or bodyweight.",
       "confidence": "medium",
       "citation": {
         "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
@@ -245,7 +245,7 @@
     },
     {
       "topic": "Injury prevention: general sport",
-      "claim": "Strength training is the most effective single exercise modality for reducing sports injury risk, with a pooled relative risk of 0.315 (95% CI 0.207-0.480) and approximately halved overuse injury risk.",
+      "claim": "Strength training is among the most effective single exercise modalities for reducing sports injury risk, with a pooled relative risk of 0.315 (95% CI 0.207-0.480) and approximately halved overuse injury risk.",
       "evidence": "Meta-analysis of 25 randomized trials and 26,610 participants: strength training reduced injury risk (RR 0.315, 95% CI 0.207-0.480) and overuse injury risk (RR 0.527, 95% CI 0.373-0.746); stretching did not reduce injury risk. Findings span multiple sports and age groups, not runners specifically.",
       "confidence": "high",
       "citation": {
@@ -290,7 +290,7 @@
     },
     {
       "topic": "Body composition and VO2max",
-      "claim": "Added strength training does not increase body mass in distance runners and does not reduce VO2max; hypertrophy is attenuated when strength is combined with endurance training.",
+      "claim": "Added strength training generally does not increase body mass in distance runners and does not reduce VO2max; hypertrophy is attenuated when strength is combined with endurance training.",
       "evidence": "Systematic review: all but one study observed no change in body mass; VO2max was generally unchanged; concurrent endurance training attenuates the hypertrophic response to resistance training. The review found weak evidence that velocity at VO2max improves.",
       "confidence": "high",
       "citation": {

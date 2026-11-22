@@ -1,0 +1,303 @@
+{
+  "workstream": "Goal-specific programming - 5K",
+  "subtopic": "5K specifics: speed/VO2max development, interval prescription, strides and hill work, pacing strategy, and plan structure for recreational runners",
+  "generated_at": "2026-11-22T14:57:00Z",
+  "claims": [
+    {
+      "topic": "5K physiological demand - VO2max vs fractional utilization",
+      "claim": "A 5K is a roughly 15-20 min event run close to vVO2max. In eight elite runners (5K 15:10 +/- 32 s), absolute VO2max correlated with 5K performance, but the fraction of VO2max utilized at 5K speed did not; an 8-min treadmill run at each runner's 5K seasonal-best velocity elicited a %VO2max not different from the incremental test. For 5K, raising the aerobic ceiling appears more important than trying to raise fractional utilization.",
+      "evidence": "Cross-sectional study, n=8 elite male distance runners (5K 15:10 +/- 32 s). Incremental VO2max test plus 8-min run at 5K seasonal-best velocity. No correlation between fractional utilization and 5K time; VO2max was related to 5K time even in this homogeneous group. Authors conclude training aimed at raising %VO2max may be of little value for events lasting up to ~20 min. Small sample and elite men limit generalization.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Percent utilization of VO2 max at 5-km competition velocity does not determine time performance at 5 km among elite distance runners",
+        "authors": "Stoa EM, Storen O, Enoksen E, Ingjer F",
+        "year": 2010,
+        "venue": "Journal of Strength and Conditioning Research 24(5):1340-1345",
+        "type": "observational",
+        "doi_or_url": "10.1519/jsc.0b013e3181cc5f7b",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "5K intensity is above critical speed - CS and D' both matter",
+      "claim": "5K race pace lies above critical speed (CS), so performance depends on both the aerobic ceiling (CS) and the finite distance that can be sustained above it (D'). In 25 recreational men, CS predicted 5K time better than peak treadmill velocity (R2 = 0.90 vs 0.82). In 16 trained runners, the standard CS + D' prediction equation underestimated 5K time by 5.7-9.4%, whereas a sample-specific multiple regression using CS and D' was within about 1% of actual performance.",
+      "evidence": "Figueiredo et al.: 25 recreational males, three field time trials (2600, 1800, 1000 m) to derive CS, plus peak treadmill velocity and a 5K track test; CS R2 = 0.90, Vpeak R2 = 0.82. Nimmerichter et al.: 16 trained runners, three CS models plus D'; individual predictions from t = (5000 - D')/CS were 65-105 s (5.7-9.4%) slower than actual, while multiple regression with CS and D' differed by only -1.0 to 1.1% (SEE ~65 s). Both are small validation studies, but they converge on a two-component model for 5K.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Peak Running Velocity or Critical Speed Under Field Conditions: Which Best Predicts 5-km Running Performance in Recreational Runners?",
+        "authors": "Figueiredo DH, Figueiredo DH, Manoel FA, Machado FA",
+        "year": 2021,
+        "venue": "Frontiers in Physiology 12:680790",
+        "type": "observational",
+        "doi_or_url": "10.3389/fphys.2021.680790",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - HIIT versus continuous training",
+      "claim": "High-intensity interval training raises VO2max more than continuous endurance training in healthy adults. A meta-analysis of 28 controlled trials (723 participants) found HIT increased VO2max by 5.5 mL/kg/min versus no-exercise controls and by a small additional 1.2 mL/kg/min versus endurance training; the advantage over endurance training was larger when HIT repetitions were longer (+2.2 mL/kg/min modifier), while work:rest ratio and age effects were unclear.",
+      "evidence": "Milanovic et al. meta-analysis, 28 controlled trials, 723 healthy adults aged 18-45 (mean baseline VO2max 40.8 +/- 7.9 mL/kg/min), interventions >=2 weeks. HIT vs no exercise: +5.5 mL/kg/min (likely large). HIT vs endurance training: +1.2 mL/kg/min (possibly small), with a small additional benefit for typically longer repetitions (+2.2 mL/kg/min). Effects were larger in subjects with lower baseline fitness. Evidence quality is limited by heterogeneity and magnitude-based inference.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effectiveness of High-Intensity Interval Training (HIT) and Continuous Endurance Training for VO2max Improvements: A Systematic Review and Meta-Analysis of Controlled Trials",
+        "authors": "Milanovic Z, Sporis G, Weston M",
+        "year": 2015,
+        "venue": "Sports Medicine 45(10):1469-1481",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-015-0365-0",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "VO2max intervals - work-bout duration and recovery intensity",
+      "claim": "For VO2max development, work bouts of about 3 min at 95% vVO2max with equal-duration recovery at 50% vVO2max produced more time above 90% VO2max than 30-s bouts at 100% vVO2max (328 vs 201 s per session) in highly trained middle-distance runners, despite similar RPE. Short intervals produced more time above 90% HRmax but less time above 90% VO2max, so HR alone can mislead session design.",
+      "evidence": "Randomized crossover, 12 highly trained middle-distance runners (7 male, 5 female), two treadmill sessions: 4 x 3 min at 95% vVO2max with 3 min at 50% vVO2max vs 24 x 30 s at 100% vVO2max with 30 s at 55% vVO2max. Time >90% VO2max: 327.9 +/- 146.8 s vs 201.3 +/- 268.4 s (p=0.05, r=0.57). Time >90% HRmax was higher in 30-s intervals (820 vs 545 s), and blood lactate was higher in 3-min intervals (9.69 vs 7.59 mmol/L). Acute study, not a training outcome.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Faster intervals, faster recoveries - intensified short VO2max running intervals are inferior to traditional long intervals in terms of time spent above 90% VO2max",
+        "authors": "Fleckenstein D, Braunstein H, Walter N",
+        "year": 2024,
+        "venue": "Frontiers in Sports and Active Living 6:1507957",
+        "type": "rct",
+        "doi_or_url": "10.3389/fspor.2024.1507957",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Interval prescription - the manipulable variables",
+      "claim": "Interval prescription is defined by up to nine variables: work intensity and duration, relief intensity and duration, exercise modality, number of repetitions, number of series, and between-series recovery duration and intensity. The practical target for a VO2max session is to accumulate several minutes at >=90% VO2max per session; pace alone is an incomplete description of the stimulus.",
+      "evidence": "Narrative review of HIT programming (Part I, cardiopulmonary emphasis). Argues that an optimal cardiovascular/peripheral stimulus requires several minutes per session in the 'red zone' (>=90% VO2max), and that anaerobic glycolytic contribution and neuromuscular/musculoskeletal load must also be considered. Provides examples from multiple sports. Not a systematic review; recommendations are mechanistic and coaching-derived.",
+      "confidence": "medium",
+      "citation": {
+        "title": "High-intensity interval training, solutions to the programming puzzle: Part I: cardiopulmonary emphasis",
+        "authors": "Buchheit M, Laursen PB",
+        "year": 2013,
+        "venue": "Sports Medicine 43(5):313-338",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-013-0029-x",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Time to exhaustion at %vVO2max - individualizing 5K-pace work",
+      "claim": "Time to exhaustion at a fixed percentage of vVO2max varies widely between runners: about 14 min at 90%, 6 min at 100%, 2 min at 120%, and 1 min at 140% vVO2max. Because 5K pace approximates 90-100% vVO2max, 5K-pace repetitions should be set from an individual recent race or time trial rather than from a single percentage for everyone.",
+      "evidence": "Ten subjects ran to exhaustion at 90, 100, 120 and 140% vVO2max; mean +/- SD times were 839 +/- 236 s, 357 +/- 110 s, 122 +/- 27 s and 65 +/- 17 s respectively. Expressing velocity relative to critical velocity and maximal sprint velocity (anaerobic speed reserve) improved prediction of time to exhaustion, explaining inter-individual variability at the same %vVO2max. Small laboratory sample.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Relationship between run times to exhaustion at 90, 100, 120, and 140% of vVO2max and velocity expressed relatively to critical velocity and maximal velocity",
+        "authors": "Blondel N, Berthoin S, Billat V, Lensel G",
+        "year": 2001,
+        "venue": "International Journal of Sports Medicine 22(1):27-33",
+        "type": "observational",
+        "doi_or_url": "10.1055/s-2001-11357",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Low-volume sprint interval training and 5K performance",
+      "claim": "Four weeks of low-volume sprint interval training (3-8 maximal sprints, three times per week) improved 5K time-trial performance by 4.5% and VO2max by about 4.5% in untrained young men relative to controls. This shows that very short, high-intensity work can move 5K performance when the aerobic base is low, but it does not establish equivalence with aerobic interval training in trained runners.",
+      "evidence": "Thirty healthy untrained men aged 18-25 allocated to control (n=10) or SIT (n=20); SIT progressed from 3 to 8 maximal sprints over 12 sessions across 4 weeks. Outcomes: 5K track time trial and incremental treadmill VO2max. 5K improved 4.5% (p<0.001); absolute and relative VO2max improved 4.9% and 4.5%. Allocation method and sprint duration are not specified in the abstract; untrained sample limits transfer to recreational runners with an established base.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Four Weeks of Sprint Interval Training Improves 5-km Run Performance",
+        "authors": "Denham J, Feros SA, O'Brien BJ",
+        "year": 2015,
+        "venue": "Journal of Strength and Conditioning Research 29(8):2137-2141",
+        "type": "cohort",
+        "doi_or_url": "10.1519/jsc.0000000000000862",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "10-20-30 training - a low-volume 5K stimulus",
+      "claim": "Six weeks of 10-20-30 training (1-min blocks of 30 s easy, 20 s moderate, 10 s fast) three times per week improved 5K performance by 2-3% and VO2max by about 7% in runners. Performing the 10-s fast segments submaximally was as effective for 5K performance and VO2max as maximal effort, but only maximal 10-s efforts increased muscle oxidative phosphorylation markers.",
+      "evidence": "Nineteen males randomized to submaximal (n=11) or maximal (n=8) 10-20-30 running, 3 sessions/week for 6 weeks. 5K improved 3.0% (SUBMAX: 21.5 to 20.8 min) and 2.3% (MAX: 21.6 to 21.2 min); VO2max rose ~7% in both groups (53.5 to 57.0 and 53.7 to 57.8 mL/min/kg). OXPHOS subunits increased 9-29% only in MAX. Small sample, short duration, performance outcomes but no long-term follow-up.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Similar improvements in 5-km performance and maximal oxygen uptake with submaximal and maximal 10-20-30 training in runners, but increase in muscle oxidative phosphorylation occur only with maximal effort training",
+        "authors": "Skovgaard C, Christiansen D, Martinez-Rodriguez A, Bangsbo J",
+        "year": 2024,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports 34:e14493",
+        "type": "rct",
+        "doi_or_url": "10.1111/sms.14493",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Speed-endurance training above vVO2max",
+      "claim": "Speed-endurance training performed above vVO2max improves performance across events lasting 20-60 s, 1-10 min and 10-60 min, even when total training volume is markedly reduced. Gains occur without a change in VO2max and are attributed mainly to improved exercise economy and a greater capacity to handle muscle ionic shifts and exercise-induced pH reduction.",
+      "evidence": "Narrative review restricted to studies of trained subjects and athletes, covering events of 20-60 s, 1-10 min, 10-60 min and repeated intense exercise. Reports performance benefits of speed-endurance training alone or combined with aerobic or power/resistance training, with mechanisms centered on economy and ionic/pH regulation rather than VO2max. Review-level evidence; protocols and doses vary substantially between studies.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Speed Endurance Training to Improve Performance",
+        "authors": "Bangsbo J, Kissow J, Hostrup M",
+        "year": 2025,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports 35:e70091",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/sms.70091",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "HIIT terminology and intensity domains",
+      "claim": "In a performance context, HIIT should be defined as intermittent exercise above the heavy-intensity domain, mainly within the severe domain, bounded by critical speed/power or the second lactate threshold/maximal lactate steady state. This is the appropriate frame for 5K-pace intervals; in health contexts 'HIIT' instead means intermittent work above moderate intensity, so the label alone does not specify a prescription.",
+      "evidence": "Perspective/review by HIIT researchers. Notes there is no common definition of HIIT despite widespread use; proposes performance HIIT = above heavy domain (severe domain), with sprint interval training as a near-maximal/all-out variant. States that optimal intensity distribution and specific HIIT prescription for endurance athletes remain unclear. Conceptual paper, not primary data.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Perspective on High-Intensity Interval Training for Performance and Health",
+        "authors": "Coates AM, Joyner MJ, Little JP, Jones AM, Gibala MJ",
+        "year": 2023,
+        "venue": "Sports Medicine 53:85-96",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-023-01938-6",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Elite 5K pacing profiles",
+      "claim": "Elite 5K pacing is context-specific. World-record 5000 m performances show a U-shaped profile (fast start, slower middle, fast finish), whereas championship 5000 m races tend to be negative-paced with pace microvariations. A rigidly even pace is therefore not the universal elite model, but avoiding an unsustainable early surge and preserving a fast final lap are consistent themes; non-medal contenders are advised to start at a realistic pace.",
+      "evidence": "Narrative review of pacing studies across sprint, middle- and long-distance events. Explicitly describes U-shaped pacing in world-record 1500 m, 5000 m and 10,000 m meet races, and negative pacing with microvariations in championship 5000 m/10,000 m. Recommends running close to the inside of the track and staying in leading positions during the last lap in 5000 m championships. Descriptive/observational synthesis, not an intervention trial.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Pacing profiles and tactical behaviors of elite runners",
+        "authors": "Casado A, Hanley B, Jimenez-Reyes P, Renfree A",
+        "year": 2021,
+        "venue": "Journal of Sport and Health Science 10(5):537-549",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/j.jshs.2020.06.011",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "5K stride characteristics and pacing-related fatigue",
+      "claim": "In a 5000 m race, faster runners had higher average step frequency and higher body-height-normalized step length, and smaller declines in step length from the first to the second half were associated with faster race times. This supports a controlled start and deliberate maintenance of stride mechanics rather than a large early surge followed by mechanical decay.",
+      "evidence": "Twenty-one male Japanese endurance runners, 5000 m race, high-speed video every 400 m. Average step frequency r=-0.611 and normalized step length r=-0.575 with race time; percent change in contact time r=0.514 and in step length r=-0.486 with race time. Observational; associations do not establish that cueing stride length causes faster times.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Relationship between Step Characteristics and Race Performance during 5000-m Race",
+        "authors": "Ueno H, Nakazawa S, Takeuchi Y, Sugita M",
+        "year": 2021,
+        "venue": "Sports (Basel) 9(9):131",
+        "type": "observational",
+        "doi_or_url": "10.3390/sports9090131",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Pacing cues for 5K - drafting and external guidance",
+      "claim": "In a 5000 m time trial, light-guided pacing did not change performance or psychophysiological responses compared with self-paced running, but drafting behind a cyclist improved the final 500 m and was associated with lower heart rate or RPE (or better affective valence). For 5K racing, pack/drafting and competitive context may help more than external even-pace feedback, and self-paced effort regulation is already reasonably effective.",
+      "evidence": "Fifteen national/regional male middle- and long-distance runners completed three counterbalanced 5000 m time trials: self-paced, light-guided, and drafting behind a cyclist (first 4000 m submaximal, last 1000 m maximal). Light vs self-paced: no significant differences. Drafting vs self-paced: faster final 500 m (p=0.031, d=0.76), with 9 of 10 comparisons showing lower HR, lower RPE or higher affective valence. Small sample; drafting effect in running is smaller than in cycling.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Performance and Psychophysiological Effects of Light-Guided Pacing During a 5000-m Run",
+        "authors": "Casado A, Hornillos A, Foster C, Ranieri LE, Renfree A, Dominguez R",
+        "year": 2025,
+        "venue": "International Journal of Sports Physiology and Performance 20:149-155",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2024-0202",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Strides - purpose and prescription",
+      "claim": "Strides are short (approximately 15-30 s) relaxed fast runs with full recovery, typically 4-6 repetitions after easy runs 2-3 times per week in Daniels' framework. They are used to develop neuromuscular coordination, stride mechanics and running economy without adding meaningful metabolic load, and they supplement rather than replace VO2max intervals; the exact dose is coaching convention, not trial-derived.",
+      "evidence": "Textbook prescription (Daniels' Running Formula, 4th ed.) describes strides/short fast repetitions as relaxed speed work within the easy-day framework, with full recovery and low volume. No controlled trial was located that isolates strides and measures 5K performance; the physiological rationale (neuromuscular recruitment, economy) is extrapolated from sprint/economy literature. Confidence is correspondingly low for performance effects.",
+      "confidence": "low",
+      "citation": {
+        "title": "Daniels' Running Formula (4th edition)",
+        "authors": "Daniels J",
+        "year": 2021,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "https://openlibrary.org/works/OL21648912W",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Hill work for speed - mechanism and dose",
+      "claim": "Hill work targets the muscle-power/neuromuscular side of speed. In trained athletes, horizontal peak running velocity correlated with anaerobic/muscle-power measures (maximal anaerobic running test peak velocity r=0.85; 30 m sprint r=0.78) but not with VO2max, and running uphill at 7% increased metabolic cost by about 53% and ground reaction force by about 12% while reducing step length by about 4%. Practical 5K doses are short steep sprints (e.g., 6-10 x 8-15 s) or longer moderate hills (e.g., 4-6 x 60-90 s); these exact doses are coaching convention.",
+      "evidence": "Paavolainen et al.: 7 middle-distance runners, 8 triathletes and 8 cross-country skiers; horizontal Vmax correlated with MART peak velocity (r=0.85) and 30 m velocity (r=0.78) but not VO2max; uphill Vmax did correlate with uphill VO2max (r=0.78). Padulo et al.: 18 high-level male runners at 70% VO2max on 0%, 2% and 7% slopes; from 0% to 7%, metabolic cost +53%, ground reaction force +12%, step frequency +4%, step length -4%. Dose recommendations are not directly tested in 5K runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Muscle power factors and VO2max as determinants of horizontal and uphill running performance",
+        "authors": "Paavolainen L, Nummela A, Rusko H",
+        "year": 2000,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports 10(5):286-291",
+        "type": "observational",
+        "doi_or_url": "10.1034/j.1600-0838.2000.010005286.x",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "5K-pace interval prescription",
+      "claim": "5K-pace intervals should be anchored between maximal lactate steady state and vVO2max (roughly 90-100% vVO2max), because that is the intensity range of 5K racing. Typical session shapes are 4-6 x 1000 m at 5K pace with 2-3 min jog recovery, or 3-4 x 1600 m, totaling about 15-25 min of quality work; the design goal is to accumulate time near vVO2max rather than to hit an exact split.",
+      "evidence": "Billat's review of aerobic interval training recommends prescribing from physiological markers between maximal lactate steady state and maximal velocity, while noting that race velocities from 800 to 5000 m are also used for calibration and that even world records are not run at constant pace. The specific 1000/1600 m shapes come from Daniels' I-pace framework (approximately 3K-5K effort) and coaching practice; no head-to-head trial shows one shape is superior for 5K.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Interval training for performance: a scientific and empirical practice. Special recommendations for middle- and long-distance running. Part I: aerobic interval training",
+        "authors": "Billat LV",
+        "year": 2001,
+        "venue": "Sports Medicine 31(1):13-31",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-200131010-00002",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Typical 5K plan structure and intensity distribution",
+      "claim": "A typical 5K block runs 8-12 weeks with 3-5 sessions per week: one VO2max/5K-pace session, one threshold session, a long easy run, and strides 2-3 times per week, with roughly 80-90% of volume easy. This mirrors the pyramidal distribution of world-class runners (about 88.5% easy, 7.4% moderate, 4.1% hard by race-pace zones), but the amateur prescription is an extrapolation from elite descriptive data and coaching templates rather than an RCT-tested optimum.",
+      "evidence": "Kenneally et al.: 7 world-class middle/long-distance runners over 50 weeks, mean 135.4 +/- 29.4 km/week; race-pace-based zones were 88.5% Z1, 7.4% Z2, 4.1% Z3, producing a pyramidal distribution across all phases. Physiological zones gave 87.2/6.1/6.6. The 8-12 week, 3-5 session amateur template follows Daniels' 5K plans; volume and session counts for recreational runners are not experimentally validated.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training intensity distribution analysis by race pace vs. physiological approach in world-class middle- and long-distance runners",
+        "authors": "Kenneally M, Casado A, Gomez-Ezeiza J, Santos-Concejero J",
+        "year": 2021,
+        "venue": "European Journal of Sport Science 21(6):819-826",
+        "type": "observational",
+        "doi_or_url": "10.1080/17461391.2020.1773934",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Taper before a 5K",
+      "claim": "Performance is optimized by a roughly 2-week taper in which training volume is reduced exponentially by 41-60% while intensity and frequency are maintained. Shorter tapers (7-14 days) with the same volume reduction are also supported, and a taper preceded by overload training tends to produce larger time-trial gains than conventional tapering.",
+      "evidence": "Bosquet et al. meta-analysis: 27 studies of competitive athletes; optimal taper ~2 weeks, volume decreased 41-60% exponentially, intensity and frequency unchanged; overall performance effect 0.59 +/- 0.33, rising to 0.72 +/- 0.36 for a 41-60% volume reduction. Wang et al. meta-analysis: 14 studies, time-trial SMD -0.45, time-to-exhaustion SMD 1.28; volume reduction 41-60% without changing intensity/frequency, duration <=21 days, greater benefit when combined with pre-taper overload. Most included athletes were not 5K specialists.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise 39(8):1358-1365",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    },
+    {
+      "topic": "Beginner 5K programmes - completion and injury",
+      "claim": "Beginner 5K programmes carry meaningful real-world attrition and injury risk: in a modified 9-week Couch-to-5k run/walk programme, only 27.3% of 110 starters completed and 19% reported a musculoskeletal injury, with previous injury strongly predicting new injury (OR 7.56). This supports conservative progression and pre-participation injury screening in beginner 5K plans.",
+      "evidence": "Observational study of 110 runners in a modified 9-week Couch-to-5k programme (mean age 47.1 +/- 13.7 y, 81.8% female, mean BMI 28.1). Questionnaires at start, midpoint and end plus interviews with 15 dropouts. 21 injuries (19%); previous injury OR 7.56 (95% CI 2.06-27.75); 27.3% completion. Single programme, self-reported outcomes, no control group; session frequency is not reported in the abstract.",
+      "confidence": "medium",
+      "citation": {
+        "title": "\"Couch-to-5k or Couch to Ouch to Couch!?\" Who Takes Part in Beginner Runner Programmes in the UK and Is Non-Completion Linked to Musculoskeletal Injury?",
+        "authors": "Relph N, Taylor SL, Christian DL, Dey P, Owen MB",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health 20(17):6682",
+        "type": "observational",
+        "doi_or_url": "10.3390/ijerph20176682",
+        "retrieved_at": "2026-11-22T14:56:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Tier A evidence supports a 5K model built on a high aerobic ceiling: 5K pace sits near vVO2max and above critical speed, so both VO2max and the ability to sustain work above CS (D') predict performance. HIIT raises VO2max more than continuous training, and sessions of ~3-5 min near vVO2max with roughly equal recovery maximize time above 90% VO2max better than very short intervals at the same or higher intensity. Low-volume sprint or 10-20-30 work can improve 5K by 2-4.5%, mainly in untrained or moderately trained runners, and speed-endurance work above vVO2max improves 1-10 min performance through economy and ionic/pH handling rather than VO2max. Elite 5K pacing is U-shaped in record attempts and negative in championships, not rigidly even; drafting/pack running helps, light-guided pacing does not. Taper by cutting volume 41-60% for about two weeks while keeping intensity and frequency. Strides and hill work are coaching-supported for neuromuscular economy, but direct 5K performance evidence is thin.",
+  "unverified": [
+    "A 10% weekly volume progression rule prevents injury in 5K runners; no controlled trial supporting this specific rule was located.",
+    "Strides directly improve 5K race times; no study isolates strides and measures 5K performance, so the benefit is inferred from neuromuscular/economy mechanisms and coaching practice.",
+    "Hill repetitions improve 5K performance more than flat VO2max intervals; no head-to-head trial was found, and the exact hill dose (6-10 x 8-15 s or 4-6 x 60-90 s) is coaching convention.",
+    "An exact 80/20 or 88/7/4 intensity split is optimal for recreational 5K runners; the distribution comes from descriptive elite data and has not been experimentally optimized for amateurs.",
+    "A specific stride dose of 4-6 x 20 s is evidence-based; it is a textbook/coaching convention rather than a trial-derived dose.",
+    "Even pacing is optimal for every 5K runner; elite profiles are U-shaped or negative, and recreational pacing evidence is indirect.",
+    "5-6 x 1000 m at 5K pace is superior to other session shapes for 5K; no comparative trial establishes one best session design."
+  ],
+  "notes": "Retrieved 2026-11-22 via PubMed E-utilities and the Europe PMC REST API; all article citations are indexed, peer-reviewed records with DOI/PMID, and the Daniels book is cited to its Open Library work record. The subtopic has few 5K-specific randomized training trials: most interval evidence comes from cycling, team sports, untrained adults or middle-distance runners, and must be extrapolated to recreational 5K runners. Key caveats: Stoa is cross-sectional with n=8 elite men; Figueiredo and Nimmerichter are small validation studies; Denham used untrained men and did not specify allocation or sprint duration; Fleckenstein and Casado 2025 are acute/short crossover studies with small samples. A separate 4-week HIIT trial in recreational runners (Silva et al., Braz J Med Biol Res 2017;50:e6335, doi:10.1590/1414-431x20176335) improved running economy and peak treadmill speed but did not change 5K performance or pacing, so short blocks should not be assumed to transfer. Elite pacing and intensity-distribution data are descriptive and may not generalize to amateurs. Female, older and beginner runners are underrepresented. Prescriptive details such as 4-6 x 1000 m, 4-6 strides, 6-10 hill sprints and the 8-12 week block are coaching conventions layered onto physiological principles, not independently validated protocols."
+}

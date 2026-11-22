@@ -1,0 +1,317 @@
+{
+  "workstream": "Stride Guide — Research",
+  "subtopic": "Returning to running after illness, a training break, or injury — graded return-to-run protocols (walk-run progressions), how to reinsert training after a cold/flu/COVID, detraining timelines and how fast fitness is lost, and safe rebuild rules",
+  "generated_at": "2026-11-22T14:34:43Z",
+  "education_disclaimer": "Educational content only; not medical advice, diagnosis, or treatment. Return-to-run and return-to-activity guidance here is general and non-diagnostic; anyone with red-flag symptoms, cardiac symptoms, or a suspected bone stress injury should be assessed by a qualified clinician before resuming running.",
+  "claims": [
+    {
+      "topic": "Graded, criteria-based return to running after injury",
+      "claim": "Return to running after a lower-limb injury should be a graded, criteria-based process rather than a fixed date: decisions are shared between athlete, clinician and coach, and progression is guided by meeting loading criteria rather than by elapsed time alone. A scoping review found the recommendations for returning to running after a tibial bone stress injury rest mostly on low-level (level IV) evidence.",
+      "evidence": "Scoping review of 50 studies on criteria and guidelines for returning to running after a tibial bone stress injury. Of the included studies, 39 were reviews/clinical commentaries, 3 retrospective cohort, 2 RCTs, 2 pilot, 1 prospective observational and 3 case studies, so recommendations are based on level IV evidence; there was a lack of consistency and strong evidence to guide the process, and decisions should be shared between clinicians, coaches and the athlete.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Criteria and Guidelines for Returning to Running Following a Tibial Bone Stress Injury: A Scoping Review",
+        "authors": "George ERM, Sheerin KR, Reid D",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-024-02051-y",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Symptom-guided load progression for bone stress injury",
+      "claim": "For low-risk tibial and metatarsal bone stress injuries in runners, the safest rebuild is symptom-driven and load is progressed so that it does not produce symptoms during, after, or on the day following loading. Initial load is typically reduced (partial or non-weight-bearing) to settle symptoms, and cardiorespiratory fitness is kept up with cross-training while the tissue is rebuilt.",
+      "evidence": "Clinical reasoning review (JOSPT) on optimal load for managing low-risk tibial and metatarsal bone stress injuries in runners. States that optimal load is symptom-driven and at all stages should not produce symptoms during, after, or the day after loading; an initial period of load reduction (partial/non-weight bearing) is typically needed; cross-training maintains cardiopulmonary fitness while musculoskeletal fitness is addressed. A return-to-running progression follows.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Optimal Load for Managing Low-Risk Tibial and Metatarsal Bone Stress Injuries in Runners: The Science Behind the Clinical Reasoning",
+        "authors": "Warden SJ, Edwards WB, Willy RW",
+        "year": 2021,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2519/jospt.2021.9982",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Return-to-sport time varies by bone stress injury site",
+      "claim": "How long a graded return takes after a bone stress injury depends strongly on the injury site (low-risk vs high-risk locations). Pooled data show the longest times to return to sport for tarsal navicular (~127 days) and femoral neck (~107 days) injuries, with shorter times at several lower-risk sites — so return-to-run timelines cannot be universal.",
+      "evidence": "Systematic review and meta-analysis of 76 studies reporting 2974 bone stress injuries in athletes. Pooled time to return to sport was longest for tarsal navicular (127 days; 95% CI 102–151) and femoral neck (107 days; 95% CI 79–135), and shortest for some other sites; most multi-site studies described anatomical site as prognostic for return-to-sport or complication rate, supporting the low-/high-risk classification.",
+      "confidence": "high",
+      "citation": {
+        "title": "Return to sport following low-risk and high-risk bone stress injuries: a systematic review and meta-analysis",
+        "authors": "Hoenig T, Eissele J, Strahl A, Popp KL, Stürznickel J, Ackerman KE, Hollander K, Warden SJ, Frosch KH, Tenforde AS, Rolvien T",
+        "year": 2023,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2022-106328",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Consensus framework for managing bone stress injuries",
+      "claim": "An international expert consensus (modified Delphi, 3 rounds, 41 experts from six continents) reached agreement on 41 of 58 statements on bone stress injuries, including management and return-to-sport: low-risk sites typically heal with activity modification followed by progressive loading and return to activity, whereas high-risk sites may require non-weight-bearing immobilisation, medication or surgery.",
+      "evidence": "International Delphi consensus on bone stress injuries in athletes (British Journal of Sports Medicine). Consensus reached on 41/58 statements across pathophysiology/diagnosis/classification, risk factors/screening/prevention, and management/return to sport. Narrative review of BSI management (Hoenig 2022, Nat Rev Dis Primers) corroborates that low-risk BSI typically heals with activity modification and progressive loading, while high-risk lesions may need immobilisation, medication or surgery.",
+      "confidence": "high",
+      "citation": {
+        "title": "International Delphi consensus on bone stress injuries in athletes",
+        "authors": "Hoenig T, Hollander K, Popp KL, Fredericson M, Kraus EA, Warden SJ, Tenforde AS, Bone Stress Injury Authorship Group",
+        "year": 2025,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2024-108616",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Walk-run protocols as the graded return-to-run starting point",
+      "claim": "A consensus statement on postpartum return to running recommends starting with a walk-run (alternating walk and run) protocol and then gradually increasing duration and intensity, together with strength training, after an initial period of relative rest. This is an example of the graded, walk-run approach used to reinsert running after a break.",
+      "evidence": "International three-round Delphi study and consensus statement of clinical and exercise professionals (118/107/95 participants across rounds). Consensus reached in 42/47 (89%) statements, including recommendations for a period of relative rest, gradual increases in duration and intensity, starting with a walk-run protocol, and incorporating strength training, with modification based on musculoskeletal or pelvic-floor factors.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Clinical and exercise professional opinion on designing a postpartum return-to-running training programme: an international Delphi study and consensus statement",
+        "authors": "Deering RE, Donnelly GM, Brockwell E, Bo K, Davenport MH, De Vivo M, Dufour S, Forner L, Mills H, Moore IS, Olson A, Christopher SM",
+        "year": 2024,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2023-107490",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Reinserting training after COVID-19: graduated return to play",
+      "claim": "Guidance for returning to sport after COVID-19 infection recommends a graduated (staged) return-to-play progression rather than resuming full training immediately. The approach moves through increasingly demanding stages of activity before full training and competition.",
+      "evidence": "British Journal of Sports Medicine infographic, 'Graduated return to play guidance following COVID-19 infection' (Elliott et al., 2020), issued as sports-medicine guidance during the pandemic. Corroborated by a narrative review of return-to-play after COVID-19 in elite athletes (Ross et al., 2021), which describes a reconditioning protocol that gradually eases athletes back into full training loads.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Infographic. Graduated return to play guidance following COVID-19 infection",
+        "authors": "Elliott N, Martin R, Heron N, Elliott J, Grimstead D, Biswas A",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2020-102637",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Post-COVID return: screen, then recondition gradually",
+      "claim": "After COVID-19, elite athletes should undergo appropriate cardiac assessment before starting a reconditioning protocol, and then be gradually eased back into full training loads. The stated reason for the gradual build is to reduce the risk of orthopaedic injury after a prolonged absence from training.",
+      "evidence": "Narrative/clinical review on return-to-play considerations after COVID-19 in elite athletes (Journal of Athletic Training). Describes a battery of cardiac tests after isolation to assess readiness, then a return-to-play plan that reintegrates athletes into strength and conditioning, sport-specific drill work and contact drills, with gradual easing back into full training loads to avoid increases in orthopaedic injuries after a prolonged absence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Return-to-Play Considerations After COVID-19 Infection in Elite Athletes",
+        "authors": "Ross R, Irvin L, Severin R, Ellis B",
+        "year": 2021,
+        "venue": "Journal of Athletic Training",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.4085/1062-6050-0117.21",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Post-viral rehabilitation consensus (Stanford Hall)",
+      "claim": "A multidisciplinary consensus on post-COVID-19 rehabilitation recommended graded, individually tailored rehabilitation across pulmonary, cardiac, musculoskeletal, psychological and other domains, with recommendations graded by level of evidence and strong expert agreement.",
+      "evidence": "Stanford Hall consensus statement for post-COVID-19 rehabilitation (British Journal of Sports Medicine). An expert panel across rehabilitation, sport and exercise medicine, rheumatology, psychiatry, general practice, psychology and pain appraised evidence across seven domains and produced recommendations graded by level of evidence; substantial agreement (7.5–10 on a 0–10 scale) was reached for 36 recommendations.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Stanford Hall consensus statement for post-COVID-19 rehabilitation",
+        "authors": "Barker-Davies RM, O'Sullivan O, Senaratne KPP, Baker P, Cranley M, Dharm-Datta S, Ellis H, Goodall D, Gough M, Lewis S, Norman J, Papadopoulou T, Roscoe D, Sherwood D, Turner P, Walker T, Mistlin A, et al.",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2020-102596",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Long COVID: limited evidence for specific return rules",
+      "claim": "For athletes with prolonged ('long COVID') symptoms, there was no high-quality evidence giving specific return-to-training recommendations; only professional/expert guidance existed. This means return guidance for lingering post-viral symptoms is expert-informed rather than evidence-based.",
+      "evidence": "Systematic review (PROSPERO CRD42021265939) of recommendations for returning athletes with long-term COVID-19 symptoms. Of 220 records screened, no studies, commentaries, editorials or reviews provided specific recommendations for 'long COVID' defined as symptoms >4 weeks, and no studies reported symptoms of athletes with long COVID; eight separate professional recommendations for managing prolonged symptoms were found.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "What are the recommendations for returning athletes who have experienced long term COVID-19 symptoms?",
+        "authors": "Lindsay RK, Wilson JJ, Trott M, Olanrewaju O, Tully MA, López-Sánchez GF, Shin JI, Pizzol D, Allen P, Butler LT, Barnett Y, Smith L",
+        "year": 2021,
+        "venue": "Annals of Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1080/07853890.2021.1992496",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Return after a cold: 'neck check' and systemic symptoms",
+      "claim": "A widely used 'neck check' heuristic — exercising is generally considered lower-risk with symptoms confined above the neck (e.g. runny nose) but not with systemic symptoms (fever, body aches, chest symptoms) — is supported by cohort data showing that runners with pre-race systemic illness were markedly more likely not to finish, especially when ill within 24 hours of the event.",
+      "evidence": "Prospective cohort (SAFER V; runners prospectively assessed for acute illness, n=172 ill vs 53,734 controls). Systemic illness was associated with a higher did-not-start rate (29.6% vs 19.2%); relative risk of not finishing was 3.4 (any illness), 4.9 (systemic illness) and 7.0 (systemic illness <24 h before the race) versus controls. The neck-check concept (systemic vs localised symptoms) is described in the companion SAFER study.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Recent acute prerace systemic illness in runners increases the risk of not finishing the race: SAFER study V",
+        "authors": "Gordon L, Schwellnus M, Swanevelder S, Jordaan E, Derman W",
+        "year": 2017,
+        "venue": "British Journal of Sports Medicine",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2016-096964",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Pre-race illness is common in distance runners",
+      "claim": "Acute illness before a race is common, and it raises the risk of underperformance: in a large runner cohort, about 1 in 5 reported pre-race illness symptoms and about 1 in 13 reported systemic symptoms, and symptomatic runners who started were more likely not to finish.",
+      "evidence": "Prospective cohort (SAFER IV) of 7031 distance runners with pre-race questionnaires. 1338 runners (19.0%) reported symptoms and 7.5% (1 in 13) reported systemic symptoms; symptomatic runners had higher did-not-start frequency (11.0% vs 6.6%) and those who started had higher did-not-finish frequency (2.1% vs 1.3%), rising to 2.4% (RR 1.90) with systemic symptoms.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A prospective cohort study of 7031 distance runners shows that 1 in 13 report systemic symptoms of an acute illness in the 8-12 day period before a race, increasing their risk of not finishing the race 1.9 times for those runners who started the race: SAFER study IV",
+        "authors": "Van Tonder A, Schwellnus M, Swanevelder S, Jordaan E, Derman W, Janse van Rensburg DC",
+        "year": 2016,
+        "venue": "British Journal of Sports Medicine",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2016-096190",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Staying home when sick: rationale and culture",
+      "claim": "It is a sensible individual strategy to 'stay home when sick' rather than train through viral illness. Although serious outcomes are rare in young healthy athletes, myocarditis (rare) and chronic fatigue/overtraining (uncommon) are recognised risks that warrant avoiding hard training during an active illness.",
+      "evidence": "Editorial/commentary in BMJ Open Sport & Exercise Medicine arguing for the 'stay home when sick' approach. Notes that in young healthy athletes severe adverse outcomes are far less likely than in the elderly/frail but that chronic fatigue and myocarditis, though rare, warrant consideration, and that athletes have traditionally pushed through illness; it calls for a culture change in sport.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "'Stay home when sick' advice: implications for sport and exercise",
+        "authors": "Orchard JW, Orchard JJ, Puranik R",
+        "year": 2021,
+        "venue": "BMJ Open Sport & Exercise Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1136/bmjsem-2021-001227",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Detraining: short-term loss of fitness (under ~4 weeks)",
+      "claim": "In the short term (under about four weeks of insufficient training), detraining in highly trained athletes causes a rapid decline in maximal oxygen uptake (VO2max) and blood volume; heart rate during exercise cannot compensate for reduced stroke volume, so maximal cardiac output falls and endurance performance drops. These changes are smaller in recently trained individuals.",
+      "evidence": "Narrative review 'Detraining: loss of training-induced physiological and performance adaptations. Part I: short term insufficient training stimulus' (Sports Medicine). Reports rapid declines in VO2max and blood volume in highly trained athletes, increased exercise heart rate insufficient to offset reduced stroke volume, reduced maximal cardiac output and impaired endurance performance; changes are more moderate in recently-trained individuals. Also notes metabolic and muscle-level changes.",
+      "confidence": "high",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part I: short term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200030020-00002",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Detraining: longer-term loss and reversibility (>4 weeks)",
+      "claim": "With longer-term insufficient training (more than about four weeks), VO2max declines markedly but trained athletes typically remain above untrained control values, while recently acquired VO2max gains are largely lost. Strength (force production) declines slowly and usually stays above baseline for a long time, and reduced training can limit these losses if training intensity is maintained.",
+      "evidence": "Narrative review 'Detraining: loss of training-induced physiological and performance adaptations. Part II: Long term insufficient training stimulus' (Sports Medicine). Reports that VO2max declines markedly but remains above control values while recently acquired gains are lost (via reduced blood volume, cardiac dimensions, ventilatory efficiency), endurance is impaired, and strength declines slowly and usually stays above control; negative effects can be avoided/limited by reduced-training strategies provided intensity is maintained.",
+      "confidence": "high",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part II: Long term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200030030-00001",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Magnitude of early cardiovascular detraining",
+      "claim": "A short layoff of roughly two to four weeks measurably reduces fitness: in endurance-trained men, this produced about a 6% decline in VO2max, a roughly 9% fall in blood volume and about a 12% drop in stroke volume; heart rate and peripheral resistance rose during submaximal exercise.",
+      "evidence": "Controlled experimental study in eight endurance-trained men measured before and after 2–4 weeks of inactivity. Detraining produced a 9% decline in blood volume (5,177 to 4,692 ml), primarily from a 12% fall in plasma volume; stroke volume fell 12% and VO2max declined 6%, while submaximal heart rate rose 11% and total peripheral resistance 8%.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of detraining on cardiovascular responses to exercise: role of blood volume",
+        "authors": "Coyle EF, Hemmert MK, Coggan AR",
+        "year": 1986,
+        "venue": "Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1152/jappl.1986.60.1.95",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Two weeks of detraining: fitness drops, endurance is retained longer",
+      "claim": "Even two weeks of detraining reduces cardiopulmonary function and some muscular strength in endurance-trained athletes, but muscle endurance can be maintained in the short term. This underlines that fitness loss begins quickly after a break but is not uniform across capacities.",
+      "evidence": "Study of 15 endurance-trained male athletes measured before and after 2 weeks of detraining. Two weeks significantly reduced VO2max, time to exhaustion, maximal stroke volume and isokinetic knee extensor strength, and increased maximal heart rate and body mass; knee flexor strength and muscle endurance were maintained (and lean mass appeared to increase).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Two weeks of detraining reduces cardiopulmonary function and muscular fitness in endurance athletes",
+        "authors": "Chen YT, Hsieh YY, Ho JY, Lin TY, Lin JC",
+        "year": 2022,
+        "venue": "European Journal of Sport Science",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1080/17461391.2021.1880647",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Detraining reduces cardiac (left ventricular) mass",
+      "claim": "Detraining reliably reduces left ventricular mass in endurance-trained people, an effect seen even over relatively short breaks. The magnitude of the reduction was not explained by the length of detraining alone once training status was accounted for.",
+      "evidence": "Systematic review and meta-analysis of 15 investigations (19 analyses; 196 adults, 18–55 y, 15% female) with detraining periods of 1.4–15 weeks. Detraining significantly reduced left ventricular mass (standardized mean difference -0.586; 95% CI -0.817 to -0.355; P<0.001). Length of detraining alone was not correlated with the change, though a meta-regression accounting for training status found length of detraining associated with the change.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of detraining on left ventricular mass in endurance-trained individuals: a systematic review and meta-analysis",
+        "authors": "Massarotto RJ, Campbell AJ, Kreiter E, Claydon VE, Cote AT",
+        "year": 2024,
+        "venue": "European Journal of Preventive Cardiology",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1093/eurjpc/zwad327",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Detraining: cardiorespiratory and metabolic consequences",
+      "claim": "Cessation of training in endurance athletes lowers VO2max largely through reductions in blood and plasma volume and cardiac changes (decreased left ventricular mass, size and thickness, increased heart rate and blood pressure), with reduced cardiac output, lower lactate threshold and altered substrate use — collectively impairing performance.",
+      "evidence": "Systematic review of cardiorespiratory and metabolic consequences of detraining in endurance athletes (Frontiers in Physiology, 2023). Reports that total cessation decreases VO2max via reductions in blood and plasma volume; cardiac changes include decreased left ventricular mass/size/thickness with increased heart rate and blood pressure, lowering cardiac output; metabolically, lactate threshold and muscle glycogen fall and body weight rises; skeletal muscle shows reduced arteriovenous oxygen difference.",
+      "confidence": "high",
+      "citation": {
+        "title": "Cardiorespiratory and metabolic consequences of detraining in endurance athletes",
+        "authors": "Barbieri A, Fuk A, Gallo G, Gotti D, Meloni A, La Torre A, Filipas L, Codella R",
+        "year": 2023,
+        "venue": "Frontiers in Physiology",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.3389/fphys.2023.1334766",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Safe rebuild rules: avoid large jumps in weekly distance",
+      "claim": "Novice runners who increased weekly running distance by more than 30% over a two-week period appeared more vulnerable to distance-related injuries than those progressing by less than 10%, although the overall difference across progression groups was not statistically significant. The practical takeaway is to avoid large, sudden jumps in distance rather than following a rigid percentage rule.",
+      "evidence": "One-year prospective cohort of 874 healthy novice runners categorised by weekly distance progression (<10%/regression, 10–30%, >30%). Across the three groups there were no statistically significant differences in overall injury rate; there was a higher rate of distance-related injuries (e.g. patellofemoral pain, ITB syndrome, medial tibial stress syndrome) in those progressing >30% versus <10% per two weeks (hazard ratio 1.59; 95% CI 0.96–2.66; P=0.07). Authors advise novice runners to progress weekly distance by less than 30% per two weeks pending further study.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury",
+        "authors": "Nielsen RØ, Parner ET, Nohr EA, Sørensen H, Lind M, Rasmussen S",
+        "year": 2014,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.2519/jospt.2014.5164",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Safe rebuild rules: the acute:chronic workload ratio is not a proven tool",
+      "claim": "Although workload relative to recent workload (the acute:chronic workload ratio, ACWR) is popular for managing return-to-training progressions, a systematic review found the evidence associating ACWR with time-loss injury in team sports to be limited and methodologically variable. It should not be presented to users as a validated prediction rule for when it is safe to increase load.",
+      "evidence": "Systematic review of methodology, variables and injury risk in practical situations (20 studies, 2375 injuries from 1234 athletes) examining ACWR and time-loss injury risk in adult professional/elite team sports. The review describes ACWR characteristics and finds the association with injury risk variable and methodologically heterogeneous, cautioning against over-reliance on the ratio in practical decision-making.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Is the Acute: Chronic Workload Ratio (ACWR) Associated with Risk of Time-Loss Injury in Professional Team Sports? A Systematic Review of Methodology, Variables and Injury Risk in Practical Situations",
+        "authors": "Andrade R, Wik EH, Rebelo-Marques A, Blanch P, Whiteley R, Espregueira-Mendes J, Gabbett TJ",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-020-01308-6",
+        "retrieved_at": "2026-11-22"
+      }
+    }
+  ],
+  "summary_tier_a": "Strongest (Tier A) evidence for an educational 'returning to running' module: (1) FITNESS IS LOST QUICKLY BUT NOT UNIFORMLY — short-term detraining (weeks) rapidly reduces VO2max, blood/plasma volume and stroke volume (Coyle 1986: ~6% VO2max, ~9% blood volume, ~12% stroke volume after only 2–4 weeks), while strength and muscle endurance decline more slowly (Mujika & Padilla 2000; Chen 2022). Recently acquired gains are lost fastest; long-standing adaptations and strength persist longer, and reduced training that keeps intensity can limit losses. This argues against assuming 'I've lost everything' after a short illness/break — rebuild volume first, protect some intensity. (2) RETURN IS GRADED, NOT SUDDEN — return-to-run after injury should be criteria-based and symptom-guided (load should not cause symptoms during, after, or the next day; e.g. low-risk bone stress injuries; Warden 2021), using graduated activity ladders and walk-run protocols (Deering 2024). Return timelines are site-specific (e.g. navicular ~127 days, femoral neck ~107 days; Hoenig 2023) — avoid universal timelines. (3) AFTER ILLNESS, RESPECT SYSTEMIC SYMPTOMS — pre-race systemic illness (failed 'neck check': fever, body aches, chest symptoms) substantially raises non-finishing risk, most of all within 24 h (SAFER IV/V), and it is reasonable to 'stay home when sick' to avoid rare but real risks (Orchard 2021). After COVID-19, guidance is to screen (cardiac) where indicated and then recondition gradually through staged return-to-play (Elliott 2020; Ross 2021; Stanford Hall 2020); specific long-COVID return rules remain expert-only (Lindsay 2021). (4) REBUILD RULES — avoid large sudden jumps in distance (e.g. >30% per two weeks raised distance-related injury rates in novice runners; Nielsen 2014) and do not treat the ACWR or a rigid '10% rule' as a validated safety threshold (Andrade 2020). Education and behaviour change framing ('stay home when sick', progress gradually, monitor symptoms) is better supported than any single numeric rule. All content is educational and non-diagnostic.",
+  "unverified": [
+    "The precise stage-by-stage contents of the 'graduated return to play' framework (e.g. number of stages, minimum 24 h per stage, exact activity per stage) could not be verified from a retrievable full text — the original BMJ guidance/infographic (Elliott 2020) returned a 403 to automated retrieval; only the general 'staged/graduated progression' principle is substantiated.",
+    "A single validated 'return-to-run' prescription with exact week-by-week run/walk ratios, total weekly sessions or pace targets for un-injured runners returning after a cold/flu could not be identified in the peer-reviewed literature; walk-run is recommended as an approach (Deering 2024) but specific numeric protocols are coaching convention, not high-level evidence.",
+    "The specific number of days of complete rest or the exact VO2max/% fitness loss attributable to a routine upper-respiratory cold (as distinct from structured detraining studies or hospitalisation) is not established; the detraining figures cited come from controlled training-cessation studies in fit/endurance populations.",
+    "The 'neck check' rule (exercise if symptoms are above the neck, rest if below) is a widely used heuristic and is consistent with cohort data on systemic-symptom risk, but no randomised trial was identified validating the rule itself as a safe decision tool.",
+    "A definitive time-to-detraining threshold or a universal 'how fast fitness is lost' curve (e.g. a fixed % per week) is not established; the literature reports ranges that depend on training status, capacity studied and duration, so any single numeric timeline should be treated as approximate."
+  ],
+  "notes": "Scope: educational only; not medical diagnosis, advice or treatment. Return-to-run and return-to-activity claims are deliberately general and non-diagnostic; red-flag/systemic or cardiac symptoms and suspected bone stress injury should prompt professional assessment before resuming running. Evidence quality is mixed: return-to-run protocols (especially bone stress injury and postpartum) are dominated by expert consensus, Delphi statements and low-level (level IV) evidence rather than RCTs, so 'consensus' should not be read as 'proven'. Detraining claims are the strongest tier here and come mainly from controlled training-cessation studies in fit/endurance and older populations, so absolute percentages may overstate losses in recreational runners and for very short breaks. The illness/return-after-COVID guidance is time-bound (pandemic-era, 2020–2021) and expert-informed. Retrieval used the Europe PMC REST API (PubMed direct pages were blocked by cookie/JS walls; bjsm.bmj.com full text returned HTTP 403); DOIs/PMIDs and abstracts were verified via Europe PMC metadata. Prefer patient-friendly framing: after illness/break, rebuild gradually (walk-run), keep some intensity if tolerated, expect the first losses to be cardiovascular/blood-volume rather than strength, return to hard training only when systemic symptoms have resolved, and avoid large sudden increases in training load."
+}

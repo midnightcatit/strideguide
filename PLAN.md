@@ -636,12 +636,27 @@ subagent and the high/medium issues are fixed:
 Deferred (documented, not blocking): sliding session rotation, dedicated regression tests for the
 revocation path, and moving AI grounding fully server-side (`M4`).
 
-### Research — Wave 1 (in progress)
+### Research — Waves 1–3 (complete)
 
-8 research subagents + 3 stack surveys dispatched. Completed so far: running physiology (periodization,
-intensity zones), workout mechanics (aerobic/long, quality sessions), strength-for-runners (economy/
-injury, programming), adaptive planning, and the three surveys. Output in `research/` (see
-`research/README.md`). Waves 2–3 and KB consolidation follow.
+All 24 workstream files landed (8 per wave), plus 3 stack surveys and an M0 security review — **469
+cited claims, 361 unique sources** (deduplicated by DOI), from ~28 subagents.
+
+Consolidated into the knowledge base via `pnpm research:consolidate` →
+`apps/api/seed/seed-research.sql` (361 `research_sources` + 24 `explanations` rows), applied to local
+D1 and verified.
+
+Cross-cutting findings that shape the engine and plan content:
+
+- The **10% weekly rule** has weak support (failed its only novice RCT). Prefer avoiding single-session
+  distance spikes >10% of the longest run in the past 30 days.
+- **Polarized vs pyramidal** are broadly equivalent in aggregate; the better choice is level-dependent.
+- **Strength → running economy** is well-supported; runner-specific injury-prevention evidence is weaker.
+- **ACWR** is contested (mathematical coupling) — use as a trend indicator, not a threshold.
+- Zone cutoffs are conventions, not validated boundaries — expose the zone basis (%HRmax vs %HRR vs
+  %LTHR) and prefer threshold-anchored zones.
+- Taper ≈1–3 weeks at −41–60% volume, keeping intensity and frequency.
+
+Deferred: tiered cron refresh of the KB (M4).
 
 ### Blocked / pending on the user
 

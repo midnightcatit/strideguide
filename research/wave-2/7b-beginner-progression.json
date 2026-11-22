@@ -1,0 +1,300 @@
+{
+  "workstream": "Whole-fitness profile for beginners / return-to-fitness",
+  "subtopic": "Beginner and return-to-fitness progression: aerobic base and strength build-up, run/walk progressions, Couch-to-5K evidence, novice strength volume/intensity, DOMS and adaptation timelines, and weekly progression rates",
+  "generated_at": "2026-11-22T14:52:00Z",
+  "claims": [
+    {
+      "topic": "Beginner aerobic target volume (public-health baseline)",
+      "claim": "The baseline aerobic target for adults, including previously inactive beginners, is 150-300 minutes/week of moderate-intensity activity, or 75-150 minutes/week of vigorous activity, or an equivalent combination, plus muscle-strengthening activity on at least 2 days/week.",
+      "evidence": "WHO 2020 guidelines, developed from systematically updated reviews, recommend 150-300 min/wk moderate or 75-150 min/wk vigorous aerobic activity (or a combination) for all adults, plus regular muscle-strengthening activity for all age groups. They reaffirm that some activity is better than none and more is better for health.",
+      "confidence": "high",
+      "citation": {
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "authors": "Bull FC, Al-Ansari SS, Biddle S, Borodulin K, Buman MP, Cardon G, et al.",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2020-102955",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Beginner aerobic prescription (ACSM)",
+      "claim": "Beginners should aim for moderate-intensity cardiorespiratory exercise of at least 30 min/day on at least 5 days/week (>=150 min/week total), or vigorous exercise >=20 min/day on >=3 days/week (>=75 min/week), and add resistance exercise for major muscle groups on 2-3 days/week; adults unable or unwilling to meet these targets still benefit from doing less, and exercise should progress gradually in intensity and volume to reduce risk.",
+      "evidence": "ACSM position stand (superseding the 1998 stand) recommends >=150 min/wk moderate or >=75 min/wk vigorous aerobic exercise, resistance exercise on 2-3 d/wk, and neuromotor/flexibility work. It states adults who do less than the targets still benefit, and that gradual progression of exercise intensity and volume, plus behaviour-change support and supervision, improves safety and adherence.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults: guidance for prescribing exercise",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, Nieman DC, Swain DP",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e318213fefb",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Run/walk progression (Couch-to-5K model)",
+      "claim": "Couch-to-5K (C25K) is a widely used app-assisted, ~9-week walk/run beginner progression, but it lacks a robust evidence base; in a UK study its participants were mostly active, higher-socioeconomic women (~82% female, mean age 47 years, mean BMI 28.1) rather than a diverse inactive population.",
+      "evidence": "A modified 9-week C25K study of 110 runners found participants were mainly female (81.8%), mean age 47.1 years, mean BMI 28.1 kg/m2, mostly high socioeconomic status, married and degree-educated, and 64% had previous running experience and were already active. The authors state the programme lacks an evidence base and may not attract diverse inactive populations.",
+      "confidence": "medium",
+      "citation": {
+        "title": "\"Couch-to-5k or Couch to Ouch to Couch!?\" Who Takes Part in Beginner Runner Programmes in the UK and Is Non-Completion Linked to Musculoskeletal Injury?",
+        "authors": "Relph N, Taylor SL, Christian DL, Dey P, Owen MB",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.3390/ijerph20176682",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Couch-to-5K completion and injury",
+      "claim": "In a modified 9-week Couch-to-5K programme, 19% of participants reported a musculoskeletal injury and only 27.3% completed the programme; dropping out was linked to musculoskeletal injury and the progressive design, and previous injury strongly increased the risk of new injury (OR 7.56, 95% CI 2.06-27.75).",
+      "evidence": "Prospective questionnaire study (n=110) over a modified 9-week C25K programme: 21 injuries (19%); only 27.3% completed; prior injury increased new-injury risk (OR 7.56). Self-reported health (EQ-5D-5L) improved from baseline (73.1) to midpoint (81.2, p=0.047) but not to the end point. Interview themes: MSK injury, negative emotions linked to non-completion, and programme design. Authors recommend injury-prevention advice and more flexible designs.",
+      "confidence": "medium",
+      "citation": {
+        "title": "\"Couch-to-5k or Couch to Ouch to Couch!?\" Who Takes Part in Beginner Runner Programmes in the UK and Is Non-Completion Linked to Musculoskeletal Injury?",
+        "authors": "Relph N, Taylor SL, Christian DL, Dey P, Owen MB",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.3390/ijerph20176682",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Couch-to-5K as a pathway to sustained activity",
+      "claim": "Completing Couch-to-5K and then joining a free weekly timed 5 km event (parkrun) is associated with sustained physical activity: C25K graduates completed a similar number of runs per year as other parkrunners and 65% reported lifestyle improvements.",
+      "evidence": "Cross-sectional survey comparing 3,296 C25K parkrunners with 55,923 other parkrunners: C25K graduates were slightly older, more often female and part-time employed, had slower times, but when registered for a year completed a similar number of runs (11/year); larger proportions perceived positive impacts and 65% reported lifestyle improvements. parkrun appeared an effective pathway for C25K graduates.",
+      "confidence": "medium",
+      "citation": {
+        "title": "How can UK public health initiatives support each other to improve the maintenance of physical activity? Evidence from a cross-sectional survey of runners who move from Couch-to-5k to parkrun",
+        "authors": "Relph N, Owen M, Moinuddin M, Noonan R, Dey P, Bullas A, Quirk H, Haake S",
+        "year": 2023,
+        "venue": "Health Promotion International",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1093/heapro/daad108",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Walk-based progression (interval walking training)",
+      "claim": "Alternating fast and slow walking (interval walking training, IWT) is a low-barrier progression that improves physical fitness, muscle strength and glycemic control, with high short-term adherence; maintaining long-term adherence is the main challenge, especially in chronic-disease and overweight/obesity populations.",
+      "evidence": "Narrative review of IWT: free-living alternating fast/slow walking cycles improved fitness and muscle strength and reduced lifestyle-disease factors; in type 2 diabetes it improved glycemic control via enhanced glucose effectiveness. Short-term adherence is high but long-term adherence remains a challenge, and long-term real-world studies are needed.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Health benefits of interval walking training",
+        "authors": "Karstoft K, Thorsen IK, Nielsen JS, Solomon TPJ, Masuki S, Nose H, Ried-Larsen M",
+        "year": 2024,
+        "venue": "Applied Physiology, Nutrition, and Metabolism",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1139/apnm-2023-0595",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Beginner aerobic adaptation timeline",
+      "claim": "In absolute beginners, the first ~10 weeks of running improve running economy and time-to-exhaustion before maximal aerobic capacity changes; VO2max can remain unchanged while gait and economy adapt, so early fitness gains are not captured by VO2max alone.",
+      "evidence": "Ten female beginner runners completed a 10-week running programme. Running economy improved significantly (224 +/- 24 to 205 +/- 27 mL/kg/km, p<0.05) and treadmill time to exhaustion increased (16.4 to 17.3 min, p<0.05), while VO2max was unchanged (34.7 to 34.3 mL/kg/min). Kinematic changes (knee angle at toe-off, later peak dorsiflexion, slower eversion velocity) explained 94.3% of the economy change.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Mechanisms for improved running economy in beginner runners",
+        "authors": "Moore IS, Jones AM, Dixon SJ",
+        "year": 2012,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e318255a727",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "The 10% weekly progression rule",
+      "claim": "The popular '10% rule' for increasing weekly running distance is not supported by the only RCT in novice runners: a gradual 13-week programme based on the 10% rule did not reduce running-related injury compared with a standard 8-week programme.",
+      "evidence": "GRONORUN randomized controlled trial (n=532 novice runners preparing for a 4-mile event): injury incidence was 20.8% in the graded 13-week (10% rule) group vs 20.3% in the standard 8-week group (chi2=0.016, p=0.90). Conclusion: the graded programme had no preventive effect on running-related injury.",
+      "confidence": "high",
+      "citation": {
+        "title": "No effect of a graded training program on the number of running-related injuries in novice runners: a randomized controlled trial",
+        "authors": "Buist I, Bredeweg SW, van Mechelen W, Lemmink KAPM, Pepping GJ, Diercks RL",
+        "year": 2008,
+        "venue": "The American Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1177/0363546507307505",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Single-session distance spikes",
+      "claim": "The strongest modern signal for running-overuse injury is a single-session distance spike: a run exceeding 10% of the longest run in the past 30 days was associated with higher injury rates, whereas week-to-week changes were not.",
+      "evidence": "18-month cohort of 5,205 runners (588,071 sessions; 35% injured). Multistate Cox models: single-session distance relative to the longest run in the past 30 days showed increased injury rates for small spikes (HRR 1.64, 95% CI 1.31-2.05), moderate spikes (HRR 1.52, 95% CI 1.16-2.00) and large spikes (HRR 2.28, 95% CI 1.50-3.48). A negative dose-response was seen for the acute:chronic workload ratio, and no relationship was found for the week-to-week ratio.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "How much running is too much? Identifying high-risk running sessions in a 5200-person cohort study",
+        "authors": "Frandsen JS, Hulme A, Parner ET, Moller M, Lindman I, Abrahamson J, et al.",
+        "year": 2025,
+        "venue": "British Journal of Sports Medicine",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2024-109380",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Combined weekly volume and pace progression",
+      "claim": "Progressing weekly running volume by more than 10% while also progressing pace was not statistically significantly associated with running-related injury in recreational runners, though the analysis was underpowered for interaction.",
+      "evidence": "Secondary analysis of a randomized-trial dataset (n=586 injury-free recreational runners, 24-week follow-up; 133 injuries). Risk difference for a >10% relative weekly volume progression combined with pace progression was 8.1% (95% CI -9.3% to 25.6%), and for an absolute >5 km weekly volume progression combined with pace progression 5.2% (95% CI -12.0% to 22.5%); neither reached statistical significance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Interactions Between Running Volume and Running Pace and Injury Occurrence in Recreational Runners: A Secondary Analysis",
+        "authors": "Ramskov D, Rasmussen S, Sorensen H, Parner ET, Lind M, Nielsen R",
+        "year": 2022,
+        "venue": "Journal of Athletic Training",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.4085/1062-6050-0165.21",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Evidence base for progression rates and novice injury",
+      "claim": "Current evidence does not consistently link running-related injury to specific training parameters or recent changes in them, so optimal weekly progression rates cannot be stated with confidence; across 36 prospective studies (23,047 runners), overall injury incidence was 26.2% and novice-runner incidence was 14.9%.",
+      "evidence": "Systematic review of 36 articles (23,047 runners): 6,043 runners (26.2%) sustained an RRI; incidence was 14.9% in novice runners (range 9.4%-94.9%), 26.1% in recreational and 62.6% in competitive runners; most-injured sites were knee (25.8%), foot/ankle (24.4%) and lower leg (24.4%). Evidence linking weekly distance, duration, frequency, intensity or changes in these parameters to injury onset was conflicting, so the authors advise caution when recommending optimal parameters or progressions.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Association Between Running Injuries and Training Parameters: A Systematic Review",
+        "authors": "Fredette A, Roy JS, Perreault K, Dupuis F, Napier C, Esculier JF",
+        "year": 2022,
+        "venue": "Journal of Athletic Training",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.4085/1062-6050-0195.21",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Training errors and running injury (older evidence)",
+      "claim": "An earlier systematic review could not identify which specific training errors (volume, duration, frequency, intensity) relate to running-related injuries; the mean methodological quality of included studies was only 44.1%, so 'too much, too soon' remains plausible but not precisely quantified.",
+      "evidence": "Systematic review of 9 retrospective cohort, 13 prospective cohort, 6 case-control and 3 randomized controlled trials (from 4,561 screened records): conflicting results across volume, duration, intensity and frequency; mean quality score 44.1%. Conclusion: it was not possible to identify which training errors were related to running-related injuries.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training errors and running related injuries: a systematic review",
+        "authors": "Nielsen RO, Buist I, Sorensen H, Lind M, Rasmussen S",
+        "year": 2012,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/22389869/",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Novice strength prescription (load, sets, frequency)",
+      "claim": "For novice resistance trainers, ACSM recommends loads corresponding to an 8-12 repetition maximum (RM), training 2-3 days/week, using both multi-joint and single-joint exercises and sequencing large before small muscle groups; load should increase by 2-10% when the individual can perform 1-2 repetitions over the target.",
+      "evidence": "ACSM 2009 position stand 'Progression models in resistance training for healthy adults': for novices (untrained or no training for several years) loads of 8-12 RM are recommended; frequency 2-3 d/wk; exercises sequenced to preserve intensity (large before small, multi-joint before single-joint); a 2-10% load increase is applied when 1-2 repetitions over the desired number can be performed. Intermediate trainees (about 6 months experience) should use a wider 1-12 RM range with eventual heavy loading (1-6 RM) and 3-5 min rests.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Modern resistance training prescription for healthy adults",
+      "claim": "An updated ACSM overview of reviews confirms that healthy adults should perform progressive resistance training; strength is enhanced by heavier loads (>=80% 1RM), full range of motion, 2-3 sets, placing key exercises early in the session, and training at least 2 sessions/week, while training to momentary failure is not required.",
+      "evidence": "ACSM 2026 position stand (overview of 137 systematic reviews, >30,000 participants, programmes 6-52 weeks): resistance training significantly improved strength, size, power, endurance, gait speed and balance versus control. Voluntary strength was enhanced by loads >=80% 1RM, complete range of motion, 2-3 sets, exercises at the beginning of sessions, and >=2 sessions/week; hypertrophy by >=10 sets/week and eccentric overload. Training to momentary fatigue, equipment type, set structure, time under tension, blood-flow restriction and periodization did not consistently affect outcomes.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine Position Stand. Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults: An Overview of Reviews",
+        "authors": "Currier BS, D'Souza AC, Singh MAF, Lowisz CV, Rawson ES, Schoenfeld BJ, Smith-Ryan AE, et al.",
+        "year": 2026,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000003897",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Early strength adaptation is neural",
+      "claim": "Early strength gains in untrained people are driven largely by neural adaptations rather than muscle growth: measurable strength increases can appear within days of starting, before any change in muscle size.",
+      "evidence": "Ten untrained women completed four days of maximal isokinetic forearm training (6 sets of 10 reps). Peak torque increased significantly (19.53 to 22.47 N.m, p=0.040) while muscle thickness did not change (no main effect of time, p=0.106), implicating neural adaptations; a decrease in antagonist co-activation (FF co-activation -7.78%, p=0.011) was consistent with a neural contribution.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Early Phase Adaptations in Strength, Muscle Size, and Co-activation Following Resistance Training in Untrained Women",
+        "authors": "Roberts, Arnett JE, Ortega DG, Pioske JS, Smith RW, Neltner TJ, Schmidt RJ, Housh TJ",
+        "year": 2026,
+        "venue": "International Journal of Exercise Science",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.70252/ijes2026705",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "DOMS mechanism and management",
+      "claim": "Delayed onset muscle soreness (DOMS) is provoked by unaccustomed, especially eccentric, activity and is most common when beginners start training or return after reduced activity; the practical management is to reduce exercise intensity and duration for 1-2 days, train less-affected body parts, and introduce novel or eccentric activities progressively over 1-2 weeks.",
+      "evidence": "Narrative review of DOMS: symptoms are most prevalent at the start of the season when athletes return after reduced activity and when first introduced to unfamiliar activities; eccentric actions cause greater micro-injury. DOMS reduces range of motion, shock attenuation and peak torque. Most treatments (cryotherapy, stretching, ultrasound, electrical current) show no effect; exercise gives only temporary analgesia. Authors recommend reducing intensity/duration for 1-2 days after intense DOMS-inducing exercise, training unaffected body parts, and introducing eccentric/novel activities progressively over 1-2 weeks.",
+      "confidence": "high",
+      "citation": {
+        "title": "Delayed onset muscle soreness: treatment strategies and performance factors",
+        "authors": "Cheung K, Hume P, Maxwell L",
+        "year": 2003,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200333020-00005",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Repeated bout effect (protection after the first exposure)",
+      "claim": "A second bout of the same unaccustomed exercise causes much less muscle damage and soreness than the first (the repeated bout effect); pooled protection is largest around 72 hours post-damage for strength and soreness, so beginners should expect the worst soreness and performance loss after the first sessions and much less thereafter.",
+      "evidence": "Three-level meta-analysis of 35 studies: the repeated bout effect significantly protected maximal voluntary contraction (g=1.18, 95% CI 0.91-1.45), reduced DOMS (g=-1.37, 95% CI -1.70 to -1.05) and reduced creatine kinase (g=-0.91, 95% CI -1.33 to -0.50). Protection for MVC and DOMS was largest at 72 h (g=1.47 and -1.65) and CK increased through 96 h (g=-1.53); effects were numerically weakest for a 2-3-week interval between bouts.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Temporal dynamics of the repeated bout effect on exercise-induced muscle damage: a systematic review and three-level meta-analysis",
+        "authors": "Yu F, Xu L, Su X, Gao Y, Chen C, Yu L",
+        "year": 2026,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.3389/fphys.2026.1815013",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "DOMS is multifactorial and adapts with training",
+      "claim": "DOMS is best understood as a multifactorial neurophysiological response rather than a simple marker of muscle damage, and chronic training reduces DOMS through repeated-bout adaptation; therefore soreness should not be used as the main guide to whether a session 'worked'.",
+      "evidence": "Systematic review with narrative synthesis (1,183 articles screened): DOMS cannot be explained by a single mechanism but involves overlapping inflammatory, neural, metabolic and proprioceptive pathways that differ by exercise modality. Resistance training induces nociceptor sensitisation and strength loss; endurance exercise raises IL-6 within 48 h but inflammation decreases after repeated bouts. The authors conclude chronic training reduces DOMS through repeated-bout adaptation.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Rethinking neurophysiology of delayed onset muscle soreness: updated concepts and mechanisms for mitigation across endurance, resistance, and plyometric exercise",
+        "authors": "Jemni M, Quodling N, Hammami N, Groves S, Ijaz A, Pulyanova D, et al.",
+        "year": 2026,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.3389/fspor.2026.1709704",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Returning exercisers (retraining advantage)",
+      "claim": "People who have trained before appear to regain muscle and strength faster on retraining than first-time beginners (a proposed 'muscle memory' effect), though the cellular mechanism (myonuclear permanence) remains debated; this supports faster early progression for returning exercisers than for true novices.",
+      "evidence": "Narrative review of skeletal muscle memory: an enhanced hypertrophic response has been observed in previously trained muscles after detraining, and myonuclear permanence is a leading candidate mechanism; however, it is unclear whether accrued myonuclei persist indefinitely or are removed, so the effect size and durability are uncertain. The review frames this as relevant to muscle-mass regain after inactivity/injury.",
+      "confidence": "low-medium",
+      "citation": {
+        "title": "Skeletal muscle memory: implications for sports, aging and nutrition",
+        "authors": "Perez-Castillo IM, Ruiz-Caride SR, Rueda R, Lopez-Chicharro J, Segura-Ortiz F, Bouzamondo H",
+        "year": 2025,
+        "venue": "Frontiers in Nutrition",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.3389/fnut.2025.1701520",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "For beginners and returning exercisers, start below the public-health target and build toward 150-300 min/week of moderate aerobic activity (or 75-150 min/week vigorous) plus strength work on at least 2 days/week. Run/walk progressions such as Couch-to-5K are the standard low-barrier on-ramp and do raise activity levels, but they lack RCT support and show real dropout and injury (~19% injury, ~27% completion in one UK cohort), with prior injury a strong risk factor. Weekly progression rates cannot be prescribed precisely: the 10% rule failed in the only novice RCT, and evidence linking specific training changes to injury is conflicting. The clearest modern signal is to avoid single-session distance spikes (>10% of the longest run in the past 30 days). For strength, novices should use 8-12 RM loads, 2-3 sessions/week, and add ~2-10% load when they exceed the target reps; early strength gains are neural, and DOMS peaks after the first unaccustomed sessions and then markedly decreases (repeated bout effect).",
+  "unverified": [
+    "The '10% rule' as a specific weekly mileage guideline that prevents injury: it is a widely repeated coaching heuristic, but the only RCT in novice runners (Buist 2008) found no injury-prevention benefit, and reviews report conflicting evidence. Treat as unverified/unsubstantiated rather than evidence-based.",
+    "The specific claim that Couch-to-5K (the branded programme) improves VO2max or objectively measured fitness: no RCT was located; available evidence is observational/survey-based and reports self-reported health and activity changes only.",
+    "A precise novice 'linear progression' schedule of adding a fixed load every session (e.g., +2.5 kg/session): this is standard coaching practice (e.g., Rippetoe-style programmes) but was not located in peer-reviewed trials with quantified weekly increments; only the ACSM 2-10% load-increase rule is substantiated.",
+    "That DOMS severity predicts training effectiveness or muscle growth: no located source supports this; the evidence indicates DOMS is multifactorial and adapts independently of hypertrophy."
+  ],
+  "notes": "Scope: beginner and return-to-fitness progression for onboarding and the whole-fitness profile. Sources were retrieved via the Europe PMC REST API (WebFetch/curl); PubMed and DuckDuckGo were JS-blocked. Peer-reviewed sources dominate: two ACSM position stands (2009 novice progression models; 2026 overview of reviews updating it), a WHO 2020 guideline, one RCT (GRONORUN, 10% rule), several prospective cohorts and systematic reviews on running load/injury, a meta-analysis on the repeated-bout effect, and narrative reviews on DOMS and muscle memory. Key caveats: (1) progression-rate evidence is genuinely conflicting - the honest position is that no single weekly percentage is proven optimal; (2) the most actionable modern finding is avoiding single-session distance spikes (Frandsen 2025), not a weekly rule; (3) Couch-to-5K is popular but evidence-poor, and completion/injury data come from a single UK cohort (n=110) so confidence is medium; (4) 'returning exerciser' claims rest on debated muscle-memory mechanisms and should be presented cautiously; (5) early aerobic adaptation in true beginners may improve running economy and endurance before VO2max, so onboarding should not rely on VO2max as the sole progress metric. Companion files: wave-1 1a-periodization, 1b-intensity-zones, 2a-aerobic-long-runs, 3b-strength-programming; wave-2 7a-general-health-cardio-strength."
+}

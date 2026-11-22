@@ -59,6 +59,14 @@ Claims whose evidence cannot be substantiated go in the file's `unverified` arra
 WebFetch first; Firecrawl (free tier) only as a fallback when a page needs JS rendering, is
 blocked, or a fetch fails. Peer-reviewed sources preferred.
 
+## Known corrections
+
+Found during later passes (apply when consolidating):
+
+- **Zourdos RPE/RIR** DOI is `10.1519/JSC.0000000000001049` (not the value used in wave-1).
+- **Circuit-training meta-analysis** DOI is `10.1007/s40279-017-0773-4`.
+- **Schwanbeck 2020** (`...3349`) is a free-weights-vs-machines study, not the cycling title used in wave-1.
+
 ## Consolidation (M3)
 
 Wave outputs are merged into the D1 tables, deduplicated by DOI, and versioned via
