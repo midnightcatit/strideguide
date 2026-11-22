@@ -33,6 +33,6 @@ jobs:
       - name: Typecheck
         run: pnpm --filter @strideguide/api typecheck
       - name: Deploy API Worker
-        run: pnpm --filter @strideguide/api deploy
+        run: pnpm --filter @strideguide/api run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

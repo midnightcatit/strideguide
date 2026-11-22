@@ -29,12 +29,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Apply remote migrations
-        run: pnpm --filter @strideguide/api db:migrate:remote
+        run: pnpm --filter @strideguide/api run db:migrate:remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Seed research KB
         if: ${{ inputs.seed }}
-        run: pnpm --filter @strideguide/api db:seed:research:remote
+        run: pnpm --filter @strideguide/api run db:seed:research:remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
