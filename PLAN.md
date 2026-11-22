@@ -709,6 +709,19 @@ Follow-up quality-of-life shipped alongside: a **Settings modal** (Appearance / 
 the header toggles, and **service-worker auto-update** (bypass HTTP cache, check on load, reload once a new
 worker takes control) so new deploys actually appear in the installed PWA.
 
+### M4 — Automatic guided flow + Today/Week (done, live)
+
+- **Engine**: every run step carries an estimated duration (so the whole workout auto-advances), strength
+  steps carry `restSec`, and the circuit expanded to **8 machines** (legs, posterior chain, push/pull).
+- **Player v2**: strength expands into **sets**, timed steps count down and auto-advance, and **rest runs
+  automatically** — finish a set → rest starts → next set. Skip / +30s / jump-to-stage still available.
+- **Navigation**: home is now **Today-only** (every session for today, each startable/loggable); the full
+  week moved to **`/week`**; a bottom nav (**Today | Week**) and a shared plan store keep them in sync.
+
+**Still to come** (from review): intensity progression that hardens toward race day (explicit
+easy/steady/hard labels + race-specific work in later phases); onboarding anchored explicitly on a
+race/pace baseline; progress analytics (M5); the AI coach/adaptation layer (M6).
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
