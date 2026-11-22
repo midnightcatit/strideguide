@@ -34,10 +34,26 @@ export interface ClientWeek {
 	sessions: ClientSession[];
 }
 
+export interface ClientLog {
+	id: string;
+	sessionId: string | null;
+	runStats: {
+		distanceKm?: number;
+		durationSec?: number;
+		avgHr?: number;
+		avgPaceSecPerKm?: number;
+	} | null;
+	strengthSets: { machine: string; sets: { reps: number; weightKg: number }[] }[] | null;
+	rpe: number | null;
+	notes: string | null;
+	createdAt?: string | number | null;
+}
+
 export interface CurrentPlan {
 	goal: { id: string; goalProfileSlug: string; targetDate: string | null } | null;
 	plan: { id: string; params: Record<string, unknown> | null } | null;
 	weeks: ClientWeek[];
+	logs: ClientLog[];
 }
 
 export const DAY_INITIALS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];

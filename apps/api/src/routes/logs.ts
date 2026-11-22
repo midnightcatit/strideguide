@@ -27,10 +27,26 @@ logs.post(
 			sessionId: z.string().optional(),
 			startedAt: z.string().optional(),
 			endedAt: z.string().optional(),
-			runStats: z.record(z.string(), z.unknown()).optional(),
-			strengthSets: z.array(z.unknown()).optional(),
+			runStats: z
+				.object({
+					distanceKm: z.number().nonnegative().optional(),
+					durationSec: z.number().nonnegative().optional(),
+					avgHr: z.number().nonnegative().optional(),
+					avgPaceSecPerKm: z.number().nonnegative().optional(),
+				})
+				.optional(),
+			strengthSets: z
+				.array(
+					z.object({
+						machine: z.string(),
+						sets: z.array(
+							z.object({ reps: z.number().nonnegative(), weightKg: z.number().nonnegative() }),
+						),
+					}),
+				)
+				.optional(),
 			rpe: z.number().min(1).max(10).optional(),
-			notes: z.string().optional(),
+			notes: z.string().max(2000).optional(),
 			source: z.enum(['manual', 'device', 'import']).default('manual'),
 		}),
 	),
