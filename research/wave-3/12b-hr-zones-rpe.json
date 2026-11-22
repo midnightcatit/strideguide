@@ -1,0 +1,316 @@
+{
+  "workstream": "wave-3",
+  "subtopic": "Heart-rate zones & RPE as data - %HRmax and heart-rate-reserve (Karvonen) zone formulas, LTHR-based zones, the 5-zone model, and RPE scales (Borg 6-20 and 1-10 / CR-10) with anchors mapping to zones; the validity and limits of each, with concrete formulas/mappings the app can compute.",
+  "generated_at": "2026-11-22T14:40:00Z",
+  "claims": [
+    {
+      "topic": "hrmax-prediction",
+      "claim": "Maximum heart rate can be estimated from age with HRmax = 208 - 0.7 x age (Tanaka), which fits measured data (meta-analytic correlation r = -0.90 with age) and does not differ by sex or habitual activity; the classic 220 - age underestimates HRmax in older adults.",
+      "evidence": "Meta-analysis of 351 studies / 18,712 subjects plus a cross-validation in 514 healthy subjects; regression 208 - 0.7 x age was virtually identical to the lab equation (209 - 0.7 x age). Age alone predicts HRmax to a large extent and independent of gender/activity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Age-predicted maximal heart rate revisited",
+        "authors": "Tanaka H, Monahan KD, Seals DR",
+        "year": 2001,
+        "venue": "Journal of the American College of Cardiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/s0735-1097(00)01054-8",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "hrmax-prediction-error",
+      "claim": "Age-based HRmax equations carry a large individual error, so a single age-derived HRmax should be treated as a starting guess, not a measurement. In 4,375 endurance athletes the age formulas underestimated self-reported field HRmax by about 5-6 bpm (mean bias -5.8 bpm Fox, -4.8 bpm Tanaka) with wide limits of agreement (Tanaka -18.5 to +9.1 bpm).",
+      "evidence": "Cross-sectional survey of 4,375 endurance athletes; Bland-Altman analyses showed systematic underestimation and wide individual error. A peak HR recorded in training/racing only becomes a true HRmax when it comes from an all-out effort on a clean trace.",
+      "confidence": "high",
+      "citation": {
+        "title": "An exploratory study of maximal heart rate determination in endurance athletes: laboratory testing vs. field based",
+        "authors": "Ausland A, Kelemen B, Seiler S",
+        "year": 2026,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "observational",
+        "doi_or_url": "10.3389/fspor.2026.1806303",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "percent-hrmax-method",
+      "claim": "%HRmax method: target HR = intensity_fraction x HRmax. This is the simplest basis (one number) but ignores resting HR and assumes each person's thresholds sit at the same percentage of maximum, which they do not. Typical watch defaults use 5 zones at 50-60 / 60-70 / 70-80 / 80-90 / 90-100% HRmax.",
+      "evidence": "Method definition and manufacturer default tables documented in a citation-rich coaching reference (Garmin/Polar defaults). No physiological rationale for these fixed cut points; the same bands are reused from old watch manuals and are percentages of an often-estimated maximum.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heart Rate Zones",
+        "authors": "Fellrnr (Fellrnr.com running-tips wiki)",
+        "year": 2025,
+        "venue": "Fellrnr.com",
+        "type": "coaching",
+        "doi_or_url": "https://fellrnr.com/wiki/Heart_Rate_Zones",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "karvonen-hrr-method",
+      "claim": "Heart-rate-reserve (Karvonen) method: target HR = HRrest + intensity_fraction x (HRmax - HRrest). It uses both max and resting HR and is the prescription basis endorsed by professional organizations because %HRR is presumed to track %VO2 reserve more closely than %HRmax does.",
+      "evidence": "Widely used in cardiac rehabilitation and clinical exercise prescription; described across multiple peer-reviewed exercise-prescription papers (e.g., Karvonen/HRR method used to set HIIT at 75-85% HRR; prescribed intensity progressed 50%->80% HRR in older adults).",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults: guidance for prescribing exercise",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, Nieman DC, Swain DP; American College of Sports Medicine",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/mss.0b013e318213fefb",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "hrr-not-equal-vo2max",
+      "claim": "%HRR is NOT interchangeable with %VO2max (or %VO2R) on a 1:1 basis: in college-aged males and females during both running and cycling the %HRR-%VO2max and %HRR-%VO2R relationships did not coincide with the line of identity, and %HRR was closer to %VO2max than to %VO2R. Interindividual variability yields meaningful error when prescribing an individual's intensity from %HRR alone.",
+      "evidence": "Bayesian analysis of simultaneous HR and VO2 in 41 subjects (21 M / 20 F) during maximal treadmill and cycle tests; credible intervals of slopes/intercepts showed interindividual variability that 'would yield significant error' in individual prescription. No sex or modality differences in the relationships.",
+      "confidence": "high",
+      "citation": {
+        "title": "Bayesian Analysis of the HR-VO2 Relationship during Cycling and Running in Males and Females",
+        "authors": "Vehrs PR, Tafuna'i ND, Fellingham GW",
+        "year": 2022,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "observational",
+        "doi_or_url": "10.3390/ijerph192416914",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "moderate-intensity-hrr-range",
+      "claim": "Guideline moderate-intensity range = 40-59% HRR (AHA/AACVPR). When tested against measured thresholds, HR at the first ventilatory threshold (VT1) approximates the LOWER limit (~40% HRR, mean absolute error ~6.4 bpm), but HR at VT2 sits well above the UPPER limit (59% HRR under-assigns intensity, bias ~ -11.4 bpm), so fixed %HRR bands miscalibrate at higher intensities.",
+      "evidence": "Retrospective multicentre study of 2,554 individuals (12 centres, 9 countries) comparing guideline 40-59% HRR with CPET-derived VT1/VT2 (Bland-Altman, Passing-Bablok, MAE).",
+      "confidence": "high",
+      "citation": {
+        "title": "Cardiorespiratory Exercise Intensity Prescription in Cardiovascular Rehabilitation: Do Updated Guideline Recommendations Reflect Real Individual Effort Responses?",
+        "authors": "Milani JGPO, Milani M, D'Ascenzi F, Braga F, da Silveira AD, Cipriano GFB, Machado FVC, Wilhelm M, Marcin T, Cavigli L, Keytsman C, Falter M, Cornelissen V, Verboven K, Hansen D, Cipriano Junior G",
+        "year": 2026,
+        "venue": "European Journal of Preventive Cardiology",
+        "type": "observational",
+        "doi_or_url": "10.1093/eurjpc/zwag311",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "fixed-hrr-zones-misclassify",
+      "claim": "Fixed %HRR training zones frequently put people in the wrong intensity domain relative to their physiological thresholds. In cardiac patients, measured vs predicted %HRR correlated only weakly (r = 0.32) and 55% had their ventilatory anaerobic threshold outside the prescribed 40-70% HRR zone (45% of them had VAT at <40% HRR).",
+      "evidence": "112 cardiac rehabilitation patients with maximal CPET before/after usual-care training; VAT compared with fixed %HRR prescription guidelines. Baseline fitness and test modality (cycle vs treadmill) shifted results.",
+      "confidence": "high",
+      "citation": {
+        "title": "Does exercise prescription based on estimated heart rate training zones exceed the ventilatory anaerobic threshold in patients with coronary heart disease undergoing usual-care cardiovascular rehabilitation? A United Kingdom perspective",
+        "authors": "Pymer S, Nichols S, Prosser J, Birkett S, Carroll S, Ingle L",
+        "year": 2020,
+        "venue": "European Journal of Preventive Cardiology",
+        "type": "observational",
+        "doi_or_url": "10.1177/2047487319852711",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "fixed-percent-markers-variability",
+      "claim": "Fixed percentage-of-maximum markers for the same nominal zone (e.g., Zone 2) show large inter- and intra-individual variability: coefficients of variation ranged 6-29% across markers, and fixed %HRmax and fixed blood-lactate thresholds varied widely between cyclists while VT1 and maximal fat oxidation aligned. Fixed %HRmax offers simplicity but may poorly reflect metabolic response.",
+      "evidence": "50 cyclists (30 M / 20 F) completed incremental ramp and step tests with power, HR, lactate, ventilation and substrate use measured.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Zone 2 Intensity: A Critical Comparison of Individual Variability in Different Submaximal Exercise Intensity Boundaries",
+        "authors": "Meixner B, Filipas L, Holmberg HC, Sperlich B",
+        "year": 2025,
+        "venue": "Translational Sports Medicine",
+        "type": "observational",
+        "doi_or_url": "10.1155/tsm2/2008291",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "thresholds-vary-by-fitness-and-sex",
+      "claim": "The %HRmax at which thresholds occur is not constant: in 1,411 runners HR at VT1 averaged 85.1 +/- 4.6% and at VT2 93.5 +/- 2.5% of peak HR, and the relative %HRmax at thresholds was greater the higher the training status, so a single fixed %HRmax boundary cannot match intensity across individuals with different fitness.",
+      "evidence": "Large cross-sectional/observational datasets using ramp incremental tests and gas exchange: (a) 1,411 endurance-trained runners (819 M / 592 F) reporting HR/VO2/speed at VT1 and VT2; (b) 1,092 adults showing %HRmax at VT1/VT2 rose with training status and correlated with VT oxygen uptake more than with VO2max.",
+      "confidence": "high",
+      "citation": {
+        "title": "Towards Accurate Reference Values for Heart Rate and Speed Zones by Aerobic Fitness and Sex in Long-Distance Runners",
+        "authors": "Esteve-Lanao J, Selles-Perez S, Arevalo-Chico H, Cejuela R",
+        "year": 2026,
+        "venue": "Sports (Basel)",
+        "type": "observational",
+        "doi_or_url": "10.3390/sports14010029",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "lthr-based-zones",
+      "claim": "LTHR-based zones: anchor zones to the heart rate at the second threshold (LTHR), usually estimated from a 20-30 minute time trial, with boundaries as fractions of LTHR (e.g., Z4 threshold ~95-99% and Z5 above 100% of LTHR in Friel-style systems). Advantage: no maximal test is required and zones move with fitness if retested. Limit: it still assumes where LT1 sits and requires a hard, repeated test.",
+      "evidence": "Coaching/threshold-based zone systems (Friel and similar) as compiled in a citation-rich reference; LTHR typically means the HR at the second threshold. Percentages are coaching conventions, not defined physiological markers.",
+      "confidence": "low",
+      "citation": {
+        "title": "Heart Rate Zones (Friel and other threshold-based coaching systems; percentage of maximum, reserve or threshold)",
+        "authors": "Fellrnr (Fellrnr.com running-tips wiki)",
+        "year": 2025,
+        "venue": "Fellrnr.com",
+        "type": "coaching",
+        "doi_or_url": "https://fellrnr.com/wiki/Heart_Rate_Zones",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "five-zone-model-conventions",
+      "claim": "The 5-zone model's interior boundaries are conventions, not physiological markers. Zone boundaries beyond the two thresholds are chosen by a coach/federation/manufacturer; e.g., the Norwegian Olympiatoppen 5-aerobic-zone scale uses ~55-72 / 72-82 / 82-87 / 87-92 / 92-100% HRmax, and Seiler & Tonnessen's 2009 version used 55-75 / 75-85 / 85-90 / 90-95 / 95-100% HRmax. A five-zone scale is the most common format among practitioners (~47% in a 710-respondent survey).",
+      "evidence": "Coaching/secondary compilation of documented zone systems (Olympiatoppen 2024; Seiler & Tonnessen 2009; practitioner survey). Only LT1/VT1 and LT2/VT2 have a physiological basis; the extra splits are 'arbitrary and not definitionally anchored.'",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heart Rate Zones (five-zone schemes and the Norwegian scale; comparison of systems)",
+        "authors": "Fellrnr (Fellrnr.com running-tips wiki)",
+        "year": 2025,
+        "venue": "Fellrnr.com",
+        "type": "coaching",
+        "doi_or_url": "https://fellrnr.com/wiki/Heart_Rate_Zones",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "zone2-definition",
+      "claim": "Expert consensus: 'Zone 2' training should be performed at intensities immediately BELOW the first lactate/ventilatory threshold (LT1/VT1). This gives the app a defensible operational definition of the easy zone anchored to a physiological boundary rather than a fixed percentage.",
+      "evidence": "A 14-expert applied-sport-scientist/coach panel commentary (IJSPP 'What Is Zone 2 Training?') reaching consensus on the preferred intensity for Zone 2 training, and noting many adaptations are not unique to Zone 2.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "What Is \"Zone 2 Training\"?: Experts' Viewpoint on Definition, Training Methods, and Expected Adaptations",
+        "authors": "Sitko S, Artetxe X, Bonnevie-Svendsen M, Galan-Rioja MA, Gallo G, Grappe F, Leo P, Mateo M, Mujika I, Sanders D, Seiler S, Zabala M, Valenzuela PL, Viribay A",
+        "year": 2025,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "position-stand",
+        "doi_or_url": "10.1123/ijspp.2024-0303",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "borg-6-20-scale",
+      "claim": "The Borg 6-20 RPE scale was designed so that the rating x 10 roughly matches heart rate (about 60-200 bpm) in healthy adults during steady exercise; the scale has fixed verbal anchors (6 = no exertion, 20 = maximal). It is a category scale and should not be arithmetically converted to other scales.",
+      "evidence": "Original psychophysical paper introducing/describing the Borg 15-point (6-20) category scale and the combined category-ratio method (precursor to CR-10). The 'x10' link to HR is a design feature and does not predict an individual's actual HR (a person with HRmax 160 reaches 19-20 at 160 bpm).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Psychophysical bases of perceived exertion",
+        "authors": "Borg GA",
+        "year": 1982,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "narrative-review",
+        "doi_or_url": "10.1249/00005768-198205000-00012",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "borg-6-20-validity",
+      "claim": "Borg RPE is a valid but imperfect proxy for exercise intensity. Meta-analytic weighted validity coefficients were: heart rate 0.62, blood lactate 0.57, %VO2max 0.64, VO2 0.63, ventilation 0.61, respiration rate 0.72 - lower than the historically assumed r = 0.80-0.90, and moderated by fitness, sex, exercise type and protocol.",
+      "evidence": "Meta-analysis of criterion-related validity of the Borg RPE scale in healthy individuals (systematic synthesis of the RPE-physiology literature).",
+      "confidence": "high",
+      "citation": {
+        "title": "Criterion-related validity of the Borg ratings of perceived exertion scale in healthy individuals: a meta-analysis",
+        "authors": "Chen MJ, Fan X, Moe ST",
+        "year": 2002,
+        "venue": "Journal of Sports Sciences",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1080/026404102320761787",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "rpe-maps-to-thresholds",
+      "claim": "Borg 6-20 RPE anchors to physiological thresholds (usable for zone mapping): in a very large mixed cohort the lactate threshold corresponded to RPE 10.8 +/- 1.8 and the individual anaerobic threshold to RPE 13.6 +/- 1.8; fixed 3 and 4 mmol/L thresholds corresponded to RPE 12.8 +/- 2.1 and 14.1 +/- 2.0. RPE 11-13 is recommended for less-trained individuals and 13-15 for harder aerobic work.",
+      "evidence": "Cohort study of 2,560 Caucasian men and women performing incremental treadmill/cycle tests with simultaneous HR, blood lactate and Borg 6-20 RPE; the RPE-HR association (r = 0.74) was not significantly influenced by sex, age, CAD, activity status or modality.",
+      "confidence": "high",
+      "citation": {
+        "title": "Associations between Borg's rating of perceived exertion and physiological measures of exercise intensity",
+        "authors": "Scherr J, Wolfarth B, Christle JW, Pressler A, Wagenpfeil S, Halle M",
+        "year": 2013,
+        "venue": "European Journal of Applied Physiology",
+        "type": "cohort",
+        "doi_or_url": "10.1007/s00421-012-2421-x",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "borg-cr10-scale",
+      "claim": "The Borg CR-10 (1-10, category-ratio) scale is a valid subjective intensity measure: during graded exercise it correlated very strongly with heart rate (pooled r = 0.95) and with a related fatigue scale (r = 0.94). Its 0-10 range with ratio properties suits quantifying 'effort out of 10' in apps, but informal 0-10 ratings without fixed anchors are not equivalent to a validated CR-10.",
+      "evidence": "Cross-cultural validation study (43 adults, modified Bruce treadmill test) reporting pooled within-participant correlations of the CR-10 and a companion scale with HR during graded exercise.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Cross-Cultural Adaptation and Validation of the Arabic Rating-of-Fatigue Scale",
+        "authors": "Baccouche MA, Trabelsi K, Masmoudi L, Jahrami H, Ammar A, Chtourou H",
+        "year": 2026,
+        "venue": "Sports Medicine - Open",
+        "type": "observational",
+        "doi_or_url": "10.1186/s40798-026-01052-7",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "resistance-rpe-rir",
+      "claim": "For strength training the RIR-based RPE scale maps directly to repetitions in reserve: RPE 10 = 0 RIR, RPE 9 = 1 RIR, ... RPE 6 = 4 RIR, i.e., RIR = 10 - RPE. It is inversely related to bar velocity (r ~ -0.77 to -0.88) and adjusts load set-to-set. This gives the app a concrete resistance-training intensity anchor.",
+      "evidence": "Development/validation study in 29 squatters (experienced and novice) showing the inverse velocity-RPE/RIR relationship; accompanied by a coaching application article (Helms et al.) explaining RIR-based RPE use.",
+      "confidence": "high",
+      "citation": {
+        "title": "Novel Resistance Training-Specific Rating of Perceived Exertion Scale Measuring Repetitions in Reserve",
+        "authors": "Zourdos MC, Klemp A, Dolan C, Quiles JM, Schau KA, Jo E, Helms E, Esgro B, Duncan S, Garcia Merino S, Blanco R",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "10.1519/jsc.0000000000001049",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "resistance-rpe-accuracy",
+      "claim": "Resistance-trained lifters can predict RIR with high absolute accuracy: mean absolute RIR error was 0.65 +/- 0.78 repetitions for 1-RIR and 3-RIR predictions in the bench press, with a minor tendency to under-predict; accuracy did not differ by sex, training experience or relative strength. RIR/RPE prescriptions are therefore usable but should tolerate ~1 rep of error.",
+      "evidence": "Crossover study in 24 resistance-trained males and females performing bench press to failure at 75% 1RM while reporting 1-RIR and 3-RIR; equivalence testing vs a +/-1 rep range.",
+      "confidence": "high",
+      "citation": {
+        "title": "Accuracy of Intraset Repetitions-in-Reserve Predictions During the Bench Press Exercise in Resistance-Trained Male and Female Subjects",
+        "authors": "Refalo MC, Remmert JF, Pelland JC, Robinson ZP, Zourdos MC, Hamilton DL, Fyfe JJ, Helms ER",
+        "year": 2024,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "10.1519/JSC.0000000000004653",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "rpe-limits-vs-thresholds",
+      "claim": "RPE is the LEAST accurate of the common fixed anchors for locating thresholds: in 165 recreational runners, RPE-derived estimates had the largest error for both LT1 and LT2, while speed-derived estimates were most accurate and HR errors were 4.9-7.4 bpm (LT1) and 2.8-5.2 bpm (LT2) when maxima were measured (errors grew when maxima were estimated). In left-ventricular-systolic-dysfunction patients RPE did not correlate with the ventilatory threshold.",
+      "evidence": "165 recreational runners (64 F / 101 M), maximal incremental treadmill test comparing fixed anchors (%, HR, speed, RPE) for estimating LT1/LT2; LT1 occurred at higher relative intensity in females, indicating a need for sex-specific anchors.",
+      "confidence": "high",
+      "citation": {
+        "title": "The accuracy of fixed intensity anchors to estimate lactate thresholds in recreational runners",
+        "authors": "Nuuttila OP, Kaikkonen P, Sievanen H, Vasankari T, Kyrolainen H",
+        "year": 2025,
+        "venue": "European Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "10.1007/s00421-025-05748-8",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "talk-test-complement",
+      "claim": "The talk test is a validated field alternative/complement to HR zones: across three increasing talk-test stages, all measured cardiorespiratory and perceptual variables rose linearly and consistently on both treadmill and stationary cycle, supporting it as a practical intensity guide where a validated test or clean HR is unavailable.",
+      "evidence": "22 healthy adults completing staged treadmill and cycle sessions based on the talk test with simultaneous cardiopulmonary exercise testing variables; no significant modality differences.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison of cardiorespiratory responses between treadmill and bicycle ergometer exercise",
+        "authors": "Kwon Y, Nam KS, Chang JS, Kang KW",
+        "year": 2025,
+        "venue": "Journal of Exercise Rehabilitation",
+        "type": "observational",
+        "doi_or_url": "10.12965/jer.2550198.099",
+        "retrieved_at": "2026-11-22"
+      }
+    }
+  ],
+  "summary_tier_a": "Computable formulas and mappings for the app. (1) HRmax: HRmax = 208 - 0.7 x age (Tanaka, meta-analytic), optional 220 - age (Fox); treat age-derived HRmax as a guess (individual error ~5-12 bpm). (2) %HRmax zones: target = fraction x HRmax (default 5 zones 50/60/70/80/90/100% HRmax; convention only). (3) Karvonen/HRR zones: target = HRrest + fraction x (HRmax - HRrest); inverse %HRR = (HR - HRrest)/(HRmax - HRrest). Guideline moderate band = 40-59% HRR; lower edge ~VT1, upper edge under-reaches VT2. %HRR tracks %VO2R better than %VO2max but is not 1:1 with either. (4) LTHR-based zones: target = fraction x LTHR (LTHR = HR at 2nd threshold, from a 20-30 min time trial); e.g., Friel-style Z4 ~95-99% LTHR, Z5 >100%. (5) Threshold-anchored 5-zone model: Zone 2 = immediately below LT1/VT1 (expert consensus); Z1-2 below LT1, Z3 between LT1 and LT2, Z4-5 above LT2; interior splits are conventions (e.g., Norwegian 55-72/72-82/82-87/87-92/92-100% HRmax). (6) Borg 6-20 RPE: rating x 10 approximately equals HR by design; threshold anchors ~RPE 11 (LT1) and ~RPE 13.5-14 (LT2); RPE 11-13 easy, 13-15 harder aerobic. (7) Borg CR-10 (1-10): correlate ~0.95 with HR during graded exercise; use 0-10 with fixed anchors. (8) Resistance RIR/RPE: RIR = 10 - RPE (RPE 10 = 0 RIR, RPE 8 = 2 RIR); RIR accuracy ~0.6-0.8 reps. (9) Fallback: talk test to bound LT1 (last comfortable-speech stage) for easy-zone control.",
+  "unverified": [
+    "Sarzynski et al. (2013) age-equation standard error (~11-12 bpm for 208-0.7xage and 220-age) is referenced secondhand (via the Fellrnr zone reference); the primary paper was not retrieved during this pass, so the specific bpm error value is unverified.",
+    "Seiler & Tonnessen (2009) exact 5-zone HRmax boundaries (55-75/75-85/85-90/90-95/95-100%) and the 'Z3 of 5 coincides with Z2 of 3' mapping are reported secondhand; the primary chapter was not retrieved.",
+    "Joe Friel's exact LTHR zone percentage table (e.g., Z4 95-99% LTHR) is a coaching convention documented in secondary sources; the primary book/blog definition was not retrieved, so the precise percentages are unverified.",
+    "Swain & Leutholtz (1997) slope/intercept figures for %HRR vs %VO2R (slope 1.00) and Swain (1994) '40% VO2max at 63% HRmax' are referenced secondhand and were not retrieved directly.",
+    "The claim that the Borg 6-20 scale was explicitly constructed so rating x 10 equals HR is widely stated but relies on the design description in Borg (1982); the primary paper's wording was not fully extracted."
+  ],
+  "notes": "Retrieval: PubMed article pages were blocked (cookies/reCAPTCHA); Europe PMC REST (search?resultType=core) and a citation-rich coaching wiki were used instead. All primary citations above were retrieved and their abstracts read via the Europe PMC core API except where flagged 'unverified'. Key practical guidance for the app: (a) always expose WHICH basis a zone uses (%HRmax vs %HRR vs %LTHR vs %threshold), because the same word '70%' maps to different bpm on each basis; (b) prefer threshold-anchored zones (LT1/LT2 from test, or talk-test estimates) and treat fixed %HRmax/%HRR bands as fallback defaults; (c) surface uncertainty - a single age-based HRmax can shift every %-based boundary by ~8-10 bpm; (d) for strength work use RIR = 10 - RPE; (e) the 5-zone model is a useful convention, not a physiological standard, and interior cut points are arbitrary. Numerical formula recap: HRR = HRmax - HRrest; Karvonen target = HRrest + frac x HRR; %HRR from a measured HR = (HR - HRrest)/HRR; %HRmax = HR/HRmax; LTHR target = frac x LTHR; Borg6-20 ~ HR/10; RIR = 10 - RPE. Supporting citations folded in here rather than as separate claims: Benitez-Munoz JA, Benito PJ, Guisado-Cuadrado I, Cupeiro R, Peinado AB (2025), 'Differences in the ventilatory thresholds in treadmill according to training status in 971 males and 301 females: a cross-sectional study', European Journal of Applied Physiology, doi:10.1007/s00421-024-05622-z (threshold %HRmax rises with training status; VO2max poorly correlated with threshold %max, r<0.3); and Strzelczyk TA, Quigg RJ, Pfeifer PB, Parker MA, Greenland P (2001), 'Accuracy of estimating exercise prescription intensity in patients with left ventricular systolic dysfunction', Journal of Cardiopulmonary Rehabilitation, doi:10.1097/00008483-200105000-00007 (Karvonen/HRR failed to estimate HR-VT +/-10% in many LVSD patients; no correlation between RPE and VT).\"
+}

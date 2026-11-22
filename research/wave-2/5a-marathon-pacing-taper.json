@@ -1,0 +1,316 @@
+{
+  "workstream": "wave-2",
+  "subtopic": "Marathon specifics: pacing strategy (negative vs even vs positive split), marathon long-run progression (peak/longest run), taper duration and volume reduction (meta-analytic evidence), and race-week preparation",
+  "generated_at": "2026-11-22T14:45:00Z",
+  "claims": [
+    {
+      "topic": "Pacing strategy - prevalence",
+      "claim": "In marathon road races, a slowing (positive-split) pattern is the most frequently observed pacing profile. In a systematic review of 39 studies, ~77% reported positive pacing, ~18% reported negative pacing, ~13% reported even pacing and ~8% reported parabolic pacing (some studies report more than one profile, so percentages overlap).",
+      "evidence": "Systematic review of 39 studies (29 observational, 10 experimental/RCT); median Newcastle-Ottawa score 8 (range 5-9). Pacing profile counts extracted per study across half-marathon, marathon and ultramarathon cohorts.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Pacing strategies in marathons: A systematic review",
+        "authors": "Sha J, Yi Q, Jiang X, Wang Z, Cao H, Jiang S",
+        "year": 2024,
+        "venue": "Heliyon",
+        "type": "systematic-review",
+        "doi_or_url": "10.1016/j.heliyon.2024.e36760",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - faster runners pace more evenly",
+      "claim": "In championship marathon cohorts, the fastest runners (race winners) maintained an even pace across the whole race, whereas runners of lesser ability slowed progressively, particularly after 20-25 km.",
+      "evidence": "Observational analysis of 62 race-years across three Japanese Women's championship marathons comparing winners and 25th/50th/100th place finishers; pace differential computed between 0-5 km and 35-40 km splits.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of ambient temperature on marathon pacing is dependent on runner ability",
+        "authors": "Ely MR, Martin DE, Cheuvront SN, Montain SJ",
+        "year": 2008,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0b013e3181788da9",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - elite championship profiles and sex differences",
+      "claim": "Across Olympic and World Championship marathons (673 men, 549 women, nine competitions), medallists of both sexes maintained even-paced running from 10 km onward, while slower finishers dropped off the lead pack at approximately half-distance. Runners who stayed with the same group throughout slowed least; women slowed less overall and were more likely to run a negative split, and their more conservative start was associated with fewer dropouts.",
+      "evidence": "Observational study of finishing and 5 km split times across nine championship races; group/pack behaviour and sex compared with effect sizes (e.g., men ES >= 1.19, women ES >= 1.06 for pack effect).",
+      "confidence": "high",
+      "citation": {
+        "title": "Pacing, packing and sex-based differences in Olympic and IAAF World Championship marathons",
+        "authors": "Hanley B",
+        "year": 2016,
+        "venue": "Journal of Sports Sciences",
+        "type": "observational",
+        "doi_or_url": "10.1080/02640414.2015.1132841",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - sex differences in slowing",
+      "claim": "Men are more likely than women to slow in the marathon. Across 91,929 performances from 14 US marathons, mean second-half pace change was 15.6% (men) vs 11.7% (women); women had 1.46x higher odds of maintaining pace and 0.36x the odds of marked slowing (>=30% slowing), a difference that persisted after adjustment and across age/finish-time groups.",
+      "evidence": "Large observational dataset (14 marathons, 2011) with subgroup experience data (n=2929); pace maintenance analysed continuously and categorically.",
+      "confidence": "high",
+      "citation": {
+        "title": "Men are more likely than women to slow in the marathon",
+        "authors": "Deaner RO, Carter RE, Joyner MJ, Hunter SK",
+        "year": 2015,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0000000000000432",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - negative splits physiology and applicability",
+      "claim": "Negative splitting (second half faster than first) has plausible physiological advantages (improved energy conservation and glycogen sparing, enhanced thermoregulation, reduced cardiovascular drift) and is supported by training modalities such as progressive long runs and fast-finish workouts, but it is not universally applicable and should be individualised by fitness, environmental conditions and race profile.",
+      "evidence": "Mini-review synthesising mechanistic physiological/psychological arguments and training approaches; no pooled effect estimate for a negative-split intervention.",
+      "confidence": "low",
+      "citation": {
+        "title": "The physiology and psychology of negative splits: insights into optimal marathon pacing strategies",
+        "authors": "Grivas GV",
+        "year": 2025,
+        "venue": "Frontiers in Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fphys.2025.1639816",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - conservative early pace predicts relative success",
+      "claim": "In the 2009 IAAF Women's World Championship marathon, athletes finishing in the top quartile ran the first two 5 km segments at a lower relative speed (% of personal-best speed) but at a higher relative speed after 35 km; slower groups selected unsustainable initial speeds and lost more speed later, finishing well below their personal-best-expected performances.",
+      "evidence": "Observational split-time analysis of a single championship race, finishers divided into quartile groups; relative speed (% PB) compared per segment.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Influence of different performance levels on pacing strategy during the Women's World Championship marathon race",
+        "authors": "Renfree A, St Clair Gibson A",
+        "year": 2013,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "observational",
+        "doi_or_url": "10.1123/ijspp.8.3.279",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - record vs championship racing",
+      "claim": "Recent world-record marathon performances have been characterised by even pacing, contrasting with the positive pacing typical of major championship marathon races; pacing profiles therefore differ systematically between record-attempt (paced) races and championship races.",
+      "evidence": "Narrative review of pacing profiles and tactical behaviours across elite running events, synthesising observational race analyses.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Pacing profiles and tactical behaviors of elite runners",
+        "authors": "Casado A, Hanley B, Jimenez-Reyes P, Renfree A",
+        "year": 2021,
+        "venue": "Journal of Sport and Health Science",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/j.jshs.2020.06.011",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Pacing strategy - determinants",
+      "claim": "Age, sex and finish time are simultaneously independent determinants of marathon pacing; older runners, women and faster runners pace more evenly (pacing ratio closer to 1.0), with no significant two- or three-way interactions among these factors.",
+      "evidence": "Observational study of 186 men and 133 women over three years of a single looped midwestern US marathon (electronic 1.6 km chip splits) using multiple regression.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Age, sex, and finish time as determinants of pacing in the marathon",
+        "authors": "March DS, Vanderburgh PM, Titlebaum PJ, Hoops ML",
+        "year": 2011,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "10.1519/JSC.0b013e3181bffd0f",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Taper - meta-analytic optimal strategy",
+      "claim": "Meta-analysis of 27 studies in competitive athletes found the optimal taper is a 2-week intervention in which training volume is exponentially decreased by 41-60% while training intensity and frequency are maintained (overall performance effect 0.59 +/- 0.33, P < 0.001); modifying intensity or frequency was not beneficial.",
+      "evidence": "Meta-analysis of 27 of 182 screened studies meeting inclusion criteria (competitive athletes, taper procedure detailed, field/competition criterion performance, calculable effect sizes).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Taper - updated meta-analysis",
+      "claim": "An updated systematic review/meta-analysis (14 studies) confirmed that a taper of up to 21 days in which training volume is progressively reduced by 41-60% without changing intensity or frequency improves time-trial performance (SMD -0.45, P < 0.05); tapering combined with pre-taper overload training produced larger time-trial gains, and there were no improvements in VO2max or movement economy.",
+      "evidence": "Meta-analysis of 14 studies with subgroup analyses on volume reduction, taper duration, taper type (progressive/step) and pre-taper overload.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance in endurance athletes: A systematic review and meta-analysis",
+        "authors": "Wang Z, Wang YT, Gao W, Zhong Y",
+        "year": 2023,
+        "venue": "PLoS ONE",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1371/journal.pone.0282838",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Taper - general prescription and expected magnitude",
+      "claim": "Tapering is defined as a progressive, nonlinear reduction of training load over a variable period. Performance is best optimised by maintaining training intensity, reducing training volume by up to 60-90%, and only slightly reducing frequency (no more than 20%); optimal duration ranges from 4 to more than 28 days, progressive nonlinear tapers outperform step tapers, and performance typically improves by about 3% (range 0.5-6.0%).",
+      "evidence": "Narrative review integrating taper studies across endurance and other sports; no single pooled estimate (values presented as consensus ranges).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Scientific bases for precompetition tapering strategies",
+        "authors": "Mujika I, Padilla S",
+        "year": 2003,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "narrative-review",
+        "doi_or_url": "10.1249/01.MSS.0000074448.73931.11",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Taper - maintain intensity, reduce volume",
+      "claim": "Training load during the taper should not be reduced at the expense of intensity: high-intensity training can maintain or further enhance training-induced adaptations while training volume is markedly reduced, so intensity should be retained even as volume falls.",
+      "evidence": "Narrative review on intense training before and during the taper, drawing on studies in moderately and highly trained athletes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Intense training: the key to optimal performance before and during the taper",
+        "authors": "Mujika I",
+        "year": 2010,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/j.1600-0838.2010.01189.x",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Taper - marathon-specific timing",
+      "claim": "Among world-class distance runners, the tapering process starts 7-10 days before the main competition, with race-pace running volume increasing as the competition approaches.",
+      "evidence": "Review integrating scientific literature with results-proven training-log practice of world-class marathon and 5000/10,000 m runners.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Training Characteristics of World-Class Distance Runners: An Integration of Scientific Literature and Results-Proven Practice",
+        "authors": "Haugen T, Sandbakk O, Seiler S, Tonnessen E",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "narrative-review",
+        "doi_or_url": "10.1186/s40798-022-00438-7",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Long-run progression - elite training volume",
+      "claim": "World-class marathoners perform a weekly running distance of about 160-220 km during the mid-preparation period (vs 130-190 km for 5000/10,000 m runners), across 11-14 sessions per week, with at least 80% of total running volume at low intensity; marathoners accumulate more running kilometres per session than track runners.",
+      "evidence": "Review integrating scientific literature with training-log data from world-class distance runners; values reported as mean ranges across athletes/mesocycles.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Training Characteristics of World-Class Distance Runners: An Integration of Scientific Literature and Results-Proven Practice",
+        "authors": "Haugen T, Sandbakk O, Seiler S, Tonnessen E",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "narrative-review",
+        "doi_or_url": "10.1186/s40798-022-00438-7",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Long-run progression - recreational marathon evidence",
+      "claim": "In recreational marathon runners, higher average weekly training volume (>65 km/wk) was associated with a faster finish time, while a longest endurance run of less than 25 km was associated with a slower finish time; a relatively high training volume and long endurance runs were not associated with increased running-related injury risk.",
+      "evidence": "Prospective cohort of 997 recreational (half-)marathon participants (556 half-marathon, 441 marathon) completing three questionnaires on injuries, weekly volume and longest endurance run; linear and logistic regression on finish time, pace decline and injuries.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Training for a (half-)marathon: Training volume and longest endurance run related to performance and running injuries",
+        "authors": "Fokkema T, van Damme AADN, Fornerod MWJ, de Vos RJ, Bierma-Zeinstra SMA, van Middelkoop M",
+        "year": 2020,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "cohort",
+        "doi_or_url": "10.1111/sms.13725",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Long-run progression - longest run and endurance performance",
+      "claim": "In recreational 24-hour ultrarunners, the longest training run before the event and personal-best marathon time (not anthropometry) were the best predictors of race performance, with the longest training session correlating r = 0.56 with distance covered.",
+      "evidence": "Observational bivariate and stepwise multiple regression in 63 male recreational ultrarunners in a 24-hour run (extrapolated evidence from ultramarathon, not the marathon itself).",
+      "confidence": "low",
+      "citation": {
+        "title": "Personal best marathon time and longest training run, not anthropometry, predict performance in recreational 24-hour ultrarunners",
+        "authors": "Knechtle B, Knechtle P, Rosemann T, Lepers R",
+        "year": 2011,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "10.1519/JSC.0b013e3181f6b0c7",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Race-week - carbohydrate loading (1-day protocol)",
+      "claim": "Combining physical inactivity with a very high carbohydrate intake (10 g/kg/day of high-glycaemic-index foods) enabled trained athletes to reach maximal muscle glycogen content within only 24 hours (glycogen rose from ~95 to ~180 mmol/kg wet mass after one day and stayed stable thereafter), suggesting a 3-day loading period is not always necessary.",
+      "evidence": "Controlled trial in eight endurance-trained male athletes with muscle biopsies before loading and after 1 and 3 days; glycogen measured in type I, IIa and IIb fibres.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Carbohydrate loading in human muscle: an improved 1 day protocol",
+        "authors": "Bussau VA, Fairchild TJ, Rao A, Steele P, Fournier PA",
+        "year": 2002,
+        "venue": "European Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "10.1007/s00421-002-0621-5",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Race-week - carbohydrate loading rationale",
+      "claim": "Carbohydrate loading increases muscle glycogen stores and improves endurance performance for events lasting longer than about 90 minutes; the classical protocol involves a glycogen-depleting phase followed by a high-carbohydrate diet over several days.",
+      "evidence": "Narrative review update summarising carbohydrate-loading studies and their effects on muscle glycogen and endurance performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Carbohydrate-loading and exercise performance. An update",
+        "authors": "Hawley JA, Schabort EJ, Noakes TD, Dennis SC",
+        "year": 1997,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-199724020-00001",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Race-week - pre-event nutrition position stand",
+      "claim": "The joint Academy of Nutrition and Dietetics / Dietitians of Canada / ACSM position stand recommends carbohydrate loading (about 10-12 g/kg/day over roughly 36-48 hours) for athletes preparing for events lasting longer than about 90 minutes, alongside appropriate pre-event meal timing and fluid/sodium strategies.",
+      "evidence": "Consensus/position statement synthesising sports-nutrition evidence for type, amount and timing of intake; guideline recommendations rather than a single trial.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Position of the Academy of Nutrition and Dietetics, Dietitians of Canada, and the American College of Sports Medicine: Nutrition and Athletic Performance",
+        "authors": "Thomas DT, Erdman KA, Burke LM",
+        "year": 2016,
+        "venue": "Journal of the Academy of Nutrition and Dietetics",
+        "type": "position-stand",
+        "doi_or_url": "10.1016/j.jand.2015.12.006",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    },
+    {
+      "topic": "Race-week - caffeine",
+      "claim": "The International Society of Sports Nutrition position stand concludes that caffeine supplementation is ergogenic for endurance performance, with typical effective doses around 3-6 mg/kg body mass, and notes that benefits are broadly consistent across many exercise modalities and populations.",
+      "evidence": "ISSN position stand reviewing caffeine's ergogenic effects and mechanisms across exercise performance studies.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "International society of sports nutrition position stand: caffeine and exercise performance",
+        "authors": "Guest NS, VanDusseldorp TA, Nelson MT, Grgic J, Schoenfeld BJ, Jenkins NDM, Arent SM, Antonio J, Stout JR, Trexler ET, Smith-Ryan AE, Goldstein ER, Kalman DS, Campbell BI",
+        "year": 2021,
+        "venue": "Journal of the International Society of Sports Nutrition",
+        "type": "position-stand",
+        "doi_or_url": "10.1186/s12970-020-00383-4",
+        "retrieved_at": "2026-11-22T14:45:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Tier-A evidence supports two of the four areas strongly. (1) Taper: two independent meta-analyses (Bosquet 2007; Wang 2023) converge on a taper of roughly 1-3 weeks in which training volume is reduced ~41-60% while intensity and frequency are maintained, yielding small-to-moderate performance gains; intensity should not be sacrificed, and elite marathoners typically begin tapering ~7-10 days out (Haugen 2022). (2) Pacing: large observational datasets and a systematic review show positive (slowing) splits dominate marathon racing, while faster/medal-winning runners and record attempts are characterised by more even pacing; men slow more than women; conservative early pacing predicts better relative finishes (Sha 2024; Hanley 2016; Deaner 2015; Ely 2008; Renfree 2013; Casado 2021). The case for negative splitting as an optimal strategy is biologically plausible but rests mainly on narrative review, not pooled intervention data (Grivas 2025). Long-run progression has direct recreational cohort support (Fokkema 2020: high weekly volume and a longest run >=25 km associate with faster marathons without higher injury risk) plus elite training-log ranges (Haugen 2022: 160-220 km/wk, >=80% low intensity), but no RCT establishes an optimal peak long-run distance. Race-week carbohydrate loading is supported by mechanistic trials and position stands (Bussau 2002: maximal glycogen within 24 h with 10 g/kg/day; Thomas 2016; Hawley 1997), and caffeine has position-stand support (Guest 2021).",
+  "unverified": [
+    "A specific numeric peak long-run target for recreational marathoners (e.g., 32 km / 20 miles, or 2.5-3.5 hours, or a defined weekly-mileage progression) is coaching convention (e.g., Pfitzinger & Douglas 'Advanced Marathoning'; Daniels' 'Running Formula') rather than a controlled-trial finding; no RCT identified.",
+    "The claim that a negative split is the single optimal marathon pacing strategy for all runners is not established by pooled experimental evidence; available support is narrative/mechanistic (Grivas 2025) and observational.",
+    "Optimal taper duration specifically for the marathon (as opposed to endurance athletes generally) is not isolated in the meta-analyses, which pool multiple endurance sports and use field/time-trial criteria.",
+    "Race-week practices beyond carbohydrate loading and caffeine (e.g., exact pre-race meal composition, sodium/fluid protocols, sleep banking) were not evaluated in dedicated marathon RCTs within this search and remain largely position-stand/coaching guidance.",
+    "No peer-reviewed study was found establishing a causal (interventional) link between specific long-run progression schemes and marathon performance; evidence is observational/correlational."
+  ],
+  "notes": "Retrieval via Europe PMC REST API (PubMed direct access was blocked by cookie/reCAPTCHA). Citation details (title, authors, journal, year, DOI) were taken from indexed Europe PMC records; abstracts were read for the primary claims. Evidence quality grades reflect design and directness to the marathon: taper meta-analyses and large pacing observational datasets are the strongest; negative-split physiology, taper prescription ranges and race-week nutrition rest on reviews/position stands; long-run progression is observational and partly extrapolated from ultramarathon. Confidence labels: 'high' = meta-analysis or large multi-race observational with consistent effect; 'moderate' = single good observational/cohort, controlled mechanistic trial, or guideline; 'low' = narrative review without pooled effect or extrapolated population. Sha 2024 pacing percentages overlap because individual studies can report multiple pacing profiles. For Stride Guide content, treat 'peak long run' and weekly progression as individualised coaching defaults, not evidence-based thresholds, and present negative splitting as an option rather than a universal rule."
+}

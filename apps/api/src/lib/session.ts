@@ -1,19 +1,42 @@
 import { SignJWT, jwtVerify } from 'jose';
 import type { Env } from '../env';
 
-const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14; // 14 days (shortened, M0-SEC-04)
 const STATE_TTL_SECONDS = 600;
+const MIN_SECRET_BYTES = 32;
 
-export const SESSION_COOKIE = 'sg_session';
-export const STATE_COOKIE = 'sg_oauth_state';
+export const DEV_SESSION_COOKIE = 'sg_session';
+export const DEV_STATE_COOKIE = 'sg_oauth_state';
+export const PROD_SESSION_COOKIE = '__Host-sg_session';
+export const PROD_STATE_COOKIE = '__Host-sg_oauth_state';
 
 export interface SessionPayload {
 	uid: string;
 	email: string;
 }
 
-function key(env: Env): Uint8Array {
-	return new TextEncoder().encode(env.SESSION_SECRET);
+export function secureCookies(env: Env): boolean {
+	return env.ENVIRONMENT === 'production';
+}
+
+export function sessionCookieName(env: Env): string {
+	return secureCookies(env) ? PROD_SESSION_COOKIE : DEV_SESSION_COOKIE;
+}
+
+export function stateCookieName(env: Env): string {
+	return secureCookies(env) ? PROD_STATE_COOKIE : DEV_STATE_COOKIE;
+}
+
+function enc(s: string): Uint8Array {
+	return new TextEncoder().encode(s);
+}
+
+function sessionKey(env: Env): Uint8Array {
+	const bytes = enc(env.SESSION_SECRET ?? '');
+	if (bytes.length < MIN_SECRET_BYTES) {
+		throw new Error(`SESSION_SECRET must be at least ${MIN_SECRET_BYTES} bytes`);
+	}
+	return bytes;
 }
 
 export async function signSession(env: Env, payload: SessionPayload): Promise<string> {
@@ -21,12 +44,12 @@ export async function signSession(env: Env, payload: SessionPayload): Promise<st
 		.setProtectedHeader({ alg: 'HS256' })
 		.setIssuedAt()
 		.setExpirationTime(`${SESSION_TTL_SECONDS}s`)
-		.sign(key(env));
+		.sign(sessionKey(env));
 }
 
 export async function verifySession(env: Env, token: string): Promise<SessionPayload | null> {
 	try {
-		const { payload } = await jwtVerify(token, key(env));
+		const { payload } = await jwtVerify(token, sessionKey(env), { algorithms: ['HS256'] });
 		if (typeof payload.uid === 'string' && typeof payload.email === 'string') {
 			return { uid: payload.uid, email: payload.email };
 		}
@@ -36,7 +59,10 @@ export async function verifySession(env: Env, token: string): Promise<SessionPay
 	}
 }
 
-/** Secure cookies on https; plain cookies on localhost http. */
+export function sessionTtlSeconds(): number {
+	return SESSION_TTL_SECONDS;
+}
+
 export function sessionCookieOptions(secure: boolean) {
 	return {
 		httpOnly: true,
@@ -58,6 +84,18 @@ export function stateCookieOptions(secure: boolean) {
 }
 
 export async function sha256Hex(input: string): Promise<string> {
-	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+	const digest = await crypto.subtle.digest('SHA-256', enc(input));
 	return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Constant-time string comparison (defense-in-depth for state/nonce). */
+export function timingSafeEqualStr(a: string, b: string): boolean {
+	const ab = enc(a);
+	const bb = enc(b);
+	if (ab.length !== bb.length) return false;
+	let out = 0;
+	for (let i = 0; i < ab.length; i++) {
+		out |= ab[i]! ^ bb[i]!;
+	}
+	return out === 0;
 }

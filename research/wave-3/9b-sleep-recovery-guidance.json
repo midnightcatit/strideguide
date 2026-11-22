@@ -1,0 +1,301 @@
+{
+  "workstream": "Sleep & recovery guidance",
+  "subtopic": "Sleep's effect on athletic performance and injury risk, sleep-extension, sleep deprivation, sleep hygiene for athletes, and sleep as a driver of training adaptation",
+  "generated_at": "2026-11-22T14:34:43Z",
+  "claims": [
+    {
+      "topic": "Acute sleep loss -> physical performance",
+      "claim": "Acute sleep loss degrades exercise performance overall, with a pooled mean change of about -7.6% (95% CI -11.9 to -3.1, p=0.001) across all exercise categories (anaerobic power, speed/power endurance, high-intensity interval exercise, strength, endurance, strength-endurance, skill).",
+      "evidence": "Systematic review with multi-level random-effects meta-analysis: 227 outcome measures from 69 publications. Effect was significant for every exercise category, but heterogeneity was very high (I2 = 98.1%) and the sample was 89% male. Subgroup analysis showed consistent negative effects only for total sleep deprivation and 'late restriction' (earlier wake), with a ~0.4% performance decrement per additional hour awake; afternoon/evening tasks were consistently impaired while morning tasks were largely spared.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Acute Sleep Loss on Physical Performance: A Systematic and Meta-Analytical Review",
+        "authors": "Craven J, McCartney D, Desbrow B, Sabapathy S, Bellinger P, Roberts L, Irwin C",
+        "year": 2022,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-022-01706-y",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep loss -> performance (narrative synthesis)",
+      "claim": "Sleep loss before competition can impair sport-specific performance; maximal single-effort and gross-motor performance can sometimes be maintained, but cognitive performance (slower, less accurate) is consistently degraded, and reduced sleep quality/quantity may create an autonomic imbalance resembling overtraining and raise pro-inflammatory cytokines linked to immune dysfunction.",
+      "evidence": "Narrative review of the effects of sleep restriction and deprivation on exercise performance and on physiological and cognitive responses to exercise. Authors state the extent/influence/mechanisms of sleep loss on performance remain uncertain and call for further controlled research; this is the review that frames the field's uncertainty.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Sleep and athletic performance: the effects of sleep loss on exercise performance, and physiological and cognitive responses to exercise",
+        "authors": "Fullagar HHK, Skorski S, Duffield R, Hammes D, Coutts AJ, Meyer T",
+        "year": 2015,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-014-0260-0",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Athlete sleep consensus recommendations",
+      "claim": "Elite athletes commonly sleep <7 h/night and a one-size-fits-all recommendation (e.g., 7-9 h) is unlikely to be ideal; performance is reduced by a full night or more without sleep, whereas the effect of partial restriction over 1-3 nights (a more realistic scenario) remains unclear, so recommendations should be individualised to the athlete's perceived sleep need.",
+      "evidence": "Expert consensus statement (20 authors) with narrative review and a practitioner 'sleep toolbox' (sleep education and screening). Notes that evidence on napping and sleep extension ('banking sleep') is still needed, and that small habitual sleep durations in the wider population increase susceptibility to respiratory infection. Observational evidence also links many athlete sleep problems to sport-specific (training, travel, competition) and non-sport (female sex, stress, anxiety) factors.",
+      "confidence": "high",
+      "citation": {
+        "title": "Sleep and the athlete: narrative review and 2021 expert consensus recommendations",
+        "authors": "Walsh NP, Halson SL, Sargent C, Roach GD, Nedelec M, Gupta L, Leeder J, Fullagar HH, Coutts AJ, Edwards BJ, Pullinger SA, Robertson CM, Burniston JG, Lastella M, Le Meur Y, Hausswirth C, Bender AM, Grandner MA, Samuels CH",
+        "year": 2021,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2020-102025",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep extension -> performance (basketball)",
+      "claim": "Extending sleep for 5-7 weeks (goal >=10 h in bed/night) in collegiate basketball players increased objective nightly sleep by ~111 min and improved performance: timed sprint improved (16.2 s -> 15.5 s), free-throw accuracy rose ~9% and 3-point accuracy ~9.2%, with improved reaction time, sleepiness and mood.",
+      "evidence": "Prospective single-arm (uncontrolled) intervention in 11 male varsity players with a 2-4 week baseline followed by 5-7 weeks of sleep extension. Small sample and no control group limit causal inference, but this is the canonical demonstration that extra sleep can improve sport-specific performance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The effects of sleep extension on the athletic performance of collegiate basketball players",
+        "authors": "Mah CD, Mah KE, Kezirian EJ, Dement WC",
+        "year": 2011,
+        "venue": "Sleep",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.5665/sleep.1132",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep extension -> performance (single night, crossover)",
+      "claim": "Even a single night of mild sleep extension (~55 min extra) improved morning physical and cognitive performance in physically active students, including 5 m shuttle-run distance and fatigue index, squat-jump height, simple reaction time and digit-cancellation performance, with effects most pronounced in the morning.",
+      "evidence": "Randomized, counterbalanced within-subjects crossover (24 physically active university students, wrist actigraphy). Sleep extension raised total sleep time to ~531 vs ~476 min (p<0.001, d=0.91). Supports a modest acute benefit of extra sleep, though the cohort was recreationally active rather than competitive and the design cannot isolate expectancy effects.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Single-Night Sleep Extension Enhances Morning Physical and Cognitive Performance Across Time of Day in Physically Active University Students: A Randomized Crossover Study",
+        "authors": "Bouzouraa E, Dhahbi W, Ferchichi A, Geanta VA, Kunszabo MI, Chtourou H, Souissi N",
+        "year": 2025,
+        "venue": "Life",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.3390/life15081178",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep extension -> recovery markers (team sport)",
+      "claim": "A 6-week sleep-extension programme in professional rugby players during pre-season produced small-to-moderate improvements in sleep quality (~-25%) and total sleep time/time in bed, with a small reduction in cortisol (~-19%) and faster mean reaction time (~-4%) versus control.",
+      "evidence": "Pre-post control-trial intervention in 25 highly trained rugby players during pre-season training. Authors conclude professional players are at risk of poor sleep and elevated physical stress during pre-season and that sleep extension is recommended; effects were small and the method (self-report plus actigraphy) is susceptible to bias.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Effects of Sleep Extension on Sleep, Performance, Immunity and Physical Stress in Rugby Players",
+        "authors": "Swinbourne R, Miller J, Smart D, Dulson DK, Gill N",
+        "year": 2018,
+        "venue": "Sports",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.3390/sports6020042",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep deprivation -> muscle protein synthesis (mechanism)",
+      "claim": "A single night of total sleep deprivation reduced postprandial skeletal-muscle protein synthesis by ~18% and shifted the hormonal environment anabolic-to-catabolic (cortisol +21%, testosterone -24%), providing a mechanistic link between acute sleep loss and impaired muscle/training adaptation.",
+      "evidence": "Randomized crossover study in 13 healthy young adults (7 male, 6 female) comparing one night of total sleep deprivation with normal sleep; muscle protein fractional synthesis rate measured via stable isotope infusion. Small mechanistic study; markers of muscle protein degradation did not change.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The effect of acute sleep deprivation on skeletal muscle protein synthesis and the hormonal environment",
+        "authors": "Lamon S, Morabito A, Arentson-Lantz E, Knowles O, Vincent GE, Condo D, Alexander SE, Garnham A, Paddon-Jones D, Aisbett B",
+        "year": 2021,
+        "venue": "Physiological Reports",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.14814/phy2.14660",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep deprivation -> muscle recovery after exercise",
+      "claim": "Total sleep deprivation for 48 h after eccentric exercise-induced muscle damage did NOT delay recovery of muscle strength (voluntary contraction and creatine kinase changed equally), but it amplified the inflammatory/hormonal response (higher IL-6, IGF-1, cortisol and cortisol/testosterone ratio).",
+      "evidence": "Randomized crossover trial: 10 men performed a unilateral eccentric knee-extensor damage protocol, then either 48 h total sleep deprivation or 3 normal nights. Directly contradicts the intuition that sleep loss delays strength recovery, while showing altered inflammatory and endocrine recovery signals.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Sleep Deprivation on Acute Skeletal Muscle Recovery after Exercise",
+        "authors": "Dattilo M, Antunes HKM, Galbes NMN, Monico-Neto M, de Sa Souza H, dos Santos Quaresma MVL, Lee KS, Ugrinowitsch C, Tufik S, de Mello MT",
+        "year": 2020,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000002137",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Partial sleep deprivation -> recovery from training",
+      "claim": "One night of partial sleep deprivation (about half the usual time in bed) impaired recovery from a single high-intensity interval training session in trained cyclists: 24 h post-session peak power output fell more after deprivation than after normal sleep, and cyclists were sleepier and less motivated to train.",
+      "evidence": "Randomized crossover intervention: 16 trained male cyclists, HIIT at ~18:00 then either normal sleep (7.6 h) or restricted sleep (3.8 h), with 2-week washout. Peak power output at 24 h fell -0.22 vs -0.05 W/kg (p=0.008, d=-2.16). Directly relevant evidence that sleep loss impairs short-term training recovery, not just performance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "One night of partial sleep deprivation impairs recovery from a single exercise training session",
+        "authors": "Rae DE, Chin T, Dikgomo K, Hill L, McKune AJ, Kohn TA, Roden LC",
+        "year": 2017,
+        "venue": "European Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1007/s00421-017-3565-5",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep duration -> injury risk (adolescent athletes)",
+      "claim": "In adolescent student-athletes, sleeping less than 8 h per night was associated with 1.7x higher odds of having sustained a sports injury (95% CI 1.0-3.0, p=0.04), and hours of sleep was among the best independent predictors of injury.",
+      "evidence": "Observational study: 112 adolescent athletes (grades 7-12) completed an online training-practices survey whose responses were correlated with the athletic department's retrospective injury records; multivariate analysis. Design is retrospective and self-report, so association is not causal, and the confidence interval is wide.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Chronic lack of sleep is associated with increased sports injuries in adolescent athletes",
+        "authors": "Milewski MD, Skaggs DL, Bishop GA, Pace JL, Ibrahim DA, Wren TAL, Barzdukas A",
+        "year": 2014,
+        "venue": "Journal of Pediatric Orthopedics",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1097/BPO.0000000000000151",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep duration -> injury risk (elite adolescents, prospective)",
+      "claim": "In adolescent elite athletes followed across a school year, sleeping more than 8 h on weekdays reduced the odds of sustaining a new injury by 61% (OR 0.39, 95% CI 0.16-0.99); adequate nutrition intake was similarly protective (OR 0.36).",
+      "evidence": "Prospective longitudinal survey: questionnaire administered at two timepoints (autumn and spring) in 340 adolescent elite athletes; multiple logistic regression. Prospective design strengthens the temporal case, but sleep/nutrition were self-reported and confidence intervals were wide.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Too little sleep and an unhealthy diet could increase the risk of sustaining a new injury in adolescent elite athletes",
+        "authors": "von Rosen P, Frohm A, Kottorp A, Friden C, Heijne A",
+        "year": 2017,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.1111/sms.12735",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep loss -> injury, recovery and mental health (synthesis)",
+      "claim": "Sleep loss and poor sleep quality can impair muscular strength and speed, increase the risk of concussions and other injuries, and impair recovery after injury; cognitive performance (vigilance, learning and memory, decision making, creativity) is also degraded, and athletes are at high risk of insufficient/irregular sleep and sleep disorders.",
+      "evidence": "Narrative review (2022 update) synthesizing sleep-health and athletic-performance evidence. Provides the broadest framing of sleep as a multi-domain performance/recovery/injury factor but is not a quantitative synthesis.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Sleep and Athletic Performance: Impacts on Physical Performance, Mental Performance, Injury Risk and Recovery, and Mental Health: An Update",
+        "authors": "Charest J, Grandner MA",
+        "year": 2022,
+        "venue": "Sleep Medicine Clinics",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1016/j.jsmc.2022.03.006",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep hygiene (evidence base)",
+      "claim": "Individual sleep-hygiene components (exercise, stress management, noise, sleep timing, and avoidance of caffeine, nicotine, alcohol and daytime napping) are each associated with nocturnal sleep in epidemiologic and experimental research, but the direct effect of these recommendations on sleep in the general population remains largely untested.",
+      "evidence": "Narrative review of empirical evidence for sleep-hygiene recommendations with emphasis on public-health utility. Important caveat for any 'sleep hygiene' guidance in an app: the building blocks have plausible associations but weak direct experimental support, and sleep-hygiene education as a package is generally considered low-intensity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The role of sleep hygiene in promoting public health: A review of empirical evidence",
+        "authors": "Irish LA, Kline CE, Gunn HE, Buysse DJ, Hall MH",
+        "year": 2015,
+        "venue": "Sleep Medicine Reviews",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1016/j.smrv.2014.10.001",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Napping (systematic review)",
+      "claim": "Napping may benefit athletes across physical performance, cognitive performance, perceptual measures (fatigue, soreness, sleepiness, alertness), psychological state and night-time sleep, and can supplement night-time sleep without harming sleep quality; a practical recommendation is a 20-90 min nap between 13:00 and 16:00, allowing ~30 min to clear sleep inertia before training or competition.",
+      "evidence": "Systematic review of 37 studies (observational and experimental) of moderate quality. Most studies did not report consistent nap frequency/duration/timing and used varied (often subjective) sleep assessment. Evidence is generally supportive but methodologically heterogeneous, so nap prescriptions should be treated as practical guidance rather than precise protocol.",
+      "confidence": "medium",
+      "citation": {
+        "title": "To Nap or Not to Nap? A Systematic Review Evaluating Napping Behavior in Athletes and the Impact on Various Measures of Athletic Performance",
+        "authors": "Lastella M, Halson SL, Vitale JA, Memon AR, Vincent GE",
+        "year": 2021,
+        "venue": "Nature and Science of Sleep",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.2147/NSS.S315556",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Napping (acute RCT)",
+      "claim": "A 30-min early-afternoon nap improved alertness and cognitive outcomes and, after a partial-sleep-deprivation night, restored subjective alertness and most degraded performance (including a karate-specific test); however, a nap had no effect on physical performance after a normal night, and physical benefits appeared only after fatigue was induced.",
+      "evidence": "Randomized crossover trial in 13 national-level male karate athletes comparing nap vs no-nap after either a reference night or a partial sleep deprivation night. Shows naps primarily help cognition/alertness and recovery from sleep loss or fatigue rather than acutely boosting well-rested physical performance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Napping on Alertness, Cognitive, and Physical Outcomes of Karate Athletes",
+        "authors": "Daaloul H, Souissi N, Davenne D",
+        "year": 2019,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000001786",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Training schedule -> sleep restriction (early-morning training)",
+      "claim": "Early-morning training severely restricts athletes' sleep: world-class swimmers averaged only ~5.4 h of sleep on nights before 06:00 training days versus ~7.1 h before rest days, suggesting that early schedules may themselves limit the effectiveness of training.",
+      "evidence": "Observational study of 7 elite Australian swimmers over 14 days of high-intensity pre-Olympic training, using sleep diaries and wrist activity monitors. Small sample but a clear and practically important schedule-sleep interaction (chronic <6 h/night can impair psychological and physiological functioning).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Sleep or swim? Early-morning training severely restricts the amount of sleep obtained by elite swimmers",
+        "authors": "Sargent C, Halson S, Roach GD",
+        "year": 2014,
+        "venue": "European Journal of Sport Science",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1080/17461391.2012.696711",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Habitual sleep in elite athletes",
+      "claim": "Elite athletes habitually sleep below recommended levels, averaging ~6.8 h per night (diary + actigraphy), with individual-sport athletes obtaining less sleep than team-sport athletes (~6.5 vs 7.0 h).",
+      "evidence": "Observational study of 124 elite athletes from five individual and four team sports, monitored for 7-28 nights during normal training. Supports the premise that many athletes are chronically short-sleeping; measurement relied largely on activity monitors and sleep diaries.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Sleep/wake behaviours of elite athletes from individual and team sports",
+        "authors": "Lastella M, Roach GD, Halson SL, Sargent C",
+        "year": 2015,
+        "venue": "European Journal of Sport Science",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1080/17461391.2014.932016",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep -> immune function and infection risk",
+      "claim": "Sleep and immunity are bidirectionally linked: sleep enhances immune defence, is associated with reduced infection risk, and improves vaccination responses, whereas prolonged sleep deficiency (short duration or disturbed sleep) promotes chronic systemic low-grade inflammation.",
+      "evidence": "Comprehensive narrative review (Physiological Reviews) of the sleep-immune crosstalk in health and disease. Provides the biological rationale for the observational finding that habitually short sleep (<7 h) increases susceptibility to respiratory infection; evidence in athletes specifically is indirect.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Sleep-Immune Crosstalk in Health and Disease",
+        "authors": "Besedovsky L, Lange T, Haack M",
+        "year": 2019,
+        "venue": "Physiological Reviews",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1152/physrev.00010.2018",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    },
+    {
+      "topic": "Sleep -> metabolic/endocrine adaptation",
+      "claim": "Chronic partial sleep deprivation alters glucose metabolism, appetite/food intake, neuroendocrine function and protein synthesis, and can thereby negatively affect an athlete's nutritional, metabolic and endocrine status and potentially reduce performance; some nutritional interventions (e.g., carbohydrate, tryptophan, melatonin) have been explored to enhance sleep.",
+      "evidence": "Narrative review of factors influencing sleep quality/quantity in athletic populations plus potential nutritional interventions. Links sleep to training adaptation via endocrine/metabolic pathways; nutritional sleep aids are described as promising but not established.",
+      "confidence": "low",
+      "citation": {
+        "title": "Sleep in elite athletes and nutritional interventions to enhance sleep",
+        "authors": "Halson SL",
+        "year": 2014,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-014-0147-0",
+        "retrieved_at": "2026-11-22T14:34:43Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Sleep is a foundational recovery behaviour for runners and lifters: acute sleep loss degrades exercise performance overall (pooled ~-7.6%), with cognitive and afternoon/evening tasks worst affected and strength/endurance both hit; a single night of sleep loss also reduces muscle protein synthesis (~18%) and shifts hormones catabolic, and partial sleep loss impairs recovery from a hard session. Conversely, extending sleep (from a single night up to several weeks) improves sprinting, jump, accuracy, reaction-time and cognitive outcomes, and lowers stress markers, though athlete sleep-extension studies are few, small and mostly uncontrolled. Chronic short sleep (<7-8 h) is common in athletes and is associated with higher injury risk in adolescent athletes (roughly 1.7x for <8 h/night; ~61% lower odds of new injury when >8 h) and with impaired immunity/recovery, while training schedules (especially early-morning sessions) themselves cut sleep to ~5.4 h. Practical guidance: protect 7-9+ h opportunity, individualise sleep need, keep consistent timing, use 20-90 min early-afternoon naps (allowing ~30 min for sleep inertia), and treat caffeine/alcohol/light/noise habits as plausible levers - but note that sleep-hygiene components are better supported by association than by direct experiment, and sleep-extension/injury findings are largely observational. Because sleep loss, mood and overtraining share symptoms, sleep should be tracked alongside training load rather than treated as an independent silver bullet.",
+  "unverified": [
+    "Direct causal evidence that sleep extension improves performance in RUNNERS or endurance athletes specifically is limited: the strongest sleep-extension trials are in basketball (Mah 2011, uncontrolled, n=11), rugby (Swinbourne 2018, pre-post) and recreationally active students (Bouzouraa 2025); no RCT in runners was identified. Treat 'sleep extension improves running performance' as unverified.",
+    "The claim that improving sleep REDUCES injury risk is not directly tested: the supporting evidence is observational (Milewski 2014 retrospective; von Rosen 2017 prospective self-report) and confounding (training load, maturation) cannot be excluded. No sleep-extension RCT with injury endpoints in athletes was found.",
+    "The claim that sleep loss DELAYS strength/muscle recovery is contradicted by direct evidence: Dattilo 2020 found total sleep deprivation after eccentric damage did not delay recovery of muscle strength, even though it altered inflammatory/hormonal markers, so 'poor sleep slows muscle recovery' should be presented cautiously.",
+    "Benefits of napping for physical performance are inconsistent: Daaloul 2019 found no physical-performance effect on a normal night (benefit only after sleep loss/fatigue), Petit 2014 (Eur J Appl Physiol, 10.1007/s00421-013-2776-7) found no performance benefit, and Suppiah 2019 (Int J Sports Physiol Perform, 10.1123/ijspp.2018-0107) reported a negative 20 m sprint effect attributed to sleep inertia.",
+    "Strategic 'banking' of sleep before competition is explicitly identified by the Walsh 2021 consensus as needing more research; the practice is not established as effective."
+  ],
+  "notes": "Retrieval policy: WebFetch only, using the Europe PMC REST API (resultType=core) to obtain verified titles, authors, journals, years, abstracts (including effect sizes) and DOIs; PubMed/DOI landing pages were not required. All 19 claims map to real indexed records with DOIs verified via Europe PMC metadata. Confidence reflects study design (meta-analysis/systematic review/expert consensus vs RCT vs observational/narrative), consistency and directness to athletes/runners. Key caveats for the app: (1) the headline acute-sleep-loss pooled effect (Craven 2022) has very high heterogeneity (I2=98%) and an 89% male sample, so it should be framed as 'performance tends to drop with sleep loss', not as a precise 7.6% figure; (2) most athlete sleep-extension evidence is small/uncontrolled, so present sleep extension as 'promising, low-risk' rather than proven; (3) injury-risk evidence is observational; (4) sleep hygiene has plausible but weakly tested components, so frame it as low-cost habit protection rather than a validated intervention; (5) sleep is bidirectionally entangled with training load, mood and overtraining, so it should be tracked as one recovery signal among several. Suggested app framing: prioritise sleep duration and regularity as the primary levers (7-9+ h, individualised), use daytime naps (20-90 min, before ~16:00) to offset early-morning training, and treat sleep as a driver of training adaptation and injury resilience while being transparent that the causal evidence in runners is thinner than in team/invasion sports."
+}

@@ -1,8 +1,9 @@
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { schema } from '../db';
 import type { Db } from '../db';
 import type { Env } from '../env';
+import { timingSafeEqualStr } from './session';
 
 const GOOGLE_AUTHORIZE = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token';
@@ -74,13 +75,17 @@ export interface GoogleIdentity {
 export async function verifyGoogleIdToken(
 	env: Env,
 	idToken: string,
-	expectedNonce?: string,
+	expectedNonce: string,
 ): Promise<GoogleIdentity> {
+	if (!expectedNonce) {
+		throw new Error('missing expected nonce');
+	}
 	const { payload } = await jwtVerify(idToken, googleJwks, {
+		algorithms: ['RS256'],
 		issuer: ['https://accounts.google.com', 'accounts.google.com'],
 		audience: env.GOOGLE_CLIENT_ID,
 	});
-	if (expectedNonce && payload.nonce !== expectedNonce) {
+	if (typeof payload.nonce !== 'string' || !timingSafeEqualStr(payload.nonce, expectedNonce)) {
 		throw new Error('id_token nonce mismatch');
 	}
 	return identityFromClaims(payload);
@@ -96,18 +101,26 @@ function identityFromClaims(p: JWTPayload): GoogleIdentity {
 	};
 }
 
-/** Upsert the user by Google subject (falling back to email) and return the row. */
+/** Upsert the user keyed on the stable OIDC subject (googleSub), refreshing profile fields. */
 export async function upsertUser(db: Db, identity: GoogleIdentity) {
 	const existing = await db
 		.select()
 		.from(schema.users)
-		.where(
-			and(eq(schema.users.googleSub, identity.sub), eq(schema.users.email, identity.email)),
-		)
+		.where(eq(schema.users.googleSub, identity.sub))
 		.limit(1);
 
 	const found = existing[0];
 	if (found) {
+		if (
+			found.email !== identity.email ||
+			found.name !== identity.name ||
+			found.avatarUrl !== identity.picture
+		) {
+			await db
+				.update(schema.users)
+				.set({ email: identity.email, name: identity.name, avatarUrl: identity.picture })
+				.where(eq(schema.users.id, found.id));
+		}
 		return found;
 	}
 

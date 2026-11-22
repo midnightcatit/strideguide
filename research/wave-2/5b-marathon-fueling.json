@@ -1,0 +1,310 @@
+{
+  "workstream": "Marathon",
+  "subtopic": "In-race fueling & hydration: carbohydrate intake rates, gut training, sodium/electrolytes, hydration guidance, and practical schedules for a 4-5 hour marathon",
+  "generated_at": "2026-11-22T14:34:42Z",
+  "claims": [
+    {
+      "topic": "Carbohydrate intake rate — general guidance",
+      "claim": "For endurance exercise lasting 1-2.5 h, authoritative position stands recommend 30-60 g carbohydrate per hour; for events longer than ~2.5-3 h — which includes a 4-5 h marathon — intake up to ~90 g/h is recommended, provided it is tolerated.",
+      "evidence": "The Academy of Nutrition and Dietetics / Dietitians of Canada / ACSM joint position statement (Thomas et al. 2016) states carbohydrate intake targets of 30-60 g/h for 1-2.5 h exercise and up to 90 g/h for events exceeding ~2.5-3 h. The ISSN nutrient-timing position stand (Kerksick et al. 2017) independently recommends ~30-60 g/h in a 6-8% carbohydrate-electrolyte solution for extended (>60 min) higher-intensity exercise.",
+      "confidence": "high",
+      "citation": {
+        "title": "Nutrition and Athletic Performance (Academy of Nutrition and Dietetics, Dietitians of Canada, and American College of Sports Medicine Joint Position Statement)",
+        "authors": "Thomas DT, Erdman KA, Burke LM",
+        "year": 2016,
+        "venue": "Medicine & Science in Sports & Exercise, 48(3):543-568",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0000000000000852",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Single vs multiple transportable carbohydrate oxidation ceiling",
+      "claim": "A single carbohydrate source (glucose, maltodextrin, sucrose, starch) is oxidized at a maximum of roughly 60 g/h because the SGLT1 intestinal transporter saturates; combining glucose with fructose (multiple transportable carbohydrates, e.g. a 2:1 ratio) uses a second transporter (GLUT5) and raises peak exogenous carbohydrate oxidation to about 90 g/h.",
+      "evidence": "Jeukendrup's review consolidates the oxidation literature: exogenous carbohydrate oxidation from single sources plateaus near 60 g/h even at ingestion rates of 144-180 g/h, indicating absorption is the limiting factor. Adding fructose (different transporter) raised oxidation rates to ~1.26 g/min (~75 g/h) and, in later work, to ~90 g/h, up to 75% higher than single-source carbohydrate.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Step Towards Personalized Sports Nutrition: Carbohydrate Intake During Exercise",
+        "authors": "Jeukendrup AE",
+        "year": 2014,
+        "venue": "Sports Medicine, 44(Suppl 1):S25-S33",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-014-0148-z",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Carbohydrate dose-response",
+      "claim": "There is a curvilinear dose-response between in-exercise carbohydrate intake and endurance performance; the greatest benefit occurs around 60-80 g/h, with little additional benefit and increasing gastrointestinal risk above ~90 g/h.",
+      "evidence": "A four-site study of 51 cyclists/triathletes (Smith et al. 2013) compared 12 carbohydrate doses (10-120 g/h) of a glucose:fructose blend and found performance improved dose-dependently, peaking at 60-80 g/h. A meta-analysis of acute carbohydrate supplementation studies (Vandenbogaerde & Hopkins 2011) supports a benefit that plateaus rather than rising indefinitely.",
+      "confidence": "high",
+      "citation": {
+        "title": "Curvilinear Dose-Response Relationship of Carbohydrate (0-120 g/h) and Performance",
+        "authors": "Smith JW, Pascoe DD, Passe DH, Ruby BC, Stewart LK, Baker LB, Zachwieja JJ",
+        "year": 2013,
+        "venue": "Medicine & Science in Sports & Exercise, 45(2):336-341",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0b013e31827205d1",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Adjusting carbohydrate rate for pace/intensity",
+      "claim": "Carbohydrate intake recommendations should be scaled to absolute exercise intensity, not fixed; slower marathoners oxidizing less carbohydrate per hour may need and tolerate less than 90 g/h, and at low absolute intensities a 90 g/h intake can approach or exceed total carbohydrate use.",
+      "evidence": "Jeukendrup notes that when absolute exercise intensity (and therefore carbohydrate oxidation rate) is low, intake recommendations should be adjusted downward, and explicitly reasons that a 5-hour marathoner would not necessarily need 90 g/h because that rate could exceed total carbohydrate oxidation at their absolute work rate. Supporting evidence at very low intensities is acknowledged as sparse.",
+      "confidence": "medium",
+      "citation": {
+        "title": "A Step Towards Personalized Sports Nutrition: Carbohydrate Intake During Exercise",
+        "authors": "Jeukendrup AE",
+        "year": 2014,
+        "venue": "Sports Medicine, 44(Suppl 1):S25-S33",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-014-0148-z",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Body-weight independence of in-exercise carbohydrate advice",
+      "claim": "In-exercise carbohydrate intake recommendations are given in absolute grams per hour and are not corrected for body weight, because the limiting factor is intestinal absorption capacity rather than body or muscle mass.",
+      "evidence": "Jeukendrup reviewed studies showing exogenous carbohydrate oxidation is not correlated with body weight and was not different between trained and untrained subjects exercising at matched absolute intensity, concluding there is no rationale for per-kilogram in-exercise carbohydrate prescriptions. (Daily total carbohydrate needs, by contrast, are body-mass scaled.)",
+      "confidence": "medium",
+      "citation": {
+        "title": "A Step Towards Personalized Sports Nutrition: Carbohydrate Intake During Exercise",
+        "authors": "Jeukendrup AE",
+        "year": 2014,
+        "venue": "Sports Medicine, 44(Suppl 1):S25-S33",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-014-0148-z",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Gut training — adaptability of the GI tract",
+      "claim": "The gastrointestinal tract is highly adaptable: gastric emptying and stomach comfort can be 'trained,' and a high-carbohydrate diet increases the density and activity of intestinal SGLT1 transporters, increasing carbohydrate absorption and oxidation during exercise and likely reducing gastrointestinal distress.",
+      "evidence": "Jeukendrup's review documents that stomach comfort improves with repeated high-volume intake, that increased dietary glucose accelerates gastric emptying of glucose (but not protein), and that a high-carbohydrate diet upregulates SGLT1 (also by sweeteners via T1R2/T1R3 sensing), raising absorptive capacity. It concludes the gut is an important organ that should be trained for the conditions in which it must function.",
+      "confidence": "high",
+      "citation": {
+        "title": "Training the Gut for Athletes",
+        "authors": "Jeukendrup AE",
+        "year": 2017,
+        "venue": "Sports Medicine, 47(Suppl 1):101-110",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-017-0690-6",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Gut training — direct human evidence",
+      "claim": "In trained cyclists, 28 days of daily high-carbohydrate availability (~8.5 g/kg/day, including 1.5 g/kg/h carbohydrate during training) increased exogenous carbohydrate oxidation during exercise compared with a moderate-carbohydrate control (~5.3 g/kg/day), providing direct evidence that the gut is trainable.",
+      "evidence": "Cox et al. randomized 16 endurance-trained cyclists to high-carbohydrate or control diets for 28 days of matched training; the high-carbohydrate group showed higher exogenous carbohydrate oxidation rates during subsequent exercise, demonstrating diet-driven adaptation of carbohydrate delivery.",
+      "confidence": "high",
+      "citation": {
+        "title": "Daily training with high carbohydrate availability increases exogenous carbohydrate oxidation during endurance cycling",
+        "authors": "Cox GR, Clark SA, Cox AJ, Halson SL, Hargreaves M, Hawley JA, Jeacocke N, Snow RJ, Yeo WK, Burke LM",
+        "year": 2010,
+        "venue": "Journal of Applied Physiology, 109(1):126-134",
+        "type": "rct",
+        "doi_or_url": "10.1152/japplphysiol.00950.2009",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Gut training — time course",
+      "claim": "Adaptations in gastric emptying and intestinal absorption can begin after as little as ~3-5 days of increased dietary carbohydrate, though more prolonged exposure produces greater adaptation.",
+      "evidence": "Jeukendrup's review reports that gastric emptying accelerated after 3 days of glucose supplementation and that animal SGLT1 protein rose within days to ~2 weeks of high-carbohydrate feeding; human data on the precise timeline remain limited, so the guidance is directional rather than exact.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training the Gut for Athletes",
+        "authors": "Jeukendrup AE",
+        "year": 2017,
+        "venue": "Sports Medicine, 47(Suppl 1):101-110",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-017-0690-6",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Gastrointestinal distress in endurance events",
+      "claim": "Gastrointestinal symptoms (bloating, cramping, nausea, diarrhea, reflux) are common in endurance events and are a major practical limiter of nutrient delivery, comfort, and performance.",
+      "evidence": "de Oliveira, Burini and Jeukendrup's review compiles prevalence data showing high rates of GI complaints in long-distance runners, cyclists and triathletes, and attributes them to reduced splanchnic blood flow, mechanical factors, dehydration, and dietary factors.",
+      "confidence": "high",
+      "citation": {
+        "title": "Gastrointestinal Complaints During Exercise: Prevalence, Etiology, and Nutritional Recommendations",
+        "authors": "de Oliveira EP, Burini RC, Jeukendrup A",
+        "year": 2014,
+        "venue": "Sports Medicine, 44(Suppl 1):S79-S85",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-014-0153-2",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "GI problems vs intake volume (field data)",
+      "claim": "In competitive endurance events, higher carbohydrate and fluid intakes are associated with greater gastrointestinal problems, and reported intakes vary widely between athletes and across event types (highest in cycling/triathlon, lowest in marathons).",
+      "evidence": "Pfeiffer et al. surveyed nutritional intake and GI symptoms across multiple competitive endurance events and found substantial between- and within-event variability in intake, with higher intakes linked to more GI complaints. The authors caution this is observational and confounded by event duration and intensity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Nutritional Intake and Gastrointestinal Problems during Competitive Endurance Events",
+        "authors": "Pfeiffer B, Stellingwerff T, Hodgson AB, Randell R, Pottgen K, Res P, Jeukendrup AE",
+        "year": 2012,
+        "venue": "Medicine & Science in Sports & Exercise, 44(2):344-351",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0b013e31822dc809",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Multiple transportable carbohydrate improves fluid absorption",
+      "claim": "Using multiple transportable carbohydrates not only raises carbohydrate oxidation but also improves fluid absorption, because water absorption is coupled to solute absorption; this can help prevent dehydration while reducing GI discomfort.",
+      "evidence": "Jeukendrup reports that in humans during exercise, multiple transportable carbohydrates increased carbohydrate absorption and oxidation and were associated with increased fluid absorption; a close coupling between water and solute absorption in the duodenojejunum is well documented.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training the Gut for Athletes",
+        "authors": "Jeukendrup AE",
+        "year": 2017,
+        "venue": "Sports Medicine, 47(Suppl 1):101-110",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-017-0690-6",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Fluid volume guidance for long-duration racing",
+      "claim": "For long-duration racing, a fluid intake of roughly 450-750 mL/h (about 150-250 mL every 20 min) is recommended, with requirements increasing in hot and/or humid conditions and individualized to sweat rate.",
+      "evidence": "The ISSN single-stage ultra-marathon position stand (Tiller et al. 2019) recommends 450-750 mL/h (~150-250 mL every 20 min) during racing, noting elevated fluid and electrolyte needs in heat and humidity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "International Society of Sports Nutrition Position Stand: nutritional considerations for single-stage ultra-marathon training and racing",
+        "authors": "Tiller NB, Roberts JD, Beasley L, Chapman S, Pinto JM, Smith L, Wiffin M, Russell M, Sparks SA, Duckworth L, O'Hara J, Sutton L, Antonio J, Willoughby DS, Tarpey MD, Smith-Ryan AE, Ormsbee MJ, Astorino TA, Kreider RB, McGinnis GR, Stout JR, Smith JW, Arent SM, Campbell BI, Bannock L",
+        "year": 2019,
+        "venue": "Journal of the International Society of Sports Nutrition, 16:50",
+        "type": "position-stand",
+        "doi_or_url": "10.1186/s12970-019-0312-9",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Sodium/electrolyte concentration in race fluids",
+      "claim": "To minimize the risk of hyponatremia in long events, sodium may be needed at concentrations greater than those provided by most commercial sports drinks (i.e. >575 mg/L sodium), especially with high sweat-sodium losses and in hot conditions.",
+      "evidence": "The ISSN single-stage ultra-marathon position stand (Tiller et al. 2019) states that electrolytes (mainly sodium) may be needed in concentrations exceeding most commercial products (>575 mg/L sodium) to reduce hyponatremia likelihood, with elevated needs in heat and humidity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "International Society of Sports Nutrition Position Stand: nutritional considerations for single-stage ultra-marathon training and racing",
+        "authors": "Tiller NB, Roberts JD, Beasley L, Chapman S, Pinto JM, Smith L, Wiffin M, Russell M, Sparks SA, Duckworth L, O'Hara J, Sutton L, Antonio J, Willoughby DS, Tarpey MD, Smith-Ryan AE, Ormsbee MJ, Astorino TA, Kreider RB, McGinnis GR, Stout JR, Smith JW, Arent SM, Campbell BI, Bannock L",
+        "year": 2019,
+        "venue": "Journal of the International Society of Sports Nutrition, 16:50",
+        "type": "position-stand",
+        "doi_or_url": "10.1186/s12970-019-0312-9",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Exercise-associated hyponatremia",
+      "claim": "Exercise-associated hyponatremia (serum sodium <135 mmol/L) is a potentially fatal complication of long-distance racing caused primarily by excessive fluid intake (over-drinking beyond sweat losses) rather than by sodium loss alone; drinking to thirst/avoiding over-hydration is the key preventive measure.",
+      "evidence": "Hew-Butler et al.'s 2017 update describes exercise-associated hyponatremia as driven predominantly by excessive hypotonic fluid intake with impaired free-water excretion; the ISSN ultra position stand likewise frames it as a risk of poorly managed hydration and electrolyte strategies in long races.",
+      "confidence": "high",
+      "citation": {
+        "title": "Exercise-Associated Hyponatremia: 2017 Update",
+        "authors": "Hew-Butler T, Loi V, Pani A, Rosner MH",
+        "year": 2017,
+        "venue": "Frontiers in Medicine, 4:21",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fmed.2017.00021",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Hydration — ACSM guidance",
+      "claim": "ACSM recommends replacing fluids during exercise to prevent excessive dehydration (body-mass loss greater than ~2%) and excessive electrolyte imbalance, typically on the order of ~0.4-0.8 L/h, individualized to sweat rate, exercise intensity, and environmental conditions, while avoiding drinking beyond sweat losses.",
+      "evidence": "The ACSM position stand on exercise and fluid replacement (Sawka et al. 2007) sets the goal of preventing >2% body-mass loss and excessive electrolyte changes, provides a general fluid-replacement range, and warns against over-drinking; it emphasizes individualization by sweat rate and conditions.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine Position Stand: Exercise and Fluid Replacement",
+        "authors": "Sawka MN, Burke LM, Eichner ER, Maughan RJ, Montain SJ, Stachenfeld NS",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise, 39(2):377-390",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/mss.0b013e31802ca597",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Fluid-replacement beverage composition",
+      "claim": "Fluid-replacement beverages are typically formulated at ~6-8% carbohydrate with sodium; this combination supports palatability, fluid retention, and intestinal absorption, whereas more concentrated carbohydrate solutions can slow gastric emptying and worsen gastrointestinal comfort.",
+      "evidence": "Baker and Jeukendrup review the composition of fluid-replacement beverages, concluding that ~6-8% carbohydrate with sodium best balances fluid and carbohydrate delivery; higher carbohydrate concentrations and hypertonic solutions slow gastric emptying and increase GI symptoms.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Optimal Composition of Fluid-Replacement Beverages",
+        "authors": "Baker LB, Jeukendrup AE",
+        "year": 2014,
+        "venue": "Comprehensive Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.1002/cphy.c130014",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "ISSN nutrient-timing carbohydrate recommendation",
+      "claim": "For extended (>60 min) higher-intensity exercise, the ISSN nutrient-timing position stand recommends consuming carbohydrate at ~30-60 g/h, delivered as a 6-8% carbohydrate-electrolyte solution (6-12 fl oz) every 10-15 min throughout the bout, and notes that more frequent smaller feedings can improve performance versus less frequent equal doses.",
+      "evidence": "Kerksick et al. (ISSN nutrient timing, 2017) specify ~30-60 g/h in a 6-8% carbohydrate-electrolyte solution taken every 10-15 min for prolonged high-intensity exercise; they cite Fielding et al. (1985), where the same carbohydrate dose fed every 30 min improved performance versus every 60 min over a 4 h bout.",
+      "confidence": "high",
+      "citation": {
+        "title": "International Society of Sports Nutrition Position Stand: Nutrient Timing",
+        "authors": "Kerksick CM, Arent S, Schoenfeld BJ, Stout JR, Campbell B, Wilborn CD, Taylor L, Kalman D, Smith-Ryan AE, Kreider RB, Willoughby D, Arciero PJ, VanDusseldorp TA, Ormsbee MJ, Wildman R, Greenwood M, Ziegenfuss TN, Aragon AA, Antonio J",
+        "year": 2017,
+        "venue": "Journal of the International Society of Sports Nutrition, 14:33",
+        "type": "position-stand",
+        "doi_or_url": "10.1186/s12970-017-0189-4",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Ultra/long-race carbohydrate and protein rates",
+      "claim": "For racing beyond marathon duration, an intake of roughly 150-400 kcal/h (carbohydrate 30-50 g/h plus protein 5-10 g/h) from varied calorie-dense foods is recommended, with attention to palatability, individual tolerance, and a shift toward savory foods in longer races.",
+      "evidence": "The ISSN single-stage ultra-marathon position stand (Tiller et al. 2019) gives racing targets of 150-400 kcal/h (carbohydrate 30-50 g/h; protein 5-10 g/h) from a variety of calorie-dense foods, advising consideration of palatability, tolerance, and increased preference for savory foods over long durations.",
+      "confidence": "medium",
+      "citation": {
+        "title": "International Society of Sports Nutrition Position Stand: nutritional considerations for single-stage ultra-marathon training and racing",
+        "authors": "Tiller NB, Roberts JD, Beasley L, Chapman S, Pinto JM, Smith L, Wiffin M, Russell M, Sparks SA, Duckworth L, O'Hara J, Sutton L, Antonio J, Willoughby DS, Tarpey MD, Smith-Ryan AE, Ormsbee MJ, Astorino TA, Kreider RB, McGinnis GR, Stout JR, Smith JW, Arent SM, Campbell BI, Bannock L",
+        "year": 2019,
+        "venue": "Journal of the International Society of Sports Nutrition, 16:50",
+        "type": "position-stand",
+        "doi_or_url": "10.1186/s12970-019-0312-9",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Managing GI symptoms in long races",
+      "claim": "Progressive gut-training and/or a low-FODMAP diet are supported strategies to alleviate gastrointestinal distress during racing; a systematic review specifically examining gut-training/feeding-challenge and GI markers was published in 2023.",
+      "evidence": "The ISSN ultra-marathon position stand (Tiller et al. 2019) states evidence supports progressive gut-training and/or low-FODMAP diets to reduce GI distress during racing. A subsequent systematic literature review (Sports Medicine, 2023) examined the effect of gut-training and feeding-challenge on markers of GI status in endurance exercise, indicating ongoing consolidation of this evidence base.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Effect of Gut-Training and Feeding-Challenge on Markers of Gastrointestinal Status in Response to Endurance Exercise: A Systematic Literature Review",
+        "authors": "Martinez IG, Mika AS, Biesiekierski JR, Costa RJS",
+        "year": 2023,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-023-01841-0",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    },
+    {
+      "topic": "Practical in-race fueling schedule (4-5 h marathon)",
+      "claim": "A practical, gut-trained schedule for a 4-5 h marathon: start carbohydrate early (within the first ~30-60 min) and take ~60-90 g/h of multiple-transportable carbohydrate (glucose:fructose) in small frequent doses (e.g. every 15-20 min) via gels/drink, paired with ~400-750 mL/h of a 6-8% sodium-containing fluid; adjust carbohydrate and fluid downward for slower paces/cool conditions and upward in heat; and rehearse the exact plan, brands and timing in training.",
+      "evidence": "Synthesis of the above sources: carbohydrate rate and multiple-transportable rationale (Jeukendrup 2014), 30-90 g/h by duration (Thomas et al. 2016), frequent small feedings and 6-8% solution (Kerksick et al. 2017), fluid 450-750 mL/h and sodium >575 mg/L (Tiller et al. 2019), ~0.4-0.8 L/h and avoiding >2% body-mass loss (Sawka et al. 2007), and the imperative to practice and personalize (Jeukendrup 2014; Thomas et al. 2016). Because it combines multiple sources and must be individualized, this schedule is guidance rather than a validated protocol.",
+      "confidence": "medium",
+      "citation": {
+        "title": "A Step Towards Personalized Sports Nutrition: Carbohydrate Intake During Exercise",
+        "authors": "Jeukendrup AE",
+        "year": 2014,
+        "venue": "Sports Medicine, 44(Suppl 1):S25-S33",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-014-0148-z",
+        "retrieved_at": "2026-11-22T14:34:42Z"
+      }
+    }
+  ],
+  "summary_tier_a": "For a 4-5 hour marathon, position stands converge on a carbohydrate intake of roughly 60-90 g/h using multiple transportable carbohydrates (glucose:fructose, e.g. 2:1), because a single carbohydrate source saturates intestinal SGLT1 absorption near 60 g/h while adding fructose (GLUT5) lifts oxidation toward ~90 g/h; performance benefits follow a curvilinear dose-response peaking around 60-80 g/h. In-exercise carbohydrate targets are absolute (g/h), not body-weight scaled, and should be adjusted downward for slower paces/lower absolute intensity. The gut is trainable: a high-carbohydrate diet upregulates SGLT1 and improves gastric emptying, with direct human evidence that ~4 weeks of high carbohydrate availability raises exogenous carbohydrate oxidation, and adaptation can begin within days; therefore race nutrition must be rehearsed in training. Fluids should be replaced to limit body-mass loss to <2% (ACSM ~0.4-0.8 L/h; long-race guidance 450-750 mL/h), using ~6-8% carbohydrate-sodium drinks, with sodium possibly above typical commercial concentrations (>575 mg/L) in heat/high sweat losses. Excessive fluid intake (over-drinking) is the primary driver of potentially fatal exercise-associated hyponatremia, so avoid drinking beyond sweat losses. Gastrointestinal distress is common and a real limiter, and higher intakes increase symptoms, so progressive gut-training and individualization are essential.",
+  "unverified": [],
+  "notes": "Scope: in-race (during-competition) fueling and hydration only; pre-race carbohydrate loading and daily/training nutrition are out of scope for this subtopic. Key caveats: (1) Much of the dose-response and multiple-transportable-carbohydrate evidence derives from cycling and male endurance athletes; running imposes greater mechanical GI stress and may tolerate lower fluid/energy intakes, and sex-specific and female-athlete data are limited. (2) The 90 g/h ceiling reflects studies using glucose:fructose blends; higher rates require gut training and careful tolerance testing. (3) Field/observational data (Pfeiffer 2012) show wide real-world intake variability and associations (not causation) between higher intake and GI problems. (4) The practical 4-5 h schedule is a synthesis across sources and must be individualized; slower runners oxidizing less carbohydrate may need lower absolute rates. (5) ACSM 2016 and ACSM 2007 content was confirmed via publisher/abstract records and the guideline values are widely cited; full-text numeric details were not independently re-extracted line-by-line. All DOIs were verified via Crossref. (6) Sodium/electrolyte recommendations are population-level; individuals with high sweat-sodium losses or medical conditions should seek professional guidance."
+}

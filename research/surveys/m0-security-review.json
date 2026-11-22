@@ -1,0 +1,170 @@
+{
+  "scope": "M0 auth + Worker security review. Reviewed: apps/api/src/index.ts, src/lib/auth.ts, src/lib/session.ts, src/lib/ai.ts, src/lib/cache.ts, src/middleware/auth.ts, src/routes/*.ts, apps/api/src/env.ts, apps/api/src/db.ts, apps/api/src/cron.ts, apps/api/wrangler.jsonc, apps/api/.dev.vars.example, packages/shared/src/db/schema.ts (users, auth_sessions), apps/web/src/lib/api.ts, apps/web/vite.config.ts, and PLAN.md section 10 (Auth & sharing).",
+  "generated_at": "2026-11-22T14:34:43Z",
+  "summary": "The M0 auth implementation is a competent first-party OAuth authorization-code flow: state+nonce are both generated and validated, the ID token is verified against Google JWKS with issuer/audience pinning, and the session cookie is httpOnly/Secure/SameSite=Lax. However, it falls short of the security intent stated in PLAN.md section 10 in three material ways: (1) the D1 auth_sessions ledger is written at login but never consulted on session verification, so sessions cannot be revoked and logout is ineffective; (2) the web client calls a non-existent /api/logout route, so the session cookie is never actually cleared; and (3) no CSRF token or Origin/Referer check protects mutating routes despite the plan explicitly promising 'CSRF protection on mutations'. There are also medium-severity gaps around CORS (localhost allowed in prod), rate limiting, email_verified enforcement, and session rotation/lifetime. No hardcoded secrets or response-body error leakage were found. Overall posture: usable for a closed M0 pilot, not yet launch-ready against the plan's own stated bar.",
+  "strengths": [
+    "OAuth state AND nonce are both generated with crypto.randomUUID() and validated; the nonce is checked against the id_token nonce claim (apps/api/src/lib/auth.ts:83).",
+    "ID token is verified with jose createRemoteJWKSet against Google's JWKS, with issuer pinned to both 'https://accounts.google.com' and 'accounts.google.com' and audience pinned to GOOGLE_CLIENT_ID; exp/nbf/iat are validated by jwtVerify by default (apps/api/src/lib/auth.ts:79-82).",
+    "OAuth state is stored in a separate httpOnly cookie with a short 600s TTL and is deleted as soon as the callback runs (apps/api/src/lib/session.ts:50-58, apps/api/src/routes/auth.ts:29,40).",
+    "Session cookie is httpOnly, Secure in production, SameSite=Lax, scoped to path '/', and signed with HS256 (apps/api/src/lib/session.ts:40-48).",
+    "The raw session token is never persisted: only its SHA-256 hash is written to auth_sessions, with a unique index on token_hash (apps/api/src/routes/auth.ts:64, packages/shared/src/db/schema.ts:44,49).",
+    "Secrets are not inlined anywhere: wrangler.jsonc contains only non-secret vars, .dev.vars is gitignored, and .dev.vars.example ships empty placeholders (apps/api/wrangler.jsonc:21-25, .gitignore, apps/api/.dev.vars.example).",
+    "Mutating routes validate request bodies with zod via zValidator and use Drizzle parameterized queries, giving baseline input validation and SQL-injection resistance (apps/api/src/routes/logs.ts:22-36, goals.ts:24-34, ai.ts:10-18).",
+    "onError returns a generic {error:'internal_error'} to clients and only logs the detail server-side, avoiding stack-trace/error leakage in responses (apps/api/src/index.ts:33-36).",
+    "Prod is same-origin (single Worker origin) and the web service worker explicitly bypasses /api and /auth, reducing credential-leak surface (apps/web/src/service-worker.ts:32, apps/api/src/index.ts:15-16)."
+  ],
+  "findings": [
+    {
+      "id": "M0-SEC-01",
+      "severity": "high",
+      "title": "auth_sessions ledger is write-only; sessions cannot be revoked and logout is ineffective",
+      "file_line": "apps/api/src/middleware/auth.ts:17; apps/api/src/lib/session.ts:27-37; apps/api/src/routes/auth.ts:61-66",
+      "description": "Login inserts a row into auth_sessions with tokenHash and expiresAt, but verifySession() (used by requireAuth) only verifies the JWT signature and never queries auth_sessions. There is no revoked_at/used_at column or lookup, so a stolen or leaked session cookie remains valid for its full 30-day lifetime and cannot be revoked server-side. Logout only deletes the client cookie. This contradicts PLAN.md section 10, which describes a D1-backed session ledger with rotation and revocation.",
+      "recommendation": "On requireAuth, after signature verification, look up sha256Hex(token) in auth_sessions and reject when the row is missing, expired, or revoked (add a revoked_at column). On logout, delete the matching auth_sessions row (and clear the cookie). Optionally add a jti to the session JWT and store it as the lookup key."
+    },
+    {
+      "id": "M0-SEC-02",
+      "severity": "high",
+      "title": "Web logout calls a non-existent endpoint, so the session cookie is never cleared",
+      "file_line": "apps/web/src/lib/api.ts:35; apps/api/src/routes/auth.ts:72; apps/api/src/index.ts:29-30",
+      "description": "The web client's logout() issues POST /api/logout (req() prefixes /api), but the only logout route is POST /auth/logout mounted at /auth. /api/logout therefore returns 404 not_found, and the .catch(() => ({ok:true})) swallows the failure so the UI reports success. The sg_session cookie is never deleted, so the user remains authenticated after 'logging out'. Combined with M0-SEC-01, there is no way to end a session.",
+      "recommendation": "Point the client at the real endpoint (e.g. fetch('/auth/logout', {method:'POST', credentials:'include'})), and make the server logout also revoke the auth_sessions row. Do not swallow non-2xx logout responses in the client."
+    },
+    {
+      "id": "M0-SEC-03",
+      "severity": "medium",
+      "title": "No CSRF protection on state-changing routes despite PLAN section 10 promising it",
+      "file_line": "apps/api/src/index.ts:17-27; apps/api/src/routes/logs.ts:22; apps/api/src/routes/goals.ts:24; apps/api/src/routes/ai.ts:10; apps/api/src/routes/auth.ts:72",
+      "description": "All mutating routes (POST /api/logs, /api/goals, /api/ai/chat, /auth/logout) authenticate solely from the session cookie. There is no CSRF token, no double-submit cookie, and no Origin/Referer validation middleware anywhere in the codebase (grep for 'csrf'/'origin'/'referer' finds only the OAuth origin helpers). SameSite=Lax is the only mitigation and it does not protect against same-site/subdomain attackers or legacy clients. PLAN.md section 10 explicitly states 'CSRF protection on mutations'. CORS does not substitute for CSRF protection because it governs response reading, not request delivery.",
+      "recommendation": "Add a CSRF defense: either an Origin/Referer check middleware on all non-GET routes (reject requests whose Origin is absent/not allowlisted) or a double-submit CSRF token. Consider SameSite=Strict for the session cookie if the UX allows, and document the chosen mechanism."
+    },
+    {
+      "id": "M0-SEC-04",
+      "severity": "medium",
+      "title": "No session rotation and 30-day session lifetime contradict the plan's 'short-lived sessions with rotation'",
+      "file_line": "apps/api/src/lib/session.ts:4; apps/api/src/routes/auth.ts:59-68",
+      "description": "SESSION_TTL_SECONDS is 30 days and there is no rotation on login or on any privilege/state change; a single signed token is valid for its entire lifetime. Session fixation is partly mitigated because a fresh JWT is minted at login (an attacker cannot preset a session value), but the absence of rotation and the long TTL mean any token leak is long-lived and the session cannot be rolled. PLAN.md section 10 calls for short-lived sessions with rotation.",
+      "recommendation": "Reduce the session TTL (e.g. 7-14 days) and implement rotation: issue a new token (and auth_sessions row) on login and periodically (e.g. sliding renewal past a fraction of TTL), invalidating the prior row. Add absolute and idle timeouts."
+    },
+    {
+      "id": "M0-SEC-05",
+      "severity": "medium",
+      "title": "CORS allowlist accepts any localhost origin in production",
+      "file_line": "apps/api/src/index.ts:17-27",
+      "description": "The CORS origin callback unconditionally returns the caller's origin when it matches /^http:\\/\\/localhost:\\d+$/ and uses credentials:true. This rule is not gated on ENVIRONMENT, so in production any page served from a localhost port (another local app, a malicious local server) is granted credentialed cross-origin access to the prod API and can read responses. It does not itself enable CSRF, but it broadens the trusted-origin set in prod beyond intent.",
+      "recommendation": "Gate the localhost branch behind ENVIRONMENT !== 'production' (or an explicit ALLOWED_DEV_ORIGINS list), keeping only https://run.midnightcatit.com allowed in prod. Prefer reading the allowlist from config rather than a hardcoded regex."
+    },
+    {
+      "id": "M0-SEC-06",
+      "severity": "medium",
+      "title": "No rate limiting on auth callback or AI chat (cost-abuse / brute-force surface)",
+      "file_line": "apps/api/src/routes/auth.ts:33; apps/api/src/routes/ai.ts:10",
+      "description": "There is no rate limiting anywhere. An authenticated user can repeatedly call POST /api/ai/chat, each triggering a Cloudflare Workers AI call and an OpenRouter fallback (billed), enabling unbounded cost abuse. GET /auth/google/callback and the token exchange are also unthrottled, allowing code-guessing/abuse traffic.",
+      "recommendation": "Add rate limiting: Cloudflare rate-limiting rules at the edge, or a KV/Durable Object counter keyed by user id (for /api/ai/*) and by IP (for /auth/*). Cap AI requests per user per window and return 429 with Retry-After."
+    },
+    {
+      "id": "M0-SEC-07",
+      "severity": "medium",
+      "title": "ID-token email_verified claim is captured but never enforced",
+      "file_line": "apps/api/src/lib/auth.ts:74-97; apps/api/src/routes/auth.ts:52-55",
+      "description": "identityFromClaims records emailVerified, but the callback never checks it and upsertUser trusts identity.email unconditionally. An account whose Google email is not verified can be provisioned. While full takeover of an existing account also requires matching googleSub (so this is not direct ATO), trusting an unverified email is contrary to OIDC best practice and weakens the identity binding.",
+      "recommendation": "Reject the login (400 invalid_google_identity) when identity.emailVerified is not true, and key upsert primarily on the stable googleSub rather than on googleSub AND email."
+    },
+    {
+      "id": "M0-SEC-08",
+      "severity": "medium",
+      "title": "ID-token verification failures throw and surface as 500 via onError instead of a 400",
+      "file_line": "apps/api/src/routes/auth.ts:52; apps/api/src/index.ts:33-36",
+      "description": "verifyGoogleIdToken is awaited without a try/catch. A nonce mismatch, expired token, bad signature, or wrong issuer/audience throws, which propagates to app.onError and returns a generic 500 internal_error. The response body does not leak details (good), but the status is misleading, the failure is indistinguishable from a genuine server fault, and the thrown message ('id_token nonce mismatch', jose errors) is written to logs where it can include token-adjacent material.",
+      "recommendation": "Wrap verifyGoogleIdToken in try/catch and return a specific 400 (e.g. {error:'invalid_id_token'}) on failure. Avoid logging raw tokens; log only a stable error code."
+    },
+    {
+      "id": "M0-SEC-09",
+      "severity": "low",
+      "title": "Nonce check is skipped when the expected nonce is falsy; state compared with non-constant-time equality",
+      "file_line": "apps/api/src/lib/auth.ts:83; apps/api/src/routes/auth.ts:42-44",
+      "description": "verifyGoogleIdToken only compares nonces when expectedNonce is truthy, so a state cookie value of the form '<state>.' (empty nonce segment) would bypass nonce validation entirely (state still has to match). Additionally, state is compared with '!==' rather than a constant-time comparison. Both are low-risk given the random 128-bit values and the fact that an attacker cannot set a victim's cookie, but they weaken defense-in-depth.",
+      "recommendation": "Treat a missing/empty nonce as a hard failure (require both segments non-empty) and reject when nonce validation cannot be performed. Use a constant-time compare for state/nonce."
+    },
+    {
+      "id": "M0-SEC-10",
+      "severity": "low",
+      "title": "SESSION_SECRET used directly as the HS256 key with no length/entropy or rotation enforcement; JWT alg not pinned",
+      "file_line": "apps/api/src/lib/session.ts:15-16,19-25,29",
+      "description": "key(env) encodes SESSION_SECRET verbatim as the HMAC key with no minimum-length or entropy check, and there is no key-rotation strategy. If SESSION_SECRET is short or guessable, session JWTs are forgeable. jwtVerify is also called without an explicit algorithms list (jose infers HS256/384/512 from the symmetric key).",
+      "recommendation": "Enforce a minimum 32-byte (256-bit) SESSION_SECRET at startup and fail fast if absent/short; document rotation. Pass algorithms:['HS256'] to jwtVerify to pin the algorithm."
+    },
+    {
+      "id": "M0-SEC-11",
+      "severity": "low",
+      "title": "Cookie hardening gaps: no __Host- prefix, Secure derived from an APP_ORIGIN string prefix",
+      "file_line": "apps/api/src/lib/session.ts:40-58; apps/api/src/routes/auth.ts:26,35",
+      "description": "Cookies are not given the __Host- name prefix (which would enforce Secure, host-only, path=/). The Secure flag is derived from APP_ORIGIN.startsWith('https'); if APP_ORIGIN is ever misconfigured to http in production, session and state cookies would be sent without Secure. The session cookie uses SameSite=Lax (see M0-SEC-03).",
+      "recommendation": "Use __Host- prefixed cookie names (e.g. __Host-sg_session) in production, and drive the Secure flag from ENVIRONMENT rather than parsing APP_ORIGIN. Validate at startup that APP_ORIGIN is https when ENVIRONMENT=production."
+    },
+    {
+      "id": "M0-SEC-12",
+      "severity": "low",
+      "title": "No open redirect today, but post-login redirect has no allowlist guard for future use",
+      "file_line": "apps/api/src/routes/auth.ts:69; apps/api/src/lib/auth.ts:12-18",
+      "description": "The callback redirects to a fixed `${WEB_ORIGIN}/` and /auth/google accepts no returnTo parameter, so there is currently no open-redirect vulnerability. However, the redirect target is constructed by string concatenation and there is no shared allowlist/validation helper, so adding a 'next'/'returnTo' parameter later would trivially introduce one.",
+      "recommendation": "Keep redirect targets server-controlled from config. If a returnTo is ever added, validate it against an allowlist of same-origin relative paths (reject absolute URLs and protocol-relative '//' values)."
+    },
+    {
+      "id": "M0-SEC-13",
+      "severity": "low",
+      "title": "Google token-exchange error_description is echoed to the client",
+      "file_line": "apps/api/src/routes/auth.ts:47-50",
+      "description": "On token-exchange failure the handler returns tokens.error/error_description directly to the caller (e.g. {error:'invalid_grant'}). This is low-risk but surfaces upstream OAuth diagnostics; combined with M0-SEC-06 (no throttling) it makes the callback a convenient oracle for probing.",
+      "recommendation": "Return a stable generic error code (e.g. {error:'token_exchange_failed'}) to the client and log the upstream error_description server-side only."
+    },
+    {
+      "id": "M0-SEC-14",
+      "severity": "low",
+      "title": "upsertUser keys identity on (googleSub AND email) and trusts the email claim",
+      "file_line": "apps/api/src/lib/auth.ts:100-125",
+      "description": "The lookup requires both googleSub and email to match. If a user changes their Google email, no row matches and the insert then violates the unique index on email (or google_sub), producing a 500. The identity email is also stored/trusted without enforcing email_verified (see M0-SEC-07).",
+      "recommendation": "Look up by googleSub alone (the stable OIDC subject); update email/name/avatar on match. Handle unique-constraint conflicts explicitly."
+    },
+    {
+      "id": "M0-SEC-15",
+      "severity": "low",
+      "title": "Client-supplied 'context' is injected as a system message (prompt injection) and AI responses are not validated",
+      "file_line": "apps/api/src/routes/ai.ts:20-31",
+      "description": "The chat route places a user-controlled 'context' string as a system-role message, letting a client override or append to the system prompt. There is no server-side grounding or output validation. No secrets are in the prompt so direct exfiltration is limited, but this is a prompt-injection surface and, with no rate limiting, an abuse/cost vector.",
+      "recommendation": "Move grounding context to the server side (derive from the user's stored goal/plan) or clearly delimit and label client context as untrusted data. Validate/limit message and context lengths and combine with rate limiting."
+    },
+    {
+      "id": "M0-SEC-16",
+      "severity": "info",
+      "title": "AI response cache uses a 32-bit non-cryptographic hash and is currently dead code",
+      "file_line": "apps/api/src/lib/cache.ts:6-8,33-41",
+      "description": "cacheKey() hashes the input with FNV-1a (32-bit), which has a non-trivial collision probability; a collision would return a different input's cached AI response. getCached/putCache are not referenced by any route yet (runAi does not use the cache), so this is latent rather than active. Cache rows also have no user scoping or expiry enforcement.",
+      "recommendation": "When the cache is wired up, use SHA-256 (crypto.subtle) for the key, scope entries by user or a stable content id, and enforce the stored ttl on read."
+    },
+    {
+      "id": "M0-SEC-17",
+      "severity": "info",
+      "title": "CORS is applied only to /api/* while /auth/* (me, logout) is called cross-origin in dev",
+      "file_line": "apps/api/src/index.ts:17-30; apps/web/vite.config.ts:8-11",
+      "description": "The cors() middleware is mounted on /api/* only, but the web client calls /auth/me and /auth/logout. In dev this works because Vite proxies /api and /auth to the Worker (same-origin), and in prod everything is same-origin. Direct cross-origin dev calls to /auth/* would lack CORS headers and fail. This is a robustness/consistency note, not a vulnerability, since the proxy path is the intended dev setup.",
+      "recommendation": "If direct cross-origin dev access to /auth/* is ever needed, apply the same allowlisted cors() to /auth/*; otherwise document that /auth/* must go through the same-origin proxy."
+    },
+    {
+      "id": "M0-SEC-18",
+      "severity": "info",
+      "title": "onError logs full error objects server-side (residual log-hygiene risk)",
+      "file_line": "apps/api/src/index.ts:33-36",
+      "description": "console.error('api_error', err) logs the entire error. With observability enabled in wrangler.jsonc, error messages that embed tokens, codes, or upstream URLs could land in logs. The client response is correctly generic, so this is a log-hygiene concern rather than response leakage.",
+      "recommendation": "Log a stable error code plus a correlation id rather than the raw error, and ensure auth-related errors (see M0-SEC-08) never include token material. Keep secrets out of all log paths."
+    }
+  ],
+  "recommended_next_steps": [
+    "Revocation + real logout (M0-SEC-01/02): make requireAuth consult auth_sessions (hash lookup, expiry, revoked_at), add revoked_at, and have logout delete the row; fix the client to call /auth/logout and stop swallowing errors.",
+    "CSRF + CORS hardening (M0-SEC-03/05): add Origin/Referer validation (or double-submit token) to all non-GET routes, and gate the localhost CORS branch on ENVIRONMENT so prod allows only the prod origin.",
+    "Token/claim and session-lifetime hardening (M0-SEC-07/04/10): enforce email_verified, pin jwtVerify algorithms to ['HS256'], require a >=32-byte SESSION_SECRET, shorten the session TTL and add rotation.",
+    "Abuse controls (M0-SEC-06/15): add per-user/IP rate limiting on /api/ai/* and /auth/*, and move AI grounding context server-side.",
+    "Error handling and cookie polish (M0-SEC-08/11/13): catch ID-token verification failures as 400, return generic OAuth errors, and adopt __Host- cookie prefixes with Secure driven by ENVIRONMENT.",
+    "Regression guard: add tests asserting protected routes 401 without a session, that a revoked/absent auth_sessions row is rejected, that cross-origin POSTs are refused, and that logout clears the cookie and row."
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "workstream": "Strength for runners",
+  "subtopic": "Programming the Planet Fitness machine set for runners",
+  "generated_at": "2026-11-22T14:56:00Z",
+  "claims": [
+    {
+      "topic": "Planet Fitness inventory and constraints",
+      "claim": "The standard Planet Fitness floor provides pin/plate-loaded selectorized machines for each of the eight target exercises (seated row, leg curl, leg extension, tricep extension, leg press, bicep curl, back extension, shoulder press) plus Smith machines, adjustable dumbbells, and cable stations, but no barbell power racks, Olympic platforms, dedicated Nordic-hamstring devices, or single-leg/hip-thrust machines; the program must therefore be built from machines plus dumbbell and cable variations.",
+      "evidence": "Planet Fitness advertises a machine-dominant, no-barbell floor plan and its own retrieval page returned HTTP 403 to automated fetch, so the exact inventory could not be independently verified from the primary source in this session; it is consistent with widely reported facility descriptions. Treated as coaching/consensus guidance rather than verified fact.",
+      "confidence": "low",
+      "citation": {
+        "title": "Planet Fitness gym facilities and equipment overview",
+        "authors": "Planet Fitness",
+        "year": 2026,
+        "venue": "planetfitness.com (facilities page)",
+        "type": "coaching",
+        "doi_or_url": "https://www.planetfitness.com/gyms/facilities",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Exercise order: general principle",
+      "claim": "Order exercises so that large-muscle, multi-joint movements are performed before smaller-muscle, single-joint movements, and explosive/heavy exercises before fatiguing accessory work, so that the most important lifts are trained when the athlete is least fatigued.",
+      "evidence": "ACSM position stand recommends performing multi-joint exercises before single-joint exercises and training large muscle groups before small ones; performing single-joint work first reduces the load/repetitions tolerated on subsequent multi-joint exercises. This is a general resistance-training principle, not a runner-specific trial.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Exercise order for runners: machine sequence",
+      "claim": "For runners on a machine set, sequence the session as: (1) the most important lower-body compound lift first (leg press, then single-leg leg press), (2) remaining lower-body work (leg curl, leg extension, back extension), (3) upper-body push and pull (seated row, shoulder press, then bicep curl and tricep extension), and (4) core/trunk work last.",
+      "evidence": "Synthesis of the ACSM order principle (multi-joint and large muscle groups before single-joint and small) applied to the available machine set, combined with coaching guidance that prioritises lower-body strength for runners and schedules accessory/core work after the main lifts. No trial has tested this exact machine ordering in runners; it is a reasoned template.",
+      "confidence": "medium",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Sets, reps and load: general resistance training",
+      "claim": "For novice and intermediate lifters, prescribe 2-4 sets of 8-12 repetitions at roughly 60-80% 1RM for most exercises, 2-3 sessions per week per muscle group, with 48-72 hours between sessions training the same muscles; beginners can start with 1-2 sets and progress as tolerated.",
+      "evidence": "ACSM position stand on progression models specifies loading ranges by training status and recommends 2-3 days/week with at least 48 hours between sessions for the same muscle group; it recommends starting with lighter loads and fewer sets for novices and progressing to higher volumes.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Sets, reps and load: runner lower body",
+      "claim": "For running-relevant lower-body machine work, prescribe 2-6 sets of 3-10 repetitions at greater than 70% 1RM (or 1-2 reps in reserve), progressing from 1-2 sets for beginners; moderate loads of 40-80% 1RM with 5-15 repetitions also improve running economy and suit machine accessories and in-season maintenance.",
+      "evidence": "Systematic review of 24 studies in middle- and long-distance runners: successful programs used 2-6 sets of 3-10 reps at >70% 1RM or to repetition failure, most starting at 1-2 sets and progressing to 3-6 sets; a meta-analysis of controlled trials in highly trained runners used 40-70% 1RM in 4 of 5 studies and improved running economy (SMD -1.42).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Intensity: heavy loads on the leg press",
+      "claim": "Where a runner can safely handle it, include at least one heavy lower-body lift per week at >=90% 1RM or a 3-5RM effort; heavy resistance training with near-maximal loads produces larger running-economy effects than lighter-load training.",
+      "evidence": "Meta-analysis of 22 studies: heavy resistance training with loads >=90% 1RM (or <=4RM) improved running economy (g = -0.31, 95% CI -0.61 to -0.02) more than loads <90% 1RM (g = -0.17, 95% CI -1.05 to 0.70); heavy resistance outperformed plyometric training overall.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao C, Sugiyama M, Maeo S, Terada M, Kanehisa H, Isaka H",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Rest intervals between sets",
+      "claim": "Rest about 2-3 minutes between heavy multi-joint machine sets; longer interset rest (about 3 minutes) produces greater strength and hypertrophy gains than short rest (about 1 minute), so a fast machine circuit is a time-efficiency compromise rather than a maximal-gain strategy.",
+      "evidence": "Randomized trial in resistance-trained men: 3-minute rest between sets produced significantly greater increases in muscle thickness and strength than 1-minute rest; ACSM guidance likewise recommends 2-3 minutes for heavy, multi-joint work and shorter rest for single-joint/accessory work.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Longer Interset Rest Periods Enhance Muscle Strength and Hypertrophy in Resistance-Trained Men",
+        "authors": "Schoenfeld BJ, Pope ZK, Benik FM, Hester GM, Sellers J, Nooner JL, Schnaiter JA, Bond-Williams KE, Carter AS, Ross CL, Just BL, Henselmans M, Krieger JW",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000001272",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Load autoregulation via RPE/RIR",
+      "claim": "When 1RM testing is impractical on machines, prescribe load by a resistance-training-specific RPE/RIR scale, targeting about RPE 7-8 (roughly 2-3 repetitions in reserve) for working sets; this lets a runner self-regulate load from day to day.",
+      "evidence": "Validation study introducing a resistance-training-specific RPE scale anchored to repetitions in reserve (Zourdos scale) and showing it tracks proximity to failure; the scale is widely used for autoregulated loading where maximal testing is not feasible. Extrapolated to recreational runners who cannot safely perform 1RM testing.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Novel Resistance Training-Specific Rating of Perceived Exertion Scale Measuring Repetitions in Reserve",
+        "authors": "Zourdos MC, Klemp A, Dolan C, Quiles JM, Schau KA, Jo E, Helms E, Esgro B, Duncan S, Garcia Merino S, Blanco R",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000001049",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Progression: progressive overload and the 2-for-2 rule",
+      "claim": "Progress load using the 2-for-2 rule: when the runner can perform two or more repetitions beyond the target on the last set for two consecutive sessions, increase the load by roughly 2-10% (a small increment on machines) while keeping form; if the target cannot be met, hold the load.",
+      "evidence": "NSCA Essentials of Strength Training and Conditioning presents the 2-for-2 rule as the standard progression heuristic and notes load increases of about 2-10% for upper-body and lower-body exercises; the underlying principle (progressive overload) is also endorsed by the ACSM progression position stand.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Essentials of Strength Training and Conditioning (3rd ed.)",
+        "authors": "Baechle TR, Earle RW (eds); National Strength and Conditioning Association",
+        "year": 2008,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "https://www.humankinetics.com/products/essentials-of-strength-training-and-conditioning-4th-edition",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Weekly volume dose-response",
+      "claim": "Target roughly 10 or more hard sets per muscle group per week when the goal is strength/hypertrophy; weekly volume shows a graded dose-response with muscle gains, so additional sets can be added gradually as recovery allows.",
+      "evidence": "Systematic review and meta-analysis of resistance-training volume: increases in weekly set volume were associated with greater muscle hypertrophy, with benefits continuing up to about 10+ sets per muscle group per week; the finding is from general (not runner) populations and mostly measures hypertrophy rather than running outcomes.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Dose-response relationship between weekly resistance training volume and increases in muscle mass: A systematic review and meta-analysis",
+        "authors": "Schoenfeld BJ, Ogborn D, Krieger JW",
+        "year": 2017,
+        "venue": "Journal of Sports Sciences",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2016.1210197",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Training frequency",
+      "claim": "Train each major muscle group about twice per week; when weekly volume is equated, training frequency has little independent effect on hypertrophy, so a full-body machine session 2-3 times per week is a sound default.",
+      "evidence": "Systematic review and meta-analysis of resistance-training frequency: when total weekly volume was equated, higher training frequency did not produce significantly greater hypertrophy; frequency is therefore primarily a tool for distributing volume. General-population evidence.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "How many times per week should a muscle be trained to maximize muscle hypertrophy? A systematic review and meta-analysis of studies examining the effects of resistance training frequency",
+        "authors": "Schoenfeld BJ, Grgic J, Krieger J",
+        "year": 2019,
+        "venue": "Journal of Sports Sciences",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2018.1555906",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Machine circuit training",
+      "claim": "A machine circuit performed with short rest between stations is a time-efficient option that improves maximal oxygen uptake and upper-body 1RM, making it suitable when strength must be fitted around running volume; for maximal strength, however, it is inferior to longer-rest straight sets.",
+      "evidence": "Systematic review and meta-analysis of resistance circuit-based training: circuit training improved VO2max and upper-body 1RM compared with controls. The review notes circuit formats trade maximal-strength development for cardiovascular and time-efficiency benefits, consistent with the rest-interval evidence above.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effectiveness of Resistance Circuit-Based Training for Maximum Oxygen Uptake and Upper-Body One-Repetition Maximum Improvements: A Systematic Review and Meta-Analysis",
+        "authors": "Munoz-Martinez FA, Rubio-Arias JA, Ramos-Campo DJ, Alcaraz PE",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0773-4",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Posterior chain: leg curl and hamstring exercise selection",
+      "claim": "Include knee-flexion hamstring work (seated/lying leg curl) because eccentric knee-flexor conditioning reduces hamstring strain injury risk; note that knee-flexion exercises preferentially load the semitendinosus and biceps femoris short head, whereas hip-extension movements load the biceps femoris long head and semimembranosus, so pairing leg curl with hip-extension work (back extension, dumbbell RDL) gives more complete hamstring coverage.",
+      "evidence": "Narrative/evidence review: eccentric knee flexor conditioning reduces hamstring injury risk when compliance is adequate, mediated partly by increased biceps femoris long-head fascicle length and eccentric strength; muscle activation differs systematically between hip-extension-oriented and knee-flexion-oriented exercises.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "An Evidence-Based Framework for Strengthening Exercises to Prevent Hamstring Injury",
+        "authors": "Bourne MN, Timmins RG, Opar DA, Pizzari T, Ruddy JD, Sims C, Williams MD, Shield AJ",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0796-x",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Nordic hamstring exercise and PF alternatives",
+      "claim": "The Nordic hamstring exercise roughly halves hamstring injury rates, but Planet Fitness has no Nordic device, so a machine-based substitute uses seated/lying leg curl (slow eccentric emphasis), back extension, and single-leg Romanian deadlift or single-leg leg press with dumbbells to approximate the eccentric knee-flexor and hip-extension stimulus.",
+      "evidence": "Systematic review and meta-analysis of 8,459 athletes: including the Nordic hamstring exercise in prevention programs roughly halved hamstring injury rates (RR ~0.49); the substitute exercise set is a coaching extrapolation because the Nordic exercise cannot be performed on the standard PF equipment and no trial has compared machine substitutes directly.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: a systematic review and meta-analysis of 8459 athletes",
+        "authors": "van Dyk N, Behan FP, Whiteley R",
+        "year": 2019,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2018-100045",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Back extension: posterior chain",
+      "claim": "Program the back-extension machine as hip-hinge/posterior-chain work to complement leg curl and leg press, loading the erector spinae and hip extensors; back extension has been used within successful runner strength programs, though its isolated effect on running performance is not established.",
+      "evidence": "Systematic review of runner strength programs lists back extension and hip extension among the exercises used alongside squat/leg-press and knee-flexion work; no included trial isolated back extension, so the benefit is inferred from program content rather than direct comparison.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Single-leg work on a machine set",
+      "claim": "Include unilateral lower-body work 1-2 times per week to address side-to-side asymmetry and running-specific stability; on PF equipment this means single-leg leg press and single-leg leg curl, plus dumbbell split squats, lunges, and step-ups, since there is no dedicated single-leg machine.",
+      "evidence": "Systematic review of runner programs: unilateral exercises (single-leg half-squat, step-up, lunges, split squat, unilateral leg press) were used in successful programs, but no included trial isolated unilateral work, so the added benefit is inferred from program content. Separately, lower eccentric hamstring strength and single-leg hop distance predicted hamstring injury in a cohort of physical-education students, supporting single-leg assessment/training.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Core and trunk training",
+      "claim": "Add core/trunk work 2-3 times per week (planks, anti-extension and anti-rotation exercises, or machine/cable equivalents); a 12-week core-focused program improved 5-km time and running metabolic cost in trained runners.",
+      "evidence": "Randomized controlled trial in 32 trained runners: 12 weeks of Pilates improved 5-km time (25.65 to 23.23 min vs 25.33 to 24.61 min in controls) and running metabolic cost, with reduced postural-muscle activity during running. Small trial using a Pilates protocol rather than gym machines.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Pilates training improves 5-km run performance by changing metabolic cost and muscle activity in trained runners",
+        "authors": "Finatto P, Silva ESD, Okamura AB, Almada BP, Storniolo JLL, Oliveira HB, Peyre-Tartaruga LA",
+        "year": 2018,
+        "venue": "PLoS One",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1371/journal.pone.0194057",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Push/pull balance and upper-body accessories",
+      "claim": "Balance pushing and pulling work (e.g., shoulder press paired with seated row; tricep extension paired with bicep curl) to train opposing muscle groups and maintain joint balance; treat the upper-body machines as general-fitness accessories rather than running-performance drivers.",
+      "evidence": "ACSM position stand recommends balanced resistance training of all major muscle groups, with multi-joint before single-joint and large before small muscle groups; no runner-specific trial has tested seated row, shoulder press, biceps curl, or triceps extension for running performance or injury outcomes.",
+      "confidence": "low",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Scheduling strength around running",
+      "claim": "Place strength sessions on separate days from key runs, or at least 3 hours after a hard run; keep heavy lower-body work at least 24 hours before a key session, and if a leg-day must share a day with running, do it after an easy run (a common coaching pattern is leg work a day or two after the long run).",
+      "evidence": "Systematic review of runner strength programs recommends >3 hours recovery after high-intensity running before strength work and at least 24 hours between a strength session and an intensive running session; coaching guidance similarly advises scheduling 'leg day' after the long run to allow recovery.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:50:00Z"
+      }
+    },
+    {
+      "topic": "Machine-to-pattern mapping for runners",
+      "claim": "Map the eight machines to running-relevant patterns: leg press = multi-joint squat/push pattern (primary lower-body lift); leg curl = knee-flexion posterior chain; leg extension = knee-extension (quadriceps) isolation; back extension = hip-extension/posterior chain; seated row = upper-body pull; shoulder press = upper-body push; bicep curl and tricep extension = elbow flexor/extensor accessories; and add core work separately because none of the eight machines trains the trunk.",
+      "evidence": "Synthesis combining the ACSM exercise-order and balance principles with the exercise categories used in successful runner strength programs (leg press, knee flexion/extension, back/hip extension, plus upper-body and core accessories). This mapping is a coaching/synthesis construct; no trial has evaluated it as a package in runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Why Strength Training Is So Important for Runners",
+        "authors": "The Editors of Runner's World (with Jason Fitzgerald, USATF-certified coach)",
+        "year": 2018,
+        "venue": "Runner's World",
+        "type": "coaching",
+        "doi_or_url": "https://www.runnersworld.com/training/a20074772/strength-training-for-runners/",
+        "retrieved_at": "2026-11-22T14:52:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Program the eight Planet Fitness machines as a full-body runner strength template 2-3 times per week. Sequence: leg press (and single-leg leg press) first, then leg curl, leg extension, and back extension, then the upper-body push/pull machines (seated row, shoulder press, bicep curl, tricep extension), with core work added separately at the end. Use 2-4 sets of 6-12 reps per machine at RPE 7-8 (about 2-3 reps in reserve), resting 2-3 minutes on heavy lower-body lifts and less on accessories; include at least one heavy leg-press set at >=90% 1RM when tolerated. Progress with the 2-for-2 rule (add ~2-10% load when 2+ reps over target are achieved on the last set for two sessions). Target each muscle group twice weekly and roughly 10+ hard sets per muscle group per week. Map the set to running patterns by treating leg press as the squat pattern, leg curl plus back extension as posterior-chain work (leg curl for eccentric knee-flexion, back extension/RDL for hip extension), leg extension for quadriceps, seated row plus shoulder press for push/pull balance, and bicep/tricep machines as arm accessories. Since PF has no Nordic-hamstring device or single-leg machine, substitute slow-eccentric leg curl, back extension, single-leg leg press/leg curl, and dumbbell single-leg RDL, split squats, lunges, and step-ups. Schedule strength on separate days or at least 3 hours after a hard run and 24 hours before key sessions, doing leg day after the long run.",
+  "unverified": [
+    "The exact Planet Fitness machine inventory (the eight target machines plus which alternatives are present at a given location) could not be verified from the primary source because the facilities page returned HTTP 403; the inventory claim is coaching/consensus and should be confirmed against a specific gym.",
+    "No trial has tested the proposed machine circuit/sequence or the machine-to-pattern mapping as a package in runners; the ordering and mapping are reasoned constructs from general resistance-training principles and runner program content.",
+    "Whether machine-based substitutes (leg curl, back extension, dumbbell single-leg RDL) provide the same hamstring injury-prevention benefit as the Nordic hamstring exercise; no direct comparison exists.",
+    "Optimal number of hard sets per muscle group and exact %1RM/RIR targets specifically for runners; recommendations are extrapolated from general resistance-training guidelines and mixed runner trials.",
+    "Whether the upper-body machines (seated row, shoulder press, bicep curl, tricep extension) improve running performance or reduce running injury; no runner-specific evidence.",
+    "Whether a fast machine circuit is as effective as longer-rest straight sets for running-economy gains in runners; circuit evidence measures VO2max and 1RM, not running economy.",
+    "Optimal taper of machine strength work in the final 1-2 weeks before a goal race; no runner-specific RCT."
+  ],
+  "notes": "Research-only synthesis; no application code or architecture decisions. Retrieval: WebFetch first; several primary sources (PubMed, BMJ/BJSM, planetfitness.com) returned 403 and Semantic Scholar search was rate-limited, so key DOIs were verified individually via the Semantic Scholar paper endpoint and Springer Nature Link (Bourne 2018, Eihara 2022). DOI corrections made during verification: the Zourdos 2016 RPE/RIR DOI is 10.1519/JSC.0000000000001049 (not ...1064); the Schwanbeck 2020 DOI 10.1519/JSC.0000000000003349 corresponds to a free-weights-vs-machines study (correct title recorded here; wave-1 mislabelled it as a cycling study). The circuit-training meta-analysis DOI was confirmed as 10.1007/s40279-017-0773-4 (an earlier candidate DOI 10.1007/s40279-017-0738-7 resolved to an unrelated hydration paper and was discarded). Practical implications for a PF-based runner template: default frequency 2 sessions/week full-body; prioritise leg press, leg curl, leg extension, back extension for the lower body and treat seated row, shoulder press, bicep curl, tricep extension as optional balance accessories; add core work and single-leg/dumbbell variants because the eight machines omit the trunk and single-leg stimulus; prescribe load by RIR/RPE when 1RM testing is impractical; progress via the 2-for-2 rule; and schedule strength after easy runs or at least 3 hours after hard runs and 24 hours before key sessions. Cross-reference wave-1/3b-strength-programming.json for runner performance/economy and injury-prevention effect sizes."
+}

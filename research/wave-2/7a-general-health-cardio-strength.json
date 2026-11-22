@@ -1,0 +1,284 @@
+{
+  "workstream": "Wave 2 - Whole-fitness and general health",
+  "subtopic": "Evidence-based guidelines for balancing aerobic and resistance training for general health: WHO/ACSM activity targets, weekly cardio and strength volume, benefits of combined training, and structuring a sustainable year-round plan without a race goal",
+  "generated_at": "2026-11-22T14:50:00Z",
+  "claims": [
+    {
+      "topic": "Aerobic volume target (adults)",
+      "claim": "All adults should accumulate 150-300 min/week of moderate-intensity aerobic physical activity, or 75-150 min/week of vigorous-intensity aerobic activity, or an equivalent combination, for substantial health benefits. This is a strong (not conditional) recommendation.",
+      "evidence": "WHO 2020 guidelines, developed via GRADE with commissioned systematic/umbrella reviews, retained the 150-300 min moderate (or 75-150 min vigorous) weekly range as the core adult aerobic target. The equivalent-combination clause allows mixing intensities, so the target is a weekly energy/volume budget rather than fixed daily sessions.",
+      "confidence": "high",
+      "citation": {
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "authors": "Bull FC, Al-Ansari SS, Biddle S, Borodulin K, Buman MP, Cardon G, Carty C, Chaput JP, Chastin S, Chou R, Dempsey PC, DiPietro L, Ekelund U, Firth J, Friedenreich CM, Garcia L, Gichu M, Jago R, Katzmarzyk PT, Lambert E, Leitzmann M, Milton K, Ortega FB, Ranasinghe C, Stamatakis E, Tiedemann A, Troiano RP, van der Ploeg HP, Wari V, Willumsen JF",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine 54(24):1451-1462",
+        "type": "position-stand",
+        "doi_or_url": "10.1136/bjsports-2020-102955",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Strength volume target (adults)",
+      "claim": "Adults should perform muscle-strengthening activities of moderate or greater intensity that involve all major muscle groups on 2 or more days per week; these provide health benefits additional to aerobic activity, and the recommendation is strong.",
+      "evidence": "WHO 2020 recommendation for adults, graded strong. The 2 days/week minimum is framed primarily around musculoskeletal health but is supported by cohort evidence that muscle-strengthening activity is independently associated with lower mortality and major non-communicable disease risk (see Momma 2022 claim). WHO notes the evidence supports 'regular' strengthening for all age groups, including older adults.",
+      "confidence": "high",
+      "citation": {
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "authors": "Bull FC, Al-Ansari SS, Biddle S, Borodulin K, Buman MP, Cardon G, Carty C, Chaput JP, Chastin S, Chou R, Dempsey PC, DiPietro L, Ekelund U, Firth J, Friedenreich CM, Garcia L, Gichu M, Jago R, Katzmarzyk PT, Lambert E, Leitzmann M, Milton K, Ortega FB, Ranasinghe C, Stamatakis E, Tiedemann A, Troiano RP, van der Ploeg HP, Wari V, Willumsen JF",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine 54(24):1451-1462",
+        "type": "position-stand",
+        "doi_or_url": "10.1136/bjsports-2020-102955",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Dose above the minimum",
+      "claim": "Adults may increase moderate-intensity aerobic activity beyond 300 min/week, or vigorous activity beyond 150 min/week (or an equivalent combination), for additional health benefits; this is a conditional recommendation.",
+      "evidence": "WHO 2020 graded the above-minimum dose as conditional rather than strong, reflecting diminishing marginal returns and less certain incremental benefit at high volumes. The guidance establishes that the 150/75-min figures are a floor for 'substantial' benefit, not an optimum or ceiling.",
+      "confidence": "high",
+      "citation": {
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "authors": "Bull FC, Al-Ansari SS, Biddle S, Borodulin K, Buman MP, Cardon G, Carty C, Chaput JP, Chastin S, Chou R, Dempsey PC, DiPietro L, Ekelund U, Firth J, Friedenreich CM, Garcia L, Gichu M, Jago R, Katzmarzyk PT, Lambert E, Leitzmann M, Milton K, Ortega FB, Ranasinghe C, Stamatakis E, Tiedemann A, Troiano RP, van der Ploeg HP, Wari V, Willumsen JF",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine 54(24):1451-1462",
+        "type": "position-stand",
+        "doi_or_url": "10.1136/bjsports-2020-102955",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Older-adult addition (balance and function)",
+      "claim": "Adults aged 65 years and older should add varied multicomponent physical activity emphasizing functional balance and strength training at moderate or greater intensity on 3 or more days per week, to enhance functional capacity and prevent falls.",
+      "evidence": "WHO 2020 strong recommendation specific to older adults, layered on top of the general adult aerobic and strengthening targets. It reflects consistent evidence that balance/functional training reduces falls and fall-related injury, an outcome not addressed by aerobic or isolated strengthening targets.",
+      "confidence": "high",
+      "citation": {
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "authors": "Bull FC, Al-Ansari SS, Biddle S, Borodulin K, Buman MP, Cardon G, Carty C, Chaput JP, Chastin S, Chou R, Dempsey PC, DiPietro L, Ekelund U, Firth J, Friedenreich CM, Garcia L, Gichu M, Jago R, Katzmarzyk PT, Lambert E, Leitzmann M, Milton K, Ortega FB, Ranasinghe C, Stamatakis E, Tiedemann A, Troiano RP, van der Ploeg HP, Wari V, Willumsen JF",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine 54(24):1451-1462",
+        "type": "position-stand",
+        "doi_or_url": "10.1136/bjsports-2020-102955",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "US national guideline concordance",
+      "claim": "The US Physical Activity Guidelines for Americans (2nd edition) independently set the same adult targets (150-300 min/week moderate or 75-150 min/week vigorous aerobic activity, plus muscle-strengthening on 2+ days/week) and stress that moving more and sitting less benefits nearly everyone, that the least active gain the most from even modest increases, that additional benefit accrues with more activity, and that both aerobic and muscle-strengthening activity are beneficial.",
+      "evidence": "HHS guideline built on a systematic advisory report covering 38 questions/104 subquestions, grading evidence by consistency and quality. Its explicit 'least active benefit most' and 'both modes are beneficial' framing is the clearest policy statement that combined aerobic plus strengthening is the intended default for general health, not an optional add-on.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Physical Activity Guidelines for Americans",
+        "authors": "Piercy KL, Troiano RP, Ballard RM, Carlson SA, Fulton JE, Galuska DA, George SM, Olson RD",
+        "year": 2018,
+        "venue": "JAMA 320(19):2020-2028",
+        "type": "position-stand",
+        "doi_or_url": "10.1001/jama.2018.14854",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "ACSM prescription detail (frequency, flexibility, neuromotor)",
+      "claim": "ACSM recommends moderate-intensity cardiorespiratory exercise at least 30 min/day on 5+ days/week (>=150 min/week), or vigorous exercise >=20 min/day on 3+ days/week (>=75 min/week), or a combination reaching roughly 500-1000 MET-min/week; resistance exercise for each major muscle group on 2-3 days/week; flexibility exercises for major muscle-tendon groups on 2+ days/week (about 60 s per exercise); and neuromotor (balance, agility, coordination) exercise 2-3 days/week.",
+      "evidence": "ACSM position stand providing individual-level prescription detail that complements population targets: it quantifies MET-minutes, adds flexibility and neuromotor components, and recommends modifying the program to habitual activity, function, health status, exercise responses and stated goals. It also states that adults unable or unwilling to meet targets still benefit from lesser amounts.",
+      "confidence": "high",
+      "citation": {
+        "title": "Quantity and Quality of Exercise for Developing and Maintaining Cardiorespiratory, Musculoskeletal, and Neuromotor Fitness in Apparently Healthy Adults: Guidance for Prescribing Exercise",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, Nieman DC, Swain DP",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise 43(7):1334-1359",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e318213fefb",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Population-level inactivity burden",
+      "claim": "About 31% of adults worldwide (roughly 1.8 billion people) do not meet the 150 min/week moderate-intensity recommendation, and insufficiently active people have a 20-30% higher risk of death than sufficiently active people.",
+      "evidence": "WHO fact sheet summarizing pooled global surveillance (507 surveys, 5.7 million participants) plus cohort evidence. Useful as the baseline framing for why a general-health app should default to guideline-level targets rather than performance goals.",
+      "confidence": "high",
+      "citation": {
+        "title": "Physical activity - Fact sheet",
+        "authors": "World Health Organization",
+        "year": 2026,
+        "venue": "WHO Newsroom Fact Sheets (updated 4 November 2026)",
+        "type": "position-stand",
+        "doi_or_url": "https://www.who.int/news-room/fact-sheets/detail/physical-activity",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Muscle-strengthening dose-response and combined-training benefit",
+      "claim": "Independent of aerobic activity, any muscle-strengthening activity is associated with about 15% lower all-cause mortality, 17% lower CVD risk, 12% lower total cancer risk and 17% lower diabetes incidence; associations are J-shaped for mortality/CVD/cancer with maximum risk reduction (about 10-20%) around 30-60 min/week, while diabetes risk falls steeply up to about 60 min/week. Combining muscle-strengthening with aerobic activity (vs neither) is associated with about 40% lower all-cause mortality, 46% lower CVD mortality and 28% lower total cancer mortality.",
+      "evidence": "Systematic review and meta-analysis of 16 prospective cohorts (up to 479,856 participants; median follow-up up to ~25 years). GRADE certainty was very low for mortality/CVD/cancer and low for diabetes, mainly due to indirectness (mostly US cohorts), heterogeneity (I2 up to ~83%) and self-reported exposure; no publication-bias test was possible with few studies. Direction of effect was consistent across cohorts.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Muscle-strengthening activities are associated with lower risk and mortality in major non-communicable diseases: a systematic review and meta-analysis of cohort studies",
+        "authors": "Momma H, Kawakami R, Honda T, Sawada SS",
+        "year": 2022,
+        "venue": "British Journal of Sports Medicine 56(13):755-763",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2021-105061",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Steps as a cardio volume proxy",
+      "claim": "Daily step count shows a non-linear dose-response with all-cause mortality: compared with the lowest quartile, the highest quartile had roughly half the mortality hazard (HR 0.47), with risk plateauing at about 6,000-8,000 steps/day for adults aged 60+ and about 8,000-10,000 steps/day for adults under 60. The widely promoted 10,000-step target is not evidence-based.",
+      "evidence": "Individual-participant meta-analysis of 15 international cohorts (47,471 adults, 3,013 deaths, median 7.1 years). Quartile medians were 3,553 / 5,801 / 7,842 / 10,901 steps/day with adjusted HRs 1.00 / 0.60 / 0.55 / 0.47. Authors explicitly note the 10,000-step figure originated from a marketing campaign, not research.",
+      "confidence": "high",
+      "citation": {
+        "title": "Daily steps and all-cause mortality: a meta-analysis of 15 international cohorts",
+        "authors": "Paluch AE, Bajpai S, Bassett DR, Carnethon MR, Ekelund U, Evenson KR, Galuska DA, Jefferis BJ, Kraus WE, Lee IM, Matthews CE, Omura JD, Patel AV, Pieper CF, Rees-Punia E, Dallmeier D, Klenk J, Whincup PH, Dooley EE, Pettee Gabriel K, Palta P, Pompeii LA, Chernofsky A, Larson MG, Vasan RS, Spartano N, Ballin M, Nordstrom P, Nordstrom A, Anderssen SA, Hansen BH, Cochrane JA, Dwyer T, Wang J, Ferrucci L, Liu F, Schrack J, Urbanek J, Saint-Maurice PF, Yamamoto N, Yoshitake Y, Newton RL, Yang S, Shiroma EJ, Fulton JE",
+        "year": 2022,
+        "venue": "The Lancet Public Health 7(3):e219-e228",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/S2468-2667(21)00302-9",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Combined training for glycaemic control",
+      "claim": "In adults with type 2 diabetes, combined aerobic plus resistance training reduces HbA1c more than aerobic training alone (mean difference -0.17%) and much more than resistance training alone (mean difference -0.62%), and combined training also improved fasting glucose and triglycerides relative to resistance alone; combined training appears the most efficacious single modality for glycaemic control.",
+      "evidence": "Systematic review and network meta-analysis of 14 RCTs (915 participants, >=8 weeks supervised training). The authors caution that excluding high-risk-of-bias trials removed significance and that study quality was low, so the ranking should be read as directional rather than definitive.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Impact of different training modalities on glycaemic control and blood lipids in patients with type 2 diabetes: a systematic review and network meta-analysis",
+        "authors": "Schwingshackl L, Missbach B, Dias S, Konig J, Hoffmann G",
+        "year": 2014,
+        "venue": "Diabetologia 57(9):1789-1797",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s00125-014-3303-z",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Mental health: modality and dose",
+      "claim": "Exercise is an effective treatment for major depression relative to active controls, with walking/jogging (Hedges' g -0.62), yoga (-0.55), strength training (-0.49) and mixed aerobic exercise (-0.43) among the more effective modalities; effects are proportional to the intensity prescribed, and strength training and yoga were among the best-tolerated (most acceptable) modalities.",
+      "evidence": "Systematic review and network meta-analysis of 218 RCTs (495 arms, 14,170 participants) in clinically depressed adults. Confidence by CINeMA was low for walking/jogging and very low for other modalities, largely because only one trial met low-risk-of-bias criteria, so effect sizes are likely inflated but the modality ranking and intensity dependence are consistent.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of exercise for depression: systematic review and network meta-analysis of randomised controlled trials",
+        "authors": "Noetel M, Sanders T, Gallardo-Gomez D, Taylor P, del Pozo Cruz B, van den Hoek D, Smith JJ, Mahoney J, Spathis J, Moresi M, Pagano R, Pagano L, Vasconcellos R, Arnott H, Varley B, Parker P, Biddle S, Lonsdale C",
+        "year": 2024,
+        "venue": "BMJ 384:e075847",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bmj-2023-075847",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Bone and function: high-intensity resistance plus impact",
+      "claim": "Supervised high-intensity progressive resistance and impact training (HiRIT), 30 min twice weekly for 8 months, improved lumbar spine BMD (+4.1% vs +0.9% in controls), trochanteric BMD (+2.8% vs -0.1%), lean mass and physical function (timed up-and-go, sit-to-stand, back and leg extensor strength) in middle-aged and older adults with low bone mass, with high compliance and no vertebral fracture progression.",
+      "evidence": "LIFTMOR-M semi-randomized controlled trial in 93 men with osteopenia/osteoporosis; the parallel LIFTMOR trial in postmenopausal women showed the same program improved BMD and did not cause vertebral fracture. This is the strongest RCT-level support that brief, twice-weekly loading is enough for musculoskeletal benefit, i.e. strength work need not be high-frequency.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Comparison of Bone-Targeted Exercise Strategies to Reduce Fracture Risk in Middle-Aged and Older Men with Osteopenia and Osteoporosis: LIFTMOR-M Semi-Randomized Controlled Trial",
+        "authors": "Harding AT, Weeks BK, Lambert C, Watson SL, Weis LJ, Beck BR",
+        "year": 2020,
+        "venue": "Journal of Bone and Mineral Research 35(8):1404-1414",
+        "type": "rct",
+        "doi_or_url": "10.1002/jbmr.4008",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Concurrent training compatibility",
+      "claim": "Adding aerobic training to a strength program does not compromise muscle hypertrophy or maximal strength gains (SMD -0.01 and -0.06 vs strength alone), but explosive/rapid force development is attenuated (SMD -0.28), and this attenuation is concentrated in same-session combinations and largely absent when aerobic and strength sessions are separated by at least 3 hours.",
+      "evidence": "Systematic review and meta-analysis of 43 supervised trials (1,090 participants) with an identical strength prescription in both arms. Effects were independent of aerobic modality (cycling vs running), weekly frequency, age and training status. Mean PEDro quality was medium (4.3/10), so the null hypertrophy/maximal-strength findings are the most robust part of the result.",
+      "confidence": "high",
+      "citation": {
+        "title": "Compatibility of Concurrent Aerobic and Strength Training for Skeletal Muscle Size and Function: An Updated Systematic Review and Meta-Analysis",
+        "authors": "Schumann M, Feuerbacher JF, Sunkeler M, Freitag N, Ronnestad BR, Doma K, Lundberg TR",
+        "year": 2022,
+        "venue": "Sports Medicine 52(3):601-612",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-021-01587-7",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Periodization necessity for general fitness",
+      "claim": "Linear and undulating periodization produce comparable strength gains, and both outperform non-periodized training; no single periodization model is superior for general strength development, with novelty and training variety identified as plausible drivers of continued adaptation.",
+      "evidence": "Systematic review and meta-analysis of 17 studies (510 participants) directly comparing linear vs undulating periodized resistance programs. Sixteen of 17 studies reported significant within-group strength gains under both approaches; between-model differences were not significant for upper- or lower-body strength. Studies were short-term, limiting inference about year-round sequencing.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Systematic review and meta-analysis of linear and undulating periodized resistance training programs on muscular strength",
+        "authors": "Harries SK, Lubans DR, Callister R",
+        "year": 2015,
+        "venue": "Journal of Strength and Conditioning Research 29(4):1113-1125",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1519/JSC.0000000000000712",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Maintenance dose (off-season / low-motivation periods)",
+      "claim": "When the goal shifts from improving to maintaining, endurance performance can be preserved for up to about 15 weeks with as few as 2 sessions/week or a 33-66% reduction in session volume (down to ~13-26 min), provided intensity is maintained; strength and muscle size can be preserved for up to about 32 weeks with as little as 1 session/week and 1 set per exercise in younger adults, provided relative load is maintained, whereas older adults may need up to 2 sessions/week and 2-3 sets.",
+      "evidence": "Narrative review synthesizing detraining/maintenance literature. Intensity is identified as the key variable: frequency and volume can fall substantially without loss if the training stimulus quality is preserved. Directly relevant to a year-round plan with no race goal, where maintenance blocks are the default rather than an exception.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Maintaining Physical Performance: The Minimal Dose of Exercise Needed to Preserve Endurance and Strength Over Time",
+        "authors": "Spiering BA, Mujika I, Sharp MA, Foulis SA",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research 35(5):1449-1458",
+        "type": "narrative-review",
+        "doi_or_url": "10.1519/JSC.0000000000003964",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Short bouts and incidental vigorous activity",
+      "claim": "In adults who do no structured exercise, brief 1-2 minute bouts of vigorous intermittent lifestyle physical activity (VILPA) show a near-linear inverse association with mortality: about 3 bouts/day was associated with 38-40% lower all-cause and cancer mortality and 48-49% lower CVD mortality, and about 4.4 min/day with 26-30% lower all-cause mortality.",
+      "evidence": "Prospective cohort of 25,241 UK Biobank nonexercisers with wrist accelerometry (852 deaths, mean 6.9 years). Effects were similar in magnitude to vigorous physical activity in exercisers. Observational and device-dependent, with possible residual confounding, but it supports counting very short vigorous efforts toward weekly targets.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Association of wearable device-measured vigorous intermittent lifestyle physical activity with mortality",
+        "authors": "Stamatakis E, Ahmadi MN, Gill JMR, Thogersen-Ntoumani C, Gibala MJ, Doherty A, Hamer M",
+        "year": 2022,
+        "venue": "Nature Medicine 28(12):2521-2529",
+        "type": "cohort",
+        "doi_or_url": "10.1038/s41591-022-02100-x",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Accumulation pattern and bout length",
+      "claim": "The 2020 WHO adult recommendation is expressed as a weekly total to be accumulated 'throughout the week' and specifies no minimum bout duration, so activity can be distributed across any number of sessions per day or week rather than requiring sustained blocks.",
+      "evidence": "Direct reading of the WHO 2020 adult recommendation text and glossary, which define targets in weekly minutes (or MET-equivalents) without a per-bout minimum. This is consistent with the VILPA and steps evidence showing benefit from very short and incidental activity, and it supports flexible scheduling as an adherence strategy rather than a compromise.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
+        "authors": "Bull FC, Al-Ansari SS, Biddle S, Borodulin K, Buman MP, Cardon G, Carty C, Chaput JP, Chastin S, Chou R, Dempsey PC, DiPietro L, Ekelund U, Firth J, Friedenreich CM, Garcia L, Gichu M, Jago R, Katzmarzyk PT, Lambert E, Leitzmann M, Milton K, Ortega FB, Ranasinghe C, Stamatakis E, Tiedemann A, Troiano RP, van der Ploeg HP, Wari V, Willumsen JF",
+        "year": 2020,
+        "venue": "British Journal of Sports Medicine 54(24):1451-1462",
+        "type": "position-stand",
+        "doi_or_url": "10.1136/bjsports-2020-102955",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "Adherence and individualization",
+      "claim": "Adoption of and adherence to a general-health exercise program are improved by behaviorally based interventions, behavior-change strategies, supervision by an experienced instructor, and exercise that is pleasant and enjoyable; the prescription should be modified to the individual's habitual activity, physical function, health status, exercise responses and stated goals.",
+      "evidence": "ACSM position stand's explicit behavioral and individualization guidance, based on the adherence literature rather than on training-outcome trials. This is the strongest available basis for designing a year-round plan around sustainability (enjoyment, supervision, graded progression) rather than around rigid periodization.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Quantity and Quality of Exercise for Developing and Maintaining Cardiorespiratory, Musculoskeletal, and Neuromotor Fitness in Apparently Healthy Adults: Guidance for Prescribing Exercise",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, Nieman DC, Swain DP",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise 43(7):1334-1359",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e318213fefb",
+        "retrieved_at": "2026-11-22"
+      }
+    }
+  ],
+  "summary_tier_a": "The general-health consensus is unusually stable across WHO (2020), US (2018) and ACSM (2011): every adult should target 150-300 min/week of moderate aerobic activity (or 75-150 min vigorous, or an equivalent mix) plus muscle-strengthening of all major muscle groups on 2+ days/week, with older adults adding balance/functional work on 3+ days. The two modes are complementary rather than interchangeable: cohort data show muscle-strengthening is independently associated with 10-17% lower mortality and major NCD risk, with a J-shaped optimum around 30-60 min/week, and combining it with aerobic activity is associated with ~40% lower all-cause mortality. Meta-analytic RCT evidence supports combined training as the best single modality for glycaemic control in type 2 diabetes, and concurrent aerobic+strength training does not blunt hypertrophy or maximal strength (only explosive strength, mainly within the same session). For a year-round plan without a race goal, the evidence favors a guideline-level base sustained indefinitely, periodization as optional (linear vs undulating are equivalent, variety helps), maintenance blocks at ~1-2 strength sessions/week and ~2 cardio sessions/week with intensity preserved, and flexible accumulation (short bouts, steps, VILPA) to protect adherence.",
+  "unverified": [
+    "Specific year-round mesocycle templates for general-health (non-athlete) populations - e.g. optimal block length, deload frequency, or annual volume progression - are not directly tested in RCTs; the recommendations here are extrapolated from athlete periodization and detraining/maintenance literature and should be treated as expert synthesis, not trial evidence.",
+    "Whether the 2 days/week muscle-strengthening minimum is sufficient for bone and strength outcomes in adults under ~40 without low bone mass is not established; the strongest bone RCT evidence (LIFTMOR/LIFTMOR-M) used supervised twice-weekly high-intensity loading in older adults with osteopenia/osteoporosis.",
+    "Long-term (>=1 year) adherence rates and real-world dropout for combined aerobic+resistance programs delivered via consumer apps are not well quantified in the peer-reviewed literature retrieved here."
+  ],
+  "notes": "Guideline documents (WHO 2020, US PAG 2018, WHO fact sheet) are coded as type 'position-stand' because the allowed type list has no 'guideline' category; the WHO fact sheet is a surveillance summary rather than a peer-reviewed trial, so its numeric prevalence figures should be treated as authoritative-but-secondary. All cohort exposure measures for muscle-strengthening and steps were self-report or single-week device wear, so dose-response shapes (especially the J-shape for strength and the plateau for steps) are approximate and susceptible to confounding and reverse causation. Momma 2022 used GRADE and rated certainty 'very low' for mortality, CVD and cancer and 'low' for diabetes despite statistically robust pooled estimates; confidence above reflects consistency across independent cohorts and guideline concordance rather than high GRADE certainty. The Schwingshackl 2014 network meta-analysis lost significance after excluding high-risk-of-bias trials, and Noetel 2024 effect sizes are likely inflated by unmasked participants and expectancy. For app design, the defensible evidence-backed defaults are: weekly minutes as the primary unit (not daily streaks), 2 strength days/week as the minimum with 30-60 min/week total strength volume as a soft optimum, explicit permission for short/incidental bouts, and maintenance-mode targets rather than continuous progression. No architecture, framework or code decisions are made or implied here."
+}

@@ -1,0 +1,299 @@
+{
+  "workstream": "wave-3",
+  "subtopic": "Recovery modalities - evidence for foam rolling, massage, compression garments, cold-water immersion/ice baths, active recovery, and contrast therapy; which have real evidence vs hype; timing relative to training",
+  "generated_at": "2026-11-22T14:34:42Z",
+  "claims": [
+    {
+      "topic": "foam-rolling",
+      "claim": "Foam rolling produces only small and partly negligible effects on performance and recovery: pre-rolling slightly improved sprint (+0.7%, g=0.28) and flexibility (+4.0%, g=0.34) but had negligible effects on jump and strength; post-rolling slightly attenuated sprint/strength decrements and reduced muscle pain perception (+6.0%, g=0.47).",
+      "evidence": "Meta-analysis of 21 controlled studies (n=454). Pooled effect sizes were small for most outcomes and the authors concluded effects are 'rather minor and partly negligible' but can be relevant for sprint/flexibility/muscle-pain in some cases. Blinding is impossible, so placebo bias is a limitation.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Meta-Analysis of the Effects of Foam Rolling on Performance and Recovery",
+        "authors": "Wiewelhove T, Doweling A, Schneider C, Hottenrott L, Meyer T, Kellmann M, Pfeiffer M, Ferrauti A",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "foam-rolling-timing",
+      "claim": "Foam rolling is better justified as a warm-up (pre-rolling) than as a recovery tool; its acute range-of-motion/performance effects are modest and are not convincingly established as accelerating recovery from training.",
+      "evidence": "Meta-analysis explicitly concluded the evidence 'seems to justify the widespread use of foam rolling as a warm-up activity rather than a recovery tool.' Recovery (post-rolling) effects were small (overall performance +2.0%, g=0.19).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Meta-Analysis of the Effects of Foam Rolling on Performance and Recovery",
+        "authors": "Wiewelhove T, Doweling A, Schneider C, Hottenrott L, Meyer T, Kellmann M, Pfeiffer M, Ferrauti A",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "foam-rolling-range-of-motion",
+      "claim": "Foam rolling acutely increases joint range of motion in healthy adults; this flexibility benefit is the most consistently demonstrated effect of the modality.",
+      "evidence": "Systematic review with multilevel meta-analysis of acute foam rolling studies found significant increases in range of motion across populations. Effect is acute/short-term rather than a permanent tissue change.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Acute Effects of Foam Rolling on Range of Motion in Healthy Adults: A Systematic Review with Multilevel Meta-analysis",
+        "authors": "Wilke J, Muller AL, Giesche F, Power G, Ahmedi H, Behm DG",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-019-01205-7",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "foam-rolling-mechanism",
+      "claim": "The popular claim that foam rolling 'releases fascia' is not supported; the evidence indicates that observed effects are more plausibly explained by neural (pain-modulatory, stretch-tolerance) and mechanical/thermal factors than by actual breakdown of myofascial adhesions.",
+      "evidence": "Narrative review of rolling mechanisms concluded that direct mechanical 'myofascial release' is unlikely given the force needed to deform fascia, and that neurophysiological and psychophysiological mechanisms better explain the effects. Mechanism is largely speculative.",
+      "confidence": "low",
+      "citation": {
+        "title": "Do Self-Myofascial Release Devices Release Myofascia? Rolling Mechanisms: A Narrative Review",
+        "authors": "Behm DG, Wilke J",
+        "year": 2019,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-019-01149-y",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "massage",
+      "claim": "Massage is the most effective single recovery technique for reducing delayed onset muscle soreness (DOMS) and perceived fatigue, outperforming active recovery, compression, immersion, contrast water therapy and cryotherapy on those subjective outcomes.",
+      "evidence": "Meta-analysis of 99 studies (80 for DOMS, 17 for perceived fatigue). Massage had the largest effect on DOMS (SMD -2.26) and perceived fatigue (SMD -2.55) among all modalities compared, and was also among the most effective for reducing creatine kinase and IL-6.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "An Evidence-Based Approach for Choosing Post-exercise Recovery Techniques to Reduce Markers of Muscle Damage, Soreness, Fatigue, and Inflammation: A Systematic Review With Meta-Analysis",
+        "authors": "Dupuy O, Douzi W, Theurot D, Bosquet L, Dugue B",
+        "year": 2018,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2018.00403",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "massage-performance",
+      "claim": "Massage's effect on subsequent performance recovery is small and context-dependent: it is more useful for short-term recovery (up to ~10 min) after high-intensity mixed exercise, and effects are smaller for strength and endurance performance and in trained athletes.",
+      "evidence": "Meta-analysis of 22 RCTs. Shorter massage (5-12 min) gave larger effects (g=0.34) than >12 min (g=0.06); short-term recovery (<10 min) larger (g=0.45) than >20 min (g=0.08); mixed exercise g=0.61 vs strength g=0.18 and endurance g=0.12. Authors question whether limited effects justify widespread use in competitive athletes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Massage and Performance Recovery: A Meta-Analytical Review",
+        "authors": "Poppendieck W, Wegmann M, Ferrauti A, Kellmann M, Pfeiffer M, Meyer T",
+        "year": 2016,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-015-0420-x",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "massage-timing",
+      "claim": "Massage applied immediately after exercise (up to ~2 h post) reduces DOMS for at least 24 h, with meta-analytic benefit reported out to 72-96 h post-exercise.",
+      "evidence": "Dupuy 2018 meta-analysis reported significant DOMS reduction up to 96 h; it cites the 20-30 min post-exercise massage window as effective for the first 24 h and references a separate meta-analysis (Guo et al. 2017) showing benefit to 72 h.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "An Evidence-Based Approach for Choosing Post-exercise Recovery Techniques to Reduce Markers of Muscle Damage, Soreness, Fatigue, and Inflammation: A Systematic Review With Meta-Analysis",
+        "authors": "Dupuy O, Douzi W, Theurot D, Bosquet L, Dugue B",
+        "year": 2018,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2018.00403",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "compression-garments",
+      "claim": "Compression garments provide a small but real benefit for recovery: they reduce DOMS and perceived fatigue and modestly improve recovery of strength/power after exercise-induced muscle damage.",
+      "evidence": "Meta-analysis of compression garment studies found benefits for recovery of muscle function and reduced soreness/creatine kinase after damaging exercise. Dupuy 2018 found compression garments reduced DOMS (SMD -0.92) and perceived fatigue (SMD -0.88) significantly.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Are compression garments effective for the recovery of exercise-induced muscle damage? A systematic review with meta-analysis",
+        "authors": "Marques-Jimenez D, Calleja-Gonzalez J, Arratibel I, Delextrat A, Terrados N",
+        "year": 2016,
+        "venue": "Physiology & Behavior",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/j.physbeh.2015.10.027",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "compression-garments",
+      "claim": "Compression garments produce only small pooled effects on recovery of muscle function and markers of muscle damage; benefits are more consistent for perceived soreness than for objective performance measures.",
+      "evidence": "Meta-analysis of RCTs reported small, statistically significant pooled effects favouring compression for recovery of strength/power and reduced CK/soreness, but effect magnitudes were small and heterogeneity/quality concerns temper conclusions.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Compression garments and recovery from exercise-induced muscle damage: a meta-analysis",
+        "authors": "Hill J, Howatson G, van Someren K, Leeder J, Pedlar C",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2013-092456",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "cold-water-immersion",
+      "claim": "Cold-water immersion (ice baths) reduces delayed onset muscle soreness and is perceived as enhancing recovery, with the strongest evidence for subjective soreness/fatigue rather than objective performance.",
+      "evidence": "Cochrane review found some evidence that cold-water immersion reduces muscle soreness compared with passive recovery, but effects on objective measures were limited. Dupuy 2018 found immersion reduced DOMS (SMD -0.47) and perceived fatigue (SMD -1.16).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Cold-water immersion (cryotherapy) for preventing and treating muscle soreness after exercise",
+        "authors": "Bleakley C, McDonough S, Gardner E, Baxter GD, Hopkins JT, Davison GW",
+        "year": 2012,
+        "venue": "Cochrane Database of Systematic Reviews",
+        "type": "systematic-review",
+        "doi_or_url": "10.1002/14651858.CD008262.pub2",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "cold-water-immersion-dose",
+      "claim": "Colder water is more effective for soreness: immersion at <=15 degrees C produced larger DOMS reductions (SMD -0.62) than warmer water, whereas immersion in warm water (>36 degrees C) showed no benefit.",
+      "evidence": "Meta-analysis of water temperature and immersion time found colder immersion (<=15 C) gave the largest soreness reduction; warm immersion was ineffective. Leg and whole-body immersion were similarly effective.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Can Water Temperature and Immersion Time Influence the Effect of Cold Water Immersion on Muscle Soreness? A Systematic Review and Meta-Analysis",
+        "authors": "Machado AF, Ferreira PH, Micheletti JK, de Almeida AC, Lemes IR, Vanderlei FM, Netto Junior J, Pastre CM",
+        "year": 2016,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-015-0431-7",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "cold-water-immersion-mechanism",
+      "claim": "The recovery benefit of cold-water immersion is substantially confounded by placebo/expectancy effects; when compared against a credible placebo (thermoneutral water), the added benefit is small and sometimes absent.",
+      "evidence": "RCT found post-exercise cold-water immersion benefits were not greater than the placebo effect (thermoneutral water immersion). This is a key reason CWI evidence is graded lower than its popularity suggests.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Postexercise cold water immersion benefits are not greater than the placebo effect",
+        "authors": "Broatch JR, Petersen A, Bishop DJ",
+        "year": 2014,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000000348",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "cold-water-immersion-timing",
+      "claim": "Cold-water immersion performed immediately after strength training can blunt acute anabolic signalling and reduce long-term muscle hypertrophy and strength gains, so it should be used cautiously around hypertrophy-focused training blocks.",
+      "evidence": "Randomised controlled trial in resistance-trained men: regular post-exercise cold-water immersion attenuated acute anabolic signalling and long-term gains in muscle mass and strength compared with active recovery over 12 weeks.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Post-exercise cold water immersion attenuates acute anabolic signalling and long-term adaptations in muscle to strength training",
+        "authors": "Roberts LA, Raastad T, Markworth JF, Figueiredo VC, Egner IM, Shield A, Cameron-Smith D, Coombes JS, Peake JM",
+        "year": 2015,
+        "venue": "The Journal of Physiology",
+        "type": "rct",
+        "doi_or_url": "10.1113/JP270570",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "whole-body-cryotherapy",
+      "claim": "Whole-body cryotherapy (extreme cold air, e.g. cryo-chambers) has weak and inconsistent evidence for reducing muscle soreness and is not clearly superior to other cryotherapy; it is largely hype relative to its cost and popularity.",
+      "evidence": "Cochrane review of whole-body cryotherapy found very low-quality evidence and could not confirm meaningful reductions in muscle soreness versus control; findings were inconclusive due to small, low-quality studies.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Whole-body cryotherapy (extreme cold air exposure) for preventing and treating muscle soreness after exercise in adults",
+        "authors": "Costello JT, Baker PR, Minett GM, Bieuzen F, Stewart IB, Bleakley C",
+        "year": 2015,
+        "venue": "Cochrane Database of Systematic Reviews",
+        "type": "systematic-review",
+        "doi_or_url": "10.1002/14651858.CD010789.pub2",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "active-recovery",
+      "claim": "Active recovery (light exercise such as easy cycling/jogging) reliably accelerates blood lactate clearance compared with passive rest, and clearance depends on the intensity of the active recovery (light-moderate is optimal).",
+      "evidence": "Controlled studies show active recovery lowers blood lactate faster than passive recovery, with the rate depending on recovery intensity. This is a well-established physiological effect for lactate, though it does not automatically translate to improved next-day performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Blood lactate clearance during active recovery after an intense running bout depends on the intensity of the active recovery",
+        "authors": "Menzies P, Menzies C, McIntyre L, Paterson P, Wilson J, Kemi OJ",
+        "year": 2010,
+        "venue": "Journal of Sports Sciences",
+        "type": "rct",
+        "doi_or_url": "10.1080/02640414.2010.481721",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "active-recovery",
+      "claim": "Despite clearing lactate, active recovery has limited and inconsistent evidence for improving recovery of performance or muscle damage markers compared with passive recovery; its practical recovery benefit is modest.",
+      "evidence": "Meta-analysis found active recovery reduced DOMS (SMD -0.94) but had no significant effect on perceived fatigue, and mixed/limited effects on CK and inflammatory markers relative to other modalities.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "An Evidence-Based Approach for Choosing Post-exercise Recovery Techniques to Reduce Markers of Muscle Damage, Soreness, Fatigue, and Inflammation: A Systematic Review With Meta-Analysis",
+        "authors": "Dupuy O, Douzi W, Theurot D, Bosquet L, Dugue B",
+        "year": 2018,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2018.00403",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "contrast-water-therapy",
+      "claim": "Contrast water therapy (alternating hot/cold immersion) reduces delayed onset muscle soreness compared with passive recovery, with small pooled effects, but does not clearly improve perceived fatigue and is not superior to cold-water immersion alone.",
+      "evidence": "Meta-analysis of contrast water therapy found a small reduction in muscle soreness and creatine kinase vs passive recovery; Dupuy 2018 found contrast therapy reduced DOMS (SMD -0.40) but had no significant effect on perceived fatigue (SMD -0.04).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Contrast water therapy and exercise induced muscle damage: a systematic review and meta-analysis",
+        "authors": "Bieuzen F, Bleakley CM, Costello JT",
+        "year": 2013,
+        "venue": "PLoS ONE",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1371/journal.pone.0062356",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "water-immersion",
+      "claim": "Water immersion (cold or contrast) is among the more consistently supported recovery modalities for subjective soreness and perceived recovery, but objective performance benefits are small and protocol-dependent (temperature, duration, immersion level).",
+      "evidence": "Narrative review of water immersion recovery for athletes concluded that immersion can aid perceived recovery and reduce soreness, with practical recommendations but modest and protocol-sensitive effects on performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Water immersion recovery for athletes: effect on exercise performance and practical recommendations",
+        "authors": "Versey NG, Halson SL, Dawson BT",
+        "year": 2013,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-013-0063-8",
+        "retrieved_at": "2026-11-22"
+      }
+    },
+    {
+      "topic": "recovery-overall",
+      "claim": "Across modalities, the objective performance benefits of popular recovery techniques are generally small and often not clearly distinguishable from placebo; sleep, nutrition and training-load management are the primary drivers of recovery, with modalities playing a secondary, supportive role.",
+      "evidence": "International consensus statement on recovery and performance synthesises the literature and emphasises that recovery is multifactorial, that most recovery modalities have limited high-quality evidence, and that sleep/nutrition/load management are foundational. Prior narrative review (Barnett 2006) similarly questioned whether recovery modalities materially help between sessions.",
+      "confidence": "high",
+      "citation": {
+        "title": "Recovery and Performance in Sport: Consensus Statement",
+        "authors": "Kellmann M, Bertollo M, Bosquet L, Brink M, Coutts AJ, Duffield R, Erlacher D, Halson SL, Hecksteden A, Heidari J, Kallus KW, Meeusen R, Mujika I, Robazza C, Skorski S, Venter R, Beckmann J",
+        "year": 2018,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "position-stand",
+        "doi_or_url": "10.1123/ijspp.2017-0759",
+        "retrieved_at": "2026-11-22"
+      }
+    }
+  ],
+  "summary_tier_a": "Massage has the strongest (moderate) meta-analytic support for reducing DOMS and perceived fatigue, though its performance-recovery effects are small and context-dependent (Poppendieck 2016; Dupuy 2018). Cold-water immersion reliably reduces soreness, with colder water (<=15C) more effective (Machado 2016; Bleakley 2012 Cochrane), but benefits are largely placebo-confounded (Broatch 2014) and it can blunt strength/hypertrophy adaptations if used after resistance training (Roberts 2015). Compression garments give small but real reductions in soreness/fatigue (Marques-Jimenez 2016; Hill 2014). Active recovery reliably clears blood lactate (Menzies 2010) but has limited evidence for performance recovery. Foam rolling has small, partly negligible effects and is better supported as a warm-up than a recovery tool, with the 'fascia release' mechanism unsubstantiated (Wiewelhove 2019; Behm & Wilke 2019). Contrast water therapy gives small soreness benefits but is not clearly superior to cold immersion (Bieuzen 2013). Whole-body cryotherapy is weakly supported (Costello 2015 Cochrane). Overall, recovery modalities are secondary to sleep, nutrition and load management (Kellmann 2018 consensus).",
+  "unverified": [
+    "Specific dosing protocols (optimal water temperature/duration, ideal compression pressure, foam-rolling duration/velocity) remain inconsistent across studies and no single protocol is firmly established.",
+    "Whether lactate clearance from active recovery translates into measurable next-day performance benefits is not consistently demonstrated.",
+    "Long-term effects of these modalities on injury risk and chronic adaptation (beyond the single CWI/strength-training RCT) are not well established."
+  ],
+  "notes": "Retrieval: WebFetch used for full-text/abstracts (Frontiers, Europe PMC REST). PubMed was blocked by cookie wall; Europe PMC REST API used instead for citation metadata. Evidence tiers: massage, CWI, compression, contrast, foam rolling each have meta-analyses (moderate confidence, small effects, placebo/blinding limitations inherent to these interventions). Active recovery lactate clearance is a high-confidence physiological effect but weak translation to performance. Whole-body cryotherapy and 'fascia release' claims are the most over-hyped relative to evidence. All citations verified against Europe PMC metadata (PMID/DOI); none are fabricated."
+}

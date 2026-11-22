@@ -43,6 +43,7 @@ export const authSessions = sqliteTable(
 			.references(() => users.id, { onDelete: 'cascade' }),
 		tokenHash: text('token_hash').notNull(),
 		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+		revokedAt: integer('revoked_at', { mode: 'timestamp' }),
 		createdAt,
 	},
 	(t) => ({
@@ -340,6 +341,13 @@ export const settings = sqliteTable('settings', {
 		.primaryKey()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	prefs: text('prefs', { mode: 'json' }),
+});
+
+/** Fixed-window rate limiting (per user or IP). */
+export const rateLimits = sqliteTable('rate_limits', {
+	key: text('key').primaryKey(),
+	windowStart: integer('window_start').notNull(),
+	count: integer('count').notNull().default(0),
 });
 
 /** Alias helpers for composite keys if needed later. */

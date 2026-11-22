@@ -611,6 +611,31 @@ Monorepo built and green end-to-end:
 6. **Dev vars** are injected via the `dev` script: `APP_ORIGIN=http://localhost:8787`,
    `WEB_ORIGIN=http://localhost:5173`.
 
+### Security hardening (post-review)
+
+An M0 security review (`research/surveys/m0-security-review.json`, 18 findings) was run by a
+subagent and the high/medium issues are fixed:
+
+- **Session revocation (M0-SEC-01/02):** `requireAuth` now looks up the `auth_sessions` ledger by
+  token hash and rejects absent/expired/revoked rows; `revoked_at` added; logout revokes the row and
+  the web client now calls the real `/auth/logout` (no swallowed errors).
+- **CSRF (M0-SEC-03):** Origin allowlist middleware on all state-changing routes; verified 403 on
+  missing/foreign Origin.
+- **CORS (M0-SEC-05):** localhost origins allowed only when `ENVIRONMENT !== 'production'`.
+- **Claims/algorithms (M0-SEC-07/08/10):** `email_verified` enforced; Google ID token pinned to
+  `RS256`; session JWT pinned to `HS256`; `SESSION_SECRET` must be ≥32 bytes; verification failures
+  return 400 not 500.
+- **Nonce/state (M0-SEC-09):** non-empty nonce required; constant-time compare.
+- **Cookies/lifetime (M0-SEC-04/11):** 14-day sessions and `__Host-` cookie prefix with `Secure`
+  driven by `ENVIRONMENT`.
+- **Abuse + prompts (M0-SEC-06/15):** D1 fixed-window rate limits on `/auth/*` (per IP) and
+  `/api/ai/chat` (per user); client context treated as untrusted data, length-capped.
+- **Hygiene (M0-SEC-13/16/18):** generic OAuth errors; SHA-256 cache key; error logs carry a
+  correlation id, not raw errors.
+
+Deferred (documented, not blocking): sliding session rotation, dedicated regression tests for the
+revocation path, and moving AI grounding fully server-side (`M4`).
+
 ### Research — Wave 1 (in progress)
 
 8 research subagents + 3 stack surveys dispatched. Completed so far: running physiology (periodization,

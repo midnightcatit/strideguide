@@ -1,0 +1,300 @@
+{
+  "workstream": "wave-3",
+  "subtopic": "Daily nutrition for runners - protein intake for endurance and strength athletes (g/kg and timing), carbohydrate availability for training, energy availability/RED-S, and pre/post-workout nutrition; practical, goal-tied guidance (not medical advice)",
+  "generated_at": "2026-11-22T14:41:00Z",
+  "claims": [
+    {
+      "topic": "Protein - daily intake (strength/resistance)",
+      "claim": "To maximise resistance-training gains in muscle size and strength, total daily protein should reach about 1.6 g/kg/day; intakes above ~1.6 g/kg/day produce no further gains in fat-free mass. A two-phase breakpoint analysis of the pooled data placed the plateau at 1.62 g/kg/day (95% CI ~1.03-2.20).",
+      "evidence": "Systematic review, meta-analysis and meta-regression of 49 RCTs (1,863 participants, resistance training >=6 weeks with protein supplementation). Protein supplementation significantly increased 1RM strength (+2.49 kg), fat-free mass (+0.30 kg) and muscle size; benefit on FFM was smaller with increasing age and larger in resistance-trained individuals. Breakpoint analysis showed no further FFM gain beyond ~1.6 g/kg/day.",
+      "confidence": "high",
+      "citation": {
+        "title": "A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults",
+        "authors": "Morton RW, Murphy KT, McKellar SR, Schoenfeld BJ, Henselmans M, Helms E, Aragon AA, Devries MC, Banfield L, Krieger JW, Phillips SM",
+        "year": 2018,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2017-097608",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - daily intake (position stand range)",
+      "claim": "For exercising individuals, an overall daily protein intake of 1.4-2.0 g/kg/day is sufficient to build and maintain muscle mass. In hypocaloric (energy-deficit) periods, higher intakes of 2.3-3.1 g/kg/day may be needed to preserve lean mass.",
+      "evidence": "International Society of Sports Nutrition (ISSN) position stand synthesising the protein literature for healthy exercising individuals; the 1.4-2.0 g/kg/day range is stated as falling within the Acceptable Macronutrient Distribution Range, with 2.3-3.1 g/kg/day flagged for resistance-trained individuals in energy deficit.",
+      "confidence": "high",
+      "citation": {
+        "title": "International Society of Sports Nutrition Position Stand: protein and exercise",
+        "authors": "Jäger R, Kerksick CM, Campbell BI, Cribb PJ, Wells SD, Skwiat TM, Purpura M, Ziegenfuss TN, Ferrando AA, Arent SM, Smith-Ryan AE, Stout JR, Arciero PJ, Ormsbee MJ, Taylor LW, Wilborn CD, Kalman DS, Kreider RB, Willoughby DS, Hoffman JR, Krzykowski JL, Antonio J",
+        "year": 2017,
+        "venue": "Journal of the International Society of Sports Nutrition",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1186/s12970-017-0177-8",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - per-serving dose (acute MPS)",
+      "claim": "A single 20 g dose of high-quality protein maximally stimulates muscle protein synthesis after resistance exercise; 40 g provides no additional MPS benefit and the excess is oxidised. Protein synthesis scales with dose up to ~20 g and then plateaus.",
+      "evidence": "Randomised controlled trial in 6 young men using 0, 5, 10, 20 or 40 g whole-egg protein after intense leg resistance exercise, with [1-13C]leucine infusion. MPS and albumin synthesis showed a dose-response that plateaued at 20 g; leucine oxidation rose significantly at 20 and 40 g, indicating protein consumed beyond the rate of tissue incorporation is oxidised.",
+      "confidence": "high",
+      "citation": {
+        "title": "Ingested protein dose response of muscle and albumin protein synthesis after resistance exercise in young men",
+        "authors": "Moore DR, Robinson MJ, Fry JL, Tang JE, Glover EI, Wilkinson SB, Prior T, Tarnopolsky MA, Phillips SM",
+        "year": 2009,
+        "venue": "American Journal of Clinical Nutrition",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.3945/ajcn.2008.26401",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - distribution across the day",
+      "claim": "Evenly distributing protein across the day is superior to skewed patterns: 20 g whey every 3 h produced 31-48% greater myofibrillar protein synthesis over 12 h of post-exercise recovery than either 10 g every 1.5 h or 40 g every 6 h.",
+      "evidence": "Randomised controlled trial, 24 trained males, 80 g whey consumed over 12 h recovery in PULSE (8x10 g/1.5 h), INT (4x20 g/3 h) or BOLUS (2x40 g/6 h) patterns. All protocols raised MPS above rest, but the intermediate 20 g every 3 h pattern was superior, supporting spread-out feeding roughly every 3 hours.",
+      "confidence": "high",
+      "citation": {
+        "title": "Timing and distribution of protein ingestion during prolonged recovery from resistance exercise alters myofibrillar protein synthesis",
+        "authors": "Areta JL, Burke LM, Ross ML, Camera DM, West DW, Broad EM, Jeacocke NA, Moore DR, Stellingwerff T, Phillips SM, Hawley JA, Coffey VG",
+        "year": 2013,
+        "venue": "The Journal of Physiology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1113/jphysiol.2012.244897",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - per-meal dose and leucine",
+      "claim": "Practical per-serving targets are 0.25 g/kg body mass (or an absolute 20-40 g) of high-quality protein every 3-4 h; each dose should contain roughly 700-3000 mg leucine plus a balanced array of essential amino acids. Casein ~30-40 g before sleep supports overnight MPS.",
+      "evidence": "ISSN nutrient-timing position stand. Recommends distributing protein every ~3 h, an EAA bolus of ~10 g or 20-40 g protein to maximally stimulate MPS, and 30-40 g pre-sleep casein to raise overnight MPS and metabolic rate without affecting lipolysis. Originates largely from acute MPS studies (including Moore 2009 and Areta 2013).",
+      "confidence": "high",
+      "citation": {
+        "title": "International society of sports nutrition position stand: nutrient timing",
+        "authors": "Kerksick CM, Arent S, Schoenfeld BJ, Stout JR, Campbell B, Wilborn CD, Taylor L, Kalman D, Smith-Ryan AE, Kreider RB, Willoughby D, Arciero PJ, VanDusseldorp TA, Ormsbee MJ, Wildman R, Greenwood M, Ziegenfuss TN, Aragon AA, Antonio J",
+        "year": 2017,
+        "venue": "Journal of the International Society of Sports Nutrition",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1186/s12970-017-0189-4",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - daily intake (endurance athletes)",
+      "claim": "Endurance athletes have modestly elevated protein needs (broadly ~1.2-1.6 g/kg/day, upper range for heavy training or energy deficit) to support repair and adaptation, but their central daily priority is adequate carbohydrate; adding protein helps offset muscle damage and support recovery when carbohydrate delivery is low.",
+      "evidence": "Joint Academy of Nutrition and Dietetics/Dietitians of Canada/ACSM position stand 'Nutrition and Athletic Performance', which sets endurance protein needs above the RDA and emphasises carbohydrate availability; corroborated by the ISSN protein position stand, which states endurance athletes should focus on adequate carbohydrate intake while added protein may offset muscle damage and promote recovery.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine Joint Position Statement. Nutrition and Athletic Performance",
+        "authors": "Thomas DT, Erdman KA, Burke LM",
+        "year": 2016,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000000852",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - training athletes vs sedentary (requirement)",
+      "claim": "Trained athletes require more dietary protein than sedentary people: a nitrogen-balance/leucine-kinetics study found protein intake for zero nitrogen balance of ~1.41 g/kg/day in strength athletes vs ~0.69 g/kg/day in sedentary controls (suggested intakes ~1.76 vs ~0.89 g/kg/day).",
+      "evidence": "Randomised controlled trial, three protein intakes (0.86, 1.40, 2.40 g/kg/day) in strength athletes vs sedentary subjects. Higher intakes were nutrient overloads for sedentary subjects and did not further raise whole-body protein synthesis in athletes, defining the elevated requirement without endorsing unlimited protein. Foundational (but small, male-only) evidence.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Evaluation of protein requirements for trained strength athletes",
+        "authors": "Tarnopolsky MA, Atkinson SA, MacDougall JD, Chesley A, Phillips S, Schwarcz HP",
+        "year": 1992,
+        "venue": "Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1152/jappl.1992.73.5.1986",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - energy deficit / body recomposition",
+      "claim": "During a substantial energy deficit combined with hard concurrent training, higher protein (2.4 vs 1.2 g/kg/day) produced greater lean-mass gain (+1.2 kg vs +0.1 kg) and greater fat loss (-4.8 kg vs -3.5 kg) over 4 weeks, with no difference in performance improvement.",
+      "evidence": "Single-blind randomised parallel-group trial, 40 young men, ~40% energy deficit, 6 days/week resistance + HIIT, 4-compartment body-composition model. Supports deliberately high protein during deliberate weight loss in athletes. Small, short, male-only.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Higher compared with lower dietary protein during an energy deficit combined with intense exercise promotes greater lean mass gain and fat mass loss: a randomized trial",
+        "authors": "Longland TM, Oikawa SY, Mitchell CJ, Devries MC, Phillips SM",
+        "year": 2016,
+        "venue": "American Journal of Clinical Nutrition",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.3945/ajcn.115.119339",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Protein - timing vs total intake",
+      "claim": "Protein timing in and around a workout is not critical to strength or hypertrophy adaptations: once a meta-regression controlled for total protein intake, the apparent benefit of 'anabolic window' feeding disappeared, with total daily protein the strongest predictor of outcomes.",
+      "evidence": "Multi-level meta-regression of RCTs (strength analysis: 20 studies, 478 subjects; hypertrophy analysis: 23 studies, 525 subjects). A simple pooled analysis showed a small hypertrophy effect of timing, but in the full covariate model there was no significant timing effect for strength or hypertrophy. Practical implication: hit the daily total; timing is secondary.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effect of protein timing on muscle strength and hypertrophy: a meta-analysis",
+        "authors": "Schoenfeld BJ, Aragon AA, Krieger JW",
+        "year": 2013,
+        "venue": "Journal of the International Society of Sports Nutrition",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/1550-2783-10-53",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Carbohydrate - daily availability for training",
+      "claim": "Daily carbohydrate should be scaled to training load: maximising muscle glycogen stores typically requires a high-carbohydrate diet of roughly 8-12 g/kg/day, while lower training volumes need less. This underpins the 'periodise around the work required' approach.",
+      "evidence": "ISSN nutrient-timing position stand (8-12 g/kg/day maximises endogenous glycogen stores; higher volumes deplete them most) plus the ACSM/DC/AND position stand, which grades daily carbohydrate targets to training load. Carbohydrate availability is the main dietary lever for fuelling hard/quality sessions.",
+      "confidence": "high",
+      "citation": {
+        "title": "International society of sports nutrition position stand: nutrient timing",
+        "authors": "Kerksick CM, Arent S, Schoenfeld BJ, Stout JR, Campbell B, Wilborn CD, Taylor L, Kalman D, Smith-Ryan AE, Kreider RB, Willoughby D, Arciero PJ, VanDusseldorp TA, Ormsbee MJ, Wildman R, Greenwood M, Ziegenfuss TN, Aragon AA, Antonio J",
+        "year": 2017,
+        "venue": "Journal of the International Society of Sports Nutrition",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1186/s12970-017-0189-4",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Carbohydrate - intake during exercise",
+      "claim": "During sustained exercise, 30-60 g carbohydrate/h is an appropriate target (~6-8% carbohydrate-electrolyte solution); events lasting >2.5 h may benefit from up to 90 g/h, and multiple-transportable carbohydrate blends (e.g. glucose+fructose) improve absorption at high rates. Even carbohydrate mouth-rinsing (~1 h events) can aid performance via central effects.",
+      "evidence": "Narrative review of carbohydrate for training and competition: intake during exercise should be scaled to event characteristics; small amounts/mouth-rinse help ~1 h events, while 30-60 g/h and up to 90 g/h with blended carbohydrates target longer events. Consistent with the ACSM/DC/AND and ISSN position stands.",
+      "confidence": "high",
+      "citation": {
+        "title": "Carbohydrates for training and competition",
+        "authors": "Burke LM, Hawley JA, Wong SH, Jeukendrup AE",
+        "year": 2011,
+        "venue": "Journal of Sports Sciences",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2011.585473",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Carbohydrate - ergogenic effect on endurance performance",
+      "claim": "Acute carbohydrate feeding during endurance exercise improves performance overall (136 studies meta-analysed); the effect is larger for time-to-exhaustion than time-trial tests, grows with event duration, and is larger in less-trained participants. Dosage, ergometer, ingestion form and carbohydrate type did not significantly moderate the effect.",
+      "evidence": "Systematic review with meta-analysis and meta-regression of 136 studies on carbohydrate intake during endurance exercise. Choice of outcome, event duration and training status moderated the benefit; carbohydrate also lowered perceived exertion and raised power/heart rate. Strong evidence for fuelling during longer/harder sessions.",
+      "confidence": "high",
+      "citation": {
+        "title": "The ergogenic effects of acute carbohydrate feeding on endurance performance: a systematic review, meta-analysis and meta-regression",
+        "authors": "Ramos-Campo DJ, Clemente-Suárez VJ, Cupeiro R, Benítez-Muñoz JA, Andreu Caravaca L, Rubio-Arias JÁ",
+        "year": 2024,
+        "venue": "Critical Reviews in Food Science and Nutrition",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1080/10408398.2023.2233633",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Carbohydrate - 'train low' / periodised restriction",
+      "claim": "'Train low' or periodised carbohydrate restriction does not, by itself, improve endurance performance: a meta-analysis of 9 training studies in highly adapted endurance athletes found no overall performance benefit versus normal high carbohydrate availability (SMD 0.17; 95% CI -0.15 to 0.49; P=0.29). Periodising intake toward the work required can be used for logistical/adaptation reasons but is not a proven performance enhancer.",
+      "evidence": "Systematic review and meta-analysis of training studies (VO2max >=55 mL/kg/min women, >=60 men; intervention >=1 week; carbohydrate restriction in >=3 sessions/week). No overall performance effect. Mechanistic narrative review (Impey 2018) explains that 'train low' augments molecular signalling (glycogen threshold hypothesis) inconsistently translates to performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Performance effects of periodized carbohydrate restriction in endurance trained athletes - a systematic review and meta-analysis",
+        "authors": "Gejl KD, Nybo L",
+        "year": 2021,
+        "venue": "Journal of the International Society of Sports Nutrition",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s12970-021-00435-3",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Carbohydrate - glycogen resynthesis after exercise",
+      "claim": "For fast glycogen refuelling, consume 1.0-1.85 g/kg/h carbohydrate immediately post-exercise and at 15-60 min intervals for up to ~5 h; delaying carbohydrate by several hours can halve the resynthesis rate. Adding protein/amino acids further increases glycogen synthesis mainly when carbohydrate is insufficient (<~1.2 g/kg/h).",
+      "evidence": "Narrative review of the determinants of post-exercise glycogen synthesis: two-phase glycogen synthesis (insulin-independent rapid phase for 30-60 min, then slower insulin-dependent phase); highest rates with immediate large carbohydrate feeds; protein/amino-acid addition helps via enhanced insulin response when carbohydrate is low but not when carbohydrate is already high.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Determinants of post-exercise glycogen synthesis during short-term recovery",
+        "authors": "Jentjens R, Jeukendrup A",
+        "year": 2003,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2165/00007256-200333020-00004",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Energy availability / RED-S - concept and threshold",
+      "claim": "Low energy availability (energy intake minus exercise energy expenditure, relative to fat-free mass) is a more useful construct than simple energy balance for athlete health; when it falls too low the body down-regulates reproductive, bone, metabolic and other systems, and appetite does not reliably compensate for high exercise energy expenditure. A commonly cited threshold for problematic LEA is below ~30 kcal/kg fat-free mass/day.",
+      "evidence": "Narrative review (Loucks, Kiens & Wright) arguing for energy availability over energy balance, summarising LEA aetiologies/clinical consequences and the failure of ad-libitum energy intake to compensate for exercise expenditure. The ~30 kcal/kg FFM/day figure derives from controlled LEA experiments (Loucks & Thuma) rather than one definitive trial, so it is presented as a conventional threshold, not a hard cutoff.",
+      "confidence": "high",
+      "citation": {
+        "title": "Energy availability in athletes",
+        "authors": "Loucks AB, Kiens B, Wright HH",
+        "year": 2011,
+        "venue": "Journal of Sports Sciences",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2011.588958",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Energy availability / RED-S - 2023 IOC consensus",
+      "claim": "Relative Energy Deficiency in Sport (REDs) is an IOC-recognised syndrome of impaired health and performance in female and male athletes exposed to prolonged/severe low energy availability; the 2023 consensus adds growing evidence for low carbohydrate availability, more data in males, updated clinical assessment (REDs CAT2) and a physiological model linking problematic vs adaptable LEA to outcomes.",
+      "evidence": "2023 International Olympic Committee consensus statement (update of the 2014/2018 REDs statements), based on >170 new research publications since 2018, including a novel physiological model, updated Health and Performance conceptual models, and guidance for safe body-composition assessment and prevention/treatment. Authoritative consensus document.",
+      "confidence": "high",
+      "citation": {
+        "title": "2023 International Olympic Committee's (IOC) consensus statement on Relative Energy Deficiency in Sport (REDs)",
+        "authors": "Mountjoy M, Ackerman KE, Bailey DM, Burke LM, Constantini N, Hackney AC, Heikura IA, Melin A, Pensgaard AM, Stellingwerff T, Sundgot-Borgen JK, Torstveit MK, Jacobsen AU, Verhagen E, Budgett R, Engebretsen L, Erdener U",
+        "year": 2023,
+        "venue": "British Journal of Sports Medicine",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2023-106994",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Energy availability / RED-S - causal performance and immune effects",
+      "claim": "Just 14 days of low energy availability (22 vs 52 kcal/kg FFM/day) in trained female endurance athletes increased cortisol (~22%) and immune-cell reactive oxygen species capacity (~94% NOX2), reduced exercise-induced white-cell mobilisation, and impaired performance in 20-min time trial and time-to-exhaustion tests - with the time-trial decrement persisting after 3 days of refuelling.",
+      "evidence": "Randomised, single-blinded, crossover controlled trial, 12 female endurance athletes (VO2max ~55 mL/kg/min), 14 days optimal vs low energy availability then 3 days refuelling. Demonstrates a causal near-term cost of LEA on immunity and performance. Small sample, specific protocol.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Low energy availability increases immune cell formation of reactive oxygen species and impairs exercise performance in female endurance athletes",
+        "authors": "Jeppesen JS, Caldwell HG, Lossius LO, Melin AK, Gliemann L, Bangsbo J, Hellsten Y",
+        "year": 2024,
+        "venue": "Redox Biology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1016/j.redox.2024.103250",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Energy availability / RED-S - prevalence in endurance athletes",
+      "claim": "LEA risk is common in endurance athletes at all levels, including recreational runners: 65% of 202 female endurance athletes (training >=5x/week) were classified at risk of LEA by the LEAF-Q, with 21% showing disordered-eating symptoms and 23% at risk of exercise addiction.",
+      "evidence": "Cross-sectional survey study across Norway, Sweden, Ireland and Germany (n=202 female endurance athletes), using LEAF-Q, EDE-Q and Exercise Addiction Inventory. Cross-sectional design cannot establish causation, and questionnaire-based LEA classification is a screening proxy rather than a clinical diagnosis, but the high prevalence supports routine screening awareness.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Risk of Low Energy Availability, Disordered Eating, Exercise Addiction, and Food Intolerances in Female Endurance Athletes",
+        "authors": "Fahrenholtz IL, Melin AK, Wasserfurth P, Stenling A, Logue D, Garthe I, Koehler K, Gräfnings M, Lichtenstein MB, Madigan S, Torstveit MK",
+        "year": 2022,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.3389/fspor.2022.869594",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    },
+    {
+      "topic": "Pre/post-workout nutrition - practical framing",
+      "claim": "Practical peri-workout guidance for endurance athletes: prioritise a carbohydrate-rich pre-exercise meal and carbohydrate during long/hard sessions (adding protein reduces muscle damage and aids recovery), then refuel with carbohydrate plus protein after training; the post-exercise recovery window remains an important message, and fat/protein are commonly under-emphasised in runners' everyday diets.",
+      "evidence": "Narrative review and recommendations for endurance athletes ('Nutrition and Supplement Update for the Endurance Athlete'), summarising that carbohydrate and hydration guidance is well established while protein and fat intake have historically been under-emphasised; it reiterates pre-exercise fuelling, carbohydrate during exercise, the post-exercise recovery window and 'train low' discussions. Consistent with the ACSM/DC/AND and ISSN position stands.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Nutrition and Supplement Update for the Endurance Athlete: Review and Recommendations",
+        "authors": "Vitale K, Getzin A",
+        "year": 2019,
+        "venue": "Nutrients",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.3390/nu11061289",
+        "retrieved_at": "2026-11-22T14:41:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Daily nutrition for runners centres on matching fuel to the work. Protein: resistance/strength training responds to about 1.6 g/kg/day total protein (meta-analytic breakpoint 1.62 g/kg; ISSN range 1.4-2.0 g/kg, higher 2.3-3.1 g/kg in energy deficit), taken as 0.25 g/kg (20-40 g) high-quality doses every ~3 h, skipping the notion of a narrow 'anabolic window' once total intake is met (20 g maximally stimulates MPS; 20 g every 3 h beats skewed patterns). Endurance runners need modestly more protein than sedentary people (~1.2-1.6 g/kg/day) but carbohydrate is the daily nutrition priority. Carbohydrate: scale intake to load (up to ~8-12 g/kg/day for glycogen maximisation), fuel longer/harder sessions at 30-60 g/h (up to 90 g/h with glucose+fructose blends for >2.5 h), and refuel quickly with 1.0-1.85 g/kg/h carbohydrate (plus protein when intake is low) after glycogen-depleting work; acute carbohydrate feeding reliably improves endurance performance, whereas 'train low'/periodised restriction does not, by itself, improve performance. Energy availability: low energy availability (conventionally <~30 kcal/kg fat-free mass/day) drives the RED-S syndrome of impaired health and performance in both sexes; just 14 days of LEA impaired performance and immunity in female athletes, and LEA risk is common even in recreational runners (~65% at risk in one female endurance cohort). Practical pre/post-workout framing: carbohydrate-rich pre-exercise fuelling, carbohydrate +/- protein during long/hard sessions, and carbohydrate+protein afterwards. Not medical advice; suspected RED-S or disordered eating warrants referral to a qualified sports clinician/dietitian.",
+  "unverified": [
+    "The frequently quoted '30 kcal/kg fat-free mass/day' LEA threshold is a convention derived from controlled experimental studies (notably Loucks & Thuma 2003, J Appl Physiol, https://doi.org/10.1152/japplphysiol.00172.2003) rather than a single definitive trial, and acceptable minimums vary by sex, sport and individual. Treat 30 kcal/kg FFM/day as a screening heuristic, not a diagnostic cutoff.",
+    "A precise, runner-specific protein 'g/kg' prescription for endurance-only athletes is extrapolated from position stands (ACSM/DC/AND 2016; ISSN 2017) that give ranges rather than a single trial-tested endpoint; the 1.2-1.6 g/kg/day range above is a synthesis, not the result of a dedicated dose-response RCT in runners.",
+    "Exact peri-workout timing windows (e.g. protein within X minutes post-run, or a specific pre-run meal interval) are not resolved by head-to-head RCTs in runners; the strong meta-analytic signal is that total daily protein (not timing) drives adaptations (Schoenfeld 2013), so specific windows should be framed loosely.",
+    "Whether carbohydrate/protein co-ingestion meaningfully accelerates glycogen resynthesis when carbohydrate intake is already high (>=1.2 g/kg/h) is disputed - the Jentjens & Jeukendrup review concludes added protein offers little further benefit under those conditions, so 'protein speeds glycogen refuelling' claims should be qualified."
+  ],
+  "notes": "Retrieval policy: WebFetch only, and the Europe PMC REST API (resultType=core) was used to obtain titles, authors, journals, years, abstracts and DOIs because direct PubMed pages can be blocked by a cookie wall. Every claim maps to a real indexed record with a DOI verified via Europe PMC metadata; no citations were fabricated. Source types span position stands (ACSM/DC/AND 2016; ISSN 2017 x2; IOC REDs 2023), meta-analyses (Morton 2018; Schoenfeld 2013; Ramos-Campo 2024; Gejl & Nybo 2021), RCTs (Moore 2009; Areta 2013; Longland 2016; Tarnopolsky 1992; Jeppesen 2024), a cross-sectional observational study (Fahrenholtz 2022) and narrative reviews (Loucks 2011; Burke 2011; Jentjens & Jeukendrup 2003; Impey 2018; Vitale & Getzin 2019). Confidence reflects study design, consistency and directness to runners; note the endurance-protein evidence base is largely position-stand synthesis rather than runner-specific dose-response RCTs, and several mechanistic RCTs (Tarnopolsky 1992; Areta 2013; Moore 2009; Longland 2016; Jeppesen 2024) are small and often male- or female-only, so ranges rather than point values should be presented in-app. NOT MEDICAL ADVICE: this is educational guidance for a general running/strength audience; individuals with suspected RED-S, amenorrhoea, bone-stress injury, eating-disorder symptoms, kidney disease or other clinical conditions should be referred to a qualified sports physician or dietitian."
+}

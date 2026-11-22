@@ -32,7 +32,15 @@ export const api = {
 	login: () => {
 		window.location.href = '/auth/google';
 	},
-	logout: () => req<{ ok: boolean }>('/logout', { method: 'POST' }).catch(() => ({ ok: true })),
+	logout: async (): Promise<{ ok: boolean }> => {
+		const res = await fetch('/auth/logout', {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'content-type': 'application/json' },
+		});
+		if (!res.ok) throw new Error(`logout failed ${res.status}`);
+		return (await res.json()) as { ok: boolean };
+	},
 	profiles: () => req<{ profiles: GoalProfileData[] }>('/goals/profiles'),
 	currentPlan: () => req<unknown>('/plans/current'),
 	logs: () => req<{ logs: unknown[] }>('/logs'),
