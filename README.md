@@ -40,13 +40,34 @@ pnpm db:migrate:local   # wrangler d1 migrations apply strideguide-db --local
 pnpm db:migrate:remote  # ... --remote
 ```
 
-## Build / deploy
+## Development flow
+
+```
+feature branch ──push──▶ PR ──▶ CI (ci.yml: install + typecheck + build)  ──merge──▶ main
+                                                                                      │
+                                    push to main ──▶ deploy-api.yml   (apps/api/** or packages/shared/**)
+                                                 └─▶ deploy-web.yml   (apps/web/** or packages/shared/**)
+```
+
+- **CI** (`.github/workflows/ci.yml`) runs on every PR and on push to `main` — it is a **gate only**, no deploy.
+- **Deploys** run on push to `main`, path-filtered, via `wrangler deploy` using the
+  `CLOUDFLARE_API_TOKEN` repo secret and `CLOUDFLARE_ACCOUNT_ID=3f513e4b8539944bdbbf5e1ff45f3af9`.
+  - `deploy-api.yml` — `apps/api/**` or `packages/shared/**`
+  - `deploy-web.yml` — `apps/web/**` or `packages/shared/**` (builds, then deploys)
+- **DB migrations are manual** (`.github/workflows/db-migrate.yml`, `workflow_dispatch`) — run it to apply
+  remote migrations, and optionally re-seed the research KB. Never on every push.
+- **Secrets:** the four Worker secrets live in Cloudflare (set once via `wrangler secret put`, PLAN.md §12.1).
+  CI only needs the `CLOUDFLARE_API_TOKEN` repo secret.
+
+## Manual build / deploy
 
 ```bash
 pnpm typecheck
 pnpm build
-pnpm deploy:api
-pnpm deploy:web
+pnpm deploy:api          # wrangler deploy (apps/api)
+pnpm deploy:web          # wrangler deploy (apps/web) — build first
 ```
 
-Production secrets go through `wrangler secret put` (PLAN.md §12.1).
+Requires `wrangler login` locally, and `CLOUDFLARE_ACCOUNT_ID=3f513e4b8539944bdbbf5e1ff45f3af9`
+(the login sees two accounts, so it must be pinned).
+
