@@ -137,6 +137,9 @@ export const api = {
 			kbVersion?: string;
 		}>(`/explanations?type=${encodeURIComponent(type)}`),
 
+	latestSummary: () =>
+		req<{ summary: { id: string; kind: string; body: string; createdAt: string } | null }>('/summaries'),
+
 	chat: (message: string) =>
 		req<{ reply: string; model?: string }>('/ai/chat', {
 			method: 'POST',

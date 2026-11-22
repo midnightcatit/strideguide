@@ -351,5 +351,22 @@ export const rateLimits = sqliteTable('rate_limits', {
 	count: integer('count').notNull().default(0),
 });
 
+/** Cron-generated coach notes (nightly / weekly). */
+export const summaries = sqliteTable(
+	'summaries',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		kind: text('kind').notNull(),
+		body: text('body').notNull(),
+		createdAt,
+	},
+	(t) => ({
+		userIdx: index('summaries_user_idx').on(t.userId),
+	}),
+);
+
 /** Alias helpers for composite keys if needed later. */
 export const authSessionsPk = primaryKey({ columns: [authSessions.id] });

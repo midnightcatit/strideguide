@@ -17,6 +17,7 @@
 	let checked = $state(false);
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
+	let note = $state<string | null>(null);
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
@@ -75,7 +76,10 @@
 
 	onMount(async () => {
 		user = await api.me().catch(() => null);
-		if (user) await ensurePlan();
+		if (user) {
+			await ensurePlan();
+			note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
+		}
 		checked = true;
 	});
 </script>
@@ -127,6 +131,15 @@
 	</header>
 
 	<AdjustmentsCard />
+
+	{#if note}
+		<section aria-labelledby="coach-note" class="mb-7">
+			<SectionHeader id="coach-note" eyebrow="Coach note" />
+			<Card tone="sunken">
+				<p class="text-sm">{note}</p>
+			</Card>
+		</section>
+	{/if}
 
 	<!-- Today's session(s) -->
 	<section aria-labelledby="today-session" class="mb-7">		<SectionHeader

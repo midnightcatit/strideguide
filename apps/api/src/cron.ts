@@ -1,41 +1,87 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { getDb, schema } from './db';
 import type { Env } from './env';
+import { runAi } from './lib/ai';
 
 /**
- * Cron handlers (PLAN.md section 6.3).
- *  0 7 * * *  — nightly: narrative summaries + adaptive evaluation
- *  0 8 * * 1  — weekly: plan review / regenerate what changed
- * Actual generation lands in M4; this is the wired skeleton.
+ * Cron handlers (PLAN.md §6.3).
+ *  0 7 * * *  nightly note
+ *  0 8 * * 1  weekly review
+ * Best-effort AI text with a deterministic fallback; always stored so it can be shown.
  */
 export async function handleScheduled(
 	event: ScheduledController,
 	env: Env,
 	ctx: ExecutionContext,
 ): Promise<void> {
-	const db = getDb(env);
-	ctx.waitUntil(
-		(async () => {
-			const jobType = event.cron === '0 8 * * 1' ? 'weekly_review' : 'nightly_summary';
-			await db.insert(schema.aiJobs).values({
-				id: crypto.randomUUID(),
-				type: jobType,
-				status: 'pending',
-			});
-			// TODO(M4): generate summaries / adjustments and mark the job ok/error.
-		})(),
-	);
+	const kind = event.cron === '0 8 * * 1' ? 'weekly' : 'nightly';
+	ctx.waitUntil(runSummary(env, kind));
 }
 
-/** Manual "refresh now" hook reused by an admin route in M4. */
-export async function triggerRefresh(env: Env, tier: string): Promise<void> {
+async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 	const db = getDb(env);
-	await db
-		.insert(schema.knowledgeBaseVersions)
-		.values({ id: crypto.randomUUID(), tier, refreshedBy: 'manual', generatedAt: new Date() });
-	await db
-		.select()
-		.from(schema.knowledgeBaseVersions)
-		.where(eq(schema.knowledgeBaseVersions.tier, tier))
-		.limit(1);
+
+	const users = await db
+		.selectDistinct({ userId: schema.userGoals.userId })
+		.from(schema.userGoals)
+		.where(eq(schema.userGoals.status, 'active'));
+
+	for (const { userId } of users) {
+		try {
+			const logs = await db
+				.select()
+				.from(schema.logs)
+				.where(eq(schema.logs.userId, userId))
+				.orderBy(desc(schema.logs.createdAt))
+				.limit(7);
+			const done = logs.length;
+			const km =
+				Math.round(
+					logs.reduce((sum, l) => sum + ((l.runStats as { distanceKm?: number } | null)?.distanceKm ?? 0), 0) * 10,
+				) / 10;
+
+			let body =
+				kind === 'weekly'
+					? `You logged ${done} session${done === 1 ? '' : 's'} this week${km ? `, about ${km} km` : ''}. Keep the easy days easy and the quality sessions honest.`
+					: done
+						? `${done} session${done === 1 ? '' : 's'} logged recently. Check tomorrow's plan and keep the routine.`
+						: 'Nothing logged yet. Start with today\u2019s session.';
+
+			try {
+				const res = await runAi(
+					env,
+					[
+						{
+							role: 'system',
+							content:
+								'You are Stride Guide, a concise running coach. Write one or two plain sentences. No em dashes, no markdown.',
+						},
+						{
+							role: 'user',
+							content: `Write a short ${kind} note for a runner: ${done} sessions logged in the last week, ${km} km.`,
+						},
+					],
+					{ maxTokens: 140 },
+				);
+				if (res.text.trim()) body = res.text.trim();
+			} catch {
+				// keep the deterministic fallback
+			}
+
+			await db.insert(schema.summaries).values({
+				id: crypto.randomUUID(),
+				userId,
+				kind,
+				body,
+			});
+			await db.insert(schema.aiJobs).values({
+				id: crypto.randomUUID(),
+				type: `${kind}_summary`,
+				status: 'ok',
+				latencyMs: 0,
+			});
+		} catch {
+			// skip this user; a later run will retry
+		}
+	}
 }
