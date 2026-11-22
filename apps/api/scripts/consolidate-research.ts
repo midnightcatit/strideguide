@@ -48,6 +48,24 @@ function hash(input: string, len = 12): string {
 	return createHash('sha256').update(input).digest('hex').slice(0, len);
 }
 
+/** No em dashes anywhere in published research text (house rule). */
+function sanitize(text: string): string {
+	return text
+		.replace(/\s*—\s*/g, ', ')
+		.replace(/\s+([,.;:])/g, '$1')
+		.replace(/\s{2,}/g, ' ')
+		.trim();
+}
+
+/** Normalise a DOI to a resolvable URL, leave real URLs alone. */
+function normDoi(value: string): string {
+	const v = value.trim();
+	if (!v) return '';
+	if (/^https?:\/\//i.test(v)) return v;
+	if (/^10\.\d{4,9}\//.test(v)) return `https://doi.org/${v}`;
+	return v;
+}
+
 function sqlStr(value: string | number | null | undefined): string {
 	if (value === null || value === undefined) return 'NULL';
 	if (typeof value === 'number') return String(value);
@@ -98,20 +116,20 @@ function main(): void {
 		const fullParts: string[] = [];
 
 		for (const c of claims) {
-			const doiUrl = c.citation?.doi_or_url?.trim() ?? '';
+			const doiUrl = normDoi(c.citation?.doi_or_url ?? '');
 			const key = doiUrl || c.citation?.title || JSON.stringify(c.citation);
 			const id = `src-${hash(key.toLowerCase())}`;
 			if (!sources.has(id)) {
-				sources.set(id, { ...c.citation, id });
+				sources.set(id, { ...c.citation, doi_or_url: doiUrl, title: sanitize(c.citation?.title ?? '') , id });
 			}
 			citationIds.push(id);
 			fullParts.push(
 				[
-					`### ${c.topic}`,
-					c.claim,
-					c.evidence ? `Evidence: ${c.evidence}` : '',
+					`### ${sanitize(c.topic)}`,
+					sanitize(c.claim),
+					c.evidence ? `Evidence: ${sanitize(c.evidence)}` : '',
 					`Confidence: ${c.confidence ?? 'n/a'}`,
-					`Source: ${c.citation?.title ?? 'unknown'}${c.citation?.year ? ` (${c.citation.year})` : ''}`,
+					`Source: ${sanitize(c.citation?.title ?? 'unknown')}${c.citation?.year ? ` (${c.citation.year})` : ''}`,
 				]
 					.filter(Boolean)
 					.join('\n'),
@@ -120,14 +138,14 @@ function main(): void {
 
 		const refId = file.replace(researchDir + '/', '').replace(/\.json$/, '');
 		const explanationId = `exp-${hash(refId, 16)}`;
-		const full = [parsed.summary_tier_a ?? '', ...fullParts].join('\n\n');
+		const full = [sanitize(parsed.summary_tier_a ?? ''), ...fullParts].join('\n\n');
 		explanationRows.push(
 			`INSERT OR REPLACE INTO explanations (id, scope, ref_id, summary, full, citation_ids, model, kb_version) VALUES (` +
 				[
 					sqlStr(explanationId),
 					sqlStr('topic'),
 					sqlStr(refId),
-					sqlStr(parsed.summary_tier_a ?? ''),
+					sqlStr(sanitize(parsed.summary_tier_a ?? '')),
 					sqlStr(full),
 					sqlStr(JSON.stringify([...new Set(citationIds)])),
 					sqlStr('consolidate-script'),
@@ -142,10 +160,10 @@ function main(): void {
 			`INSERT OR REPLACE INTO research_sources (id, title, authors, year, venue, type, doi_url, retrieved_at) VALUES (` +
 			[
 				sqlStr(s.id),
-				sqlStr(s.title ?? ''),
+				sqlStr(sanitize(s.title ?? '')),
 				sqlStr(s.authors ?? null),
 				sqlStr(s.year ?? null),
-				sqlStr(s.venue ?? null),
+				sqlStr(s.venue ? sanitize(s.venue) : null),
 				sqlStr(s.type ?? null),
 				sqlStr(s.doi_or_url ?? null),
 				sqlStr(toUnix(s.retrieved_at)),

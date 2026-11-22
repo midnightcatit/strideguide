@@ -2,7 +2,8 @@
 	import { formatClock } from '@strideguide/shared/units';
 	import { findMachine } from '@strideguide/shared/plan';
 	import type { ClientSession, ClientStep } from '$lib/plan';
-	import { fmtDistance, fmtPaceBand, fmtStepDistance } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
+	import { modal } from '$lib/actions';
 
 	let {
 		session,
@@ -146,20 +147,25 @@
 	const progress = $derived(`${Math.min(idx + 1, instances.length)} / ${instances.length}`);
 </script>
 
-<div class="fixed inset-0 z-30 overflow-y-auto bg-paper">
+<div
+	class="fixed inset-0 z-30 overflow-y-auto bg-paper"
+	role="dialog"
+	aria-modal="true"
+	aria-label={sessionLabel(session)}
+	use:modal={onClose}
+>
 	<div class="mx-auto max-w-2xl px-4 py-5 pb-24">
-		<div class="flex items-start justify-between gap-3">
-			<div>
-				<p class="text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
-				<h1 class="font-display text-xl font-bold">{session.title ?? 'Workout'}</h1>
-			</div>
-			<button type="button" onclick={onClose} class="px-2 py-1 text-steel hover:text-ink" aria-label="Close">✕</button>
+		<div class="flex items-center justify-between">
+			<a href="/" class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</a>
+			<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">✕</button>
 		</div>
+		<h1 class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>
+		<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 
 		{#if finished}
 			<div class="mt-6 rounded-xl border border-hairline p-6 text-center">
 				<p class="font-display text-lg font-medium">Workout complete</p>
-				<p class="mt-1 text-sm text-steel">Nice work. Log how it went.</p>
+				<p class="mt-1 text-sm text-steel">Log how it went.</p>
 				<button type="button" onclick={onFinish} class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Log it</button>
 			</div>
 		{:else if resting}
@@ -244,7 +250,7 @@
 			{/each}
 		</ul>
 		<p class="mt-4 text-xs text-steel">
-			Advances automatically. Timed steps count down, and strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.
+			Timed steps count down on their own, and strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 </div>

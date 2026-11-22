@@ -492,7 +492,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			title: TITLE.long,
 			purpose: PURPOSE.long,
 			prescription: {
-				summary: `Long run ${longKm} km, easy and even.`,
+				summary: 'Long run, easy and even.',
 				targetDistanceKm: longKm,
 				targetPaceSecPerKm: paces ? paces.easy : undefined,
 				targetZone: 'Z2',
@@ -536,7 +536,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					title: TITLE['race-pace'],
 					purpose: PURPOSE['race-pace'],
 					prescription: {
-						summary: `${reps} × ${shape.distanceM / 1000} km at goal pace.`,
+						summary: 'Goal-pace reps at your target pace.',
 						targetDistanceKm: rpKm,
 						targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
 						targetRpe: [7, 8],
@@ -555,7 +555,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					title: TITLE.interval,
 					purpose: PURPOSE.interval,
 					prescription: {
-						summary: `${reps} × 800 m at interval pace, equal-time recovery.`,
+						summary: 'Interval reps at interval pace, with equal-time recovery.',
 						targetDistanceKm: round1((reps * 800) / 1000),
 						targetPaceSecPerKm: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
 						targetRpe: [8, 9],
@@ -573,7 +573,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					title: TITLE.tempo,
 					purpose: PURPOSE.tempo,
 					prescription: {
-						summary: `${qualityKm} km continuous at threshold pace.`,
+						summary: 'Continuous work at threshold pace.',
 						targetDistanceKm: qualityKm,
 						targetPaceSecPerKm: paces
 							? [paces.threshold * 0.99, paces.threshold * 1.03]
@@ -599,7 +599,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					title: TITLE.easy,
 					purpose: PURPOSE.easy,
 					prescription: {
-						summary: `Easy run ${easyPer} km, conversational.`,
+						summary: 'Easy run, conversational.',
 						targetDistanceKm: easyPer,
 						targetPaceSecPerKm: paces ? paces.easy : undefined,
 						targetZone: 'Z2',

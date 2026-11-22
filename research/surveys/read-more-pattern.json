@@ -1,0 +1,183 @@
+{
+  "generated_at": "2026-11-22T22:47:47Z",
+  "approaches": [
+    {
+      "name": "line-clamp truncation (ellipsis)",
+      "when": "Teaser or card text in a fixed-height list where the full text lives elsewhere: short summaries and headlines, not evidentiary prose. Good for a claim title clamped to 1-2 lines in a summary list.",
+      "pros": [
+        "Pure CSS, no JavaScript needed to truncate",
+        "Ellipsis is a conventional truncation signal; -webkit-line-clamp is supported in ~97% of browsers",
+        "Deterministic height, so the layout never shifts and cards align"
+      ],
+      "cons": [
+        "Clamps the whole block as one unit, so per-claim structure and separators are lost",
+        "The hidden text stays in the accessibility tree and in find-in-page: screen reader users hear text sighted users cannot see",
+        "Only works with display:-webkit-box; fails on flex/grid children and has padding/border quirks",
+        "A 'Read more' control needs JS overflow detection (scrollHeight > clientHeight) or it appears when nothing is hidden",
+        "The control must be a sibling of the clamped box, otherwise it is clipped too"
+      ],
+      "css": "/* 2-line clamp on a claim title, not on the why text */\n.clamp-2 {\n  display: -webkit-box;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n  line-clamp: 2;          /* standardized shorthand; keep the prefixed line above */\n  overflow: hidden;\n  text-overflow: ellipsis; /* informational; the clamp draws its own ellipsis */\n}\n\n/* Hide the toggle when nothing is clamped (JS sets the attribute) */\n[data-overflow=\"false\"] > .clamp-2 { -webkit-line-clamp: unset; line-clamp: unset; }\n[data-overflow=\"false\"] > .more { display: none; }",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/line-clamp"
+    },
+    {
+      "name": "gradient fade / mask fade (no truncation)",
+      "when": "A clipped or scrollable region where you want to signal 'more below' without removing words: long explanations, per-claim lists, any place where the text itself is the evidence.",
+      "pros": [
+        "No text is removed: everything stays readable, selectable and in the accessibility tree",
+        "Works over lists and per-claim rows, unlike line-clamp which clamps one block",
+        "Cheap: one pseudo-element overlay or one mask-image declaration",
+        "Reads as a scroll hint rather than a control, so it adds no interaction cost"
+      ],
+      "cons": [
+        "Fades the last visible line, dropping its contrast below 4.5:1 (WCAG 1.4.3 risk) unless the fade sits over padding",
+        "A static fade lies once the user reaches the end; needs JS or a scroll-driven state to remove it",
+        "mask-image on the scroll container also masks the scrollbar; Safari needs -webkit-mask-image on older versions",
+        "Decorative only: no accessible name, so it must accompany a real scrollable region or a labelled control",
+        "On a gradient, 'transparent' can render as a grey band in some browsers; use the surface colour at 0 alpha"
+      ],
+      "css": "/* Overlay variant: fade sits in the bottom padding, never over the last line */\n.scroll {\n  position: relative;\n  overflow-y: auto;\n  overscroll-behavior: contain;\n}\n.scroll::after {\n  content: \"\";\n  position: absolute;\n  inset-inline: 0;\n  bottom: 0;\n  height: 2.5rem;\n  pointer-events: none;\n  background: linear-gradient(\n    to bottom,\n    color-mix(in srgb, var(--surface) 0%, transparent),\n    var(--surface)\n  );\n  transition: opacity 150ms ease;\n}\n.scroll[data-at-end=\"true\"]::after { opacity: 0; }\n@media (prefers-reduced-motion: reduce) { .scroll::after { transition: none; } }\n\n/* Mask variant: fades the content edge itself. Note it also fades the scrollbar\n   and reduces contrast of the final line. */\n.scroll--mask {\n  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);\n  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);\n}",
+      "source": "https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image"
+    },
+    {
+      "name": "Read more / Show more inline disclosure",
+      "when": "Long prose where the first 2-4 lines are a genuine summary and the remainder is optional detail the user can reveal in place without leaving the view.",
+      "pros": [
+        "Explicit, labelled affordance that is discoverable without scrolling",
+        "aria-expanded gives state to assistive tech; the W3C APG documents the button + aria-expanded + optional aria-controls pattern",
+        "No navigation and no scroll hijack; focus stays on the control so keyboard users do not lose their place",
+        "Easy to instrument (measure reveal rate) to validate the summary split"
+      ],
+      "cons": [
+        "Must be a real <button type=\"button\">, not href=\"#\"; a link that goes nowhere is a keyboard/AT barrier",
+        "'Read more' alone is ambiguous in a screen reader links list (WebAIM); needs context in the accessible name",
+        "Layout shift on expand, and a long expansion pushes the detail view past the screen height",
+        "Contradictory when combined with line-clamp: AT already read the hidden text, so 'collapsed' describes only the visual state",
+        "Needs JS to detect overflow and to relabel to 'Show less' on toggle"
+      ],
+      "css": "<button type=\"button\" class=\"more\" aria-expanded=\"false\" aria-controls=\"why-extra\">\n  Read more<span class=\"sr-only\"> about this recommendation</span>\n</button>\n<div id=\"why-extra\" hidden>\n  <!-- remaining claims -->\n</div>\n\n<style>\n[hidden] { display: none !important; }\n.more {\n  min-height: 44px;      /* touch target */\n  min-width: 44px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25rem;\n}\n.more:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }\n.sr-only {\n  position: absolute; width: 1px; height: 1px;\n  padding: 0; margin: -1px; overflow: hidden;\n  clip-path: inset(50%); white-space: nowrap; border: 0;\n}\n</style>\n\n<script>\nconst btn = document.querySelector('.more');\nconst panel = document.getElementById('why-extra');\nbtn.addEventListener('click', () => {\n  const open = btn.getAttribute('aria-expanded') === 'true';\n  btn.setAttribute('aria-expanded', String(!open));\n  panel.hidden = open;\n  btn.firstChild.textContent = open ? 'Read more' : 'Show less';\n  // Focus stays on the button. If collapsing while focus is inside the panel,\n  // move it back to the button first.\n});\n</script>",
+      "source": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+    },
+    {
+      "name": "bounded scroll container",
+      "when": "The detail view must fill but not exceed the screen and the content is a list the user reads in order: per-claim lines, evidence rows, long explanations. This is the default for a mobile detail view.",
+      "pros": [
+        "Directly satisfies 'fill but do not exceed': height:100dvh on the shell plus flex:1 and min-height:0 on the scroll child",
+        "Nothing is hidden or truncated; every claim stays in DOM order and in the accessibility tree",
+        "Native scrolling means native keyboard, touch and screen reader behaviour; no focus management and no state to announce",
+        "dvh/svh handle the dynamic mobile toolbars that make 100vh overflow",
+        "One scroll context inside the view, so the page behind never moves"
+      ],
+      "cons": [
+        "Nested scroll can fight the page scroll without overscroll-behavior: contain",
+        "No built-in affordance: users may not notice there is more, so a fade or hint is still needed",
+        "A scrollable region needs tabindex=0 and role=region to be keyboard-scrollable when it contains no focusable elements",
+        "Sticky header/footer eat height, and safe-area insets must be added on notched devices",
+        "Scrollbar styling differs across platforms; scrollbar-gutter avoids layout jump"
+      ],
+      "css": "/* Shell fills the viewport but never exceeds it */\n.detail {\n  display: flex;\n  flex-direction: column;\n  height: 100dvh;              /* fallback: 100vh for older browsers */\n  max-height: 100dvh;\n  overflow: hidden;\n  padding-bottom: env(safe-area-inset-bottom);\n}\n\n.detail__header,\n.detail__footer { flex: 0 0 auto; }\n\n/* The only scrollable region */\n.detail__body {\n  flex: 1 1 auto;\n  min-height: 0;               /* REQUIRED: lets the flex child shrink and scroll */\n  overflow-y: auto;\n  overscroll-behavior: contain; /* stop scroll chaining to the page */\n  -webkit-overflow-scrolling: touch;\n  scrollbar-gutter: stable;\n  scroll-padding-block: 1rem;\n}\n\n/* Per-claim row: structure survives because each claim is its own element */\n.claim {\n  display: grid;\n  grid-template-columns: 1.25rem 1fr;\n  gap: 0.5rem;\n  padding-block: 0.75rem;\n  border-bottom: 1px solid var(--border);\n}\n.claim:last-child { border-bottom: 0; }\n.claim__text { margin: 0; }",
+      "source": "https://web.dev/blog/viewport-units"
+    },
+    {
+      "name": "modal / bottom sheet",
+      "when": "The extra content is a self-contained reading task the user opts into and the underlying view should stay mounted, for example 'Read full explanation' from a detail view.",
+      "pros": [
+        "Strong focus on the content; native <dialog> supplies Esc, the top layer and a focus trap",
+        "Keeps the detail view's context behind the sheet",
+        "max-height:90dvh caps growth so the sheet cannot exceed the screen",
+        "Works well as the escalation target when inline expansion would overflow"
+      ],
+      "cons": [
+        "Interrupts the task; NN/g lists modal costs: lost context, an extra dismissal step, and a blocked background",
+        "Back-button, scroll-lock and iOS overscroll bugs are common and must be handled deliberately",
+        "Overkill for a short 'why' explanation of 3-6 claims",
+        "Stacks two scroll contexts (sheet and page) and needs its own focus restoration"
+      ],
+      "css": "<dialog class=\"sheet\" aria-labelledby=\"sheet-title\">\n  <h2 id=\"sheet-title\">Full explanation</h2>\n  <div class=\"sheet__body\"><!-- claims --></div>\n  <button type=\"button\" class=\"sheet__close\">Close</button>\n</dialog>\n\n<style>\ndialog.sheet {\n  width: 100%;\n  max-width: 40rem;\n  max-height: 90dvh;          /* never exceeds the screen */\n  margin: auto auto 0;        /* bottom sheet */\n  border: 0;\n  border-radius: 1rem 1rem 0 0;\n  padding: 0;\n  overscroll-behavior: contain;\n}\ndialog.sheet::backdrop { background: rgb(0 0 0 / 0.4); }\n.sheet__body {\n  max-height: calc(90dvh - 8rem);\n  overflow-y: auto;\n  overscroll-behavior: contain;\n  padding-bottom: env(safe-area-inset-bottom);\n}\n</style>",
+      "source": "https://www.nngroup.com/articles/modal-nonmodal-dialog/"
+    },
+    {
+      "name": "full article view (route navigation)",
+      "when": "The explanation is long-form, worth its own URL and deep link, or users may arrive from search or a share. Also the fallback when the inline content would exceed the screen.",
+      "pros": [
+        "Simplest and most accessible layout: one document scroll, no nested regions, no focus traps",
+        "Deep-linkable and shareable; the back button and browser scroll restoration return the user to the list",
+        "No height budgeting: the page grows as long as it needs",
+        "Best for long evidence trails and citations"
+      ],
+      "cons": [
+        "Loses the detail-view context and costs a navigation",
+        "SPA scroll restoration is not automatic and must be implemented",
+        "Overkill for a handful of claim lines; a full page for 4 lines feels heavy",
+        "Back navigation may reload data unless the detail view is cached"
+      ],
+      "css": "/* Full view: ordinary document scroll, no height clamp */\n.article {\n  max-width: 65ch;\n  margin-inline: auto;\n  padding-inline: 1rem;\n  padding-block: 1.5rem calc(1.5rem + env(safe-area-inset-bottom));\n}\n.article h1 { text-wrap: balance; }\n.article p  { text-wrap: pretty; }\n\n/* Restore position when returning to the list */\nhtml { scroll-behavior: smooth; }\n@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }",
+      "source": "https://www.nngroup.com/articles/progressive-disclosure/"
+    }
+  ],
+  "recommendation": {
+    "for_why_view": "Use a bounded scroll container as the primary mechanism. The detail view is height:100dvh (dvh, not vh, so mobile toolbars do not push it past the screen), header and footer are fixed, and the 'why' block is the only flex child that scrolls: flex:1 1 auto with min-height:0 and overflow-y:auto. Render each claim as its own row so order and structure survive. Do not line-clamp the why text: it is the evidence surface, and clamping hides claims from sighted users while screen readers still read them, so the visible and announced states disagree. Add a bottom fade in the bottom padding as a scroll hint and remove it when the region reaches its end. If the full reasoning is long, escalate with one sticky 'Read full explanation' control that opens a full-height <dialog> or a routed article view; keep the inline scroll region as the summary. Use line-clamp only on claim titles in summary cards, never on the reasoning itself.",
+    "css": "/* Detail view: fills the screen, never exceeds it */\n.detail {\n  display: flex;\n  flex-direction: column;\n  height: 100dvh;                /* fallback: 100vh */\n  max-height: 100dvh;\n  overflow: hidden;\n  background: var(--surface);\n  padding-bottom: env(safe-area-inset-bottom);\n}\n\n.detail__header { flex: 0 0 auto; }\n.detail__footer { flex: 0 0 auto; }\n\n/* The only scrollable region: fills remaining height */\n.detail__body {\n  position: relative;\n  flex: 1 1 auto;\n  min-height: 0;                 /* the critical flex-scroll fix */\n  overflow-y: auto;\n  overscroll-behavior: contain;  /* no scroll chaining to the page */\n  -webkit-overflow-scrolling: touch;\n  scrollbar-gutter: stable;\n  scroll-padding-block: 1rem;\n  padding-inline: 1rem;\n}\n\n/* Scroll hint: fade in the bottom padding, not over the last line */\n.detail__body::after {\n  content: \"\";\n  position: sticky;\n  bottom: 0;\n  display: block;\n  height: 2.5rem;\n  margin-top: -2.5rem;\n  pointer-events: none;\n  background: linear-gradient(\n    to bottom,\n    color-mix(in srgb, var(--surface) 0%, transparent),\n    var(--surface)\n  );\n  transition: opacity 150ms ease;\n}\n.detail__body[data-at-end=\"true\"]::after { opacity: 0; }\n@media (prefers-reduced-motion: reduce) {\n  .detail__body::after { transition: none; }\n}\n\n/* Per-claim line: one element per claim keeps the structure */\n.claim {\n  display: grid;\n  grid-template-columns: 1.25rem 1fr;\n  gap: 0.5rem;\n  padding-block: 0.75rem;\n  border-bottom: 1px solid var(--border);\n}\n.claim:last-child { border-bottom: 0; }\n.claim__text { margin: 0; }\n\n/* Escalation control, only shown when the region actually overflows */\n.detail__more {\n  min-height: 44px;\n  min-width: 44px;\n}\n.detail__more:focus-visible {\n  outline: 2px solid var(--focus);\n  outline-offset: 2px;\n}\n\n/* Optional: summary cards clamp titles only */\n.clamp-2 {\n  display: -webkit-box;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n  line-clamp: 2;\n  overflow: hidden;\n}",
+    "behaviour": [
+      "Height: height:100dvh on the shell; min-height:0 on the scroll child. Never rely on 100vh alone on iOS, where the toolbar makes it taller than the visible area.",
+      "Scroll only the middle band. Header and footer stay put; the why block is the single scroll context.",
+      "Compute overflow: after mount and on resize, compare scrollHeight with clientHeight. Only render 'Read full explanation' when there is real overflow.",
+      "Track the end: set data-at-end=\"true\" when scrollTop + clientHeight >= scrollHeight - 1, and hide the fade. Recompute on scroll and on content change.",
+      "Keep the inline view short: 3-6 claims. Beyond that, do not grow the sheet; escalate to the full-height view.",
+      "Do not animate height. If you animate anything, gate it behind prefers-reduced-motion and keep it under 200ms.",
+      "Preserve scroll position when leaving to the full view and restore it on return (sessionStorage or the router's scroll restoration).",
+      "Keep overscroll-behavior: contain so a flick at the end of the why block does not move the page behind it.",
+      "Hide the scroll hint when the region is not scrollable at all, so a short why block does not show a fade that means nothing."
+    ],
+    "a11y": [
+      "Trigger: use a real <button type=\"button\"> with aria-expanded and optional aria-controls. Never an <a href=\"#\">; links need a real destination and a dead link is a keyboard and AT barrier.",
+      "Accessible name must make sense out of context: 'Read full explanation' or 'Read more about this recommendation', not 'Read more' alone. Screen reader users navigate by links and buttons and often skip the surrounding text (WebAIM).",
+      "Do not move focus when expanding inline. Focus stays on the button so keyboard users keep their place. If collapsing while focus is inside the expanded content, move focus back to the button first.",
+      "If escalating to a dialog, move focus to the dialog heading or close button on open and restore it to the trigger on close. Native <dialog> supplies Esc, the top layer and a focus trap.",
+      "Scrollable region: role=\"region\", aria-label=\"Why this recommendation\", tabindex=\"0\", plus a visible focus ring. A scrollable area with no focusable children is otherwise unreachable by keyboard (WCAG 2.1.1).",
+      "Do not stack line-clamp with 'Read more'. The clamped text is still read by screen readers, so 'collapsed' would describe only the visual state. Prefer the scroll region, where all text is reachable and the state is honest.",
+      "The fade is decorative: it carries no accessible name, pseudo-elements are ignored by AT, and it must never be the only signal that more content exists. Pair it with a scrollbar or a text hint.",
+      "Contrast: keep the fade over the bottom padding or gutter. Fading the final text line pushes it below 4.5:1 and fails WCAG 1.4.3.",
+      "Touch target: at least 44x44 CSS px (WCAG 2.5.8 requires 24x24; Apple and Material recommend 44/48).",
+      "Announce only asynchronous changes with a polite live region. A disclosure toggle's aria-expanded change is announced automatically; do not add a redundant live region.",
+      "Respect prefers-reduced-motion for the fade and any expand transition."
+    ]
+  },
+  "sources": [
+    {
+      "title": "MDN: line-clamp",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/line-clamp"
+    },
+    {
+      "title": "CSS-Tricks: Line Clampin' (Truncating Multiple Line Text)",
+      "url": "https://css-tricks.com/line-clampin/"
+    },
+    {
+      "title": "Can I use: CSS line-clamp (97.39% global support)",
+      "url": "https://caniuse.com/css-line-clamp"
+    },
+    {
+      "title": "MDN: mask-image",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image"
+    },
+    {
+      "title": "W3C WAI-ARIA APG: Disclosure (Show/Hide) Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+    },
+    {
+      "title": "WebAIM: Links and Hypertext, Introduction to Links and Hypertext",
+      "url": "https://webaim.org/techniques/hypertext/"
+    },
+    {
+      "title": "Nielsen Norman Group: Progressive Disclosure",
+      "url": "https://www.nngroup.com/articles/progressive-disclosure/"
+    },
+    {
+      "title": "Nielsen Norman Group: Modal & Nonmodal Dialogs, When (& When Not) to Use Them",
+      "url": "https://www.nngroup.com/articles/modal-nonmodal-dialog/"
+    },
+    {
+      "title": "web.dev: New CSS units that account for mobile viewports with dynamic toolbars",
+      "url": "https://web.dev/blog/viewport-units"
+    }
+  ]
+}

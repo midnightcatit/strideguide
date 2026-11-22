@@ -42,7 +42,7 @@ async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 
 			let body =
 				kind === 'weekly'
-					? `You logged ${done} session${done === 1 ? '' : 's'} this week${km ? `, about ${km} km` : ''}. Keep the easy days easy and the quality sessions honest.`
+					? `You logged ${done} session${done === 1 ? '' : 's'} this week. Keep the easy days easy and the quality sessions honest.`
 					: done
 						? `${done} session${done === 1 ? '' : 's'} logged recently. Check tomorrow's plan and keep the routine.`
 						: 'Nothing logged yet. Start with today\u2019s session.';
@@ -54,11 +54,11 @@ async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 						{
 							role: 'system',
 							content:
-								'You are Stride Guide, a concise running coach. Write one or two plain sentences. No em dashes, no markdown.',
+								'You are Stride Guide, a concise running coach. Write one or two plain sentences. No em dashes, no markdown, no distances or units. Avoid hype and hedging; be specific.',
 						},
 						{
 							role: 'user',
-							content: `Write a short ${kind} note for a runner: ${done} sessions logged in the last week, ${km} km.`,
+							content: `Write a short ${kind} note for a runner with ${done} sessions logged in the last week.`,
 						},
 					],
 					{ maxTokens: 140 },

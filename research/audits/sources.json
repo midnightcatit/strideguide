@@ -1,0 +1,138 @@
+{
+  "scope": {
+    "files_scanned": 27,
+    "files_glob": "research/wave-*/**.json",
+    "claims_scanned": 529,
+    "field": "claims[].citation.doi_or_url",
+    "written_to": "research_sources.doi_url (apps/api/scripts/consolidate-research.ts:101,142)",
+    "rendered_by": "apps/web/src/lib/components/SessionDetail.svelte:53-59,147 via sourceHref()",
+    "method": "static parse of every claim in all 27 wave files; DOI liveness/title match sampled on 31 distinct bare DOIs via Crossref api.crossref.org; web-URL liveness spot-checked with curl"
+  },
+  "patterns": [
+    {
+      "type": "bare-doi-no-url-scheme",
+      "count": 249,
+      "distinct_papers": 183,
+      "share_of_claims": "47% (249/529)",
+      "examples": [
+        { "file_line": "research/wave-1/1a-periodization.json:17", "value": "10.1186/s40798-025-00848-3", "title": "Best-Practice Training Characteristics Within Olympic Endurance Sports..." },
+        { "file_line": "research/wave-1/1a-periodization.json:77", "value": "10.1249/mss.0b013e31806010e0", "title": "Effects of tapering on performance: a meta-analysis" },
+        { "file_line": "research/wave-2/5a-marathon-pacing-taper.json:257", "value": "10.1007/s00421-002-0621-5", "title": "Carbohydrate loading in human muscle: an improved 1 day protocol" },
+        { "file_line": "research/wave-3/8b-recovery-modalities.json:212", "value": "10.1002/14651858.CD010789.pub2", "title": "Whole-body cryotherapy (extreme cold air exposure)..." }
+      ],
+      "fix": "Normalize at the source in apps/api/scripts/consolidate-research.ts so doi_url is always absolute: after `const raw = (c.citation?.doi_or_url ?? '').trim();` set `const doiUrl = /^10\\.\\d{4,9}\\//.test(raw) ? `https://doi.org/${raw}` : raw;` and use doiUrl for both the dedup key (line 102) and the INSERT (line 142). Zero-padded DOIs (/^10\\./) with no scheme would otherwise resolve against the current page as a relative path. Keep the existing SessionDetail.svelte sourceHref() guard as a defence-in-depth fallback."
+    },
+    {
+      "type": "not-a-doi-and-not-a-url",
+      "count": 5,
+      "distinct_values": 3,
+      "note": "All five are ISBN strings in the doi_or_url field. sourceHref() returns undefined for them, so they render as unlinked plain text (no crash, but no link).",
+      "examples": [
+        { "file_line": "research/wave-1/2a-aerobic-long-runs.json:197", "value": "ISBN 978-0451470881", "title": "80/20 Running: Run Stronger and Race Faster by Training Slower" },
+        { "file_line": "research/wave-3/12a-vdot-pacing-tables.json:302", "value": "ISBN 0-87322-959-2", "title": "Lore of Running (4th ed.), pp. 311-312" },
+        { "file_line": "research/wave-4/progress-metrics.json:257", "value": "ISBN 978-1450431835", "title": "Daniels' Running Formula (3rd ed.)" }
+      ],
+      "fix": "Either leave the field empty and put the ISBN in a dedicated notes/isbn field, or canonicalize to a resolvable URL: map `ISBN <digits>` to `https://openlibrary.org/isbn/<digits>`. Note the same book is already cited elsewhere as the openlibrary URL (research/wave-3/... uses https://openlibrary.org/isbn/9781450431835), so canonicalizing also merges the duplicate source row."
+    },
+    {
+      "type": "duplicate-source-rows-from-mixed-forms",
+      "count": 21,
+      "note": "21 distinct papers are cited in one file as a bare DOI and in another as https://doi.org/<same DOI>. consolidate-research.ts keys the source id off the RAW doiUrl string (line 102), so each form gets its own research_sources row: the same paper appears twice in the sources list.",
+      "examples": [
+        { "file_line": "research/wave-1/1a-periodization.json:77", "value": "10.1249/mss.0b013e31806010e0", "vs": "research/wave-1/4a-adaptive-adjustments.json:32 -> https://doi.org/10.1249/mss.0b013e31806010e0" },
+        { "file_line": "research/wave-2/7a-general-health-cardio-strength.json:17", "value": "10.1136/bjsports-2020-102955", "vs": "research/wave-2/7b-beginner-progression.json:17 -> https://doi.org/10.1136/bjsports-2020-102955" },
+        { "file_line": "research/wave-1/3a-strength-economy-injury.json:122", "value": "10.1007/s40279-023-01978-y", "vs": "research/wave-1/2b-quality-sessions.json:227 -> https://doi.org/10.1007/s40279-023-01978-y" }
+      ],
+      "fix": "Same normalization as bare-doi-no-url-scheme: compute the id from a normalized key (`doiUrl.toLowerCase()` after stripping any `https://doi.org/` or `doi:` prefix) so both forms collapse to one source row. Alternatively normalize all values to a single canonical form at authoring time."
+    },
+    {
+      "type": "insecure-http-url",
+      "count": 1,
+      "examples": [
+        { "file_line": "research/wave-3/12a-vdot-pacing-tables.json:32", "value": "http://www.simpsonassociatesinc.com/runningmath1.htm", "title": "The Daniels/Gilbert Formula" }
+      ],
+      "fix": "Upgrade to https:// (the host serves https) or replace with the peer-reviewed source. Other external URLs are https://."
+    },
+    {
+      "type": "non-primary-reference-urls",
+      "count": 7,
+      "note": "External URLs that resolve but point at product/promotional/facilities pages rather than the cited work. One has an edition mismatch between the URL and the title.",
+      "examples": [
+        { "file_line": "research/wave-2/4b-pf-machines-programming.json:17", "value": "https://www.planetfitness.com/gyms/facilities", "title": "Planet Fitness gym facilities and equipment overview" },
+        { "file_line": "research/wave-2/4b-pf-machines-programming.json:137", "value": "https://www.humankinetics.com/products/essentials-of-strength-training-and-conditioning-4th-edition", "title": "Essentials of Strength Training and Conditioning (3rd ed.)", "issue": "URL says 4th edition, title says 3rd ed. (2008)" },
+        { "file_line": "research/wave-1/1b-intensity-zones.json:272", "value": "https://www.trainingpeaks.com/blog/joe-friel-s-quick-guide-to-setting-zones/", "title": "Joe Friel's Quick Guide to Setting Training Zones" },
+        { "file_line": "research/wave-1/1b-intensity-zones.json:287", "value": "https://us.humankinetics.com/products/daniels-running-formula-4th-edition", "title": "Daniels' Running Formula (4th edition)" }
+      ],
+      "fix": "Prefer a DOI/PubMed/PMC link to the primary work; if a commercial page is intentional, mark citation.type consistently and fix the edition mismatch (make the URL and title describe the same edition)."
+    },
+    {
+      "type": "wave-authoring-inconsistency",
+      "count": 27,
+      "note": "Normalization was applied per-wave (likely per research agent), not globally: some files are 100% https://doi.org/, others 100% bare DOI. wave-1 66/156 bare, wave-2 94/156 bare, wave-3 41/157 bare, wave-4 48/60 bare. Files at 0 bare: 3a,3b,4a,4b (wave-1); 4a,4b,7b (wave-2); 8a,9a,9b,10a,10b (wave-3).",
+      "examples": [
+        { "file_line": "research/wave-1/3a-strength-economy-injury.json (21/21 https://doi.org/)", "value": "all absolute" },
+        { "file_line": "research/wave-2/5a-marathon-pacing-taper.json (20/20 bare DOI)", "value": "all bare" }
+      ],
+      "fix": "Normalize globally in the consolidation step (single source of truth) instead of relying on per-file authoring, so new waves cannot reintroduce the split."
+    }
+  ],
+  "findings": [
+    {
+      "id": "src-001",
+      "severity": "high",
+      "file_line": "apps/api/scripts/consolidate-research.ts:101",
+      "issue": "Bare DOIs (no scheme) are stored verbatim into research_sources.doi_url: 249 of 529 claims (47%, 183 distinct papers) across every wave start with '10.' instead of 'https://doi.org/'. The API passes the raw value through (apps/api/src/routes/explanations.ts:62) and the column is indexed as-is (packages/shared/src/db/schema.ts:203). Any consumer that renders doi_url directly as an href would emit a broken relative link. Today's only renderer (SessionDetail.svelte:57) already prefixes https://doi.org/, so live links are NOT broken, but the stored knowledge-base data is non-canonical and unsafe for any new consumer, export, or SQL report.",
+      "fix": "Normalize in consolidate-research.ts before storing: `const raw = (c.citation?.doi_or_url ?? '').trim(); const doiUrl = /^10\\.\\d{4,9}\\//.test(raw) ? `https://doi.org/${raw}` : raw;` then use doiUrl for the dedup key (line 102) and the INSERT (line 142). Keep SessionDetail.svelte sourceHref() as a fallback."
+    },
+    {
+      "id": "src-002",
+      "severity": "medium",
+      "file_line": "research/wave-1/2a-aerobic-long-runs.json:197",
+      "issue": "Five claims put an ISBN (not a DOI or URL) in doi_or_url: 'ISBN 978-0451470881' x3, 'ISBN 0-87322-959-2', 'ISBN 978-1450431835'. These land in the doi_url column and render as unlinked text because sourceHref() only matches ^https?:// or ^10.<4+digits>.",
+      "fix": "Canonicalize to https://openlibrary.org/isbn/<digits> at consolidation, or keep the ISBN out of doi_url (empty string) and store it elsewhere. The same book is already cited as an openlibrary URL in another file, so canonicalizing also dedupes."
+    },
+    {
+      "id": "src-003",
+      "severity": "medium",
+      "file_line": "apps/api/scripts/consolidate-research.ts:102",
+      "issue": "The source id is derived from the raw doi_or_url string, so a paper cited once as '10.x/y' and once as 'https://doi.org/10.x/y' produces TWO research_sources rows. 21 distinct papers have both forms across files (e.g. 10.1249/mss.0b013e31806010e0, 10.1136/bjsports-2020-102955, 10.1007/s40279-023-01978-y). This duplicates entries in the sources list returned to the UI and inflates the source count.",
+      "fix": "Key the source id on a normalized DOI (strip ^https?://(dx.)?doi.org/ and ^doi: prefixes, lowercase) so equivalent forms collapse to one row."
+    },
+    {
+      "id": "src-004",
+      "severity": "low",
+      "file_line": "research/wave-3/12a-vdot-pacing-tables.json:32",
+      "issue": "One source uses plain http:// (http://www.simpsonassociatesinc.com/runningmath1.htm), which a browser opening from an https PWA marks insecure; the host also serves https.",
+      "fix": "Change to https://."
+    },
+    {
+      "id": "src-005",
+      "severity": "low",
+      "file_line": "research/wave-2/4b-pf-machines-programming.json:137",
+      "issue": "A product-page URL labels a different edition than its title: URL '...essentials-of-strength-training-and-conditioning-4th-edition' with title 'Essentials of Strength Training and Conditioning (3rd ed.)' (2008). Similar product/promo pages used elsewhere (planetfitness.com/gyms/facilities, trainingpeaks blog, humankinetics product pages). Titles are all present, so this is a label match problem, not a broken link.",
+      "fix": "Point at the primary work (DOI/PubMed/PMC) or, if a commercial page is intentional, ensure the URL and title describe the same edition."
+    },
+    {
+      "id": "src-006",
+      "severity": "info",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:53-59",
+      "issue": "Verification: the described symptom (bare DOIs rendering as broken relative links) is already mitigated at the single render path. sourceHref() returns https://doi.org/<doi> for bare DOIs and returns undefined for anything else, and line 147 only wraps a value in <a> when sourceHref() is truthy. So today no broken link is produced; the risk is confined to the stored data and non-UI consumers.",
+      "fix": "Move normalization upstream (src-001) so the DB is canonical; keep this guard as defence-in-depth. Optionally extend sourceHref() to also handle 'ISBN <digits>' -> openlibrary."
+    },
+    {
+      "id": "src-007",
+      "severity": "info",
+      "file_line": "research/**/wave-*.json (all)",
+      "issue": "Wrong/mismatched-DOI check cleared for the sample: 31 distinct bare DOIs resolved on Crossref with HTTP 200 and matching title/journal. Newest entries resolve too (10.3389/fspor.2026.1806303, 10.7717/peerj.21806, 10.1123/ijspp.2025-0578, all 2026-dated and found). Only cosmetic unmatched cases are wording/capitalisation variants of the same paper sharing one DOI (12 DOIs map to >1 title string) and one online-first year (10.1080/17461391.2020.1773934 is 2021 in the JSON, 2020 in Crossref). No fabricated or cross-paper DOIs found in the sample.",
+      "fix": "No action; optionally standardise citation titles and use the print year."
+    },
+    {
+      "id": "src-008",
+      "severity": "info",
+      "file_line": "research/**/wave-*.json (all)",
+      "issue": "Missing metadata check: 0 of 529 claims are missing citation.year and 0 are missing citation.venue (both present, including for the ISBN entries).",
+      "fix": "No action."
+    }
+  ],
+  "summary": "27 wave JSON files, 529 claims. doi_or_url is not normalized: 249 (47%, 183 distinct papers) are bare DOIs (start '10.'), 275 are absolute URLs (218 doi.org, 57 non-doi.org), and 5 are ISBN strings. The consolidation script stores the raw string, so the column is non-canonical; worse, the source id is keyed on that raw string, so 21 papers cited as both '10.x' and 'https://doi.org/10.x' create duplicate research_sources rows. The described broken-relative-link symptom is already prevented in the only UI renderer (SessionDetail.svelte sourceHref()), so no link is broken today; the real defect is data-level and affects any new consumer/export. Fix at the source: in consolidate-research.ts normalize `10.\\d{4,9}/...` to https://doi.org/<doi> (reusing it for the dedup key), canonicalize ISBNs to openlibrary, upgrade the one http:// URL, and fix the 3rd/4th-edition label mismatch. 31-DOI sample all resolved and matched titles; no wrong DOIs found; year/venue present everywhere."
+}

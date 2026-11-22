@@ -1,0 +1,68 @@
+{
+  "findings": [
+    {
+      "id": "units-001",
+      "severity": "high",
+      "file_line": "apps/web/src/routes/progress/+page.svelte:146",
+      "issue": "Hardcoded 's/km' in a user-visible pace-trend sentence: `{Math.abs(metrics.pace.changeSecPerKm)}s/km`. Imperial users see a per-km figure labelled /km. The rest of the page correctly uses fmtDistance/fmtPace.",
+      "fix": "Convert the delta and use the user's pace unit, e.g. import { convertPace, paceUnit } from '@strideguide/shared/units' and render `{Math.abs(Math.round(convertPace(metrics.pace.changeSecPerKm, prefs.units)))}s{paceUnit(prefs.units)}`, or add a `fmtPaceDelta(secPerKm)` helper in apps/web/src/lib/prefs.svelte.ts that does the same."
+    },
+    {
+      "id": "units-002",
+      "severity": "high",
+      "file_line": "apps/api/src/cron.ts:45",
+      "issue": "Cron stores a user-visible coach note body with metric baked in: `..., about ${km} km` (shown on the home page as the 'Coach note'). The km value is computed from distanceKm and written straight into summaries.body, so imperial users see km.",
+      "fix": "Store a unit-neutral note: drop the distance clause ('You logged N sessions this week. Keep the easy days easy...'), or persist the raw distanceKm on the summary and format it at the edge with fmtDistance(prefs.units). Do not bake 'km' into the stored string."
+    },
+    {
+      "id": "units-003",
+      "severity": "medium",
+      "file_line": "apps/api/src/cron.ts:61",
+      "issue": "The AI prompt that generates the stored note passes `${km} km` and never tells the model that units vary, so the model routinely echoes 'km' in a user-visible note. Contrast narration.ts:40, which correctly says 'Do not mention distances or units, since units vary by user.'",
+      "fix": "Remove the km value from the prompt or add the narration instruction: 'Distances vary by user; do not mention distances or units.' Then the AI text stays unit-neutral like the fallback."
+    },
+    {
+      "id": "units-004",
+      "severity": "medium",
+      "file_line": "apps/api/src/routes/ai.ts:61",
+      "issue": "Coach-chat context line bakes metric into model input: `${p.targetDistanceKm} km` per session. The model grounds answers in this context and will echo '6 km' to imperial users.",
+      "fix": "Format distances with the user's prefs before building the context (the settings/prefs row is available to the route), or label the context as metric and add the narration instruction not to mention units."
+    },
+    {
+      "id": "units-005",
+      "severity": "medium",
+      "file_line": "apps/api/src/routes/ai.ts:97",
+      "issue": "Same as units-004 for logged runs: recent-logs context uses `${rs.distanceKm} km`, feeding metric into the model for a user whose units may be imperial.",
+      "fix": "Convert with prefs.units (or omit units and instruct the model not to mention them) when assembling the 'Recent logs' context."
+    },
+    {
+      "id": "units-006",
+      "severity": "medium",
+      "file_line": "packages/shared/src/plan/engine.ts:495,539,558,576,602",
+      "issue": "Engine-generated prescription.summary strings bake units into stored data: 'Long run X km, easy and even.' (495), 'N × D km at goal pace.' (539), 'N × 800 m at interval pace...' (558), 'X km continuous at threshold pace.' (576), 'Easy run X km, conversational.' (602). These are persisted verbatim into sessions_plan.prescription (plans.ts:162) with units baked in, violating 'units are presentation'. They are not currently rendered, but they are stored user-facing text.",
+      "fix": "Make summaries unit-neutral, e.g. 'Long run, easy and even.', 'N reps at goal pace.', 'Interval reps, equal-time recovery.', 'Tempo at threshold pace.', 'Easy run, conversational.' The UI already renders distance/pace through fmtDistance/fmtPaceBand/sessionLabel, so no distance value is needed in the summary."
+    },
+    {
+      "id": "units-007",
+      "severity": "medium",
+      "file_line": "packages/shared/src/goal-profiles.ts:12,33,53,72",
+      "issue": "Goal-profile descriptions hardcode metric distances ('42.195 km.', '21.1 km.', '10 km.', '5 km.') and are rendered verbatim to users in onboarding (onboarding/+page.svelte:132 `{p.description}`). Imperial users see metric.",
+      "fix": "Reword to be unit-neutral by naming the race rather than the distance, e.g. 'Marathon distance. Long aerobic build...', 'Half-marathon distance. Faster threshold work...', 'VO2max intervals plus sustained threshold work...', 'Speed-biased: short VO2max intervals...'. Alternatively render the distance via fmtDistance at the onboarding render site."
+    },
+    {
+      "id": "units-008",
+      "severity": "low",
+      "file_line": "apps/api/seed/seed-research.sql:603,852,870,888,1027,1529,1560,1566,1584,1632,1638,1808,1838,1844,1868,1892,2165,2656",
+      "issue": "Seeded knowledge-base explanation claim lines (the line after each '### ' block, which explanations.ts parseClaims exposes as claim and SessionDetail.svelte:131 renders) contain metric distances, e.g. 'about 30 km/week', '>65 km/wk', '5-km time', '35 km'. These surface in the 'Why this session' panel for every user regardless of prefs.",
+      "fix": "This is cited literature; the cleanest option is to leave the unit in the Evidence line and keep the rendered claim unit-neutral, or accept metric for research claims and label them as such. If strict unit-correctness is required, rewrite the affected claim lines without specific distances."
+    },
+    {
+      "id": "units-009",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:191",
+      "issue": "Strength weight unit is hardcoded 'kg' in the log form (input labelled kg, values stored as weightKg). There is no lb path, so imperial users still log and see kg, unlike distance/pace which respect prefs.",
+      "fix": "Add a weightUnit/fmtWeight helper alongside the distance helpers in @strideguide/shared/units and prefs.svelte.ts (kg vs lb), and convert at the edge; store metric (kg) as now."
+    }
+  ],
+  "summary": "9 findings. Clear code bugs: hardcoded 's/km' on the progress page (units-001, high) and a stored cron coach note with 'km' baked in (units-002, high). Unit-bearing text fed to or produced by the AI: cron prompt and coach-chat context in ai.ts (units-003/004/005, medium). Stored/generated engine text with units baked in: prescription.summary in engine.ts (units-006) and goal-profile descriptions shown in onboarding (units-007). Lower: knowledge-base claim lines in seed-research.sql surface metric in the 'Why this session' panel (units-008), and strength weight is kg-only with no lb helper (units-009). Correct usage confirmed for fmtDistance/fmtPace/fmtPaceBand/fmtStepDistance/sessionLabel in SessionCard, SessionDetail, SessionPlayer, week, progress volume, LogSheet distance, and onboarding weekly-volume conversion; 'min' durations are unit-agnostic and are not bugs. Suggested shared fix: add fmtPaceDelta and a weight-unit helper to prefs/units, and keep summaries/notes/distances unit-free at rest."
+}

@@ -1,0 +1,348 @@
+{
+  "findings": [
+    {
+      "id": "emdash-001",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:248",
+      "issue": "Em dash inside a research_sources.title. This table is seeded to production (the DB Migrate workflow runs db:seed:research:remote) and the titles are shown to users as the source list in the session 'Why this session' panel (apps/web/src/lib/components/SessionDetail.svelte:147). Hard rule violation (AGENTS.md: no em dashes anywhere).",
+      "fix": "Replace 'work\u2014and probably never will' with 'work, and probably never will'."
+    },
+    {
+      "id": "emdash-002",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:379",
+      "issue": "Em dash in a stored explanation claim heading (user-visible via the explanations API and the coach context in apps/api/src/routes/ai.ts:76).",
+      "fix": "'### Periodization models (block vs traditional) \u2014 endurance evidence' -> '### Periodization models (block vs traditional): endurance evidence'."
+    },
+    {
+      "id": "emdash-003",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:391",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Base/build/peak/taper \u2014 taper structure' -> '### Base/build/peak/taper: taper structure'."
+    },
+    {
+      "id": "emdash-004",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:397",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Base/build/peak/taper \u2014 taper in other sports' -> '### Base/build/peak/taper: taper in other sports'."
+    },
+    {
+      "id": "emdash-005",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:403",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Intensity distribution \u2014 polarized vs pyramidal vs threshold' -> '### Intensity distribution: polarized vs pyramidal vs threshold'."
+    },
+    {
+      "id": "emdash-006",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:409",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Intensity distribution \u2014 polarized vs threshold (meta-analysis)' -> '### Intensity distribution: polarized vs threshold (meta-analysis)'."
+    },
+    {
+      "id": "emdash-007",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:415",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Intensity distribution \u2014 polarized training response' -> '### Intensity distribution: polarized training response'."
+    },
+    {
+      "id": "emdash-008",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:421",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Intensity distribution \u2014 10K runners' -> '### Intensity distribution: 10K runners'."
+    },
+    {
+      "id": "emdash-009",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:427",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Intensity distribution \u2014 sequencing pyramidal then polarized' -> '### Intensity distribution: sequencing pyramidal then polarized'."
+    },
+    {
+      "id": "emdash-010",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:433",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Intensity distribution \u2014 elite practice' -> '### Intensity distribution: elite practice'."
+    },
+    {
+      "id": "emdash-011",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:439",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### The ''10% rule'' \u2014 evidence' -> '### The ''10% rule'': evidence'."
+    },
+    {
+      "id": "emdash-012",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:445",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### The ''10% rule'' \u2014 systematic review of training-load change' -> '### The ''10% rule'': systematic review of training-load change'."
+    },
+    {
+      "id": "emdash-013",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:451",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Volume progression \u2014 half-marathon schedule' -> '### Volume progression: half-marathon schedule'."
+    },
+    {
+      "id": "emdash-014",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:457",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Volume progression \u2014 training errors' -> '### Volume progression: training errors'."
+    },
+    {
+      "id": "emdash-015",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:463",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Weekly mileage \u2014 marathon (elite)' -> '### Weekly mileage: marathon (elite)'."
+    },
+    {
+      "id": "emdash-016",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:469",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Weekly mileage \u2014 marathon (top-class)' -> '### Weekly mileage: marathon (top-class)'."
+    },
+    {
+      "id": "emdash-017",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:475",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Weekly mileage \u2014 recreational marathon runners' -> '### Weekly mileage: recreational marathon runners'."
+    },
+    {
+      "id": "emdash-018",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:607",
+      "issue": "Two em dashes in a stored explanation summary (shown as the session 'why' headline).",
+      "fix": "'peripheral adaptations \u2014 capillarization, mitochondrial biogenesis, fat oxidation, and running economy \u2014 while keeping' -> 'peripheral adaptations (capillarization, mitochondrial biogenesis, fat oxidation, and running economy) while keeping'."
+    },
+    {
+      "id": "emdash-019",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:616",
+      "issue": "Two em dashes in a stored explanation summary.",
+      "fix": "'The ''80/20'' heuristic \u2014 about 80% of running volume easy and 20% moderate-to-hard \u2014 is an empirical' -> 'The ''80/20'' heuristic (about 80% of running volume easy and 20% moderate-to-hard) is an empirical'."
+    },
+    {
+      "id": "emdash-020",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:676",
+      "issue": "Two em dashes in a stored explanation summary.",
+      "fix": "'Running economy \u2014 the oxygen cost of running at a given submaximal speed \u2014 is a key determinant' -> 'Running economy (the oxygen cost of running at a given submaximal speed) is a key determinant'."
+    },
+    {
+      "id": "emdash-021",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:718",
+      "issue": "Em dash in a stored explanation summary.",
+      "fix": "'effort should feel sustainable and diffuse \u2014 breathing controlled and conversational' -> 'effort should feel sustainable and diffuse: breathing controlled and conversational'."
+    },
+    {
+      "id": "emdash-022",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:1674",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Carbohydrate intake rate \u2014 general guidance' -> '### Carbohydrate intake rate: general guidance'."
+    },
+    {
+      "id": "emdash-023",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:1675",
+      "issue": "Two em dashes in a stored explanation claim.",
+      "fix": "'for events longer than ~2.5-3 h \u2014 which includes a 4-5 h marathon \u2014 intake up to ~90 g/h is recommended' -> 'for events longer than ~2.5-3 h (which includes a 4-5 h marathon), intake up to ~90 g/h is recommended'."
+    },
+    {
+      "id": "emdash-024",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:1704",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Gut training \u2014 adaptability of the GI tract' -> '### Gut training: adaptability of the GI tract'."
+    },
+    {
+      "id": "emdash-025",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:1710",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Gut training \u2014 direct human evidence' -> '### Gut training: direct human evidence'."
+    },
+    {
+      "id": "emdash-026",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:1716",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Gut training \u2014 time course' -> '### Gut training: time course'."
+    },
+    {
+      "id": "emdash-027",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:1758",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### Hydration \u2014 ACSM guidance' -> '### Hydration: ACSM guidance'."
+    },
+    {
+      "id": "emdash-028",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2253",
+      "issue": "Em dash in a stored explanation summary.",
+      "fix": "'weaker and less certain than commonly assumed \u2014 evidence for sudden load changes is ''very limited''' -> 'weaker and less certain than commonly assumed: evidence for sudden load changes is ''very limited'''."
+    },
+    {
+      "id": "emdash-029",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2298",
+      "issue": "Two em dashes in a stored explanation claim.",
+      "fix": "'The ACWR \u2014 widely promoted for load management \u2014 is conceptually and statistically problematic' -> 'The ACWR (widely promoted for load management) is conceptually and statistically problematic'."
+    },
+    {
+      "id": "emdash-030",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2331",
+      "issue": "Em dash inside a verbatim paper title repeated in a 'Source:' line of a stored explanation.",
+      "fix": "'work\u2014and probably never will' -> 'work, and probably never will'. Same title as emdash-001; apply consistently."
+    },
+    {
+      "id": "emdash-031",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2334",
+      "issue": "Two em dashes in a stored explanation claim.",
+      "fix": "'Relative Energy Deficiency in Sport (RED-S) \u2014 driven by low energy availability \u2014 impairs multiple body systems' -> 'Relative Energy Deficiency in Sport (RED-S), driven by low energy availability, impairs multiple body systems'."
+    },
+    {
+      "id": "emdash-032",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2357",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### RED FLAG \u2014 focal bone pain and high-risk sites: see a professional' -> '### RED FLAG: focal bone pain and high-risk sites: see a professional'."
+    },
+    {
+      "id": "emdash-033",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2358",
+      "issue": "Em dash in a stored explanation claim, introducing example sites.",
+      "fix": "'base of the 5th metatarsal, hip/groin \u2014 femoral neck, pelvis/sacrum).' -> 'base of the 5th metatarsal, hip/groin: femoral neck, pelvis/sacrum).'."
+    },
+    {
+      "id": "emdash-034",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2363",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### RED FLAG \u2014 menstrual dysfunction / recurrent bone stress injury / low energy: see a professional' -> '### RED FLAG: menstrual dysfunction / recurrent bone stress injury / low energy: see a professional'."
+    },
+    {
+      "id": "emdash-035",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2369",
+      "issue": "Em dash in a stored explanation claim heading.",
+      "fix": "'### RED FLAG \u2014 systemic / non-mechanical features: see a professional' -> '### RED FLAG: systemic / non-mechanical features: see a professional'."
+    },
+    {
+      "id": "emdash-036",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2374",
+      "issue": "Six em dashes in one stored explanation summary (the densest violation).",
+      "fix": "Apply each: 'UNIFORMLY \u2014 short-term detraining' -> 'UNIFORMLY: short-term detraining'; 'illness/break \u2014 rebuild volume first' -> 'illness/break: rebuild volume first'; 'NOT SUDDEN \u2014 return-to-run' -> 'NOT SUDDEN: return-to-run'; 'Hoenig 2023) \u2014 avoid universal timelines' -> 'Hoenig 2023), so avoid universal timelines'; 'SYSTEMIC SYMPTOMS \u2014 pre-race systemic illness' -> 'SYSTEMIC SYMPTOMS: pre-race systemic illness'; 'REBUILD RULES \u2014 avoid large sudden jumps' -> 'REBUILD RULES: avoid large sudden jumps'."
+    },
+    {
+      "id": "emdash-037",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2389",
+      "issue": "Em dash in a stored explanation claim.",
+      "fix": "'shorter times at several lower-risk sites \u2014 so return-to-run timelines cannot be universal.' -> 'shorter times at several lower-risk sites, so return-to-run timelines cannot be universal.'."
+    },
+    {
+      "id": "emdash-038",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2431",
+      "issue": "Two em dashes in a stored explanation claim, wrapping a parenthetical.",
+      "fix": "'heuristic \u2014 exercising is generally considered lower-risk with symptoms confined above the neck (e.g. runny nose) but not with systemic symptoms (fever, body aches, chest symptoms) \u2014 is supported by cohort data' -> 'heuristic (exercising is generally considered lower-risk with symptoms confined above the neck, such as a runny nose, but not with systemic symptoms such as fever, body aches and chest symptoms) is supported by cohort data'."
+    },
+    {
+      "id": "emdash-039",
+      "severity": "high",
+      "file_line": "apps/api/seed/seed-research.sql:2479",
+      "issue": "Em dash in a stored explanation claim.",
+      "fix": "'altered substrate use \u2014 collectively impairing performance.' -> 'altered substrate use, collectively impairing performance.'."
+    },
+    {
+      "id": "emdash-040",
+      "severity": "low",
+      "file_line": "apps/api/.dev.vars.example:1",
+      "issue": "Em dash in a comment header ('# Stride Guide \u2014 local secrets...'). Not user-visible, but the AGENTS.md rule says no em dashes anywhere, code comments included.",
+      "fix": "'# Stride Guide \u2014 local secrets.' -> '# Stride Guide local secrets.'."
+    },
+    {
+      "id": "prompt-001",
+      "severity": "medium",
+      "file_line": "apps/api/src/lib/narration.ts:40",
+      "issue": "The week-summary prompt forbids em dashes and markdown but does not tell the model to avoid hype, hedging and AI-tell phrasing. AGENTS.md requires any prompt that produces user-visible text to instruct the model to follow the full human-writing rules. Summaries are shown on the Today page (apps/web/src/routes/+page.svelte:141).",
+      "fix": "Extend the system string to: 'You are a sports-scientist running coach. Reply with ONLY a JSON array of strings, one short (<= 18 words) summary per week, in order. Plain prose, no markdown, no em dashes. No hype or filler words; be specific and plain. Do not mention distances or units, since units vary by user.'"
+    },
+    {
+      "id": "prompt-002",
+      "severity": "medium",
+      "file_line": "apps/api/src/cron.ts:57",
+      "issue": "The nightly/weekly note prompt forbids em dashes and markdown but not hype, hedging or AI-tell phrasing, though its output is stored and shown as the coach note (+page.svelte:141).",
+      "fix": "Change the system content to: 'You are Stride Guide, a concise running coach. Write one or two plain sentences. No em dashes, no markdown, no hype or filler; be specific and plain.'"
+    },
+    {
+      "id": "prompt-003",
+      "severity": "medium",
+      "file_line": "apps/api/src/routes/ai.ts:108",
+      "issue": "The coach prompt bans em dashes and markdown and asks for plain short sentences, but never names the AI-tell rule (no hype, no hedging filler, no buzzwords). AGENTS.md requires prompts that generate user-visible text to carry the full rule set. Output is shown in the coach chat (apps/web/src/routes/coach/+page.svelte:74).",
+      "fix": "Add to the system string, after 'plain prose only.': ' No hype words, hedging filler or buzzwords; be specific and plain.'"
+    },
+    {
+      "id": "endash-001",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionCard.svelte:36,39",
+      "issue": "En dash used as a missing-value placeholder ('\u2013'), not a numeric range. The rule allows en dashes only in numeric ranges; these are data placeholders for an absent duration.",
+      "fix": "Replace the '\u2013' fallback with a neutral placeholder such as 'n/a', or render nothing when the value is absent."
+    },
+    {
+      "id": "endash-002",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionDetail.svelte:91,97",
+      "issue": "En dash used as a missing-value placeholder, not a numeric range.",
+      "fix": "Replace the '\u2013' fallbacks with 'n/a' or omit the value."
+    },
+    {
+      "id": "endash-003",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/LogSheet.svelte:157",
+      "issue": "En dash used as a missing-value placeholder for pace, not a numeric range.",
+      "fix": "Replace the '\u2013' fallback with 'n/a' or omit the value."
+    },
+    {
+      "id": "generick-001",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+page.svelte:94",
+      "issue": "Marketing-style tagline 'Your training, tailored.' reads generically (any fitness app could use it). Also catalogued as voice-001 in research/audits/copy-voice.json.",
+      "fix": "Use a specific headline, e.g. 'Train for your race, not a template.'"
+    },
+    {
+      "id": "generick-002",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/coach/+page.svelte:44",
+      "issue": "Generic chatbot headline 'Ask anything' says nothing about what this coach knows. Also catalogued as voice-003 in copy-voice.json.",
+      "fix": "Use 'Ask about your training'."
+    },
+    {
+      "id": "generick-003",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:161",
+      "issue": "Generic praise opener 'Nice work. Log how it went.' is filler that reads as generated text. Also catalogued as voice-011 in copy-voice.json.",
+      "fix": "Use 'That's the session done. Log how it felt.'"
+    }
+  ],
+  "summary": "Em dashes are absent from all three source trees (apps/web/src, packages/shared/src, apps/api/src): every en dash there is a numeric range (Z1\u2013Z2, Z3\u2013Z4, 60\u201390s, 2\u20133 weeks, 4:55\u20135:05) except five standalone '\u2013' missing-value placeholders (SessionCard:36,39; SessionDetail:91,97; LogSheet:157), flagged low. The only real em-dash violations are in apps/api/seed/seed-research.sql (39 dashes across 39 lines): this seed is applied to production by the DB Migrate workflow and its explanation summaries/claims and research titles are shown to users in the session 'Why this session' panel and in the coach context, so each is high severity. Two of them (lines 248 and 2331) sit inside a verbatim paper title; the rest are generated prose/headings and take a colon, comma or parentheses. Also low: an em dash in the .dev.vars.example comment (line 1). AI-tell words (thrilled, revolutionary, seamless, unlock, empower, etc.) do not appear in any user-visible source; the gap is that the three runtime prompts (narration.ts:40, cron.ts:57, ai.ts:108) ban em dashes and markdown but not hype/hedging/AI tells, which AGENTS.md requires, so they are medium. Generic prose in the web copy is limited and already catalogued in research/audits/copy-voice.json (three noted here for completeness). Internal research/*.md notes contain many em dashes but are not user-visible and are out of scope. 49 findings total (39 high, 3 medium, 7 low)."
+}

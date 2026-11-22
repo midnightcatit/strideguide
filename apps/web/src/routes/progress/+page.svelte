@@ -3,7 +3,7 @@
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { fmtDistance, fmtPace } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
@@ -137,13 +137,13 @@
 				{:else}
 					<svg viewBox="0 0 100 {PACE_H}" preserveAspectRatio="none" class="w-full" style="height: {PACE_H}px" role="img" aria-label="Logged run paces over time">
 						{#each paceGeom as p, i (i)}
-							<circle cx={p.x} cy={p.y} r="1.6" class={p.fast ? 'fill-signal' : 'fill-ink'}></circle>
+							<circle cx={p.x} cy={p.y} r="1.6" class={p.fast ? 'fill-signal-ink' : 'fill-ink'}></circle>
 						{/each}
 					</svg>
 					<p class="mt-3 text-xs text-steel">
 						One dot per logged run, higher is faster.
 						{#if metrics.pace.changeSecPerKm !== undefined}
-							{metrics.pace.changeSecPerKm > 0 ? 'Recent runs are faster on average by ' : 'Recent runs are slower on average by '}{Math.abs(metrics.pace.changeSecPerKm)}s/km.
+							{metrics.pace.changeSecPerKm > 0 ? 'Recent runs are faster on average by ' : 'Recent runs are slower on average by '}{convertPaceDelta(Math.abs(metrics.pace.changeSecPerKm))}{paceDeltaUnit()}.
 						{/if}
 					</p>
 				{/if}

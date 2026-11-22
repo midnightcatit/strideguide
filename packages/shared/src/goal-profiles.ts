@@ -9,7 +9,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		slug: 'marathon',
 		name: 'Marathon',
 		description:
-			'42.195 km. Long aerobic build with threshold work, a progressive long run, and a 2–3 week taper.',
+			'The full marathon. Long aerobic build with threshold work, a progressive long run, and a 2–3 week taper.',
 		modalityMix: { running: 0.8, strength: 0.14, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
 			{ phase: 'base', weeks: 8, volumeStep: 0.1, deload: false },
@@ -30,7 +30,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		slug: 'half-marathon',
 		name: 'Half Marathon',
 		description:
-			'21.1 km. Faster threshold work, longer quality sessions, and a shorter taper than the marathon.',
+			'The half marathon. Faster threshold work, longer quality sessions, and a shorter taper than the marathon.',
 		modalityMix: { running: 0.78, strength: 0.16, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
 			{ phase: 'base', weeks: 6, volumeStep: 0.1, deload: false },
@@ -50,7 +50,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 	{
 		slug: '10k',
 		name: '10K',
-		description: '10 km. VO2max intervals plus sustained threshold work; strength supports speed.',
+		description: 'The 10K. VO2max intervals plus sustained threshold work, with strength to support speed.',
 		modalityMix: { running: 0.74, strength: 0.2, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
 			{ phase: 'base', weeks: 4, volumeStep: 0.1, deload: false },
@@ -69,7 +69,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 	{
 		slug: '5k',
 		name: '5K',
-		description: '5 km. Speed-biased: short VO2max intervals, strides, and hill work.',
+		description: 'The 5K. Speed-biased: short VO2max intervals, strides, and hill work.',
 		modalityMix: { running: 0.7, strength: 0.24, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
 			{ phase: 'base', weeks: 3, volumeStep: 0.1, deload: false },

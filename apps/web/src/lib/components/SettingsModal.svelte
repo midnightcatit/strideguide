@@ -1,25 +1,58 @@
 <script lang="ts">
 	import { applyTheme, getTheme, type Theme } from '$lib/theme';
 	import { prefs, setUnits } from '$lib/prefs.svelte';
+	import { api } from '$lib/api';
+	import { modal } from '$lib/actions';
 	import type { Units } from '@strideguide/shared/units';
 
 	let { user, onClose }: { user: { email: string } | null; onClose: () => void } = $props();
 
 	let theme = $state<Theme>(getTheme());
+	let confirmText = $state('');
+	let clearing = $state(false);
 
 	function chooseTheme(t: Theme) {
 		theme = t;
 		applyTheme(t);
 	}
+
+	async function clearData() {
+		if (confirmText.trim() !== 'DELETE MY DATA') return;
+		clearing = true;
+		try {
+			await api.clearData();
+		} catch {
+			// proceed anyway; the app will show onboarding
+		}
+		try {
+			for (const k of Object.keys(localStorage)) {
+				if (k.startsWith('sg:')) localStorage.removeItem(k);
+			}
+		} catch {
+			// ignore
+		}
+		window.location.href = '/onboarding';
+	}
+
+	const canClear = $derived(confirmText.trim() === 'DELETE MY DATA');
 </script>
 
-<div class="fixed inset-0 z-40 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label="Settings">
+<div
+	class="fixed inset-0 z-40 flex items-end justify-center sm:items-center"
+	role="dialog"
+	aria-modal="true"
+	aria-label="Settings"
+	use:modal={onClose}
+>
 	<button type="button" aria-label="Close settings" onclick={onClose} class="absolute inset-0 bg-ink/30"></button>
 
-	<div class="relative w-full max-w-md rounded-t-2xl border border-hairline bg-paper p-5 sm:rounded-2xl">
+	<div
+		class="relative w-full max-w-md max-h-[92dvh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-5 sm:rounded-2xl"
+		style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))"
+	>
 		<div class="flex items-center justify-between">
 			<h1 class="font-display text-lg font-bold">Settings</h1>
-			<button type="button" onclick={onClose} class="px-2 py-1 text-steel hover:text-ink" aria-label="Close">
+			<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">
 				✕
 			</button>
 		</div>
@@ -104,6 +137,26 @@
 					Sign in with Google
 				</button>
 			{/if}
+		</section>
+
+		<!-- Danger zone -->
+		<section class="mt-5 border-t border-hairline pt-5">
+			<h2 class="text-xs uppercase tracking-widest text-steel">Clear data</h2>
+			<p class="mt-2 text-xs text-steel">Deletes your plan and every logged session. Your account stays. This cannot be undone.</p>
+			<input
+				bind:value={confirmText}
+				placeholder="Type DELETE MY DATA"
+				aria-label="Type DELETE MY DATA to confirm"
+				class="mt-2 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+			/>
+			<button
+				type="button"
+				onclick={clearData}
+				disabled={!canClear || clearing}
+				class="mt-2 w-full rounded-md border border-hairline px-4 py-2.5 text-sm text-signal-ink hover:border-signal disabled:opacity-50"
+			>
+				{clearing ? 'Clearing…' : 'Clear all data'}
+			</button>
 		</section>
 	</div>
 </div>

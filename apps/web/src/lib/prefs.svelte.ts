@@ -46,6 +46,15 @@ export function distanceUnit(): 'km' | 'mi' {
 	return prefs.units === 'imperial' ? 'mi' : 'km';
 }
 
+export function paceDeltaUnit(): string {
+	return prefs.units === 'imperial' ? 's/mi' : 's/km';
+}
+
+/** Convert a pace difference (sec per km) into the user's pace unit. */
+export function convertPaceDelta(secPerKm: number): number {
+	return prefs.units === 'imperial' ? Math.round(secPerKm * 1.609344) : Math.round(secPerKm);
+}
+
 /** A step/rep distance in the user's units (metres for short metric steps, miles for imperial). */
 export function fmtStepDistance(meters: number): string {
 	if (prefs.units === 'imperial') {

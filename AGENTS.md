@@ -26,6 +26,21 @@ pnpm deploy:web          # build + deploy (apps/web)
 
 Scope a command to one package with `pnpm --filter @strideguide/api <script>`.
 
+## Writing (every user-facing string)
+
+All text a person can see (app copy, generated coach output, emails, errors, empty states) must read as
+human-written. Follow the `human-writing` skill (`~/.kilo/skills/human-writing/SKILL.md`). Hard rules:
+
+- **No em dashes.** Use commas, periods, colons or parentheses. En dashes are fine only in numeric
+  ranges (e.g. `4:55–5:05`). Applies to code comments too.
+- **No AI tells:** no hype ("thrilled", "revolutionary", "seamless", "unlock", "empower"), no hedging
+  filler, no generic transitions ("let's dive in"), no buzzwords. Be specific and plain.
+- **Mono is for data, never for prose.**
+- **Generated content counts.** Any prompt that produces user-visible text (coach, summaries) must
+  instruct the model to follow these rules.
+
+If you touch copy, run a quick `grep -rn "—" apps packages` before you commit; it should be empty.
+
 ## Testing philosophy — test the core, not the surface
 
 A small, sharp suite beats a large, clunky one. Tests exist to protect behaviour, not to raise a

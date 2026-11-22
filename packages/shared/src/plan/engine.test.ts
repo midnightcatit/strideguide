@@ -48,6 +48,22 @@ describe('generatePlan (marathon)', () => {
 		expect(plan.meta.vdot).toBeLessThan(70);
 	});
 
+	it('handles a plan shorter than the sum of phase weeks', () => {
+		const short = generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === 'marathon')!,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 2, 4],
+			startDate: '2026-12-01',
+			targetDate: '2027-01-12', // ~6 weeks, far shorter than the profile default
+		});
+		expect(short.weeks.length).toBe(short.meta.totalWeeks);
+		for (const w of short.weeks) {
+			expect(w.phase).toBeTruthy();
+			expect(w.sessions.length).toBeGreaterThan(0);
+		}
+		expect(short.weeks[short.weeks.length - 1]!.phase).toBe('taper');
+	});
+
 	it('builds structured workouts (warm-up, set, cool-down)', () => {
 		const interval = plan.weeks
 			.flatMap((w) => w.sessions)

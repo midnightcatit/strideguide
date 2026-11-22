@@ -11,7 +11,7 @@ const PHASE_FOCUS: Record<string, string> = {
 /** Deterministic fallback summary, used whenever AI is unavailable or fails. */
 export function templateWeekSummary(weekNumber: number, phase: string, volumeKm: number): string {
 	const focus = PHASE_FOCUS[phase] ?? phase;
-	return `Week ${weekNumber} — ${focus}. Target volume ~${volumeKm} km.`;
+	return `Week ${weekNumber}: ${focus}.`;
 }
 
 export interface WeekLite {
@@ -37,7 +37,7 @@ export async function narrateWeeks(env: Env, weeks: WeekLite[]): Promise<Narrati
 			{
 				role: 'system',
 				content:
-					'You are a sports-scientist running coach. Reply with ONLY a JSON array of strings — one short (<= 18 words) summary per week, in order. No prose, no code fences.',
+					'You are a sports-scientist running coach. Reply with ONLY a JSON array of strings, one short (<= 18 words) summary per week, in order. Plain prose, no markdown. No em dashes. No hype or hedging; be specific. Do not mention distances or units, since units vary by user.',
 			},
 			{
 				role: 'user',

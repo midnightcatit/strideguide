@@ -52,6 +52,15 @@ describe('suggestAdjustments', () => {
 		expect(out.some((a) => a.kind === 'run-spike')).toBe(true);
 	});
 
+	it('flags a big volume overshoot as a warning', () => {
+		const logs: AdaptLog[] = [
+			{ sessionId: 'a', runStats: { distanceKm: 9 }, rpe: 6, createdAt: '2026-11-02' },
+			{ sessionId: 'b', runStats: { distanceKm: 10 }, rpe: 6, createdAt: '2026-11-04' },
+		];
+		const out = suggestAdjustments(logs, weeks, '2026-11-06');
+		expect(out.some((a) => a.kind === 'volume-over')).toBe(true);
+	});
+
 	it('returns nothing when everything is on track', () => {
 		const onTrack: AdaptWeek[] = [
 			{

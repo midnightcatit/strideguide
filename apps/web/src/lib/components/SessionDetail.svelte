@@ -4,6 +4,7 @@
 	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
+	import { modal } from '$lib/actions';
 
 	let {
 		session,
@@ -41,26 +42,43 @@
 
 	const claims = $derived(why?.claims ?? []);
 	const headline = $derived(claims[0]?.claim ?? why?.summary ?? session.purpose ?? '');
+	let showAllSources = $state(false);
 
 	function markersFor(source?: string): number[] {
 		if (!source || !why) return [];
 		const idx = why.sources.findIndex((s) => source.startsWith(s.title));
 		return idx >= 0 ? [idx + 1] : [];
 	}
+
+	/** Turn a bare DOI ("10.1016/…") or URL into a real link. */
+	function sourceHref(s: { doiUrl?: string }): string | undefined {
+		const v = s.doiUrl?.trim();
+		if (!v) return undefined;
+		if (/^https?:\/\//i.test(v)) return v;
+		if (/^10\.\d{4,}/.test(v)) return `https://doi.org/${v}`;
+		return undefined;
+	}
 </script>
 
-<div class="fixed inset-0 z-40 flex flex-col bg-paper" role="dialog" aria-modal="true" aria-label={sessionLabel(session)}>
+<div
+	class="fixed inset-0 z-40 flex flex-col bg-paper"
+	role="dialog"
+	aria-modal="true"
+	aria-label={sessionLabel(session)}
+	use:modal={onClose}
+>
 	<header class="border-b border-hairline px-4 py-3">
-		<div class="mx-auto flex max-w-2xl items-start justify-between gap-3">
-			<div class="min-w-0">
-				<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
-				<h1 class="font-display mt-0.5 truncate text-xl font-bold">{sessionLabel(session)}</h1>
+		<div class="mx-auto max-w-2xl">
+			<div class="flex items-center justify-between">
+				<a href="/" class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</a>
+				<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">✕</button>
 			</div>
-			<button type="button" onclick={onClose} class="px-2 py-1 text-steel hover:text-ink" aria-label="Close">✕</button>
+			<h1 class="font-display mt-1 truncate text-xl font-bold">{sessionLabel(session)}</h1>
+			<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 		</div>
 	</header>
 
-	<div class="flex-1 overflow-y-auto">
+	<div class="flex-1 overflow-y-auto overscroll-contain min-h-0">
 		<div class="mx-auto max-w-2xl px-4 py-5">
 			<div class="flex items-center justify-between">
 				<span class="flex items-center gap-2">
@@ -129,16 +147,26 @@
 				{#if why.sources.length}
 					<p class="mt-5 tabular text-xs uppercase tracking-widest text-steel">Sources</p>
 					<ol class="mt-2 space-y-1 text-xs text-steel">
-						{#each why.sources.slice(0, 16) as s, i (i)}
+						{#each (showAllSources ? why.sources.slice(0, 16) : why.sources.slice(0, 3)) as s, i (i)}
 							<li class="flex justify-between gap-3">
 								<span class="flex-1">
 									<span class="tabular text-steel">{i + 1}</span>
-									{#if s.doiUrl}<a href={s.doiUrl} target="_blank" rel="noopener" class="hover:text-signal-ink">{s.title}</a>{:else}{s.title}{/if}{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
+									{#if sourceHref(s)}<a href={sourceHref(s)} target="_blank" rel="noopener" class="hover:text-signal-ink">{s.title}</a>{:else}{s.title}{/if}{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
 								</span>
-								{#if s.doiUrl}<span class="text-steel" aria-hidden="true">↗</span>{/if}
+								{#if sourceHref(s)}<span class="text-steel" aria-hidden="true">↗</span>{/if}
 							</li>
 						{/each}
 					</ol>
+					{#if why.sources.length > 3}
+						<button
+							type="button"
+							onclick={() => (showAllSources = !showAllSources)}
+							aria-expanded={showAllSources}
+							class="mt-2 text-xs text-signal-ink hover:underline"
+						>
+							{showAllSources ? 'Show fewer sources' : `View all ${why.sources.length} sources`}
+						</button>
+					{/if}
 				{/if}
 				<p class="mt-5 text-xs text-steel">
 					{#if why.kbVersion}Knowledge base {why.kbVersion}. {/if}Guidance, not medical advice.
