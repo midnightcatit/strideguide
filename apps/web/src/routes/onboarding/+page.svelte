@@ -123,7 +123,7 @@
 		<div class="mt-3 grid gap-2">
 			{#each profiles as p (p.slug)}
 				<label
-					class="flex cursor-pointer flex-col rounded-lg border px-4 py-3 transition-colors {slug === p.slug
+					class="flex cursor-pointer flex-col rounded-lg border px-4 py-3 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-signal-ink {slug === p.slug
 						? 'border-signal bg-signal-wash'
 						: 'border-hairline hover:border-steel'}"
 				>
