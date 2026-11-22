@@ -123,15 +123,14 @@
 
 	<!-- 7-cell load ledger (primary control) -->
 	<Card tone="sunken">
-		<div class="grid grid-cols-7 gap-1" role="tablist" aria-label="Days of the week">
+		<div class="grid grid-cols-7 gap-1" role="group" aria-label="Days of the week">
 			{#each DAY_INITIALS as initial, day (day)}
 				{@const level = dayLevel(day)}
 				{@const logged = dayLogged(day)}
 				{@const km = dayDistance(day)}
 				<button
 					type="button"
-					role="tab"
-					aria-selected={day === selectedDay}
+					aria-pressed={day === selectedDay}
 					aria-label="{DAY_NAMES[day]}{logged ? ', logged' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
 					onclick={() => (selectedDay = day)}
 					class="flex flex-col items-center gap-1.5 rounded-md py-2 transition-colors {day === selectedDay
