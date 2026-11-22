@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { GOAL_PROFILES } from '@strideguide/shared';
 import { requireAuth } from '../middleware/auth';
 import type { AppBindings } from '../types';
 import ai from './ai';
@@ -11,6 +12,9 @@ import plans from './plans';
 const api = new Hono<AppBindings>();
 
 api.route('/health', health);
+
+// Public reference data (no user data) so onboarding can render before sign-in.
+api.get('/goals/profiles', (c) => c.json({ profiles: GOAL_PROFILES }));
 
 const secured = new Hono<AppBindings>();
 secured.use('*', requireAuth);

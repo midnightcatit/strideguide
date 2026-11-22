@@ -9,17 +9,20 @@
     ".": "./src/index.ts",
     "./db": "./src/db/schema.ts",
     "./tokens": "./src/tokens.ts",
-    "./profiles": "./src/goal-profiles.ts"
+    "./profiles": "./src/goal-profiles.ts",
+    "./plan": "./src/plan/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4"
   },
   "devDependencies": {
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
   }
 }

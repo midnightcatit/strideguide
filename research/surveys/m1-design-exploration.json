@@ -1,0 +1,434 @@
+{
+  "generated_at": "2026-11-22T18:02:44Z",
+  "wires": [
+    {
+      "screen": "1. Onboarding — goal profile (step 1/4)",
+      "ascii": "┌──────────────────────────────────────┐\n│ STRIDE GUIDE                ◐    1/4 │\n├──────────────────────────────────────┤\n│                                      │\n│ WHAT ARE YOU                         │\n│ TRAINING FOR?                        │\n│                                      │\n│▌MARATHON                     42.2 km │\n│──────────────────────────────────────│\n│ HALF MARATHON                21.1 km │\n│──────────────────────────────────────│\n│ 10K                          10.0 km │\n│──────────────────────────────────────│\n│ 5K                            5.0 km │\n│──────────────────────────────────────│\n│ WHOLE FITNESS               balanced │\n│──────────────────────────────────────│\n│ long aerobic build, threshold        │\n│ work, progressive long run.          │\n│                                      │\n│ [ CONTINUE                       ▸ ] │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "Choose the goal profile first; everything downstream is parameterised by it. Selection is a ruled list, not a card grid — the plan is a document, not a shop.",
+        "tokens": [
+          "paper / ink",
+          "hairline 1px rules between options",
+          "signal for the selected 2px left marker + its rule only",
+          "Space Grotesk for the question (24/32, weight 500)",
+          "IBM Plex Mono right-column for distance (tabular)"
+        ],
+        "components": [
+          "ChoiceRow (44→56px tall, full-bleed, 2px signal left marker when selected, 2px ink rule under selection)",
+          "StepMeter '1/4' in steel mono",
+          "PrimaryButton: ink fill, paper label, 48px"
+        ],
+        "motion": "None on entry. Selection: rule + marker fade 120ms. Advancing: 160ms paper cross-dissolve, no slide.",
+        "a11y": "Row is a real <button role=radio> inside radiogroup; selection announced by aria-checked, not colour. Right-distance is decorative repetition of the label (aria-hidden). Question uses one <h1>. 44px minimum, 56px here.",
+        "responsive": "At ≥720px the list becomes two columns; max-width 560px, left-aligned, no centring."
+      }
+    },
+    {
+      "screen": "2. Onboarding — race date + baseline (step 2/4)",
+      "ascii": "┌──────────────────────────────────────┐\n│ ‹                  MARATHON      2/4 │\n├──────────────────────────────────────┤\n│                                      │\n│ RACE DAY                             │\n│ ┌────────┬────────┬────────┐         │\n│ │  2027  │   03   │   14   │         │\n│ └────────┴────────┴────────┘         │\n│                          in 16 weeks │\n│                                      │\n│ BASELINE                             │\n│ ● RECENT RACE TIME                   │\n│ ○ RECENT TRAINING PACE               │\n│ ○ WEEKLY DISTANCE                    │\n│ ○ STARTING FROM SCRATCH              │\n│                                      │\n│ HALF MARATHON TIME                   │\n│ ┌──────────┐ : ┌──────────┐          │\n│ │    1     │   │    52    │          │\n│ └──────────┘   └──────────┘          │\n│ ▸ 1:52:00 = 5:19 /km. We set         │\n│   your easy band from this.          │\n│                                      │\n│ [ CONTINUE                       ▸ ] │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "Date and baseline are the only two numbers the engine cannot infer. Show the derivation immediately (1:52:00 → 5:19 /km) so the user sees the instrument working.",
+        "tokens": [
+          "ink numerals on paper",
+          "steel labels in 12px caps",
+          "signal only on the '▸' derivation caret",
+          "sunken for the three date selects"
+        ],
+        "components": [
+          "DateTriplet (three 44px selects, mono)",
+          "RadioList (same ChoiceRow as step 1)",
+          "TimeField (two mono inputs + ':' + unit)",
+          "DerivationNote (Plex Sans 14, steel, with signal ▸)"
+        ],
+        "motion": "No motion. Number entry must never animate (see motion anti-rule).",
+        "a11y": "Date triplet has a fieldset legend 'Race day'; each select labelled Month/Day/Year, not placeholder-only. Time inputs inputmode=numeric, label 'Half marathon time', error text inline + aria-live=polite. Derived pace in aria-describedby so screen readers get it once, not per keystroke.",
+        "responsive": "Derivation note wraps under the inputs below 360px."
+      }
+    },
+    {
+      "screen": "3. Onboarding — available days + equipment (step 3/4)",
+      "ascii": "┌──────────────────────────────────────┐\n│ ‹                                3/4 │\n├──────────────────────────────────────┤\n│                                      │\n│ WHICH DAYS CAN YOU TRAIN?            │\n│                                      │\n│  MON TUE WED THU FRI SAT SUN         │\n│  ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐         │\n│  │✓│ │✓│ │✓│ │ │ │✓│ │ │ │✓│         │\n│  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘         │\n│  5 sessions                   2 rest │\n│                                      │\n│──────────────────────────────────────│\n│ LONG RUN DAY                         │\n│  SAT ○        SUN ●                  │\n│                                      │\n│──────────────────────────────────────│\n│ GYM ACCESS                           │\n│ [ PLANET FITNESS ✓ ] [ BARBELL ]     │\n│ [ BODYWEIGHT ]       [ NONE ]        │\n│                                      │\n│ 5 days fits a 23-week marathon       │\n│ build at your baseline.              │\n│                                      │\n│ [ BUILD MY PLAN                  ▸ ] │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "Days are the plan's lattice. A 7-cell switch that mirrors the calendar strip later, so the user learns the layout once. Equipment is a capability statement, not a preference.",
+        "tokens": [
+          "hairline grid",
+          "signal for selected-day underline + '✓'",
+          "steel for '3 rest'",
+          "sunken for selected chips"
+        ],
+        "components": [
+          "DaySwitch (7 × 44px minimum, 48px here, label above, tick below)",
+          "LongRunPicker (2 × 44px)",
+          "ChipGroup (equipment, multi-select, 44px)",
+          "FeasibilityNote (engine feedback before commit)"
+        ],
+        "motion": "Day toggle: 90ms background step only. No bounce, no scale.",
+        "a11y": "Day cells are toggle buttons with aria-pressed and full weekday names as accessible labels ('Monday'). The count summary is aria-live=polite. Chips are a group with aria-describedby on why PF is preselected. Colour never encodes state alone: pressed cells gain a 2px ink rule as well as the amber tick.",
+        "responsive": "Below 360px, weekday initials replace the 3-letter labels; cell stays 44px."
+      }
+    },
+    {
+      "screen": "4. Calendar — week strip + journal spine, today's session as hero",
+      "ascii": "┌──────────────────────────────────────┐\n│ STRIDE GUIDE           W5 · BASE   ◐ │\n├──────────────────────────────────────┤\n│                                      │\n│  M    T    W    T    F    S    S     │\n│ 18   19   20   21  (22)  23   24     │\n│ ✓    ✓    ✓    ·    ●    ·    ·      │\n│                                      │\n├──────────────────────────────────────┤\n│ TODAY · FRI 22 NOV                   │\n│ │▏MARATHON · W5      TEMPO  RUN ╲ │  │\n│ │▏6.0 km            4:55–5:05 /km │  │\n│ │▏30:00            ▓▓▓▓▓▓░░░ plan │  │\n│ │▏────────────────────────────────│  │\n│ │▏Lift clearance so goal pace     │  │\n│ │▏                [ WHY ] [ LOG ] │  │\n│ └─────────────────────────────────┘  │\n│                                      │\n├──────────────────────────────────────┤\n│ THU 21 ┃○ REST                       │\n│ WED 20 ┃● LOWER A      45:00       ✓ │\n│ TUE 19 ┃● EASY       5.0 km  28:40 ✓ │\n│ MON 18 ┃● INTERVALS    6×800m      ✓ │\n│ SUN 17 ┃● LONG       14.0 km 1:22:10 │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "The week strip is the instrument's face; the spine is the notebook's binding. Today is the only thing allowed to be large. Past sessions are one line each so the week reads as a ledger, not a feed.",
+        "tokens": [
+          "paper base",
+          "hairline horizontal rules",
+          "hairline-strong for the spine rail and the hero card's tick rail",
+          "signal ONLY on the today ring, today's node and the hero needle",
+          "mono for all dates, distances, times",
+          "Space Grotesk for session names"
+        ],
+        "components": [
+          "WeekStrip (7 × 48px cells; states: done ✓, planned ·, today ringed + filled dot, rest ○)",
+          "HeroSlot → SessionCard variant body",
+          "SpineList / SpineRow (date mono, heavy rail ┃, node ●/○, name display 14, right-aligned mono result, ✓)",
+          "MiniActions [WHY] [LOG] at 44px"
+        ],
+        "motion": "Week strip: today's ring draws once (SVG dash 480ms). Thumbnail swap between days: 140ms crossfade only. Spine rows do not animate on scroll — no reveal-on-scroll.",
+        "a11y": "Week strip is a tablist-like nav with aria-label 'Week 5, 18–24 November'; each cell's accessible name is 'Friday 22 November, today, tempo 6 km'. Ring is a shape, but also has a visible 'TODAY' heading below, so nothing is colour-only. Spine is an <ol>; nodes are decorative, results are text. Skip link 'Skip to today's session'. Sticky hero must not trap scroll.",
+        "responsive": "≥720px the strip becomes a 7-column grid with the selected day expanded; the spine stays single-column, max-width 720px."
+      }
+    },
+    {
+      "screen": "5. Session card — 'why' expanded",
+      "ascii": "┌──────────────────────────────────────┐\n│▏ MARATHON · W5          TEMPO  RUN ╲ │\n│▏─────────────────────────────────────│\n│▏ 6.0 km · 30:00 · 4:55–5:05 /km      │\n│▏                                     │\n│▏ WHY THIS SESSION                  ⌃ │\n│▏                                     │\n│▏ PURPOSE                             │\n│▏ Sustained running just under        │\n│▏ threshold raises the pace you       │\n│▏ can hold before lactate builds.     │\n│▏                                     │\n│▏ WHAT IT BUILDS                      │\n│▏ · lactate clearance (Z3)            │\n│▏ · durability at goal pace           │\n│▏                                     │\n│▏ HOW IT SHOULD FEEL                  │\n│▏ “Comfortably hard.” Short           │\n│▏ sentences, not conversation.        │\n│▏─────────────────────────────────────│\n│▏ SOURCE  Seiler 2010 · Billat      › │\n│▏ [ LOG IT ▸ ]                        │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "Expansion is the field-notebook layer: purpose, what it builds, how it should feel, source. It replaces the session card in place (no modal), so the instrument and the explanation are the same object.",
+        "tokens": [
+          "ink headings 12px caps + letter-spacing 0.06em",
+          "steel body? no — body is ink at 15/22 for reading",
+          "hairline-strong rules between blocks",
+          "signal reserved for nothing here: explanation is quiet, measurement stays on the collapsed card",
+          "IBM Plex Sans 15/22 for prose, not mono"
+        ],
+        "components": [
+          "WhyPanel (grid-template-rows 0fr→1fr)",
+          "DefinitionBlock (label + prose)",
+          "SourceLink (mono 12, steel, underline on hover)",
+          "CollapseControl '⌃' 44px"
+        ],
+        "motion": "Expand 180ms cubic-bezier(.2,.8,.2,1) on grid rows + 90ms content fade delayed 60ms. Collapse 140ms, no delay. Reduced motion: instant.",
+        "a11y": "Trigger is aria-expanded + aria-controls; panel keeps DOM order for reading; sources are real links. Prose max 66ch. The '⌃' glyph is aria-hidden with a text label 'Hide explanation'.",
+        "responsive": "Panel is the card body; at ≥720px the why sits in a right column while the target stays pinned left."
+      }
+    },
+    {
+      "screen": "6. Session detail / log — manual run",
+      "ascii": "┌──────────────────────────────────────┐\n│ ✕  LOG SESSION                 TEMPO │\n├──────────────────────────────────────┤\n│ PRESCRIBED            6.0 km · 30:00 │\n│              4:55–5:05 /km · RPE 6–7 │\n│ ──────────────────────────────────── │\n│ DISTANCE                             │\n│ ┌──────────────────────────────────┐ │\n│ │ 6.02                         km  │ │\n│ └──────────────────────────────────┘ │\n│ MOVING TIME                          │\n│ ┌──────────────────────────────────┐ │\n│ │ 31:04                      h:mm  │ │\n│ └──────────────────────────────────┘ │\n│ AVG PACE  auto       5:10 /km   edit │\n│ AVG HR                               │\n│ ┌──────────┐                         │\n│ │   152    │ bpm                     │\n│ └──────────┘                         │\n│                                      │\n│ EFFORT  RPE                          │\n│ ┌────┬────┬────┬────┬────┐           │\n│ │ 1  │ 2  │ 3  │ 4  │ 5  │           │\n│ ├────┼────┼────┼────┼────┤           │\n│ │ 6  │ 7  │ 8  │ 9  │ 10 │           │\n│ └────┴────┴────┴────┴────┘           │\n│  easy      hard      max             │\n│                                      │\n│ NOTE                                 │\n│ ┌──────────────────────────────────┐ │\n│ │ felt strong after 2 km, last km  │ │\n│ │ was a grind.                     │ │\n│ └──────────────────────────────────┘ │\n│                                      │\n│ [ SAVE SESSION                   ▸ ] │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "Logging is a form that already knows the answer. Prescription stays visible at the top, derived fields are pre-filled and marked auto, and the only required work is what the watch would have measured.",
+        "tokens": [
+          "sunken input wells",
+          "ink 24px mono values",
+          "steel labels 12px caps",
+          "signal on the RPE selection cell only",
+          "hairline-strong focus ring (signal-ink outline)"
+        ],
+        "components": [
+          "PrescriptionHeader (sticky, 1 line + band)",
+          "NumberField (mono, unit right-aligned inside the well, inputmode=decimal)",
+          "DerivedField (auto badge, edit affordance)",
+          "RpeGrid (2×5 because 10 across breaks 44px on a 390px screen; each cell 64×48)",
+          "NoteField",
+          "PrimaryButton ink fill"
+        ],
+        "motion": "Sheet rise 220ms (if presented as sheet); fields do not animate. Derived pace updates instantly — never count up.",
+        "a11y": "Labels sit above fields permanently (no placeholder labels). Units are part of the accessible name. Derived pace has aria-describedby 'calculated from distance and moving time'; when the user edits it, the description changes to 'manual'. RPE is a radiogroup of 10, each labelled '6 — could speak short sentences, threshold'. Errors: inline text + aria-live, field gets aria-invalid. Sticky header must not cover focused field (scroll-padding-top).",
+        "responsive": "Two-column on ≥720px (prescription left, form right); single column on phone with 16px input text to avoid iOS zoom."
+      }
+    },
+    {
+      "screen": "7. Session detail / log — strength, per-machine sets",
+      "ascii": "┌──────────────────────────────────────┐\n│ ✕  LOWER A                       LOG │\n├──────────────────────────────────────┤\n│ LEG PRESS              3 × 8 · 80 kg │\n│ last week 3×8 · 75 kg        ▲ +5 kg │\n│ ┌────────┬────────┬────────┐         │\n│ │  SET   │  REPS  │   KG   │         │\n│ ├────────┼────────┼────────┤         │\n│ │   1    │   8    │   80   │ ✓       │\n│ │   2    │   8    │   80   │ ✓       │\n│ │   3    │   7    │   80   │ ○       │\n│ └────────┴────────┴────────┘         │\n│ reps  − 8 +            weight − 80 + │\n│ ──────────────────────────────────── │\n│ LEG CURL               2 / 3 sets  ▸ │\n│ SEATED ROW             0 / 3 sets  ▸ │\n│ ──────────────────────────────────── │\n│ SESSION RPE                   NOTE ▸ │\n│ ┌────┬────┬────┬────┬────┐           │\n│ │ 6  │ 7  │ 8  │ 9  │ 10 │           │\n│ └────┴────┴────┴────┴────┘           │\n│                                      │\n│ [ SAVE SESSION                   ▸ ] │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "One machine expanded, the rest collapsed to a single line with progress. Logging a set is one tap plus two steppers; last week's numbers are the default, and the delta is shown as a fact, not praise.",
+        "tokens": [
+          "mono table with hairline-strong row rules",
+          "signal on completed-set ✓ and the load delta only",
+          "sunken stepper wells",
+          "ink 20px mono numbers"
+        ],
+        "components": [
+          "MachineBlock (collapsed row | expanded ledger)",
+          "SetTable (set / reps / kg / state)",
+          "Stepper (− value +, 44×44 each, hold-to-repeat after 400ms)",
+          "DeltaTag (+5 kg)",
+          "SessionRpe"
+        ],
+        "motion": "Machine expand 180ms, same grid-rows trick as WhyPanel. Stepper has no animation; the number swaps. Row completion: 120ms ink flash on the ✓ cell only.",
+        "a11y": "Table is a real table with caption 'Leg press, target 3 sets of 8 at 80 kilograms'. Each set row is a group of three labelled inputs; stepper buttons have accessible names 'decrease reps', not '−'. Completion announced via aria-live: 'Set 2 of 3 logged, 80 kilograms for 8 reps'. Weight step is 2.5 kg via aria-valuetext. Do not use a slider for weight.",
+        "responsive": "Below 360px the table drops the SET column and numbers rows 1–3 on the left edge; targets still visible."
+      }
+    },
+    {
+      "screen": "8. Week so far — adherence + volume at a glance",
+      "ascii": "┌──────────────────────────────────────┐\n│ WEEK 5                          BASE │\n├──────────────────────────────────────┤\n│                                      │\n│ SESSIONS                       3 / 5 │\n│ ███░░                            60% │\n│  3 done · 2 remaining                │\n│                                      │\n│ VOLUME                11.4 / 31.4 km │\n│ █████░░░░░░░░░░░                     │\n│ 0        target 31.4 km              │\n│                                      │\n│  M    T    W    T    F    S    S     │\n│ ▁    ▂    ▃    ·    ░    ·    ░      │\n│ ●    ●    ●    ○    ◐    ○    ○      │\n│                                      │\n├──────────────────────────────────────┤\n│ 4-WEEK LOAD                          │\n│  W1 ▂   W2 ▃   W3 ▅   W4 ▅  build    │\n│                                      │\n├──────────────────────────────────────┤\n│ “On schedule. Two sessions left;     │\n│  the tempo is doing its job.”        │\n└──────────────────────────────────────┘",
+      "notes": {
+        "intent": "Two facts and one shape: sessions done / planned, volume against target, and the week's rhythm as micro-bars aligned to the same 7-column axis as the week strip (relative session load: filled = done, hollow = planned, · = rest — not kilometres). Not a dashboard — three blocks, one hairline each.",
+        "tokens": [
+          "ink for the two primary figures (32px display)",
+          "mono for 3/4 and 22.4/28",
+          "hairline-strong for the target notch ╫",
+          "signal for the current-week mark only",
+          "steel for the interpretation sentence"
+        ],
+        "components": [
+          "AdherenceBar (4 segments, filled = ink, empty = hairline)",
+          "VolumeScale (bar + target notch + mono labels)",
+          "DayMicroBars (shares the 7-col grid with WeekStrip)",
+          "LoadSparkline (4 weeks, ink bars, no axis)",
+          "CoachLine (AI weekly summary, 15/22, quotes typeset as prose)"
+        ],
+        "motion": "Bars fill once on first intersection (420ms), then never re-animate. Sparkline has no draw-in. Reduced motion: final state.",
+        "a11y": "Figures are text, not canvas; bars are aria-hidden decoration behind real numbers. '3 of 5 sessions complete, 60 percent. 11.4 of 31.4 kilometres, 36 percent.' Volume target notch has a text label. Coach line is a blockquote with the model attribution in steel. Contrast: signal never used for text here.",
+        "responsive": "Stacks to one column; day micro-bars remain 7 across because they align to the strip."
+      }
+    }
+  ],
+  "session_card_variants": [
+    {
+      "name": "A — Needle (measurement band) · PRIMARY for runs",
+      "ascii": "┌──────────────────────────────────────┐\n│▏ MARATHON · W5          TEMPO  RUN ╲ │\n│▏─────────────────────────────────────│\n│▏                                     │\n│▏ TARGET               30:00 · 6.0 km │\n│▏ PACE                                │\n│▏ 5:15 ┬─╫──▒▒▒▒▒▒───┬──── 4:40       │\n│▏       slow  4:55–5:05  fast         │\n│▏ ╫ 5:10 logged · RPE 6–7 · Z3        │\n│▏─────────────────────────────────────│\n│▏ PLAN   ▓▓▓▓▓▓▓▓▓░ 30:00             │\n│▏ DONE   ▓▓▓▓▓▓▓▓▓▓ +1:04             │\n│▏─────────────────────────────────────│\n│▏ Builds lactate clearance so goal    │\n│▏ pace feels easier.                  │\n│▏                                     │\n│▏ [ WHY THIS? ↧ ]        [ LOG IT ▸ ] │\n└──────────────────────────────────────┘",
+      "rationale": "The card is an instrument face: a pace axis with a target band and a needle for the logged value. Prescribed vs actual is legible in one glance and in one dimension, which is the only honest way to show a pace band. The left tick rail (12 hairline ticks, major every 3) is the card's spine and doubles as the progress track, so the instrument motif carries information instead of decorating. Mono numerals do all the data work; the purpose line is the only prose and sets in Plex Sans. Out-of-band is a first-class state: the needle sits outside the shaded band and the legend says '5:10 logged · 5s outside band' — no colour-only failure signal."
+    },
+    {
+      "name": "B — Ledger (journal entry) · ALTERNATE for long runs and intervals",
+      "ascii": "┌──────────────────────────────────────┐\n│ NO. 042 · MARATHON   W5 · BASE   FRI │\n│ TEMPO RUN                            │\n│ ════════════════════════════════════ │\n│                                      │\n│  1.5 km  warm-up               easy  │\n│  3.0 km  at 4:55–5:05       RPE 6–7  │\n│  1.5 km  cool-down             easy  │\n│         ─────────────────────        │\n│         30:00 · 6.0 km · Z3          │\n│                                      │\n│  “Comfortably hard.” Teaches legs to │\n│  clear lactate at the pace you race. │\n│                                      │\n│  logged ─ 6.0 km / 31:04      ▸ view │\n│ [ WHY THIS? ]           [ LOG IT ▸ ] │\n└──────────────────────────────────────┘",
+      "rationale": "The notebook reading: an indexed entry (No. 042) with ruled segments, the prescription as a small structure table, and the purpose as a quoted margin note. Best when the session's meaning is its structure — warm-up / work / cool-down, or interval sets — because rows beat a single band. Deliberately borrows nothing from variant A except tokens: no axis, no needle, no bars. Use it for long and interval sessions so the timeline reads as a logbook, not a repeated gauge."
+    },
+    {
+      "name": "C — Set ledger (strength) · PRIMARY for machines",
+      "ascii": "┌──────────────────────────────────────┐\n│▏ MARATHON · W5            STRENGTH ╲ │\n│▏─────────────────────────────────────│\n│▏ LOWER A                      45 MIN │\n│▏ LEG PRESS             3 × 8 · 80 kg │\n│▏  ▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░           2 / 3 │\n│▏  ┌──────┬──────┬──────┐             │\n│▏  │  8   │  8   │  8   │  reps       │\n│▏  │ 80   │ 80   │ 80   │  kg         │\n│▏  │  ✓   │  ✓   │  ○   │             │\n│▏  └──────┴──────┴──────┘             │\n│▏ LEG CURL              3×10 · 35kg ▸ │\n│▏ SEATED ROW            3×10 · 45kg ▸ │\n│▏─────────────────────────────────────│\n│▏ Keeps hips and hamstrings strong so │\n│▏ form holds late in the race.        │\n│▏ [ WHY THIS? ↧ ]       [ LOG SET ▸ ] │\n└──────────────────────────────────────┘",
+      "rationale": "Same card shell, different body: the target is sets × reps × weight, so the body is a three-column set table with per-set completion, plus collapsed sibling machines. The load ramp lives in the numbers (last week's 75 → today's 80, shown as +5), not in a chart. This is the only variant where a table is the right answer, and it proves the shell is a system rather than one layout skinned three ways."
+    }
+  ],
+  "token_adjustments": [
+    {
+      "token": "--signal-ink",
+      "light": "#8A5C12",
+      "dark": "#F2B451",
+      "role": "Amber TEXT: labels, inline emphasis, focus ring, source links. --signal remains mark-only (needle, ticks, today ring, notch).",
+      "why": "Measured: #E8A33D on #F4F5F2 = 1.97:1 — fails AA for text. #8A5C12 on paper = 5.3:1; #F2B451 on #101318 = 10.7:1. Without this split the amber will be used as text somewhere and fail.",
+      "additive": true
+    },
+    {
+      "token": "--hairline-strong",
+      "light": "#848C96",
+      "dark": "#6B7484",
+      "role": "Ticks, pace-axis strokes, band edges, set-table row rules, target notch, spine rail.",
+      "why": "--hairline on paper is 1.17:1: fine for decoration, but these ticks encode data (band bounds, segment count). Measured 3.12:1 light and 4.07:1 dark, meeting the 3:1 non-text bar. Keeping one hairline for both jobs would either make dividers heavy or ticks invisible.",
+      "additive": true
+    },
+    {
+      "token": "--signal-wash",
+      "light": "color-mix(in oklab, #E8A33D 14%, #F4F5F2)",
+      "dark": "color-mix(in oklab, #F2B451 18%, #101318)",
+      "role": "Pace-band fill, today-cell fill, current-week marker.",
+      "why": "Lets amber tint a surface without introducing a second hue. Dark needs a higher mix: the same 14% amber on #101318 reads as dirty grey rather than lit.",
+      "additive": true
+    },
+    {
+      "token": "--sunken",
+      "light": "#ECEEE9",
+      "dark": "#161A21",
+      "role": "Input wells, steppers, chips, bottom-sheet surface.",
+      "why": "One tonal step + hairline replaces box-shadow. Shadows read as consumer-app elevation; a machined plate does not float.",
+      "additive": true
+    },
+    {
+      "token": "--radius-card / --radius-control",
+      "light": "2px / 4px",
+      "dark": "2px / 4px",
+      "role": "Corner radii.",
+      "why": "The templated look is 12–16px rounded cards. 2px keeps the card a plate; 4px on controls keeps them tappable-looking without becoming pills.",
+      "additive": true
+    },
+    {
+      "token": "--font-feature-data",
+      "light": "\"tnum\" 1, \"zero\" 1",
+      "dark": "same",
+      "role": "All IBM Plex Mono data.",
+      "why": "Tabular figures stop pace and weight jittering while typing; slashed zero separates 0 from O at 12px in 4:50 and 10.0.",
+      "additive": true
+    },
+    {
+      "token": "--tap-min",
+      "light": "44px",
+      "dark": "44px",
+      "role": "Minimum hit area for day cells, RPE cells, steppers, icon buttons.",
+      "why": "Puts the floor in the token layer so no component can quietly ship a 32px chevron. RPE forced to 2×5 as a consequence, not as a taste call.",
+      "additive": true
+    }
+  ],
+  "motion": [
+    {
+      "name": "needle-settle",
+      "trigger": "SessionCard first paint, once per session per app launch (sessionStorage key = session id)",
+      "spec": "12 ticks reveal via clip-path inset left→right, 14ms stagger; needle translateX from band centre to actual position; band wash fades in last",
+      "duration_ms": 320,
+      "easing": "cubic-bezier(.2,.85,.25,1)",
+      "reduced_motion": "No transform, no stagger: final state, opacity 120ms"
+    },
+    {
+      "name": "today-ring-draw",
+      "trigger": "Calendar mount when the date changes",
+      "spec": "SVG circle stroke-dashoffset 1→0, no fill until complete",
+      "duration_ms": 480,
+      "easing": "cubic-bezier(.2,.8,.2,1)",
+      "reduced_motion": "Instant, ring already drawn"
+    },
+    {
+      "name": "why-expand",
+      "trigger": "Tap 'WHY THIS?'",
+      "spec": "grid-template-rows 0fr→1fr plus 90ms content fade delayed 60ms; collapse 140ms with no delay",
+      "duration_ms": 180,
+      "easing": "cubic-bezier(.2,.8,.2,1)",
+      "reduced_motion": "Instant toggle, no height animation"
+    },
+    {
+      "name": "sheet-rise",
+      "trigger": "'LOG IT' / 'LOG SET'",
+      "spec": "translateY 24px→0 + opacity; backdrop 160ms opacity only; drag-to-dismiss follows finger 1:1",
+      "duration_ms": 220,
+      "easing": "cubic-bezier(.2,0,0,1)",
+      "reduced_motion": "Sheet appears in place, backdrop instant"
+    },
+    {
+      "name": "bar-fill-once",
+      "trigger": "First intersection of Week-so-far, once per mount",
+      "spec": "scaleX 0→1 from left; never replays on scroll-back or data refetch",
+      "duration_ms": 420,
+      "easing": "cubic-bezier(.2,.8,.2,1)",
+      "reduced_motion": "Final state immediately"
+    },
+    {
+      "name": "press-step",
+      "trigger": "Any control press",
+      "spec": "background steps paper→sunken in 90ms; no scale, no shadow, no ripple",
+      "duration_ms": 90,
+      "easing": "linear",
+      "reduced_motion": "Same (colour step is not vestibular motion)"
+    },
+    {
+      "name": "ANTI-RULE: numerals never animate",
+      "trigger": "Always",
+      "spec": "Pace, distance, weight, reps, RPE swap instantly. No count-up, no odometer, no digit roll. Blurred numerals are unreadable mid-effort and tabular figures exist precisely to avoid the reflow that makes animation tempting.",
+      "duration_ms": 0,
+      "easing": "n/a",
+      "reduced_motion": "n/a"
+    }
+  ],
+  "a11y": [
+    {
+      "topic": "Contrast (measured)",
+      "requirement": "ink/paper 15.9:1 light, 15.8:1 dark. steel/paper 5.5:1 light, 7.3:1 dark. signal-ink/paper 5.3:1 light; signal/dark-paper 10.7:1. --signal as TEXT fails at 1.97:1 on paper and is therefore mark-only. Tick marks use --hairline-strong at 3.12:1 / 4.07:1 because they encode data."
+    },
+    {
+      "topic": "Colour is never the only signal",
+      "requirement": "Needle carries a numeric label and sits inside/outside a shaped band; today gets a ring plus a 'TODAY' heading; done nodes are ● + ✓ vs ○ for rest; over-target volume gets a −/+ text delta. Greyscale screenshot must still be fully readable."
+    },
+    {
+      "topic": "Tap targets",
+      "requirement": "44px minimum everywhere (we use 48px for day cells and 48px row height). RPE is a 2×5 grid of 64×48 cells; 10-across would be 32px on a 390px phone and is rejected. Steppers are 44×44 with hold-to-repeat after 400ms."
+    },
+    {
+      "topic": "Focus",
+      "requirement": "2px --signal-ink outline, 2px paper offset, on :focus-visible only. Must be visible on paper, sunken, and inside the amber band fill. Focus never moves on expand; the trigger stays focused. Bottom sheet traps focus, Esc closes, focus returns to the invoking button."
+    },
+    {
+      "topic": "Screen reader structure",
+      "requirement": "Card is <article aria-labelledby> with an h2 carrying 'Tempo run, 6 kilometres'. Pace band is role=img with aria-label 'Target band 4 minutes 55 to 5 minutes 5 per kilometre. Logged 5 minutes 10, 5 seconds outside the band.' The same facts also exist as visible text, so nothing is SR-only-essential. Spine is an ordered list; the why-panel is aria-expanded/aria-controls."
+    },
+    {
+      "topic": "Forms",
+      "requirement": "Persistent labels above fields, unit inside the accessible name, inputmode=decimal for distance/weight and numeric for reps/HR, 16px minimum input text to prevent iOS zoom. Derived values marked 'auto' and described via aria-describedby; errors inline + aria-live=polite + aria-invalid, never colour-only. No placeholder-as-label."
+    },
+    {
+      "topic": "Live updates",
+      "requirement": "Set completion, day-count changes, and derived pace announce through one polite live region with complete sentences. No assertive interruptions during a workout."
+    },
+    {
+      "topic": "Text scaling",
+      "requirement": "No fixed heights on text blocks; 200% zoom reflows the card. Below 320px the pace axis is removed and the band degrades to '4:55–5:05 /km · logged 5:10' text, which is the accessible source of truth anyway. Display weight stays ≥400 at small sizes."
+    },
+    {
+      "topic": "Reduced motion",
+      "requirement": "prefers-reduced-motion: reduce kills every transform, stagger, and draw; only 90–120ms opacity/colour changes remain. No parallax, no scroll-triggered reveals, no confetti, no streak flame animation."
+    },
+    {
+      "topic": "Language and effort",
+      "requirement": "RPE cells carry plain-language anchors ('6–7: short sentences possible'), because a bare 1–10 scale is a vocabulary test. Zone labels always appear with their band, never alone."
+    }
+  ],
+  "self_critique": {
+    "ascii_legend": "▏ = continuous hairline tick rail (12 ticks in build, major every 3). ▓ = filled/completed. ░ = planned/not yet done. ▒ = target band fill. ╫ = logged value (needle). ┬ = axis tick. ●/○ = done/planned node. (22) = today ring. ◐ = today, not yet done. ╲ = modality edge tick.",
+    "templated_defaults_avoided": [
+      {
+        "default": "Cream + serif + terracotta 'editorial wellness'",
+        "how": "No serif anywhere, no warm off-white (#F4F5F2 is cool-neutral, green-grey not cream), no terracotta. Warmth comes from the single amber, used as a needle rather than a surface wash."
+      },
+      {
+        "default": "Near-black + acid-green 'performance tech'",
+        "how": "Dark theme is #101318 (blue-black), not #0A0A0A; the accent is amber, not acid. No neon glow, no gradient mesh, no glow-on-hover."
+      },
+      {
+        "default": "Broadsheet hairlines only — thin rules doing all the work",
+        "how": "Hairlines are the quiet layer; weight comes from the tick rail, the shaded band, and the set table. --hairline-strong exists specifically because hairline-only would make the instrument parts invisible."
+      }
+    ],
+    "other_defaults_avoided": [
+      "No card grid of equal tiles — the session card is singular and the rest is a ruled list.",
+      "No progress rings, streak flames, confetti, or 'you crushed it' copy. Feedback is a number and a delta.",
+      "No icon-per-row. Icons appear only where a word fails (none in M1 except ✕ and ▸).",
+      "No pill buttons or 16px radii; corners are 2px.",
+      "No dashboard: 'Week so far' is three blocks and one sparkline, not six KPI tiles.",
+      "No skeleton-shimmer; loading is a single hairline sweep."
+    ],
+    "risks": [
+      {
+        "risk": "Amber reads as a generic accent rather than an instrument needle.",
+        "mitigation": "Amber only ever marks measurement or 'now': the needle, the target notch, the today ring, the completed-set tick. If a screen has amber that is none of those, it is a bug. Never use amber as a CTA fill; CTAs are ink on paper."
+      },
+      {
+        "risk": "The tick rail becomes decorative noise.",
+        "mitigation": "Ticks are coupled to data: 12 ticks = 12 session blocks, major every 3. If a session has fewer blocks, ticks drop out — they are not a texture."
+      },
+      {
+        "risk": "'Field notebook' tips into skeuomorphism (paper grain, torn edges, handwriting).",
+        "mitigation": "The notebook shows up only in structure: index numbers, ruled rows, margin notes, a spine. No textures, no torn edges, no script typefaces, no photo of paper."
+      },
+      {
+        "risk": "Mono-heavy interface reads as a spreadsheet.",
+        "mitigation": "Mono is restricted to numerals and short uppercase metadata; every sentence is Plex Sans. Prose never sets in mono, and no mono string exceeds ~28 characters."
+      },
+      {
+        "risk": "Variant A's gauge could be misread when the needle is out of band.",
+        "mitigation": "Out-of-band is explicit: the needle sits outside the shaded band and the legend states the delta in words. No red, no shake — this is a measurement app, not a scold."
+      }
+    ],
+    "rejected": [
+      {
+        "option": "Three visual skins of the same layout",
+        "reason": "Would have produced three answers to 'make the card prettier' instead of three answers to 'what is the card for'. A/B/C differ in information architecture: measured band, structure rows, set ledger."
+      },
+      {
+        "option": "A single universal card with a strength table bolted in",
+        "reason": "Sets × reps × weight does not fit a pace band, and forcing it would have produced a dense hybrid that reads well in a mock and badly with gloves on."
+      }
+    ],
+    "open_questions": [
+      "Does the week strip show 7 days or 14 on ≥720px? A 14-day strip is more useful for a 6-day week but breaks the 1:1 with 'Week so far'.",
+      "Should 'why' be a stored AI paragraph (per plan) with a source list, or a hand-authored block per session type with AI only summarising? The wireframe assumes the latter to keep the citation honest.",
+      "Whether the today card should collapse to a 2-line summary once 2+ sessions are completed that day (double days)."
+    ],
+    "chosen_direction": {
+      "primary": "A — Needle for running sessions",
+      "structural": "C — Set ledger for strength sessions",
+      "alternate": "B — Ledger for long / interval runs",
+      "why": "One SessionCard shell (goal tag, modality edge tick, target block, purpose line, why toggle, log action) with three swappable bodies selected by workout type. A carries the instrument signature on the sessions the app is about; C covers the gym case without forcing sets into a gauge; B keeps long sessions from all looking like the same dial.",
+      "implementation_note": "SessionCard renders header + footer and slots body by session.kind: 'pace' → PaceBand body, 'structure' → Structure rows, 'strength' → SetLedger body. Do not build three separate card components."
+    }
+  }
+}

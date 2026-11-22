@@ -2,13 +2,10 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { desc, eq } from 'drizzle-orm';
-import { GOAL_PROFILES } from '@strideguide/shared/profiles';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
 const goals = new Hono<AppBindings>();
-
-goals.get('/profiles', (c) => c.json({ profiles: GOAL_PROFILES }));
 
 goals.get('/', async (c) => {
 	const user = c.get('user')!;

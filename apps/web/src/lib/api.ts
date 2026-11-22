@@ -1,5 +1,6 @@
 /** Thin typed client for the Hono API. Same-origin: /api/* on the Worker. */
 import type { GoalProfileData } from '@strideguide/shared';
+import type { CurrentPlan } from './plan';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
 	const res = await fetch(`/api${path}`, {
@@ -20,8 +21,21 @@ export interface ApiUser {
 	avatarUrl?: string | null;
 }
 
+export interface GeneratePlanInput {
+	goalProfileSlug: string;
+	targetDate?: string;
+	startDate?: string;
+	baseline?: {
+		recentTimes?: Record<string, string>;
+		weeklyKm?: number;
+		experience?: 'beginner' | 'intermediate' | 'advanced';
+	};
+	availableDays?: number[];
+}
+
 export const api = {
 	health: () => req<{ ok: boolean; env: string }>('/health'),
+
 	me: async (): Promise<ApiUser | null> => {
 		const res = await fetch('/auth/me', { credentials: 'include' });
 		if (!res.ok) return null;
@@ -29,9 +43,11 @@ export const api = {
 		if (!data.user) return null;
 		return { id: data.user.uid, email: data.user.email };
 	},
+
 	login: () => {
 		window.location.href = '/auth/google';
 	},
+
 	logout: async (): Promise<{ ok: boolean }> => {
 		const res = await fetch('/auth/logout', {
 			method: 'POST',
@@ -41,10 +57,21 @@ export const api = {
 		if (!res.ok) throw new Error(`logout failed ${res.status}`);
 		return (await res.json()) as { ok: boolean };
 	},
+
 	profiles: () => req<{ profiles: GoalProfileData[] }>('/goals/profiles'),
-	currentPlan: () => req<unknown>('/plans/current'),
+
+	currentPlan: () => req<CurrentPlan>('/plans/current'),
+
+	generatePlan: (body: GeneratePlanInput) =>
+		req<{ planId: string; goalId: string; weeks: number; usedAi: boolean }>('/plans/generate', {
+			method: 'POST',
+			body: JSON.stringify(body),
+		}),
+
 	logs: () => req<{ logs: unknown[] }>('/logs'),
+
 	log: (body: unknown) => req<{ log: unknown }>('/logs', { method: 'POST', body: JSON.stringify(body) }),
+
 	chat: (message: string, context?: string) =>
 		req<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, context }) }),
 };

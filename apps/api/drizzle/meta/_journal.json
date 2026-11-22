@@ -15,6 +15,13 @@
       "when": 1795358216639,
       "tag": "0001_groovy_dragon_lord",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795370412891,
+      "tag": "0002_broken_nekra",
+      "breakpoints": true
     }
   ]
 }

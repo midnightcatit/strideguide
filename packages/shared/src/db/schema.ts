@@ -137,6 +137,7 @@ export const sessionsPlan = sqliteTable(
 		modality: text('modality', { enum: ['running', 'strength', 'mobility', 'recovery'] }).notNull(),
 		type: text('type').notNull(),
 		title: text('title'),
+		purpose: text('purpose'),
 		prescription: text('prescription', { mode: 'json' }),
 		durationMin: integer('duration_min'),
 		explanationId: text('explanation_id'),
