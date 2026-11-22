@@ -144,7 +144,7 @@
 		<section class="mb-6">
 			<h2 class="text-xs uppercase tracking-widest text-steel">Pace trend</h2>
 			{#if !paceGeom}
-				<p class="mt-2 text-xs text-steel">Log at least 3 runs to see a pace trend — fewer points aren't meaningful.</p>
+				<p class="mt-2 text-xs text-steel">Log at least 3 runs to see a pace trend. Fewer points aren't meaningful.</p>
 			{:else}
 				<svg viewBox="0 0 100 {PACE_H}" preserveAspectRatio="none" class="mt-3 w-full" style="height: {PACE_H}px" role="img" aria-label="Logged run paces over time">
 					{#each paceGeom as p, i (i)}

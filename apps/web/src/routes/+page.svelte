@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api, type ApiUser } from '$lib/api';
-	import { fmtDistance } from '$lib/prefs.svelte';
+	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, mondayIndex } from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -101,7 +101,7 @@
 			{daySessions.length
 				? daySessions.length > 1
 					? `${daySessions.length} sessions`
-					: (daySessions[0]?.title || daySessions[0]?.type || 'Today')
+					: sessionLabel(daySessions[0])
 				: 'Rest day'}
 		</h1>
 		<p class="mt-1 text-sm text-steel">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
-	import { fmtDistance } from '$lib/prefs.svelte';
+	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, mondayIndex } from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -68,7 +68,8 @@
 	<p class="mt-6 text-sm text-steel">No plan yet. <a href="/onboarding" class="text-signal-ink hover:underline">Build one →</a></p>
 {:else}
 	<section class="mb-4">
-		<p class="text-xs uppercase tracking-widest text-steel">Plan</p>
+		<a href="/" class="text-xs text-steel hover:text-signal-ink">‹ Today</a>
+		<p class="mt-2 text-xs uppercase tracking-widest text-steel">Plan</p>
 		<h1 class="font-display mt-1 text-2xl font-bold">{currentWeek.focus ?? 'This week'}</h1>
 	</section>
 
@@ -113,7 +114,7 @@
 				<li>
 					<button type="button" onclick={() => (selectedDay = s.day)} class="flex w-full items-center justify-between gap-3 py-2.5 text-left hover:text-signal-ink">
 						<span class="w-8 shrink-0 tabular text-xs text-steel">{DAY_NAMES[s.day]?.slice(0, 3)}</span>
-						<span class="flex-1 truncate text-sm">{#if done}<span class="text-signal-ink">✓</span>{/if}{s.title ?? s.type}</span>
+						<span class="flex-1 truncate text-sm">{#if done}<span class="text-signal-ink">✓</span>{/if}{sessionLabel(s)}</span>
 						<IntensityLadder intensity={s.prescription?.intensity} label={false} />
 						<span class="tabular w-14 shrink-0 text-right text-xs text-steel">
 							{#if s.prescription?.targetDistanceKm}{fmtDistance(s.prescription.targetDistanceKm)}{:else}{s.modality}{/if}

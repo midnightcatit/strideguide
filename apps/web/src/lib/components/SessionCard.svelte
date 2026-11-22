@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { formatDuration, modalityLabel } from '$lib/plan';
-	import { fmtDistance, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPace, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { api } from '$lib/api';
 
@@ -51,10 +51,10 @@
 			? fmtDistance(p.targetDistanceKm)
 			: isStrength
 				? `${machines.length} machines`
-				: (formatDuration(session.durationMin) ?? '—'),
+				: (formatDuration(session.durationMin) ?? '–'),
 	);
 	const secondary = $derived(
-		isStrength ? (reps ? `3 × ${reps}` : '3 sets') : (formatDuration(session.durationMin) ?? '—'),
+		isStrength ? (reps ? `3 × ${reps}` : '3 sets') : (formatDuration(session.durationMin) ?? '–'),
 	);
 
 	const loggedLine = $derived.by(() => {
@@ -96,7 +96,7 @@
 		</div>
 
 		<h2 class="font-display mt-1 text-lg font-medium leading-tight">
-			{session.title ?? modalityLabel(session.modality)}
+			{sessionLabel(session)}
 		</h2>
 
 		<hr class="my-3 border-hairline" />
@@ -168,7 +168,7 @@
 						{#each machines as block (block.machine)}
 							<li class="flex justify-between tabular">
 								<span class="text-ink">{block.machine}</span>
-								<span class="text-steel">{block.sets?.[0]?.reps ?? '—'} reps × {block.sets?.length ?? 0}</span>
+								<span class="text-steel">{block.sets?.[0]?.reps ?? '–'} reps × {block.sets?.length ?? 0}</span>
 							</li>
 						{/each}
 					</ul>

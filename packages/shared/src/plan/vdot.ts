@@ -2,7 +2,7 @@ import type { TrainingPaces } from './types';
 
 /**
  * VDOT-based training paces (Daniels). Pure, dependency-free.
- * References: Daniels' Running Formula (VDOT) — velocity<->VO2 and
+ * References: Daniels' Running Formula (VDOT): velocity<->VO2 and
  * sustainable-fraction-of-VO2max equations.
  */
 

@@ -2,7 +2,7 @@
 	import { formatClock } from '@strideguide/shared/units';
 	import { findMachine } from '@strideguide/shared/plan';
 	import type { ClientSession, ClientStep } from '$lib/plan';
-	import { fmtDistance, fmtPaceBand } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPaceBand, fmtStepDistance } from '$lib/prefs.svelte';
 
 	let {
 		session,
@@ -129,7 +129,7 @@
 
 	function stepDistance(m?: number): string | null {
 		if (m == null) return null;
-		return m < 1000 ? `${m} m` : fmtDistance(m / 1000);
+		return fmtStepDistance(m);
 	}
 
 	function stepTarget(step: ClientStep): string {
@@ -165,7 +165,7 @@
 		{:else if resting}
 			<!-- Automatic rest -->
 			<div class="mt-6 rounded-xl border border-hairline bg-sunken p-6 text-center">
-				<p class="text-xs uppercase tracking-widest text-steel">Rest — next up</p>
+				<p class="text-xs uppercase tracking-widest text-steel">Rest, next up</p>
 				<p class="tabular mt-1 text-4xl font-medium">{formatClock(restLeft)}</p>
 				{#if instances[idx + 1]}
 					<p class="mt-2 text-sm text-steel">
@@ -244,7 +244,7 @@
 			{/each}
 		</ul>
 		<p class="mt-4 text-xs text-steel">
-			Advances automatically — timed steps count down, strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.
+			Advances automatically. Timed steps count down, and strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 </div>

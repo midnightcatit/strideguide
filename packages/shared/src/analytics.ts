@@ -1,5 +1,5 @@
 /**
- * Progress analytics — pure functions over logs + the prescribed plan.
+ * Progress analytics: pure functions over logs + the prescribed plan.
  * Grounded in research/wave-4/progress-metrics.json: descriptive metrics only
  * (adherence, volume, intensity distribution, pace trend, PBs). Load-management
  * ratios (ACWR/monotony/strain) are deliberately NOT computed (contested / dismissed).

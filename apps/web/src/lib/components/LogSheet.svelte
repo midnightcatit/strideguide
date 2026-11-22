@@ -153,7 +153,7 @@
 		</div>
 		<div class="mt-3 flex items-baseline justify-between">
 			<span class="text-xs text-steel">Pace (auto)</span>
-			<span class="tabular text-lg">{paceSecPerKm ? fmtPace(paceSecPerKm) : '—'}</span>
+			<span class="tabular text-lg">{paceSecPerKm ? fmtPace(paceSecPerKm) : '–'}</span>
 		</div>
 		<label class="mt-3 block text-xs text-steel">
 			Avg HR (optional)

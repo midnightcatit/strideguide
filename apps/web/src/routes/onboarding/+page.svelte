@@ -170,7 +170,7 @@
 			</div>
 		{:else}
 			<p class="mt-2 text-xs text-steel">
-				Optional — without a recent race we'll estimate paces from your experience, and recalibrate after your first runs.
+				Optional. Without a recent race, we'll estimate paces from your experience, and recalibrate after your first runs.
 			</p>
 		{/if}
 	</fieldset>
