@@ -32,8 +32,6 @@ export async function checkRateLimit(
 }
 
 export function clientIp(request: Request): string {
-	const cf = request.headers.get('cf-connecting-ip');
-	if (cf) return cf;
-	const xff = request.headers.get('x-forwarded-for');
-	return xff?.split(',')[0]?.trim() || 'unknown';
+	// cf-connecting-ip is set by Cloudflare and cannot be spoofed by the client.
+	return request.headers.get('cf-connecting-ip') ?? 'unknown';
 }

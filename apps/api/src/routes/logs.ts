@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { desc, eq } from 'drizzle-orm';
+import { desc, and, eq } from 'drizzle-orm';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -53,6 +53,21 @@ logs.post(
 	async (c) => {
 		const user = c.get('user')!;
 		const body = c.req.valid('json');
+
+		// A log may only be attached to the caller's own session.
+		if (body.sessionId) {
+			const owned = await c
+				.get('db')
+				.select({ id: schema.sessionsPlan.id })
+				.from(schema.sessionsPlan)
+				.innerJoin(schema.planWeeks, eq(schema.sessionsPlan.planWeekId, schema.planWeeks.id))
+				.innerJoin(schema.plans, eq(schema.planWeeks.planId, schema.plans.id))
+				.innerJoin(schema.userGoals, eq(schema.plans.userGoalId, schema.userGoals.id))
+				.where(and(eq(schema.sessionsPlan.id, body.sessionId), eq(schema.userGoals.userId, user.id)))
+				.limit(1);
+			if (!owned[0]) return c.json({ error: 'unknown_session' }, 400);
+		}
+
 		const inserted = await c
 			.get('db')
 			.insert(schema.logs)

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
-	import { api, type ApiUser } from '$lib/api';
+	import { api } from '$lib/api';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
+	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -14,8 +15,6 @@
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
-	let user = $state<ApiUser | null>(null);
-	let checked = $state(false);
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
@@ -100,33 +99,15 @@
 	}
 
 	onMount(async () => {
-		user = await api.me().catch(() => null);
-		if (user) {
+		await ensureAuth();
+		if (auth.user) {
 			await ensurePlan();
 			note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 		}
-		checked = true;
 	});
 </script>
 
-{#if !checked}
-	<p class="tabular text-sm text-steel">Loading…</p>
-{:else if !user}
-	<section class="mt-10 text-center">
-		<p class="tabular text-xs uppercase tracking-widest text-steel">Stride Guide</p>
-		<h1 class="font-display mt-2 text-2xl font-bold">Built around your race, your pace, your week.</h1>
-		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
-			Pick a goal and a race date. We write the sessions and explain each one.
-		</p>
-		<button
-			type="button"
-			onclick={() => api.login()}
-			class="mt-6 rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90"
-		>
-			Sign in with Google
-		</button>
-	</section>
-{:else if store.error}
+{#if store.error}
 	<p class="mt-6 text-sm text-steel">{store.error}</p>
 {:else if !weeks.length}
 	<section class="mt-10 text-center">
@@ -211,7 +192,7 @@
 				<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
 					{#each selWeek.sessions as s (s.id)}
 						{@const done = loggedBySession.has(s.id)}
-						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-hairline-strong/40'}"></span>
+						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-ink/40'}"></span>
 					{/each}
 				</div>
 				<p class="tabular mt-2 text-sm">

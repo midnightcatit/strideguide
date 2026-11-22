@@ -180,35 +180,31 @@
 					<p class="text-sm font-medium">{row.machine}</p>
 					<div class="mt-2 space-y-1">
 						{#each row.sets as set, i (i)}
-							<div class="flex items-center gap-2">
-								<span class="tabular w-6 text-xs text-steel">{i + 1}</span>
+							<div class="flex min-w-0 items-center gap-2">
+								<span class="tabular w-5 shrink-0 text-xs text-steel">{i + 1}</span>
 								<input
 									bind:value={set.reps}
 									type="number"
 									inputmode="numeric"
 									aria-label="{row.machine} set {i + 1} reps"
-									class="tabular w-16 rounded-md border border-hairline bg-paper px-2 py-1 text-sm"
+									class="tabular w-14 min-w-0 rounded-md border border-hairline-strong bg-paper px-2 py-1.5 text-sm"
 								/>
-								<span class="text-xs text-steel">reps ×</span>
+								<span class="shrink-0 text-xs text-steel">×</span>
 								<input
 									bind:value={set.weightKg}
 									type="number"
 									inputmode="decimal"
 									aria-label="{row.machine} set {i + 1} weight"
-									class="tabular w-20 rounded-md border border-hairline bg-paper px-2 py-1 text-sm"
+									class="tabular w-16 min-w-0 rounded-md border border-hairline-strong bg-paper px-2 py-1.5 text-sm"
 								/>
-								<span class="text-xs text-steel">{weightUnit}</span>
+								<span class="shrink-0 text-xs text-steel">{weightUnit}</span>
 							</div>
 						{/each}
 					</div>
-					<div class="mt-2 flex gap-2 text-xs">
-						<button type="button" onclick={() => repeatLast(row)} class="text-signal-ink hover:underline"
-							>↻ same</button
-						>
-						<button type="button" onclick={() => addSet(row)} class="text-steel hover:text-ink">+ set</button>
-						<button type="button" onclick={() => removeSet(row)} class="text-steel hover:text-ink"
-							>− set</button
-						>
+					<div class="mt-1 flex gap-1 text-xs">
+						<button type="button" onclick={() => repeatLast(row)} class="flex h-11 items-center px-2 text-signal-ink hover:underline">↻ same</button>
+						<button type="button" onclick={() => addSet(row)} class="flex h-11 items-center px-2 text-steel hover:text-ink">+ set</button>
+						<button type="button" onclick={() => removeSet(row)} class="flex h-11 items-center px-2 text-steel hover:text-ink">− set</button>
 					</div>
 				</div>
 			{/each}

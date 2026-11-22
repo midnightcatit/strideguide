@@ -36,8 +36,6 @@ export interface GeneratePlanInput {
 }
 
 export const api = {
-	health: () => req<{ ok: boolean; env: string }>('/health'),
-
 	me: async (): Promise<ApiUser | null> => {
 		const res = await fetch('/auth/me', { credentials: 'include' });
 		if (!res.ok) return null;
@@ -80,8 +78,6 @@ export const api = {
 			body: JSON.stringify(body),
 		}),
 
-	logs: () => req<{ logs: unknown[] }>('/logs'),
-
 	/** Save a log; if offline, queue it and return an optimistic (pending) log. */
 	log: async (body: unknown): Promise<{ log: unknown }> => {
 		try {
@@ -105,8 +101,6 @@ export const api = {
 			throw e;
 		}
 	},
-
-	pendingCount: () => outbox().length,
 
 	/** Flush queued offline logs. Stops on the first failure (still offline). */
 	flushOutbox: async (): Promise<{ sent: number; remaining: number }> => {

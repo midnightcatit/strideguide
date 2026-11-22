@@ -61,10 +61,10 @@
 
 <article
 	class="relative overflow-hidden rounded-xl border bg-paper p-4 sm:p-5 transition-colors {active
-		? 'border-signal/50'
+		? 'border-signal-ink'
 		: 'border-hairline'}"
 >
-	<div class="absolute left-0 top-0 h-full w-0.5 {isStrength ? 'bg-steel' : 'bg-signal'} {active && !logged ? 'breathe' : ''}" aria-hidden="true"></div>
+	<div class="absolute left-0 top-0 h-full w-0.5 {isStrength ? 'bg-steel' : 'bg-signal-ink'} {active && !logged ? 'breathe' : ''}" aria-hidden="true"></div>
 
 	{#if onOpen}
 		<button
@@ -111,7 +111,7 @@
 			<button
 				type="button"
 				onclick={onStart}
-				class="flex-1 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-paper hover:opacity-90"
+				class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
 			>
 				Start
 			</button>
@@ -120,7 +120,7 @@
 			<button
 				type="button"
 				onclick={onLog}
-				class="flex-1 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink"
+				class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 			>
 				{logged ? 'Log again' : 'Log it'}
 			</button>

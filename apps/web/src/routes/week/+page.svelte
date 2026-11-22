@@ -112,9 +112,9 @@
 		<div class="flex items-baseline justify-between gap-3">
 			<a href="/" class="tabular text-xs uppercase tracking-widest text-steel hover:text-signal-ink">‹ Today</a>
 			<div class="flex items-center gap-2">
-				<button type="button" onclick={() => selectWeek(weekIndex - 1)} disabled={weekIndex === 0} aria-label="Previous week" class="px-2 py-1 text-steel disabled:opacity-40">‹</button>
+				<button type="button" onclick={() => selectWeek(weekIndex - 1)} disabled={weekIndex === 0} aria-label="Previous week" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink disabled:opacity-40">‹</button>
 				<span class="tabular text-xs text-steel">W{currentWeek.weekNumber} of {weeks.length}</span>
-				<button type="button" onclick={() => selectWeek(weekIndex + 1)} disabled={weekIndex >= weeks.length - 1} aria-label="Next week" class="px-2 py-1 text-steel disabled:opacity-40">›</button>
+				<button type="button" onclick={() => selectWeek(weekIndex + 1)} disabled={weekIndex >= weeks.length - 1} aria-label="Next week" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink disabled:opacity-40">›</button>
 			</div>
 		</div>
 		<h1 class="font-display mt-1 text-2xl font-bold">{currentWeek.focus ?? 'This week'}</h1>
@@ -154,7 +154,7 @@
 					</span>
 					<span class="h-3 text-[10px] {logged ? 'text-signal-ink' : 'text-transparent'}" aria-hidden="true">✓</span>
 					{#if currentWeekIsToday && day === todayIndex}
-						<span class="h-0.5 w-4 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-signal'}" aria-hidden="true"></span>
+						<span class="h-0.5 w-4 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-signal-ink'}" aria-hidden="true"></span>
 					{/if}
 				</button>
 			{/each}
@@ -166,7 +166,7 @@
 			<h2 id="day-sessions" class="tabular text-xs uppercase tracking-widest text-steel">{DAY_NAMES[selectedDay]}</h2>
 			<div class="flex items-center gap-1">
 				{#if selectedDay !== todayIndex || !currentWeekIsToday}
-					<button type="button" onclick={goToday} class="mr-1 rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal">Today</button>
+					<button type="button" onclick={goToday} class="mr-1 flex h-11 items-center rounded-md border border-hairline-strong px-3 text-xs text-signal-ink hover:border-signal">Today</button>
 				{/if}
 				<button type="button" onclick={() => stepDay(-1)} aria-label="Previous day" class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink">‹</button>
 				<span class="tabular text-xs text-steel">{selectedDay + 1} / 7</span>

@@ -240,11 +240,11 @@
 			{#each instances as inst, i (i)}
 				<li>
 					<button type="button" onclick={() => jump(i)} class="flex w-full items-start justify-between gap-3 py-2.5 text-left {i === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink">
-						<span class="flex-1">
+						<span class="min-w-0 flex-1">
 							<span class="text-sm">{inst.blockLabel ? `${inst.blockLabel}: ` : ''}{inst.step.label}{inst.setNo ? ` (set ${inst.setNo}/${inst.totalSets})` : ''}{inst.rep ? ` (${inst.rep}/${inst.totalReps})` : ''}</span>
 							{#if inst.step.note}<span class="mt-0.5 block text-xs text-steel">{inst.step.note}</span>{/if}
 						</span>
-						<span class="tabular shrink-0 text-xs text-steel">{stepTarget(inst.step)}</span>
+						<span class="tabular max-w-[45%] shrink-0 truncate text-xs text-steel">{stepTarget(inst.step)}</span>
 					</button>
 				</li>
 			{/each}

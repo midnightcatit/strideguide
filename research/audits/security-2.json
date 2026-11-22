@@ -1,0 +1,80 @@
+{
+  "findings": [
+    {
+      "id": "SEC2-01",
+      "severity": "medium",
+      "file_line": "apps/api/src/routes/plans.ts:62-68 (read), apps/api/src/routes/logs.ts:27,62 (write)",
+      "issue": "Cross-user log exposure / IDOR via the log-to-session association. plans.get('/current') loads logs with only inArray(logs.sessionId, sessionIds) and no userId filter, while logs.post accepts an arbitrary client-supplied sessionId (z.string().optional()) without verifying the session belongs to the caller. A user who knows or obtains another user's session id can attach a log to it, and that log (including notes/runStats) then renders inside the victim's plan view; a caller can also associate rows with sessions they do not own.",
+      "fix": "Filter by owner on read: and(eq(schema.logs.userId, user.id), inArray(schema.logs.sessionId, part)) in plans.ts. On write, validate the sessionId belongs to the caller (join sessions_plan -> plan_weeks -> plans -> user_goals where user_goals.userId = user.id) and reject or null an unknown/foreign id before insert."
+    },
+    {
+      "id": "SEC2-02",
+      "severity": "medium",
+      "file_line": "apps/api/src/routes/plans.ts:84-195 (narrateWeeks at 140; runAi call chain)",
+      "issue": "POST /api/plans/generate triggers AI narration (narrateWeeks -> runAi) but has no rate limit, unlike POST /api/ai/chat (40/hr per user). An authenticated user can loop the endpoint to drive repeated Cloudflare/OpenRouter spend and D1 writes (goal, plan, weeks, sessions rows per call), a cost-abuse and resource-exhaustion vector.",
+      "fix": "Add checkRateLimit(c.env.DB, `plan:${user.id}`, e.g. 10, 3600) before generating, returning 429 with Retry-After. Consider also capping plans/goals per user."
+    },
+    {
+      "id": "SEC2-03",
+      "severity": "low",
+      "file_line": "apps/api/src/routes/auth.ts:100-105",
+      "issue": "GET /auth/me verifies only the JWT signature (verifySession) and never checks the auth_sessions ledger row, unlike requireAuth. A token revoked by logout (revokedAt set) but not yet expired still returns uid and email here, so revocation is not uniformly enforced across the API.",
+      "fix": "Reuse the requireAuth check (verify the D1 row by sha256Hex(token) and reject when absent/revoked/expired), or return { user: null } unless the ledger row is valid."
+    },
+    {
+      "id": "SEC2-04",
+      "severity": "low",
+      "file_line": "apps/api/src/routes/goals.ts:26,36-42; apps/api/src/routes/ai.ts:35,110",
+      "issue": "POST /api/goals stores goalProfileSlug as an unconstrained z.string(), unlike /api/plans/generate which validates it against GOAL_PROFILES (plans.ts:101-102). The stored slug is later interpolated into a system-role coach message (ai.ts:35 then ai.ts:110), so a crafted slug injects attacker text into the privileged system context. Impact is limited to the attacker's own chat output, but it is unvalidated user input crossing into a system prompt.",
+      "fix": "Validate goalProfileSlug against GOAL_PROFILES and return 400 on unknown slugs, matching plans.ts. Keep user-derived strings in the user turn (or clearly delimited data), not the system role."
+    },
+    {
+      "id": "SEC2-05",
+      "severity": "low",
+      "file_line": "apps/api/src/routes/account.ts:35-43",
+      "issue": "DELETE /api/me/data runs each delete best-effort, swallows errors, and always returns { ok: true }. If a step fails (e.g. transient D1 error), the user is told their data was cleared while rows remain, so the delete-my-data guarantee is not honest.",
+      "fix": "Collect failures and return a non-2xx status (or 207 with the failed steps) when any table delete throws, so the client can retry instead of assuming success."
+    },
+    {
+      "id": "SEC2-06",
+      "severity": "low",
+      "file_line": "apps/api/src/lib/rate-limit.ts:34-39; apps/api/src/routes/auth.ts:29-35",
+      "issue": "clientIp falls back to the client-controlled X-Forwarded-For header when cf-connecting-ip is absent, so the /auth/google/callback rate limit can be evaded by spoofing XFF. The /auth/google start route has no rate limit at all.",
+      "fix": "Use cf-connecting-ip only and treat its absence as unknown (do not trust XFF on Workers). Add a modest per-IP limit on /auth/google."
+    },
+    {
+      "id": "SEC2-07",
+      "severity": "low",
+      "file_line": "apps/api/src/index.ts:45,63-73",
+      "issue": "The error handler persists the raw error message (up to 300 chars) to app_errors and logs it. Upstream failures can surface provider text or URLs (OpenRouter/Google/network) into stored error records, which risks retaining sensitive detail beyond the request lifecycle.",
+      "fix": "Redact or whitelist what is stored (name plus a generic category), and avoid persisting raw upstream response bodies or URLs."
+    },
+    {
+      "id": "SEC2-08",
+      "severity": "info",
+      "file_line": "apps/api/src/routes/auth.ts:50",
+      "issue": "The OAuth state is compared with !== while the nonce uses the constant-time timingSafeEqualStr (session.ts:92-100). The state is cookie-bound and single-use, so practical risk is negligible, but the comparison is inconsistent with the codebase's own constant-time practice.",
+      "fix": "Compare state with timingSafeEqualStr for consistency."
+    },
+    {
+      "id": "SEC2-09",
+      "severity": "low",
+      "file_line": "apps/api/src/lib/session.ts:18-20; apps/api/src/index.ts:23; apps/api/src/middleware/auth.ts:50-53",
+      "issue": "Secure cookies, the __Host- cookie prefix, and the localhost CORS/CSRF exceptions are all keyed on ENVIRONMENT === 'production'. Any other deployed value (for example a staging environment) silently disables the Secure flag and __Host- prefix and widens CORS/CSRF to localhost, weakening session protections by misconfiguration.",
+      "fix": "Fail closed: treat an explicit non-production allowlist as dev, and require Secure cookies plus the __Host- prefix for any non-localhost deployment."
+    }
+  ],
+  "strengths": [
+    "Central authz: every user-data route is mounted under a secured router with requireAuth (routes/api.ts:23-35); the only public endpoints are /health and /goals/profiles (routes/api.ts:18-21), neither of which returns user data.",
+    "requireAuth verifies both the HS256 JWT and the D1 auth_sessions ledger row, so sessions are revocable and expired/revoked tokens are rejected (middleware/auth.ts:17-40).",
+    "DELETE /api/me/data is scoped to the authenticated user.id for every table (routes/account.ts:13-33) and is CSRF-protected via requireSameOrigin on all mutating /api and /auth/logout routes (index.ts:35-36, middleware/auth.ts:45-58). No IDOR path to another user was found in this handler.",
+    "CSRF origin allowlist applied to all mutating methods, and CORS restricted to allowlisted WEB_ORIGIN/APP_ORIGIN with credentials (index.ts:20-36); the localhost exception is gated on non-production.",
+    "Session cookies are httpOnly, Secure in production, SameSite=Lax, with the __Host- prefix in production; HS256 signing enforces a >= 32-byte SESSION_SECRET (lib/session.ts:4-40,66-84).",
+    "OAuth flow uses random state plus nonce bound in an httpOnly cookie, verifies the nonce against the Google ID token with a constant-time compare, and pins algorithms/issuer/audience (routes/auth.ts:29-52,83-90; lib/auth.ts:83-92).",
+    "The new /explanations route serves only global knowledge-base rows with no user context (routes/explanations.ts:34-66), and /summaries filters by user.id (routes/summaries.ts:9-22); no cross-user data leak in either.",
+    "D1 access is parameterized throughout: Drizzle query builders in routes and bound prepared statements for the rate limiter (lib/rate-limit.ts:17-29); no string-interpolated SQL.",
+    "Mutating endpoints use zod validation (settings, logs, plans/generate, ai/chat); the coach input is capped at 2000 chars and rate limited per user (routes/ai.ts:15-21).",
+    "No secrets are logged: GOOGLE_CLIENT_SECRET, SESSION_SECRET, and OPENROUTER_API_KEY are only used in token exchange bodies or auth headers (lib/auth.ts:58, lib/ai.ts:54); log statements carry no secret values."
+  ],
+  "summary": "The API's authorization model is fundamentally sound: user-data routes sit behind a revocable session check, mutating routes are CSRF-protected by an origin allowlist, cookies use httpOnly/Secure/SameSite plus the __Host- prefix, the OAuth flow binds state and nonce, and all SQL is parameterized. Two medium issues stand out: an IDOR via unvalidated log-to-session association that can surface one user's logs in another's plan view (plans.ts:62-68, logs.ts:27,62), and an unthrottled POST /plans/generate that triggers AI spend (plans.ts:84-195). The remaining findings are low/info hardening items: /auth/me skips the revocation ledger, goalProfileSlug is unvalidated before entering a system prompt, /me/data reports success on partial failure, XFF-based rate-limit spoofing on the auth callback, raw error persistence, a non-constant-time state compare, and Secure-cookie behavior keyed to a single ENVIRONMENT string. No cross-user leak was found in /explanations or /summaries, DELETE /me/data is correctly user-scoped, and the client-only sign-in gate is backed by API 401s via requireAuth."
+}

@@ -42,7 +42,8 @@ app.notFound((c) => c.json({ error: 'not_found' }, 404));
 app.onError((err, c) => {
 	const correlationId = crypto.randomUUID();
 	const e = err as Error;
-	const message = (e?.message ?? '').slice(0, 300);
+	// First line only: D1 errors append the SQL and its params, which we do not persist.
+	const message = (e?.message ?? '').split('\n')[0]!.slice(0, 300);
 	let path = '';
 	try {
 		path = new URL(c.req.url).pathname;

@@ -124,7 +124,7 @@
 			{#each profiles as p (p.slug)}
 				<label
 					class="flex cursor-pointer flex-col rounded-lg border px-4 py-3 transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-signal-ink {slug === p.slug
-						? 'border-signal bg-signal-wash'
+						? 'border-signal-ink bg-signal-wash'
 						: 'border-hairline hover:border-steel'}"
 				>
 					<input type="radio" name="profile" value={p.slug} bind:group={slug} class="sr-only" />
@@ -142,7 +142,7 @@
 			<select
 				bind:value={raceKey}
 				aria-label="Race distance"
-				class="tabular rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+				class="tabular max-w-[45%] shrink-0 rounded-md border border-hairline-strong bg-paper px-3 py-2 text-sm"
 			>
 				{#each RACE_DISTANCES as d (d.key)}
 					<option value={d.key}>{d.label}</option>
@@ -153,7 +153,7 @@
 				placeholder="45:00"
 				inputmode="numeric"
 				aria-label="Race time (mm:ss)"
-				class="tabular flex-1 rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+				class="tabular min-w-0 flex-1 rounded-md border border-hairline-strong bg-paper px-3 py-2 text-sm"
 			/>
 		</div>
 

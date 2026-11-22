@@ -5,14 +5,13 @@
 	import { api } from '$lib/api';
 	import { loadPrefs } from '$lib/prefs.svelte';
 	import { outbox } from '$lib/offline';
+	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 
 	let { children } = $props();
 
 	let pending = $state(0);
-	let user = $state<{ email: string } | null>(null);
-	let authChecked = $state(false);
 	let settingsOpen = $state(false);
 
 	const tabs = $derived([
@@ -23,11 +22,7 @@
 
 	onMount(() => {
 		void loadPrefs();
-		void api
-			.me()
-			.then((u) => (user = u))
-			.catch(() => {})
-			.finally(() => (authChecked = true));
+		void ensureAuth();
 
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker
@@ -57,11 +52,11 @@
 	});
 </script>
 
-{#if !authChecked}
+{#if !auth.checked}
 	<div class="min-h-dvh flex items-center justify-center">
 		<p class="tabular text-sm text-steel">Loading…</p>
 	</div>
-{:else if !user}
+{:else if !auth.user}
 	<SignIn />
 {:else}
 	<div class="min-h-dvh flex flex-col">
@@ -119,7 +114,7 @@
 						class="relative flex h-14 flex-col items-center justify-center gap-1 {tab.active ? 'text-ink' : 'text-steel'}"
 					>
 						{#if tab.active}
-							<span class="absolute top-0 h-0.5 w-8 rounded-full bg-signal" aria-hidden="true"></span>
+							<span class="absolute top-0 h-0.5 w-8 rounded-full bg-signal-ink" aria-hidden="true"></span>
 						{/if}
 						<svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							{#if tab.key === 'today'}
@@ -145,6 +140,6 @@
 	</div>
 {/if}
 
-{#if settingsOpen && user}
-	<SettingsModal {user} onClose={() => (settingsOpen = false)} />
+{#if settingsOpen && auth.user}
+	<SettingsModal user={auth.user} onClose={() => (settingsOpen = false)} />
 {/if}
