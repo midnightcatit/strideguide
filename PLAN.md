@@ -696,10 +696,18 @@ Deferred: tiered cron refresh of the KB (M4).
   countdown (time-based steps) or elapsed timer, Start/Pause/Next/Prev, and finish → "Log it".
   Session cards gained a **Start** action.
 - Verified end-to-end: an interval session stores as `1.5 km warm-up + 6 × (800 m + 800 m) + 1 km cool-down`.
-- **Remaining in this phase**: per-machine drill-down (form cues / "why" from the KB), guided
-  warm-up/cool-down mobility routines, rest timers between sets, and optional audio/haptic cues.
-  Auto-advance by GPS is **out of scope** by design — the app has no live tracking (shareable stats only),
-  so progression is manual/timer-based.
+- **M3b — machine drill-down + rest timer**: each strength step shows muscles, "where you feel it",
+  3–4 form cues and common mistakes (from the researched catalog), plus a rest timer (90s / +30s / skip).
+- **M3c — guided warm-up / cool-down routines**: quality runs and strength sessions open with timed
+  dynamic warm-up drills and close with cool-down stretches, walked through by the player.
+- **Remaining (optional)**: audio/haptic cues. Auto-advance by GPS is **out of scope** by design — the app
+  has no live tracking (shareable stats only), so progression is manual/timer-based.
+
+### M0–M3 shipped
+
+Follow-up quality-of-life shipped alongside: a **Settings modal** (Appearance / Units / Account) replacing
+the header toggles, and **service-worker auto-update** (bypass HTTP cache, check on load, reload once a new
+worker takes control) so new deploys actually appear in the installed PWA.
 
 ### Deployed — live (M0 complete)
 
