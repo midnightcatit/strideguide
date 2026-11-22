@@ -2,6 +2,7 @@
 	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { formatDuration, modalityLabel } from '$lib/plan';
 	import { fmtDistance, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
+	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 
 	let {
 		session,
@@ -67,7 +68,10 @@
 
 	<div class="p-4">
 		<div class="flex items-baseline justify-between gap-3">
-			<span class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
+			<span class="flex items-center gap-2">
+				<span class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
+				<IntensityLadder intensity={p.intensity} label={false} />
+			</span>
 			<span class="tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
 				>{session.type}{#if logged} ✓{/if}</span
 			>
@@ -99,6 +103,7 @@
 				{#if band}{band}{/if}
 				{#if p.targetZone}<span class="text-steel"> · {p.targetZone}</span>{/if}
 				{#if p.targetRpe}<span class="text-steel"> · RPE {p.targetRpe[0]}–{p.targetRpe[1]}</span>{/if}
+				{#if session.type === 'race-pace'}<span class="text-signal-ink"> · ◎ at goal pace</span>{/if}
 				{#if !band && !p.targetZone && !p.targetRpe}<span class="text-steel">Effort: see notes</span>{/if}
 			</p>
 		{/if}

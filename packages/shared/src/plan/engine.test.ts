@@ -90,3 +90,36 @@ describe('generatePlan (whole-fitness, no race)', () => {
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.modality === 'strength')).toBe(true);
 	});
 });
+
+describe('handle intensity + race-pace', () => {
+	const half = generatePlan({
+		profile: GOAL_PROFILES.find((p) => p.slug === 'half-marathon')!,
+		baseline: { recentTimes: { '10k': '45:00' }, experience: 'intermediate' },
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-12-01',
+		targetDate: '2027-03-01',
+	});
+
+	it('labels every session easy / steady / hard', () => {
+		for (const s of half.weeks.flatMap((w) => w.sessions)) {
+			expect(['easy', 'steady', 'hard']).toContain(s.prescription.intensity);
+		}
+	});
+
+	it('maps archetypes to the expected band', () => {
+		const flat = half.weeks.flatMap((w) => w.sessions);
+		const easy = flat.find((s) => s.type === 'easy');
+		const interval = flat.find((s) => s.type === 'interval');
+		expect(easy?.prescription.intensity).toBe('easy');
+		expect(interval?.prescription.intensity).toBe('hard');
+	});
+
+	it('schedules goal-pace work in the build/peak phases', () => {
+		const racePace = half.weeks.flatMap((w) => w.sessions).filter((s) => s.type === 'race-pace');
+		expect(racePace.length).toBeGreaterThan(0);
+		// goal pace band is a plausible half-marathon pace (faster than easy, slower than interval)
+		const band = racePace[0]!.prescription.targetPaceSecPerKm!;
+		expect(band[0]).toBeGreaterThan(200);
+		expect(band[1]).toBeLessThan(420);
+	});
+});

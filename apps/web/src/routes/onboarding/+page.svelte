@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { api, type GeneratePlanInput } from '$lib/api';
-	import { prefs, distanceUnit } from '$lib/prefs.svelte';
-	import { DAY_INITIALS } from '$lib/plan';
+	import { parseTime, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
+	import { api, type GeneratePlanInput } from '$lib/api';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
+	import { DAY_INITIALS } from '$lib/plan';
 
 	interface ProfileLite {
 		slug: string;
@@ -16,20 +17,49 @@
 	let slug = $state('half-marathon');
 	let targetDate = $state('');
 	let experience = $state<'beginner' | 'intermediate' | 'advanced'>('beginner');
-	let weeklyKm = $state<string>('');
-	let fiveK = $state('');
-	let tenK = $state('');
+	let weeklyKm = $state('');
 	let days = $state<number[]>([0, 2, 4, 6]);
 	let submitting = $state(false);
 	let error = $state<string | null>(null);
 
+	// Race anchor (M4d): a recent race time drives training paces.
+	const RACE_DISTANCES: { key: string; label: string; meters: number }[] = [
+		{ key: '5k', label: '5K', meters: 5000 },
+		{ key: '10k', label: '10K', meters: 10000 },
+		{ key: 'half', label: 'Half marathon', meters: 21097.5 },
+	];
+	let raceKey = $state('10k');
+	let raceTime = $state('');
+
 	const selected = $derived(profiles.find((p) => p.slug === slug));
 	const needsRaceDate = $derived(slug !== 'whole-fitness');
 
+	const vdot = $derived.by(() => {
+		const dist = RACE_DISTANCES.find((d) => d.key === raceKey);
+		const secs = parseTime(raceTime);
+		if (!dist || !secs || secs <= 0) return undefined;
+		return vdotFromRace(dist.meters, secs);
+	});
+	const paces = $derived(vdot ? pacesFromVdot(vdot) : undefined);
+	const goalPace = $derived.by(() => {
+		if (!paces) return undefined;
+		switch (slug) {
+			case 'marathon':
+				return paces.marathon;
+			case 'half-marathon':
+				return (paces.marathon + paces.threshold) / 2;
+			case '10k':
+				return paces.threshold;
+			case '5k':
+				return (paces.threshold + paces.interval) / 2;
+			default:
+				return paces.threshold;
+		}
+	});
+
 	onMount(async () => {
 		try {
-			const res = await api.profiles();
-			profiles = res.profiles;
+			profiles = (await api.profiles()).profiles;
 		} catch {
 			error = 'Could not load goal profiles.';
 		}
@@ -50,15 +80,18 @@
 		}
 		submitting = true;
 		error = null;
-		const recentTimes: Record<string, string> = {};
-		if (fiveK.trim()) recentTimes['5k'] = fiveK.trim();
-		if (tenK.trim()) recentTimes['10k'] = tenK.trim();
+
+		const recentTimes =
+			vdot && raceTime.trim() && RACE_DISTANCES.some((d) => d.key === raceKey)
+				? { [raceKey]: raceTime.trim() }
+				: undefined;
+
 		const body: GeneratePlanInput = {
 			goalProfileSlug: slug,
 			availableDays: days,
 			baseline: {
 				experience,
-				...(Object.keys(recentTimes).length ? { recentTimes } : {}),
+				...(recentTimes ? { recentTimes } : {}),
 				...(weeklyKm.trim()
 					? {
 							weeklyKm:
@@ -90,8 +123,7 @@
 		<div class="mt-3 grid gap-2">
 			{#each profiles as p (p.slug)}
 				<label
-					class="flex cursor-pointer flex-col rounded-lg border px-4 py-3 transition-colors {slug ===
-					p.slug
+					class="flex cursor-pointer flex-col rounded-lg border px-4 py-3 transition-colors {slug === p.slug
 						? 'border-signal bg-signal-wash'
 						: 'border-hairline hover:border-steel'}"
 				>
@@ -103,57 +135,64 @@
 		</div>
 	</fieldset>
 
+	<!-- Race anchor -->
+	<fieldset class="mt-6">
+		<legend class="text-xs uppercase tracking-widest text-steel">Recent race (sets your paces)</legend>
+		<div class="mt-3 flex gap-2">
+			<select
+				bind:value={raceKey}
+				aria-label="Race distance"
+				class="tabular rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+			>
+				{#each RACE_DISTANCES as d (d.key)}
+					<option value={d.key}>{d.label}</option>
+				{/each}
+			</select>
+			<input
+				bind:value={raceTime}
+				placeholder="45:00"
+				inputmode="numeric"
+				aria-label="Race time (mm:ss)"
+				class="tabular flex-1 rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+			/>
+		</div>
+
+		{#if paces && goalPace}
+			<div class="mt-3 rounded-lg border border-hairline p-3">
+				<p class="text-xs uppercase tracking-widest text-steel">Your training paces</p>
+				<ul class="mt-2 space-y-1 text-sm">
+					<li class="flex justify-between"><span>Easy</span><span class="tabular">{fmtPaceBand(paces.easy)}</span></li>
+					<li class="flex justify-between"><span>Threshold</span><span class="tabular">{fmtPace(paces.threshold)}</span></li>
+					<li class="flex justify-between"><span>Interval</span><span class="tabular">{fmtPace(paces.interval)}</span></li>
+					<li class="flex justify-between text-signal-ink"><span>Goal pace</span><span class="tabular">{fmtPace(goalPace)}</span></li>
+				</ul>
+				<p class="mt-2 text-xs text-steel">Estimated from your {RACE_DISTANCES.find((d) => d.key === raceKey)?.label} in {raceTime} (VDOT {Math.round(vdot!)}).</p>
+			</div>
+		{:else}
+			<p class="mt-2 text-xs text-steel">
+				Optional — without a recent race we'll estimate paces from your experience, and recalibrate after your first runs.
+			</p>
+		{/if}
+	</fieldset>
+
 	{#if needsRaceDate}
 		<div class="mt-6">
 			<label for="race" class="text-xs uppercase tracking-widest text-steel">Race date</label>
-			<input
-				id="race"
-				type="date"
-				bind:value={targetDate}
-				class="tabular mt-2 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
-			/>
+			<input id="race" type="date" bind:value={targetDate} class="tabular mt-2 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm" />
 		</div>
 	{/if}
 
-	<!-- Baseline -->
+	<!-- Current training -->
 	<fieldset class="mt-6">
-		<legend class="text-xs uppercase tracking-widest text-steel">Baseline (optional)</legend>
+		<legend class="text-xs uppercase tracking-widest text-steel">Current training</legend>
 		<div class="mt-3 grid grid-cols-2 gap-3">
 			<div>
-				<label for="5k" class="text-xs text-steel">Recent 5K (mm:ss)</label>
-				<input
-					id="5k"
-					bind:value={fiveK}
-					placeholder="22:00"
-					class="tabular mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
-				/>
-			</div>
-			<div>
-				<label for="10k" class="text-xs text-steel">Recent 10K (mm:ss)</label>
-				<input
-					id="10k"
-					bind:value={tenK}
-					placeholder="45:00"
-					class="tabular mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
-				/>
-			</div>
-			<div>
 				<label for="km" class="text-xs text-steel">Typical weekly {distanceUnit()}</label>
-				<input
-					id="km"
-					type="number"
-					bind:value={weeklyKm}
-					placeholder="25"
-					class="tabular mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
-				/>
+				<input id="km" type="number" bind:value={weeklyKm} placeholder="25" class="tabular mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm" />
 			</div>
 			<div>
 				<label for="exp" class="text-xs text-steel">Experience</label>
-				<select
-					id="exp"
-					bind:value={experience}
-					class="mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
-				>
+				<select id="exp" bind:value={experience} class="mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm">
 					<option value="beginner">Beginner</option>
 					<option value="intermediate">Intermediate</option>
 					<option value="advanced">Advanced</option>
@@ -171,9 +210,7 @@
 					type="button"
 					aria-pressed={days.includes(d)}
 					onclick={() => toggleDay(d)}
-					class="flex h-11 flex-1 items-center justify-center rounded-md text-sm tabular transition-colors {days.includes(
-						d,
-					)
+					class="flex h-11 flex-1 items-center justify-center rounded-md text-sm tabular transition-colors {days.includes(d)
 						? 'bg-ink text-paper font-bold'
 						: 'border border-hairline text-steel hover:border-steel'}"
 				>
