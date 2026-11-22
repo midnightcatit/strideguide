@@ -43,6 +43,8 @@
 	const claims = $derived(why?.claims ?? []);
 	const headline = $derived(claims[0]?.claim ?? why?.summary ?? session.purpose ?? '');
 	let showAllSources = $state(false);
+	let showAllClaims = $state(false);
+	const visibleClaims = $derived(showAllClaims ? claims.slice(0, 16) : claims.slice(0, 4));
 
 	function markersFor(source?: string): number[] {
 		if (!source || !why) return [];
@@ -79,8 +81,8 @@
 	</header>
 
 	<div class="flex-1 overflow-y-auto overscroll-contain min-h-0">
-		<div class="mx-auto max-w-2xl px-4 py-5">
-			<div class="flex items-center justify-between">
+	<div class="mx-auto max-w-2xl px-4 py-5 reveal">
+		<div class="flex items-center justify-between">
 				<span class="flex items-center gap-2">
 					<span class="tabular text-xs uppercase tracking-widest text-steel">{session.modality}</span>
 					<IntensityLadder intensity={p.intensity} />
@@ -131,7 +133,7 @@
 				{#if headline}<p class="mt-2 text-sm">{headline}</p>{/if}
 				{#if claims.length}
 					<ul class="mt-3 space-y-3">
-						{#each claims.slice(0, 12) as cl, i (i)}
+						{#each visibleClaims as cl, i (i)}
 							<li class="flex justify-between gap-3 text-sm">
 								<span class="flex-1 text-steel">
 									<span class="text-ink">{cl.topic}.</span>
@@ -143,6 +145,16 @@
 							</li>
 						{/each}
 					</ul>
+					{#if claims.length > 4}
+						<button
+							type="button"
+							onclick={() => (showAllClaims = !showAllClaims)}
+							aria-expanded={showAllClaims}
+							class="mt-3 text-sm text-signal-ink hover:underline"
+						>
+							{showAllClaims ? 'Show less' : `Read more (${claims.length - 4} more)`}
+						</button>
+					{/if}
 				{/if}
 				{#if why.sources.length}
 					<p class="mt-5 tabular text-xs uppercase tracking-widest text-steel">Sources</p>
