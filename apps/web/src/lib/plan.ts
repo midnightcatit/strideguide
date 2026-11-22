@@ -60,6 +60,7 @@ export interface ClientWeek {
 	summaryText: string | null;
 	startDate: string | null;
 	endDate: string | null;
+	targetVolumeKm?: number | null;
 	sessions: ClientSession[];
 }
 
