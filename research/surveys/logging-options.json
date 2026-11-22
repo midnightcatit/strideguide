@@ -1,0 +1,171 @@
+{
+  "generated_at": "2026-11-22T23:10:00Z",
+  "scope": "Error/usage logging for a 2-user hobby app: Cloudflare Worker (Hono) + D1 on the API side, SvelteKit PWA on the web side. Prices are USD, current as of 2026-11-22.",
+  "datadog_free_tier": {
+    "included": [
+      "Up to 5 Basic hosts (Infrastructure Monitoring).",
+      "1-day metric retention.",
+      "Unlimited user accounts.",
+      "Unlimited alerts.",
+      "Core dashboards and visualization.",
+      "Datadog Free plan is separate from the trial; it is an infrastructure-metrics tier, not a logs or APM tier."
+    ],
+    "limits": [
+      "APM is NOT included on the free plan (paid APM starts at $31/host/month, billed annually).",
+      "Log Management is NOT included on the free plan; log retention is not part of free.",
+      "Only 1 day of metric retention, so no useful history or long-term trend analysis.",
+      "The '5 hosts' model fits servers/VMs/containers, not Cloudflare Workers. Serverless/Workers monitoring is metered separately by usage, so the free host allowance does not cleanly cover a Worker + D1 + PWA stack.",
+      "Only 5 hosts means a hobby app with real log volume quickly leaves the free tier once you need logs or APM.",
+      "Product breadth (Logs, APM, RUM, Synthetics) is billed per product on top of Infrastructure, so a 'free' hobby stack realistically becomes multiple paid SKUs."
+    ],
+    "entry_paid_cost": "Infrastructure Monitoring Pro from $15/host/month (annual) or $18 on-demand; APM from $31/host/month (annual); Log Management ingest from $0.10/GB/month, plus indexing (e.g. $1.70 per million log events at 15-day retention; retention tiers of 3, 7, 15, 30 days). Flex Storage retention starts at 1 month ($0.05 per million events stored). A free trial is offered (length not stated on the pricing page).",
+    "verdict": "Datadog's free tier is an infrastructure-metrics tier (5 hosts, 1-day retention) and does NOT include log management or APM, so it cannot deliver free error/usage logging for this project. Turning on logs or APM moves the bill to per-host (APM $15-31/host/month) plus per-GB log ingest/indexing, and the host model maps poorly to Workers. Datadog is the wrong fit and the most expensive option here; skip it for a 2-user hobby app."
+  },
+  "cloudflare_native": [
+    {
+      "name": "Cloudflare Workers Logs (Workers Observability)",
+      "cost": "Free plan: 200,000 log events/day included, 3-day retention. Workers Paid ($5/month min): 20 million events/month included, then $0.60 per additional million, 7-day retention. From 2026-12-01 it moves to Cloudflare Observability pricing: Free 0.5 GB/day ingestion with 7-day retention (ingestion stops at the daily cap); Paid 50 GB/cycle ingestion + 10 GB-month storage included, then $0.25/GB ingest and $0.10/GB-month storage.",
+      "captures": "Automatic invocation logs (request, response, metadata), all console.log/custom logs (JSON is parsed and indexed for filtering), console errors, uncaught exceptions. Pair with Workers Issues to group and alert on failures (5xx, uncaught exceptions, error-level logs). Supports head-based sampling and source maps for readable stack traces.",
+      "retention": "3 days (Free), 7 days (Paid).",
+      "setup": "Lowest effort. Set observability.enabled = true in the Worker's wrangler config (on by default for new Workers) and redeploy. View in dashboard under the Worker > Observability."
+    },
+    {
+      "name": "Cloudflare Logpush (Workers Trace Events + HTTP Requests) to R2/S3/etc.",
+      "cost": "Logpush on Free/Pro/Business is usage-based: 25 GB/account/month included; internal destinations (R2, Pipelines) $0.03/GB after that, external destinations $0.10/GB, transformation $0.04/GB. Workers Trace Events Logpush requires the Workers Paid plan: 10 million requests/month included, then $0.05 per additional million. Destination storage is billed separately (R2: 10 GB-month free tier, then $0.015/GB-month).",
+      "captures": "Full field-level records (HTTP Requests ~1.5-3 kB/record; Workers Trace Events with console logs, exceptions, outcome) delivered near real time as gzip batches to R2, S3, or a SIEM/provider.",
+      "retention": "None at Cloudflare; you own retention at the destination (e.g. R2 lifecycle rules).",
+      "setup": "Medium. Create a Logpush job via dashboard/API and provision a destination bucket (e.g. R2). Caveat: no backfill, logs during a disabled/failed job are lost, so configure health notifications."
+    },
+    {
+      "name": "Tail Workers",
+      "cost": "Requires Workers Paid (or Enterprise). Billed by CPU time, not by request count (no per-request charge).",
+      "captures": "Per-invocation execution data about a producer Worker: HTTP status, console.log output, uncaught exceptions, and diagnostics-channel events. You forward them anywhere over HTTP.",
+      "retention": "None by itself; retention depends on whatever endpoint/store you forward to (KV, D1, R2, third party).",
+      "setup": "Medium-high. Create a Worker with a tail() handler, add it to the producer Worker's tail_consumers, then handle/forward events yourself. Documented as the 'advanced mode' for custom needs; for standard error/log export Cloudflare recommends OpenTelemetry export instead."
+    },
+    {
+      "name": "Workers Analytics Engine",
+      "cost": "Free plan: 100,000 data points/day + 10,000 read queries/day. Workers Paid: 10 million data points/month + 1 million read queries/month, then $0.25/additional million writes and $1.00/additional million reads. Cloudflare currently does not bill for Analytics Engine; pricing is published in advance for future billing.",
+      "captures": "Custom high-cardinality time-series metrics written from Worker code via writeDataPoint() (blobs, doubles, indexes), queried with SQL (SQL API). It is aggregated metrics/usage analytics, not raw log storage.",
+      "retention": "Approximately 90 days (fixed Cloudflare retention window; not user-configurable).",
+      "setup": "Medium. Bind a dataset to the Worker, call writeDataPoint in code paths, and query via the SQL API or Grafana/dashboard. Good for usage counters and per-endpoint error rates, not for reading individual log lines."
+    }
+  ],
+  "third_party": [
+    {
+      "name": "Sentry",
+      "cost_free_tier": "Developer plan: $0, 1 user, 5,000 errors/month, 5 GB logs, 5 GB app metrics, 5M spans, 50 replays, 1 uptime/cron monitor, 10 dashboards. Paid entry: Team $26/month.",
+      "captures": "Error monitoring with stack traces, tracing, logs, session replays, app metrics, cron/uptime monitors. Has a Cloudflare Workers SDK (@sentry/cloudflare).",
+      "retention": "30-day lookback on free; up to 90 days on paid.",
+      "setup": "Low-medium. Install @sentry/cloudflare, wrap the Worker handler withSentry(), and upload source maps. Best-in-class error grouping and alerting for the price."
+    },
+    {
+      "name": "Axiom",
+      "cost_free_tier": "Personal plan: $0/month, permanent, no credit card. 500 GB/month data loading compute, 10 GB-hours query compute, 25 GB storage, 30-day retention, full query language (APL), all integrations. Paid: Axiom Cloud $25/month platform fee + usage.",
+      "captures": "Logs, traces, and metrics via OpenTelemetry, Vector, CloudWatch, and other integrations; SQL/APL querying, dashboards, alerts.",
+      "retention": "30 days (free); configurable on paid.",
+      "setup": "Medium. Send Cloudflare Worker logs/traces via the built-in OpenTelemetry export or a Vector/HTTP source. Generous free allowance for a hobby app."
+    },
+    {
+      "name": "Grafana Cloud",
+      "cost_free_tier": "Free forever: 50 GB logs/month, 50 GB traces/month, 10k metrics active series, 3 Grafana users, 14-day retention, community support. Paid: Pro from $19/month + usage (30-day logs retention, 13-month metrics).",
+      "captures": "Logs (Loki), traces (Tempo), metrics (Prometheus), profiles, plus dashboards/alerting, synthetic monitoring, RUM.",
+      "retention": "14 days (free); 30 days logs / 13 months metrics (paid).",
+      "setup": "Medium-high. Wire Cloudflare (OpenTelemetry export or Loki push) and learn the Grafana stack. Powerful but heavier than needed for two users."
+    },
+    {
+      "name": "Better Stack",
+      "cost_free_tier": "Free for personal projects: 10 monitors & heartbeats, 1 status page, 100,000 exceptions/month, 5,000 session replays, 3 GB logs retained 3 days, 3 GB traces retained 3 days, 30 GB metrics. Paid entry: Nano bundle from $30/month (EU) or $45/month (US) with 30-day retention; usage beyond is metered per GB.",
+      "captures": "Logs, traces, metrics, error tracking (Sentry-SDK compatible), uptime/heartbeat monitoring, session replay, status pages, on-call/incident management.",
+      "retention": "3 days (free); 30 days (paid bundles).",
+      "setup": "Medium. Point logs at a Better Stack source (HTTP/Vector/OTel); error tracking reuses a Sentry-compatible SDK. Free log retention is only 3 days."
+    },
+    {
+      "name": "Baselime",
+      "cost_free_tier": "No longer an independent product. Cloudflare acquired Baselime (announced 2024) and folded its technology into Cloudflare's own observability (OpenTelemetry-based Workers Observability). Existing Baselime users kept access during transition; new projects should use Cloudflare Workers Logs / OTel export instead.",
+      "captures": "Historically: OpenTelemetry logs/traces/metrics and real-time error tracking for serverless.",
+      "retention": "N/A as a standalone option; see Cloudflare Workers Logs and Cloudflare Observability pricing.",
+      "setup": "Not applicable for new work; not a separate free-tier vendor anymore."
+    }
+  ],
+  "recommendation": {
+    "for_this_project": "Use Cloudflare Workers Logs as the primary logging layer, and add Sentry's free Developer plan only if you want grouped error tracking with a nicer UI and 30-day history. Skip Datadog entirely.",
+    "why": "Workers Logs is native, needs a one-line wrangler change, and its free allowance (200,000 log events/day, 3-day retention) is far more than a 2-user hobby app generates. It captures exactly what you care about (invocation logs, console.log, errors, uncaught exceptions) and Workers Issues adds failure alerting at no cost. If 3-day retention or a dedicated error UI becomes a limitation, Sentry free (5k errors/month, 30-day lookback, 1 user, Workers SDK) is the cheapest upgrade; Axiom Personal (25 GB storage, 30-day, $0) is the alternative if you want a log-search/query experience. Datadog is the worst fit: its free tier covers only 1-day infrastructure metrics with no logs or APM, and real log/APM usage is $15-31/host/month plus per-GB ingest.",
+    "steps": [
+      "1. In each Worker's wrangler config add observability = { enabled = true } (or JSON observability: { enabled: true }) and redeploy. New Workers have this on by default.",
+      "2. Log structured JSON from the API and PWA (e.g. console.error({ event, status, route, userId, requestId })) so Workers Logs indexes fields for filtering; use console.error for handled failures so Workers Issues groups them.",
+      "3. Enable Workers Issues and create an automation/webhook (or a Monitors threshold query on logs.workersLogs) to alert on 5xx and uncaught exceptions with an occurrence threshold of 1.",
+      "4. Upload build source maps (framework builds must generate and upload them) so exception stacks point to original files and lines.",
+      "5. Optional, only if you need longer than 3-day retention: create a Logpush job to an R2 bucket (25 GB/month free across internal destinations; R2 has a 10 GB-month free tier) and set an R2 lifecycle rule. Logpush has no backfill, so enable health notifications.",
+      "6. Optional, if you want grouped errors with 30-day history and email alerts: add @sentry/cloudflare to the API Worker on the free Developer plan, wrap the handler with withSentry(), and upload source maps.",
+      "7. Do not sign up for Datadog for this project; the free tier does not include logs or APM and the entry cost is per-host plus per-GB."
+    ]
+  },
+  "sources": [
+    {
+      "title": "Datadog Pricing",
+      "url": "https://www.datadoghq.com/pricing/",
+      "date": "accessed 2026-11-22"
+    },
+    {
+      "title": "Cloudflare Workers Logs",
+      "url": "https://developers.cloudflare.com/workers/observability/logs/workers-logs/",
+      "date": "2026-11-18"
+    },
+    {
+      "title": "Cloudflare Observability Pricing (effective 2026-12-01)",
+      "url": "https://developers.cloudflare.com/observability/pricing/",
+      "date": "2026-11-11"
+    },
+    {
+      "title": "Cloudflare Workers Pricing",
+      "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+      "date": "2026-11-18"
+    },
+    {
+      "title": "Cloudflare Logpush Overview",
+      "url": "https://developers.cloudflare.com/logs/logpush/",
+      "date": "2026-11-20"
+    },
+    {
+      "title": "Cloudflare Logpush Pricing",
+      "url": "https://developers.cloudflare.com/logs/logpush/pricing/",
+      "date": "2026-10-12"
+    },
+    {
+      "title": "Cloudflare Tail Workers",
+      "url": "https://developers.cloudflare.com/workers/observability/logs/tail-workers/",
+      "date": "2026-10-02"
+    },
+    {
+      "title": "Cloudflare Workers Analytics Engine Pricing",
+      "url": "https://developers.cloudflare.com/analytics/analytics-engine/pricing/",
+      "date": "2026-04-23"
+    },
+    {
+      "title": "Sentry Pricing",
+      "url": "https://sentry.io/pricing/",
+      "date": "accessed 2026-11-22"
+    },
+    {
+      "title": "Axiom Pricing",
+      "url": "https://axiom.co/pricing",
+      "date": "accessed 2026-11-22"
+    },
+    {
+      "title": "Grafana Cloud Pricing",
+      "url": "https://grafana.com/pricing/",
+      "date": "accessed 2026-11-22"
+    },
+    {
+      "title": "Better Stack Pricing",
+      "url": "https://betterstack.com/pricing",
+      "date": "accessed 2026-11-22"
+    },
+    {
+      "title": "Cloudflare acquires Baselime to expand serverless application observability",
+      "url": "https://blog.cloudflare.com/cloudflare-acquires-baselime-expands-observability-capabilities/",
+      "date": "2024"
+    }
+  ]
+}

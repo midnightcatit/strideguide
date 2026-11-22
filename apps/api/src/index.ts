@@ -2,10 +2,12 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 import { handleScheduled } from './cron';
+import { getDb } from './db';
 import type { Env } from './env';
 import { attachDb, requireSameOrigin } from './middleware/auth';
 import apiRoutes from './routes/api';
 import authRoutes from './routes/auth';
+import { schema } from './db';
 import type { AppBindings } from './types';
 
 const app = new Hono<AppBindings>();
@@ -40,12 +42,39 @@ app.notFound((c) => c.json({ error: 'not_found' }, 404));
 app.onError((err, c) => {
 	const correlationId = crypto.randomUUID();
 	const e = err as Error;
+	const message = (e?.message ?? '').slice(0, 300);
+	let path = '';
+	try {
+		path = new URL(c.req.url).pathname;
+	} catch {
+		path = '';
+	}
 	console.error('api_error', {
 		id: correlationId,
 		name: e?.name ?? 'Error',
-		message: e?.message,
-		stack: c.env.ENVIRONMENT !== 'production' ? e?.stack : undefined,
+		message,
+		path,
+		method: c.req.method,
 	});
+
+	// Persist recent errors (best-effort) so production issues are inspectable.
+	try {
+		const db = c.get('db') ?? getDb(c.env as Env);
+		c.executionCtx.waitUntil(
+			db.insert(schema.appErrors).values({
+				id: correlationId,
+				name: e?.name ?? 'Error',
+				message,
+				path,
+				method: c.req.method,
+				userId: c.get('user')?.id ?? null,
+				requestId: c.req.header('cf-ray') ?? null,
+			}),
+		);
+	} catch {
+		// never fail the error handler
+	}
+
 	return c.json({ error: 'internal_error', id: correlationId }, 500);
 });
 
