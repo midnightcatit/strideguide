@@ -1,0 +1,438 @@
+{
+  "workstream": "wave-4",
+  "subtopic": "Defensible PROGRESS and LOAD metrics for an amateur runner computed from a run log (distance, duration, pace, avg HR, RPE) plus the prescribed plan: adherence/streaks, weekly volume actual-vs-planned and safe progression, pace/fitness trend (pace-at-effort, VDOT/race-time), intensity distribution, load-management indicators (ACWR, monotony/strain, session-RPE), recovery signals (resting HR, sleep), and personal bests.",
+  "generated_at": "2026-11-22T20:41:00Z",
+  "claims": [
+    {
+      "topic": "Adherence: realistic baseline and determinants",
+      "claim": "In a 10-week group-based beginner running programme, overall adherence to prescribed sessions was only 53 +/- 27%; injury was the most common reason for missing sessions and for discontinuing training. Adherence to group sessions correlated positively with enjoyment, motivation, confidence, satisfaction with progress and social support, while cardiorespiratory fitness and body composition improved over the 10 weeks regardless of adherence level.",
+      "evidence": "34 participants completed adherence diaries and 20 completed start/end fitness testing; fitness rose (20 m shuttle distance +189 +/- 133 m) and body composition improved. Observational, small sample, self-reported diaries; adherence was not shown to statistically mediate the fitness change.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Adherence and Health-Related Outcomes of Beginner Running Programs: A 10-Week Observational Study",
+        "authors": "Stevinson C, Plateau CR, Plunkett S, Fitzpatrick EJ, Ojo M, Moran M, Clemes SA",
+        "year": 2022,
+        "venue": "Research Quarterly for Exercise and Sport 93(1):87-95",
+        "type": "observational",
+        "doi_or_url": "10.1080/02701367.2020.1799916",
+        "retrieved_at": "2026-11-22T20:38:00Z"
+      }
+    },
+    {
+      "topic": "Adherence and dropout in beginner programmes",
+      "claim": "Among UK Couch-to-5k participants, non-completion was linked to musculoskeletal injury, and individual fitness and injury history at programme start plus the rate of graduated increase in running time/distance were identified as plausible modifiable targets to lower injury and dropout. Beginner running programmes generally lack a strong evidence base.",
+      "evidence": "Observational study of a modified 9-week beginner running programme examining who takes part, MSK injury incidence and experiences of dropouts. Self-selected, non-randomised sample; qualitative plus descriptive injury data.",
+      "confidence": "medium",
+      "citation": {
+        "title": "\"Couch-to-5k or Couch to Ouch to Couch!?\" Who Takes Part in Beginner Runner Programmes in the UK and Is Non-Completion Linked to Musculoskeletal Injury?",
+        "authors": "Relph N, Taylor SL, Christian DL, Dey P, Owen MB",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health 20(16):6562",
+        "type": "observational",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10487403/",
+        "retrieved_at": "2026-11-22T20:37:00Z"
+      }
+    },
+    {
+      "topic": "Weekly volume progression: >30% threshold",
+      "claim": "Novice runners who progressed weekly running distance by more than 30% over a two-week period had a higher rate of distance-related injuries than those progressing <10% (hazard ratio 1.59, 95% CI 0.96-2.66, p=0.07), but overall injury rates did not differ significantly across the <10%, 10-30% and >30% progression groups.",
+      "evidence": "874 healthy novice runners in a 1-year prospective cohort with GPS watches; 202 sustained an injury. The association was confined to the >30% group, only for a subset of distance-related diagnoses, and the confidence interval crossed 1. Authors advise novice runners progress weekly distance by less than 30% per week over a two-week period and call for RCT verification.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury",
+        "authors": "Nielsen RO, Parner ET, Nohr EA, Sorensen H, Lind M, Rasmussen S",
+        "year": 2014,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy 44(10):739-747",
+        "type": "cohort",
+        "doi_or_url": "10.2519/jospt.2014.5164",
+        "retrieved_at": "2026-11-22T20:35:00Z"
+      }
+    },
+    {
+      "topic": "Training-load change and injury: systematic review",
+      "claim": "A systematic review found only very limited evidence that a sudden change in training load is associated with running-related injury: of four eligible studies, three reported an association, but no difference was found between a 10% and a 24% average increase in weekly volume (HR 0.8, 95% CI 0.6-1.3), and the widely cited >30% finding had a confidence interval crossing 1.",
+      "evidence": "Systematic review of four articles (RCT/prospective cohort/cross-sectional/case-control), runners 18-65 years, Level of Evidence 2, quality assessed with Newcastle-Ottawa and PEDro. Authors' conclusion: very limited evidence.",
+      "confidence": "high",
+      "citation": {
+        "title": "Is There Evidence for an Association Between Changes in Training Load and Running-Related Injuries? A Systematic Review",
+        "authors": "Damsted C, Glad S, Nielsen RO, Sorensen H, Malisoux L",
+        "year": 2018,
+        "venue": "International Journal of Sports Physical Therapy 13(6):931-942",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/30534459/",
+        "retrieved_at": "2026-11-22T20:35:00Z"
+      }
+    },
+    {
+      "topic": "The 10% rule is a heuristic, not evidence",
+      "claim": "The widely cited '10% rule' for progressing running load has unclear origins and lacks direct empirical support; a scoping review of return-to-running progression reported that the evidence base across progression parameters is lacking and called for empirical research to guide it.",
+      "evidence": "Scoping review of return-to-running after tibial bone stress injury; states the 10% rule is widely cited but its origins are unclear and the evidence across reviewed studies is lacking. Review-level, no quantitative synthesis, focused on return-to-run rather than healthy progression.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Criteria and Guidelines for Returning to Running Following a Tibial Bone Stress Injury: A Scoping Review",
+        "authors": "George ERM, Sheerin KR, Reid D",
+        "year": 2024,
+        "venue": "Sports Medicine - Open 10(1):120",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11393297/",
+        "retrieved_at": "2026-11-22T20:36:00Z"
+      }
+    },
+    {
+      "topic": "Large-cohort running-load thresholds are relative",
+      "claim": "In a ~5,200-person Garmin-device cohort, high-risk running sessions were identified by relative changes in running distance (a session's distance relative to the longest run in the past 30 days, and 1-week distance relative to the preceding 3 weeks), supporting a relative-change rather than absolute-distance framing of volume risk.",
+      "evidence": "Cohort study of ~5,200 runners using Garmin Connect device data with three relative-change exposure definitions. Observational, device-measured exposure but self-reported/registry injury outcomes.",
+      "confidence": "medium",
+      "citation": {
+        "title": "How much running is too much? Identifying high-risk running sessions in a 5200-person cohort study",
+        "authors": "Frandsen JSB, Hulme A, Parner ET, Moller M, Lindman I, Abrahamson J, Simonsen NS, Jacobsen JS, Ramskov D, Skejo S, Malisoux L, Bertelsen ML, Nielsen RO",
+        "year": 2025,
+        "venue": "British Journal of Sports Medicine (online first)",
+        "type": "cohort",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12421110/",
+        "retrieved_at": "2026-11-22T20:36:00Z"
+      }
+    },
+    {
+      "topic": "ACWR conceptual problems",
+      "claim": "There is no evidence supporting the use of the acute:chronic workload ratio (ACWR) in training-load-management systems or for injury-reduction recommendations: its causal relation to injury is unestablished, it is an inaccurate and ambiguous metric that fails to normalise the numerator by the denominator even when uncoupled, and it is not consistently or unidirectionally related to injury risk.",
+      "evidence": "Critical methodological review in IJSPP arguing that manipulating ACWR is conjecture and an overinterpretation of available data, that ratio data introduce statistical artefacts and noise, and that no study has properly estimated causal effects.",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute:Chronic Workload Ratio: Conceptual Issues and Fundamental Pitfalls",
+        "authors": "Impellizzeri FM, Tenan MS, Kempton T, Novak A, Coutts AJ",
+        "year": 2020,
+        "venue": "International Journal of Sports Physiology and Performance 15(6):907-913",
+        "type": "narrative-review",
+        "doi_or_url": "10.1123/ijspp.2019-0864",
+        "retrieved_at": "2026-11-22T20:35:00Z"
+      }
+    },
+    {
+      "topic": "ACWR statistical artefact (contrived chronic load)",
+      "claim": "Replacing the real chronic load with fixed or randomly generated values reproduced the apparent ACWR-injury association (OR 1.95 using an average fixed chronic load; random ACWRs mean OR 1.89), and neither ACWR nor acute load alone beat an intercept-only model (c-statistic 0.574/0.544 vs 0.5). The authors conclude ACWR and its underlying theory should be dismissed.",
+      "evidence": "Re-analysis of previously published data substituting contrived chronic loads; shows ACWR is a rescaling of acute load that inflates effect estimates and reduces variance without predictive advantage, and disproves the etiological theory behind the ratio.",
+      "confidence": "high",
+      "citation": {
+        "title": "What Role Do Chronic Workloads Play in the Acute to Chronic Workload Ratio? Time to Dismiss ACWR and Its Underlying Theory",
+        "authors": "Impellizzeri FM, Woodcock S, Coutts AJ, Fanchini M, McCall A, Vigotsky AD",
+        "year": 2021,
+        "venue": "Sports Medicine 51(3):581-592",
+        "type": "observational",
+        "doi_or_url": "10.1007/s40279-020-01378-6",
+        "retrieved_at": "2026-11-22T20:40:00Z"
+      }
+    },
+    {
+      "topic": "ACWR systematic review (team sports)",
+      "claim": "A systematic review of ACWR and injury risk in sports concluded the relationship is not consistently supported, with high heterogeneity and methodological limitations; ACWR may be more useful as one load-management guide alongside other factors than as a standalone injury predictor.",
+      "evidence": "Systematic review of team-sport studies (Open Access Journal of Sports Medicine); documents inconsistency in the direction and methods of ACWR-injury studies.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Relationship Between Acute:Chronic Workload Ratios and Injury Risk in Sports: A Systematic Review",
+        "authors": "Maupin D, Schram B, Canetti E, Orr R",
+        "year": 2020,
+        "venue": "Open Access Journal of Sports Medicine 11:51-75",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/32158285/",
+        "retrieved_at": "2026-11-22T20:38:00Z"
+      }
+    },
+    {
+      "topic": "ACWR in runners can be inverted",
+      "claim": "In 435 runners, ACWR was inversely associated with running-related injury risk: runners with ACWR below 0.70 had about a 10% predicted injury probability while those above 1.38 had about 1%, the opposite direction to the usual 'spike is dangerous' interpretation, forming a smooth L-shaped decay curve. Coupled and uncoupled methods gave similar results; EWMA results were sparse and non-significant.",
+      "evidence": "Secondary analysis of three prospective runner cohorts (435 runners, 18-65 weeks), Bayesian logistic mixed models, ACWR referenced to 4/6/8/10/12-week chronic windows. Directly contradicts the assumption that higher ACWR is riskier.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Association Between the Acute:Chronic Workload Ratio and Running-Related Injuries in Dutch Runners: A Prospective Cohort Study",
+        "authors": "Nakaoka G, Barboza SD, Verhagen E, van Mechelen W, Hespanhol L",
+        "year": 2021,
+        "venue": "Sports Medicine 51(11):2437-2447",
+        "type": "cohort",
+        "doi_or_url": "10.1007/s40279-021-01483-0",
+        "retrieved_at": "2026-11-22T20:38:00Z"
+      }
+    },
+    {
+      "topic": "Session-RPE validity",
+      "claim": "The session-RPE method (session RPE multiplied by duration) is a simple, inexpensive, non-invasive measure of internal training load that shows strong correlations with objective HR- and TRIMP-based methods across many sports and has good reliability and internal consistency; it is the practical foundation for load monitoring when lab measures are unavailable.",
+      "evidence": "Narrative review of the session-RPE method (validity, ecological usefulness, influencing factors) citing ~950 studies; validity correlations generally strong but methods heterogeneous across studies.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Session-RPE Method for Training Load Monitoring: Validity, Ecological Usefulness, and Influencing Factors",
+        "authors": "Haddad M, Stylianides G, Djaoui L, Dellal A, Chamari K",
+        "year": 2017,
+        "venue": "Frontiers in Neuroscience 11:612",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fnins.2017.00612",
+        "retrieved_at": "2026-11-22T20:37:00Z"
+      }
+    },
+    {
+      "topic": "Training monotony and strain",
+      "claim": "In 25 experienced athletes, a high percentage of banal illnesses (a cited marker of overtraining) was accounted for when individuals exceeded individually identifiable thresholds, mostly related to training strain (weekly load x monotony), where monotony = daily load mean / standard deviation and load integrates session-RPE and duration.",
+      "evidence": "Observational study, N=25, using individually defined thresholds and illness as a surrogate outcome; no control group. Findings are hypothesis-generating rather than causal.",
+      "confidence": "low",
+      "citation": {
+        "title": "Monitoring training in athletes with reference to overtraining syndrome",
+        "authors": "Foster C",
+        "year": 1998,
+        "venue": "Medicine & Science in Sports & Exercise 30(7):1164-1168",
+        "type": "observational",
+        "doi_or_url": "10.1097/00005768-199807000-00023",
+        "retrieved_at": "2026-11-22T20:40:00Z"
+      }
+    },
+    {
+      "topic": "Intensity-distribution target for runners",
+      "claim": "Systematic review evidence for middle- and long-distance runners indicates that a high volume of low-intensity training (>=70% of total training volume) combined with a low volume of threshold and high-intensity work (<=30%) is needed to optimise endurance adaptations, and that pyramidal and polarized distributions produced greater performance improvement than threshold-focused distributions.",
+      "evidence": "Systematic review of 20 articles; notes that apparent intensity distribution depends heavily on the quantification method (session-RPE, heart rate, blood lactate, race pace, running speed), so the same plan can be classified differently. Review-level, no new RCT.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training-intensity Distribution on Middle- and Long-distance Runners: A Systematic Review",
+        "authors": "Campos Y, Casado A, Vieira JG, Guimaraes M, Sant'Ana L, Leitao L, da Silva SF, Silva Marques de Azevedo PH, Vianna J, Dominguez R",
+        "year": 2022,
+        "venue": "International Journal of Sports Medicine 43(4):305-316",
+        "type": "systematic-review",
+        "doi_or_url": "10.1055/a-1559-3623",
+        "retrieved_at": "2026-11-22T20:38:00Z"
+      }
+    },
+    {
+      "topic": "Polarized vs threshold meta-analysis",
+      "claim": "A meta-analysis of RCTs comparing polarized (POL) versus threshold (THR) training in endurance-trained athletes found a moderate pooled effect favouring POL for time-trial performance (ES = -0.66, 95% CI -1.17 to -0.15), although only three studies entered the meta-analysis and study quality was modest (PEDro 4-5/10).",
+      "evidence": "Systematic review and meta-analysis of RCTs (PROSPERO CRD42016050942); four studies qualitative, three in the meta-analysis; athletes with >2 years training and VO2max >50 ml/kg/min. Small evidence base, high risk of bias.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Polarized vs. Threshold Training Intensity Distribution on Endurance Sport Performance: A Systematic Review and Meta-Analysis of Randomized Controlled Trials",
+        "authors": "Rosenblat MA, Perrotta AS, Vicenzino B",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research 33(12):3491-3500",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1519/JSC.0000000000002618",
+        "retrieved_at": "2026-11-22T20:37:00Z"
+      }
+    },
+    {
+      "topic": "Polarized superiority is narrow",
+      "claim": "A 2024 meta-analysis of 17 studies (n=437) found polarized training superior to other intensity distributions for VO2peak (SMD 0.24, 95% CI 0.01-0.48; small effect, high certainty of evidence), with superiority mainly in interventions shorter than 12 weeks and in highly trained athletes; there was no evidence of superiority of POL for any of the other endurance-performance surrogates investigated.",
+      "evidence": "Systematic review with meta-analysis (PROSPERO CRD42022365117), 17 studies. Effect size small and confined to VO2peak; no advantage for time-trial or other outcomes.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Comparison of Polarized Versus Other Types of Endurance Training Intensity Distribution on Athletes' Endurance Performance: A Systematic Review with Meta-analysis",
+        "authors": "Oliveira PS, Boppre G, Fonseca H",
+        "year": 2024,
+        "venue": "Sports Medicine 54(11):2777-2796",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11329428/",
+        "retrieved_at": "2026-11-22T20:39:00Z"
+      }
+    },
+    {
+      "topic": "Race-time prediction (Riegel) accuracy",
+      "claim": "Applied to more than 2,300 recreational runners, the Riegel formula (t2 = t1 x (d2/d1)^1.06) predicted a marathon time more than 20 minutes too fast for nearly 25% of runners, so single-formula race-time predictions should be presented as rough estimates with wide uncertainty, ideally updated from a recent race.",
+      "evidence": "Internet-survey study of 2,303 recreational runners split 2:1 into training and validation sets; sex, age, BMI and race training were associated with mean race velocity, and a novel statistical model outperformed Riegel for marathon prediction. Observational, self-reported data.",
+      "confidence": "medium",
+      "citation": {
+        "title": "An empirical study of race times in recreational endurance runners",
+        "authors": "Vickers AJ, Vertosick EA",
+        "year": 2016,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation 8:26",
+        "type": "observational",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5000509/",
+        "retrieved_at": "2026-11-22T20:37:00Z"
+      }
+    },
+    {
+      "topic": "VDOT as a fitness index",
+      "claim": "VDOT (Daniels' pseudo-VO2max derived from race performance and used to set training paces) is a widely used coaching framework, but its race-equivalent tables assume performance scales predictably across distances, an assumption the Riegel data above shows is imperfect; VDOT trends should therefore be read as a directional index rather than a precise VO2max.",
+      "evidence": "Textbook framework (Daniels' Running Formula) plus the empirical finding that cross-distance race-time prediction commonly errs. Textbook/coaching consensus, not an RCT.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Daniels' Running Formula (3rd ed.)",
+        "authors": "Daniels J",
+        "year": 2014,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "ISBN 978-1450431835",
+        "retrieved_at": "2026-11-22T20:36:00Z"
+      }
+    },
+    {
+      "topic": "HRV-guided training meta-analysis",
+      "claim": "A meta-analysis of 8 studies (198 participants) found HRV-guided endurance training had a medium-sized effect on submaximal physiological parameters (g=0.296, 95% CI 0.031-0.562) but only small and non-significant effects on performance (g=0.079) and VO2peak (g=0.171); HRV-guided groups contained fewer performance non-responders.",
+      "evidence": "Systematic review and meta-analysis; HRV-guided interventions typically included fewer moderate/high-intensity sessions than predefined training. Small pooled sample; heterogeneous interventions.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Monitoring and adapting endurance training on the basis of heart rate variability monitored by wearable technologies: A systematic review with meta-analysis",
+        "authors": "Duking P, Zinner C, Trabelsi K, Reed JL, Holmberg HC, Kunz P, Sperlich B",
+        "year": 2021,
+        "venue": "Journal of Science and Medicine in Sport 24(11):1180-1192",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/j.jsams.2021.04.012",
+        "retrieved_at": "2026-11-22T20:38:00Z"
+      }
+    },
+    {
+      "topic": "HRV-guided training: second meta-analysis",
+      "claim": "A separate methodological meta-analysis concluded HRV-guided training did not produce significantly greater fitness or performance outcomes than pre-planned training, although small effect sizes consistently favoured HRV-guided training and responses were more homogeneous with fewer negative responders.",
+      "evidence": "Systematic review with meta-analysis; high methodological heterogeneity across studies but no statistical inconsistency found for the aerobic fitness and endurance performance outcomes.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Heart Rate Variability-Guided Training for Enhancing Cardiac-Vagal Modulation, Aerobic Fitness, and Endurance Performance: A Methodological Systematic Review with Meta-Analysis",
+        "authors": "Manresa-Rocamora A, Sarabia JM, Javaloyes A, Flatt AA, Moya-Ramon M",
+        "year": 2021,
+        "venue": "International Journal of Environmental Research and Public Health 18(19):10299",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8507742/",
+        "retrieved_at": "2026-11-22T20:39:00Z"
+      }
+    },
+    {
+      "topic": "Sleep quality and running injury",
+      "claim": "A 26-week prospective study of 339 adult runners found poorer sleep quality was associated with about a 36% higher risk of running-related injury; a separate latent-profile analysis of 425 runners classified 37% as 'poor sleepers'.",
+      "evidence": "Prospective cohort with weekly self-reported RRI and the Hooper questionnaire assessing sleep quality/quantity. Sleep is self-reported; observational, so direction and confounding are unresolved.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Poor Sleep Quality Is Associated With an Increased Risk of Running-Related Injuries: A Prospective Study of 339 Runners Over Six Months",
+        "authors": "Goldberg M, Le Mat Y, Metra M, de Sousa T, Edouard P, Millet GY, Pairot de Fontenay B, Debarnot U",
+        "year": 2025,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "cohort",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/41239840/",
+        "retrieved_at": "2026-11-22T20:39:00Z"
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "name": "Session adherence rate (completed vs planned)",
+      "purpose": "Show whether the runner is doing the prescribed plan; the honest primary progress signal for a beginner and the denominator for every other metric.",
+      "how_to_compute": "completed_sessions / planned_sessions over a window (week, 4-week block), counting a planned session as complete only if the run was done at or near the prescribed type/duration; report a 4-week rolling rate, not a lifetime average.",
+      "target_or_threshold": "No evidence-based 'good' cutoff. Report as a percentage with the plan context. Real-world beginner adherence is commonly 50-80%; low adherence is a prompt to adjust the plan, not to shame the runner.",
+      "supported": "moderate",
+      "caveats": "Distinguish 'completed', 'modified' and 'missed'; do not count a short jog as a completed long run. Adherence is descriptive - it was not shown to mediate fitness change in the beginner study. Never display it as a grade."
+    },
+    {
+      "name": "Streaks (consecutive days/weeks active)",
+      "purpose": "Motivational only.",
+      "how_to_compute": "Count consecutive calendar days or weeks with at least one qualifying run; reset on a gap.",
+      "target_or_threshold": "None. Do not set a numeric streak goal.",
+      "supported": "weak",
+      "caveats": "No evidence that streaks improve performance or reduce injury; streaks can actively encourage running through fatigue/illness. Show only as a soft, resettable motivator with a rest-day allowance, never as a training target."
+    },
+    {
+      "name": "Weekly volume: actual vs planned (distance or duration)",
+      "purpose": "Core dose metric; compares delivered training against the plan and against the runner's own recent history.",
+      "how_to_compute": "Sum distance (km) or moving time per calendar week (respect the user's week start); show actual next to planned for the week and a 4-week rolling mean.",
+      "target_or_threshold": "Driven by the plan. For self-structured progression, keep week-on-week increases below ~30% (see progression metric); there is no evidence that a specific absolute weekly distance is optimal for amateurs.",
+      "supported": "strong",
+      "caveats": "Units are presentation only (km/mi) - store metric. Volume is descriptive; more is not automatically better, and very high chronic volume is associated with injury in some cohorts."
+    },
+    {
+      "name": "Volume progression (% change in weekly distance)",
+      "purpose": "Flag rapid increases that are the most defensible load-risk signal available from a run log.",
+      "how_to_compute": "(this_week_distance - previous_week_distance) / previous_week_distance, and optionally the 2-week change; compare a run's distance to the longest run in the past 30 days.",
+      "target_or_threshold": "Keep week-on-week increases below ~30% for novices (Nielsen 2014; Damsted 2018 found no difference between 10% and 24%). The '10% rule' is a conservative heuristic, not evidence-based; a gradual ramp with cutback weeks is defensible.",
+      "supported": "moderate",
+      "caveats": "Evidence is limited and partly non-significant; the >30% hazard ratio CI crossed 1. Never present a % as a hard rule. Judge over 2-4 weeks, not a single week, and ignore noise for very low-mileage runners."
+    },
+    {
+      "name": "Pace at a given effort (HR or RPE band)",
+      "purpose": "Answer 'am I getting faster at the same effort?' - the most honest fitness-trend metric from a plain run log.",
+      "how_to_compute": "Bucket runs by an effort band (e.g. avg HR 70-80% max, or RPE 3-4), then compare median pace within the same band across rolling 4-8 week windows. Only compare within-band.",
+      "target_or_threshold": "No fixed number; look for a downward trend in pace (or upward trend in distance at fixed HR/RPE) over >=6-8 weeks.",
+      "supported": "moderate",
+      "caveats": "HR is affected by heat, caffeine, fatigue, hydration and cardiac drift; RPE is subjective. Require a minimum number of comparable runs before claiming a trend, and prefer median over mean to resist outliers."
+    },
+    {
+      "name": "VDOT / race-equivalent trend",
+      "purpose": "Express fitness as a single index and translate it into training paces and predicted race times.",
+      "how_to_compute": "From a recent race or hard time-trial, look up the VDOT (Daniels tables); plot VDOT over months. Alternatively fit the Riegel relation t2 = t1 x (d2/d1)^1.06 across recent bests.",
+      "target_or_threshold": "Trend direction over months; treat any single race-time prediction as a range, not a point.",
+      "supported": "moderate",
+      "caveats": "Cross-distance prediction is imperfect: Riegel over-predicted a marathon by >20 min in ~25% of recreational runners. Only compute from a genuine race/time-trial effort, not from easy runs; a new VDOT needs a fresh maximal effort."
+    },
+    {
+      "name": "Intensity distribution (% easy / steady / hard)",
+      "purpose": "Show whether the runner is training at a sensible intensity mix, which is the best-supported training-quality metric.",
+      "how_to_compute": "Classify each completed session by its dominant effort (RPE and/or HR and/or pace relative to threshold) into easy / steady / hard; report the share of sessions or of time per 4-week block.",
+      "target_or_threshold": "Aim for roughly >=70-80% easy and <=20-30% steady/hard, i.e. a pyramidal or polarized mix (80/20); threshold-heavy distributions performed worse for runners.",
+      "supported": "moderate",
+      "caveats": "Classification depends on the method (RPE vs HR vs pace) and the same plan can be scored differently; state the method used. Targets derive mainly from trained/elite data, so treat the split as guidance for amateurs, not a precise prescription."
+    },
+    {
+      "name": "Session-RPE load (sRPE = RPE x duration)",
+      "purpose": "Quantify internal training load per session and per week, including for runs with no reliable HR.",
+      "how_to_compute": "sRPE = session RPE (CR-10, captured within ~30 min post-run) x duration in minutes; sum per week for weekly load.",
+      "target_or_threshold": "No universal threshold. Use it to describe the runner's own load pattern and week-to-week variation, not to compare against others.",
+      "supported": "moderate",
+      "caveats": "Valid as a measure of internal load, but its link to injury outcomes is not established. RPE must be captured consistently; it is influenced by fitness, mood and environment."
+    },
+    {
+      "name": "Acute:chronic workload ratio (ACWR)",
+      "purpose": "Popularly marketed as an injury-risk predictor.",
+      "how_to_compute": "7-day (acute) load / 28-day (chronic) load, using distance, time or sRPE.",
+      "target_or_threshold": "None that is defensible. Do not present a 'sweet spot' (e.g. 0.8-1.3) as a safe/unsafe boundary.",
+      "supported": "weak",
+      "caveats": "Recommended to be dropped: it is a mathematical rescaling of acute load that inflates effect estimates, has no demonstrated predictive advantage, and in runners the association has even been found inverted (higher ACWR, lower injury risk). If shown at all, present only as a descriptive load-ratio with an explicit 'not a validated risk predictor' caveat."
+    },
+    {
+      "name": "Training monotony",
+      "purpose": "Flag unvarying day-to-day loading.",
+      "how_to_compute": "monotony = weekly mean daily load / weekly SD of daily load (load = sRPE or distance), using daily values including zero-load rest days.",
+      "target_or_threshold": "None validated for amateurs.",
+      "supported": "weak",
+      "caveats": "Origin is a single N=25 observational study using illness as a surrogate for overtraining; not validated as an injury predictor. High monotony is also a natural consequence of low training frequency, so it can be misleading. Not recommended as a headline metric."
+    },
+    {
+      "name": "Training strain",
+      "purpose": "Combine weekly load and monotony into a single 'stress' index.",
+      "how_to_compute": "strain = weekly load x monotony.",
+      "target_or_threshold": "None validated.",
+      "supported": "weak",
+      "caveats": "Same weak evidence base as monotony (Foster 1998, N=25); multiplies two noisy quantities, so it is dominated by measurement error. Not recommended as a displayed metric; at most an internal note."
+    },
+    {
+      "name": "Resting heart rate (RHR) trend",
+      "purpose": "Popular 'recovery' signal.",
+      "how_to_compute": "Rolling 7-day mean of morning resting HR; show deviation from the runner's own baseline.",
+      "target_or_threshold": "No defensible absolute or delta threshold; a sustained rise of a few bpm may accompany fatigue but is non-specific.",
+      "supported": "weak",
+      "caveats": "RHR is affected by sleep, alcohol, illness, caffeine, temperature and measurement conditions; in a beginner running study RHR did not change over 10 weeks. Do not present a bpm rise as a diagnosis of overtraining."
+    },
+    {
+      "name": "HRV trend",
+      "purpose": "Objective autonomic recovery signal to modulate daily training.",
+      "how_to_compute": "Daily/rolling HRV (e.g. rMSSD) from a wearable; compare against a personal rolling baseline and use to adapt session intensity.",
+      "target_or_threshold": "No fixed threshold; evidence supports using HRV to shift some sessions rather than to declare readiness by a cutoff.",
+      "supported": "weak",
+      "caveats": "Meta-analyses show at best a medium effect on submaximal physiological parameters and only small, non-significant effects on performance/VO2peak; HRV-guided training's main benefit is fewer non-responders. Measurement protocol must be consistent. Optional, not core."
+    },
+    {
+      "name": "Sleep duration / quality",
+      "purpose": "Recovery input that is associated with injury risk.",
+      "how_to_compute": "Log nightly sleep duration and a simple quality rating; show rolling means and flag short/low-quality weeks.",
+      "target_or_threshold": "No running-specific cutoff; general adult guidance of 7-9 h is reasonable. Poor sleep quality was associated with ~36% higher injury risk in one 26-week cohort.",
+      "supported": "weak",
+      "caveats": "Evidence is mixed (a youth XC cohort found no prospective association) and mostly self-reported; confounding is likely. Present as a supportive, non-diagnostic signal only."
+    },
+    {
+      "name": "Personal bests (fastest pace, longest run, biggest week)",
+      "purpose": "Concrete, motivating records of what the runner has actually done.",
+      "how_to_compute": "Track best-ever and best-in-window values from the log: fastest sustained pace over a minimum distance, longest single run, largest weekly volume, fastest race/time-trial.",
+      "target_or_threshold": "None - these are records, not targets.",
+      "supported": "strong",
+      "caveats": "Defensible as facts, weak as fitness inference: a fast short run or a big week can reflect one good day or a risky spike. Guard against comparing pace across different distances and against encouraging a new PB at the cost of recovery. Present with date and context."
+    }
+  ],
+  "summary_tier_a": "Show these with confidence because they are descriptive, robust to sparse data and/or well supported: (1) session adherence rate (completed vs planned), reported as a rolling 4-week percentage with no grade; (2) weekly volume actual vs planned (distance or time) with a 4-week rolling mean; (3) volume progression as a % change with a soft 'keep under ~30%' caution rather than a hard 10% rule; (4) pace at a given effort (HR/RPE band) trend, compared only within-band over >=6-8 weeks; (5) intensity distribution (% easy/steady/hard) with a pyramidal/polarized 80/20-ish target; (6) session-RPE load as an internal-load descriptor; and (7) personal bests as factual records. VDOT/race-time and recovery signals (RHR, HRV, sleep) are defensible only as directional, caveated trends. Drop or demote ACWR, training monotony and training strain - the ACWR has been recommended for dismissal (statistical artefact, no predictive advantage, and inverted associations in runners), and monotony/strain rest on a single N=25 observational study with illness as a surrogate outcome.",
+  "unverified": [
+    "The exact origin and rationale of the '10% rule' could not be sourced to any primary study; it appears to be a coaching convention. No peer-reviewed source established a 10%-per-week safe ceiling.",
+    "A specific ACWR 'sweet spot' range (commonly quoted as 0.8-1.3) as a safe/unsafe boundary is not supported by the reviewed evidence and should not be presented as validated.",
+    "A numeric resting-HR rise (e.g. +5 to +7 bpm) as a validated overtraining marker in amateur runners was not found in the reviewed literature.",
+    "Optimal absolute weekly mileage thresholds for amateur runners (beyond relative-change signals) were not established; cohort findings were relative-change based.",
+    "No RCT in amateur runners directly shows that displaying any single progress metric improves adherence or performance outcomes; all metric-selection reasoning here is inferential."
+  ],
+  "notes": "Scope: metrics computable from a run log (distance, duration, pace, avg HR, RPE) plus the prescribed plan. Confidence is deliberately conservative: descriptive metrics (adherence, volume, intensity split, PBs) are 'strong' because they are direct facts; predictive load-management metrics are 'weak'. Key defensible positions: (a) define adherence as completed/planned over a rolling window and never grade it; (b) treat volume risk as a relative-change signal (<~30%/week soft caution; the 10% rule is a heuristic) rather than an absolute mileage target; (c) read pace-at-effort over >=6-8 weeks within the same HR/RPE band and prefer medians; (d) target an easy-dominated distribution (~80/20 pyramidal/polarized); (e) do NOT display ACWR (Impellizzeri 2020a,b; Nakaoka 2021 found the association inverted in runners) and do NOT headline monotony/strain (Foster 1998, N=25); (f) present RHR/HRV/sleep as optional, directional, non-diagnostic signals (HRV meta-analyses show small/non-significant performance effects; sleep evidence is mixed); (g) present PBs and race-time/VDOT predictions with explicit uncertainty (Riegel over-predicted ~25% of recreational marathoners by >20 min). Sparse-data handling: suppress any trend until a minimum sample exists (e.g. >=4-6 comparable runs per window, >=3 weeks for a volume trend), use rolling medians, and label early values as 'building baseline'. Units are presentation only - compute and store metric. Peer-reviewed sources were prioritised; Riegel's original 1981 magazine article and Daniels' textbook are cited at coaching/textbook tier and flagged as such."
+}

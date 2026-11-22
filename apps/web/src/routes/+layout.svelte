@@ -84,24 +84,15 @@
 		aria-label="Primary"
 	>
 		<div class="mx-auto flex max-w-2xl">
-			<a
-				href="/"
-				aria-current={page.url.pathname === '/' ? 'page' : undefined}
-				class="flex-1 py-3 text-center text-sm {page.url.pathname === '/'
-					? 'text-ink font-medium'
-					: 'text-steel'}"
-			>
-				Today
-			</a>
-			<a
-				href="/week"
-				aria-current={page.url.pathname.startsWith('/week') ? 'page' : undefined}
-				class="flex-1 py-3 text-center text-sm {page.url.pathname.startsWith('/week')
-					? 'text-ink font-medium'
-					: 'text-steel'}"
-			>
-				Week
-			</a>
+			{#each [{ href: '/', label: 'Today', active: page.url.pathname === '/' }, { href: '/week', label: 'Week', active: page.url.pathname.startsWith('/week') }, { href: '/progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') }] as tab (tab.href)}
+				<a
+					href={tab.href}
+					aria-current={tab.active ? 'page' : undefined}
+					class="flex-1 py-3 text-center text-sm {tab.active ? 'text-ink font-medium' : 'text-steel'}"
+				>
+					{tab.label}
+				</a>
+			{/each}
 		</div>
 	</nav>
 

@@ -1,0 +1,261 @@
+{
+  "generated_at": "2026-11-22T20:33:22Z",
+  "scope": "M5 design exploration: a third bottom-nav tab, Progress. Design only, no app code changed. Hard rule: every mark encodes a real logged or planned value. Each panel has an explicit data gate; when the gate is not met the panel renders a steel sentence with its n, never a placeholder axis, ghost series, or sample trend.",
+  "data_contract": {
+    "planned": "plan_weeks + sessions_plan: prescription.targetDistanceKm, prescription.workout.totalDistanceKm, prescription.intensity, durationMin.",
+    "actual": "logs joined to sessions_plan by session_id: startedAt/endedAt, runStats.distanceKm, runStats.durationSec, runStats.avgPaceSecPerKm, rpe, notes.",
+    "derived": "week bucket from startedAt in the user's week-start pref; band from prescription.intensity with the M4 archetype fallback; pace only from logs that carry both distanceKm and durationSec.",
+    "excluded": "logs with no session_id appear only in the adherence 'extra' count and in the effort strip, never in planned-vs-actual volume or the intensity distribution, because there is no prescription to compare them to.",
+    "gates": "adherence n>=1 planned session dated on/before today; volume n>=1 week with a plan; intensity n>=1 completed linked session; pace n>=3 runs in the selected band; bests n>=1 qualifying race log; effort n>=1 logged RPE."
+  },
+  "wires": [
+    {
+      "screen": "1. Progress — populated (mid-block, 3 weeks of logs)",
+      "ascii": "┌────────────────────────────────────────┐\n│PROGRESS                   WEEK 5 · BASE│\n├────────────────────────────────────────┤\n│ADHERENCE                         n = 16│\n│12 logged · 4 not logged · +2 extra     │\n│▓▓▓▓▓▓▓▓▓▓▓▓░░░░   1 tick = 1 planned   │\n│counted to today only                   │\n├────────────────────────────────────────┤\n│RUNNING VOLUME (km)               plan ▏│\n│W3  ███████████████████▏ 38.0 / 40.0    │\n│W4  ██████████████████▏  35.5 / 38.0    │\n│W5  ███████▐           ▏   14.0 / 40.0  │\n│in progress · 2 of 5 sessions           │\n│1 block = 2 km · tick = plan            │\n├────────────────────────────────────────┤\n│INTENSITY  completed              n = 12│\n│easy    ▓▓▓▓▓▓▓▓▓▓▓▓▓  7                │\n│steady  ▓▓▓▓▓  3                        │\n│hard    ▓▓▓ 2                           │\n├────────────────────────────────────────┤\n│PACE [EASY] steady hard            n = 6│\n│5:40 ┤  ·        ·        ·             │\n│5:30 ┤       ·        ·                 │\n│5:20 ┤                          ·       │\n│     └──┬───────┬───────┬─              │\n│       OCT 12  OCT 26  NOV 09           │\n│FASTER ↑ · one band only                │\n├────────────────────────────────────────┤\n│BESTS  from race logs only              │\n│5K    24:12   RACE   12 OCT             │\n│10K   51:40   RACE   02 NOV             │\n├────────────────────────────────────────┤\n│EFFORT  session RPE               n = 11│\n│1 2 3 4 5│6 7│8 9 10  median 6          │\n│      ·  ·│ · │ ·  ·                    │\n│NOTE 12 NOV  legs heavy, slept 5h       │\n├────────────────────────────────────────┤\n│Today         Week            [Progress]│\n└────────────────────────────────────────┘",
+      "notes": {
+        "intent": "A field notebook page, read top to bottom: did I do the work (adherence), how much (volume), what kind (intensity), is it working (pace), what is proven (bests), how did it feel (effort). Panels are separated by a hairline, never by cards or shadows. The page is one scroll; no tabbed sub-navigation, because six short panels are cheaper to scan than a segmented control.",
+        "reading_order": "Adherence first because it is the one number that is true on day one. Pace sits after intensity so the band filter is already explained by the panel above it. Bests sit low because they are usually empty.",
+        "tokens": [
+          "--paper ground",
+          "--ink for marks and values",
+          "--steel for panel captions, units and gate sentences",
+          "--hairline between panels",
+          "--hairline-strong for axes, ticks and planned markers (they encode data, so 3:1 minimum)",
+          "--signal only as the 2px in-progress cap and the today rule; --signal-ink only if amber text is unavoidable"
+        ],
+        "components": [
+          "ProgressHeader (goal + week + phase, no title art)",
+          "Panel (caption row: uppercase name, n, optional chip group)",
+          "TickLedger",
+          "TargetBarRow",
+          "BandBarRow",
+          "PaceTrace",
+          "LedgerRow",
+          "RpeStrip",
+          "BottomNav 3-up"
+        ],
+        "motion": "See the motion list. Nothing animates on scroll or on tab return within the session.",
+        "a11y": "Each panel is a region with aria-labelledby; charts are role=img with a sentence that contains n and the figures, and each panel has a NUMBERS disclosure holding a real table. The page's first focusable item is the pace band chip group, so keyboard users can reach the only interactive data control without tabbing through six static panels.",
+        "responsive": "One column to 719px. At >=720px adherence and volume sit side by side at 50/50; intensity, pace and effort stay full width because their labels need the room."
+      }
+    },
+    {
+      "screen": "2. Progress — sparse (3 planned sessions, 2 logs, week 1)",
+      "ascii": "┌────────────────────────────────────────┐\n│PROGRESS                   WEEK 1 · BASE│\n├────────────────────────────────────────┤\n│ADHERENCE                          n = 3│\n│2 logged · 1 not logged                 │\n│▓▓░                                     │\n├────────────────────────────────────────┤\n│RUNNING VOLUME (km)                     │\n│W1  ██████▏  9.0 / 18.0                 │\n│one week so far — numbers, no axis      │\n├────────────────────────────────────────┤\n│INTENSITY  completed               n = 2│\n│easy    ▓▓  2                           │\n│steady  —   0                           │\n│hard    —   0                           │\n├────────────────────────────────────────┤\n│PACE [EASY] steady hard                 │\n│2 easy runs logged. A trend needs 3.    │\n│5:38 /km · 26 OCT                       │\n│5:41 /km · 29 OCT                       │\n├────────────────────────────────────────┤\n│BESTS                                   │\n│No verified bests. Bests come from      │\n│race logs, not training runs.           │\n├────────────────────────────────────────┤\n│EFFORT  session RPE                n = 2│\n│1 2 3 4 5│6 7│8 9 10                    │\n│      ·  ·│                             │\n├────────────────────────────────────────┤\n│Today         Week            [Progress]│\n└────────────────────────────────────────┘",
+      "notes": {
+        "intent": "The same page with almost no data. The proof that the design is honest is that nothing grows to fill space: the tick ledger is two ticks wide, the volume row is one row with no axis, and the pace panel refuses to draw. Empty space is information here.",
+        "gates_visible": "Adherence and effort render at n=1. Volume renders one real week. Intensity renders two real counts. Pace states its gate in words. Bests states how a best is earned. No panel dims or disappears, so the user learns what will appear rather than wondering where it went.",
+        "tokens": [
+          "same as populated; the only new mark is the em dash for a zero count, in --steel, which reads as 'none' and not as a zero-height bar"
+        ],
+        "components": [
+          "Panel (gate variant)",
+          "BandBarRow at n<=3 uses the ladder glyph count, not a proportional bar"
+        ],
+        "motion": "Only the one-time panel reveal. A panel that gains its first real data on the next visit cross-fades its content in 120ms so the change is noticed but not celebrated.",
+        "a11y": "Gate sentences are ordinary text in reading order, so a screen reader gets the same story: what is known, what is not, and what would unlock it.",
+        "responsive": "Identical; sparse panels do not stretch to fill the column."
+      }
+    },
+    {
+      "screen": "3. Pace — the band-filtered detail (tap the pace panel)",
+      "ascii": "┌────────────────────────────────────────┐\n│‹ PROGRESS              PACE · EASY     │\n├────────────────────────────────────────┤\n│ONE BAND AT A TIME                      │\n│Easy pace is only compared with easy    │\n│pace. Mixing bands would move the line  │\n│with the training, not with you.        │\n├────────────────────────────────────────┤\n│[EASY]   steady   hard             n = 6│\n│                                        │\n│5:50 ┤                                  │\n│5:40 ┤   ·        ·      ·              │\n│5:30 ┤        ·                         │\n│5:20 ┤              ·     ·             │\n│     └──┬──────┬──────┬──────┬─         │\n│       OCT 05 OCT 12 OCT 26 NOV 09      │\n│                                        │\n│FASTER ↑   gaps = no easy run logged    │\n├────────────────────────────────────────┤\n│RANGE 5:19 – 5:44 /km                   │\n│FIRST 5:44 · 05 OCT                     │\n│LAST  5:19 · 09 NOV                     │\n│runs plotted on real dates              │\n├────────────────────────────────────────┤\n│NUMBERS                                 │\n│05 OCT 5:44   12 OCT 5:31  26 OCT 5:22  │\n│26 OCT 5:28   02 NOV 5:24  09 NOV 5:19  │\n└────────────────────────────────────────┘",
+      "notes": {
+        "intent": "The one place where an honest trend needs explaining, so it gets its own page rather than a modal. The rule is stated before the chart: one band at a time. Comparing an easy run to a threshold run would draw a trend that belongs to the plan, not the runner.",
+        "why_its_own_screen": "It holds a chip group, a chart, a range summary and a NUMBERS table. Inline on Progress the panel stays a 90px preview at n>=3.",
+        "tokens": [
+          "--ink dots",
+          "--hairline-strong axes and gridline ticks",
+          "--steel month labels and the FASTER ↑ caption",
+          "no --signal: amber means now, and these are past runs"
+        ],
+        "components": [
+          "BandChipGroup (radiogroup, 44px, one selected)",
+          "PaceTrace",
+          "RangeFacts (three ruled rows)",
+          "NumbersTable (always available, not a fallback)"
+        ],
+        "motion": "None on the trace. Changing band swaps the dataset with a 120ms cross-fade and the chip's 120ms selected transition; the dots are never animated between bands, because a morph would imply the same runs moved.",
+        "a11y": "Chip group is a radiogroup with arrow-key navigation and the count in each label ('Easy, 6 runs'). Each dot has a 44px invisible hit area and is focusable; left/right walks the series in date order and announces '9 November, 5 minutes 19 seconds per kilometre'. Axes have a text caption. NUMBERS table is the non-visual equivalent, always rendered, not a hidden fallback.",
+        "responsive": "Chart height 180px at 320px wide, 220px above. Month labels thin from every point to first/last when the span is under 6 weeks."
+      }
+    }
+  ],
+  "elements": [
+    {
+      "name": "Adherence — TickLedger",
+      "mark": "One 6x14px tick per planned session. Filled ink tick = a log exists for it. Hollow tick, 1px --hairline-strong = planned, date on/before today, no log. Future sessions are not rendered at all. Sessions logged with no matching plan session appear as a separate short row of '+2 extra' ticks in steel.",
+      "encodes": "Per-session completion state (categorical, one tick = one session) plus two counts whose sum is the planned-session count up to today. Nothing about distance, quality, or how well the session went.",
+      "scale": "No axis. Length is n. The ratio is printed as '12 of 16' with the words 'logged' and 'not logged'; a bare percentage is never shown because it hides n.",
+      "sparse_data": "n=1..3 draws at true tick size with the sentence '1 of 2 planned'. The ledger never stretches to fill the row, and a single tick is never centred as a hero stat. At n>48 the ticks fold into three rows of 16 plus one sentence ('last 48 sessions shown'); the count line above stays exact.",
+      "tokens": "fill --ink; hollow stroke --hairline-strong; caption and counts --steel; counts in --font-data tabular-nums. No amber here: completion is not 'now'.",
+      "motion": "Ticks paint once on mount with a 20ms stagger, opacity only, 120ms total. No draw-on per tick, no fill animation on refresh.",
+      "a11y": "role=img, aria-label: 'Adherence, 12 of 16 planned sessions logged, 4 not logged, 2 extra sessions.' Plus a hidden table: session date, title, logged yes/no. 'Not logged' is used instead of 'missed' in both visible copy and the label, because a session can be done without a device."
+    },
+    {
+      "name": "Running volume — TargetBarRow (actual bar + planned tick)",
+      "mark": "One row per week: a solid ink horizontal bar to actual kilometres, and a 2px vertical --hairline-strong tick at planned kilometres, so bar-beyond-tick reads as over and bar-short-of-tick as under. The planned number is printed at the tick's right. The current week gets a 2px --signal cap on the bar's right end and the words 'in progress'.",
+      "encodes": "Two real quantities per week: actual = sum of runStats.distanceKm for that week's logs; planned = sum of prescription targetDistanceKm (or workout.totalDistanceKm) for that week's sessions. Only running modality: strength and mobility are not converted into kilometres.",
+      "scale": "Linear, shared zero baseline across the visible weeks, one hairline gridline at the largest planned value in view with its value labelled. No fixed 0–50 axis, because a fixed axis would make a beginner's real 9 km week look like nothing.",
+      "sparse_data": "One week: one row, no gridline and no axis, just '9.0 / 18.0' and 'one week so far'. Two weeks: two rows, still no gridline. The partial week is labelled at all times and never compared as if complete against a full planned week; the panel also prints '2 of 5 sessions' so the short bar is explained rather than inferred.",
+      "tokens": "bar --ink; planned tick and gridline --hairline-strong; in-progress cap --signal (mark only); delta text --steel; values --font-data tabular-nums; 'km' and 'plan' in 12px --steel caps. A negative delta is a minus sign and a number, never red.",
+      "motion": "Bar width wipes from the zero baseline once, 220ms ease-out. The planned tick does not animate, because animating it would suggest it moved.",
+      "a11y": "role=img with 'Week 4: 35.5 kilometres actual, 38 planned, 2.5 under.' Hidden table: week, actual, planned, delta, status. The in-progress state is the words 'in progress' in the label, not the amber cap alone."
+    },
+    {
+      "name": "Intensity distribution — BandBarRow",
+      "mark": "Three horizontal bars, one per band, each prefixed by the M4 IntensityLadder glyph (lit-cell count: 1 easy, 2 steady, 3 hard) so the band is encoded by shape and by position, not by colour. Bar length is the count of completed sessions in that band.",
+      "encodes": "Counts of completed, plan-linked sessions per band, derived from prescription.intensity (or the M4 archetype fallback). This is what was done, not what was prescribed, so it answers 'what kind of work have I actually banked'.",
+      "scale": "Linear from zero to n completed sessions, common baseline, count printed at the bar end. Never percentages alone. Unlinked logs are excluded and their count is printed as '3 unplanned, not shown'.",
+      "sparse_data": "At n<=3 the proportional bar is dropped: each row shows the ladder glyph repeated per session (e.g. ▓▓ for two easy runs) and the count. A zero row prints an em dash and 0, in steel, never a zero-width bar that looks like a rendering bug.",
+      "tokens": "bar --ink; ladder lit cells --ink, unlit outline --hairline-strong; labels --steel; counts --font-data. Amber is absent: intensity is not 'now'.",
+      "motion": "Bars wipe once with the volume bars on first mount; no sorting animation between visits, so a reordered list cannot be mistaken for a change in training.",
+      "a11y": "role=img: 'Completed sessions by intensity: easy 7, steady 3, hard 2, from 12 sessions.' Hidden table with band, count, and the planned count for the same period in a second column so the comparison is available without a second chart."
+    },
+    {
+      "name": "Pace trend — PaceTrace (band-filtered dot trace)",
+      "mark": "A dot-and-segment trace: one 6px ink dot per qualifying run at (real date, avg pace), joined by a 1px --hairline-strong segment only between adjacent points, no smoothing, no fill, no area. A vertical 1px --signal rule marks today when today falls inside the range. The latest point is not highlighted in amber; it is a past measurement, not 'now'.",
+      "encodes": "logs.runStats.avgPaceSecPerKm for runs in exactly one intensity band. One series only, chosen by the chip group. Time and distance are not encoded, so a 4 km run and a 30 km run are the same kind of dot; the NUMBERS table carries distance so the difference stays visible.",
+      "scale": "Inverted linear y (faster is higher), ticks padded 15s beyond the observed min/max and labelled mm:ss. Linear x on real calendar dates over at most 12 weeks, so uneven gaps are drawn as gaps and never compressed to equal spacing. Gate: 3 points minimum.",
+      "sparse_data": "0–2 points: no chart is drawn. The panel lists each run as 'date · pace' in mono and states 'A trend needs 3.' Two points are never connected, and nothing is extrapolated forward. 3 points: chart appears at full fidelity, still no trend line or fit, because a fitted line would be a claim about the missing points.",
+      "tokens": "dots --ink; segments and axes --hairline-strong; tick labels and the FASTER ↑ caption --steel; today rule --signal; selected chip ink fill with paper text. No amber text; if a label must be amber it uses --signal-ink.",
+      "motion": "No motion on the trace. Changing band cross-fades the dataset 120ms; dots never slide between positions. Reduced motion removes the cross-fade.",
+      "a11y": "Dots are individually focusable with 44px hit areas and arrow-key traversal in date order; each announces '9 November, 5 minutes 19 seconds per kilometre, 8.0 kilometres'. Axes are described in text in the same panel. NUMBERS table lists date, pace, distance, RPE where present. The band chips are a radiogroup, each labelled with its run count; a band with fewer than 3 runs is still selectable and lands on the sparse state, which is the honest answer."
+    },
+    {
+      "name": "Personal bests — BestLedger",
+      "mark": "Ruled ledger rows with a hairline bottom rule. Columns: distance, time, date, source tag (RACE). No medal, no trophy, no amber, no badge, no confetti. Two columns on phone only if both fit; otherwise stacked distance/time with date and source on a second line.",
+      "encodes": "Only bests that the log can actually verify: race sessions whose runStats.distanceKm is within 2% of a standard distance, using durationSec; or an interval/repetition session whose splits carry both a standard segment and a pace. A training run never sets a best, and a best is never estimated from a moving average.",
+      "scale": "None. Times are absolute, mm:ss or h:mm:ss, mono, tabular.",
+      "sparse_data": "Zero qualifying logs: 'No verified bests.' plus one sentence, 'Bests come from race logs, not training runs.' No empty rows, no locked slots, no '??:??' ghosts. One best: one row. Bests are per distance and are never collapsed into a single 'PB'.",
+      "tokens": "values --ink, source tag and caption --steel, rules --hairline, time --font-data. No amber anywhere in this panel, so a best is not treated as a prize.",
+      "motion": "None. A new best on save is a new row with a 120ms steel rule flash, not an animation; the row is announced once as 'New verified best, 5 kilometres, 24 minutes 12 seconds'.",
+      "a11y": "A real table with caption 'Personal bests, verified from race logs', columns distance, time, date, source. The panel heading states the rule in words so the absence of bests is never read as a bug."
+    },
+    {
+      "name": "Recovery and effort — RpeStrip + NoteLines",
+      "mark": "A fixed 1–10 ruled scale with hairline zone boundaries at 5|6 and 7|8. One 2x10px tick per logged session at its true rpe. The median is printed in mono beside the scale. Under it, up to two verbatim notes as ruled notebook lines, each led by its date. No recovery score, no readiness number, no gauge.",
+      "encodes": "logs.rpe per session and the median of those values; notes are the user's own words, truncated at a word boundary, never paraphrased. Sleep and recovery logs are not folded in, because a nutrition/sleep model would be a new derived metric this screen has not earned.",
+      "scale": "Ordinal 1–10, fixed. Ticks are not jittered, binned into bars, or offset when they collide; two sessions at RPE 7 print as two ticks side by side under the 7. Zones are labelled with the words easy, steady, hard rather than colour.",
+      "sparse_data": "One RPE: one tick, the sentence '1 session with RPE', and no median (a median of one is not a finding). Notes render from one entry upward, because they are qualitative and carry no trend claim. Empty: 'No RPE logged.' and nothing else.",
+      "tokens": "ticks --ink; zone boundaries and rules --hairline-strong; numeric labels and dates --steel; the scale numerals --font-data. Amber is used only for the 'today' tick if a session is today.",
+      "motion": "None. The strip is a static record; animating RPE ticks would imply they move as recovery changes, which they do not.",
+      "a11y": "role=group labelled 'Session effort, 1 to 10, 11 sessions with RPE, median 6.' Each tick is a button-like disclosure that opens the session it belongs to, with an accessible name 'RPE 7, 12 November, tempo run'. Zone boundaries are described in text. Notes are quotation blocks with the date in the label."
+    },
+    {
+      "name": "Panel gate — GateNote",
+      "mark": "A single steel sentence on paper where a chart would be, optionally with the n. No box, no border, no ghost axes, no skeleton, no sample data.",
+      "encodes": "The actual n and the rule that gates the panel, so the absence of a chart is itself accurate information.",
+      "scale": "Not applicable.",
+      "sparse_data": "This is the sparse state for pace below 3 points, bests at zero, effort at zero, and volume before the first week closes.",
+      "tokens": "--steel text, --font-body for the sentence, --font-data for the n, no amber.",
+      "motion": "Replaced by the real panel with a 120ms cross-fade when the gate is met on a later visit.",
+      "a11y": "Plain text in reading order, not aria-hidden and not replaced by an aria-label, so the gate reason is read in the same position the chart would occupy."
+    }
+  ],
+  "empty_state": {
+    "ascii": "┌────────────────────────────────────────┐\n│PROGRESS                                │\n│                                        │\n│  Nothing logged yet.                   │\n│                                        │\n│  This screen only draws what you log.  │\n│  No estimates, no invented trends.     │\n│                                        │\n│  ┌──────────────────────────────────┐  │\n│  │  Log today’s session             │  │\n│  └──────────────────────────────────┘  │\n│    Open the week                       │\n│                                        │\n│  FIRST MARKS                           │\n│  ○  1 log      adherence, effort       │\n│  ○  1 week     running volume          │\n│  ○  3 runs     pace trend, same band   │\n│  ─  race log   personal bests          │\n│                                        │\n│  ○ = what unlocks next, not a chart    │\n├────────────────────────────────────────┤\n│Today         Week            [Progress]│\n└────────────────────────────────────────┘",
+    "copy": {
+      "heading": "Nothing logged yet.",
+      "body": "This screen only draws what you log. No estimates, no invented trends.",
+      "cta": "Log today’s session",
+      "secondary": "Open the week",
+      "unlock_list_title": "First marks",
+      "unlock_rows": [
+        "1 log — adherence, effort",
+        "1 week — running volume",
+        "3 runs — pace trend, same band",
+        "race log — personal bests"
+      ],
+      "footnote": "○ marks what unlocks next. It is a list, not a chart: no axes are drawn until there is data to put on them.",
+      "voice_notes": "Short declaratives, second person, no exclamation marks, no streak language, no 'let's'. The screen explains its own honesty rule instead of apologising for being empty, and the single CTA is the same action the Today tab offers so it is not a second path to learn."
+    }
+  },
+  "rejected": [
+    {
+      "name": "Area charts",
+      "reason": "A fill asserts continuity and magnitude between discrete sessions. Area under a pace curve has no meaning, and a filled band hides both n and the exact values, which is the opposite of the brief. A 1px segment between adjacent dots is the maximum join this screen allows, and only when both points are comparable runs."
+    },
+    {
+      "name": "Trend arrows",
+      "reason": "An arrow converts two noisy points into a confident direction. With 2 runs it is noise; with heat, terrain and fatigue it may be weather rather than fitness. Rejected as a mark; replaced by the n>=3 trace plus a sentence that names both dates and both values, and that is only generated when a >=3-point window in one band supports it."
+    },
+    {
+      "name": "Badges and medals",
+      "reason": "They invent thresholds the plan does not define, and they would put a prize on a training run that cannot be a verified best. The BestLedger reports time, date and source with no ornament, so the achievement is the number and the fact that it is verifiable."
+    },
+    {
+      "name": "Streak flames",
+      "reason": "The plan prescribes rest and deload weeks. A streak punishes exactly the recovery the engine schedules, and it rewards logging over training. Adherence is counted against planned sessions, which include rest, so a rest day is a tick, not a broken chain."
+    },
+    {
+      "name": "Progress rings",
+      "reason": "A ring encodes a single ratio while hiding n, the planned absolute value, and whether the week is still open. A circumference is also hard to read precisely and invites a gamified 'close the ring' reading. Replaced by the tick ledger (exact n) and the actual-bar-plus-planned-tick (exact magnitudes)."
+    },
+    {
+      "name": "Animated number counters",
+      "reason": "Counting up implies a value is changing over time. These are static measurements; the reveal animation would be a lie about the data's behaviour, and it delays the number for no benefit."
+    },
+    {
+      "name": "Forecast or projection line",
+      "reason": "Any forward line is invented data. The only future marks on this screen are planned bars, which are real because the plan is real, and they are labelled 'plan' and never joined to the actual series."
+    }
+  ],
+  "motion": [
+    {
+      "name": "Panel reveal",
+      "spec": "opacity 0→1 with translateY(4px→0), 180ms cubic-bezier(0.2,0,0,1), 20ms stagger per panel, once per session mount. Not re-run on tab return."
+    },
+    {
+      "name": "Bar wipe",
+      "spec": "transform scaleX 0→1 from the zero baseline, 220ms ease-out, once. The planned tick is static. No width transition on data refresh."
+    },
+    {
+      "name": "Dot paint",
+      "spec": "opacity only, 120ms, 15ms stagger. No path draw-on, because draw-on reads as data arriving over time."
+    },
+    {
+      "name": "Data change",
+      "spec": "A 120ms cross-fade when a panel's dataset genuinely changes after a save, so a new value is noticed but not celebrated. No morphing between datasets, no sliding dots, no reordering animation."
+    },
+    {
+      "name": "Reduced motion",
+      "spec": "prefers-reduced-motion: reduce sets every duration to 0ms and paints the final state once. Staggers collapse to a single paint. The focus ring is never animated in either mode."
+    }
+  ],
+  "a11y": [
+    {
+      "topic": "Contrast, measured",
+      "requirement": "ink/paper 15.9:1 light and 15.8:1 dark; steel/paper 5.5:1 light and 7.3:1 dark; hairline-strong/paper 3.12:1 light and 4.07:1 dark, which is why axes, planned ticks and gridlines use hairline-strong and not hairline. --signal fails as text (1.97:1 on paper) so it stays a 2px cap and a rule; any amber text uses --signal-ink (5.3:1 light, 10.7:1 on dark paper)."
+    },
+    {
+      "topic": "Colour is never the only signal",
+      "requirement": "Adherence is filled vs hollow plus the words logged/not logged. Volume is bar-beyond-tick plus the printed plan number plus 'in progress'. Intensity is the ladder glyph plus a text label. Pace is dots plus the FASTER ↑ caption plus mm:ss ticks. Bests are text rows. A greyscale screenshot stays fully readable."
+    },
+    {
+      "topic": "Every mark has a text equivalent",
+      "requirement": "Each panel carries a role=img sentence containing n and the key figures, and a NUMBERS disclosure with a real table (caption, column headers, units in the header). Screen-reader users get the same facts as sighted users, not a summary that omits n."
+    },
+    {
+      "topic": "Tap targets and focus",
+      "requirement": "Band chips, NUMBERS disclosures, note rows and dot hit areas are >=44px. Dots have a 44px invisible hit area around a 6px mark. Focus is a 2px --ink outline with 2px offset, visible on paper and on the ink-filled selected chip (where it switches to a paper-coloured inner ring). Arrow keys move within the chip radiogroup and along the dot series; Escape returns to the panel heading."
+    },
+    {
+      "topic": "Data is not announced twice",
+      "requirement": "The role=img sentence is the only announcement when a panel mounts; the hidden table is reached by the NUMBERS disclosure, not read automatically. Save flows announce one line ('Run saved, volume for week 5 is now 18.0 of 40.0 kilometres')."
+    },
+    {
+      "topic": "No motion-only meaning",
+      "requirement": "Nothing is communicated by an animation that is absent under prefers-reduced-motion. The in-progress week, the pace gate and the sparse states are all static text plus static marks."
+    }
+  ],
+  "self_critique": [
+    "Band-filtered pace is the most honest option available, but it is still confounded: easy pace moves with heat, terrain, surface and fatigue, and a 6-run sample cannot separate those from fitness. The panel must not editorialise ('getting faster'); it reports dates and values and lets the user read them.",
+    "Adherence uses 'not logged' rather than 'missed', which is honest, but it understates a session done without a device. The extra-session row is the only correction offered; a 'I did this, don't log it' action belongs on the Week tab, not here.",
+    "Volume counts running kilometres only. That is defensible because summing strength sets and easy kilometres is meaningless, but a whole-fitness user may read an empty volume panel as 'no progress'. The caption says 'running volume' for that reason and the intensity panel carries their strength work.",
+    "The pace panel often sits behind its 3-run gate, and bests can stay empty for months for a user who never races. Two mostly-empty panels is a real cost; the gate sentences make the wait legible, but a future revision should consider folding pace into the intensity panel until the gate is met.",
+    "Tick-ledger legibility degrades past roughly 48 sessions and the fold to 'last 48' is a compromise; the counts above it stay exact, but the visual history is truncated.",
+    "The inverted pace axis is correct for runners and still confuses first-time readers. FASTER ↑ plus mm:ss ticks mitigate it; if testing shows misreads, the fallback is seconds-per-kilometre ascending with SLOWER ↓ labelled, which is uglier but unambiguous.",
+    "Amber is doing very little here (one cap, one today rule), which is the right amount for a screen that is mostly record rather than action, but it also means the Progress tab has no amber 'live' cue the way Today does. Accepted deliberately: nothing on this screen is live."
+  ]
+}
