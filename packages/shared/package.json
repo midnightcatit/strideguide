@@ -11,7 +11,8 @@
     "./tokens": "./src/tokens.ts",
     "./profiles": "./src/goal-profiles.ts",
     "./plan": "./src/plan/index.ts",
-    "./units": "./src/units.ts"
+    "./units": "./src/units.ts",
+    "./analytics": "./src/analytics.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

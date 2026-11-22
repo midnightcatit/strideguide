@@ -1,0 +1,166 @@
+/**
+ * Progress analytics — pure functions over logs + the prescribed plan.
+ * Grounded in research/wave-4/progress-metrics.json: descriptive metrics only
+ * (adherence, volume, intensity distribution, pace trend, PBs). Load-management
+ * ratios (ACWR/monotony/strain) are deliberately NOT computed (contested / dismissed).
+ */
+
+export type Intensity = 'easy' | 'steady' | 'hard';
+
+export interface LogLike {
+	sessionId?: string | null;
+	runStats?: {
+		distanceKm?: number;
+		durationSec?: number;
+		avgPaceSecPerKm?: number;
+		avgHr?: number;
+	} | null;
+	rpe?: number | null;
+	createdAt?: string | number | null;
+}
+
+export interface SessionLike {
+	id: string;
+	day: number;
+	modality: string;
+	type: string;
+	prescription?: { targetDistanceKm?: number; intensity?: Intensity } | null;
+}
+
+export interface WeekLike {
+	weekNumber: number;
+	targetVolumeKm?: number;
+	sessions: SessionLike[];
+}
+
+export interface WeekVolume {
+	week: number;
+	plannedKm: number;
+	actualKm: number;
+}
+
+export interface PacePoint {
+	day: string;
+	paceSecPerKm: number;
+	intensity?: Intensity;
+}
+
+export interface ProgressMetrics {
+	adherence: { planned: number; completed: number; recentPlanned: number; recentCompleted: number };
+	volume: { byWeek: WeekVolume[]; totalPlannedKm: number; totalActualKm: number; changePct?: number };
+	intensity: { easy: number; steady: number; hard: number; completed: number };
+	pace: { points: PacePoint[]; fastest?: number; changeSecPerKm?: number };
+	prs: { longestRunKm?: number; fastestPaceSecPerKm?: number; biggestWeekKm?: number };
+	rpe: { avg?: number; count: number };
+}
+
+function dayOf(value: string | number | null | undefined): string | undefined {
+	if (value == null) return undefined;
+	const d = typeof value === 'number' ? new Date(value * 1000) : new Date(value);
+	if (Number.isNaN(d.getTime())) return undefined;
+	return d.toISOString().slice(0, 10);
+}
+
+export function computeProgress(logs: LogLike[], weeks: WeekLike[]): ProgressMetrics {
+	const logBySession = new Map<string, LogLike>();
+	for (const l of logs) {
+		if (l.sessionId) logBySession.set(l.sessionId, l);
+	}
+
+	const byWeek: WeekVolume[] = [];
+	let totalPlannedKm = 0;
+	let totalActualKm = 0;
+	const intensity = { easy: 0, steady: 0, hard: 0 };
+	let completed = 0;
+	let planned = 0;
+	let rpeSum = 0;
+	let rpeCount = 0;
+
+	for (const w of weeks) {
+		let plannedKm = 0;
+		let actualKm = 0;
+		for (const s of w.sessions) {
+			planned += 1;
+			if (s.modality === 'running') plannedKm += s.prescription?.targetDistanceKm ?? 0;
+			const log = logBySession.get(s.id);
+			if (log) {
+				completed += 1;
+				if (s.modality === 'running') actualKm += log.runStats?.distanceKm ?? 0;
+				const band = s.prescription?.intensity;
+				if (band) intensity[band] += 1;
+				if (typeof log.rpe === 'number') {
+					rpeSum += log.rpe;
+					rpeCount += 1;
+				}
+			}
+		}
+		plannedKm = Math.round(plannedKm * 10) / 10;
+		actualKm = Math.round(actualKm * 10) / 10;
+		byWeek.push({ week: w.weekNumber, plannedKm, actualKm });
+		totalPlannedKm += plannedKm;
+		totalActualKm += actualKm;
+	}
+
+	// Relative volume change: last vs previous week that had any actual volume.
+	let changePct: number | undefined;
+	for (let i = byWeek.length - 1; i > 0; i--) {
+		const cur = byWeek[i]!;
+		const prev = byWeek[i - 1]!;
+		if (cur.actualKm > 0 && prev.actualKm > 0) {
+			changePct = Math.round(((cur.actualKm - prev.actualKm) / prev.actualKm) * 100);
+			break;
+		}
+	}
+
+	// Pace trend from running logs (newest last).
+	const points: PacePoint[] = [];
+	for (const l of logs) {
+		const p = l.runStats?.avgPaceSecPerKm;
+		const day = dayOf(l.createdAt);
+		if (typeof p === 'number' && p > 0 && day) {
+			const session = l.sessionId
+				? weeks.flatMap((w) => w.sessions).find((s) => s.id === l.sessionId)
+				: undefined;
+			points.push({ day, paceSecPerKm: p, intensity: session?.prescription?.intensity });
+		}
+	}
+	points.sort((a, b) => a.day.localeCompare(b.day));
+
+	const fastest = points.length ? Math.min(...points.map((p) => p.paceSecPerKm)) : undefined;
+	let paceChangeSecPerKm: number | undefined;
+	if (points.length >= 4) {
+		const mid = Math.floor(points.length / 2);
+		const avg = (xs: PacePoint[]) => xs.reduce((s, p) => s + p.paceSecPerKm, 0) / xs.length;
+		paceChangeSecPerKm = Math.round(avg(points.slice(0, mid)) - avg(points.slice(mid)));
+	}
+
+	const distances = logs.map((l) => l.runStats?.distanceKm).filter((d): d is number => !!d);
+	const longestRunKm = distances.length ? Math.round(Math.max(...distances) * 10) / 10 : undefined;
+	const biggestWeekKm = byWeek.length
+		? Math.max(...byWeek.map((w) => w.actualKm)) || undefined
+		: undefined;
+
+	const recent = byWeek[byWeek.length - 1];
+	const recentWeek = weeks[weeks.length - 1];
+	const recentPlanned = recentWeek?.sessions.length ?? 0;
+	const recentCompleted =
+		recentWeek?.sessions.filter((s) => logBySession.has(s.id)).length ?? 0;
+
+	return {
+		adherence: {
+			planned,
+			completed,
+			recentPlanned,
+			recentCompleted,
+		},
+		volume: { byWeek, totalPlannedKm: Math.round(totalPlannedKm * 10) / 10, totalActualKm: Math.round(totalActualKm * 10) / 10, changePct },
+		intensity: { ...intensity, completed },
+		pace: { points, fastest, changeSecPerKm: paceChangeSecPerKm },
+		prs: {
+			longestRunKm,
+			fastestPaceSecPerKm: fastest,
+			biggestWeekKm: recent ? biggestWeekKm : biggestWeekKm,
+		},
+		rpe: { avg: rpeCount ? Math.round((rpeSum / rpeCount) * 10) / 10 : undefined, count: rpeCount },
+	};
+}
