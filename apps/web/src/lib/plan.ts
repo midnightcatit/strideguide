@@ -96,6 +96,20 @@ export function mondayIndex(d: Date): number {
 	return (d.getDay() + 6) % 7;
 }
 
+/** Add n days to an ISO date (yyyy-mm-dd), UTC-safe. */
+export function addDaysIso(iso: string, n: number): string {
+	const d = new Date(`${iso}T00:00:00Z`);
+	d.setUTCDate(d.getUTCDate() + n);
+	return d.toISOString().slice(0, 10);
+}
+
+export function dayIndexInWeek(weekStart: string, iso: string): number {
+	const days = Math.round(
+		(Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${weekStart}T00:00:00Z`)) / 86400000,
+	);
+	return ((days % 7) + 7) % 7;
+}
+
 export function formatDuration(min?: number | null): string | null {
 	if (min == null) return null;
 	const m = Math.floor(min);
