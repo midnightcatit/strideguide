@@ -14,6 +14,7 @@
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
+	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
 
 	let user = $state<ApiUser | null>(null);
 	let plan = $state<CurrentPlan | null>(null);
@@ -27,6 +28,7 @@
 	let weekIndex = $state(0);
 	let selectedDay = $state(todayIndex);
 	let sheetOpen = $state(false);
+	let playerOpen = $state(false);
 
 	const profileName = $derived(
 		plan?.goal ? (getGoalProfile(plan.goal.goalProfileSlug)?.name ?? plan.goal.goalProfileSlug) : '',
@@ -177,6 +179,7 @@
 				active={selectedDay === todayIndex}
 				logged={heroLogged}
 				onLog={() => (sheetOpen = true)}
+				onStart={() => (playerOpen = true)}
 			/>
 		{:else}
 			<div class="rounded-xl border border-dashed border-hairline p-6 text-center text-sm text-steel">
@@ -218,6 +221,18 @@
 			{/each}
 		</ul>
 	</section>
+{/if}
+
+{#if playerOpen && hero && currentWeek}
+	<SessionPlayer
+		session={hero}
+		eyebrow="{profileName} · W{currentWeek.weekNumber}"
+		onClose={() => (playerOpen = false)}
+		onFinish={() => {
+			playerOpen = false;
+			sheetOpen = true;
+		}}
+	/>
 {/if}
 
 {#if sheetOpen && hero && currentWeek}

@@ -92,6 +92,41 @@ export interface SessionPrescription {
 	/** For strength sessions. */
 	blocks?: StrengthSet[];
 	notes?: string;
+	/** Structured, guided step sequence (warm-up → set → rest → cool-down). */
+	workout?: StructuredWorkout;
+}
+
+export type StepKind = 'warmup' | 'work' | 'recovery' | 'rest' | 'cooldown';
+
+export interface WorkoutStep {
+	kind: StepKind;
+	/** Short label, e.g. "Warm-up", "Interval", "Recovery", "Cool-down". */
+	label: string;
+	/** Distance target, when the step is distance-based. */
+	distanceM?: number;
+	/** Duration target, when the step is time-based (e.g. rest). */
+	durationSec?: number;
+	targetPaceSecPerKm?: [number, number];
+	targetZone?: string;
+	targetRpe?: [number, number];
+	note?: string;
+	/** For strength steps: the machine and its prescription. */
+	machine?: string;
+	sets?: number;
+	reps?: number;
+}
+
+export interface StepBlock {
+	/** 1 for warm-up/cool-down; N for a repeated set. */
+	repeat: number;
+	label?: string;
+	steps: WorkoutStep[];
+}
+
+export interface StructuredWorkout {
+	blocks: StepBlock[];
+	totalDistanceKm?: number;
+	estimatedDurationMin?: number;
 }
 
 export interface ApiUser {

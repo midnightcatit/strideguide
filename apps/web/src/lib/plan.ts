@@ -2,6 +2,32 @@
 
 export type Modality = 'running' | 'strength' | 'mobility' | 'recovery';
 
+export interface ClientStep {
+	kind: 'warmup' | 'work' | 'recovery' | 'rest' | 'cooldown';
+	label: string;
+	distanceM?: number;
+	durationSec?: number;
+	targetPaceSecPerKm?: [number, number];
+	targetZone?: string;
+	targetRpe?: [number, number];
+	note?: string;
+	machine?: string;
+	sets?: number;
+	reps?: number;
+}
+
+export interface ClientBlock {
+	repeat: number;
+	label?: string;
+	steps: ClientStep[];
+}
+
+export interface ClientWorkout {
+	blocks: ClientBlock[];
+	totalDistanceKm?: number;
+	estimatedDurationMin?: number;
+}
+
 export interface ClientPrescription {
 	summary?: string;
 	targetDistanceKm?: number;
@@ -10,6 +36,7 @@ export interface ClientPrescription {
 	targetRpe?: [number, number];
 	blocks?: { machine: string; sets: { reps: number; weightKg: number }[] }[];
 	notes?: string;
+	workout?: ClientWorkout;
 }
 
 export interface ClientSession {
