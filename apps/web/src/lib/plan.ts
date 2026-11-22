@@ -47,6 +47,8 @@ export interface ClientLog {
 	rpe: number | null;
 	notes: string | null;
 	createdAt?: string | number | null;
+	/** True when the log was queued offline and has not synced yet. */
+	pending?: boolean;
 }
 
 export interface CurrentPlan {

@@ -2,12 +2,15 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { cycleTheme, getTheme, type Theme } from '$lib/theme';
+	import { api } from '$lib/api';
 	import { loadPrefs, prefs } from '$lib/prefs.svelte';
+	import { outbox } from '$lib/offline';
 	import UnitsToggle from '$lib/components/UnitsToggle.svelte';
 
 	let { children } = $props();
 
 	let theme = $state<Theme>('system');
+	let pending = $state(0);
 
 	onMount(() => {
 		theme = getTheme();
@@ -15,6 +18,17 @@
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js').catch(() => {});
 		}
+
+		const sync = async () => {
+			pending = outbox().length;
+			if (navigator.onLine && pending > 0) {
+				await api.flushOutbox().catch(() => {});
+				pending = outbox().length;
+			}
+		};
+		void sync();
+		window.addEventListener('online', sync);
+		return () => window.removeEventListener('online', sync);
 	});
 
 	function toggleTheme() {
@@ -30,6 +44,11 @@
 	>
 		<a href="/" class="font-display text-lg font-bold tracking-tight">Stride Guide</a>
 		<div class="flex items-center gap-2">
+			{#if pending > 0}
+				<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync"
+					>⟳ {pending}</span
+				>
+			{/if}
 			<UnitsToggle current={prefs.units} />
 			<button
 				type="button"
