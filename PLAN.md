@@ -718,9 +718,15 @@ worker takes control) so new deploys actually appear in the installed PWA.
 - **Navigation**: home is now **Today-only** (every session for today, each startable/loggable); the full
   week moved to **`/week`**; a bottom nav (**Today | Week**) and a shared plan store keep them in sync.
 
-**Still to come** (from review): intensity progression that hardens toward race day (explicit
-easy/steady/hard labels + race-specific work in later phases); onboarding anchored explicitly on a
-race/pace baseline; progress analytics (M5); the AI coach/adaptation layer (M6).
+**M4c — intensity progression** (live): every session carries an **easy / steady / hard** band, shown as a
+count-encoded ladder on the session card, week strip and week list (no colour). **Goal-pace sessions** are
+introduced through build/peak and scale by race distance — half `2→3 × 3 km`, marathon `2→3 × 5 km`,
+10K `3→4 × 2 km`, 5K `4→6 × 1 km` — with goal pace derived from VDOT (wave-4 research).
+
+**M4d — pace-anchored onboarding** (live): a recent race time drives VDOT and the full pace set,
+**previewed live** (easy / threshold / interval / goal) with a fallback to experience when none is given.
+
+**Still to come**: progress analytics (M5); the AI coach/adaptation layer (M6).
 
 ### Deployed — live (M0 complete)
 
