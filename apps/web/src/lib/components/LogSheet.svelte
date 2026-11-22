@@ -21,6 +21,7 @@
 
 	// --- run state ---
 	const unit = $derived(prefs.units === 'imperial' ? 'mi' : 'km');
+	const weightUnit = $derived(prefs.units === 'imperial' ? 'lb' : 'kg');
 	let runDistance = $state('');
 	let runDuration = $state('');
 	let runHr = $state('');
@@ -92,8 +93,16 @@
 		saving = true;
 		error = null;
 		try {
+			const strengthSets = rows.map((r) => ({
+				machine: r.machine,
+				sets: r.sets.map((s) => ({
+					reps: s.reps,
+					weightKg:
+						weightUnit === 'lb' ? Math.round((s.weightKg / 2.20462) * 10) / 10 : s.weightKg,
+				})),
+			}));
 			const body = isStrength
-				? { sessionId: session.id, strengthSets: rows, rpe, notes: notes || undefined }
+				? { sessionId: session.id, strengthSets, rpe, notes: notes || undefined }
 				: {
 						sessionId: session.id,
 						runStats: {
@@ -188,7 +197,7 @@
 									aria-label="{row.machine} set {i + 1} weight"
 									class="tabular w-20 rounded-md border border-hairline bg-paper px-2 py-1 text-sm"
 								/>
-								<span class="text-xs text-steel">kg</span>
+								<span class="text-xs text-steel">{weightUnit}</span>
 							</div>
 						{/each}
 					</div>

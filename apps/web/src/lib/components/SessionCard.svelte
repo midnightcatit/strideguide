@@ -64,7 +64,7 @@
 		? 'border-signal/50'
 		: 'border-hairline'}"
 >
-	<div class="absolute left-0 top-0 h-full w-0.5 {isStrength ? 'bg-steel' : 'bg-signal'}" aria-hidden="true"></div>
+	<div class="absolute left-0 top-0 h-full w-0.5 {isStrength ? 'bg-steel' : 'bg-signal'} {active && !logged ? 'breathe' : ''}" aria-hidden="true"></div>
 
 	{#if onOpen}
 		<button
