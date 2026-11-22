@@ -18,7 +18,7 @@
 	{/if}
 	<span class="inline-flex gap-0.5" aria-hidden="true">
 		{#each [1, 2, 3] as i (i)}
-			<span class="h-2 w-2 rounded-[1px] {i <= level ? 'bg-ink' : 'bg-hairline'}"></span>
+			<span class="h-2 w-2 rounded-[1px] {i <= level ? 'bg-ink' : 'bg-ink/25'}"></span>
 		{/each}
 	</span>
 	<span class="sr-only">Intensity {intensity}</span>

@@ -130,9 +130,9 @@
 									<p class="tabular text-xs uppercase tracking-widest text-signal-ink">{block.label ?? 'Set'} × {block.repeat}</p>
 									<ul class="mt-1 space-y-1">
 										{#each block.steps as step, si (si)}
-											<li class="flex justify-between gap-3 text-sm">
-												<span>{step.label}</span>
-												<span class="tabular text-steel">{stepTarget(step)}</span>
+											<li class="flex items-center justify-between gap-3 text-sm">
+												<span class="min-w-0 truncate">{step.label}</span>
+												<span class="tabular shrink-0 text-steel">{stepTarget(step)}</span>
 											</li>
 										{/each}
 									</ul>
@@ -190,9 +190,9 @@
 						<ol class="mt-2 space-y-1 text-xs text-steel">
 							{#each (showAllSources ? why.sources.slice(0, 16) : why.sources.slice(0, 3)) as s, i (i)}
 								<li class="flex justify-between gap-3">
-									<span class="flex-1">
+									<span class="min-w-0 flex-1 break-words">
 										<span class="tabular text-steel">{i + 1}</span>
-										{#if sourceHref(s)}<a href={sourceHref(s)} target="_blank" rel="noopener" class="hover:text-signal-ink">{s.title}</a>{:else}{s.title}{/if}{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
+										{#if sourceHref(s)}<a href={sourceHref(s)} target="_blank" rel="noopener" class="break-all hover:text-signal-ink">{s.title}</a>{:else}{s.title}{/if}{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
 									</span>
 									{#if sourceHref(s)}<span class="text-steel" aria-hidden="true">↗</span>{/if}
 								</li>

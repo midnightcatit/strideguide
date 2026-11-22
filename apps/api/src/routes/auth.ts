@@ -101,6 +101,19 @@ auth.get('/me', async (c) => {
 	const token = getCookie(c, sessionCookieName(c.env));
 	if (!token) return c.json({ user: null });
 	const payload = await verifySession(c.env, token);
+	if (!payload) return c.json({ user: null });
+
+	// Same revocation check as requireAuth, so a revoked session reads as signed out.
+	const rows = await c
+		.get('db')
+		.select()
+		.from(schema.authSessions)
+		.where(eq(schema.authSessions.tokenHash, await sha256Hex(token)))
+		.limit(1);
+	const session = rows[0];
+	if (!session || session.revokedAt || session.expiresAt.getTime() <= Date.now()) {
+		return c.json({ user: null });
+	}
 	return c.json({ user: payload });
 });
 

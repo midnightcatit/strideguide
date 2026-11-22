@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { asc, desc, eq, inArray } from 'drizzle-orm';
+import { asc, and, desc, eq, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import type { Baseline } from '@strideguide/shared';
 import { schema } from '../db';
 import { narrateWeeks } from '../lib/narration';
+import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
 
 const plans = new Hono<AppBindings>();
@@ -62,7 +63,10 @@ plans.get('/current', async (c) => {
 	const logs = (
 		await Promise.all(
 			chunk(sessionIds, 90).map((part) =>
-				db.select().from(schema.logs).where(inArray(schema.logs.sessionId, part)),
+				db
+					.select()
+					.from(schema.logs)
+					.where(and(eq(schema.logs.userId, user.id), inArray(schema.logs.sessionId, part))),
 			),
 		)
 	).flat();
@@ -97,6 +101,10 @@ plans.post(
 		const user = c.get('user')!;
 		const db = c.get('db');
 		const body = c.req.valid('json');
+
+		// Generation costs AI; keep it bounded.
+		const rl = await checkRateLimit(c.env.DB, `generate:${user.id}`, 20, 3600);
+		if (!rl.ok) return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '600' });
 
 		const profile = GOAL_PROFILES.find((p) => p.slug === body.goalProfileSlug);
 		if (!profile) return c.json({ error: 'unknown_profile' }, 400);

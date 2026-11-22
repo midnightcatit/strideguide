@@ -53,7 +53,7 @@
 							<button
 								type="button"
 								onclick={() => dismiss(a.id)}
-								class="shrink-0 text-xs text-steel hover:text-signal-ink"
+								class="flex h-11 shrink-0 items-center px-2 text-xs text-steel hover:text-signal-ink"
 							>
 								Dismiss
 							</button>

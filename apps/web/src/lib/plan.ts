@@ -116,16 +116,3 @@ export function formatDuration(min?: number | null): string | null {
 	return `${m} min`;
 }
 
-/** The primary (hero) session for a day: run/long/quality first, else anything. */
-export function heroSession(sessions: ClientSession[], day: number): ClientSession | undefined {
-	const onDay = sessions.filter((s) => s.day === day);
-	return (
-		onDay.find((s) => s.modality === 'running' && s.type !== 'recovery') ??
-		onDay.find((s) => s.modality === 'running') ??
-		onDay[0]
-	);
-}
-
-export function modalityLabel(m: Modality): string {
-	return { running: 'Run', strength: 'Strength', mobility: 'Mobility', recovery: 'Recovery' }[m];
-}

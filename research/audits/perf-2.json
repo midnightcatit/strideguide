@@ -1,0 +1,80 @@
+{
+  "audit": "perf-2",
+  "scope": "Stride Guide web bundle hygiene, dead code post sign-in gate, D1 query patterns, duplicate fetches",
+  "method": "Static read of apps/web + apps/api + packages/shared, plus inspection of the committed client build at apps/web/.svelte-kit/output/client. No files modified.",
+  "findings": [
+    {
+      "id": "shared-root-barrel-pulls-drizzle",
+      "severity": "medium",
+      "file_line": "packages/shared/src/index.ts:4",
+      "issue": "The root barrel does `export * as schema from './db/schema'`, and db/schema.ts imports drizzle-orm (schema.ts:1-10). apps/web/src/lib/api.ts:2 imports the root `@strideguide/shared`, but only as `import type`, so it is erased today and the client build contains no drizzle/sqlite strings (verified: grep for 'drizzle' / 'drizzle-orm' in .svelte-kit/output/client returns nothing). The landmine is that any future VALUE import from the root barrel silently pulls drizzle + the D1 schema into the browser bundle.",
+      "fix": "Remove line 4 from packages/shared/src/index.ts (export schema only from the /db subpath, which apps/api already uses via `import * as schema from '@strideguide/shared/db'`). Keep web on ./plan, /units, /analytics, /profiles, /tokens. Optionally add a lint rule banning value imports of the root barrel in apps/web.",
+      "impact": "No leak today. Without the fix, one careless value import adds the whole drizzle ORM and schema to the client bundle (tens of KB) and ships server DB code to the browser."
+    },
+    {
+      "id": "duplicate-api-me-on-every-load",
+      "severity": "medium",
+      "file_line": "apps/web/src/routes/+layout.svelte:27 and apps/web/src/routes/+page.svelte:103",
+      "issue": "Both the layout and the Today page call `api.me()` (GET /auth/me) on mount. Landing on `/` fires two identical /auth/me requests. The page's local `user`/`checked` state (lines 17-18, 102-109) exists only to re-derive what the layout already knows.",
+      "fix": "Resolve the user once in the layout and expose it via Svelte context (setContext/getContext) or a shared `$state` user store in $lib. Delete the page's `api.me()` call and its `user`/`checked` state; gate on the layout.",
+      "impact": "One redundant network round-trip on the hot path (Today) for every cold load, plus a second in-flight request the browser must dedupe/serve. Removing it shortens time-to-plan."
+    },
+    {
+      "id": "dead-signed-out-hero",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+page.svelte:114-128",
+      "issue": "The `{:else if !user}` signed-out hero (heading, copy, 'Sign in with Google' button) is unreachable: +layout.svelte:60-66 renders `{@render children()}` only inside the `{:else}` (signed-in) branch, so a route component never renders without a user. The same applies to coach/+page.svelte and progress/+page.svelte, which carry no signed-out branch at all.",
+      "fix": "Delete the `!user` hero block in +page.svelte and the now-redundant `checked`/`user` local state (see duplicate-api-me finding). The layout's <SignIn/> is the single signed-out surface.",
+      "impact": "Removes dead markup and a misleading branch; no runtime cost (markup is cheap), so this is a clarity/maintenance win rather than a bundle-size one."
+    },
+    {
+      "id": "cron-serial-n-plus-one-unbounded",
+      "severity": "medium",
+      "file_line": "apps/api/src/cron.ts:24-29",
+      "issue": "The nightly/weekly cron selects every active user with `selectDistinct` and no LIMIT, then serially loops (lines 29-86) running two D1 queries plus one Workers AI / OpenRouter call per user, with inserts per user. Work grows linearly with the user base in both D1 round-trips and AI billing, all inside one scheduled invocation.",
+      "fix": "Bound the run: paginate users (limit + cursor) or enqueue one message per user onto a Cloudflare Queue and process in a consumer. At minimum cap users per run and use `ctx.waitUntil` per batch. Also skip users with no recent logs before calling AI.",
+      "impact": "As users grow, the cron risks exceeding Worker CPU/wall-clock limits and multiplies AI spend; a single slow provider call can delay every later user in the loop."
+    },
+    {
+      "id": "goal-profiles-data-shipped-for-a-name",
+      "severity": "low",
+      "file_line": "apps/web/src/routes/+page.svelte:3, apps/web/src/routes/week/+page.svelte:3, apps/web/src/routes/progress/+page.svelte:4",
+      "issue": "Today, Week and Progress import `getGoalProfile` from `@strideguide/shared/profiles`, which bundles the entire GOAL_PROFILES array (all progressionRules, successMetrics, sessionTypes for every goal; goal-profiles.ts:1-118) into a shared client chunk (build shows this as DJ9mcGlR.js, ~4KB, imported by nodes 2/5/6). The routes only use it to resolve a display name.",
+      "fix": "Ship a lean `{ slug -> name }` map (or return the resolved profile name in the /plans/current payload) and import that instead of the full profiles module.",
+      "impact": "~4KB of engine-contract data shipped on three routes to render one string. Small but pure waste, and it grows if more goal profiles are added."
+    },
+    {
+      "id": "machine-catalog-shared-chunk",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/SessionPlayer.svelte:3",
+      "issue": "SessionPlayer imports `findMachine` from the `@strideguide/shared/plan` barrel, which re-exports the full PF_MACHINES catalog (machines.ts, 140 lines of prose cues/mistakes). The build shows the catalog in a 35KB shared chunk (DbsL4FD3.js) loaded by Today and Week. The data is genuinely used for exercise cues, so this is a size observation, not a correctness bug.",
+      "fix": "If any route only needs presence/name, split the lookup from the catalog data so the prose cues load lazily with SessionPlayer/SessionDetail. Otherwise leave as-is and treat 35KB as an accepted cost.",
+      "impact": "The catalog sits on the critical path for the two most-used routes (Today, Week). Worth confirming the 35KB chunk is mostly catalog and not accidental barrel pull-in of engine.ts."
+    },
+    {
+      "id": "dead-api-client-methods",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/api.ts:39, apps/web/src/lib/api.ts:83, apps/web/src/lib/api.ts:109",
+      "issue": "`api.health`, `api.logs` and `api.pendingCount` have zero callers anywhere in apps/web.",
+      "fix": "Delete the three methods (and the unused GET /logs server route, see next finding).",
+      "impact": "No runtime cost (unimported methods are tree-shaken); dead surface that misleads readers about what the app uses."
+    },
+    {
+      "id": "dead-component-and-helpers",
+      "severity": "low",
+      "file_line": "apps/web/src/lib/components/WeekStrip.svelte, apps/web/src/lib/plan.ts:137, apps/web/src/lib/plan.ts:156",
+      "issue": "WeekStrip.svelte is imported nowhere (0 references). plan.ts `heroSession` (line 137) and `modalityLabel` (line 156) are also unused.",
+      "fix": "Delete WeekStrip.svelte and the two unused helpers.",
+      "impact": "None in the bundle (never imported); reduces dead source and review surface."
+    },
+    {
+      "id": "logs-endpoint-unused-full-rows",
+      "severity": "low",
+      "file_line": "apps/api/src/routes/logs.ts:10-19",
+      "issue": "GET /logs returns up to 100 complete log rows (including notes and strengthSets JSON) with no field selection. The web client's `api.logs` that would call it has no callers, so the endpoint is currently dead but would ship large payloads if wired up.",
+      "fix": "Remove the GET handler (POST is the only used path), or add column selection plus pagination before any client consumes it.",
+      "impact": "No cost today; prevents a future large-payload endpoint. The plan payload already carries the user's logs via /plans/current."
+    }
+  ],
+  "summary": "No active drizzle/server leak into the browser (verified against the built client), but the shared root barrel re-exports the D1 schema so it is one value import away from shipping drizzle; that is the top hygiene fix. The app is gated in the layout, so the Today page's signed-out hero and its user/checked state are dead, and the layout plus Today both call /auth/me (one duplicate request per cold load). Cron is a serial, unbounded per-user N+1 (two D1 queries plus an AI call each) that will not scale. Smaller wins: goal-profiles data (~4KB) and the machine catalog ship to routes via barrels, and a handful of client methods, one component and two helpers are unused. plans.ts IN(...) chunking is correct; explanations.ts is bounded (24); logs.ts is capped at 100."
+}
