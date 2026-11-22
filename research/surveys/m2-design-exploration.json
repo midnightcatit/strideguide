@@ -1,0 +1,230 @@
+{
+  "generated_at": "2026-11-22T18:21:17Z",
+  "world": "precision instrument + field notebook. Amber (--signal) is a MARK only (ticks, edges, today ring, completed-set tick, needle) — never text and never a CTA fill. Amber TEXT uses --signal-ink. Data ticks/rules that encode information use --hairline-strong. All numbers are IBM Plex Mono with tabular-nums slashed-zero. Continues M1: one SessionCard shell (header / title / target grid / meta line / action row) with bodies swapped by session.kind. M2 adds logging, completed state, calendar nav, and a units control WITHOUT changing that shell.",
+  "wires": [
+    {
+      "screen": "1. Entry point — session card gains the LOG action (shape unchanged)",
+      "ascii": "┌───────────────────────────────────────┐\n│ MARATHON · W5             TEMPO RUN ╲ │\n│───────────────────────────────────────│\n│ Tempo Run                             │\n│ 6.0 km                     30:00      │\n│ prescribed                 target     │\n│───────────────────────────────────────│\n│ 4:55–5:05 /km · Z3 · RPE 6–7          │\n│───────────────────────────────────────│\n│ [ WHY THIS? ↧ ]        [ LOG RUN  ▸ ] │\n└───────────────────────────────────────┘",
+      "notes": {
+        "intent": "The only change to the existing card is the action row: it becomes a two-up footer, WHY on the left, LOG on the right (the M1 plan). Nothing else moves, so the card the user learned in M1 is the same object that now accepts a result.",
+        "tokens": ["ink-filled CTA on paper", "hairline-strong rule above the footer", "amber edge tick stays a mark, not a button tint", "signal-ink only for the WHY text link"],
+        "components": ["SessionCard (unchanged shell)", "FooterActions: GhostLink [WHY THIS?] + PrimaryButton [LOG RUN ▸]"],
+        "motion": "No new motion; LOG opens the run log sheet via the M1 sheet-rise.",
+        "a11y": "LOG RUN is the primary button, 48px. WHY THIS? is a text link with aria-expanded. Both >=44px and never colour-only.",
+        "responsive": "Footer stays two-up down to 320px; below that LOG goes full-width and WHY wraps above it."
+      }
+    },
+    {
+      "screen": "2. Log sheet — run, empty",
+      "ascii": "┌───────────────────────────────────────┐\n│                 ═══                    │\n│ LOG RUN · TEMPO              KM │ MI   │\n├───────────────────────────────────────┤\n│ PRESCRIBED     6.0 km       30:00      │\n│            4:55–5:05 /km  ·  RPE 6–7   │\n│ ─────────────────────────────────────  │\n│ DISTANCE                               │\n│ ┌────────────────────────────────────┐ │\n│ │ 6.02                           km  │ │\n│ └────────────────────────────────────┘ │\n│ DURATION                               │\n│ ┌────────────────────────────────────┐ │\n│ │ 31:04                       h:m:s  │ │\n│ └────────────────────────────────────┘ │\n│                                        │\n│ PACE                          AUTO ▏   │\n│ 5:10 /km                               │\n│ distance ÷ duration · tap to edit      │\n│ ─────────────────────────────────────  │\n│ AVG HR                                 │\n│ ┌──────────┐  bpm                      │\n│ │   152    │                           │\n│ └──────────┘                           │\n│ ─────────────────────────────────────  │\n│ EFFORT  RPE                            │\n│ ┌────┬────┬────┬────┬────┐             │\n│ │ 1  │ 2  │ 3  │ 4  │ 5  │             │\n│ ├────┼────┼────┼────┼────┤             │\n│ │ 6  │ 7  │ 8  │ 9  │ 10 │             │\n│ └────┴────┴────┴────┴────┘             │\n│ easy    steady    hard           max   │\n│ ─────────────────────────────────────  │\n│ NOTE                                   │\n│ ┌────────────────────────────────────┐ │\n│ │                                    │ │\n│ └────────────────────────────────────┘ │\n│                                        │\n│ [ SAVE RUN                        ▸ ]  │\n└───────────────────────────────────────┘",
+      "notes": {
+        "intent": "A form that already knows the prescription. Distance and duration are the only required inputs; pace is derived and shown as a first-class readout, not a hidden field. HR, RPE and note are optional.",
+        "tokens": ["--sunken input wells on --paper sheet", "ink 24px mono values in wells", "steel 12px caps labels above fields", "hairline-strong between blocks", "amber mark only on the active unit segment and the selected RPE cell"],
+        "components": ["BottomSheet (grip ═══, sticky PrescriptionHeader)", "NumberField (18px input text, unit inside well, inputmode=decimal)", "DurationField (h:m:s triplet or masked input)", "DerivedField PACE (readout + auto badge + ▏edit)", "RpeGrid (2x5 of 64x48 = >44px; forced by --tap-min)", "NoteField", "PrimaryButton ink fill"],
+        "motion": "sheet-rise (M1). The derived pace swaps instantly on each valid keystroke — never counts up (numerals anti-rule).",
+        "a11y": "Labels above fields permanently (no placeholder labels); unit is part of the accessible name. PACE has aria-describedby 'calculated from distance and duration'; once edited it reads 'manual'. RPE is a radiogroup of 10 with roving tabindex and plain-language anchors ('7 — could speak a sentence'). Sticky header must not cover the focused field (scroll-padding-top). 16px input text prevents iOS zoom.",
+        "responsive": "Single column on phone. At >=720px the sheet becomes a centred panel with prescription left, form right."
+      }
+    },
+    {
+      "screen": "3. Log sheet — run, filled (the state that ships)",
+      "ascii": "┌───────────────────────────────────────┐\n│                 ═══                    │\n│ LOG RUN · TEMPO              KM │ MI   │\n├───────────────────────────────────────┤\n│ PRESCRIBED     6.0 km       30:00      │\n│            4:55–5:05 /km  ·  RPE 6–7   │\n│ ─────────────────────────────────────  │\n│ DISTANCE                               │\n│ ┌────────────────────────────────────┐ │\n│ │ 6.02                           km  │ │\n│ └────────────────────────────────────┘ │\n│ DURATION                               │\n│ ┌────────────────────────────────────┐ │\n│ │ 31:04                       h:m:s  │ │\n│ └────────────────────────────────────┘ │\n│ PACE                          AUTO ▏   │\n│ 5:10 /km                               │\n│ from distance ÷ duration · tap to edit │\n│ ─────────────────────────────────────  │\n│ AVG HR                                 │\n│ ┌──────────┐  bpm    effort RPE    7   │\n│ │   152    │  steady — short sentences │\n│ └──────────┘                           │\n│ ─────────────────────────────────────  │\n│ EFFORT  RPE                            │\n│ ┌────┬────┬────┬────┬────┐             │\n│ │ 1  │ 2  │ 3  │ 4  │ 5  │             │\n│ ├────┼────┼────┼────┼────┤             │\n│ │ 6  │▏7▕ │ 8  │ 9  │ 10 │             │\n│ └────┴────┴────┴────┴────┘             │\n│ ─────────────────────────────────────  │\n│ NOTE                                   │\n│ ┌────────────────────────────────────┐ │\n│ │ held goal pace; last km a grind     │ │\n│ └────────────────────────────────────┘ │\n│ 5s slower than band · 0.02 km over plan│\n│ [ SAVE RUN                        ▸ ]  │\n└───────────────────────────────────────┘",
+      "notes": {
+        "intent": "Filled state proves the instrument is working. Pace and the prescribed-vs-actual delta are the two facts that matter, so they are large mono, and the RPE cell shows the plain-language meaning of 7 inline so the scale stops being a vocabulary test.",
+        "tokens": ["ink for the pace readout and the delta line", "amber MARK = selected RPE cell edge (▏7▕) and the active unit segment only", "--signal-ink for nothing here (no amber text needed)", "steel for helper lines and the auto badge"],
+        "components": ["SelectedRpeCell (ink fill + amber top edge tick + inert numeric)", "DeltaLine (mono, contrasts logged vs prescribed in one sentence)", "SaveButton becomes enabled ink fill"],
+        "motion": "On blur of duration, the PACE value swaps instantly and a 1px hairline-strong underline fades in/out once (120ms) to say 'recomputed'. No count-up, no odometer. Reduced motion: underline appears without fade.",
+        "a11y": "The delta is text ('5 seconds slower than the target band'), so being outside the band is never colour-only. Selected RPE cell is aria-checked in the radiogroup; its meaning text appears in the description. Save announces 'Run saved' through the shared polite live region and returns focus to the card's LOG button.",
+        "responsive": "Delta line wraps under the note below 360px; RPE stays 5-across at 44px because --tap-min forbids a 10-across row on a 390px phone."
+      }
+    },
+    {
+      "screen": "4. Log sheet — strength, 6 machines readable on a phone",
+      "ascii": "┌───────────────────────────────────────┐\n│                 ═══                    │\n│ LOG LIFT · LOWER A       REPEAT LAST ▸ │\n├───────────────────────────────────────┤\n│ CIRCUIT                         2 / 6  │\n│ ██████░░░░░░░░░░░░░░░░░░░░░░           │\n│ ─────────────────────────────────────  │\n│ ▾ LEG PRESS              3×8 · 80 kg   │\n│   ┌─────┬──────┬────────┐              │\n│   │ SET │ REPS │   KG   │              │\n│   ├─────┼──────┼────────┤              │\n│   │  1  │  ⋅8  │  ⋅80   │ ✓            │\n│   │  2  │  ⋅8  │  ⋅80   │ ✓            │\n│   │  3  │   8  │   80   │ ↻ same       │\n│   └─────┴──────┴────────┘              │\n│   last week 3×8 · 75 kg       ▲ +5 kg  │\n│   [ + SET ]        [ ─ REMOVE SET ]    │\n│ ─────────────────────────────────────  │\n│ ▸ LEG CURL             0/3   3×10·35kg │\n│ ▸ BACK EXTENSION       0/3   3×12·40kg │\n│ ▸ SEATED ROW           0/3   3×10·45kg │\n│ ▸ LEG EXTENSION        0/3   3×10·30kg │\n│ ▸ SHOULDER PRESS       0/3    3×8·30kg │\n│ ─────────────────────────────────────  │\n│ SESSION RPE      6   7   ▏8▕   9  10  │\n│ NOTE                              ▸    │\n│ [ SAVE LIFT                       ▸ ]  │\n└───────────────────────────────────────┘",
+      "notes": {
+        "intent": "Six machines stay readable because five are single lines (name · done/total · target) and exactly one is expanded to its set table. The whole session fits one phone scroll; opening a machine collapses the previous one, so the ledger never grows past one table. This is the M1 strength shell with the logging affordances added.",
+        "tokens": ["--hairline-strong row rules inside the set table", "--sunken wells for editable reps/kg cells", "amber MARK on completed-set ✓ and the up-load delta triangle only", "steel for collapsed machine lines, ink for the active machine name"],
+        "components": ["MachineBlock (collapsed row | expanded set table, grid-rows 0fr->1fr)", "SetTable (real <table>, caption 'Leg press, target 3 sets of 8 at 80 kilograms')", "RepeatLastSet (per-pending-row '↻ same' chip copies the row above; header REPEAT LAST copies all of last week)", "AddSet / RemoveSet (44px, full labels)", "DeltaTag (+5 kg)"],
+        "motion": "Machine expand 180ms grid-rows. Add-set: new row enters 120ms height 0->auto + fade. Repeat fills instantly (numbers swap, no animation). Row complete: 120ms ink flash on the ✓ cell. Reduced motion: instant.",
+        "a11y": "Real table with row groups; each set row is three labelled inputs ('set 3 reps', 'set 3 kilograms'). Steppers/rt are buttons named 'repeat the values from set 2', not a glyph. Remove-set with entered data opens a confirm dialog and announces 'Set 3 removed, 2 sets remaining'. Live region: 'Set 2 of 3 logged, 80 kilograms for 8 reps'. Weight step 2.5 kg, exposed via aria-valuetext. Never a slider for weight.",
+        "responsive": "Below 360px the set table drops the SET column and numbers rows on the left edge; collapsed machine lines keep target visible. The expanded machine is scroll-anchored so its header stays under the sticky toolbar."
+      }
+    },
+    {
+      "screen": "5. Log sheet — strength, repeat last set + add/remove in detail",
+      "ascii": "┌───────────────────────────────────────┐\n│ ▾ LEG PRESS            target 3×8·80kg │\n│   ┌─────┬──────┬────────┬───────────┐  │\n│   │ SET │ REPS │   KG   │           │  │\n│   ├─────┼──────┼────────┼───────────┤  │\n│   │  1  │  ⋅8  │  ⋅80   │ ✓         │  │\n│   │  2  │  ⋅8  │  ⋅80   │ ✓         │  │\n│   │  3  │   8  │   80   │ ↻ same    │  │\n│   └─────┴──────┴────────┴───────────┘  │\n│   last week 3×8 · 75 kg        ▲ +5 kg │\n│   [ + SET ]       [ ─ REMOVE SET ]     │\n└───────────────────────────────────────┘\n\n legend:  ⋅ = editable well (--sunken)\n          ✓ = logged (amber MARK, 90ms tick draw)\n          ↻ same = copy the row above\n          ▲ +5 kg = load delta (amber MARK)",
+      "notes": {
+        "intent": "The two gym-speed affordances are explicit and adjacent: '↻ same' on the next pending set (one tap duplicates the last set, which is how almost every set after the first is logged), and '+ SET' to add a row that itself copies the last set's values. RPE sits once per session, not per set, because per-set RPE is a chore mid-workout.",
+        "tokens": ["amber MARK reserved for completion and the load delta; never on buttons", "ink-filled stepper wells", "mono numerals with slashed zero"],
+        "components": ["RepeatChip ('↻ same', 44px)", "AddSet copies last set's reps/kg", "RemoveSet removes the last row (or a chosen row) with confirm if it has data"],
+        "motion": "Tick draw 90ms stroke-dashoffset; reduced => visible tick immediately. No spinner animation on +SET.",
+        "a11y": "'↻ same' accessible name is 'repeat set 2, 8 reps at 80 kilograms'; the visible glyph is aria-hidden. Add/remove announce the new set count. The table has scope on its header cells so SR reads 'set, 2; reps, 8; kilograms, 80'.",
+        "responsive": "Steppers are +/- with hold-to-repeat after 400ms and stay 44x44."
+      }
+    },
+    {
+      "screen": "6. Completed state — session card, shape unchanged",
+      "ascii": "┌───────────────────────────────────────┐\n│ MARATHON · W5             TEMPO RUN ╲ │\n│───────────────────────────────────────│\n│ Tempo Run                        ✓    │\n│ 6.0 km                     30:00      │\n│ prescribed                 target     │\n│───────────────────────────────────────│\n│ LOGGED  6.02 km · 31:04 · 5:10 /km    │\n│         6.0 → 6.02 km · 5s slow       │\n│───────────────────────────────────────│\n│ [ WHY THIS? ↧ ]     [ LOGGED  ✓ edit ]│\n└───────────────────────────────────────┘",
+      "notes": {
+        "intent": "Completion is added, not laid out. The shell keeps its four bands (header / title+target grid / rule / footer). Three signals change: a ✓ mark joins the type zone, the meta line is prefixed 'LOGGED' and now carries actual-vs-prescribed facts, and the footer CTA becomes a filled 'LOGGED ✓ edit' state. The two-column target grid is untouched — no new rows, no new card.",
+        "tokens": ["amber MARK on the ✓ and on the filled modality edge tick", "ink-filled 'LOGGED' pill is NOT used; instead the button reads as done via a check glyph + ink text, keeping amber out of the CTA", "hairline-strong stays the rule layer"],
+        "components": ["CardHeader gains a CheckMark slot", "MetaLine switches from prescription band text to LoggedLine", "EdgeTick gains a filled state (our one shape change: the tick fills, the card outline does not move)", "FooterActions: DEFAULT_LOG <-> DONE_EDIT"],
+        "motion": "On save, the ✓ draws (90ms stroke) and the edge tick fills top->bottom (160ms); reduced motion: both appear complete. The card does not resize.",
+        "a11y": "The ✓ is decorative; the state is spoken through the button text 'Logged, edit' and the LoggedLine text. Card aria-labelledby now includes 'logged' so SR users hear completion. The edit action reopens the same sheet pre-filled; no lost data.",
+        "responsive": "Identical shape at every width; only the target labels ('prescribed/target') remain, so nothing collapses on completion."
+      }
+    },
+    {
+      "screen": "7. Completed state — week strip marks (no card-shape change)",
+      "ascii": "  M    T    W    T    F    S    S\n 18   19   20   21   22   23   24\n ✓    ✓    ✓    ○   ⟨●⟩   ·    ·\n───────────────────────────────────\n done ✓      missed ○     today ⟨●⟩\n planned ●   rest ·\n\n card: one-day row is all that a\n completed day adds to the strip.",
+      "notes": {
+        "intent": "The strip is the same 7-cell instrument; completion is a ✓ mark under the initial plus a filled node. Today keeps its ring; a missed past session becomes a hollow node (not red, not a scold). Rest days are a middot.",
+        "tokens": ["amber MARK on the ✓ glyph", "ink for the filled node", "--hairline-strong for the hollow/today ring stroke", "steel for rest middots"],
+        "components": ["WeekCell states: done (✓+filled), missed (hollow), today (ring+filled), planned (small filled node), rest (middot)"],
+        "motion": "On save the cell's ✓ draws once (90ms) and the node fills; reduced motion: instant.",
+        "a11y": "Each cell's accessible name carries state: 'Monday 18 November, completed, intervals 6 km'; 'Tuesday 21 November, missed'; 'Friday 22 November, today'. State is never encoded by shape/colour alone; text names it.",
+        "responsive": "Cells stay 48px and 7-across; at >=720px a completed cell may also show the logged distance in mono under the initial."
+      }
+    },
+    {
+      "screen": "8. Calendar — week navigation + past/today/upcoming + week so far",
+      "ascii": "┌───────────────────────────────────────┐\n│ ‹     W5 · 18–24 NOV · BASE        ›   │\n│                                        │\n│  M    T    W    T    F    S    S       │\n│ 18   19   20   21  (22)  23   24       │\n│ ✓    ✓    ✓    ○   ⟨●⟩   ·    ·        │\n│                                        │\n├───────────────────────────────────────┤\n│ WEEK SO FAR                 KM │ MI    │\n│ SESSIONS                       3 / 5   │\n│ ███░░                            60%   │\n│ VOLUME               11.4 / 31.4 km    │\n│ ██████░░░░░░░░░░░░░                    │\n│ 4-WEEK LOAD    ▂  ▃  ▅  ▅    build    │\n└───────────────────────────────────────┘",
+      "notes": {
+        "intent": "Prev/next arrows flank a mono week title; both are 44px and disabled at plan bounds (past weeks are retrospective, future weeks are preview). Past cells use the missed/completed marks, today keeps the ring, upcoming cells are quiet. 'Week so far' now counts logged data: sessions done/planned, and volume is logged km against prescribed target.",
+        "tokens": ["signal MARK on the today ring and the current-week node only", "hairline-strong target notch on the volume bar", "steel for disabled arrows", "mono for all figures and dates"],
+        "components": ["WeekNav (‹ / › 44px, aria-disabled at bounds)", "WeekStrip (see wire 7)", "AdherenceBar (4 segments, ink fill on paper)", "VolumeScale (logged fill + target notch + mono labels)", "LoadSparkline (4 weeks, ink bars, no axis)"],
+        "motion": "Week change: 140ms crossfade between weeks (no horizontal slide, matching M1). Bars fill once on first intersection (420ms), then never re-animate even when logged data changes the numbers. Reduced motion: final state.",
+        "a11y": "Arrows are labelled 'Previous week' / 'Next week'; disabled at bounds, not hidden. The week title is a heading inside an aria-live=polite region so a week change is announced ('Week 5, 18 to 24 November, base'). Volume reads '11.4 of 31.4 kilometres logged, 36 percent'. Bars are aria-hidden decoration behind real numbers; nothing is canvas-only.",
+        "responsive": "Logging is available on today and past-today weeks only; a future week shows the same layout with LOG disabled and the footer button reading 'Opens on the day'. At >=720px the strip becomes a grid and 'Week so far' sits to the right of the strip."
+      }
+    },
+    {
+      "screen": "9. Units control — km <-> mi, where it lives and how it reads",
+      "ascii": "  ┌───────────────────────────┐\n  │ DISTANCE UNITS            │\n  │ ┌──────────┬───────────┐  │\n  │ │  KM ▓▓▓  │   MI      │  │\n  │ └──────────┴───────────┘  │\n  │ 5:10 /km   →   8:19 /mi   │\n  └───────────────────────────┘\n  (shown in: log-sheet header, and\n   the 'Week so far' block header)",
+      "notes": {
+        "intent": "One global control, surfaced in exactly the two places the user reads or enters distance: the log sheet header (so it is set before typing) and the 'Week so far' header (so the whole week re-reads at once). It writes settings.prefs.units ('metric' | 'imperial'); storage stays metric, units are presentation only. Never a per-entry override — one truth.",
+        "tokens": ["active segment = ink fill, paper text (never amber)", "inactive = steel on --sunken", "the live example line is mono with tabular figures"],
+        "components": ["UnitSwitch (2-segment radiogroup, 44px tall)", "ExampleLine (shows the current pace in the active unit so the switch is legible in place)"],
+        "motion": "90ms background step on the active segment (M1 press-step). Every number on screen swaps instantly; no per-number animation.",
+        "a11y": "role=radiogroup aria-label 'Distance units'; each segment is a radio labelled 'Kilometres' / 'Miles'. On change, a polite live region says 'Showing miles'. Distances and paces carry the unit in their accessible name ('5 minutes 10 per kilometre'), so a bare number is never ambiguous.",
+        "responsive": "Segments never shrink below 44px; at <360px the example line drops to its own row under the switch.",
+        "edge_notes": "Weight stays in kg (PF machines, fitness-standard); a lb toggle is deliberately out of scope here and would be a second additive control, not a third segment. Pace derives from the stored metric value (sec per km) and is re-expressed as mm:ss per mile on display, so the engine and logs never hold imperial."
+      }
+    }
+  ],
+  "log_sheet": {
+    "presentation": "Bottom sheet on phones (grip + sticky PrescriptionHeader), centred panel at >=720px. Focus trapped; Esc closes; focus returns to the invoking LOG button. Sheet surface is --sunken on --paper with a 2px radius, no drop shadow (a machined plate does not float).",
+    "run": {
+      "fields": ["distance km (required)", "duration h:m:s (required)", "pace /km (derived, AUTO badge, editable)", "avg HR bpm (optional)", "RPE 1-10 (optional, 2x5 grid)", "note (optional)"],
+      "derivation": "paceSecPerKm = round(durationSec / distanceKm). Shown large in mono immediately under the two inputs. Editing pace flips the badge AUTO -> MANUAL and stops re-deriving. Derived pace never animates (numerals anti-rule).",
+      "delta_line": "One mono sentence contrasts logged vs prescribed: '5s slower than band · 0.02 km over plan'. Outside-band is stated in words, never by colour.",
+      "empty_vs_filled": "Empty: pace shows '— /km' with helper 'distance ÷ duration'. Filled: pace shows the value, the RPE cell shows its plain-language meaning inline, and SAVE enables.",
+      "entry": "SessionCard footer [LOG RUN ▸] -> sheet-rise. Save writes logs.runStats (RunStats type) + rpe + notes, then returns to the card in completed state."
+    },
+    "strength": {
+      "structure": "One expanded machine + N collapsed machine lines. Opening a machine closes the previous one, so at most one set table is ever on screen. Persisted per-session as logs.strengthSets (StrengthSet[]).",
+      "collapsed_row": "name (display) · done/total (mono) · target 3x8·80kg (mono steel). Six rows occupy ~6*44px, so the whole session is one scroll.",
+      "set_row": "set number · reps (well) · kg (well) · state (✓ mark / '↻ same' chip). Tapping a well opens a numeric keypad; the row above is the default.",
+      "repeat_last_set": "Two entry points: the per-row '↻ same' chip copies the immediately previous set's reps+kg into the pending row in one tap; the header 'REPEAT LAST ▸' fills every unlogged set of the active machine from last week's stored log. The copy is silent (no praise), numbers swap instantly.",
+      "add_remove": "+ SET appends a row pre-filled from the last set. ─ REMOVE SET removes the last row, or a chosen row, and confirms if that row has data. Both 44px with full-word labels.",
+      "scope": "6 machines (defaultCircuit: Leg press, Leg curl, Leg extension, Back extension, Seated row, Shoulder press). One session-level RPE, not per-set.",
+      "entry": "SessionCard footer [LOG SET ▸] (or [LOG LIFT ▸]) -> sheet. Save writes strengthSets + rpe + notes."
+    },
+    "shared": {
+      "units_control": "KM | MI in the sheet header, top-right, right of the title.",
+      "save": "PrimaryButton ink fill, full width, 48px. Announces through the shared polite live region and returns focus to the card."
+    }
+  },
+  "completed_state": {
+    "principle": "Add, do not re-lay-out. The M1 shell (header / title + target grid / rule / footer) is byte-for-byte the same; three additive signals mark completion.",
+    "session_card": {
+      "signal_1_mark": "A ✓ joins the type zone (amber MARK, 90ms draw).",
+      "signal_2_meta": "The meta line is prefixed LOGGED and carries actual-vs-prescribed facts (logged distance · duration · pace, then the delta).",
+      "signal_3_action": "The footer CTA changes from [LOG RUN ▸] to [LOGGED ✓ edit]; the modality edge tick fills. No new rows, no new card variant.",
+      "edit": "Reopens the log sheet pre-filled from logs.runStats / logs.strengthSets; saving updates the same log row."
+    },
+    "week_strip": {
+      "cell_states": ["done = ✓ mark + filled node", "missed = hollow node (steel stroke)", "today = ring + filled node (ring is amber MARK)", "planned/upcoming = small filled node", "rest = middot"],
+      "rule": "No red, no shake, no streak copy. A missed session is a shape fact, stated in words in the accessible name."
+    },
+    "week_so_far": {
+      "adherence": "done sessions / planned sessions, from logs matched to the week's session ids.",
+      "volume": "sum(logged distanceKm) vs sum(prescribed targetDistanceKm); the bar fills with logged km and the notch marks the target.",
+      "load": "4-week bars switch from prescribed to logged load once a week has ended."
+    }
+  },
+  "calendar": {
+    "navigation": "‹ / › arrows flank a mono week title ('W5 · 18–24 NOV · BASE'). 44px, aria-disabled at plan bounds (before plan start / after plan end).",
+    "week_title_a11y": "Heading inside aria-live=polite: 'Week 5, 18 to 24 November, base'.",
+    "past": "Retrospective: cells show done/missed; the hero card for a past day shows the completed state (or 'missed' with an override affordance to log late).",
+    "today": "Amber ring + filled node; hero card is action-enabled (LOG).",
+    "upcoming": "Quiet cells (small node/middot); hero card is preview-only, its footer reads 'Opens on the day', LOG disabled.",
+    "week_nav_motion": "140ms crossfade between weeks; never a horizontal slide or parallax.",
+    "week_so_far": {
+      "sessions": "N / M with a 4-segment ink bar and a mono percentage.",
+      "volume": "logged / target km with a target notch (hairline-strong).",
+      "load": "4-week ink sparkline, no axis, no draw-in.",
+      "includes_logged": "Both figures count logs; before any log exists they read prescribed-only and the label stays honest ('0 of 5 sessions, 0.0 of 31.4 km')."
+    },
+    "units_control_here": "KM | MI in the 'Week so far' header so the whole block re-reads at once."
+  },
+  "units_control": {
+    "location": ["log-sheet header (top-right)", "'Week so far' block header"],
+    "not_location": "Not a global settings modal, not a per-entry override, not a third nav item. One truth per user.",
+    "storage": "settings.prefs.units = 'metric' | 'imperial'. All stored values stay metric (km, sec/km, kg). Conversion happens only at render.",
+    "reads_as": "Two segments 'KM' / 'MI'; active = ink fill with paper text; the inactive = steel on sunken. An example line shows the active pace ('5:10 /km' or '8:19 /mi') so the effect is visible in place.",
+    "conversion": ["distance mi = km / 1.609344", "pace min:sec per mile = (sec/km) * 1.609344 rendered as mm:ss", "weights stay kg (lb out of scope)"],
+    "a11y": "role=radiogroup aria-label 'Distance units'; live region announces 'Showing miles'. Unit label travels inside every accessible name for distance and pace."
+  },
+  "motion": [
+    { "name": "sheet-rise", "trigger": "LOG RUN / LOG SET / edit a logged session", "spec": "translateY 24px->0 + opacity; backdrop 160ms opacity only; drag-to-dismiss 1:1", "duration_ms": 220, "easing": "cubic-bezier(.2,0,0,1)", "reduced_motion": "Appears in place, backdrop instant" },
+    { "name": "pace-recompute", "trigger": "distance or duration input changes (blur)", "spec": "no numeric animation; a single 1px hairline-strong underline fades in then out once to say 'recomputed'", "duration_ms": 120, "easing": "linear", "reduced_motion": "underline shown without fade" },
+    { "name": "set-complete-tick", "trigger": "A set row is logged", "spec": "amber ✓ draws via stroke-dashoffset; 120ms ink flash on the row's state cell only", "duration_ms": 90, "easing": "cubic-bezier(.2,.8,.2,1)", "reduced_motion": "tick visible immediately, no flash" },
+    { "name": "repeat-fill", "trigger": "'↻ same' / REPEAT LAST", "spec": "none on the numbers (swap instantly); the filled row steps --sunken -> --paper in 90ms", "duration_ms": 90, "easing": "linear", "reduced_motion": "same" },
+    { "name": "add-set", "trigger": "+ SET", "spec": "new row enters height 0->auto + 120ms fade", "duration_ms": 120, "easing": "cubic-bezier(.2,.8,.2,1)", "reduced_motion": "row appears at full height instantly" },
+    { "name": "machine-expand", "trigger": "Open a machine block", "spec": "grid-template-rows 0fr->1fr (same mechanic as why-expand); collapse 140ms no delay", "duration_ms": 180, "easing": "cubic-bezier(.2,.8,.2,1)", "reduced_motion": "instant toggle" },
+    { "name": "card-complete", "trigger": "Save from the sheet", "spec": "✓ draws 90ms; modality edge tick fills top->bottom 160ms; card does not resize", "duration_ms": 160, "easing": "cubic-bezier(.2,.8,.2,1)", "reduced_motion": "both appear complete" },
+    { "name": "week-nav", "trigger": "‹ / ›", "spec": "crossfade between weeks, no slide", "duration_ms": 140, "easing": "linear", "reduced_motion": "instant swap" },
+    { "name": "press-step", "trigger": "Any control press", "spec": "background paper->sunken 90ms; no scale, shadow, or ripple", "duration_ms": 90, "easing": "linear", "reduced_motion": "same" },
+    { "name": "ANTI-RULE: numerals never animate", "trigger": "Always", "spec": "pace, distance, duration, reps, kg, RPE swap instantly. No count-up, odometer, or digit roll — blurred numerals are unreadable mid-effort, and tabular figures exist precisely to avoid the reflow that tempts animation.", "duration_ms": 0, "easing": "n/a", "reduced_motion": "n/a" }
+  ],
+  "a11y": [
+    { "topic": "Tap targets", "requirement": "44px floor from --tap-min. RPE is a 2x5 grid of 64x48 (10-across is 32px on a 390px phone and is rejected). Steppers 44x44 with hold-to-repeat after 400ms; sheet handles, nav arrows, chips, add/remove all >=44px." },
+    { "topic": "Colour is never the only signal", "requirement": "Completed = ✓ glyph + text 'logged'; missed = hollow node + the word 'missed'; out-of-band pace = a numeric delta in words; selected RPE = filled cell + aria-checked + inline meaning. A greyscale screenshot stays fully readable." },
+    { "topic": "Amber discipline", "requirement": "--signal marks only: completed-set tick, load delta, today ring, modality edge fill, active unit/cell edge. Amber is never text (fails 1.97:1 on paper) and never a CTA fill. Amber text uses --signal-ink (5.3:1 light / 10.7:1 dark). Data-encoding strokes use --hairline-strong (3.12:1 / 4.07:1)." },
+    { "topic": "Forms", "requirement": "Persistent labels above fields; units inside the accessible name; inputmode=decimal for distance/kg and numeric for reps/HR; 16px input text to stop iOS zoom. Derived pace described via aria-describedby ('calculated from distance and duration' vs 'manual'); never announced per keystroke — announced once on blur. Errors inline + aria-live=polite + aria-invalid, never colour-only. No placeholder-as-label." },
+    { "topic": "Strength table semantics", "requirement": "Real <table> with a caption naming machine, target sets/reps/weight; header cells scoped; each set row is a group of labelled inputs; steppers/rt are buttons with word labels ('decrease reps', 'repeat set 2'), not glyph-only. Completion announced via one polite region with full sentences. Weight never uses a slider." },
+    { "topic": "Bottom sheet", "requirement": "Focus is trapped while open; Esc closes; focus returns to the invoking LOG button. scroll-padding-top keeps the focused field clear of the sticky prescription header. The sheet is a dialog with aria-labelledby its title." },
+    { "topic": "Week navigation", "requirement": "Arrows labelled 'Previous week' / 'Next week'; aria-disabled at plan bounds. Week title in an aria-live region so a change is announced. Each day cell's accessible name carries the day, date, state, and session ('Friday 22 November, today, tempo 6 kilometres')." },
+    { "topic": "Live updates", "requirement": "One shared polite live region for: set logged, set added/removed, run saved, units changed, week changed, day-count changes. No assertive interruptions during a workout." },
+    { "topic": "Text scaling and reflow", "requirement": "No fixed heights on text; 200% zoom reflows the card and sheet. Below 320px the set table drops the SET column; the pace band degrades to text (its accessible source of truth anyway). Display weight stays >=400 at small sizes." },
+    { "topic": "Reduced motion", "requirement": "prefers-reduced-motion: reduce kills every transform, draw, stagger, and fill; only 90-120ms opacity/colour steps remain. No confetti, no streak flame, no scroll reveals, no sheet spring." }
+  ],
+  "self_critique": {
+    "ascii_legend": "═ grip, ✓ amber MARK completion, ○ hollow = missed past, ● filled node = planned/done, ⟨●⟩ today (ring + node), · rest middot, ▏..▕ selected RPE cell edge (amber mark), ▓ ink fill, ░ empty track, ▲ load delta, ↻ same = repeat last set, ⋅ editable well.",
+    "templated_defaults_avoided": [
+      { "default": "A generic full-screen 'workout logger' with big pill inputs and a gradient save button", "how": "Logging is a sheet that already knows the prescription; wells are --sunken plates on --paper with a 2px radius, the CTA is ink on paper, and there is no gradient." },
+      { "default": "iOS-style segmented pill for the unit switch", "how": "The switch is two square-edged segments (4px radius) with an ink active fill and a live example line; it is not a rounded pill and amber never fills it." },
+      { "default": "KPI-tile dashboard for 'week so far'", "how": "Two figures (sessions, volume) and one 4-week sparkline, one hairline each — the M1 decision held; the only change is that the numbers now include logged data." },
+      { "default": "Stepper spinners / plus-minus number inputs", "how": "Reuse the M1 44x44 steppers with hold-to-repeat, or tap-to-type; '↻ same' cuts the common case to one tap instead of forcing repeated spinner presses." },
+      { "default": "Gamified completion (confetti, streak counters, 'crushed it')", "how": "Completion is a ✓ mark, a filled tick, and a factual delta line. No praise copy, no animation on numerals." }
+    ],
+    "risks": [
+      { "risk": "A six-machine log sheet still scrolls long enough to feel like a chore at the gym.", "mitigation": "Collapsed rows are single lines and only one machine expands; '↻ same' and '+ SET' make the common set one tap; session RPE is once, not per set. Kept honest by testing the 6-machine case explicitly (wire 4)." },
+      { "risk": "Adding a ✓ and a LOGGED line to the card edges toward a second layout.", "mitigation": "Strictly additive: same four bands, no new rows; the only shape change is the edge tick filling. Review gate: overlay completed and planned cards and diff the band geometry." },
+      { "risk": "Two surfaces for the units control could drift into two truths.", "mitigation": "Both write the same settings.prefs.units and render from it; no local component state. One control component, two mount points." },
+      { "risk": "Pace recompute underline reads as a flicker.", "mitigation": "Single 120ms fade, fires only on blur (not per keystroke), disabled under reduced motion." }
+    ],
+    "rejected": [
+      { "option": "RPE 10-across on one row", "reason": "Violates the 44px floor (32px cells on a 390px phone). The 2x5 grid is forced by --tap-min, not by taste." },
+      { "option": "A per-machine RPE row", "reason": "Per-set/per-machine RPE is friction mid-workout and inflates the log; one session RPE plus the load delta carries the meaning." },
+      { "option": "Showing logged km in miles by storing imperial", "reason": "Bakes units into the engine and logs. Units stay presentation; storage is metric." },
+      { "option": "A rebuild/override of the M2 card shape", "reason": "The established card is the signature; M2 must prove it survives real data, not redraw it." }
+    ],
+    "open_questions": [
+      "Past-week logging: allow a late entry on a missed day, or keep past strictly read-only with a small '+ log missed' ghost link?",
+      "Does the collapsed machine row show done/total as '2/3' or a tiny 3-segment micro-bar sharing the card's tick language?",
+      "Should SAVE stay enabled with only distance+duration, or require an RPE so adherence quality is always captured?"
+    ]
+  }
+}

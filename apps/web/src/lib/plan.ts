@@ -1,5 +1,4 @@
 /** Client-side plan shapes as returned by the API, plus small display helpers. */
-import { formatPace } from '@strideguide/shared/plan';
 
 export type Modality = 'running' | 'strength' | 'mobility' | 'recovery';
 
@@ -47,15 +46,6 @@ export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'
 /** 0 = Monday … 6 = Sunday for a Date. */
 export function mondayIndex(d: Date): number {
 	return (d.getDay() + 6) % 7;
-}
-
-export function formatKm(km: number): string {
-	return `${km % 1 === 0 ? km : km.toFixed(1)} km`;
-}
-
-export function paceBand(band?: [number, number]): string | null {
-	if (!band) return null;
-	return `${formatPace(band[0])}–${formatPace(band[1])} /km`;
 }
 
 export function formatDuration(min?: number | null): string | null {

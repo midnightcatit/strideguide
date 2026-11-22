@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api, type ApiUser } from '$lib/api';
+	import { fmtDistance } from '$lib/prefs.svelte';
 	import {
 		type ClientWeek,
 		type CurrentPlan,
 		DAY_NAMES,
-		formatKm,
 		heroSession,
 		mondayIndex,
 	} from '$lib/plan';
@@ -128,7 +128,7 @@
 	<section class="mt-6">
 		<div class="flex items-baseline justify-between">
 			<h2 class="text-xs uppercase tracking-widest text-steel">Week so far</h2>
-			<span class="tabular text-xs text-steel">{weekStats.count} sessions · {formatKm(weekStats.km)}</span>
+			<span class="tabular text-xs text-steel">{weekStats.count} sessions · {fmtDistance(weekStats.km)}</span>
 		</div>
 		<ul class="mt-3 divide-y divide-hairline border-y border-hairline">
 			{#each currentWeek.sessions as s (s.id)}
@@ -142,7 +142,7 @@
 						<span class="flex-1 truncate text-sm">{s.title ?? s.type}</span>
 						<span class="tabular shrink-0 text-xs text-steel">
 							{#if s.prescription?.targetDistanceKm}
-								{formatKm(s.prescription.targetDistanceKm)}
+								{fmtDistance(s.prescription.targetDistanceKm)}
 							{:else}
 								{s.modality}
 							{/if}
