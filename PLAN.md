@@ -726,7 +726,25 @@ introduced through build/peak and scale by race distance — half `2→3 × 3 km
 **M4d — pace-anchored onboarding** (live): a recent race time drives VDOT and the full pace set,
 **previewed live** (easy / threshold / interval / goal) with a fallback to experience when none is given.
 
-**Still to come**: progress analytics (M5); the AI coach/adaptation layer (M6).
+### M5 — Progress analytics + polish (done, live)
+
+- **Analytics** (`packages/shared/analytics`, 8 tests): adherence, weekly volume (planned vs actual),
+  completed intensity distribution, pace trend, personal bests, average RPE. Deliberately omits
+  ACWR/monotony/strain (contested). Computed client-side from the plan store, so no new endpoint.
+- **Progress tab** with honest marks only: adherence tick ledger, volume bars with planned ticks,
+  intensity counts, pace dots (gated at 3+ points), PBs, and an empty state. Every panel is gated on
+  sample size; no fabricated trends or decorative charts.
+- **KB-backed "Why this?"**: each session archetype maps to its seeded knowledge-base topic
+  (`EXPLANATION_REFS`); `GET /api/explanations?type=` returns the summary, parsed per-claim lines and
+  real sources with DOI links. The card loads it on expand.
+- **Units everywhere**: session titles no longer embed units; the client composes labels from plan data,
+  so km/mi switches for distances and rep distances alike.
+- **Human copy**: every em dash removed from UI copy and comments (punctuation instead). En dashes remain
+  only in numeric ranges (e.g. `4:55–5:05`).
+- **Navigation**: Today | Progress tabs; the full week is a summary reached from a button on Today.
+- Rebuild moved into a Settings > Plan section.
+
+**Still to come**: the AI coach/adaptation layer (M6).
 
 ### Deployed — live (M0 complete)
 
