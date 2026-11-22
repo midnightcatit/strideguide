@@ -5,3 +5,9 @@ packages:
 allowBuilds:
   esbuild: true
   workerd: true
+
+# pnpm 12 blocks packages published within a minimum-release-age window.
+# hono@4.13.20 is pinned in the lockfile and was published inside that window;
+# explicitly trust it (Mirrors what pnpm recorded during local install.)
+minimumReleaseAgeExclude:
+  - hono@4.13.20
