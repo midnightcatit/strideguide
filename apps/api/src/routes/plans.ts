@@ -53,6 +53,14 @@ plans.get('/current', async (c) => {
 				.where(inArray(schema.sessionsPlan.planWeekId, weekIds))
 		: [];
 
+	const sessionIds = sessions.map((s) => s.id);
+	const logs = sessionIds.length
+		? await db
+				.select()
+				.from(schema.logs)
+				.where(inArray(schema.logs.sessionId, sessionIds))
+		: [];
+
 	return c.json({
 		goal,
 		plan,
@@ -62,6 +70,7 @@ plans.get('/current', async (c) => {
 				.filter((s) => s.planWeekId === w.id)
 				.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? '')),
 		})),
+		logs,
 	});
 });
 

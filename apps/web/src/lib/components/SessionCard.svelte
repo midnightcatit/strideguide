@@ -1,10 +1,21 @@
 <script lang="ts">
-	import type { ClientSession } from '$lib/plan';
+	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { formatDuration, modalityLabel } from '$lib/plan';
-	import { fmtDistance, fmtPaceBand } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
 
-	let { session, eyebrow = '', active = false }: { session: ClientSession; eyebrow?: string; active?: boolean } =
-		$props();
+	let {
+		session,
+		eyebrow = '',
+		active = false,
+		logged = null,
+		onLog,
+	}: {
+		session: ClientSession;
+		eyebrow?: string;
+		active?: boolean;
+		logged?: ClientLog | null;
+		onLog?: () => void;
+	} = $props();
 
 	let expanded = $state(false);
 
@@ -24,6 +35,18 @@
 	const secondary = $derived(
 		isStrength ? (reps ? `3 × ${reps}` : '3 sets') : (formatDuration(session.durationMin) ?? '—'),
 	);
+
+	const loggedLine = $derived.by(() => {
+		if (!logged) return null;
+		if (isStrength && logged.strengthSets?.length) {
+			return `Logged · ${logged.strengthSets.length} machines`;
+		}
+		if (logged.runStats?.distanceKm) {
+			const pace = logged.runStats.avgPaceSecPerKm ? ` · ${fmtPace(logged.runStats.avgPaceSecPerKm)}` : '';
+			return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}`;
+		}
+		return 'Logged';
+	});
 </script>
 
 <article
@@ -31,9 +54,11 @@
 		? 'border-signal/60'
 		: 'border-hairline'}"
 >
-	<!-- signature: amber modality edge -->
+	<!-- signature: amber modality edge (fills to solid when logged) -->
 	<div
-		class="absolute right-0 top-0 h-full w-1.5 {isStrength ? 'bg-steel' : 'bg-signal'}"
+		class="absolute right-0 top-0 h-full w-1.5 {isStrength ? 'bg-steel' : 'bg-signal'} {logged
+			? ''
+			: 'opacity-100'}"
 		aria-hidden="true"
 	></div>
 
@@ -41,7 +66,7 @@
 		<div class="flex items-baseline justify-between gap-3">
 			<span class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
 			<span class="tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-				>{session.type}</span
+				>{session.type}{#if logged} ✓{/if}</span
 			>
 		</div>
 
@@ -64,25 +89,40 @@
 
 		<hr class="my-3 border-hairline" />
 
-		<p class="tabular text-sm">
-			{#if band}{band}{/if}
-			{#if p.targetZone}<span class="text-steel"> · {p.targetZone}</span>{/if}
-			{#if p.targetRpe}<span class="text-steel"> · RPE {p.targetRpe[0]}–{p.targetRpe[1]}</span>{/if}
-			{#if !band && !p.targetZone && !p.targetRpe}<span class="text-steel">Effort: see notes</span>{/if}
-		</p>
+		{#if loggedLine}
+			<p class="tabular text-sm text-ink">{loggedLine}</p>
+		{:else}
+			<p class="tabular text-sm">
+				{#if band}{band}{/if}
+				{#if p.targetZone}<span class="text-steel"> · {p.targetZone}</span>{/if}
+				{#if p.targetRpe}<span class="text-steel"> · RPE {p.targetRpe[0]}–{p.targetRpe[1]}</span>{/if}
+				{#if !band && !p.targetZone && !p.targetRpe}<span class="text-steel">Effort: see notes</span>{/if}
+			</p>
+		{/if}
 
 		{#if session.purpose}
 			<p class="mt-3 text-sm text-steel">{session.purpose}</p>
 		{/if}
 
-		<button
-			type="button"
-			onclick={() => (expanded = !expanded)}
-			aria-expanded={expanded}
-			class="mt-3 text-sm text-signal-ink hover:underline"
-		>
-			{expanded ? 'Show less ▴' : 'Why this? ▾'}
-		</button>
+		<div class="mt-3 flex items-center justify-between">
+			<button
+				type="button"
+				onclick={() => (expanded = !expanded)}
+				aria-expanded={expanded}
+				class="text-sm text-signal-ink hover:underline"
+			>
+				{expanded ? 'Show less ▴' : 'Why this? ▾'}
+			</button>
+			{#if onLog}
+				<button
+					type="button"
+					onclick={onLog}
+					class="rounded-md border border-hairline px-3 py-2 text-sm hover:border-signal hover:text-signal-ink"
+				>
+					{logged ? 'Log again' : 'Log it'}
+				</button>
+			{/if}
+		</div>
 
 		{#if expanded}
 			<div class="mt-3 space-y-2 border-t border-hairline pt-3 text-sm text-steel">
@@ -97,9 +137,7 @@
 					</ul>
 				{/if}
 				{#if p.notes}<p>{p.notes}</p>{/if}
-				<p class="text-xs">
-					Sources and the full deep-dive arrive with the knowledge base (M3).
-				</p>
+				<p class="text-xs">Sources and the full deep-dive arrive with the knowledge base (M3).</p>
 			</div>
 		{/if}
 	</div>
