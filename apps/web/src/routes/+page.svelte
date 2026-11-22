@@ -2,12 +2,15 @@
 	import { onMount } from 'svelte';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api, type ApiUser } from '$lib/api';
-	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, mondayIndex } from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
+	import WhyCard from '$lib/components/WhyCard.svelte';
+	import Card from '$lib/components/Card.svelte';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	let user = $state<ApiUser | null>(null);
 	let checked = $state(false);
@@ -16,6 +19,9 @@
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
+	const dayLabel = new Date()
+		.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
+		.toUpperCase();
 
 	const profileName = $derived(
 		store.plan?.goal
@@ -35,11 +41,7 @@
 		(store.plan?.weeks.length ?? 0) > 0 &&
 			(store.plan?.weeks ?? []).some((w) => w.sessions.some((s) => !s.prescription?.workout)),
 	);
-	const runKm = $derived(
-		daySessions
-			.filter((s) => s.modality === 'running')
-			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0),
-	);
+
 	const weekLogged = $derived(
 		todayWeek ? todayWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0,
 	);
@@ -51,6 +53,24 @@
 					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0)
 			: 0,
 	);
+	const planCap = $derived(todayWeek?.targetVolumeKm ?? weekKm);
+	const dayMinutes = $derived(daySessions.reduce((m, s) => m + (s.durationMin ?? 0), 0));
+
+	// Next session after today (for rest days).
+	const nextSession = $derived.by(() => {
+		const weeks = store.plan?.weeks ?? [];
+		const all: { s: ClientSession; date: string }[] = [];
+		for (const w of weeks) {
+			if (!w.startDate) continue;
+			const base = new Date(`${w.startDate}T00:00:00Z`);
+			for (const s of w.sessions) {
+				const d = new Date(base);
+				d.setUTCDate(d.getUTCDate() + s.day);
+				all.push({ s, date: d.toISOString().slice(0, 10) });
+			}
+		}
+		return all.filter((x) => x.date > todayIso).sort((a, b) => a.date.localeCompare(b.date))[0];
+	});
 
 	onMount(async () => {
 		user = await api.me().catch(() => null);
@@ -63,10 +83,10 @@
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !user}
 	<section class="mt-10 text-center">
-		<p class="text-xs uppercase tracking-widest text-steel">Stride Guide</p>
+		<p class="tabular text-xs uppercase tracking-widest text-steel">Stride Guide</p>
 		<h1 class="font-display mt-2 text-2xl font-bold">Your training, tailored.</h1>
 		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
-			Goal-driven running and strength plans with a researched "why" behind every session.
+			Goal-driven running and strength plans with the research behind every session.
 		</p>
 		<button
 			type="button"
@@ -80,7 +100,7 @@
 	<p class="mt-6 text-sm text-steel">{store.error}</p>
 {:else if !todayWeek}
 	<section class="mt-10 text-center">
-		<p class="text-xs uppercase tracking-widest text-steel">No plan yet</p>
+		<p class="tabular text-xs uppercase tracking-widest text-steel">No plan yet</p>
 		<h1 class="font-display mt-2 text-2xl font-bold">Let's build your plan.</h1>
 		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
 			Pick a goal, a race date, and the days you can train. We'll generate a week-by-week plan.
@@ -89,61 +109,96 @@
 	</section>
 {:else}
 	{#if stalePlan}
-		<div class="mb-4 rounded-lg border border-signal bg-signal-wash p-3 text-sm">
-			This plan predates guided workouts. Rebuild it for step-by-step sessions, warm-up drills and machine detail.
+		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
+			This plan predates guided workouts. Rebuild it to get step-by-step sessions and drills.
 			<a href="/onboarding" class="ml-1 font-medium text-signal-ink hover:underline">Rebuild plan →</a>
 		</div>
 	{/if}
 
-	<section class="mb-5">
-		<p class="text-xs uppercase tracking-widest text-steel">Today · {DAY_NAMES[todayIndex]}</p>
-		<h1 class="font-display mt-1 text-2xl font-bold">
-			{daySessions.length
-				? daySessions.length > 1
-					? `${daySessions.length} sessions`
-					: sessionLabel(daySessions[0])
-				: 'Rest day'}
-		</h1>
-		<p class="mt-1 text-sm text-steel">
-			{profileName} · Week {todayWeek.weekNumber}{runKm ? ` · ${fmtDistance(runKm)}` : ''}
-		</p>
+	<!-- Masthead -->
+	<header class="mb-7">
+		<div class="flex items-baseline justify-between gap-3">
+			<p class="tabular text-xs uppercase tracking-widest text-steel">Today</p>
+			<p class="tabular text-xs text-steel">{dayLabel} · W{todayWeek.weekNumber}</p>
+		</div>
+		<h1 class="font-display mt-1 text-2xl font-bold">{profileName}</h1>
+		<p class="mt-0.5 text-sm text-steel">{todayWeek.focus ?? ''}</p>
+	</header>
+
+	<!-- Today's session(s) -->
+	<section aria-labelledby="today-session" class="mb-7">
+		<SectionHeader
+			id="today-session"
+			eyebrow={daySessions.length ? "Today's session" : 'Today'}
+			meta={daySessions.length ? `${daySessions.length} ${daySessions.length === 1 ? 'session' : 'sessions'} · ${dayMinutes} min` : 'Rest · 0 min'}
+		/>
+		{#if daySessions.length}
+			<div class="space-y-3">
+				{#each daySessions as s (s.id)}
+					<SessionCard
+						session={s}
+						eyebrow="{profileName} · W{todayWeek.weekNumber}"
+						active
+						logged={loggedBySession.get(s.id) ?? null}
+						onLog={() => (logTarget = s)}
+						onStart={() => (playTarget = s)}
+					/>
+				{/each}
+			</div>
+		{:else}
+			<Card tone="sunken">
+				<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
+				{#if nextSession}
+					<hr class="my-3 border-hairline" />
+					<div class="flex items-baseline justify-between gap-3">
+						<div>
+							<p class="tabular text-xs uppercase tracking-widest text-steel">Next session</p>
+							<p class="mt-1 text-sm">{sessionLabel(nextSession.s)}</p>
+							{#if nextSession.s.prescription?.targetDistanceKm}
+								<p class="tabular text-sm text-steel">
+									{fmtDistance(nextSession.s.prescription.targetDistanceKm)}{#if nextSession.s.prescription.targetPaceSecPerKm}
+										· {fmtPaceBand(nextSession.s.prescription.targetPaceSecPerKm)}{/if}
+								</p>
+							{/if}
+						</div>
+						<a href="/week" class="shrink-0 rounded-md border border-hairline px-3 py-2 text-sm hover:border-signal hover:text-signal-ink">Peek →</a>
+					</div>
+				{/if}
+			</Card>
+		{/if}
 	</section>
 
-	<div class="space-y-4">
-		{#if daySessions.length}
-			{#each daySessions as s (s.id)}
-				<SessionCard
-					session={s}
-					eyebrow="{profileName} · W{todayWeek.weekNumber}"
-					active
-					logged={loggedBySession.get(s.id) ?? null}
-					onLog={() => (logTarget = s)}
-					onStart={() => (playTarget = s)}
-				/>
-			{/each}
-		{:else}
-			<div class="rounded-xl border border-dashed border-hairline p-6 text-center text-sm text-steel">
-				Nothing scheduled today. Recovery is training too.
+	<!-- Week so far -->
+	<section aria-labelledby="week-so-far" class="mb-7">
+		<SectionHeader id="week-so-far" eyebrow="Week so far" meta="W{todayWeek.weekNumber}" />
+		<Card tone="sunken">
+			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
+				{#each todayWeek.sessions as s (s.id)}
+					{@const done = loggedBySession.has(s.id)}
+					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-hairline-strong/40'}"></span>
+				{/each}
 			</div>
-		{/if}
-	</div>
+			<p class="tabular mt-2 text-sm">
+				{weekLogged} of {weekPlanned} done
+				<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
+			</p>
+		</Card>
+	</section>
 
-	<!-- Week so far (sunken well) -->
-	<section class="mt-6 rounded-xl border border-hairline bg-sunken p-4">
-		<div class="flex items-baseline justify-between">
-			<h2 class="text-xs uppercase tracking-widest text-steel">Week so far</h2>
-			<a href="/week" class="text-xs text-steel hover:text-signal-ink">View week →</a>
-		</div>
-		<p class="tabular mt-2 text-sm">
-			{weekLogged} / {weekPlanned} logged{#if weekKm}
-				<span class="text-steel"> · {fmtDistance(weekKm)}</span>{/if}
-		</p>
-		<ul class="mt-3 flex flex-wrap gap-1" aria-label="This week's sessions">
-			{#each todayWeek.sessions as s (s.id)}
-				{@const done = loggedBySession.has(s.id)}
-				<li class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-hairline-strong/40'}" title="{done ? 'Logged' : 'Not logged'}"></li>
-			{/each}
-		</ul>
+	<!-- Why -->
+	{#if daySessions[0]}
+		<WhyCard session={daySessions[0]} />
+	{/if}
+
+	<!-- Quick -->
+	<section aria-labelledby="quick" class="mt-7">
+		<SectionHeader id="quick" eyebrow="Quick" />
+		<Card>
+			<div class="flex flex-col gap-2">
+				<a href="/week" class="rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">Full week →</a>
+				<a href="/progress" class="rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">Progress →</a>
+			</div>
+		</Card>
 	</section>
 {/if}
 
