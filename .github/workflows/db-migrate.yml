@@ -1,6 +1,8 @@
 name: DB Migrate
 
-# Migrations are a deliberate, manual step (not run on every push).
+# Normal (additive) migrations run automatically inside deploy-api.yml, before the API deploy.
+# Use this workflow for: re-seeding the research KB, and any destructive/hand-reviewed migration
+# you want to apply deliberately rather than as part of a normal deploy.
 on:
   workflow_dispatch:
     inputs:
