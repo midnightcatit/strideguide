@@ -673,6 +673,20 @@ Deferred: tiered cron refresh of the KB (M4).
 - **Shipped through the new pipeline**: PR #1 → CI (with tests) → merge → auto-deploy of api + web.
   Verified live; the remote D1 shows the `purpose` column.
 
+### M2 — Logging + offline + units (done, live)
+
+- **Units / settings**: shared metric↔imperial conversions + formatters (`packages/shared/units`);
+  `GET/PUT /api/settings` (prefs JSON: `units`, `weekStart`); a KM|MI toggle; all distances and paces
+  rendered through the user's preference. The engine and stored data remain metric.
+- **Logging**: run logs (distance + duration → auto pace, HR, RPE) and strength logs (per-machine
+  sets × reps × weight with repeat-last / add / remove set). `POST /api/logs` takes structured payloads;
+  `GET /api/plans/current` returns logs. Session cards and the week strip gain an **additive** LOGGED/tick
+  state; the calendar gets prev/next week navigation and per-week adherence.
+- **Offline**: a localStorage outbox queues logs written offline and auto-flushes on reconnect (with a
+  pending indicator and an optimistic "syncing" card state); the last plan is cached so the app renders
+  offline.
+- Shipped as PRs #4–#6, each through the CI gate.
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
