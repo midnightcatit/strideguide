@@ -774,6 +774,17 @@ introduced through build/peak and scale by race distance — half `2→3 × 3 km
   deterministic fallback) into a `summaries` table (migration 0003), shown as a Coach note card on Today.
 - Navigation is now **Today | Coach | Progress**.
 
+### Mobile-first layout pass (done, live)
+
+- **Session carousel**: when a day has 2+ sessions they snap-scroll horizontally (322px cards with a
+  peek and an honest tick rail) instead of stacking; a single session stays a plain card; at >=720px it
+  becomes a 2-up grid.
+- **Week restructured**: one sunken **7-cell load ledger** (intensity marks, logged ticks, today ring,
+  selected state) replaces the week strip and the duplicate "this week" list; the selected day's carousel
+  sits below. Week stays a focused view reached from Today, not a fourth tab.
+- **Bottom tab bar**: a 56px ruler with a hairline, mono caps labels, three geometric marks (notch,
+  reticle, ladder), a single amber sliding active indicator, and iOS safe-area padding.
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
