@@ -1,0 +1,1 @@
+ALTER TABLE `sessions_plan` ADD `purpose` text;
