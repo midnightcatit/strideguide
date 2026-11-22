@@ -25,7 +25,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		feel: 'Front of the thighs and glutes; not your lower back.',
 		form: [
 			'Feet shoulder-width on the platform, whole foot in contact.',
-			'Lower until knees are about 90° — no deeper if your back rounds.',
+			'Lower until knees are about 90°, no deeper if your back rounds.',
 			'Press through mid-foot without locking the knees hard.',
 		],
 		mistakes: ['Letting the lower back round off the pad', 'Bouncing at the bottom'],
@@ -38,7 +38,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		form: [
 			'Line the knee up with the machine pivot.',
 			'Curl smoothly, squeeze the hamstrings at the top.',
-			'Lower under control — don’t let the stack slam.',
+			"Lower under control; don't let the stack slam.",
 		],
 		mistakes: ['Using momentum to swing the pad', 'Hips lifting off the seat'],
 	},
@@ -58,10 +58,10 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Back extension',
 		muscles: ['erector spinae', 'glutes'],
 		pattern: 'hinge',
-		feel: 'Lower back and glutes — controlled, never sharp.',
+		feel: 'Lower back and glutes, controlled and never sharp.',
 		form: [
 			'Hinge from the hips with a neutral spine.',
-			'Rise to a straight line — do not arch past neutral.',
+			'Rise to a straight line without arching past neutral.',
 			'Move slowly; stop if you feel it in the joints.',
 		],
 		mistakes: ['Overextending at the top', 'Jerky reps'],
@@ -86,7 +86,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		form: [
 			'Handles at shoulder height, wrists stacked.',
 			'Press up and slightly in, without shrugging.',
-			'Lower to a comfortable range — no clanking.',
+			'Lower to a comfortable range, with no clanking.',
 		],
 		mistakes: ['Arching the lower back', 'Bouncing out of the bottom'],
 	},

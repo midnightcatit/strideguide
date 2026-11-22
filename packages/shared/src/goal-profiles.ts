@@ -1,5 +1,5 @@
 /**
- * Built-in goal profiles — the engine's contract (PLAN.md section 4).
+ * Built-in goal profiles: the engine's contract (PLAN.md section 4).
  * Adding a profile later is data, not new code.
  */
 import type { GoalProfileData } from './types';

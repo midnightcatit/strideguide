@@ -36,14 +36,14 @@ function weeksBetween(a: string, b: string): number {
 const PURPOSE: Record<SessionArchetype, string> = {
 	easy: 'Aerobic base: builds capillaries and mitochondria so faster running feels easier. You should feel conversational throughout.',
 	recovery: 'Gentle blood flow to speed recovery between harder days. Keep it easy enough to chat.',
-	long: 'Time on feet and fat oxidation — the single biggest driver of endurance. Stay relaxed and even.',
+	long: 'Time on feet and fat oxidation, the single biggest driver of endurance. Stay relaxed and even.',
 	tempo: 'Raises lactate threshold so your goal pace feels easier to hold. You should feel "comfortably hard."',
 	threshold: 'Sustained work near threshold lifts the pace you can hold. Steady breathing, not gasping.',
 	interval: 'Develops VO2max and top-end speed. Hard but controlled reps, full recovery between.',
-	'race-pace': 'Rehearsal at your goal pace — makes race effort familiar, even and sustainable.',
+	'race-pace': 'Rehearsal at your goal pace. It makes race effort feel familiar, even and sustainable.',
 	strides: 'Short, fast, relaxed bursts that improve running economy and leg speed. Never straining.',
 	hills: 'Strength-endurance: builds power and economy. Power up, control the descent.',
-	fartlek: 'Unstructured speed play — teaches pace changes with less pressure.',
+	fartlek: 'Unstructured speed play that teaches pace changes with less pressure.',
 	race: 'Rehearsal at goal effort. Treat as a hard, purposeful effort.',
 	'machine-circuit': 'Full-body strength circuit: supports running economy and injury resistance.',
 	'full-body-strength': 'Builds the strength that protects joints and improves running economy.',
@@ -70,10 +70,10 @@ const TITLE: Record<SessionArchetype, string> = {
 };
 
 const FOCUS: Record<string, string> = {
-	base: 'Base — build aerobic volume',
-	build: 'Build — add quality',
-	peak: 'Peak — sharpen and rehearse goal pace',
-	taper: 'Taper — freshen up, keep intensity',
+	base: 'Base: build aerobic volume',
+	build: 'Build: add quality',
+	peak: 'Peak: sharpen and rehearse goal pace',
+	taper: 'Taper: freshen up, keep intensity',
 };
 
 /* ------------------------------- phases ---------------------------------- */
@@ -272,7 +272,7 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 					targetPaceSecPerKm: paces ? [paces.threshold * 0.99, paces.threshold * 1.03] : undefined,
 					targetZone: 'Z3–Z4',
 					targetRpe: [6, 7],
-					note: 'Comfortably hard — steady breathing, not gasping.',
+					note: 'Comfortably hard, with steady breathing and not gasping.',
 				},
 			],
 		},
@@ -388,7 +388,7 @@ function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout
 		pace: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
 		fallbackPace: (paces ?? DEFAULT_PACES).interval,
 		label: 'Interval',
-		note: 'Even, controlled reps — stop the set if form breaks down.',
+		note: 'Even, controlled reps. Stop the set if form breaks down.',
 		recoveryM: 800,
 		recoveryPace: paces?.easy,
 		paces,
@@ -409,7 +409,7 @@ function racePaceWorkout(
 		pace: [goalPace * 0.99, goalPace * 1.01],
 		fallbackPace: goalPace,
 		label: 'Goal pace',
-		note: 'At your goal pace — even splits, relaxed effort. This is what race day should feel like.',
+		note: 'At your goal pace, with even splits and relaxed effort. This is what race day should feel like.',
 		recoveryM: Math.min(800, shape.distanceM),
 		recoveryPace: paces?.easy,
 		paces,
@@ -533,14 +533,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					slot: 'AM',
 					modality: 'running',
 					type: 'race-pace',
-					title: `${reps} × ${shape.distanceM / 1000} km @ goal pace`,
+					title: TITLE['race-pace'],
 					purpose: PURPOSE['race-pace'],
 					prescription: {
 						summary: `${reps} × ${shape.distanceM / 1000} km at goal pace.`,
 						targetDistanceKm: rpKm,
 						targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
 						targetRpe: [7, 8],
-						notes: 'Even splits at goal pace — rehearsal for race day.',
+						notes: 'Even splits at goal pace. Rehearsal for race day.',
 						workout,
 					},
 					durationMin: Math.round(((workout.totalDistanceKm ?? rpKm) * goalPace) / 60),
@@ -552,7 +552,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					slot: 'AM',
 					modality: 'running',
 					type: 'interval',
-					title: `${reps} × 800 m`,
+					title: TITLE.interval,
 					purpose: PURPOSE.interval,
 					prescription: {
 						summary: `${reps} × 800 m at interval pace, equal-time recovery.`,
@@ -570,7 +570,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					slot: 'AM',
 					modality: 'running',
 					type: 'tempo',
-					title: `Tempo ${qualityKm} km`,
+					title: TITLE.tempo,
 					purpose: PURPOSE.tempo,
 					prescription: {
 						summary: `${qualityKm} km continuous at threshold pace.`,
@@ -596,7 +596,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					slot: 'AM',
 					modality: 'running',
 					type: 'easy',
-					title: `Easy ${easyPer} km`,
+					title: TITLE.easy,
 					purpose: PURPOSE.easy,
 					prescription: {
 						summary: `Easy run ${easyPer} km, conversational.`,
