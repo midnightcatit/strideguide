@@ -9,8 +9,8 @@
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
-	import WhyCard from '$lib/components/WhyCard.svelte';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
+	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
@@ -18,6 +18,7 @@
 	let checked = $state(false);
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
+	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
 
 	const todayIndex = mondayIndex(new Date());
@@ -192,7 +193,19 @@
 
 	<!-- Why -->
 	{#if daySessions[0]}
-		<WhyCard session={daySessions[0]} />
+		<section aria-labelledby="why" class="mt-7">
+			<SectionHeader id="why" eyebrow="Why this session" />
+			<Card>
+				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
+				<button
+					type="button"
+					onclick={() => (detailTarget = daySessions[0] ?? null)}
+					class="mt-2 text-sm text-signal-ink hover:underline"
+				>
+					See full detail →
+				</button>
+			</Card>
+		</section>
 	{/if}
 
 	<!-- Quick -->
@@ -230,6 +243,23 @@
 	/>
 {/if}
 
+{#if detailTarget}
+	<SessionDetail
+		session={detailTarget}
+		eyebrow={`${profileName} · W${todayWeek?.weekNumber ?? ''}`}
+		logged={loggedBySession.get(detailTarget.id) ?? null}
+		onClose={() => (detailTarget = null)}
+		onLog={() => {
+			logTarget = detailTarget;
+			detailTarget = null;
+		}}
+		onStart={() => {
+			playTarget = detailTarget;
+			detailTarget = null;
+		}}
+	/>
+{/if}
+
 {#snippet card(s: ClientSession)}
 	<SessionCard
 		session={s}
@@ -238,5 +268,6 @@
 		logged={loggedBySession.get(s.id) ?? null}
 		onLog={() => (logTarget = s)}
 		onStart={() => (playTarget = s)}
+		onOpen={() => (detailTarget = s)}
 	/>
 {/snippet}
