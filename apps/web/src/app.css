@@ -145,3 +145,51 @@ body {
 	}
 }
 
+/* Danger (destructive) colour, distinct from the amber signal mark. */
+:root {
+	--danger: #c0392b;
+	--danger-ink: #a93226;
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--danger: #c74a3a;
+		--danger-ink: #f08a7a;
+	}
+}
+:root[data-theme='light'] {
+	--danger: #c0392b;
+	--danger-ink: #a93226;
+}
+:root[data-theme='dark'] {
+	--danger: #c74a3a;
+	--danger-ink: #f08a7a;
+}
+
+.btn-danger {
+	background: var(--danger);
+	color: #fff;
+}
+.text-danger {
+	color: var(--danger-ink);
+}
+
+/* Modern, quiet scrollbars for the day panel and other inner scrollers. */
+.scroll-modern {
+	scrollbar-width: thin;
+	scrollbar-color: var(--hairline-strong) transparent;
+}
+.scroll-modern::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+.scroll-modern::-webkit-scrollbar-thumb {
+	background-color: var(--hairline-strong);
+	border-radius: 999px;
+	border: 3px solid transparent;
+	background-clip: content-box;
+}
+.scroll-modern::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+
