@@ -75,6 +75,30 @@
 		selectedIso = todayIso;
 	}
 
+	// Horizontal swipe on the day panel changes day. A deliberate swipe only, so a
+	// vertical scroll never flips the day.
+	let startX = 0;
+	let startY = 0;
+	let tracking = false;
+	function onTouchStart(e: TouchEvent) {
+		const t = e.touches[0];
+		if (!t) return;
+		startX = t.clientX;
+		startY = t.clientY;
+		tracking = true;
+	}
+	function onTouchEnd(e: TouchEvent) {
+		if (!tracking) return;
+		tracking = false;
+		const t = e.changedTouches[0];
+		if (!t) return;
+		const dx = t.clientX - startX;
+		const dy = t.clientY - startY;
+		if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+			stepDay(dx < 0 ? 1 : -1);
+		}
+	}
+
 	onMount(async () => {
 		user = await api.me().catch(() => null);
 		if (user) {
@@ -121,7 +145,6 @@
 		</div>
 	{/if}
 
-	<!-- Masthead + day navigation -->
 	<header class="mb-4">
 		<div class="flex items-baseline justify-between gap-3">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</p>
@@ -134,63 +157,85 @@
 					: sessionLabel(daySessions[0])
 				: 'Rest day'}
 		</h1>
-		<div class="mt-2 flex items-center gap-2">
-			<button type="button" onclick={() => stepDay(-1)} aria-label="Previous day" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
-			<span class="tabular text-xs text-steel">{selDay + 1} / 7</span>
+		<div class="mt-3 flex items-center gap-2">
 			{#if !isToday}
 				<button type="button" onclick={goToday} class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal">Back to today</button>
 			{/if}
-			<button type="button" onclick={() => stepDay(1)} aria-label="Next day" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">›</button>
+			<span class="tabular text-xs text-steel sm:hidden">Swipe to change day</span>
 			<a href="/week" class="ml-auto text-xs text-steel hover:text-signal-ink">Week →</a>
 		</div>
 	</header>
 
-	<!-- Day panel -->
-	<div class="scroll-modern rounded-xl border border-hairline bg-paper p-4 sm:max-h-[calc(100dvh-15rem)] sm:overflow-y-auto">
-		<AdjustmentsCard />
+	<!-- Day panel with flanking arrows (laptop) and swipe (phone) -->
+	<div class="flex items-stretch gap-2">
+		<button
+			type="button"
+			onclick={() => stepDay(-1)}
+			aria-label="Previous day"
+			class="hidden w-12 shrink-0 items-center justify-center rounded-xl border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
+		>
+			‹
+		</button>
 
-		{#if note}<p class="mb-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
+		<div
+			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:max-h-[calc(100dvh-16rem)] sm:overflow-y-auto"
+			ontouchstart={onTouchStart}
+			ontouchend={onTouchEnd}
+		>
+			<AdjustmentsCard />
 
-		<SectionHeader
-			id="day-sessions"
-			eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
-			meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
-		/>
-		{#if daySessions.length}
-			<SessionCarousel sessions={daySessions} {card} />
-		{:else if selWeek}
-			<Card tone="sunken">
-				<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
-			</Card>
-		{:else}
-			<Card tone="sunken">
-				<p class="text-sm text-steel">This day is outside your plan.</p>
-			</Card>
-		{/if}
+			{#if note}<p class="mb-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
 
-		{#if selWeek}
-			<hr class="my-6 border-hairline" />
-			<SectionHeader id="week-so-far" eyebrow="Week so far" meta={`W${selWeek.weekNumber}`} />
-			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
-				{#each selWeek.sessions as s (s.id)}
-					{@const done = loggedBySession.has(s.id)}
-					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-hairline-strong/40'}"></span>
-				{/each}
-			</div>
-			<p class="tabular mt-2 text-sm">
-				{weekLogged} of {weekPlanned} done
-				<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
-			</p>
-
-			{#if daySessions[0]}
-				<hr class="my-6 border-hairline" />
-				<SectionHeader id="why" eyebrow="Why this session" />
-				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
-				<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
-					About, what's to come, and the research →
-				</button>
+			<SectionHeader
+				id="day-sessions"
+				eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
+				meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
+			/>
+			{#if daySessions.length}
+				<SessionCarousel sessions={daySessions} {card} />
+			{:else if selWeek}
+				<Card tone="sunken">
+					<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
+				</Card>
+			{:else}
+				<Card tone="sunken">
+					<p class="text-sm text-steel">This day is outside your plan.</p>
+				</Card>
 			{/if}
-		{/if}
+
+			{#if selWeek}
+				<hr class="my-6 border-hairline" />
+				<SectionHeader id="week-so-far" eyebrow="Week so far" meta={`W${selWeek.weekNumber}`} />
+				<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
+					{#each selWeek.sessions as s (s.id)}
+						{@const done = loggedBySession.has(s.id)}
+						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-hairline-strong/40'}"></span>
+					{/each}
+				</div>
+				<p class="tabular mt-2 text-sm">
+					{weekLogged} of {weekPlanned} done
+					<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
+				</p>
+
+				{#if daySessions[0]}
+					<hr class="my-6 border-hairline" />
+					<SectionHeader id="why" eyebrow="Why this session" />
+					<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
+					<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
+						About, what's to come, and the research →
+					</button>
+				{/if}
+			{/if}
+		</div>
+
+		<button
+			type="button"
+			onclick={() => stepDay(1)}
+			aria-label="Next day"
+			class="hidden w-12 shrink-0 items-center justify-center rounded-xl border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
+		>
+			›
+		</button>
 	</div>
 {/if}
 
