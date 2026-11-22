@@ -368,5 +368,17 @@ export const summaries = sqliteTable(
 	}),
 );
 
+/** Recent API errors, so production failures are inspectable without tailing. */
+export const appErrors = sqliteTable('app_errors', {
+	id: text('id').primaryKey(),
+	createdAt,
+	name: text('name'),
+	message: text('message'),
+	path: text('path'),
+	method: text('method'),
+	userId: text('user_id'),
+	requestId: text('request_id'),
+});
+
 /** Alias helpers for composite keys if needed later. */
 export const authSessionsPk = primaryKey({ columns: [authSessions.id] });

@@ -46,20 +46,26 @@ plans.get('/current', async (c) => {
 		.orderBy(asc(schema.planWeeks.weekNumber));
 
 	const weekIds = weeks.map((w) => w.id);
-	const sessions = weekIds.length
-		? await db
-				.select()
-				.from(schema.sessionsPlan)
-				.where(inArray(schema.sessionsPlan.planWeekId, weekIds))
-		: [];
+	// Chunk IN(...) queries: D1 caps bound parameters per statement (100).
+	const sessions = (
+		await Promise.all(
+			chunk(weekIds, 90).map((part) =>
+				db
+					.select()
+					.from(schema.sessionsPlan)
+					.where(inArray(schema.sessionsPlan.planWeekId, part)),
+			),
+		)
+	).flat();
 
 	const sessionIds = sessions.map((s) => s.id);
-	const logs = sessionIds.length
-		? await db
-				.select()
-				.from(schema.logs)
-				.where(inArray(schema.logs.sessionId, sessionIds))
-		: [];
+	const logs = (
+		await Promise.all(
+			chunk(sessionIds, 90).map((part) =>
+				db.select().from(schema.logs).where(inArray(schema.logs.sessionId, part)),
+			),
+		)
+	).flat();
 
 	return c.json({
 		goal,
