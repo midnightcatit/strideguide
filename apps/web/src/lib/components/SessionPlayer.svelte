@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatClock } from '@strideguide/shared/units';
+	import { findMachine } from '@strideguide/shared/plan';
 	import type { ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand } from '$lib/prefs.svelte';
 
@@ -29,7 +30,12 @@
 			const reps = Math.max(1, b.repeat ?? 1);
 			for (let r = 0; r < reps; r++) {
 				for (const s of b.steps) {
-					out.push({ blockLabel: b.label, rep: reps > 1 ? r + 1 : undefined, totalReps: reps > 1 ? reps : undefined, step: s });
+					out.push({
+						blockLabel: b.label,
+						rep: reps > 1 ? r + 1 : undefined,
+						totalReps: reps > 1 ? reps : undefined,
+						step: s,
+					});
 				}
 			}
 		}
@@ -40,11 +46,15 @@
 	let running = $state(false);
 	let elapsed = $state(0);
 	let finished = $state(false);
+	let showForm = $state(true);
+	let restLeft = $state(0);
 
 	const current = $derived(instances[idx]);
+	const machine = $derived(findMachine(current?.step.machine));
 	const remaining = $derived(
 		current?.step.durationSec != null ? Math.max(0, current.step.durationSec - elapsed) : null,
 	);
+	const resting = $derived(restLeft > 0);
 
 	function next() {
 		if (idx >= instances.length - 1) {
@@ -61,6 +71,9 @@
 			elapsed = 0;
 		}
 	}
+	function startRest(sec = 90) {
+		restLeft = sec;
+	}
 
 	$effect(() => {
 		if (!running) return;
@@ -68,6 +81,14 @@
 			elapsed += 1;
 			const step = instances[idx]?.step;
 			if (step?.durationSec != null && elapsed >= step.durationSec) next();
+		}, 1000);
+		return () => clearInterval(t);
+	});
+
+	$effect(() => {
+		if (restLeft <= 0) return;
+		const t = setInterval(() => {
+			restLeft = Math.max(0, restLeft - 1);
 		}, 1000);
 		return () => clearInterval(t);
 	});
@@ -87,7 +108,6 @@
 		return step.label;
 	}
 
-	const done = $derived(idx >= instances.length);
 	const clock = $derived(remaining != null ? formatClock(remaining) : formatClock(elapsed));
 </script>
 
@@ -112,8 +132,20 @@
 
 		<hr class="my-4 border-hairline" />
 
-		<!-- current step (hero when running) -->
-		{#if current && !finished}
+		{#if resting}
+			<div class="rounded-xl border border-hairline bg-sunken p-4 text-center">
+				<p class="text-xs uppercase tracking-widest text-steel">Rest</p>
+				<p class="tabular mt-1 text-3xl font-medium">{formatClock(restLeft)}</p>
+				<div class="mt-3 flex justify-center gap-2">
+					<button type="button" onclick={() => startRest(restLeft + 30)} class="rounded-md border border-hairline px-3 py-2 text-sm">
+						+30s
+					</button>
+					<button type="button" onclick={() => (restLeft = 0)} class="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper">
+						Skip
+					</button>
+				</div>
+			</div>
+		{:else if current && !finished}
 			<div class="relative overflow-hidden rounded-xl border border-hairline bg-paper p-4">
 				<div class="absolute right-0 top-0 h-full w-1.5 bg-signal" aria-hidden="true"></div>
 				<div class="flex items-baseline justify-between">
@@ -126,6 +158,7 @@
 				<p class="tabular mt-2 text-3xl font-medium leading-none">{clock}</p>
 				<p class="tabular mt-2 text-sm">{stepTarget(current.step)}</p>
 				{#if current.step.note}<p class="mt-2 text-sm text-steel">{current.step.note}</p>{/if}
+
 				<div class="mt-4 flex gap-2">
 					<button
 						type="button"
@@ -134,38 +167,50 @@
 					>
 						{running ? 'Pause' : elapsed > 0 ? 'Resume' : 'Start'}
 					</button>
-					<button
-						type="button"
-						onclick={prev}
-						disabled={idx === 0}
-						class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40"
-					>
+					<button type="button" onclick={prev} disabled={idx === 0} class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40">
 						‹
 					</button>
-					<button
-						type="button"
-						onclick={next}
-						class="rounded-md border border-hairline px-4 py-3 text-sm"
-					>
-						Next ›
-					</button>
+					<button type="button" onclick={next} class="rounded-md border border-hairline px-4 py-3 text-sm">Next ›</button>
 				</div>
+				<div class="mt-2 flex gap-2">
+					<button type="button" onclick={() => startRest(90)} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">
+						Rest 90s
+					</button>
+					{#if machine}
+						<button
+							type="button"
+							onclick={() => (showForm = !showForm)}
+							aria-expanded={showForm}
+							class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink"
+						>
+							{showForm ? 'Hide form' : 'Form & muscles'}
+						</button>
+					{/if}
+				</div>
+
+				{#if machine && showForm}
+					<div class="mt-3 border-t border-hairline pt-3 text-sm">
+						<p class="text-steel"><span class="text-ink">Muscles:</span> {machine.muscles.join(', ')}</p>
+						<p class="mt-1 text-steel"><span class="text-ink">Feel it:</span> {machine.feel}</p>
+						<ul class="mt-2 space-y-1">
+							{#each machine.form as cue (cue)}
+								<li class="text-steel">• {cue}</li>
+							{/each}
+						</ul>
+						<p class="mt-2 text-xs text-steel">Avoid: {machine.mistakes.join('; ')}.</p>
+					</div>
+				{/if}
 			</div>
 		{:else if finished}
 			<div class="rounded-xl border border-hairline p-6 text-center">
 				<p class="font-display text-lg font-medium">Workout complete</p>
 				<p class="mt-1 text-sm text-steel">Nice work. Log how it went.</p>
-				<button
-					type="button"
-					onclick={onFinish}
-					class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90"
-				>
+				<button type="button" onclick={onFinish} class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
 					Log it
 				</button>
 			</div>
 		{/if}
 
-		<!-- full stage list -->
 		<h2 class="mt-6 text-xs uppercase tracking-widest text-steel">Workout stages</h2>
 		<ul class="mt-2 divide-y divide-hairline border-y border-hairline">
 			{#each instances as inst, i (i)}
@@ -176,20 +221,15 @@
 							idx = i;
 							elapsed = 0;
 							finished = false;
+							restLeft = 0;
 						}}
-						class="flex w-full items-start justify-between gap-3 py-2.5 text-left {i === idx
-							? 'text-signal-ink'
-							: 'text-ink'} hover:text-signal-ink"
+						class="flex w-full items-start justify-between gap-3 py-2.5 text-left {i === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink"
 					>
 						<span class="flex-1">
 							<span class="text-sm"
-								>{inst.blockLabel ? `${inst.blockLabel}: ` : ''}{inst.step.label}{inst.rep
-									? ` (${inst.rep}/${inst.totalReps})`
-									: ''}</span
+								>{inst.blockLabel ? `${inst.blockLabel}: ` : ''}{inst.step.label}{inst.rep ? ` (${inst.rep}/${inst.totalReps})` : ''}</span
 							>
-							{#if inst.step.note}
-								<span class="mt-0.5 block text-xs text-steel">{inst.step.note}</span>
-							{/if}
+							{#if inst.step.note}<span class="mt-0.5 block text-xs text-steel">{inst.step.note}</span>{/if}
 						</span>
 						<span class="tabular shrink-0 text-xs text-steel">{stepTarget(inst.step)}</span>
 					</button>
@@ -197,7 +237,7 @@
 			{/each}
 		</ul>
 		<p class="mt-4 text-xs text-steel">
-			Guided by time/target — advance manually with Next at track or on hills.
+			Rest timer and manual Next — advance at track or on hills. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 </div>
