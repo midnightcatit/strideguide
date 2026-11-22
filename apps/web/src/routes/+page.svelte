@@ -9,6 +9,7 @@
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
 	import WhyCard from '$lib/components/WhyCard.svelte';
+	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
@@ -125,9 +126,10 @@
 		<p class="mt-0.5 text-sm text-steel">{todayWeek.focus ?? ''}</p>
 	</header>
 
+	<AdjustmentsCard />
+
 	<!-- Today's session(s) -->
-	<section aria-labelledby="today-session" class="mb-7">
-		<SectionHeader
+	<section aria-labelledby="today-session" class="mb-7">		<SectionHeader
 			id="today-session"
 			eyebrow={daySessions.length ? "Today's session" : 'Today'}
 			meta={daySessions.length ? `${daySessions.length} ${daySessions.length === 1 ? 'session' : 'sessions'} · ${dayMinutes} min` : 'Rest · 0 min'}

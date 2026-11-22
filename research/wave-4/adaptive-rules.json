@@ -1,0 +1,525 @@
+{
+  "workstream": "wave-4",
+  "subtopic": "Deterministic adaptive/deload rules for a running plan when life, illness or fatigue interrupt training: missed sessions, weekly volume deviations, RPE/fatigue signals (monotony, decoupling, sleep), illness return-to-training, back-off cadence, and progression resume.",
+  "generated_at": "2026-11-22T21:13:00Z",
+  "claims": [
+    {
+      "topic": "Detraining: first 7 days",
+      "claim": "Missing up to about 7 consecutive days of training has no meaningful effect on performance for an already-trained runner; measured reductions in individual physiological determinants (e.g. VO2max, stroke volume) over one week are small and do not reliably translate into slower performance. Coaching guidance therefore treats a missed week as a non-event and advises erring conservative on the return.",
+      "evidence": "Short-term detraining review: highly-trained athletes show rapid declines in VO2max and blood volume, but these changes are 'more moderate in recently trained individuals', and single-week gaps sit below the threshold of practical performance change; the practical implication is drawn explicitly by CTS coaching. Review is narrative (Mujika & Padilla); the 'up to 7 days = zero implication' framing is coaching interpretation.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part I: short term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine 30(2):79-87",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-200030020-00002",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Detraining: what is lost in 2-4 weeks",
+      "claim": "Short-term detraining (<4 weeks of insufficient training) in highly trained athletes produces rapid falls in VO2max and blood volume, insufficient HR compensation, reduced maximal cardiac output, impaired ventilatory efficiency and endurance performance, plus metabolic shifts toward carbohydrate use and lower lactate threshold: but strength/fibre-area performance declines are limited. Effects are milder in recently trained individuals.",
+      "evidence": "Narrative review of controlled detraining studies; effect magnitudes depend on prior training status (larger losses the more trained). No single pooled effect size.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part I: short term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine 30(2):79-87",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-200030020-00002",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Detraining: preserving fitness during reduced training",
+      "claim": "Loss of training adaptations during longer breaks (>4 weeks) can be avoided or limited if training INTENSITY is maintained and frequency is reduced only moderately; training VOLUME can be cut markedly and cross-training in a similar mode is effective (dissimilar-mode cross-training helps moderately trained individuals). Recently-acquired VO2max gains are lost most completely.",
+      "evidence": "Narrative review; 'reduced training' experiments show maintaining intensity + moderate frequency reduction preserves adaptations while large volume cuts are tolerated. Implication: when volume must drop, keep some fast/hard work.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Detraining: loss of training-induced physiological and performance adaptations. Part II: long term insufficient training stimulus",
+        "authors": "Mujika I, Padilla S",
+        "year": 2000,
+        "venue": "Sports Medicine 30(3):155-170",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-200030030-00001",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Illness/inactivity: bed rest rebuild cost",
+      "claim": "Even short periods of bed rest or forced inactivity can rapidly decrease physical performance, and rebuilding can require weeks. This underpins the rule that a period of full rest from illness is not 'free' rest and should be followed by a graded, not immediate, return to previous loading.",
+      "evidence": "Systematic and narrative review of bed-rest effects on performance in athletes: rapid performance loss with incomplete recovery over short timeframes; recovery timelines vary.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of bed rest on physical performance in athletes: a systematic and narrative review",
+        "authors": "Spiering BA, Weakley J, Mujika I",
+        "year": 2023,
+        "venue": "Sports Medicine 53(11):2135-2146",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-023-01889-y",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Volume spikes: single-session long-run rule",
+      "claim": "In 5205 adult runners followed 18 months, injury rates rose significantly when a single run exceeded the longest run of the past 30 days by more than 10%: small spikes (>10-30%) HRR 1.64 (95% CI 1.31-2.05, p=0.01), moderate spikes (>30-100%) HRR 1.52 (1.16-2.00), large spikes (>100%) HRR 2.28 (1.50-3.48). This single-session relative increase was the strongest signal; week-to-week ratio showed NO relationship.",
+      "evidence": "Prospective GPS/Garmin cohort, 1820 injuries over 588,071 sessions, multistate Cox regression. Observational but large, well-powered, consistent with the authors' earlier work. Independent of week-to-week volume change.",
+      "confidence": "high",
+      "citation": {
+        "title": "How much running is too much? Identifying high-risk running sessions in a 5200-person cohort study",
+        "authors": "Frandsen JSB, Hulme A, Parner ET, et al.",
+        "year": 2025,
+        "venue": "British Journal of Sports Medicine 59(17):1203-",
+        "type": "cohort",
+        "doi_or_url": "10.1136/bjsports-2024-109380",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Volume spikes: weekly progression ceiling",
+      "claim": "Novice runners who increased weekly distance by more than 30% over a two-week period had a higher rate of distance-related injuries than those progressing <10% (HR 1.59, 95% CI 0.96-2.66, p=0.07), but overall injury rates did not differ significantly across <10%, 10-30% and >30% progression groups.",
+      "evidence": "1-year prospective cohort of 874 novice runners (202 injuries). Association confined to a distance-related injury subset and the CI crossed 1; authors recommend novice weekly progression below 30%/2wk but call for RCT evidence. This is the source of the '>30%' caution, not a validated 10% law (an RCT found no injury reduction from a 10%-rule program vs a 24% program).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury",
+        "authors": "Nielsen RO, Parner ET, Nohr EA, Sorensen H, Lind M, Rasmussen S",
+        "year": 2014,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy 44(10):739-747",
+        "type": "cohort",
+        "doi_or_url": "10.2519/jospt.2014.5164",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "ACWR as an adjustment signal",
+      "claim": "In a 5205-runner cohort the acute:chronic workload ratio showed a NEGATIVE dose-response relationship with overuse injury, and the week-to-week ratio showed no relationship; only the single-session relative spike predicted injury. An engine should not treat a rising ACWR as a primary trigger to back off on its own.",
+      "evidence": "Same cohort as the single-session finding; contrasts with earlier ACWR-injury proposals and supports the methodological critiques. Observational; 'sweet-spot' ACWR is not supported here.",
+      "confidence": "medium",
+      "citation": {
+        "title": "How much running is too much? Identifying high-risk running sessions in a 5200-person cohort study",
+        "authors": "Frandsen JSB, Hulme A, Parner ET, et al.",
+        "year": 2025,
+        "venue": "British Journal of Sports Medicine 59(17):1203-",
+        "type": "cohort",
+        "doi_or_url": "10.1136/bjsports-2024-109380",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Fatigue metric: training monotony and strain",
+      "claim": "From session-RPE data: session load = session-RPE x duration (min); weekly monotony = (mean daily load)/(SD of daily load); training strain = (weekly total load) x monotony. High monotony combined with high loads (high strain) is associated with illness and poor performance; low monotony (varied day-to-day load) keeps strain low even at similar weekly totals.",
+      "evidence": "Narrative review of the session-RPE method, consolidating Foster's framework; monotony/strain are indices derived from the same validated session-RPE approach.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Session-RPE Method for Training Load Monitoring: Validity, Ecological Usefulness, and Influencing Factors",
+        "authors": "Haddad M, Stylianides G, Djaoui L, Dellal A, Chamari K",
+        "year": 2017,
+        "venue": "Frontiers in Neuroscience 11:612",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fnins.2017.00612",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Fatigue metric: monotony threshold and illness clustering",
+      "claim": "Watching training monotony and strain in collegiate athletes, illnesses clustered when individual athletes exceeded individually identifiable training thresholds; unremittingly heavy, monotonous training (low day-to-day variability) raised the likelihood of overtraining-type states. Monotony around 2.0 (mean daily load / SD) is the commonly cited reference ceiling above which illness risk rises.",
+      "evidence": "Monitoring study with illness incidence plotted against load/monotony/strain; thresholds were individual rather than a universal number, and the ~2.0 reference is the widely-cited practical derivation. Observational, small, single cohort.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Monitoring training in athletes with reference to overtraining syndrome",
+        "authors": "Foster C",
+        "year": 1998,
+        "venue": "Medicine & Science in Sports & Exercise 30(7):1164-1168",
+        "type": "observational",
+        "doi_or_url": "10.1097/00005768-199807000-00023",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Overreaching taxonomy and recovery timelines",
+      "claim": "A joint ECSS/ACSM consensus distinguishes acute fatigue (recovery day[s]), functional overreaching (days-weeks, performance temporarily dips then supercompensates), non-functional overreaching (weeks-months to recover) and overtraining syndrome (months or longer). Persistent performance reduction (>10% below baseline) is a red flag, and treating NFOR/OTS is by rest; recovery from an intensified block typically needs at least ~2 weeks of reduced volume and intensity.",
+      "evidence": "Joint position stand synthesizing integrated physiological, psychological and immunological markers; recovery windows are expert consensus derived from training-camp studies (e.g. a hard week often required >=2 weeks reduced training to restore performance).",
+      "confidence": "high",
+      "citation": {
+        "title": "Prevention, Diagnosis, and Treatment of the Overtraining Syndrome: Joint Consensus Statement of the European College of Sport Science and the American College of Sports Medicine",
+        "authors": "Meeusen R, Duclos M, Foster C, et al.",
+        "year": 2013,
+        "venue": "Medicine & Science in Sports & Exercise 45(1):186-205",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e318279a10a",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Periodization: deliberate recovery prevents maladaptation",
+      "claim": "Preventing overreaching/overtraining requires planned recovery interleaved with overload: the consensus identifies 'a training error resulting in an imbalance between load and recovery' as the most certain trigger of maladaptation, with training monotony, excess competition and psychosocial stress as contributors. Planned reduced-load periods are the primary preventive measure.",
+      "evidence": "Joint ECSS/ACSM position stand; prevention section synthesizes evidence that recovery balance (not any single marker) governs adaptation.",
+      "confidence": "high",
+      "citation": {
+        "title": "Prevention, Diagnosis, and Treatment of the Overtraining Syndrome: Joint Consensus Statement of the European College of Sport Science and the American College of Sports Medicine",
+        "authors": "Meeusen R, Duclos M, Foster C, et al.",
+        "year": 2013,
+        "venue": "Medicine & Science in Sports & Exercise 45(1):186-205",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e318279a10a",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Illness: the neck-check rule",
+      "claim": "The 'neck-check' rule is widely used by sports physicians: exercise is generally allowed when symptoms are limited to the upper respiratory tract (above the neck), and avoided when symptoms are below the neck. The rule is explicitly described as non-scientific but 'partly useful'; there is a lack of evidence that sport during a common cold causes significant harm, but the decision should be individualised.",
+      "evidence": "Perspective/commentary reviewing the evidence on ARI in athletes; notes the neck check is expert convention, not RCT-validated, and that aetiology matters (adenoviral tonsillitis, enteroviral pharyngitis can be URTI yet dangerous).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Sport and exercise during viral acute respiratory illness - Time to revisit",
+        "authors": "Ruuskanen O, Valtonen M, Waris M, Luoto R, Heinonen OJ",
+        "year": 2024,
+        "venue": "Journal of Sport and Health Science 13(5):663-665",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/j.jshs.2023.12.002",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Illness: cardiac red flags",
+      "claim": "Chest pain, syncope, shortness of breath and palpitations are absolute contraindications to exercise during (or after) a viral illness and are indications for cardiologic investigation. Potentially cardiogenic infections (SARS-CoV-2, adenovirus, enterovirus, influenza) are reasons to break training; suspected myocarditis should be excluded by a clinician before return to hard training.",
+      "evidence": "Perspective reviewing animal and human myocarditis/SCD data; myocarditis-related SCD in athletes is exceedingly rare (approx. 0.047 per 100,000 person-years), but symptom-driven referral is the accepted safety rule.",
+      "confidence": "high",
+      "citation": {
+        "title": "Sport and exercise during viral acute respiratory illness - Time to revisit",
+        "authors": "Ruuskanen O, Valtonen M, Waris M, Luoto R, Heinonen OJ",
+        "year": 2024,
+        "venue": "Journal of Sport and Health Science 13(5):663-665",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/j.jshs.2023.12.002",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Illness: return-to-training after mild ARI",
+      "claim": "For mild, non-cardiopulmonary illness the ACC expert consensus advises withdrawing from exercise training until symptom resolution; guidelines to return to sport after a viral ARI are based on expert opinion, and even short bed rest can rapidly reduce performance and take weeks to rebuild.",
+      "evidence": "Guideline/consensus summary reported by Ruuskanen et al. (2024), citing the 2022 ACC expert consensus decision pathway and the bed-rest review; recommendation strength is expert-opinion.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Sport and exercise during viral acute respiratory illness - Time to revisit",
+        "authors": "Ruuskanen O, Valtonen M, Waris M, Luoto R, Heinonen OJ",
+        "year": 2024,
+        "venue": "Journal of Sport and Health Science 13(5):663-665",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/j.jshs.2023.12.002",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Illness: exercising during infection",
+      "claim": "A systematic review and meta-analysis of animal viral-infection studies found that moderate exercise before or after viral inoculation reduced morbidity with no change in symptom severity or mortality, whereas exercise continued 'until fatigue' tended to increase symptom severity and mortality.",
+      "evidence": "Meta-analysis of experimental viral-infection studies (HSV-1, H1N1 influenza, BK polyomavirus). Animal models, indirect transfer to humans, but directionally supports 'light/moderate OK, hard/all-out is risky while acutely unwell'.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Exercise effect on symptom severity, morbidity and mortality in viral infections: a systematic review and meta-analysis",
+        "authors": "de Araujo RB, Chacon-Mikhael MPT, Lord JM, Sardeli AV",
+        "year": 2022,
+        "venue": "Immunology and Exercise Review 28:133-140",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/35913495/",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Autoregulation: HRV-guided training",
+      "claim": "HRV-guided training (hard days replaced by easy days when morning vagal HRV drops below an individual threshold) preserved/improved vagal-mediated HRV more than predefined plans (SMD 0.50, 95% CI 0.09-0.91, significant) but produced only small, non-significant advantages for VO2max and endurance performance (SMD ~0.20 each). HRV guidance is therefore best used to avoid unnecessary hard days, not as an optimization tool.",
+      "evidence": "Systematic review with meta-analysis of randomized HRV-guided vs predefined-training trials in endurance athletes; one well-known trial had HRV-guided athletes complete ~4-5 fewer hard sessions with equal-or-better 3000 m performance.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Heart Rate Variability-Guided Training for Enhancing Cardiac-Vagal Modulation, Aerobic Fitness, and Endurance Performance: A Methodological Systematic Review with Meta-Analysis",
+        "authors": "Manresa-Rocamora A, Sarabia JM, Javaloyes A, Flatt AA, Moya-Ramon M",
+        "year": 2021,
+        "venue": "International Journal of Environmental Research and Public Health 18(19):10299",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3390/ijerph181910299",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Fatigue signal: sleep and injury",
+      "claim": "Adolescent athletes sleeping <8 h per night had 1.7x the odds of a sports injury compared with those sleeping >=8 h (95% CI 1.0-3.0, p=0.04); a later meta-analysis broadly confirmed an elevated risk (OR ~1.58 for chronic poor sleep).",
+      "evidence": "Cross-sectional survey of 112 adolescent athletes plus a 7-study meta-analysis; observational, adolescent/young cohort, so applies to fatigue-signal logic rather than adult runners specifically.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Chronic lack of sleep is associated with increased sports injuries in adolescent athletes",
+        "authors": "Milewski MD, Skaggs DL, Bishop GA, et al.",
+        "year": 2014,
+        "venue": "Journal of Pediatric Orthopaedics 34(2):129-133",
+        "type": "observational",
+        "doi_or_url": "10.1097/BPO.0000000000000151",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Back-off/taper magnitude",
+      "claim": "Meta-analysis of pre-competition tapers found that reducing training volume by roughly 41-60% over about 2 weeks while maintaining training intensity produced a mean performance improvement of about 2-3%; complete rest or maintaining volume did not. This supports back-off weeks that cut volume but keep some intensity, rather than stopping.",
+      "evidence": "Meta-analysis of taper studies in competitive athletes; context is pre-race tapering, not a mid-block deload, so the magnitude transfers only directionally to an in-season back-off.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise 39(8):1358-1365",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "Adherence baseline for adaptive design",
+      "claim": "In a 10-week beginner running programme, adherence to prescribed sessions averaged only 53 +/- 27%, with injury the most common reason for missing sessions; fitness still improved regardless of adherence level. Adaptive rules should assume frequent, imperfect adherence rather than treat every missed session as exceptional.",
+      "evidence": "Observational study (34 completers with diaries, 20 with start/end testing). Small, self-reported, beginner cohort; supports designing rules that tolerate misses without penalty spirals.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Adherence and Health-Related Outcomes of Beginner Running Programs: A 10-Week Observational Study",
+        "authors": "Stevinson C, Plateau CR, Plunkett S, Fitzpatrick EJ, Ojo M, Moran M, Clemes SA",
+        "year": 2022,
+        "venue": "Research Quarterly for Exercise and Sport 93(1):87-95",
+        "type": "observational",
+        "doi_or_url": "10.1080/02701367.2020.1799916",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    },
+    {
+      "topic": "RPE usability for autoregulation",
+      "claim": "Session/effort RPE is a validated, low-cost internal-load and effort measure (RPE 10 = maximal, 8 = clearly hard), and a session's effort RPE is the practical anchor for a runner's quality vs easy labelling. RPE is influenced by psychological and environmental factors, so it is a signal rather than a precise load.",
+      "evidence": "RPE-scale validation research and the session-RPE monitoring literature; RPE is widely validated as a proxy for internal intensity but has known confounds (mood, sleep, environment).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Novel Resistance Training-Specific Rating of Perceived Exertion Scale Measuring Repetitions in Reserve",
+        "authors": "Zourdos MC, Klemp A, Dolan C, et al.",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research 30(1):267-275",
+        "type": "observational",
+        "doi_or_url": "10.1519/JSC.0000000000001049",
+        "retrieved_at": "2026-11-22T21:13:00Z"
+      }
+    }
+  ],
+  "rules": [
+    {
+      "id": "MISS_1",
+      "trigger": "1-2 consecutive days missed (total missed sessions in the week <=2), any session type.",
+      "action": "Absorb: do not stack or reschedule. Resume the plan as written on the next scheduled day; treat the missed easy run or single quality session as dropped for that week.",
+      "rationale": "Up to ~7 days of gap has no meaningful performance cost; the extra recovery often benefits the next session (Mujika & Padilla 2000; Koop/CTS 2025).",
+      "supported": "moderate"
+    },
+    {
+      "id": "MISS_2",
+      "trigger": "A key session (quality/interval OR long run) was missed, but total missed <=2 days this week.",
+      "action": "Do not add the missed key session on top of the next days. Keep at most one quality session and one long run in the remaining week, separated by >=48 h; if no clean slot exists, drop the missed key session rather than compress it.",
+      "rationale": "Compressing hard days creates acute single-session relative spikes, which predict overuse injury (Frandsen 2025); hard sessions need spacing for adaptation (Meeusen 2013).",
+      "supported": "moderate"
+    },
+    {
+      "id": "MISS_3",
+      "trigger": "3-7 consecutive days missed (or >=3 sessions missed in one week).",
+      "action": "Do not make up 100%. Replace 50-75% of the missed volume over the following 4-6 weeks, prioritising the most important (quality) sessions first; add no more than +25% to any single day; do not replace missed easy/recovery runs at all.",
+      "rationale": "Detraining over <=7 days is small, and stacking risks injury; coaching consensus is to spread, not cram (Koop/CTS 2025; Mujika & Padilla 2000).",
+      "supported": "weak"
+    },
+    {
+      "id": "MISS_4",
+      "trigger": ">=4 sessions missed in a week, or a whole week missed.",
+      "action": "Convert the next week into a rebuild week at 60-70% of planned volume, with no interval/hard intensity (light strides allowed), then resume normal progression the week after.",
+      "rationale": "Acutely resuming full load after a gap risks a volume spike; reduced training that keeps some intensity preserves fitness best (Mujika & Padilla 2000; Frandsen 2025).",
+      "supported": "moderate"
+    },
+    {
+      "id": "MISS_5",
+      "trigger": "Any missed long run, and the current or next block includes a taper.",
+      "action": "Never move a missed long run into the taper; drop it. Never place two quality sessions on back-to-back days to 'catch up'.",
+      "rationale": "Taper requires reduced volume with maintained intensity; cramming defeats it (Bosquet 2007; Meeusen 2013).",
+      "supported": "moderate"
+    },
+    {
+      "id": "VOL_1",
+      "trigger": "Completed weekly volume is 80-99% of planned.",
+      "action": "No adjustment to next week's plan: progress as written (subject to VOL_4/VOL_5 ceilings).",
+      "rationale": "Small shortfalls are within normal adherence noise (Stevinson 2022) and do not require compensation.",
+      "supported": "moderate"
+    },
+    {
+      "id": "VOL_2",
+      "trigger": "Completed weekly volume is 60-79% of planned (i.e. >20% under).",
+      "action": "Hold: next week repeats the same planned volume instead of progressing (no increase). Do not attempt to recover the deficit.",
+      "rationale": "Chasing a deficit stacks volume and raises risk; a hold preserves the trajectory without a spike.",
+      "supported": "moderate"
+    },
+    {
+      "id": "VOL_3",
+      "trigger": "Completed weekly volume <60% of planned (major shortfall).",
+      "action": "Treat as a rebuild: set next week's target to roughly (actual completed volume +10%), reintroduce no more than one quality session, then rebuild over 2-4 weeks.",
+      "rationale": "Large shortfalls behave like a break; re-entry must be graded (Mujika & Padilla 2000; Spiering 2023).",
+      "supported": "moderate"
+    },
+    {
+      "id": "VOL_4",
+      "trigger": "Completed weekly volume is 110-130% of planned.",
+      "action": "Hold: next week stays at planned volume (no progression); ensure >=1 easy/low day between hard days.",
+      "rationale": "Over-delivery on volume is still a load increase; a hold prevents a two-week compounding rise.",
+      "supported": "moderate"
+    },
+    {
+      "id": "VOL_5",
+      "trigger": "Completed weekly volume >130% of planned, OR a single run exceeded the longest run of the past 30 days by >10%.",
+      "action": "Reduce next week's volume by 20-30% (a back-off) and cap the next long run at the previous 30-day long-run maximum until volume is back on plan.",
+      "rationale": "Relative single-session spikes >10% significantly raise overuse-injury risk (HRR 1.64-2.28) (Frandsen 2025); week-on-week ratio alone showed no effect, so the single-session cap is the operative rule.",
+      "supported": "moderate"
+    },
+    {
+      "id": "VOL_6",
+      "trigger": "Planning the next progression step from a normal week.",
+      "action": "Cap planned week-on-week volume increase at <=10%; never schedule a >30% increase across a two-week window; cap any single long run's increase at <=10% of the past-30-day longest run.",
+      "rationale": "The >30%/2wk group showed higher distance-injury rates (HR 1.59, CI crossed 1) (Nielsen 2014); the 10% single-session cap is supported by the large 5205-runner cohort (Frandsen 2025).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RPE_1",
+      "trigger": ">=3 consecutive hard/quality sessions logged at RPE >=8, with perceived effort high relative to the pace achieved.",
+      "action": "Insert a lighter week: cut volume 40-50% and remove interval intensity (easy + strides only); resume intensity only when a normal quality session is rated <=7.",
+      "rationale": "Sustained hard sessions without recovery is the 'load-recovery imbalance' that drives overreaching; reducing volume while keeping some intensity is the recovery pattern (Meeusen 2013; Bosquet 2007).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RPE_2",
+      "trigger": "A quality session feels >=2 RPE points harder than usual at the same pace, OR an easy/recovery run is rated >=8 (RPE >=8 on an easy day).",
+      "action": "Convert the next scheduled quality session to an easy run; keep total volume, drop intensity for that week.",
+      "rationale": "Rising RPE at fixed output is an early internal-load warning; removing the hard stimulus is the least-disruptive intervention (Haddad 2017; Zourdos 2016).",
+      "supported": "weak"
+    },
+    {
+      "id": "RPE_3",
+      "trigger": "Training monotony (weekly mean daily session-RPE load / SD of daily loads) > 2.0 in two consecutive weeks, with training strain (weekly load x monotony) rising.",
+      "action": "Reduce weekly load ~20% and deliberately add day-to-day load variation (more easy days, spaced hard days) to lower monotony.",
+      "rationale": "High monotony with high load is associated with illness and poor performance; varied daily load keeps strain low at equal weekly total (Foster 1998; Haddad 2017).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RPE_4",
+      "trigger": "Aerobic decoupling (HR drift vs pace/power) > 5% on two consecutive comparable steady runs (>=60-90 min), or resting HR up >=5-7 bpm above personal baseline for >=3 consecutive days.",
+      "action": "Hold intensity and volume for one week: keep only easy aerobic running; no intervals. Resume as the signal normalises.",
+      "rationale": "Excessive HR drift at fixed effort indicates the steady effort is no longer comfortably sustainable and accompanies fatigue; the 5% decoupling line is the common practical threshold. Multi-marker fatigue monitoring is consensus-recommended (Meeusen 2013).",
+      "supported": "weak"
+    },
+    {
+      "id": "RPE_5",
+      "trigger": "Persistent localised soreness/tightness lasting >24-48 h, or pain that worsens as a run progresses, or pain altering gait.",
+      "action": "Replace quality sessions with easy running or rest; if pain persists or worsens over 1-2 weeks, stop impact training and seek assessment (injury path).",
+      "rationale": "Localised, progressive pain is a tissue-loading red flag distinct from general fatigue; continuing hard loading risks a running-related injury (Frandsen 2025; Meeusen 2013).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RPE_6",
+      "trigger": "Chronic short sleep (< 7-8 h/night) for the training week, with any high-RPE session.",
+      "action": "Reduce the week's intensity (drop one quality session) rather than adding volume; prioritise sleep before progressing.",
+      "rationale": "Sleeping <8 h is associated with ~1.7x injury odds and poor recovery; the app should treat it as a fatigue signal (Milewski 2014).",
+      "supported": "weak"
+    },
+    {
+      "id": "DELOAD_1",
+      "trigger": "Normal loading with no accumulated signals (no RPE_1/RPE_3/RPE_4 triggered).",
+      "action": "Schedule a planned back-off week every 3rd or 4th week: cut volume 20-40% while retaining a short dose of quality/intensity (e.g. strides, reduced-rep intervals). Pull the back-off earlier if any fatigue signal triggers.",
+      "rationale": "Planned recovery interleaved with overload is the primary prevention of overreaching (Meeusen 2013); cutting volume while keeping intensity improves performance in the taper literature (Bosquet 2007). The fixed 3:1/4:1 cadence is coaching convention without direct RCT support.",
+      "supported": "weak"
+    },
+    {
+      "id": "DELOAD_2",
+      "trigger": "Fatigue signals accumulated but performance still normal (e.g. RPE_1 or RPE_3 triggered).",
+      "action": "Back off for 1 week: volume -40%, intensity removed (easy + strides only); then resume at the pre-back-off volume and hold progression for one week before increasing.",
+      "rationale": "Functional overreaching recovers in days to weeks; extracal recovery is restorative (Meeusen 2013).",
+      "supported": "moderate"
+    },
+    {
+      "id": "DELOAD_3",
+      "trigger": "Mood disturbance, sustained high RPE, and a performance drop (e.g. >10% slower at usual effort) persisting past one back-off week.",
+      "action": "Extend to a 2-week back-off with reduced volume AND intensity; if the drop persists beyond ~4 weeks, flag as possible non-functional overreaching/overtraining and advise professional review rather than continuing to train.",
+      "rationale": "ECSS/ACSM consensus: NFOR recovery takes weeks-months and OTS months, treated with rest; persistent >10% performance loss is a red flag (Meeusen 2013).",
+      "supported": "moderate"
+    },
+    {
+      "id": "ILL_1",
+      "trigger": "Symptoms entirely above the neck (runny nose, congestion, mild sore throat, sneezing), no fever, no systemic symptoms.",
+      "action": "May train easy: keep intensity low, cut volume ~50% (e.g. easy run/walk); stop and rest if symptoms worsen.",
+      "rationale": "The neck-check rule is widely used and partly useful for URTI-limited symptoms, though it is non-scientific; light/moderate exercise during viral illness does not worsen outcomes while exercising to fatigue may (Ruuskanen 2024; de Araujo 2022).",
+      "supported": "moderate"
+    },
+    {
+      "id": "ILL_2",
+      "trigger": "Any symptom below the neck (chest congestion, productive cough, GI upset, body aches), OR fever, OR systemic malaise.",
+      "action": "No training until symptom-free for 24 h (and, for fever, at least 24 h fever-free without medication). Then follow ILL_4 to rebuild.",
+      "rationale": "Below-the-neck/systemic symptoms mark a potentially more serious infection; the ACC consensus advises withdrawing from exercise until symptom resolution (Ruuskanen 2024).",
+      "supported": "moderate"
+    },
+    {
+      "id": "ILL_3",
+      "trigger": "Chest pain, palpitations, syncope, or disproportionate shortness of breath during/after illness.",
+      "action": "Do not train; advise urgent medical assessment before any return to running (absolute contraindication).",
+      "rationale": "These are absolute contraindications during viral illness and warrant cardiologic exclusion, e.g. myocarditis (Ruuskanen 2024).",
+      "supported": "strong"
+    },
+    {
+      "id": "ILL_4",
+      "trigger": "Returning to running after any illness requiring full rest.",
+      "action": "Rebuild over ~4 weeks: week 1 easy at ~50% of pre-illness volume, week 2 ~70%, week 3 ~85%, week 4 back to 100%; no quality/intensity until easy runs feel normal.",
+      "rationale": "Even short bed rest rapidly reduces performance and needs weeks to rebuild, so re-entry must be graded; the 50/30/20/10-style ladder is coaching convention consistent with that physiology (Spiering 2023; Ruuskanen 2024).",
+      "supported": "weak"
+    },
+    {
+      "id": "ILL_5",
+      "trigger": "Every day of fever, or a day of full rest from illness.",
+      "action": "Drop at least one planned day of training; on return apply ILL_4. Expect a fitness setback that scales with days fully rested, not returned as 'free recovery'.",
+      "rationale": "Bed rest/inactivity rapidly decreases performance with rebuilding time; rest days for illness are not training-neutral (Spiering 2023; Mujika & Padilla 2000).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RESUME_1",
+      "trigger": "Disruption of <=7 days (any cause) with prior good consistency.",
+      "action": "Resume at the pre-disruption volume/intensity directly; no de-load rebuild needed.",
+      "rationale": "No meaningful performance loss over <=7 days (Mujika & Padilla 2000; Koop/CTS 2025).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RESUME_2",
+      "trigger": "Disruption of ~1-2 weeks.",
+      "action": "Rebuild to the previous volume over 2-4 weeks at <=10%/week (or a 50/30/20/10-style ladder); reintroduce one quality session in week 1 and add the second only once easy volume is restored.",
+      "rationale": "Small measurable detraining begins; graded return avoids a re-entry volume spike (Mujika & Padilla 2000; Frandsen 2025).",
+      "supported": "moderate"
+    },
+    {
+      "id": "RESUME_3",
+      "trigger": "Disruption of >3-4 weeks.",
+      "action": "Expect lost VO2max/endurance; rebuild over a period of roughly 1x to 2x the time off, keeping some intensity early (strides / short fast reps) and cutting volume first.",
+      "rationale": "Longer detraining loses recently-acquired VO2max and endurance performance; maintaining intensity while reducing volume limits the loss (Mujika & Padilla 2000 Part II).",
+      "supported": "moderate"
+    }
+  ],
+  "summary_tier_a": "When life interrupts training, the engine should protect consistency and avoid load spikes rather than chase missed work. Gaps of up to 7 days cost little: absorb 1-2 missed days (do not stack), and only for 3-7 day gaps spread 50-75% of the missed volume over 4-6 weeks with the important sessions first. Cap any single run at no more than 10% longer than the longest run of the past 30 days (the one load rule with strong cohort support) and cap weekly increases at <=10-30%. Judge fatigue with session-RPE: insert a lighter week (volume -40%, intensity off) when three or more consecutive sessions hit RPE >=8, when monotony (mean daily load / SD) exceeds ~2 for two weeks, or when a comparable steady run shows >5% HR drift twice. Plan a back-off every 3rd-4th week, cutting volume 20-40% while keeping some intensity. For illness, use the neck-check: above-the-neck symptoms allow easy reduced-volume running; below-the-neck symptoms or fever mean no training until 24 h symptom-free, then a ~4-week 50/70/85/100% rebuild; chest pain, palpitations, syncope or disproportionate breathlessness are absolute stop-and-refer flags. After a break, resume directly only for <=7 days; otherwise rebuild at <=10%/week over roughly the time off. All numeric deload/ilness-return ladders are conservative conventions layered on weaker evidence than the load-spike and detraining findings.",
+  "unverified": [
+    {
+      "claim": "A fixed 3:1 or 4:1 loading-to-deload cadence is optimal for running.",
+      "reason": "Widely used coaching convention (Daniels/Pfitzinger-style periodisation); no running-specific RCT shows a fixed 3:1 beat is superior to autoregulated back-offs. Encode as a default, not a validated optimum."
+    },
+    {
+      "claim": "Aerobic decoupling of 5% is the exact threshold that indicates inadequate durability at a given effort.",
+      "reason": "Threshold originates from TrainingPeaks/Friel-style practitioner convention; no RCT establishes 5% as a validated cut-point, though >5% drift is a reasonable practical alarm."
+    },
+    {
+      "claim": "The 50/30/20/10 weekly return ladder (50%/70%/85%/100% of prior volume) is evidence-based.",
+      "reason": "Circulated in coaching/clinical return-to-activity guidance; the physiology (bed-rest detraining) supports graded return but not this specific sequence."
+    },
+    {
+      "claim": "Missed hard sessions must never be made up and easy runs never need replacing.",
+      "reason": "Koop/CTS coaching consensus; sensible and consistent with detraining/injury-risk evidence, but not directly tested."
+    }
+  ],
+  "notes": "Scope: amateur/novice-to-recreational runners. Numbers are given as engine-encodable triggers. Evidence tiers: the single-session >10% long-run cap (Frandsen 2025, n=5205) is the strongest load rule; detraining windows (Mujika & Padilla), overreaching taxonomy (Meeusen 2013 ECSS/ACSM) and monotony/strain (Foster 1998; Haddad 2017) are moderate; fixed deload cadence, the 5% decoupling line and the 50/30/20/10 illness/break ladder are coaching conventions (weak). 'Back-off' here means a within-block reduced-load week; 'taper' (Bosquet 2007) is pre-race and used only directionally for back-off magnitude. Overlaps with wave-1 4a-adaptive-adjustments and 4b-load-management and wave-4 progress-metrics (Nielsen >30%, ACWR, adherence) are intentional and reused where the rule depends on them. All recommendations are non-medical; illness rules must defer to a clinician."
+}

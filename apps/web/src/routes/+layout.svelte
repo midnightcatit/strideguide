@@ -84,7 +84,7 @@
 		aria-label="Primary"
 	>
 		<div class="mx-auto flex max-w-2xl">
-			{#each [{ href: '/', label: 'Today', active: page.url.pathname === '/' }, { href: '/progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') }] as tab (tab.href)}
+			{#each [{ href: '/', label: 'Today', active: page.url.pathname === '/' }, { href: '/coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') }, { href: '/progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') }] as tab (tab.href)}
 				<a
 					href={tab.href}
 					aria-current={tab.active ? 'page' : undefined}
