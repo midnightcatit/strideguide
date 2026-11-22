@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "strideguide-db",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "04fdcfe6-d839-4580-886c-fb2ac2fb2e99",
       "migrations_dir": "drizzle"
     }
   ],

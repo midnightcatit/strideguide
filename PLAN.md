@@ -658,10 +658,20 @@ Cross-cutting findings that shape the engine and plan content:
 
 Deferred: tiered cron refresh of the KB (M4).
 
-### Blocked / pending on the user
+### Deployed — live (M0 complete)
 
-- **Cloudflare auth for deploy:** this session has no Cloudflare MCP tools and no API token, so
-  **D1 create (remote), DNS, and Worker deploys** are pending. Provide a token
-  (`CLOUDFLARE_API_TOKEN`) or run in a session with the Cloudflare MCP. `wrangler.jsonc` still has a
-  `REPLACE_WITH_D1_DATABASE_ID` placeholder to fill after `wrangler d1 create`.
+Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
+
+- **D1** `strideguide-db` created; schema applied (23 tables incl. `d1_migrations` ledger); **361
+  research_sources + 24 explanations** seeded remotely.
+- **DNS:** `run.midnightcatit.com` (proxied AAAA placeholder).
+- **Routes:** API Worker on `run.midnightcatit.com/api/*` and `/auth/*`; web Worker on
+  `run.midnightcatit.com/*` (more specific routes win).
+- **Secrets:** 4 production secrets set via `wrangler secret put` (fresh prod `SESSION_SECRET`).
+- **Verified live:** `/` (200 HTML, "Stride Guide"), `/api/health` (200, `env=production`),
+  `/api/goals/profiles` (401), `/auth/me` (200), `/auth/google` (302 with the registered prod
+  redirect URI), and PWA assets (`/manifest.webmanifest`, `/service-worker.js`, `/icon.svg`).
+
+Wrangler is now authenticated on this machine (two accounts available; `CLOUDFLARE_ACCOUNT_ID` must be
+set to `3f513e4b8539944bdbbf5e1ff45f3af9` for account-scoped commands).
 
