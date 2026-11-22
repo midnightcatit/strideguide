@@ -179,6 +179,8 @@
 
 		<div
 			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:max-h-[calc(100dvh-16rem)] sm:overflow-y-auto"
+			role="group"
+			aria-label="Day panel, swipe left or right to change day"
 			ontouchstart={onTouchStart}
 			ontouchend={onTouchEnd}
 		>
