@@ -3,4 +3,5 @@ export * from './types';
 export * from './vdot';
 export * from './machines';
 export * from './mobility';
+export * from './explanations';
 export * from './engine';

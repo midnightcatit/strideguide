@@ -3,6 +3,7 @@
 	import { formatDuration, modalityLabel } from '$lib/plan';
 	import { fmtDistance, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
+	import { api } from '$lib/api';
 
 	let {
 		session,
@@ -21,6 +22,23 @@
 	} = $props();
 
 	let expanded = $state(false);
+	let why = $state<Awaited<ReturnType<typeof api.explanation>> | null>(null);
+	let whyLoading = $state(false);
+	let whyError = $state<string | null>(null);
+
+	async function toggleWhy() {
+		expanded = !expanded;
+		if (expanded && !why && !whyLoading) {
+			whyLoading = true;
+			try {
+				why = await api.explanation(session.type);
+			} catch (e) {
+				whyError = e instanceof Error ? e.message : 'Could not load the research.';
+			} finally {
+				whyLoading = false;
+			}
+		}
+	}
 
 	const p = $derived(session.prescription ?? {});
 	const isRun = $derived(session.modality === 'running');
@@ -115,7 +133,7 @@
 		<div class="mt-3 flex items-center justify-between">
 			<button
 				type="button"
-				onclick={() => (expanded = !expanded)}
+				onclick={toggleWhy}
 				aria-expanded={expanded}
 				class="text-sm text-signal-ink hover:underline"
 			>
@@ -144,19 +162,50 @@
 		</div>
 
 		{#if expanded}
-			<div class="mt-3 space-y-2 border-t border-hairline pt-3 text-sm text-steel">
+			<div class="mt-3 space-y-3 border-t border-hairline pt-3 text-sm">
 				{#if isStrength && machines.length}
 					<ul class="space-y-1">
 						{#each machines as block (block.machine)}
 							<li class="flex justify-between tabular">
 								<span class="text-ink">{block.machine}</span>
-								<span>{block.sets?.[0]?.reps ?? '—'} reps × {block.sets?.length ?? 0}</span>
+								<span class="text-steel">{block.sets?.[0]?.reps ?? '—'} reps × {block.sets?.length ?? 0}</span>
 							</li>
 						{/each}
 					</ul>
 				{/if}
-				{#if p.notes}<p>{p.notes}</p>{/if}
-				<p class="text-xs">Sources and the full deep-dive arrive with the knowledge base (M3).</p>
+				{#if p.notes}<p class="text-steel">{p.notes}</p>{/if}
+
+				{#if whyLoading}
+					<p class="text-xs text-steel">Loading the research…</p>
+				{:else if whyError}
+					<p class="text-xs text-steel">Research unavailable right now.</p>
+				{:else if why}
+					{#if why.summary}<p class="text-steel">{why.summary}</p>{/if}
+					{#if why.claims.length}
+						<ul class="space-y-2">
+							{#each why.claims.slice(0, 8) as cl, i (i)}
+								<li class="text-steel">
+									<span class="text-ink">{cl.topic}:</span>
+									{cl.claim}
+									{#if cl.confidence}<span class="tabular text-xs text-steel"> ({cl.confidence})</span>{/if}
+								</li>
+							{/each}
+						</ul>
+					{/if}
+					{#if why.sources.length}
+						<div>
+							<p class="text-xs uppercase tracking-widest text-steel">Sources</p>
+							<ol class="mt-1 space-y-1 text-xs text-steel">
+								{#each why.sources.slice(0, 10) as s, i (i)}
+									<li>
+										{#if s.doiUrl}<a href={s.doiUrl} target="_blank" rel="noopener" class="hover:text-signal-ink">{s.title}</a>{:else}{s.title}{/if}{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
+									</li>
+								{/each}
+							</ol>
+						</div>
+					{/if}
+					{#if why.kbVersion}<p class="text-xs text-steel">Knowledge base: {why.kbVersion}</p>{/if}
+				{/if}
 			</div>
 		{/if}
 	</div>

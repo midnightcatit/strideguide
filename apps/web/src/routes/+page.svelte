@@ -40,6 +40,17 @@
 			.filter((s) => s.modality === 'running')
 			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0),
 	);
+	const weekLogged = $derived(
+		todayWeek ? todayWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0,
+	);
+	const weekPlanned = $derived(todayWeek?.sessions.length ?? 0);
+	const weekKm = $derived(
+		todayWeek
+			? todayWeek.sessions
+					.filter((s) => s.modality === 'running')
+					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0)
+			: 0,
+	);
 
 	onMount(async () => {
 		user = await api.me().catch(() => null);
@@ -117,9 +128,23 @@
 		{/if}
 	</div>
 
-	<a href="/week" class="mt-6 block rounded-lg border border-hairline px-4 py-3 text-center text-sm hover:border-signal hover:text-signal-ink">
-		See the full week →
-	</a>
+	<!-- Week so far (sunken well) -->
+	<section class="mt-6 rounded-xl border border-hairline bg-sunken p-4">
+		<div class="flex items-baseline justify-between">
+			<h2 class="text-xs uppercase tracking-widest text-steel">Week so far</h2>
+			<a href="/week" class="text-xs text-steel hover:text-signal-ink">View week →</a>
+		</div>
+		<p class="tabular mt-2 text-sm">
+			{weekLogged} / {weekPlanned} logged{#if weekKm}
+				<span class="text-steel"> · {fmtDistance(weekKm)}</span>{/if}
+		</p>
+		<ul class="mt-3 flex flex-wrap gap-1" aria-label="This week's sessions">
+			{#each todayWeek.sessions as s (s.id)}
+				{@const done = loggedBySession.has(s.id)}
+				<li class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-hairline-strong/40'}" title="{done ? 'Logged' : 'Not logged'}"></li>
+			{/each}
+		</ul>
+	</section>
 {/if}
 
 {#if playTarget}
