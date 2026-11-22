@@ -302,7 +302,7 @@ function strengthWorkout(
 				sets: 3,
 				reps,
 				targetRpe: [7, 8],
-				note: `${m.muscles.join(', ')} — ${m.feel} Rest ~60–90s between sets.`,
+				note: `Rest ~60–90s between sets. ${m.muscles.join(', ')}.`,
 			})),
 		},
 		{
