@@ -5,10 +5,10 @@
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import {
 		type ClientLog,
+		type ClientSession,
 		type ClientWeek,
 		type CurrentPlan,
 		DAY_NAMES,
-		heroSession,
 		mondayIndex,
 	} from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -27,8 +27,8 @@
 
 	let weekIndex = $state(0);
 	let selectedDay = $state(todayIndex);
-	let sheetOpen = $state(false);
-	let playerOpen = $state(false);
+	let logTarget = $state<ClientSession | null>(null);
+	let playTarget = $state<ClientSession | null>(null);
 
 	const profileName = $derived(
 		plan?.goal ? (getGoalProfile(plan.goal.goalProfileSlug)?.name ?? plan.goal.goalProfileSlug) : '',
@@ -44,13 +44,19 @@
 			? [...new Set(currentWeek.sessions.filter((s) => loggedBySession.has(s.id)).map((s) => s.day))]
 			: [],
 	);
-	const hero = $derived(currentWeek ? heroSession(currentWeek.sessions, selectedDay) : undefined);
-	const heroLogged = $derived(hero ? (loggedBySession.get(hero.id) ?? null) : null);
+	const daySessions = $derived(
+		currentWeek ? currentWeek.sessions.filter((s) => s.day === selectedDay) : [],
+	);
 	const currentWeekIsToday = $derived(
 		!!currentWeek?.startDate &&
 			!!currentWeek?.endDate &&
 			todayIso >= currentWeek.startDate &&
 			todayIso <= currentWeek.endDate,
+	);
+
+	// Plans generated before the guided-workout engine have no `workout` on their sessions.
+	const stalePlan = $derived(
+		weeks.length > 0 && weeks.some((w) => w.sessions.some((s) => !s.prescription?.workout)),
 	);
 
 	const weekStats = $derived.by(() => {
@@ -65,8 +71,7 @@
 		weekIndex = Math.max(0, Math.min(weeks.length - 1, i));
 		const w = weeks[weekIndex];
 		if (!w) return;
-		const inWeek =
-			w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate;
+		const inWeek = w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate;
 		selectedDay = inWeek
 			? (w.sessions.find((s) => s.day === todayIndex)?.day ?? w.sessions[0]?.day ?? todayIndex)
 			: (w.sessions[0]?.day ?? todayIndex);
@@ -92,7 +97,7 @@
 
 	function onSaved(log: ClientLog) {
 		logs = [...logs.filter((l) => l.sessionId !== log.sessionId), log];
-		sheetOpen = false;
+		logTarget = null;
 	}
 </script>
 
@@ -130,6 +135,14 @@
 		</a>
 	</section>
 {:else}
+	{#if stalePlan}
+		<div class="mb-4 rounded-lg border border-signal bg-signal-wash p-3 text-sm">
+			This plan was built before guided workouts. Rebuild it to get step-by-step sessions, warm-up
+			drills and machine detail.
+			<a href="/onboarding" class="ml-1 font-medium text-signal-ink hover:underline">Rebuild plan →</a>
+		</div>
+	{/if}
+
 	<section class="mb-4 flex items-start justify-between gap-3">
 		<div>
 			<p class="text-xs uppercase tracking-widest text-steel">Today · {DAY_NAMES[todayIndex]}</p>
@@ -171,16 +184,18 @@
 		onSelect={(d) => (selectedDay = d)}
 	/>
 
-	<div class="mt-5">
-		{#if hero}
-			<SessionCard
-				session={hero}
-				eyebrow="{profileName} · W{currentWeek.weekNumber}"
-				active={selectedDay === todayIndex}
-				logged={heroLogged}
-				onLog={() => (sheetOpen = true)}
-				onStart={() => (playerOpen = true)}
-			/>
+	<div class="mt-5 space-y-4">
+		{#if daySessions.length}
+			{#each daySessions as s (s.id)}
+				<SessionCard
+					session={s}
+					eyebrow="{profileName} · W{currentWeek.weekNumber}"
+					active={selectedDay === todayIndex}
+					logged={loggedBySession.get(s.id) ?? null}
+					onLog={() => (logTarget = s)}
+					onStart={() => (playTarget = s)}
+				/>
+			{/each}
 		{:else}
 			<div class="rounded-xl border border-dashed border-hairline p-6 text-center text-sm text-steel">
 				Rest day — nothing scheduled. Recovery is training too.
@@ -223,23 +238,23 @@
 	</section>
 {/if}
 
-{#if playerOpen && hero && currentWeek}
+{#if playTarget}
 	<SessionPlayer
-		session={hero}
-		eyebrow="{profileName} · W{currentWeek.weekNumber}"
-		onClose={() => (playerOpen = false)}
+		session={playTarget}
+		eyebrow="{profileName} · W{currentWeek?.weekNumber ?? ''}"
+		onClose={() => (playTarget = null)}
 		onFinish={() => {
-			playerOpen = false;
-			sheetOpen = true;
+			logTarget = playTarget;
+			playTarget = null;
 		}}
 	/>
 {/if}
 
-{#if sheetOpen && hero && currentWeek}
+{#if logTarget}
 	<LogSheet
-		session={hero}
-		eyebrow="{profileName} · W{currentWeek.weekNumber}"
-		onClose={() => (sheetOpen = false)}
+		session={logTarget}
+		eyebrow="{profileName} · W{currentWeek?.weekNumber ?? ''}"
+		onClose={() => (logTarget = null)}
 		onSaved={onSaved}
 	/>
 {/if}
