@@ -1,4 +1,5 @@
 import type {
+	Intensity,
 	SessionArchetype,
 	StepBlock,
 	StepKind,
@@ -39,6 +40,7 @@ const PURPOSE: Record<SessionArchetype, string> = {
 	tempo: 'Raises lactate threshold so your goal pace feels easier to hold. You should feel "comfortably hard."',
 	threshold: 'Sustained work near threshold lifts the pace you can hold. Steady breathing, not gasping.',
 	interval: 'Develops VO2max and top-end speed. Hard but controlled reps, full recovery between.',
+	'race-pace': 'Rehearsal at your goal pace — makes race effort familiar, even and sustainable.',
 	strides: 'Short, fast, relaxed bursts that improve running economy and leg speed. Never straining.',
 	hills: 'Strength-endurance: builds power and economy. Power up, control the descent.',
 	fartlek: 'Unstructured speed play — teaches pace changes with less pressure.',
@@ -56,6 +58,7 @@ const TITLE: Record<SessionArchetype, string> = {
 	tempo: 'Tempo run',
 	threshold: 'Threshold session',
 	interval: 'Intervals',
+	'race-pace': 'Goal-pace session',
 	strides: 'Strides',
 	hills: 'Hill reps',
 	fartlek: 'Fartlek',
@@ -282,43 +285,135 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 	};
 }
 
-function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
+/** Easy / steady / hard band per session type (research/wave-4). */
+function intensityFor(type: SessionArchetype): Intensity {
+	switch (type) {
+		case 'easy':
+		case 'recovery':
+		case 'mobility':
+		case 'strides':
+			return 'easy';
+		case 'interval':
+		case 'race-pace':
+		case 'hills':
+		case 'fartlek':
+		case 'race':
+			return 'hard';
+		default:
+			return 'steady';
+	}
+}
+
+/** Goal race pace (sec/km) derived from the VDOT paces, per profile. */
+function goalPaceFor(slug: string, paces: TrainingPaces): number {
+	switch (slug) {
+		case 'marathon':
+			return paces.marathon;
+		case 'half-marathon':
+			return (paces.marathon + paces.threshold) / 2;
+		case '10k':
+			return paces.threshold;
+		case '5k':
+			return (paces.threshold + paces.interval) / 2;
+		default:
+			return paces.threshold;
+	}
+}
+
+/** Race-pace rep shape per profile (metres per rep; reps by phase). */
+const RACE_PACE_SHAPE: Record<string, { distanceM: number; build: number; peak: number }> = {
+	marathon: { distanceM: 5000, build: 2, peak: 3 },
+	'half-marathon': { distanceM: 3000, build: 2, peak: 3 },
+	'10k': { distanceM: 2000, build: 3, peak: 4 },
+	'5k': { distanceM: 1000, build: 4, peak: 6 },
+};
+
+/** A repeated-rep running workout (warm-up → N × [work + recovery] → cool-down → stretches). */
+function repWorkout(opts: {
+	reps: number;
+	distanceM: number;
+	pace?: [number, number];
+	fallbackPace: number;
+	label: string;
+	note: string;
+	recoveryM?: number;
+	recoveryPace?: [number, number];
+	paces?: TrainingPaces;
+}): StructuredWorkout {
+	const recoveryM = opts.recoveryM ?? opts.distanceM;
+	const workPace = opts.pace ? (opts.pace[0] + opts.pace[1]) / 2 : opts.fallbackPace;
+	const recoveryPace = opts.recoveryPace
+		? (opts.recoveryPace[0] + opts.recoveryPace[1]) / 2
+		: (opts.paces ?? DEFAULT_PACES).easy[1];
 	const blocks: StepBlock[] = [
 		drillBlock('Warm-up drills', WARMUP_DRILLS.slice(1), 'warmup'),
-		{ repeat: 1, steps: [warmupStep(paces)] },
+		{ repeat: 1, steps: [warmupStep(opts.paces)] },
 		{
-			repeat: reps,
+			repeat: opts.reps,
 			label: 'Set',
 			steps: [
 				{
 					kind: 'work',
-					label: 'Interval',
-					distanceM: 800,
-					durationSec: secsForM(800, (paces ?? DEFAULT_PACES).interval),
-					targetPaceSecPerKm: paces
-						? [paces.interval * 0.98, paces.interval * 1.02]
-						: undefined,
+					label: opts.label,
+					distanceM: opts.distanceM,
+					durationSec: secsForM(opts.distanceM, workPace),
+					targetPaceSecPerKm: opts.pace,
 					targetRpe: [8, 9],
-					note: 'Even, controlled reps — stop the set if form breaks down.',
+					note: opts.note,
 				},
 				{
 					kind: 'recovery',
 					label: 'Recovery',
-					distanceM: 800,
-					durationSec: secsForM(800, (paces ?? DEFAULT_PACES).easy[1]),
-					targetPaceSecPerKm: paces?.easy,
+					distanceM: recoveryM,
+					durationSec: secsForM(recoveryM, recoveryPace),
+					targetPaceSecPerKm: opts.recoveryPace,
 					targetRpe: [2, 3],
 					note: 'Jog easily, or walk if you need more recovery.',
 				},
 			],
 		},
-		{ repeat: 1, steps: [cooldownStep(paces)] },
+		{ repeat: 1, steps: [cooldownStep(opts.paces)] },
 		drillBlock('Stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
-		totalDistanceKm: round1(WARMUP_KM + reps * 1.6 + COOLDOWN_KM),
+		totalDistanceKm: round1(WARMUP_KM + opts.reps * ((opts.distanceM + recoveryM) / 1000) + COOLDOWN_KM),
 	};
+}
+
+function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
+	return repWorkout({
+		reps,
+		distanceM: 800,
+		pace: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
+		fallbackPace: (paces ?? DEFAULT_PACES).interval,
+		label: 'Interval',
+		note: 'Even, controlled reps — stop the set if form breaks down.',
+		recoveryM: 800,
+		recoveryPace: paces?.easy,
+		paces,
+	});
+}
+
+function racePaceWorkout(
+	profileSlug: string,
+	phase: string,
+	goalPace: number,
+	paces?: TrainingPaces,
+): StructuredWorkout {
+	const shape = RACE_PACE_SHAPE[profileSlug] ?? RACE_PACE_SHAPE['half-marathon']!;
+	const reps = phase === 'peak' ? shape.peak : shape.build;
+	return repWorkout({
+		reps,
+		distanceM: shape.distanceM,
+		pace: [goalPace * 0.99, goalPace * 1.01],
+		fallbackPace: goalPace,
+		label: 'Goal pace',
+		note: 'At your goal pace — even splits, relaxed effort. This is what race day should feel like.',
+		recoveryM: Math.min(800, shape.distanceM),
+		recoveryPace: paces?.easy,
+		paces,
+	});
 }
 
 function strengthWorkout(
@@ -408,9 +503,49 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		});
 
 		// quality sessions
+		const goalPace = goalPaceFor(input.profile.slug, paces ?? DEFAULT_PACES);
 		qualityDays.forEach((day, qi) => {
-			const isInterval = input.profile.sessionTypes.includes('interval') && (qi % 2 === 1 || !input.profile.sessionTypes.includes('tempo'));
-			if (isInterval) {
+			let kind: 'race-pace' | 'interval' | 'tempo';
+			if (
+				(phase === 'build' || phase === 'peak') &&
+				qi === 1 &&
+				input.profile.slug !== 'whole-fitness' &&
+				input.profile.sessionTypes.includes('race')
+			) {
+				kind = 'race-pace';
+			} else if (
+				phase !== 'base' &&
+				phase !== 'taper' &&
+				input.profile.sessionTypes.includes('interval')
+			) {
+				kind = 'interval';
+			} else {
+				kind = 'tempo';
+			}
+
+			if (kind === 'race-pace') {
+				const shape = RACE_PACE_SHAPE[input.profile.slug] ?? RACE_PACE_SHAPE['half-marathon']!;
+				const reps = phase === 'peak' ? shape.peak : shape.build;
+				const rpKm = round1((reps * shape.distanceM) / 1000);
+				const workout = racePaceWorkout(input.profile.slug, phase, goalPace, paces);
+				sessions.push({
+					day,
+					slot: 'AM',
+					modality: 'running',
+					type: 'race-pace',
+					title: `${reps} × ${shape.distanceM / 1000} km @ goal pace`,
+					purpose: PURPOSE['race-pace'],
+					prescription: {
+						summary: `${reps} × ${shape.distanceM / 1000} km at goal pace.`,
+						targetDistanceKm: rpKm,
+						targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
+						targetRpe: [7, 8],
+						notes: 'Even splits at goal pace — rehearsal for race day.',
+						workout,
+					},
+					durationMin: Math.round(((workout.totalDistanceKm ?? rpKm) * goalPace) / 60),
+				});
+			} else if (kind === 'interval') {
 				const reps = clamp(Math.round(qualityKm / 0.8 / 2) * 2, 4, 10);
 				sessions.push({
 					day,
@@ -487,6 +622,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			strengthLeft--;
 		}
 
+		const withIntensity = sessions.map((s) => ({
+			...s,
+			prescription: { ...s.prescription, intensity: s.prescription.intensity ?? intensityFor(s.type) },
+		}));
+
 		weeks.push({
 			weekNumber: w + 1,
 			phase,
@@ -494,7 +634,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			startDate: weekStart,
 			endDate: weekEnd,
 			targetVolumeKm: volume,
-			sessions: sessions.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
+			sessions: withIntensity.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
 		});
 	}
 

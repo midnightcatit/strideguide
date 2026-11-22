@@ -9,6 +9,7 @@ export type SessionArchetype =
 	| 'tempo'
 	| 'threshold'
 	| 'interval'
+	| 'race-pace'
 	| 'strides'
 	| 'hills'
 	| 'fartlek'
@@ -17,6 +18,8 @@ export type SessionArchetype =
 	| 'full-body-strength'
 	| 'mobility'
 	| 'cross-train';
+
+export type Intensity = 'easy' | 'steady' | 'hard';
 
 export type GoalSlug = 'marathon' | 'half-marathon' | '10k' | '5k' | 'whole-fitness';
 
@@ -84,6 +87,8 @@ export interface StrengthSet {
 
 export interface SessionPrescription {
 	summary: string;
+	/** Easy / steady / hard band (drives the intensity ladder in the UI). */
+	intensity?: Intensity;
 	/** For running sessions. */
 	targetPaceSecPerKm?: [number, number];
 	targetZone?: string;

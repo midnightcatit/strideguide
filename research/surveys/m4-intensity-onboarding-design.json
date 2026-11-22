@@ -1,0 +1,458 @@
+{
+  "generated_at": "2026-11-22T20:19:56Z",
+  "scope": "M4 design exploration: (1) intensity band easy/steady/hard in the plan UI + a race-pace session treatment + an honest intensity ramp legend; (2) onboarding anchored on pace with a live derived-pace preview. Design only — no app code changed.",
+  "core_device": {
+    "name": "IntensityLadder",
+    "shape": "A fixed 3-slot ladder mark: three discrete cells with a hairline gap, filled bottom/left-up to the session's band. easy = 1 lit (▓··), steady = 2 lit (▓▓·), hard = 3 lit (▓▓▓). No fourth state.",
+    "why_one_glyph": "One mark, rendered at three sizes, is what lets intensity appear on the card, the week strip and the week list WITHOUT a new row, a new colour, or a new card shape. The user learns the glyph once (in the legend and in onboarding) and reads it everywhere.",
+    "colour_rule": "Lit cells = --ink (a prescription is ink, not a measurement). Unlit cells = --hairline-strong outline at 3:1. Band is encoded by COUNT, never by hue, so it survives greyscale and colour-blind simulation. --signal (amber) is NOT used for the band: amber stays reserved for measurement/now (goal-pace marker, today, current phase, needle).",
+    "derivation": "band = f(archetype, targetRpe), pure and testable in packages/shared. Rule: if prescription.targetRpe exists use its upper bound (<=5 easy, 6-7 steady, >=8 hard); else fall back to archetype: {easy,recovery,long,mobility,cross-train}->easy, {tempo,threshold,strides,machine-circuit,full-body-strength}->steady, {interval,hills,fartlek,race}->hard. No new stored field; computed at the edge like units.",
+    "data_source": "SessionArchetype + SessionPrescription.targetRpe (packages/shared/src/types.ts); engine PURPOSE/TITLE (apps/api + plan/engine.ts). Honest: the band is a summary of data the engine already emits, not a new invented metric."
+  },
+
+  "wires": [
+    {
+      "screen": "1. Session card — intensity band on the existing card (easy / steady / hard)",
+      "ascii": "EASY                                  STEADY                                HARD\n┌────────────────────────────────────┐ ┌────────────────────────────────────┐ ┌────────────────────────────────────┐\n│▓·· MARATHON · W5      EASY  RUN ╲ │ │▓▓· MARATHON · W5    TEMPO  RUN ╲ │ │▓▓▓ MARATHON · W5  INTERVAL  RUN ╲ │\n│────────────────────────────────────│ │────────────────────────────────────│ │────────────────────────────────────│\n│ Easy 5 km                          │ │ Tempo 6 km                         │ │ 5 × 800 m                          │\n│ ────────────────────────────────── │ │ ────────────────────────────────── │ │ ────────────────────────────────── │\n│  5.0 km            29:30            │ │  6.0 km            30:00            │ │  4.0 km            24:00            │\n│  prescribed        target           │ │  prescribed        target           │ │  prescribed        target           │\n│ ────────────────────────────────── │ │ ────────────────────────────────── │ │ ────────────────────────────────── │\n│ 5:30–6:00 /km · Z2 · RPE 3–4        │ │ 4:55–5:05 /km · Z3–Z4 · RPE 6–7     │ │ 4:24 /km · RPE 8–9                 │\n│ Aerobic base: capillaries…          │ │ Raises lactate threshold…           │ │ Develops VO2max…                    │\n│ [ Why this? ▾ ]     [ Start ][ Log ]│ │ [ Why this? ▾ ]     [ Start ][ Log ]│ │ [ Why this? ▾ ]     [ Start ][ Log ]│\n└────────────────────────────────────┘ └────────────────────────────────────┘ └────────────────────────────────────┘\n\n  CHANGE FROM TODAY'S CARD: exactly two edits, no new row, no new block.\n  (1) the ladder glyph ▓·· / ▓▓· / ▓▓▓ is prepended inside the EXISTING eyebrow row;\n  (2) the EXISTING band line gains the plain-language band word ('steady') after the pace band.\n  The title, target grid, dividers, purpose line and action row are untouched.",
+      "notes": {
+        "intent": "The band must be legible in one glance without re-flowing the card. The card already has an eyebrow row, a target grid and a band line; intensity rides in two places that already exist, so the card shape (eyebrow / title / rule / 2-col target / rule / band / purpose / actions) is byte-for-byte stable.",
+        "tokens": [
+          "ladder lit = --ink (15.9:1 light)", "ladder unlit = --hairline-strong outline (3.12:1 light / 4.07:1 dark)",
+          "band word in the band line = --steel after the mono pace band (already the line's colour)",
+          "modality edge tick (right) unchanged: --signal for running, --steel for strength",
+          "numerals stay --ink mono, tabular-nums slashed-zero"
+        ],
+        "components": [
+          "IntensityLadder (3 cells, 14x12 glyph in the card; aria-hidden, band word carries meaning)",
+          "existing EyebrowRow (now [ladder][eyebrow][spacer][type])",
+          "existing BandLine (pace band + ' · steady · Z3-Z4 · RPE 6-7')"
+        ],
+        "motion": "ladder-fill-once: lit cells reveal left->right on first paint, 14ms stagger, once per session id (sessionStorage). Reduced motion: final state, no stagger.",
+        "a11y": "Ladder is decorative (aria-hidden). The band word is real text in the band line. The card's <article aria-labelledby> heading reads 'Tempo run, steady, 6 kilometres'. No colour-only encoding. Ladder sits inside an existing >=44px region and adds no tap target.",
+        "responsive": "The ladder is 3 mono cells and never wraps; below 320px it stays, since it is 3 glyphs wide. The band word in the band line may wrap to a second line at <360px and that is acceptable (the line already wraps)."
+      }
+    },
+    {
+      "screen": "2. Week strip — intensity band under each day, replacing the planned dot",
+      "ascii": "  M      T      W      T      F      S      S\n  18     19     20     21    (22)    23     24\n  ▓··    ▓▓·    ▓▓▓     ·     ▓▓·     ·      ▓··\n  ✓      ✓      ✓             ●            ·\n\n  Legend:  ▓.. = easy day   ▓▓. = steady day   ▓▓▓ = hard day   · = rest\n  (22) = today ring. ✓ = logged. ● = planned, not yet done.\n\n  The existing planned '·' dot under a day is REPLACED in place by a 3-cell vertical ladder\n  sized to the day's PEAK band. Same cell, same height, same 7-column axis — so the strip\n  still reads as one row and nothing about the strip's shape changes.",
+      "notes": {
+        "intent": "The strip must say, at a glance, which day is the hard day, before the user opens any card. The ladder slots into the existing dot position (top-centre of each day cell) so no cell grows and the 7-column rhythm is preserved.",
+        "tokens": [
+          "ladder lit = --ink", "ladder unlit = --hairline-strong",
+          "today underline stays --signal (mark), active-day cell stays ink fill",
+          "logged ✓ stays --signal-ink (amber text)",
+          "day initials/ordinals stay --steel mono, active day ink"
+        ],
+        "components": [
+          "WeekStrip (unchanged 7 x min-h-11 cells)", "IntensityLadder (vertical 6x10 variant, replaces the planned dot)"
+        ],
+        "motion": "None on mount beyond the inherited today-underline. The ladder does not animate in the strip (it is a static index, not a reveal).",
+        "a11y": "Each cell's aria-label gains the band, e.g. 'Thursday 21 November, intervals, hard, not logged'. The ladder is aria-hidden. Rest stays '·' plus the accessible word 'rest'. Colour never encodes the band: the COUNT of lit cells plus the accessible name do.",
+        "responsive": "Unchanged. Strip stays 7 across on the phone; at >=720px it expands to the same 7-column grid as today.",
+        "double_day_note": "When a day has two sessions (run + strength), the day shows the MAX band of that day's sessions and the accessible name lists both ('tempo, steady; strength, steady'). The day is one column, so one mark; the honest detail lives in the accessible name and in the week list."
+      }
+    },
+    {
+      "screen": "3. Week list — intensity band as the row's leading node column",
+      "ascii": "THIS WEEK                                       INTENSITY ▾\n┌──────────────────────────────────────────────────────────┐\n│ ▓··  MON   Easy 5 km                          5.0 km  ✓ │\n│ ▓▓·  TUE   Tempo 6 km                  4:55–5:05 /km  ✓ │\n│  ·   WED   Rest                                          │\n│ ▓▓▓  THU   Intervals 5 × 800 m                4.0 km     │\n│  ·   FRI   Rest                                          │\n│ ▓··  SAT   Long run 14 km                    14.0 km     │\n│  ·   SUN   Rest                                          │\n└──────────────────────────────────────────────────────────┘\n\n  The ledger row keeps ONE line of height. The leading node column (where a ●/○ node\n  would live) now holds the ladder; the day, title, right-aligned result and ✓ are\n  exactly where they are today. No new column is added — the node column is reused.",
+      "notes": {
+        "intent": "The week list is the field-notebook ledger; the ladder is the ledger's margin mark. Reusing the node column means the list gains intensity without a column or a row of extra height.",
+        "tokens": [
+          "leading column width = the existing node/day gutter (~24px)",
+          "rules stay --hairline; the ledger rail (if present) stays --hairline-strong",
+          "done ✓ stays --signal-ink; days stay --steel mono; titles stay display font",
+          "band is NOT repeated as a word here to keep the row single-line; it is in the accessible name"
+        ],
+        "components": [
+          "SpineList/WeekList (unchanged single-line row)", "IntensityLadder (inline leading variant)",
+          "IntensityKey disclosure ('INTENSITY ▾') in the section header"
+        ],
+        "motion": "Rows do not animate on scroll (inherits M1 anti-reveal rule). Ladder is static.",
+        "a11y": "Row button's accessible name includes the band: 'Thursday, intervals, hard, 4 kilometres, not logged'. The ladder is aria-hidden. The 'INTENSITY ▾' control opens the key; aria-expanded + aria-controls.",
+        "responsive": "Unchanged. Below 320px the leading ladder column can drop to 2 cells of width but the lit count still reads; alternatively the band degrades to the accessible name only (colour/count removed, words remain)."
+      }
+    },
+    {
+      "screen": "4. Intensity key + progression cue — how intensity ramps across phases",
+      "ascii": "INTENSITY ▾\n┌──────────────────────────────────────────────────────────┐\n│ ▓··  EASY     easy · recovery · long · strength           │\n│                conversational; most of your running       │\n│ ▓▓·  STEADY   tempo · threshold · strides                 │\n│                'comfortably hard' — short sentences       │\n│ ▓▓▓  HARD     intervals · hills · race                    │\n│                controlled reps; form holds                │\n└──────────────────────────────────────────────────────────┘\n\nWHERE THE PLAN IS GOING            (derived from your phase rules)\n┌──────────────────────────────────────────────────────────┐\n│            BASE      BUILD      PEAK      TAPER          │\n│ ceiling     ▓·        ▓▓        ▓▓▓        ▓▓            │\n│           (steady)  (steady+)  (hard)   (hold effort)     │\n│ vol   ▬▬▬   ▬▬▬▬▬▬    ▬▬▬▬▬▬▬▬   ▬▬▬▬     ▬▬▬            │\n│  W5 ───▲─────────                                        │\n└──────────────────────────────────────────────────────────┘\n\n  Two honest, discrete encodings — no fake smooth curve:\n   'ceiling' = the highest intensity band the phase actually schedules (1 / 2 / 3 / 2);\n   'vol' = a hairline rule whose LENGTH is the phase's peak weekly volume from the\n   engine's volume curve (rises through build/peak, drops in taper). The only amber is\n   the '▲ you are here' notch on the current phase/week.",
+      "notes": {
+        "intent": "Answer 'why are some weeks hard and some calm' with two real, discrete facts, not a fabricated performance chart. It teaches the plan's architecture at the moment the user is looking at the strip and the list.",
+        "tokens": [
+          "ceiling ladder lit = --ink; unlit = --hairline-strong",
+          "phase labels 12px caps --steel; current phase label --ink",
+          "volume rules --hairline-strong (they encode relative length = data)",
+          "'you are here' notch = --signal (mark only) + a text label 'W5 · base'",
+          "no red/amber/green intensity colour-coding"
+        ],
+        "components": [
+          "IntensityKey (definition list: ladder, word, archetypes, feel)",
+          "PhaseRail (4 discrete columns: ceiling ladder + volume rule + current-week notch)"
+        ],
+        "motion": "phase-rail enter: the amber notch draws once on mount, 160ms; never replays. Ceiling ladders and volume rules are static. Reduced motion: instant.",
+        "a11y": "The key is a <dl> (term = ladder+word as text, description = feel). The PhaseRail is a <table> or a list with a caption 'Phase progression: base, build, peak, taper'; the ladder marks and volume rules are aria-hidden, and each phase cell has text 'base — steady ceiling, rising volume'. The current week is stated in text ('you are here: week 5, base'), not only the amber notch.",
+        "responsive": "At <360px the PhaseRail stacks to 4 short rows (one per phase) with the ladder first; the volume rule becomes a short inline rule. The key stays a list."
+      }
+    },
+    {
+      "screen": "5. Race-pace session card — '3 × 2 km @ goal pace'",
+      "ascii": "┌────────────────────────────────────────────────────────┐\n│▓▓· ◎ MARATHON · W9              RACE-PACE  RUN ╲       │\n│────────────────────────────────────────────────────────│\n│ 3 × 2 km @ goal pace                                   │\n│ ────────────────────────────────────────────────────── │\n│  1.5 km   warm-up                              easy     │\n│  2.0 km   @ goal pace        ◎  4:12 /km                │\n│   800 m   float               ▓··  easy                 │\n│  2.0 km   @ goal pace        ◎  4:12 /km                │\n│   800 m   float               ▓··  easy                 │\n│  2.0 km   @ goal pace        ◎  4:12 /km                │\n│  1.0 km   cool-down                            easy     │\n│ ────────────────────────────────────────────────────── │\n│ 13.4 km · ~58:00 · goal pace 4:12 /km                   │\n│ ◎ goal pace = your half race pace · from 1:29:00 half  ›│\n│ ────────────────────────────────────────────────────── │\n│ Rehearses the exact pace you race at, so race day is a  │\n│ known effort, not a guess.                              │\n│ [ Why this? ▾ ]                    [ Start ][ Log ]     │\n└────────────────────────────────────────────────────────┘\n\n  SAME card shell. The body is the Structure-rows body (M1 variant B), because a\n  repeated set is structure, not a single band. Three goal-pace markers (◎) ring the\n  work reps; the float recoveries carry the ▓·· easy ladder. Provenance line ties the\n  paces back to the onboarding race entry.",
+      "notes": {
+        "intent": "A workout at goal pace is the plan's centrepiece and must be unmistakable without shouting. Mark it with a target glyph (◎, amber, mark only) and a provenance line; let the structure rows carry the repeats honestly.",
+        "tokens": [
+          "goal-pace marker ◎ = --signal (mark only, never a fill, never text)",
+          "'at goal pace' words = --ink text (never amber text)",
+          "◎ provenance '›' link = --signal-ink (amber text role)",
+          "float ladder ▓·· lit = --ink; repeated-work pace = --ink mono",
+          "hairline rules between structure rows; --hairline-strong under the total line"
+        ],
+        "components": [
+          "SessionCard shell (unchanged header/footer)", "StructureRows body (warm-up / repeat / float / cool-down)",
+          "GoalPaceMarker (◎, aria-hidden, paired with the text 'at goal pace')",
+          "ProvenanceLine (goal pace = X, from the anchor race; '› relink')"
+        ],
+        "motion": "needle-settle inherited from the card; the goal-pace marks do not pulse. Reduced motion: final state.",
+        "a11y": "◎ is aria-hidden; every work row has the text '@ goal pace' and a mono pace, so meaning is not glyph-only. The repeat block announces 'Repeat 3 times: 2 kilometres at goal pace, 4 minutes 12 per kilometre, then 800 metres easy float'. Provenance line is plain text with a real link to the onboarding pace step.",
+        "responsive": "Structure rows keep a three-column read (distance | role | pace/ladder). Below 360px the float ladder drops and the row reads '800 m float, easy'. Goals-pace markers stay.",
+        "honesty_rule": "If no goal/race pace can be derived (no recent time AND a non-race profile), the session is NOT labelled 'goal pace'. It renders as '3 × 2 km @ threshold' with the threshold pace and a line 'Add a recent race time to unlock goal pace.' We never print an invented goal pace."
+      }
+    },
+    {
+      "screen": "6. Onboarding — pace step (recent race), inputs + live derived-pace preview",
+      "ascii": "┌──────────────────────────────────────────────────────────┐\n│ ‹                  PACE                      STEP 2/4     │\n├──────────────────────────────────────────────────────────┤\n│ What pace should your plan be built on?                  │\n│ One recent result is enough. We derive every training    │\n│ pace from it, and write your plan in those paces.        │\n│                                                          │\n│ ● RECENT RACE                                            │\n│ ○ CURRENT EASY PACE                                      │\n│ ○ NO RECENT RACE — start me at a level                   │\n│                                                          │\n│ DISTANCE                    TIME                         │\n│ ┌──────────┐    ┌────────┐ : ┌────────┐    ┌────────┐    │\n│ │ HALF  ▾  │    │   1    │   │   52   │  : │   00   │    │\n│ └──────────┘    └────────┘   └────────┘    └────────┘    │\n│ ▸ 1:52:00 half · 5:19 /km · VDOT 47                      │\n│ ──────────────────────────────────────────────────────── │\n│ ┌────────────────────────────────────────────────────┐   │\n│ │ YOUR TRAINING PACES                                │   │\n│ │ anchor  1:52:00 half  →  VDOT 47                   │   │\n│ │ ─────────────────────────────────────────────────  │   │\n│ │ ▓··  EASY        5:30–6:00 /km    conversational    │   │\n│ │ ▓▓·  THRESHOLD   4:55 /km         'comfortably hard'│   │\n│ │ ▓▓▓  INTERVAL    4:30 /km         hard reps         │   │\n│ │ ◎    GOAL PACE   5:05 /km         your half pace    │   │\n│ └────────────────────────────────────────────────────┘   │\n│ Times older than ~6 months drift — add a fresher one      │\n│ when you can.                                            │\n│ [ BUILD MY PLAN                                      ▸ ] │\n└──────────────────────────────────────────────────────────┘\n\n  The preview is built from the SAME components as the session card (IntensityLadder,\n  PaceBand, mono numerals), so the vocabulary learned in setup is the vocabulary of\n  the plan. On >=720px the preview docks as a sticky right column while the inputs\n  stay left; on the phone it sits directly under the inputs.",
+      "notes": {
+        "intent": "Make the derivation visible: the user types one number and watches four paces and the ladder appear, so the plan is obviously built from their pace rather than a black box. The preview is the pitch, not a decoration.",
+        "tokens": [
+          "inputs = --sunken wells, --hairline border, mono tabular numerals, label above in 12px caps --steel",
+          "preview rows: ladder (--ink lit / --hairline-strong unlit), label display font, pace mono --ink, feel line --steel",
+          "goal-pace row marker ◎ = --signal (mark only)",
+          "derivation caret '▸' and '›' relink = --signal-ink (amber text role)",
+          "no amber fills, no CTA in amber; CTA stays ink fill / paper label"
+        ],
+        "components": [
+          "BaselineMode (radiogroup: recent race / easy pace / no recent race)",
+          "RaceAnchor (distance Select + 3-part mono time field, one anchor not four fields)",
+          "DerivationNote (mono result + VDOT, --signal-ink caret)",
+          "PacePreviewPanel (4 ladder rows; a <dl>)", "PrimaryButton (ink fill, 48px)"
+        ],
+        "motion": "preview-update: pace numerals swap instantly (numerals never animate); the row set cross-fades 120ms on a real change; ladder lit cells step 90ms. Reduced motion: instant.",
+        "a11y": "Real radiogroup for the mode (aria-checked, not colour). Time field: inputmode=numeric, each part labelled, no placeholder-as-label; distance is a labelled <select>. The preview is a definition list; the derived paces are announced ONCE through a polite live region after a 400ms debounce (not per keystroke), e.g. 'From 1 hour 52 minutes half marathon: VDOT 47. Easy 5:30 to 6:00 per kilometre; threshold 4:55; interval 4:30; goal pace 5:05.' Units are part of each accessible name. Errors inline + aria-live + aria-invalid, never colour-only.",
+        "responsive": "Single column on the phone; >=720px inputs left, sticky preview right (scroll-padding-top so the sticky panel never covers a focused field). Input text >=16px to avoid iOS zoom."
+      }
+    },
+    {
+      "screen": "7. Onboarding — 'no recent race' fallback (experience + weekly volume)",
+      "ascii": "│ ○ NO RECENT RACE — start me at a level                   │\n│                                                          │\n│ EXPERIENCE                                               │\n│ [ BEGINNER ][ INTERMEDIATE ][ ADVANCED ]                 │\n│ ▌BEGINNER▐                                               │\n│                                                          │\n│ TYPICAL WEEKLY DISTANCE                                  │\n│ ┌──────────┐   km        ≈ 15 mi                         │\n│ │    25    │                                             │\n│ └──────────┘                                             │\n│ ──────────────────────────────────────────────────────── │\n│ ┌────────────────────────────────────────────────────┐   │\n│ │ YOUR TRAINING PACES  (starting estimate)           │   │\n│ │ anchor  beginner · ~25 km/wk                       │   │\n│ │ ▓··  EASY        6:15–6:50 /km    conversational    │   │\n│ │ ▓▓·  THRESHOLD   provisional       unlocks after    │   │\n│ │ ▓▓▓  INTERVAL    provisional        your first runs │   │\n│ │ ◎    GOAL PACE   not set yet                       │   │\n│ └────────────────────────────────────────────────────┘   │\n│ No race to hand? We start you at a comfortable easy band  │\n│ and keep the build conservative. Your first few logged    │\n│ runs recalibrate every pace above.                        │\n│ [ I'LL ADD A RACE TIME LATER ]        [ BUILD MY PLAN ▸ ] │\n\n  The fallback must be as honest as the race path: it shows a PROVISIONAL ladder with\n  only the easy band filled, threshold/interval marked 'unlocks after your first runs',\n  and goal pace explicitly 'not set yet' — no made-up numbers dressed as real ones.",
+      "notes": {
+        "intent": "Novices are the majority of 'no recent race' users; the fallback must not punish them with an empty preview or a fabricated pace table. It gives a real, conservative easy band and states plainly what will fill in later.",
+        "tokens": [
+          "segmented experience control = ink fill for the selected segment (same DaySwitch language as onboarding)",
+          "weekly-distance well --sunken; unit --steel; converted unit (≈ 15 mi) --steel mono",
+          "provisional rows: label --ink, value 'provisional' --steel (not a fake number)",
+          "'unlocks after your first runs' --steel; goal pace 'not set yet' --steel",
+          "note line --steel; both actions ink-fill for primary, hairline for secondary"
+        ],
+        "components": [
+          "ExperienceSegmented (3 segments, >=44px, aria-pressed)",
+          "WeeklyVolumeField (mono number + unit select + converted echo)",
+          "PacePreviewPanel (provisional state: easy filled, others locked)",
+          "ReassuranceNote"
+        ],
+        "motion": "None on numerals. The locked rows do not shimmer or pulse; 'provisional' is static text. Reduced motion: N/A (already static).",
+        "a11y": "Experience is a radiogroup or a set of toggle buttons with aria-pressed and full-word labels. The preview rows that are not yet real are marked as such in TEXT ('threshold, provisional — unlocks after your first logged runs'), never by a faded colour alone. Live region announces the conservative easy band and the fact that the rest will calibrate.",
+        "responsive": "Stacks the same as the race path; the two actions become full-width stacked buttons below 360px.",
+        "recalibration_copy": "After the first 1-3 logged runs, the app recomputes paces from actual average pace at a known RPE and surfaces a one-line 'Your paces were recalibrated from your last 3 runs' note on the plan. This is why the fallback is safe to be conservative."
+      }
+    }
+  ],
+
+  "intensity_display": {
+    "band_model": {
+      "bands": ["easy", "steady", "hard"],
+      "ladder": {"easy": 1, "steady": 2, "hard": 3},
+      "why_three": "Three bands map cleanly onto the engine's own effort data (RPE 3-4 / 6-7 / 8-9 and Z2 / Z3-Z4 / Z5) and onto the purpose copy already written per archetype. Five zones would be a vocabulary test; two would flatten tempo and intervals together."
+    },
+    "card": {
+      "where": "Inside the existing eyebrow row (prepended) + the existing band line (band word appended).",
+      "rule": "No new row, no new block, no new colour. The card's eyebrow / title / rule / two-column target / rule / band / purpose / action structure is unchanged.",
+      "example": "▓· MARATHON · W5  ...  TEMPO  RUN  /  band line: 4:55-5:05 /km · steady · Z3-Z4 · RPE 6-7",
+      "strength_note": "Strength/machine sessions read steady (▓▓·), loading is shown in the set-ledger body (M1 variant C), so intensity and load stay two distinct facts."
+    },
+    "strip": {
+      "where": "Replaces the existing planned '·' dot at the top-centre of each day cell.",
+      "rule": "Same cell footprint, same 7-column axis, no new row of pixels.",
+      "peak_rule": "A double day shows the day's MAX band; both bands live in the accessible name.",
+      "rest": "Rest stays '·' with the accessible word 'rest'."
+    },
+    "list": {
+      "where": "The row's leading node column (the gutter where a ledger node would sit).",
+      "rule": "One line of height per row, no new column, no band word echoed (kept in the accessible name to preserve the single-line ledger read)."
+    },
+    "legend": {
+      "key": "IntensityKey — a definition list: ladder + word + the archetypes it covers + a one-line 'how it feels'. Opens from 'INTENSITY ▾' in the week header.",
+      "progression_cue": "PhaseRail — 4 discrete columns (base / build / peak / taper). Top: the phase's intensity CEILING as a ladder (1/2/3/2). Bottom: a hairline rule whose LENGTH is the phase's peak weekly volume from the engine's volume curve. A single amber notch + text marks the current week.",
+      "honesty": "Both encodings are discrete readings of real engine data (progressionRules, phases, volumes, targetRpe). There is no fitted curve, no gradient, no invented 'readiness' line. 'No fake charts' means: if we cannot derive it, we do not draw it.",
+      "placement": "Lives in the week list/header, collapsed by default, so it never competes with the session card."
+    }
+  },
+
+  "race_pace_treatment": {
+    "name": "Goal-pace session",
+    "trigger": "A session whose work steps target the profile's race pace (marathon/half/10k/5k profile goal pace), rendered as repeats such as '3 × 2 km @ goal pace'.",
+    "marker": {
+      "glyph": "◎ (target/concentric)",
+      "colour": "--signal, MARK ONLY",
+      "placement": "Eyebrow row, immediately right of the IntensityLadder; repeated on each @goal-pace structure row; on the provenance line.",
+      "rule": "The words 'at goal pace' are always present as text; the glyph is aria-hidden. Amber is never used for the text or a fill."
+    },
+    "body": "Structure-rows body (M1 variant B) because repeated sets are structure, not a single band. Rows: warm-up (easy ladder) / repeated [work @ goal pace ◎ + float easy ladder] / cool-down.",
+    "summary_line": "'13.4 km · ~58:00 · goal pace 5:05 /km' in mono; provenance line '◎ goal pace = your half race pace · from 1:29:00 half ›' linking back to the onboarding pace step.",
+    "honesty_rule": "If no race/goal pace is derivable, the session is labelled '@ threshold' (with threshold pace) plus 'Add a recent race time to unlock goal pace.' Never fabricate a goal pace. For 'whole-fitness' (no race), race-pace sessions do not appear at all.",
+    "intensity_band": "Race-pace work is steady-to-hard depending on profile distance: HM/marathon race-pace work reads steady (▓▓·) for longer reps, hard (▓▓▓) for short 5K-style reps; the float recoveries read easy (▓··). The ladder is per-ROW in the structure body, not one band for the whole session.",
+    "motion": "Inherits needle-settle; markers are static. No pulse, no flash.",
+    "a11y": "Repeat block announced once as a sentence; each work row has text + mono pace; provenance is a real link."
+  },
+
+  "onboarding_pace": {
+    "goal": "Make the running paces the visible foundation of the plan: one user input yields four derived paces and the ladder, so the plan reads as 'built from your pace'.",
+    "inputs": [
+      {
+        "mode": "recent_race (default)",
+        "fields": [
+          {"name": "distance", "control": "<select>", "options": ["Mile", "5K", "10K", "Half", "Marathon"], "default": "Half"},
+          {"name": "time", "control": "3-part mono field (h : mm : ss, leading parts optional)", "inputmode": "numeric", "example": "1:52:00", "rules": "accept '52:00' (mm:ss) for short distances; pad and echo a normalised value"}
+        ],
+        "note": "ONE anchor, not four blank race fields. The engine's vdotFromRace already takes one (distanceM, timeSec)."
+      },
+      {
+        "mode": "current_easy_pace",
+        "fields": [
+          {"name": "easy pace", "control": "mono pace field (min:ss) + unit toggle km/mi", "inputmode": "numeric", "example": "6:05 /km", "echo": "converted unit shown, e.g. '≈ 9:47 /mi'"},
+          {"name": "weekly volume", "control": "mono number + unit", "optional": true}
+        ],
+        "note": "For users who know their everyday pace but no recent race. Inverts the easy band to an equivalent VDOT conservatively (use the slower end of their stated easy pace as 'easy' and derive the rest); label the result 'estimated from easy pace'."
+      },
+      {
+        "mode": "no_recent_race (fallback)",
+        "fields": [
+          {"name": "experience", "control": "3-segment control (Beginner / Intermediate / Advanced)", "maps_to": "Baseline.experience"},
+          {"name": "weekly volume", "control": "mono number + unit", "maps_to": "Baseline.weeklyKm", "note": "existing engine baseWeeklyKm already branches on exactly these two fields"}
+        ]
+      }
+    ],
+    "preview": {
+      "title": "YOUR TRAINING PACES",
+      "anchor_line": "anchor  <input summary>  →  VDOT <n>   (or 'starting estimate' in the fallback)",
+      "rows": [
+        {"band": "easy", "ladder": "▓··", "example": "5:30–6:00 /km", "feel": "conversational", "used": "most running"},
+        {"band": "threshold", "ladder": "▓▓·", "example": "4:55 /km", "feel": "'comfortably hard'", "used": "tempo / threshold"},
+        {"band": "interval", "ladder": "▓▓▓", "example": "4:30 /km", "feel": "hard reps, form holds", "used": "VO2max intervals"},
+        {"band": "goal pace", "marker": "◎", "example": "5:05 /km", "feel": "the pace you race at", "used": "race-pace rehearsals"}
+      ],
+      "behaviour": "Recalculates live as the user types (debounced ~150ms); numerals swap instantly (never count up); on a real change the row set cross-fades 120ms.",
+      "component_reuse": "IntensityLadder + PaceBand + mono numerals — the SAME components as the session card, so setup teaches the plan's own vocabulary.",
+      "locked_state": "In the fallback, threshold/interval read 'provisional — unlocks after your first logged runs' and goal pace reads 'not set yet'. No fabricated numbers.",
+      "live_region": "Announced once after debounce: 'From 1 hour 52 minutes half marathon: VDOT 47. Easy 5:30 to 6:00 per kilometre; threshold 4:55; interval 4:30; goal pace 5:05.'"
+    },
+    "copy": {
+      "step_title": "What pace should your plan be built on?",
+      "step_help": "One recent result is enough. We derive every training pace from it, and write your plan in those paces.",
+      "mode_labels": {
+        "recent_race": "RECENT RACE",
+        "current_easy_pace": "CURRENT EASY PACE",
+        "no_recent_race": "NO RECENT RACE — start me at a level"
+      },
+      "derivation": "1:52:00 half · 5:19 /km · VDOT 47",
+      "preview_title": "YOUR TRAINING PACES",
+      "feels": {
+        "easy": "Conversational — you could hold a full conversation. Most of your running lives here.",
+        "threshold": "'Comfortably hard' — short sentences, not chat. This is where the plan gets faster.",
+        "interval": "Hard, controlled reps. If form breaks down, the set is over.",
+        "goal_pace": "The pace you race at. Rehearsed in the plan so race day is a known effort."
+      },
+      "provenance": "◎ goal pace = your half race pace · from 1:29:00 half",
+      "stale_note": "Times older than ~6 months drift — add a fresher one when you can.",
+      "fallback": "No race to hand? We start you at a comfortable easy band and keep the build conservative. Your first few logged runs recalibrate every pace above.",
+      "fallback_provisional": "Threshold and interval unlock after your first logged runs. Goal pace isn't set yet.",
+      "guardrail_fast": "That time is very fast for a starting plan — we'll cap the weekly build and recalibrate after your first runs.",
+      "guardrail_slow": "All good — everyone starts somewhere. We'll begin easy and the paces will tighten as you get fitter.",
+      "recalibrated_later": "Your paces were recalibrated from your last 3 logged runs.",
+      "cta": "BUILD MY PLAN"
+    },
+    "fallback": {
+      "trigger": "The user picks 'NO RECENT RACE', or the race path is left empty and they continue.",
+      "derivation": "Use Baseline.experience + Baseline.weeklyKm, exactly the two fields the engine's baseWeeklyKm already consumes. Produce a conservative easy band (slower end first) and a provisional VDOT ceiling; do not print threshold/interval/goal as if measured.",
+      "recalibration": "After the first 1-3 logged runs, recompute paces from actual average pace at a known RPE and surface 'Your paces were recalibrated from your last 3 logged runs' on the plan. This is the safety that makes a conservative fallback honest.",
+      "escape_hatch": "'I'LL ADD A RACE TIME LATER' keeps a re-entry point into this same step from plan settings; paces stay provisional until then."
+    }
+  },
+
+  "motion": [
+    {
+      "name": "ladder-fill-once",
+      "trigger": "First paint of a card, strip cell, or preview row, once per session id / once per onboarding mount",
+      "spec": "lit cells reveal left->right (card/list) or bottom->top (strip) with 14ms stagger; unlit outlines present from the start; band meaning does not depend on the animation",
+      "duration_ms": 320,
+      "easing": "cubic-bezier(.2,.85,.25,1)",
+      "reduced_motion": "No stagger, no transform: final state, opacity 120ms"
+    },
+    {
+      "name": "preview-update",
+      "trigger": "Onboarding pace field changes (debounced 150ms)",
+      "spec": "pace numerals swap instantly; row set cross-fades 120ms; ladder cells step 90ms; live region speaks once after 400ms",
+      "duration_ms": 120,
+      "easing": "linear",
+      "reduced_motion": "Instant; only the live-region announcement remains"
+    },
+    {
+      "name": "phase-notch-draw",
+      "trigger": "PhaseRail first mount",
+      "spec": "the amber 'you are here' notch draws once; ceiling ladders and volume rules are static",
+      "duration_ms": 160,
+      "easing": "cubic-bezier(.2,.8,.2,1)",
+      "reduced_motion": "Instant, notch already drawn"
+    },
+    {
+      "name": "goal-pace-marker",
+      "trigger": "Race-pace card first paint",
+      "spec": "◎ fades in with the inherited needle-settle; no pulse, no flash, no rotation",
+      "duration_ms": 120,
+      "easing": "linear",
+      "reduced_motion": "Instant"
+    },
+    {
+      "name": "press-step / sheet-rise / why-expand",
+      "trigger": "inherited from M1",
+      "spec": "90ms background step; 220ms sheet rise; 180ms grid-rows expand",
+      "duration_ms": 220,
+      "easing": "cubic-bezier(.2,0,0,1)",
+      "reduced_motion": "Instant per the global reduce block in app.css"
+    },
+    {
+      "name": "ANTI-RULE: numerals and paces never animate",
+      "trigger": "Always",
+      "spec": "Every derived pace, VDOT, distance and volume swaps instantly. No count-up, no odometer, no scrolling digits. Tabular figures exist so values do not reflow; animating them is unreadable mid-effort and dishonest about precision.",
+      "duration_ms": 0,
+      "easing": "n/a",
+      "reduced_motion": "n/a"
+    }
+  ],
+
+  "a11y": [
+    {
+      "topic": "Intensity is never colour-only",
+      "requirement": "The band is the COUNT of lit ladder cells plus a real word: card band line ('steady'), strip/list accessible names ('hard'), and the key's definition text. Greyscale and colour-blind simulation must preserve the band. Lit=--ink (15.9:1), unlit outline=--hairline-strong (3:1) — both above their bars."
+    },
+    {
+      "topic": "Amber discipline (measured)",
+      "requirement": "--signal is mark-only: the goal-pace ◎, the today ring/underline, the current-phase notch, the modality edge. Band never uses amber. Amber TEXT (provenance '›', derivation caret, logged ✓) uses --signal-ink: 5.3:1 light, 10.7:1 dark. --signal as text (#E8A33D on #F4F5F2 = 1.97:1) remains forbidden."
+    },
+    {
+      "topic": "Accessible names carry the band",
+      "requirement": "Card heading: 'Tempo run, steady, 6 kilometres'. Strip cell: 'Thursday 21 November, intervals, hard, not logged'. List row: 'Thursday, intervals, hard, 4 kilometres, not logged'. Ladder glyphs are aria-hidden so they never double-speak."
+    },
+    {
+      "topic": "Forms (onboarding)",
+      "requirement": "Persistent labels above fields (no placeholder-as-label); time input inputmode=numeric, pace inputmode=decimal; unit inside the accessible name; >=16px input text to stop iOS zoom; errors inline with aria-live=polite + aria-invalid, never colour-only."
+    },
+    {
+      "topic": "Derived values and live regions",
+      "requirement": "The pace preview is a <dl>; derived paces are announced once through one polite live region after a 400ms debounce, in complete sentences, never per keystroke and never assertively. VDOT is announced with its unit meaning ('VDOT 47'), not as a bare number."
+    },
+    {
+      "topic": "Provisional vs measured (fallback)",
+      "requirement": "Locked/provisional rows say so in TEXT ('threshold, provisional — unlocks after your first logged runs'), never by faded colour alone. Goal pace reads 'not set yet' when it is not set. No fabricated numbers are rendered with the same weight as real ones."
+    },
+    {
+      "topic": "Tap targets",
+      "requirement": ">=44px everywhere. The ladder marks add no tap target — they live inside existing 44px+ rows, cells, and wells. Mode radios, day cells, segments and steppers are all >=44px."
+    },
+    {
+      "topic": "Focus",
+      "requirement": "2px --signal-ink outline, 2px paper offset on :focus-visible only, visible on paper, sunken, inside the amber band and inside the sticky preview. Focus never moves on live update; the typed field keeps focus."
+    },
+    {
+      "topic": "Reduced motion",
+      "requirement": "prefers-reduced-motion kills every stagger, draw, notch and cross-fade; only 90-120ms opacity/colour steps remain. app.css already zeroes durations globally; components must still land on the correct FINAL state (lit ladder, drawn notch) rather than an empty one."
+    },
+    {
+      "topic": "Text scaling",
+      "requirement": "No fixed heights on text; at 200% zoom the preview rows and the PhaseRail reflow to stacked rows, and the band degrades to its word in every case. The accessible name is always the source of truth."
+    }
+  ],
+
+  "self_critique": {
+    "ascii_legend": "▓ = lit ladder cell (ink) · = unlit cell / rest. ▓·· easy, ▓▓· steady, ▓▓▓ hard. ◎ = goal-pace marker (amber, mark only). ▾/▸ = disclosure/caret (signal-ink). ▬ = hairline-strong volume rule. ▲ = current-week notch (amber). ✓ = logged. ● = planned. (22) = today ring.",
+    "templated_defaults_avoided": [
+      {
+        "default": "Cream + serif + terracotta 'editorial wellness'",
+        "how": "No serif, no cream (paper is cool green-grey #F4F5F2), no terracotta. All display/heading type is Space Grotesk; warmth is the single amber, used as a mark (◎, notch) not a surface."
+      },
+      {
+        "default": "Near-black + acid-green 'performance tech'",
+        "how": "Dark is #101318 (blue-black), not #0A0A0A; the accent is amber, never acid; no glow, no gradient mesh, no neon intensity colours. Intensity is encoded by COUNT, not by a traffic-light hue."
+      },
+      {
+        "default": "Broadsheet hairlines only — thin rules doing all the work",
+        "how": "Hairlines are the quiet layer; the data layer is the ladder (discrete filled cells), the structure rows, the volume rule, and --hairline-strong specifically because hairline-only would make the instrument parts invisible."
+      }
+    ],
+    "other_defaults_avoided": [
+      "No red/yellow/green intensity colour-coding — the single most templated way to do 'easy/steady/hard', and the least accessible. Banned here: band is count + word.",
+      "No fake 'readiness' line, no smooth intensity curve, no gradient gauge. The progression cue draws only what the engine can derive (phase ceilings + relative volume).",
+      "No emoji intensity badges (🔥💪😤) and no icon-per-row; the only glyphs are the ladder, ◎, ✓, ▾.",
+      "No progress ring for 'intensity' and no streak flame.",
+      "No new row bolted onto the session card — the band rides the existing eyebrow row and band line, proving the card shape is a system, not a layout to be broken.",
+      "No amber CTA. The build button stays ink-fill/paper-label."
+    ],
+    "risks": [
+      {
+        "risk": "The horizontal 3-cell ladder could be misread as a progress bar (sessions done).",
+        "mitigation": "The ladder always sits adjacent to the WORD 'easy/steady/hard', never alone; it is 3 discrete gapped cells (▓·· ) so it can't be read as a continuous fill; completion is a different mark (✓). The legend pairs the glyph with its word the first time."
+      },
+      {
+        "risk": "Amber creeps into the band (it is tempting to tint hard days amber).",
+        "mitigation": "Band is ink-only by rule; amber is defined as measurement/now. If a hard day is amber, that is a bug. The goal-pace ◎ is the one amber intensity-adjacent mark, and it means 'race pace', not 'hard'."
+      },
+      {
+        "risk": "The fallback (no race) preview looks empty or fake.",
+        "mitigation": "It shows a real conservative easy band (from experience + volume via the engine's own baseWeeklyKm) and marks the rest provisional/unlockable, with a recalibration promise. Nothing pretends to be measured."
+      },
+      {
+        "risk": "Goal pace is shown for a profile that has no race (whole-fitness).",
+        "mitigation": "Harmony rule: no goal/race pace if it can't be derived; race-pace sessions don't exist for whole-fitness; the preview row reads 'not set yet'."
+      },
+      {
+        "risk": "Mono + ladders everywhere makes the app read as a spreadsheet of marks.",
+        "mitigation": "Marks are restricted to (a) the band ladder, (b) the single amber measurement mark per surface. Prose stays Plex Sans; mono stays numerals + short caps."
+      }
+    ],
+    "rejected": [
+      {
+        "option": "Colour-code intensity (e.g. blue/green/red or a graded amber).",
+        "reason": "Fails AA in greyscale and colour-blindness, breaks the 'amber is a mark, not a scale' rule, and re-introduces the traffic-light default the world is trying to avoid."
+      },
+      {
+        "option": "A fourth band or five-zone display.",
+        "reason": "More bands than the engine's effort data cleanly supports; risks the user having to learn a vocabulary mid-run. Three maps to RPE/Z bands that already exist."
+      },
+      {
+        "option": "A smooth 'intensity over the plan' line chart.",
+        "reason": "'No fake charts.' A fitted line would imply continuous data we don't have; discrete phase ceilings + a volume rule are honest and cheaper."
+      },
+      {
+        "option": "Make the card's modality edge encode intensity.",
+        "reason": "The edge already encodes modality (signal=run, steel=strength); overloading it would make two facts fight in one 1.5px channel and break the established card."
+      },
+      {
+        "option": "Four separate onboarding race fields (5K/10K/half/full).",
+        "reason": "One anchor is enough for the engine and lowers the form burden; four blank fields read as a test."
+      }
+    ],
+    "open_questions": [
+      "Should the strip show a double day as the day's peak band, or split the cell into two thin ladders? I chose peak + accessible detail to keep the 7-column axis.",
+      "Does 'current easy pace' invert cleanly to a VDOT without a race, or should it stay a display-only band and defer threshold/interval until a race time exists?",
+      "Where exactly does the PhaseRail live — week header, plan overview, or a settings 'about this plan' screen — without competing with the session card?",
+      "Recalibration from logged runs: what RPE threshold counts as 'a known effort' before we trust the derived paces?"
+    ]
+  }
+}

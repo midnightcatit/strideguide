@@ -31,6 +31,7 @@ export interface ClientWorkout {
 
 export interface ClientPrescription {
 	summary?: string;
+	intensity?: 'easy' | 'steady' | 'hard';
 	targetDistanceKm?: number;
 	targetPaceSecPerKm?: [number, number];
 	targetZone?: string;

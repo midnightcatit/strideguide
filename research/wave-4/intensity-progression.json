@@ -1,0 +1,534 @@
+{
+  "workstream": "wave-4",
+  "subtopic": "Intensity progression toward a race goal: weekly intensity distribution by phase (base/build/peak/taper), when and how to introduce race-pace/goal-pace work, concrete goal-pace sessions for 5K/10K/half/marathon, taper intensity handling, and an easy/steady/hard labelling scheme",
+  "generated_at": "2026-11-22T20:35:00Z",
+  "claims": [
+    {
+      "topic": "Phase-level intensity distribution (elite/aggregate)",
+      "claim": "Across 175 retrospective training-intensity distributions (TIDs) of elite-to-world-class endurance athletes, >60% of endurance exercise was low intensity (Z1) in 91% of cases; pyramidal (Z1>Z2>Z3) was the most common shape (89/175), then polarized (65/175), then threshold (8/175). Runners specifically showed >80% in Z1 and <12% in Z2, and the proportion of heavy-to-severe work was generally higher during the competition phase than during the preparatory phase.",
+      "evidence": "Review of 175 TIDs (49% single-case studies, mainly cross-country skiing/biathlon); 120 quantified by HR time-in-zone or session-goal with physiological zone demarcation. Pyramidal 89, polarized 65, threshold 8; these relative numbers varied by sport and phase. Runners/triathletes/skiers/rowers showed >80% Z1 and <12% Z2, while cyclists/swimmers were <72% Z1 and >16% Z2. Authors caution methods vary widely and general conclusions are limited.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The proportional distribution of training by elite endurance athletes at different intensities during different phases of the season",
+        "authors": "Sperlich B, Matzka M, Holmberg HC",
+        "year": 2023,
+        "venue": "Frontiers in Sports and Active Living 5:1258585",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fspor.2023.1258585",
+        "retrieved_at": "2026-11-22T20:22:00Z"
+      }
+    },
+    {
+      "topic": "Phase-dependent model selection (general prep -> specific prep -> pre-comp -> competition)",
+      "claim": "Training-intensity-distribution models are not fixed for a whole season: pyramidal structure tends to dominate general preparation, while threshold- and polarized-type structures become more prominent as training moves through specific preparation, pre-competition and competition phases. Phased adaptation and strategic integration of more than one model across phases is proposed to enhance cumulative adaptation.",
+      "evidence": "Narrative review of TID theory and zone classification for cyclic endurance sports, examining the dynamic structural shifts of pyramidal (PYR), threshold (THR) and polarized (POL) models across the general-preparation, specific-preparation, pre-competition and competition phases. Concludes the appropriate model depends on sport, objective and individual variability, and that phased integration may be superior to a single fixed model. Review-level synthesis, not a controlled comparison.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Recent advances in training intensity distribution theory for cyclic endurance sports: theoretical foundations, model comparisons, and periodization characteristics",
+        "authors": "Sun Q, Yu Y, Cui J, Lin S, Wang X, Zhou T",
+        "year": 2025,
+        "venue": "Frontiers in Physiology 16:1657892",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fphys.2025.1657892",
+        "retrieved_at": "2026-11-22T20:23:00Z"
+      }
+    },
+    {
+      "topic": "Marathon final-12-week distribution (sub-elite plans)",
+      "claim": "In 92 recommended 12-week sub-elite marathon plans, the intensity distribution was pyramidal, with zone shares of 15-67-10-5-3% (high-volume plans, >90 km/wk peak), 14-63-18-2-3% (middle, 65-90 km/wk) and 12-67-17-2-2% (low, <65 km/wk) across zones 1-5. Collapsing to three bands, this is roughly 77-82% easy (Z1+Z2), 10-18% steady (Z3) and 4-8% hard (Z4+Z5) over the specific-preparation/peak window.",
+      "evidence": "Systematic quantitative analysis of 92 marathon training plans: each session linked to five intensity zones; plans grouped by peak-week volume. Mean final-12-week weekly volume 108/59/43 km for high/middle/low categories. Authors state the approach has obvious limitations (no evidence that the plans are effective) but narrows the science-practice gap. Descriptive, not interventional.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Quantitative Analysis of 92 12-Week Sub-elite Marathon Training Plans",
+        "authors": "Knopp M, Appelhans D, Schonfelder M, Seiler S, Wackerhage H",
+        "year": 2024,
+        "venue": "Sports Medicine - Open 10(1):50",
+        "type": "observational",
+        "doi_or_url": "10.1186/s40798-024-00717-5",
+        "retrieved_at": "2026-11-22T20:18:00Z"
+      }
+    },
+    {
+      "topic": "World-class runners: race-pace-zone distribution across phases",
+      "claim": "Seven world-class middle/long-distance runners (mean 135.4 km/wk over 50 weeks) showed a pyramidal distribution across all phases of the season when intensity was referenced to specific race pace: 88.5 +/- 1.1% Z1, 7.4 +/- 0.8% Z2, 4.1 +/- 0.7% Z3. Using physiological zones instead shifted Z3 up to 6.6% and produced polarized shapes in some phases for middle-distance runners.",
+      "evidence": "Training-log analysis of 7 world-class runners over 50 weeks using two zone schemes (race-pace based vs physiological). Race-pace zones gave 88.5/7.4/4.1%; physiological zones gave 87.2/6.1/6.6% (large ES difference in Z2, moderate in Z3). Race-pace approach produced pyramidal distributions across all phases. Highlights that the analysis/prescription method changes the apparent TID. Small elite sample; descriptive.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training intensity distribution analysis by race pace vs. physiological approach in world-class middle- and long-distance runners",
+        "authors": "Kenneally M, Casado A, Gomez-Ezeiza J, Santos-Concejero J",
+        "year": 2021,
+        "venue": "European Journal of Sport Science 21(6):819-826",
+        "type": "observational",
+        "doi_or_url": "10.1080/17461391.2020.1773934",
+        "retrieved_at": "2026-11-22T20:28:00Z"
+      }
+    },
+    {
+      "topic": "Race-pace prescription is effective in recreational runners",
+      "claim": "Prescribing endurance sessions by race pace improved 7-km time-trial performance in recreational runners (effect size 1.07) and produced the smallest inter-individual variation in performance change, despite a training load similar to heart-rate- and HRV-guided groups.",
+      "evidence": "28 recreational runners randomised to heart-rate-, race-pace- or HRV-guided training for 6 weeks. All groups improved physiological markers and the 7-km time trial; the race-pace group showed the clearest time-trial improvement and lowest coefficient of variation. Small sample and short duration limit certainty.",
+      "confidence": "low",
+      "citation": {
+        "title": "Performance and Physiological Effects of Race Pace-Based Versus Heart Rate Variability-Guided Training Prescription in Runners",
+        "authors": "Ranieri LE, Casado A, Martin D, Trujillo-Colmena D, Gil-Arias A, Kenneally M, Jimenez A",
+        "year": 2025,
+        "venue": "Medicine & Science in Sports & Exercise 57(6)",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0000000000003671",
+        "retrieved_at": "2026-11-22T20:18:00Z"
+      }
+    },
+    {
+      "topic": "Pace- vs HR-based prescription: execution accuracy",
+      "claim": "When aiming to hit a prescribed intensity zone, heart-rate-based prescription achieved greater training-execution accuracy than race-pace-based prescription: 85% vs 69% of session time in-zone during low-intensity continuous running and 41% vs 27% during HIIT (5 x 800 m). This argues for using pace to set the intent of race-pace reps while HR/RPE act as real-time guardrails, because high-intensity target zones are hard to hold by pace alone.",
+      "evidence": "Randomised crossover in 37 runners (VO2max 53.7 mL/kg/min): each completed a 45-min low-intensity continuous session and a 5 x 800-m HIIT session under HR- and race-pace-based prescriptions. HR prescription yielded significantly greater time-in-zone in both sessions; time-in-zone during HIIT was low for both methods.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Comparison of Heart Rate- and Race Pace-Based Training Prescriptions on Training Execution Accuracy in Recreational Distance Runners",
+        "authors": "Ranieri LE, Del Coso J, Garcia-Ortiz C, Jimenez A, Solano V, Casado A",
+        "year": 2026,
+        "venue": "International Journal of Sports Physiology and Performance 21(8):902-909",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2025-0578",
+        "retrieved_at": "2026-11-22T20:18:00Z"
+      }
+    },
+    {
+      "topic": "Race-pace long-run work and physiological resilience/durability",
+      "claim": "Prolonged exercise sessions that include bouts of high-intensity exercise at race pace or above, or a progressive increase in intensity in the face of developing fatigue, are proposed as an effective way to develop physiological resilience (durability) - the resistance of VO2max, economy and thresholds to deterioration during long races. Training consistency and accumulation of large volumes over years are also implicated.",
+      "evidence": "Narrative review extending the Joyner model with 'resilience'. States data are scant but that regular prolonged sessions containing race-pace-or-above bouts or progressive fatigue-state intensity increases may enhance resilience, alongside heavy strength and plyometric training. Review-level/mechanistic; no pooled effect estimate.",
+      "confidence": "low",
+      "citation": {
+        "title": "Physiological Resilience: What Is It and How Might It Be Trained?",
+        "authors": "Jones AM, Kirby BS",
+        "year": 2025,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports 35(3):e70032",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/sms.70032",
+        "retrieved_at": "2026-11-22T20:18:00Z"
+      }
+    },
+    {
+      "topic": "Hard-session frequency and volume vs marathon performance",
+      "claim": "In 917 recreational marathoners, more 'quality' (hard) sessions per week, higher running distance and more running sessions in both the 12-4 and 4-0 month pre-race windows were associated with faster times; runners who reduced running frequency in the final 4 months performed better than those who maintained or increased it.",
+      "evidence": "Observational analysis of 2022 Boston Marathon registrants (n=917; female 3:53, male 3:35). Linear regressions controlling for experience and demographics; higher weekly distance, sessions/week, quality sessions/week and cross-training in the 4-0 month window associated with faster times (p<=0.050). A training-frequency decrease in 4-0 months was associated with better performance. Self-reported training; associational.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Training Volume and Training Frequency Changes Associated with Boston Marathon Race Performance",
+        "authors": "DeJong Lempke AF, Ackerman KE, Stellingwerff T, Burke LM, Baggish AL, d'Hemecourt PA, Dyer S, Troyanos C, Saville GH, Adelzadeh K, Holtzman B, Hackney AC, Whitney KE",
+        "year": 2026,
+        "venue": "Sports Medicine 56(1):243-256",
+        "type": "cohort",
+        "doi_or_url": "10.1007/s40279-025-02304-4",
+        "retrieved_at": "2026-11-22T20:22:00Z"
+      }
+    },
+    {
+      "topic": "Taper: optimal volume reduction with intensity maintained",
+      "claim": "Meta-analysis of 27 taper studies in competitive athletes found the optimal taper is about 2 weeks, with training volume reduced exponentially by 41-60% while training intensity and frequency are maintained; performance improved by an overall effect of ~0.72. Modifying intensity or frequency was not beneficial.",
+      "evidence": "Meta-analysis of 27 of 182 screened studies (competitive athletes, detailed taper, competition criterion performance, calculable effect sizes). Best strategy: 2-week taper, 41-60% exponential volume reduction (overall effect 0.72 +/- 0.36, P<0.001); intensity (0.33) and frequency (0.35) changes added nothing.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise 39(8):1358-1365",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-22T20:22:00Z"
+      }
+    },
+    {
+      "topic": "Taper: updated meta-analysis (up to 21 days)",
+      "claim": "An updated systematic review/meta-analysis (14 studies) confirmed that a taper of up to 21 days in which training volume is progressively reduced by 41-60% without changing intensity or frequency improves time-trial performance (SMD -0.45, P<0.05); tapering combined with pre-taper overload produced larger gains, and VO2max and movement economy did not improve.",
+      "evidence": "Meta-analysis of 14 studies with subgroup analyses on volume reduction, taper duration, taper type (progressive vs step) and pre-taper overload. Confirms volume reduction 41-60% with maintained intensity/frequency; duration <=21 days effective.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance in endurance athletes: A systematic review and meta-analysis",
+        "authors": "Wang Z, Wang YT, Gao W, Zhong Y",
+        "year": 2023,
+        "venue": "PLoS ONE 18(6):e0282838",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1371/journal.pone.0282838",
+        "retrieved_at": "2026-11-22T20:22:00Z"
+      }
+    },
+    {
+      "topic": "Recreational marathon taper: duration and discipline",
+      "claim": "Among >158,000 recreational marathon runners, strict tapers (progressive weekly volume decrease) outperformed relaxed tapers, and longer tapers up to 3 weeks outperformed shorter ones; a strict 3-week taper was associated with a median finish-time saving of 5 min 32 s (~2.6%) versus a minimal taper. Most recreational runners (64%) used less disciplined 2-3 week tapers.",
+      "evidence": "Analysis of training activities from >158,000 recreational marathon runners, classifying taper type by duration (1-4 weeks) and discipline (strict vs relaxed). Kruskal-Wallis with post-hoc Dunn tests (p<0.001). Large observational dataset; no randomisation, so causality is inferred.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Longer Disciplined Tapers Improve Marathon Performance for Recreational Runners",
+        "authors": "Smyth B, Lawlor A",
+        "year": 2021,
+        "venue": "Frontiers in Sports and Active Living 3:735220",
+        "type": "cohort",
+        "doi_or_url": "10.3389/fspor.2021.735220",
+        "retrieved_at": "2026-11-22T20:20:00Z"
+      }
+    },
+    {
+      "topic": "Taper: keep intensity, cut volume",
+      "claim": "Training load during the taper should not be reduced at the expense of intensity: high-intensity training can maintain or further enhance training-induced adaptations while volume is markedly reduced, so intensity should be retained (in reduced volume) even as overall load falls.",
+      "evidence": "Narrative review on intense training before and during the taper, drawing on studies in moderately and highly trained athletes; argues intensity is the key to optimal performance before and during the taper.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Intense training: the key to optimal performance before and during the taper",
+        "authors": "Mujika I",
+        "year": 2010,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports 20(Suppl 2):24-31",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/j.1600-0838.2010.01189.x",
+        "retrieved_at": "2026-11-22T20:22:00Z"
+      }
+    },
+    {
+      "topic": "Elite taper timing and rising race-pace volume",
+      "claim": "Among world-class distance runners the taper begins about 7-10 days before the main competition, and race-pace running volume increases as the competition approaches; marathoners and 5000/10,000 m runners spend >=80% of running volume at low intensity outside these specific race-pace sessions.",
+      "evidence": "Review integrating scientific literature with results-proven training-log practice of world-class marathon and 5000/10,000 m runners. Reports taper onset 7-10 days out and rising race-pace volume toward competition; weekly volumes ~160-220 km (marathon) and ~130-190 km (track) with >=80% low intensity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Training Characteristics of World-Class Distance Runners: An Integration of Scientific Literature and Results-Proven Practice",
+        "authors": "Haugen T, Sandbakk O, Seiler S, Tonnessen E",
+        "year": 2022,
+        "venue": "Sports Medicine - Open 8(1):46",
+        "type": "narrative-review",
+        "doi_or_url": "10.1186/s40798-022-00438-7",
+        "retrieved_at": "2026-11-22T20:20:00Z"
+      }
+    },
+    {
+      "topic": "VO2max interval dose for speed-endurance",
+      "claim": "Aerobic high-intensity intervals raise VO2max and stroke volume more than moderate continuous training: in moderately trained men over 8 weeks, 4 x 4 min at 90-95% HRmax with 3-min active recovery increased VO2max by 7.2% and stroke volume by ~10%, significantly more than long slow distance (70% HRmax) or threshold (85% HRmax) training.",
+      "evidence": "Randomised trial, 40 moderately trained men, 8 weeks, four groups matched for total oxygen consumption and frequency. Interval groups (15/15 s and 4x4 min at 90-95% HRmax) increased VO2max by 5.5% and 7.2% vs LSD/LT (P<0.01); stroke volume rose ~10% with interval training.",
+      "confidence": "high",
+      "citation": {
+        "title": "Aerobic high-intensity intervals improve VO2max more than moderate training",
+        "authors": "Helgerud J, Hoydal K, Wang E, Karlsen T, Berg P, Bjerkaas M, Simonsen T, Helgesen C, Hjorth N, Bach R, Hoff J",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise 39(4):665-671",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0b013e3180304570",
+        "retrieved_at": "2026-11-22T20:24:00Z"
+      }
+    },
+    {
+      "topic": "Interval shape for time near VO2max",
+      "claim": "For accumulating time near VO2max, longer work bouts are better: 4 x 3 min at 95% vVO2max with equal-duration recovery at 50% vVO2max produced more time above 90% VO2max (328 vs 201 s) than 24 x 30 s at 100% vVO2max, despite similar RPE. Short intervals produced more time above 90% HRmax, so HR alone can mislead session design.",
+      "evidence": "Randomised crossover, 12 highly trained middle-distance runners. 4 x 3 min at 95% vVO2max (3 min at 50% vVO2max recovery) vs 24 x 30 s at 100% vVO2max (30 s at 55% vVO2max). Time >90% VO2max 327.9 +/- 146.8 s vs 201.3 +/- 268.4 s (p=0.05); time >90% HRmax higher with 30-s reps. Acute study, not a training-outcome trial.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Faster intervals, faster recoveries - intensified short VO2max running intervals are inferior to traditional long intervals in terms of time spent above 90% VO2max",
+        "authors": "Fleckenstein D, Braunstein H, Walter N",
+        "year": 2024,
+        "venue": "Frontiers in Sports and Active Living 6:1507957",
+        "type": "rct",
+        "doi_or_url": "10.3389/fspor.2024.1507957",
+        "retrieved_at": "2026-11-22T20:24:00Z"
+      }
+    },
+    {
+      "topic": "RPE prescription for hard intervals",
+      "claim": "RPE can validly prescribe long-format hard intervals: an RPE of about 7 on the Borg CR-10 scale maximises time near VO2max while limiting ventilatory stress, comparable to RPE 8 but perceptually easier.",
+      "evidence": "17 current/former physical-education students performed three 3-min intervals at RPE 6, 7 or 8 with 2-min passive rest. Time >=90% VO2max, >=90% HRmax, speed, VO2 and blood lactate were all lower at RPE 6 than at RPE 7 and 8, with no difference between RPE 7 and 8; ventilation was the main perceptual cue. Small sample; acute.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Rating of Perceived Exertion as Prescription Tool to Maximize Oxygen Uptake Response during High-Intensity Interval Training",
+        "authors": "Bok D, Turk E, Gulin J, Rakovac M, Foster C",
+        "year": 2026,
+        "venue": "Medicine & Science in Sports & Exercise 58(3)",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000003917",
+        "retrieved_at": "2026-11-22T20:24:00Z"
+      }
+    },
+    {
+      "topic": "Easy/steady/hard anchoring: ACSM bands",
+      "claim": "ACSM's position stand defines moderate-intensity aerobic exercise as 46-63% VO2R (64-76% HRmax; RPE 12-13) and vigorous-intensity exercise as 64-90% VO2R (77-95% HRmax; RPE 14-17). These bands underpin consumer zone models and map cleanly onto an easy/steady/hard labelling scheme.",
+      "evidence": "ACSM position stand, Table 2 intensity classification for cardiorespiratory exercise. Moderate = 46-63% VO2R or 64-76% HRmax, RPE 12-13; vigorous = 64-90% VO2R or 77-95% HRmax, RPE 14-17, within an overall 30-89% VO2R aerobic range.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults",
+        "authors": "Garber CE, Blissmer B, Deschenes MR, Franklin BA, Lamonte MJ, Lee IM, Nieman DC, Swain DP; American College of Sports Medicine",
+        "year": 2011,
+        "venue": "Medicine & Science in Sports & Exercise 43(7):1334-1359",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e318213fefb",
+        "retrieved_at": "2026-11-22T20:26:00Z"
+      }
+    },
+    {
+      "topic": "Easy/steady/hard anchoring: VT1 at RPE 12-13",
+      "claim": "The ventilatory threshold (VT1, the easy/steady boundary) corresponds to about RPE 12-13 on the Borg 6-20 scale, and this anchor is independent of aerobic fitness, so a fixed RPE 12-13 can stand in for VT1 when lab testing is unavailable.",
+      "evidence": "Retrospective analysis of 863 exercise tests across the VO2peak spectrum: mean RPE at VT was 12.5 +/- 0.93 and did not vary with VO2peak, although VT expressed as %VO2R varied widely. A separate treadmill study (Stojiljkovic 2004) found no significant difference between VT and a fixed RPE 12-13 threshold.",
+      "confidence": "high",
+      "citation": {
+        "title": "Ventilatory Threshold Related to VO2 reserve, Heart Rate Reserve, and Rating of Perceived Exertion in a Large Varied Sample",
+        "authors": "Gaskill SE, Skinner JS, Quindry J",
+        "year": 2023,
+        "venue": "Medicine & Science in Sports & Exercise 55(10):1876-1885",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000003220",
+        "retrieved_at": "2026-11-22T20:26:00Z"
+      }
+    },
+    {
+      "topic": "Race-pace anchors as %VO2max by distance (Daniels paces)",
+      "claim": "Daniels' performance-derived paces give encodable intensity anchors for goal-pace work: Easy 59-74% VO2max, Marathon 75-84% VO2max (80-90% HRmax), Threshold 83-88% VO2max (88-92% HRmax, ~60-min race pace), and Interval 97-100% VO2max (~3-5 km race pace). Race pace therefore sits at roughly 75-80% VO2max for the marathon, 83-88% for the half/threshold region, ~90-93% for 10K and 97-100% for 5K.",
+      "evidence": "Daniels' Running Formula (4th ed., Human Kinetics) and the official V.O2 calculator training definitions give the %VO2max / %HRmax bands per zone. Bands are approximate and edition-dependent; VDOT is a performance-equivalent index assuming adequate endurance and comparable conditions, not a lab VO2max. The 5K-at-vVO2max anchor is consistent with Stoa 2010 (5K run at ~90-100% vVO2max) and Billat 2001 (race velocities 800-5000 m used for calibration).",
+      "confidence": "medium",
+      "citation": {
+        "title": "Daniels' Running Formula (4th edition)",
+        "authors": "Daniels J",
+        "year": 2021,
+        "venue": "Human Kinetics",
+        "type": "textbook",
+        "doi_or_url": "https://us.humankinetics.com/products/daniels-running-formula-4th-edition",
+        "retrieved_at": "2026-11-22T20:28:00Z"
+      }
+    },
+    {
+      "topic": "Recreational half-marathon intensity anchor",
+      "claim": "Recreational runners race a half marathon at roughly 79% of VO2max (mean race speed 223 m/min = 79 +/- 5% VO2max), and the running speed at a 4 mmol/L blood lactate concentration predicted half-marathon time better than VO2max itself (r = -0.88 vs -0.81).",
+      "evidence": "Ten recreational runners (8 men, 2 women) tested around a half marathon. Small, dated sample; supports the half marathon as a threshold-dominant event and places half-marathon goal pace near the top of the 'steady' band.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Some physiological demands of a half-marathon race on recreational runners",
+        "authors": "Williams C, Nute ML",
+        "year": 1983,
+        "venue": "British Journal of Sports Medicine 17(3):152-161",
+        "type": "observational",
+        "doi_or_url": "10.1136/bjsm.17.3.152",
+        "retrieved_at": "2026-11-22T20:28:00Z"
+      }
+    }
+  ],
+  "parameters": {
+    "phase_distribution": {
+      "units": "percentages are share of weekly running time or volume; bands are easy (below LT1/VT1), steady (LT1-LT2, threshold/marathon pace), hard (above LT2, VO2max/5K-10K pace)",
+      "bands_definition": {
+        "easy": "Z1: <LT1/VT1, <~2 mmol/L",
+        "steady": "Z2: LT1-LT2, ~2-4 mmol/L (threshold/marathon pace)",
+        "hard": "Z3: >LT2/CP, >~4 mmol/L (VO2max/5K-10K pace)"
+      },
+      "recreational_default_phases": [
+        {
+          "phase": "base",
+          "typical_weeks": [6, 10],
+          "easy_pct": [80, 85],
+          "steady_pct": [10, 15],
+          "hard_pct": [3, 7],
+          "hard_sessions_per_week": [1, 2],
+          "session_types": ["easy + long runs", "strides 4-6 x 20 s (2-3x/wk)", "hills or short threshold/tempo", "optional light fartlek"],
+          "tid_shape": "pyramidal",
+          "race_pace_share_pct": [0, 5],
+          "notes": "Build aerobic base; introduce strides and hills; threshold touches only. No formal goal-pace blocks yet."
+        },
+        {
+          "phase": "build",
+          "typical_weeks": [4, 8],
+          "easy_pct": [75, 82],
+          "steady_pct": [8, 12],
+          "hard_pct": [8, 14],
+          "hard_sessions_per_week": [2, 2],
+          "session_types": ["threshold/cruise intervals", "VO2max intervals (3-5 min reps)", "race-pace reps (5K/10K early; half/marathon later)"],
+          "tid_shape": "pyramidal trending polarized",
+          "race_pace_share_pct": [5, 15],
+          "notes": "Introduce race-pace reps once a threshold base exists; keep one threshold session and one interval/race-pace session per week."
+        },
+        {
+          "phase": "peak",
+          "typical_weeks": [2, 4],
+          "easy_pct": [72, 80],
+          "steady_pct": [4, 8],
+          "hard_pct": [12, 18],
+          "hard_sessions_per_week": [2, 2],
+          "session_types": ["goal-pace intervals (e.g. 3-5 x 2 km)", "goal-pace block inside a long run", "threshold maintenance", "strides"],
+          "tid_shape": "polarized",
+          "race_pace_share_pct": [15, 30],
+          "notes": "Race-pace share is highest here; longest race-pace block (e.g. 16-24 km at marathon pace) sits in this phase."
+        },
+        {
+          "phase": "taper",
+          "typical_weeks": [1, 3],
+          "volume_reduction_pct": [41, 60],
+          "easy_pct": [75, 85],
+          "steady_pct": [5, 10],
+          "hard_pct": [10, 20],
+          "hard_sessions_per_week": [1, 2],
+          "session_types": ["short goal-pace touches (e.g. 2-3 x 1-2 km)", "strides", "one short VO2max touch early in taper"],
+          "tid_shape": "polarized",
+          "race_pace_share_pct": [20, 40],
+          "notes": "Absolute hard volume falls with total volume; intensity is preserved. Frequency reduced by no more than ~20%."
+        }
+      ],
+      "observed_anchors": {
+        "marathon_final_12wk_sub_elite": {
+          "z1_z2_easy_pct": [77, 82],
+          "z3_steady_pct": [10, 18],
+          "z4_z5_hard_pct": [4, 8],
+          "shape": "pyramidal"
+        },
+        "world_class_runners_race_pace_zones": {
+          "z1_pct": 88.5,
+          "z2_pct": 7.4,
+          "z3_pct": 4.1,
+          "shape": "pyramidal across all phases"
+        },
+        "elite_aggregate": {
+          "low_intensity_gt_60pct_cases": 0.91,
+          "shape_counts": {"pyramidal": 89, "polarized": 65, "threshold": 8},
+          "phase_effect": "heavy-to-severe proportion generally higher in competition phase than preparatory phase"
+        }
+      }
+    },
+    "race_pace_introduction": {
+      "principles": [
+        "Introduce race-pace work only after an aerobic/threshold base exists; race-pace is a specific-phase stimulus, not a base-phase one.",
+        "Set goal pace from a recent race or time trial (VDOT/Riegel), not from a target you have not yet earned (Daniels: training paces are a ceiling).",
+        "Use pace to define the intent of a race-pace rep; use HR/RPE as real-time guardrails because pace alone yields lower time-in-zone at high intensity (Ranieri 2026).",
+        "Grow the race-pace share of weekly volume from base to peak, then keep brief touches in the taper."
+      ],
+      "start_phase_by_distance": {
+        "5k": {"introduce": "build", "approx_week_of_12_16wk_plan": [4, 6], "reason": "5K pace is near vVO2max, so it aligns with the VO2max/interval work already present in build"},
+        "10k": {"introduce": "build", "approx_week_of_12_16wk_plan": [5, 7], "reason": "10K pace sits between interval and threshold; can appear once threshold volume is established"},
+        "half": {"introduce": "build", "approx_week_of_12_16wk_plan": [6, 8], "reason": "Half pace is threshold-dominant; build threshold first, then lengthen goal-pace blocks"},
+        "marathon": {"introduce": "specific-preparation/build (final 8-12 weeks)", "approx_week_of_16_18wk_plan": [8, 12], "reason": "Marathon-pace blocks are specific-prep work; start short and inside medium-long runs, then lengthen"}
+      },
+      "share_progression_pct_weekly_volume": {
+        "base": [0, 5],
+        "build": [5, 15],
+        "peak": [15, 30],
+        "taper": [20, 40]
+      },
+      "race_pace_block_progression_marathon": {
+        "approach": "progress from short marathon-pace (M) segments inside medium-long runs to long continuous M blocks",
+        "example_sequence_km_at_goal_pace": [5, 8, 10, 13, 16, 19, 21, 24],
+        "long_run_peak_block_km": [16, 24],
+        "taper_touch_km": [3, 5]
+      },
+      "elite_timing_note": "world-class runners begin tapering 7-10 days out and increase race-pace running volume as competition approaches (Haugen 2022)",
+      "mechanism_note": "race-pace or above work inside prolonged sessions, or progressive intensity under fatigue, is proposed to build durability/resilience (Jones & Kirby 2025)"
+    },
+    "race_pace_sessions": {
+      "pace_anchors_pct_vo2max_at_goal_pace": {
+        "5k": [95, 100],
+        "10k": [90, 93],
+        "half": [82, 88],
+        "marathon": [75, 84]
+      },
+      "recovery_defaults": {
+        "short_reps_200_400m": "60-120 s jog (or full recovery for rep/neuromuscular work)",
+        "1000_1600m_reps": "2-3 min jog",
+        "2km_plus_reps": "2-3 min jog",
+        "vo2max_interval_reps": "equal-duration jog (e.g. 3 min rep / 3 min jog)",
+        "threshold_cruise_intervals": "1-3 min jog"
+      },
+      "sessions_by_distance": {
+        "5k": [
+          {"phase": "base", "session": "6 x 20 s strides + 3-4 x 5 min @ threshold", "pace": "strides relaxed fast; threshold ~83-88% VO2max", "recovery": "strides full; threshold 1 min jog"},
+          {"phase": "build", "session": "6-8 x 400 m @ 5K pace", "pace": "~97-100% VO2max (~vVO2max)", "recovery": "90-120 s jog"},
+          {"phase": "build", "session": "4-6 x 1000 m @ 5K pace", "pace": "~95-100% VO2max", "recovery": "2-3 min jog"},
+          {"phase": "peak", "session": "3-5 x 1000-1600 m @ goal 5K pace", "pace": "goal pace, ~95-100% VO2max", "recovery": "2-3 min jog"},
+          {"phase": "taper", "session": "4-6 x 200-400 m @ goal pace", "pace": "goal pace", "recovery": "full recovery"}
+        ],
+        "10k": [
+          {"phase": "build", "session": "5-6 x 1000 m @ 10K pace", "pace": "~90-93% VO2max (about 24 s/mile slower than 5K)", "recovery": "2 min jog"},
+          {"phase": "build", "session": "3-4 x 2 km @ goal pace", "pace": "~90-93% VO2max", "recovery": "2-3 min jog"},
+          {"phase": "peak", "session": "3-4 x 2 km @ goal 10K pace, or 6-8 km continuous @ goal pace", "pace": "goal pace", "recovery": "2-3 min jog between reps"},
+          {"phase": "taper", "session": "2-3 x 1000 m @ goal pace", "pace": "goal pace", "recovery": "2 min jog"}
+        ],
+        "half": [
+          {"phase": "build", "session": "4-6 x 1 mile @ threshold (T) pace (cruise intervals)", "pace": "~83-88% VO2max", "recovery": "1 min jog"},
+          {"phase": "build", "session": "2-3 x 3 km @ goal half pace inside a long run", "pace": "goal pace ~82-88% VO2max", "recovery": "3 min jog"},
+          {"phase": "peak", "session": "3 x 5 km @ goal half pace, or 8-10 km continuous", "pace": "goal pace", "recovery": "3 min jog between reps"},
+          {"phase": "peak", "session": "long run with 5-8 km goal-pace block", "pace": "goal pace", "recovery": "continuous"},
+          {"phase": "taper", "session": "2-3 km @ goal pace", "pace": "goal pace", "recovery": "continuous"}
+        ],
+        "marathon": [
+          {"phase": "specific-prep", "session": "medium-long run with 5-10 km @ goal M pace", "pace": "~75-84% VO2max", "recovery": "continuous"},
+          {"phase": "build", "session": "long run with 8-16 km @ goal M pace (continuous or 2 x 8 km)", "pace": "goal M pace", "recovery": "continuous or 5 min jog"},
+          {"phase": "peak", "session": "long run with 16-24 km @ goal M pace (e.g. 2 x 8 km or 3 x 6 km)", "pace": "goal M pace", "recovery": "continuous or short jog"},
+          {"phase": "taper", "session": "3-5 km @ goal M pace", "pace": "goal M pace", "recovery": "continuous"}
+        ]
+      },
+      "vo2max_interval_template_all_distances": {
+        "shape": "4 x 4 min at 90-95% HRmax (or 3 min at 95% vVO2max)",
+        "recovery": "3 min jog / 50-55% vVO2max",
+        "frequency": "1x/week in build and peak",
+        "note": "Longer reps accumulate more time >90% VO2max than short reps (Fleckenstein 2024); RPE ~7/10 is a valid alternative prescription (Bok 2026)"
+      }
+    },
+    "taper": {
+      "duration_weeks": [1, 3],
+      "optimal_duration_weeks": 2,
+      "recreational_marathon_best_weeks": 3,
+      "volume_reduction_pct": [41, 60],
+      "volume_reduction_pattern": "progressive/exponential (nonlinear beats step)",
+      "intensity": "maintain (do not reduce); keep short race-pace touches",
+      "frequency_change_pct": [0, 20],
+      "elite_onset_days_before_race": [7, 10],
+      "race_pace_touches": "1-2 short sessions at goal pace (e.g. 2-3 x 1-2 km), plus strides, early in the taper week",
+      "expected_performance_benefit_pct": [0.5, 3],
+      "recreational_marathon_observed_benefit_pct": 2.6,
+      "pre_taper_overload": "a taper preceded by overload training tends to produce larger gains (Wang 2023)",
+      "notes": "Cut volume, keep intensity and (nearly) frequency; the last hard session lands ~4-7 days out; final 2-3 days mostly easy + strides."
+    },
+    "intensity_labels": {
+      "scheme": "three-band easy / steady / hard mapped to the 3-zone (VT1/VT2) model, the 5-zone (Seiler) scale, %VO2max, %HRmax, RPE and blood lactate",
+      "easy": {
+        "zone_3": "Z1",
+        "zone_5": "Z1-Z2",
+        "vo2max_pct": [59, 79],
+        "hrmax_pct": [55, 79],
+        "rpe_borg_6_20": [8, 12],
+        "rpe_cr10": [2, 4],
+        "lactate_mmol": [0.8, 2.0],
+        "talk_test": "full sentences, conversational",
+        "sessions": ["easy runs", "recovery runs", "most long-run volume", "strides (neuromuscular, not metabolic)"],
+        "purpose": "aerobic base, volume tolerance, recovery"
+      },
+      "steady": {
+        "zone_3": "Z2",
+        "zone_5": "Z3-Z4",
+        "vo2max_pct": [80, 88],
+        "hrmax_pct": [80, 92],
+        "rpe_borg_6_20": [13, 15],
+        "rpe_cr10": [5, 6],
+        "lactate_mmol": [2.0, 4.0],
+        "talk_test": "short sentences; 'comfortably hard'",
+        "sessions": ["tempo/threshold runs", "cruise intervals", "marathon-pace runs", "half-marathon-pace blocks"],
+        "purpose": "raise lactate threshold / maximal lactate steady state"
+      },
+      "hard": {
+        "zone_3": "Z3",
+        "zone_5": "Z5 (with Z4 VO2max work)",
+        "vo2max_pct": [90, 100],
+        "hrmax_pct": [90, 100],
+        "rpe_borg_6_20": [16, 19],
+        "rpe_cr10": [7, 9],
+        "lactate_mmol": [4.0, 10.0],
+        "talk_test": "a word or two at most",
+        "sessions": ["VO2max intervals (3-5 min)", "5K-10K pace reps", "hill sprints", "goal-pace intervals at 5K/10K"],
+        "purpose": "raise VO2max / aerobic power, race-specific speed"
+      },
+      "boundary_rules": {
+        "easy_steady_boundary": "VT1 / LT1 ~ RPE 12-13 (Borg 6-20); ~2 mmol/L",
+        "steady_hard_boundary": "VT2 / LT2 / CP ~ RPE 15-16; ~4 mmol/L",
+        "mapping_note": "5-zone Z3 corresponds to 3-zone Z2, so 'steady' spans 5-zone Z3-Z4 and 'hard' is 5-zone Z5 plus top of Z4"
+      }
+    }
+  },
+  "summary_tier_a": "Intensity progression should follow a phased shift, not a fixed split. Across elite cohorts the backbone is low intensity (>80% of running volume in runners; >60% low in 91% of 175 TIDs), with pyramidal structure dominant in general preparation and polarized/threshold-type emphasis growing through specific preparation and competition; recreational marathon plans cluster at roughly 77-82% easy, 10-18% steady and 4-8% hard over the final 12 weeks. Race-pace (goal-pace) work is a specific-phase stimulus: introduce it once a threshold base exists (build phase, earlier for 5K/10K, later for half/marathon), then grow its share of weekly volume from ~0-5% (base) to 5-15% (build), 15-30% (peak) and brief touches (20-40% of a much smaller total) in the taper. Concrete goal-pace sessions scale from short reps (5K: 6-8 x 400 m or 4-6 x 1000 m) to long blocks (marathon: 16-24 km at goal pace inside a long run), with pace anchors of ~95-100% VO2max (5K), 90-93% (10K), 82-88% (half) and 75-84% (marathon). Taper by cutting volume 41-60% over ~2 weeks (up to 3 for recreational marathoners, ~2.6% faster) while preserving intensity and (nearly) frequency. Label sessions easy/steady/hard against VT1/VT2 and RPE 12-13/15-16, using %VO2max and lactate as cross-checks. Two design cautions: HR-based prescription hits target zones better than pace-based (so pace sets intent, HR/RPE are guardrails), and the 80/20-style splits are descriptive of elites, not a proven optimum for amateurs.",
+  "unverified": [
+    "That a specific easy/steady/hard percentage split is optimal for recreational runners at each phase: the numeric distributions come from descriptive elite training logs and analyses of published plans, not from randomised trials comparing phase-specific distributions in amateurs.",
+    "That goal-pace blocks inside long runs directly improve race performance: the strongest support is mechanistic/narrative (Jones & Kirby 2025 on resilience) plus the general race-pace prescription trial (Ranieri 2025, n=28, 6 weeks); no trial isolates 'marathon-pace long-run blocks' and measures marathon time.",
+    "Exact session shapes such as 3 x 2 km at goal pace or 6-8 x 400 m at 5K pace are coaching conventions (Daniels, Pfitzinger) layered on physiological principles; no head-to-head trial establishes one best shape per distance/phase.",
+    "The precise per-phase percentages for base/build/peak in the parameters block are synthesized ranges anchored to Knopp 2024 (final 12 weeks), Kenneally 2021 and Sperlich 2023; they are defensible defaults, not validated prescriptions, and should be treated as tunable.",
+    "Optimal taper duration specifically for the marathon (vs endurance athletes generally) is not isolated in the meta-analyses; the 3-week recreational-marathon finding (Smyth 2021) is observational.",
+    "The %VO2max anchors at race pace for each distance are approximations from Daniels' performance-derived paces and small studies (Williams & Nute 1983, n=10; Stoa 2010, n=8); individual values vary with running economy.",
+    "RPE values for zones between the VT1 anchor (~12-13) and maximal are interpolations; no study was located validating every intermediate band (e.g. RPE 13-15 for steady, 16-17 for hard) in runners."
+  ],
+  "notes": "SCOPE: this file synthesizes how intensity progresses toward a race goal; it deliberately reuses verified citations from wave-1 (1a-periodization, 1b-intensity-zones, 2b-quality-sessions), wave-2 (5a-marathon-pacing-taper, 6a/6b distance specifics) and wave-3 (12a-vdot-pacing-tables) where those sources support a phase/intensity claim, and adds new phase-specific evidence (Sperlich 2023; Sun 2025; Knopp 2024; Kenneally 2021; Ranieri 2025/2026; Jones & Kirby 2025; DeJong Lempke 2026; Smyth & Lawlor 2021). RETRIEVAL: WebFetch to the Europe PMC REST API (which indexes PubMed/MEDLINE); all new citations were DOI-verified against indexed records. TYPE-MAPPING CAVEAT: the schema enum has no 'cross-sectional' value, so plan-analysis and training-log studies are tagged 'observational' and cohort analyses 'cohort'; several sources are peer-reviewed narrative reviews (Sperlich, Sun, Jones & Kirby, Haugen, Mujika) tagged 'narrative-review'. HOW TO ENCODE: phase_distribution gives band ranges and hard-session counts per phase; race_pace_introduction gives start phases and a share-progression curve; race_pace_sessions gives concrete reps x distance + pace anchors + recovery per distance/phase; taper gives volume/intensity/frequency rules; intensity_labels maps easy/steady/hard to %VO2max, %HRmax, RPE, lactate and zones. KEY TENSION FOR PRODUCT COPY: (1) the 80/20 / pyramidal splits are descriptive of elites and published plans, not a proven amateur optimum; (2) HR beats pace for hitting prescribed zones, so present pace as intent and HR/RPE as guardrails; (3) race-pace session shapes and the peak long-run goal-pace block are coaching conventions, not trial-validated protocols. Female, older and beginner runners remain underrepresented in the underlying evidence."
+}

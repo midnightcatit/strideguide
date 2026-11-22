@@ -8,6 +8,7 @@
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
+	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
@@ -113,7 +114,8 @@
 					<button type="button" onclick={() => (selectedDay = s.day)} class="flex w-full items-center justify-between gap-3 py-2.5 text-left hover:text-signal-ink">
 						<span class="w-8 shrink-0 tabular text-xs text-steel">{DAY_NAMES[s.day]?.slice(0, 3)}</span>
 						<span class="flex-1 truncate text-sm">{#if done}<span class="text-signal-ink">✓</span>{/if}{s.title ?? s.type}</span>
-						<span class="tabular shrink-0 text-xs text-steel">
+						<IntensityLadder intensity={s.prescription?.intensity} label={false} />
+						<span class="tabular w-14 shrink-0 text-right text-xs text-steel">
 							{#if s.prescription?.targetDistanceKm}{fmtDistance(s.prescription.targetDistanceKm)}{:else}{s.modality}{/if}
 						</span>
 					</button>

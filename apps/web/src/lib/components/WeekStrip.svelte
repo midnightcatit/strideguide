@@ -17,6 +17,17 @@
 	} = $props();
 
 	const hasSession = (day: number) => sessions.some((s) => s.day === day);
+
+	/** Strongest intensity scheduled that day: 1 easy, 2 steady, 3 hard. */
+	function dayLevel(day: number): number {
+		const ds = sessions.filter((s) => s.day === day);
+		if (!ds.length) return 0;
+		return Math.max(
+			...ds.map((s) =>
+				s.prescription?.intensity === 'hard' ? 3 : s.prescription?.intensity === 'steady' ? 2 : 1,
+			),
+		);
+	}
 </script>
 
 <div class="flex justify-between gap-1" role="tablist" aria-label="Days of the week">
@@ -43,13 +54,20 @@
 				<span class="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] text-signal-ink" aria-hidden="true"
 					>✓</span
 				>
-			{:else if hasSession(day)}
-				<span
-					class="absolute left-1/2 top-1 h-1 w-1 -translate-x-1/2 rounded-full {day === activeDay
-						? 'bg-paper'
-						: 'bg-steel'}"
-					aria-hidden="true"
-				></span>
+			{:else if dayLevel(day) > 0}
+				<span class="absolute left-1/2 top-1 flex -translate-x-1/2 gap-px" aria-hidden="true">
+					{#each [1, 2, 3] as i (i)}
+						<span
+							class="h-2 w-0.5 rounded-[1px] {i <= dayLevel(day)
+								? day === activeDay
+									? 'bg-paper'
+									: 'bg-ink'
+								: day === activeDay
+									? 'bg-paper/40'
+									: 'bg-hairline'}"
+						></span>
+					{/each}
+				</span>
 			{/if}
 		</button>
 	{/each}
