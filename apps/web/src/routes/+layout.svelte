@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import { api } from '$lib/api';
 	import { loadPrefs } from '$lib/prefs.svelte';
 	import { outbox } from '$lib/offline';
@@ -74,9 +75,35 @@
 		</div>
 	</header>
 
-	<main class="flex-1 mx-auto w-full max-w-2xl px-4 py-6">
+	<main class="flex-1 mx-auto w-full max-w-2xl px-4 py-6 pb-24">
 		{@render children()}
 	</main>
+
+	<nav
+		class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper/95 backdrop-blur"
+		aria-label="Primary"
+	>
+		<div class="mx-auto flex max-w-2xl">
+			<a
+				href="/"
+				aria-current={page.url.pathname === '/' ? 'page' : undefined}
+				class="flex-1 py-3 text-center text-sm {page.url.pathname === '/'
+					? 'text-ink font-medium'
+					: 'text-steel'}"
+			>
+				Today
+			</a>
+			<a
+				href="/week"
+				aria-current={page.url.pathname.startsWith('/week') ? 'page' : undefined}
+				class="flex-1 py-3 text-center text-sm {page.url.pathname.startsWith('/week')
+					? 'text-ink font-medium'
+					: 'text-steel'}"
+			>
+				Week
+			</a>
+		</div>
+	</nav>
 
 	<footer class="border-t border-hairline px-4 py-3 text-center text-xs text-steel">
 		<span class="tabular">run.midnightcatit.com</span>

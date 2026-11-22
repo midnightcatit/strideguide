@@ -106,6 +106,8 @@ export interface WorkoutStep {
 	distanceM?: number;
 	/** Duration target, when the step is time-based (e.g. rest). */
 	durationSec?: number;
+	/** Rest to run automatically after completing this step. */
+	restSec?: number;
 	targetPaceSecPerKm?: [number, number];
 	targetZone?: string;
 	targetRpe?: [number, number];
