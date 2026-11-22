@@ -44,7 +44,7 @@ auth.get('/google/callback', async (c) => {
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
 	const cookieState = getCookie(c, stateCookieName(c.env)) ?? '';
-	deleteCookie(c, stateCookieName(c.env), { path: '/' });
+	deleteCookie(c, stateCookieName(c.env), { path: '/', secure: secureCookies(c.env) });
 
 	const [expectedState, expectedNonce] = cookieState.split('.');
 	if (!code || !state || !expectedState || !expectedNonce || state !== expectedState) {
@@ -86,7 +86,7 @@ auth.get('/google/callback', async (c) => {
 /** Real logout: revoke the ledger row (server-side) and clear the cookie (M0-SEC-01/02). */
 auth.post('/logout', async (c) => {
 	const token = getCookie(c, sessionCookieName(c.env));
-	deleteCookie(c, sessionCookieName(c.env), { path: '/' });
+	deleteCookie(c, sessionCookieName(c.env), { path: '/', secure: secureCookies(c.env) });
 	if (token) {
 		await c
 			.get('db')

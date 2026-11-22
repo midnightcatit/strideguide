@@ -30,6 +30,10 @@
     {
       "pattern": "run.midnightcatit.com/api/*",
       "zone_name": "midnightcatit.com"
+    },
+    {
+      "pattern": "run.midnightcatit.com/auth/*",
+      "zone_name": "midnightcatit.com"
     }
   ]
 }

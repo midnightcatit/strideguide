@@ -39,9 +39,12 @@ app.route('/api', apiRoutes);
 app.notFound((c) => c.json({ error: 'not_found' }, 404));
 app.onError((err, c) => {
 	const correlationId = crypto.randomUUID();
+	const e = err as Error;
 	console.error('api_error', {
 		id: correlationId,
-		name: (err as Error)?.name ?? 'Error',
+		name: e?.name ?? 'Error',
+		message: e?.message,
+		stack: c.env.ENVIRONMENT !== 'production' ? e?.stack : undefined,
 	});
 	return c.json({ error: 'internal_error', id: correlationId }, 500);
 });

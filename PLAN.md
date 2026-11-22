@@ -675,3 +675,9 @@ Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…
 Wrangler is now authenticated on this machine (two accounts available; `CLOUDFLARE_ACCOUNT_ID` must be
 set to `3f513e4b8539944bdbbf5e1ff45f3af9` for account-scoped commands).
 
+**Post-deploy fix (OAuth 500):** the login callback and logout returned `internal_error` in production
+because Hono rejects deletion of a `__Host-`-prefixed cookie without a `Secure` attribute (`deleteCookie`
+was called with only `{ path }`). Both deletes now pass `secure` (from `ENVIRONMENT`). Also, the
+`/auth/*` route is now declared in `wrangler.jsonc` so deploys keep it (it had been added out-of-band).
+Verified: synthetic callback → 400 `token_exchange_failed`, logout → 200 (with Origin) / 403 (without).
+
