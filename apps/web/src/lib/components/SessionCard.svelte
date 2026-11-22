@@ -11,6 +11,7 @@
 		logged = null,
 		onLog,
 		onStart,
+		onOpen,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -18,6 +19,7 @@
 		logged?: ClientLog | null;
 		onLog?: () => void;
 		onStart?: () => void;
+		onOpen?: () => void;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
@@ -36,16 +38,24 @@
 	const secondary = $derived(
 		isStrength ? (reps ? `3 × ${reps}` : '3 sets') : (formatDuration(session.durationMin) ?? '–'),
 	);
-
-	const loggedLine = $derived.by(() => {
-		if (!logged) return null;
-		const sync = logged.pending ? ' · syncing' : '';
-		if (isStrength && logged.strengthSets?.length) return `Logged · ${logged.strengthSets.length} machines${sync}`;
-		if (logged.runStats?.distanceKm) {
-			const pace = logged.runStats.avgPaceSecPerKm ? ` · ${fmtPace(logged.runStats.avgPaceSecPerKm)}` : '';
-			return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}${sync}`;
+	// One line for every card, so run and strength cards stay the same height.
+	const metaLine = $derived.by(() => {
+		if (logged) {
+			const sync = logged.pending ? ' · syncing' : '';
+			if (isStrength && logged.strengthSets?.length) return `Logged · ${logged.strengthSets.length} machines${sync}`;
+			if (logged.runStats?.distanceKm) {
+				const pace = logged.runStats.avgPaceSecPerKm ? ` · ${fmtPace(logged.runStats.avgPaceSecPerKm)}` : '';
+				return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}${sync}`;
+			}
+			return `Logged${sync}`;
 		}
-		return `Logged${sync}`;
+		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
+		const bits: string[] = [];
+		if (band) bits.push(band);
+		if (p.targetZone) bits.push(p.targetZone);
+		if (p.targetRpe) bits.push(`RPE ${p.targetRpe[0]}–${p.targetRpe[1]}`);
+		if (session.type === 'race-pace') bits.push('at goal pace');
+		return bits.join(' · ') || 'Effort: see detail';
 	});
 </script>
 
@@ -54,60 +64,49 @@
 		? 'border-signal/50'
 		: 'border-hairline'}"
 >
-	<!-- amber/steel session edge (left) -->
 	<div class="absolute left-0 top-0 h-full w-0.5 {isStrength ? 'bg-steel' : 'bg-signal'}" aria-hidden="true"></div>
 
-	<div class="flex items-baseline justify-between gap-3">
-		<span class="flex items-center gap-2">
-			<span class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
-			<IntensityLadder intensity={p.intensity} label={false} />
-		</span>
-		<span class="tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-			>{session.type}{#if logged} ✓{/if}</span
-		>
-	</div>
-
-	<h2 class="font-display mt-1.5 text-lg font-medium leading-tight">{sessionLabel(session)}</h2>
-
-	<hr class="my-3 border-hairline" />
-
-	<div class="grid grid-cols-2 gap-3">
-		<div>
-			<p class="tabular text-2xl font-medium leading-none">{primary}</p>
-			<p class="mt-1 text-xs text-steel">{isStrength ? 'circuit' : 'prescribed'}</p>
-		</div>
-		<div>
-			<p class="tabular text-2xl font-medium leading-none">{secondary}</p>
-			<p class="mt-1 text-xs text-steel">{isStrength ? 'sets × reps' : 'target'}</p>
-		</div>
-	</div>
-
-	<hr class="my-3 border-hairline" />
-
-	{#if loggedLine}
-		<p class="tabular text-sm text-ink">{loggedLine}</p>
-	{:else}
-		<p class="tabular text-sm">
-			{#if band}{band}{/if}
-			{#if p.targetZone}<span class="text-steel"> · {p.targetZone}</span>{/if}
-			{#if p.targetRpe}<span class="text-steel"> · RPE {p.targetRpe[0]}–{p.targetRpe[1]}</span>{/if}
-			{#if session.type === 'race-pace'}<span class="text-signal-ink"> · at goal pace</span>{/if}
-			{#if !band && !p.targetZone && !p.targetRpe}<span class="text-steel">Effort: see notes</span>{/if}
-		</p>
+	{#if onOpen}
+		<button
+			type="button"
+			class="absolute inset-0 z-0"
+			aria-label="Open {sessionLabel(session)} details"
+			onclick={onOpen}
+		></button>
 	{/if}
 
-	{#if isStrength && machines.length}
-		<ul class="mt-3 space-y-1">
-			{#each machines as block (block.machine)}
-				<li class="flex justify-between text-sm">
-					<span class="text-ink">{block.machine}</span>
-					<span class="tabular text-steel">{block.sets?.[0]?.reps ?? 10} reps × {block.sets?.length ?? 3}</span>
-				</li>
-			{/each}
-		</ul>
-	{/if}
+	<div class="pointer-events-none relative z-10">
+		<div class="flex items-baseline justify-between gap-3">
+			<span class="flex items-center gap-2">
+				<span class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
+				<IntensityLadder intensity={p.intensity} label={false} />
+			</span>
+			<span class="tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
+				>{session.type}{#if logged} ✓{/if}</span
+			>
+		</div>
 
-	<div class="mt-4 flex gap-2">
+		<h2 class="font-display mt-1.5 truncate text-lg font-medium leading-tight">{sessionLabel(session)}</h2>
+
+		<hr class="my-3 border-hairline" />
+
+		<div class="grid grid-cols-2 gap-3">
+			<div>
+				<p class="tabular text-2xl font-medium leading-none">{primary}</p>
+				<p class="mt-1 text-xs text-steel">{isStrength ? 'circuit' : 'prescribed'}</p>
+			</div>
+			<div>
+				<p class="tabular text-2xl font-medium leading-none">{secondary}</p>
+				<p class="mt-1 text-xs text-steel">{isStrength ? 'sets × reps' : 'target'}</p>
+			</div>
+		</div>
+
+		<hr class="my-3 border-hairline" />
+
+		<p class="tabular truncate text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
+	</div>
+
+	<div class="relative z-20 mt-4 flex gap-2">
 		{#if onStart && session.prescription?.workout}
 			<button
 				type="button"

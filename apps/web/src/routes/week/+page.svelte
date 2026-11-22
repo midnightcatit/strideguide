@@ -8,6 +8,7 @@
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
+	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
@@ -18,6 +19,7 @@
 	let selectedDay = $state(todayIndex);
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
+	let detailTarget = $state<ClientSession | null>(null);
 
 	const profileName = $derived(
 		store.plan?.goal
@@ -171,6 +173,23 @@
 	/>
 {/if}
 
+{#if detailTarget}
+	<SessionDetail
+		session={detailTarget}
+		eyebrow={`${profileName} · W${currentWeek?.weekNumber ?? ''}`}
+		logged={loggedBySession.get(detailTarget.id) ?? null}
+		onClose={() => (detailTarget = null)}
+		onLog={() => {
+			logTarget = detailTarget;
+			detailTarget = null;
+		}}
+		onStart={() => {
+			playTarget = detailTarget;
+			detailTarget = null;
+		}}
+	/>
+{/if}
+
 {#snippet card(s: ClientSession)}
 	<SessionCard
 		session={s}
@@ -179,5 +198,6 @@
 		logged={loggedBySession.get(s.id) ?? null}
 		onLog={() => (logTarget = s)}
 		onStart={() => (playTarget = s)}
+		onOpen={() => (detailTarget = s)}
 	/>
 {/snippet}
