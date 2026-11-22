@@ -9,12 +9,14 @@
 		active = false,
 		logged = null,
 		onLog,
+		onStart,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
 		active?: boolean;
 		logged?: ClientLog | null;
 		onLog?: () => void;
+		onStart?: () => void;
 	} = $props();
 
 	let expanded = $state(false);
@@ -114,15 +116,26 @@
 			>
 				{expanded ? 'Show less ▴' : 'Why this? ▾'}
 			</button>
-			{#if onLog}
-				<button
-					type="button"
-					onclick={onLog}
-					class="rounded-md border border-hairline px-3 py-2 text-sm hover:border-signal hover:text-signal-ink"
-				>
-					{logged ? 'Log again' : 'Log it'}
-				</button>
-			{/if}
+			<div class="flex gap-2">
+				{#if onStart && session.prescription?.workout}
+					<button
+						type="button"
+						onclick={onStart}
+						class="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:opacity-90"
+					>
+						Start
+					</button>
+				{/if}
+				{#if onLog}
+					<button
+						type="button"
+						onclick={onLog}
+						class="rounded-md border border-hairline px-3 py-2 text-sm hover:border-signal hover:text-signal-ink"
+					>
+						{logged ? 'Log again' : 'Log it'}
+					</button>
+				{/if}
+			</div>
 		</div>
 
 		{#if expanded}

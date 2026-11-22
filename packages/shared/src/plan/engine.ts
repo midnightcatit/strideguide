@@ -1,4 +1,4 @@
-import type { SessionArchetype } from '../types';
+import type { SessionArchetype, StepBlock, StructuredWorkout, WorkoutStep } from '../types';
 import { defaultCircuit } from './machines';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { pacesFromVdot, vdotFromBaseline } from './vdot';
@@ -157,6 +157,170 @@ function estDuration(distanceKm: number, paceSecPerKm: number): number {
 	return Math.round((distanceKm * paceSecPerKm) / 60);
 }
 
+/* ----------------------- structured workout builders ---------------------- */
+
+const WARMUP_KM = 1.5;
+const COOLDOWN_KM = 1.0;
+
+function warmupStep(paces?: TrainingPaces): WorkoutStep {
+	return {
+		kind: 'warmup',
+		label: 'Warm-up',
+		distanceM: Math.round(WARMUP_KM * 1000),
+		targetPaceSecPerKm: paces?.easy,
+		targetZone: 'Z1–Z2',
+		targetRpe: [2, 3],
+		note: 'Easy and conversational. Extend if you need time to reach your route or hill.',
+	};
+}
+
+function cooldownStep(paces?: TrainingPaces): WorkoutStep {
+	return {
+		kind: 'cooldown',
+		label: 'Cool-down',
+		distanceM: Math.round(COOLDOWN_KM * 1000),
+		targetPaceSecPerKm: paces?.easy,
+		targetRpe: [1, 3],
+	};
+}
+
+function singleRunWorkout(
+	type: SessionArchetype,
+	distanceKm: number,
+	paces?: TrainingPaces,
+): StructuredWorkout {
+	return {
+		blocks: [
+			{
+				repeat: 1,
+				steps: [
+					{
+						kind: 'work',
+						label: TITLE[type],
+						distanceM: Math.round(distanceKm * 1000),
+						targetPaceSecPerKm: paces?.easy,
+						targetZone: 'Z2',
+						targetRpe: type === 'long' ? [4, 5] : [3, 4],
+						note:
+							type === 'long'
+								? 'Keep the first 10 minutes relaxed; settle into an even, easy rhythm.'
+								: undefined,
+					},
+				],
+			},
+		],
+		totalDistanceKm: distanceKm,
+	};
+}
+
+function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorkout {
+	const blocks: StepBlock[] = [
+		{ repeat: 1, steps: [warmupStep(paces)] },
+		{
+			repeat: 1,
+			label: 'Set',
+			steps: [
+				{
+					kind: 'work',
+					label: 'Tempo',
+					distanceM: Math.round(qualityKm * 1000),
+					targetPaceSecPerKm: paces ? [paces.threshold * 0.99, paces.threshold * 1.03] : undefined,
+					targetZone: 'Z3–Z4',
+					targetRpe: [6, 7],
+					note: 'Comfortably hard — steady breathing, not gasping.',
+				},
+			],
+		},
+		{ repeat: 1, steps: [cooldownStep(paces)] },
+	];
+	return {
+		blocks,
+		totalDistanceKm: round1(WARMUP_KM + qualityKm + COOLDOWN_KM),
+	};
+}
+
+function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
+	const blocks: StepBlock[] = [
+		{ repeat: 1, steps: [warmupStep(paces)] },
+		{
+			repeat: reps,
+			label: 'Set',
+			steps: [
+				{
+					kind: 'work',
+					label: 'Interval',
+					distanceM: 800,
+					targetPaceSecPerKm: paces
+						? [paces.interval * 0.98, paces.interval * 1.02]
+						: undefined,
+					targetRpe: [8, 9],
+					note: 'Even, controlled reps — stop the set if form breaks down.',
+				},
+				{
+					kind: 'recovery',
+					label: 'Recovery',
+					distanceM: 800,
+					targetPaceSecPerKm: paces?.easy,
+					targetRpe: [2, 3],
+					note: 'Jog easily, or walk if you need more recovery.',
+				},
+			],
+		},
+		{ repeat: 1, steps: [cooldownStep(paces)] },
+	];
+	return {
+		blocks,
+		totalDistanceKm: round1(WARMUP_KM + reps * 1.6 + COOLDOWN_KM),
+	};
+}
+
+function strengthWorkout(
+	circuit: ReturnType<typeof defaultCircuit>,
+	reps: number,
+): StructuredWorkout {
+	const blocks: StepBlock[] = [
+		{
+			repeat: 1,
+			label: 'Warm-up',
+			steps: [
+				{
+					kind: 'warmup',
+					label: 'Activation',
+					durationSec: 300,
+					targetRpe: [2, 3],
+					note: '5 min easy cardio, then dynamic drills (leg swings, hip openers, glute bridges).',
+				},
+			],
+		},
+		{
+			repeat: 1,
+			label: 'Circuit',
+			steps: circuit.map<WorkoutStep>((m) => ({
+				kind: 'work',
+				label: m.name,
+				machine: m.name,
+				sets: 3,
+				reps,
+				targetRpe: [7, 8],
+				note: `${m.muscles.join(', ')} — ${m.feel} Rest ~60–90s between sets.`,
+			})),
+		},
+		{
+			repeat: 1,
+			label: 'Cool-down',
+			steps: [
+				{
+					kind: 'cooldown',
+					label: 'Stretch',
+					durationSec: 300,
+					note: 'Gentle stretches for the muscles you trained.',
+				},
+			],
+		},
+	];
+	return { blocks, estimatedDurationMin: 45 };
+}
+
 /* ------------------------------- engine ---------------------------------- */
 
 export function generatePlan(input: PlanInput): PlanDraft {
@@ -213,6 +377,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				targetPaceSecPerKm: paces ? paces.easy : undefined,
 				targetZone: 'Z2',
 				targetRpe: [4, 5],
+				workout: singleRunWorkout('long', longKm, paces),
 			},
 			durationMin: estDuration(longKm, paces ? paces.easy[1] : easyPace + 15),
 		});
@@ -235,6 +400,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetPaceSecPerKm: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
 						targetRpe: [8, 9],
 						notes: 'Even reps; stop the set if form breaks down.',
+						workout: intervalWorkout(reps, paces),
 					},
 					durationMin: estDuration((reps * 800) / 1000, paces ? paces.interval : easyPace - 60) + 15,
 				});
@@ -254,6 +420,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 							: undefined,
 						targetZone: 'Z3–Z4',
 						targetRpe: [6, 7],
+						workout: tempoWorkout(qualityKm, paces),
 					},
 					durationMin: estDuration(qualityKm, paces ? paces.threshold : easyPace - 30),
 				});
@@ -277,6 +444,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetPaceSecPerKm: paces ? paces.easy : undefined,
 						targetZone: 'Z2',
 						targetRpe: [3, 4],
+						workout: singleRunWorkout('easy', easyPer, paces),
 					},
 					durationMin: estDuration(easyPer, easyPace),
 				});
@@ -340,6 +508,7 @@ function strengthSession(
 			blocks: sets,
 			targetRpe: [7, 8],
 			notes: 'Log weight per set; add load when you clear the top rep target.',
+			workout: strengthWorkout(circuit, reps),
 		},
 		durationMin: 45,
 	};

@@ -47,6 +47,30 @@ describe('generatePlan (marathon)', () => {
 		expect(plan.meta.vdot).toBeGreaterThan(30);
 		expect(plan.meta.vdot).toBeLessThan(70);
 	});
+
+	it('builds structured workouts (warm-up, set, cool-down)', () => {
+		const interval = plan.weeks
+			.flatMap((w) => w.sessions)
+			.find((s) => s.type === 'interval');
+		expect(interval).toBeTruthy();
+		const w = interval!.prescription.workout;
+		expect(w).toBeTruthy();
+		const kinds = w!.blocks.flatMap((b) => b.steps.map((s) => s.kind));
+		expect(kinds).toContain('warmup');
+		expect(kinds).toContain('work');
+		expect(kinds).toContain('recovery');
+		expect(kinds).toContain('cooldown');
+		const rep = w!.blocks.find((b) => b.repeat > 1);
+		expect(rep?.repeat).toBeGreaterThan(1);
+	});
+
+	it('gives every session a workout with at least one step', () => {
+		for (const s of plan.weeks.flatMap((w) => w.sessions)) {
+			const blocks = s.prescription.workout?.blocks ?? [];
+			expect(blocks.length).toBeGreaterThan(0);
+			expect(blocks.flatMap((b) => b.steps).length).toBeGreaterThan(0);
+		}
+	});
 });
 
 describe('generatePlan (whole-fitness, no race)', () => {
