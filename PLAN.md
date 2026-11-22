@@ -658,6 +658,21 @@ Cross-cutting findings that shape the engine and plan content:
 
 Deferred: tiered cron refresh of the KB (M4).
 
+### M1 — Plan core (done, live)
+
+- **Engine** (`packages/shared/src/plan`): deterministic generator — phase sequence
+  (base → build → peak → taper), weekly volume curve with deloads and a taper, VDOT-derived training
+  paces from a baseline race time, and Planet Fitness machine circuits. 12 vitest unit tests.
+- **API**: `POST /api/plans/generate` creates a goal + plan + weeks + sessions with best-effort AI
+  week summaries (deterministic template fallback); `GET /api/plans/current` returns weeks with their
+  sessions. Added `sessions_plan.purpose` (migration 0002). Fixed D1 batch inserts (100 bound-parameter
+  limit per statement). Made `/api/goals/profiles` public for onboarding.
+- **Web**: onboarding (goal, race date, baseline, training days); home shows the week-strip calendar
+  with today's hero session card and "week so far" — all bound to real plan data. Amber refined to a
+  mark-only colour with `signal-ink` for text contrast (from the design review).
+- **Shipped through the new pipeline**: PR #1 → CI (with tests) → merge → auto-deploy of api + web.
+  Verified live; the remote D1 shows the `purpose` column.
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
