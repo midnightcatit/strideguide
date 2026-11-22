@@ -137,6 +137,9 @@ export const api = {
 			kbVersion?: string;
 		}>(`/explanations?type=${encodeURIComponent(type)}`),
 
-	chat: (message: string, context?: string) =>
-		req<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, context }) }),
+	chat: (message: string) =>
+		req<{ reply: string; model?: string }>('/ai/chat', {
+			method: 'POST',
+			body: JSON.stringify({ message }),
+		}),
 };
