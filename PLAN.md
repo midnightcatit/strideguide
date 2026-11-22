@@ -687,6 +687,20 @@ Deferred: tiered cron refresh of the KB (M4).
   offline.
 - Shipped as PRs #4–#6, each through the CI gate.
 
+### M3 — Guided workouts (started, live)
+
+- **Structured steps** (`packages/shared`): sessions now carry a `workout` of blocks/steps —
+  warm-up → set (with repeats) → recovery → cool-down — each step with distance/time + pace/zone/RPE.
+  Built for tempo, interval, easy, long and strength (activation → machine circuit → cool-down). +2 tests.
+- **Guided player** (web): a full-screen overlay with the stage breakdown, a current-step hero, a
+  countdown (time-based steps) or elapsed timer, Start/Pause/Next/Prev, and finish → "Log it".
+  Session cards gained a **Start** action.
+- Verified end-to-end: an interval session stores as `1.5 km warm-up + 6 × (800 m + 800 m) + 1 km cool-down`.
+- **Remaining in this phase**: per-machine drill-down (form cues / "why" from the KB), guided
+  warm-up/cool-down mobility routines, rest timers between sets, and optional audio/haptic cues.
+  Auto-advance by GPS is **out of scope** by design — the app has no live tracking (shareable stats only),
+  so progression is manual/timer-based.
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
