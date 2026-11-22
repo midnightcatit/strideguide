@@ -3,12 +3,11 @@
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_NAMES, mondayIndex } from '$lib/plan';
+	import { type ClientSession, DAY_INITIALS, DAY_NAMES, mondayIndex } from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
-	import WeekStrip from '$lib/components/WeekStrip.svelte';
+	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
-	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
@@ -30,11 +29,6 @@
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
-	const loggedDays = $derived(
-		currentWeek
-			? [...new Set(currentWeek.sessions.filter((s) => loggedBySession.has(s.id)).map((s) => s.day))]
-			: [],
-	);
 	const daySessions = $derived(
 		currentWeek ? currentWeek.sessions.filter((s) => s.day === selectedDay) : [],
 	);
@@ -44,6 +38,24 @@
 			todayIso >= currentWeek.startDate &&
 			todayIso <= currentWeek.endDate,
 	);
+
+	function dayLevel(day: number): number {
+		const ds = currentWeek?.sessions.filter((s) => s.day === day) ?? [];
+		if (!ds.length) return 0;
+		return Math.max(
+			...ds.map((s) =>
+				s.prescription?.intensity === 'hard' ? 3 : s.prescription?.intensity === 'steady' ? 2 : 1,
+			),
+		);
+	}
+	function dayLogged(day: number): boolean {
+		return (currentWeek?.sessions ?? []).some((s) => s.day === day && loggedBySession.has(s.id));
+	}
+	function dayDistance(day: number): number {
+		return (currentWeek?.sessions ?? [])
+			.filter((s) => s.day === day && s.modality === 'running')
+			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0);
+	}
 
 	function selectWeek(i: number) {
 		weekIndex = Math.max(0, Math.min(weeks.length - 1, i));
@@ -69,64 +81,69 @@
 {:else if !currentWeek}
 	<p class="mt-6 text-sm text-steel">No plan yet. <a href="/onboarding" class="text-signal-ink hover:underline">Build one →</a></p>
 {:else}
-	<section class="mb-4">
-		<a href="/" class="text-xs text-steel hover:text-signal-ink">‹ Today</a>
-		<p class="mt-2 text-xs uppercase tracking-widest text-steel">Plan</p>
+	<header class="mb-6">
+		<div class="flex items-baseline justify-between gap-3">
+			<a href="/" class="tabular text-xs uppercase tracking-widest text-steel hover:text-signal-ink">‹ Today</a>
+			<div class="flex items-center gap-2">
+				<button type="button" onclick={() => selectWeek(weekIndex - 1)} disabled={weekIndex === 0} aria-label="Previous week" class="px-2 py-1 text-steel disabled:opacity-40">‹</button>
+				<span class="tabular text-xs text-steel">W{currentWeek.weekNumber} of {weeks.length}</span>
+				<button type="button" onclick={() => selectWeek(weekIndex + 1)} disabled={weekIndex >= weeks.length - 1} aria-label="Next week" class="px-2 py-1 text-steel disabled:opacity-40">›</button>
+			</div>
+		</div>
 		<h1 class="font-display mt-1 text-2xl font-bold">{currentWeek.focus ?? 'This week'}</h1>
-	</section>
+		{#if currentWeek.summaryText}<p class="mt-0.5 text-sm text-steel">{currentWeek.summaryText}</p>{/if}
+	</header>
 
-	<div class="mb-3 flex items-center justify-between">
-		<button type="button" onclick={() => selectWeek(weekIndex - 1)} disabled={weekIndex === 0} aria-label="Previous week" class="rounded-md border border-hairline px-3 py-1.5 text-sm disabled:opacity-40">‹</button>
-		<p class="tabular text-sm" aria-live="polite">
-			Week {currentWeek.weekNumber} of {weeks.length}
-		</p>
-		<button type="button" onclick={() => selectWeek(weekIndex + 1)} disabled={weekIndex >= weeks.length - 1} aria-label="Next week" class="rounded-md border border-hairline px-3 py-1.5 text-sm disabled:opacity-40">›</button>
-	</div>
+	<!-- 7-cell load ledger (primary control) -->
+	<Card tone="sunken">
+		<div class="grid grid-cols-7 gap-1" role="tablist" aria-label="Days of the week">
+			{#each DAY_INITIALS as initial, day (day)}
+				{@const level = dayLevel(day)}
+				{@const logged = dayLogged(day)}
+				{@const km = dayDistance(day)}
+				<button
+					type="button"
+					role="tab"
+					aria-selected={day === selectedDay}
+					aria-label="{DAY_NAMES[day]}{logged ? ', logged' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
+					onclick={() => (selectedDay = day)}
+					class="flex flex-col items-center gap-1.5 rounded-md py-2 transition-colors {day === selectedDay
+						? 'bg-ink text-paper'
+						: 'text-steel hover:text-ink'}"
+				>
+					<span class="tabular text-xs uppercase tracking-wide">{initial}</span>
+					<span class="flex h-3 items-end gap-0.5" aria-hidden="true">
+						{#each [1, 2, 3] as i (i)}
+							<span
+								class="w-0.5 rounded-[1px] {i <= level
+									? day === selectedDay
+										? 'bg-paper'
+										: 'bg-ink'
+									: day === selectedDay
+										? 'bg-paper/30'
+										: 'bg-hairline'}"
+								style="height: {3 + i * 3}px"
+							></span>
+						{/each}
+					</span>
+					<span class="h-3 text-[10px] {logged ? 'text-signal-ink' : 'text-transparent'}" aria-hidden="true">✓</span>
+					{#if currentWeekIsToday && day === todayIndex}
+						<span class="h-0.5 w-4 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-signal'}" aria-hidden="true"></span>
+					{/if}
+				</button>
+			{/each}
+		</div>
+	</Card>
 
-	{#if currentWeek.summaryText}
-		<p class="mb-4 text-sm text-steel">{currentWeek.summaryText}</p>
-	{/if}
-
-	<WeekStrip
-		sessions={currentWeek.sessions}
-		activeDay={selectedDay}
-		todayIndex={currentWeekIsToday ? todayIndex : -1}
-		loggedDays={loggedDays}
-		onSelect={(d) => (selectedDay = d)}
-	/>
-
-	<div class="mt-7 space-y-3">
-		{#each daySessions as s (s.id)}
-			<SessionCard
-				session={s}
-				eyebrow="{profileName} · W{currentWeek.weekNumber}"
-				active={selectedDay === todayIndex}
-				logged={loggedBySession.get(s.id) ?? null}
-				onLog={() => (logTarget = s)}
-				onStart={() => (playTarget = s)}
-			/>
-		{/each}
-	</div>
-
-	<section aria-labelledby="this-week" class="mt-7">
-		<SectionHeader id="this-week" eyebrow="This week" />
-		<Card>
-			<ul class="divide-y divide-hairline">
-				{#each currentWeek.sessions as s (s.id)}
-					{@const done = loggedBySession.has(s.id)}
-					<li>
-						<button type="button" onclick={() => (selectedDay = s.day)} class="flex w-full items-center justify-between gap-3 py-2.5 text-left hover:text-signal-ink">
-							<span class="w-8 shrink-0 tabular text-xs text-steel">{DAY_NAMES[s.day]?.slice(0, 3)}</span>
-							<span class="flex-1 truncate text-sm">{#if done}<span class="text-signal-ink">✓</span>{/if}{sessionLabel(s)}</span>
-							<IntensityLadder intensity={s.prescription?.intensity} label={false} />
-							<span class="tabular w-14 shrink-0 text-right text-xs text-steel">
-								{#if s.prescription?.targetDistanceKm}{fmtDistance(s.prescription.targetDistanceKm)}{:else}{s.modality}{/if}
-							</span>
-						</button>
-					</li>
-				{/each}
-			</ul>
-		</Card>
+	<section aria-labelledby="day-sessions" class="mt-7">
+		<SectionHeader id="day-sessions" eyebrow={DAY_NAMES[selectedDay] ?? ''} meta={`${daySessions.length} ${daySessions.length === 1 ? 'session' : 'sessions'}`} />
+		{#if daySessions.length}
+			<SessionCarousel sessions={daySessions} {card} />
+		{:else}
+			<Card tone="sunken">
+				<p class="text-sm text-steel">Rest day. Nothing scheduled.</p>
+			</Card>
+		{/if}
 	</section>
 {/if}
 
@@ -153,3 +170,14 @@
 		}}
 	/>
 {/if}
+
+{#snippet card(s: ClientSession)}
+	<SessionCard
+		session={s}
+		eyebrow={`${profileName} · W${currentWeek?.weekNumber ?? ''}`}
+		active={selectedDay === todayIndex}
+		logged={loggedBySession.get(s.id) ?? null}
+		onLog={() => (logTarget = s)}
+		onStart={() => (playTarget = s)}
+	/>
+{/snippet}

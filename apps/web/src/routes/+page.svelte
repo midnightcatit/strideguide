@@ -6,6 +6,7 @@
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, mondayIndex } from '$lib/plan';
 	import SessionCard from '$lib/components/SessionCard.svelte';
+	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
 	import WhyCard from '$lib/components/WhyCard.svelte';
@@ -148,18 +149,7 @@
 			meta={daySessions.length ? `${daySessions.length} ${daySessions.length === 1 ? 'session' : 'sessions'} · ${dayMinutes} min` : 'Rest · 0 min'}
 		/>
 		{#if daySessions.length}
-			<div class="space-y-3">
-				{#each daySessions as s (s.id)}
-					<SessionCard
-						session={s}
-						eyebrow="{profileName} · W{todayWeek.weekNumber}"
-						active
-						logged={loggedBySession.get(s.id) ?? null}
-						onLog={() => (logTarget = s)}
-						onStart={() => (playTarget = s)}
-					/>
-				{/each}
-			</div>
+			<SessionCarousel sessions={daySessions} {card} />
 		{:else}
 			<Card tone="sunken">
 				<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
@@ -218,8 +208,7 @@
 {/if}
 
 {#if playTarget}
-	<SessionPlayer
-		session={playTarget}
+	<SessionPlayer		session={playTarget}
 		eyebrow="{profileName} · W{todayWeek?.weekNumber ?? ''}"
 		onClose={() => (playTarget = null)}
 		onFinish={() => {
@@ -240,3 +229,14 @@
 		}}
 	/>
 {/if}
+
+{#snippet card(s: ClientSession)}
+	<SessionCard
+		session={s}
+		eyebrow={`${profileName} · W${todayWeek?.weekNumber ?? ''}`}
+		active
+		logged={loggedBySession.get(s.id) ?? null}
+		onLog={() => (logTarget = s)}
+		onStart={() => (playTarget = s)}
+	/>
+{/snippet}

@@ -83,14 +83,44 @@
 		class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper/95 backdrop-blur"
 		aria-label="Primary"
 	>
-		<div class="mx-auto flex max-w-2xl">
-			{#each [{ href: '/', label: 'Today', active: page.url.pathname === '/' }, { href: '/coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') }, { href: '/progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') }] as tab (tab.href)}
+		<div class="mx-auto grid max-w-2xl grid-cols-3" style="padding-bottom: env(safe-area-inset-bottom)">
+			{#each [{ href: '/', key: 'today', label: 'Today', active: page.url.pathname === '/' }, { href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') }, { href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') }] as tab (tab.href)}
 				<a
 					href={tab.href}
 					aria-current={tab.active ? 'page' : undefined}
-					class="flex-1 py-3 text-center text-sm {tab.active ? 'text-ink font-medium' : 'text-steel'}"
+					class="relative flex h-14 flex-col items-center justify-center gap-1 {tab.active
+						? 'text-ink'
+						: 'text-steel'}"
 				>
-					{tab.label}
+					{#if tab.active}
+						<span class="absolute top-0 h-0.5 w-8 rounded-full bg-signal" aria-hidden="true"></span>
+					{/if}
+					<svg
+						class="h-5 w-5"
+						viewBox="0 0 20 20"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.6"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						{#if tab.key === 'today'}
+							<path d="M10 2.5a7.5 7.5 0 1 0 7.5 7.5" />
+							<circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
+						{:else if tab.key === 'coach'}
+							<circle cx="10" cy="10" r="7" />
+							<line x1="10" y1="3.5" x2="10" y2="7" />
+							<line x1="10" y1="13" x2="10" y2="16.5" />
+							<line x1="3.5" y1="10" x2="7" y2="10" />
+							<line x1="13" y1="10" x2="16.5" y2="10" />
+						{:else}
+							<rect x="3" y="12" width="3" height="5" />
+							<rect x="8.5" y="8" width="3" height="9" />
+							<rect x="14" y="4" width="3" height="13" />
+						{/if}
+					</svg>
+					<span class="tabular text-[10px] uppercase tracking-widest">{tab.label}</span>
 				</a>
 			{/each}
 		</div>
