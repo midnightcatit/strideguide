@@ -11,10 +11,15 @@
 
 	let theme = $state<Theme>('system');
 	let pending = $state(0);
+	let user = $state<{ email: string } | null>(null);
 
 	onMount(() => {
 		theme = getTheme();
 		void loadPrefs();
+		void api
+			.me()
+			.then((u) => (user = u))
+			.catch(() => {});
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js').catch(() => {});
 		}
@@ -30,6 +35,11 @@
 		window.addEventListener('online', sync);
 		return () => window.removeEventListener('online', sync);
 	});
+
+	async function signOut() {
+		await api.logout().catch(() => {});
+		window.location.href = '/';
+	}
 
 	function toggleTheme() {
 		theme = cycleTheme();
@@ -48,6 +58,16 @@
 				<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync"
 					>⟳ {pending}</span
 				>
+			{/if}
+			{#if user}
+				<button
+					type="button"
+					onclick={signOut}
+					class="text-xs text-steel hover:text-signal-ink"
+					title="Sign out of {user.email}"
+				>
+					Sign out
+				</button>
 			{/if}
 			<UnitsToggle current={prefs.units} />
 			<button
