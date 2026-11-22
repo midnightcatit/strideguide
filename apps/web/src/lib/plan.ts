@@ -7,6 +7,7 @@ export interface ClientStep {
 	label: string;
 	distanceM?: number;
 	durationSec?: number;
+	restSec?: number;
 	targetPaceSecPerKm?: [number, number];
 	targetZone?: string;
 	targetRpe?: [number, number];

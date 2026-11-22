@@ -121,7 +121,16 @@ export function defaultCircuit(
 	available: string[] = PF_MACHINES.map((m) => m.name),
 ): MachineExercise[] {
 	const byName = new Map(PF_MACHINES.map((m) => [m.name, m]));
-	const want = ['Leg press', 'Leg curl', 'Back extension', 'Seated row', 'Leg extension', 'Shoulder press'];
+	const want = [
+		'Leg press',
+		'Leg curl',
+		'Back extension',
+		'Leg extension',
+		'Seated row',
+		'Shoulder press',
+		'Bicep curl',
+		'Tricep extension',
+	];
 	return want.map((n) => byName.get(n)).filter((m): m is MachineExercise => !!m && available.includes(m.name));
 }
 

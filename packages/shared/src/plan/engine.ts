@@ -169,11 +169,27 @@ function estDuration(distanceKm: number, paceSecPerKm: number): number {
 const WARMUP_KM = 1.5;
 const COOLDOWN_KM = 1.0;
 
+/** Fallback paces (sec/km) when there is no VDOT baseline, so steps still get durations. */
+const DEFAULT_PACES: TrainingPaces = {
+	easy: [360, 390],
+	marathon: 345,
+	threshold: 330,
+	interval: 300,
+	repetition: 290,
+};
+
+/** Seconds to cover a distance at a pace (sec/km). */
+function secsForM(meters: number, paceSecPerKm: number): number {
+	return Math.round((meters / 1000) * paceSecPerKm);
+}
+
 function warmupStep(paces?: TrainingPaces): WorkoutStep {
+	const p = paces ?? DEFAULT_PACES;
 	return {
 		kind: 'warmup',
 		label: 'Warm-up',
 		distanceM: Math.round(WARMUP_KM * 1000),
+		durationSec: secsForM(WARMUP_KM * 1000, p.easy[1]),
 		targetPaceSecPerKm: paces?.easy,
 		targetZone: 'Z1–Z2',
 		targetRpe: [2, 3],
@@ -182,10 +198,12 @@ function warmupStep(paces?: TrainingPaces): WorkoutStep {
 }
 
 function cooldownStep(paces?: TrainingPaces): WorkoutStep {
+	const p = paces ?? DEFAULT_PACES;
 	return {
 		kind: 'cooldown',
 		label: 'Cool-down',
 		distanceM: Math.round(COOLDOWN_KM * 1000),
+		durationSec: secsForM(COOLDOWN_KM * 1000, p.easy[1]),
 		targetPaceSecPerKm: paces?.easy,
 		targetRpe: [1, 3],
 	};
@@ -209,6 +227,7 @@ function singleRunWorkout(
 	distanceKm: number,
 	paces?: TrainingPaces,
 ): StructuredWorkout {
+	const p = paces ?? DEFAULT_PACES;
 	return {
 		blocks: [
 			{
@@ -218,6 +237,7 @@ function singleRunWorkout(
 						kind: 'work',
 						label: TITLE[type],
 						distanceM: Math.round(distanceKm * 1000),
+						durationSec: secsForM(distanceKm * 1000, p.easy[1]),
 						targetPaceSecPerKm: paces?.easy,
 						targetZone: 'Z2',
 						targetRpe: type === 'long' ? [4, 5] : [3, 4],
@@ -245,6 +265,7 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 					kind: 'work',
 					label: 'Tempo',
 					distanceM: Math.round(qualityKm * 1000),
+					durationSec: secsForM(qualityKm * 1000, (paces ?? DEFAULT_PACES).threshold),
 					targetPaceSecPerKm: paces ? [paces.threshold * 0.99, paces.threshold * 1.03] : undefined,
 					targetZone: 'Z3–Z4',
 					targetRpe: [6, 7],
@@ -273,6 +294,7 @@ function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout
 					kind: 'work',
 					label: 'Interval',
 					distanceM: 800,
+					durationSec: secsForM(800, (paces ?? DEFAULT_PACES).interval),
 					targetPaceSecPerKm: paces
 						? [paces.interval * 0.98, paces.interval * 1.02]
 						: undefined,
@@ -283,6 +305,7 @@ function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout
 					kind: 'recovery',
 					label: 'Recovery',
 					distanceM: 800,
+					durationSec: secsForM(800, (paces ?? DEFAULT_PACES).easy[1]),
 					targetPaceSecPerKm: paces?.easy,
 					targetRpe: [2, 3],
 					note: 'Jog easily, or walk if you need more recovery.',
@@ -313,6 +336,7 @@ function strengthWorkout(
 				machine: m.name,
 				sets: 3,
 				reps,
+				restSec: 75,
 				targetRpe: [7, 8],
 				note: `Rest ~60–90s between sets. ${m.muscles.join(', ')}.`,
 			})),

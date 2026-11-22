@@ -20,6 +20,8 @@
 		blockLabel?: string;
 		rep?: number;
 		totalReps?: number;
+		setNo?: number;
+		totalSets?: number;
 		step: ClientStep;
 	}
 
@@ -30,12 +32,17 @@
 			const reps = Math.max(1, b.repeat ?? 1);
 			for (let r = 0; r < reps; r++) {
 				for (const s of b.steps) {
-					out.push({
-						blockLabel: b.label,
-						rep: reps > 1 ? r + 1 : undefined,
-						totalReps: reps > 1 ? reps : undefined,
-						step: s,
-					});
+					const sets = s.kind === 'work' && (s.sets ?? 0) > 1 ? (s.sets as number) : 1;
+					for (let k = 0; k < sets; k++) {
+						out.push({
+							blockLabel: b.label,
+							rep: reps > 1 ? r + 1 : undefined,
+							totalReps: reps > 1 ? reps : undefined,
+							setNo: sets > 1 ? k + 1 : undefined,
+							totalSets: sets > 1 ? sets : undefined,
+							step: s,
+						});
+					}
 				}
 			}
 		}
@@ -46,51 +53,78 @@
 	let running = $state(false);
 	let elapsed = $state(0);
 	let finished = $state(false);
-	let showForm = $state(true);
 	let restLeft = $state(0);
+	let restThenAdvance = $state(false);
+	let showForm = $state(true);
 
 	const current = $derived(instances[idx]);
 	const machine = $derived(findMachine(current?.step.machine));
-	const remaining = $derived(
-		current?.step.durationSec != null ? Math.max(0, current.step.durationSec - elapsed) : null,
-	);
+	const timed = $derived(current?.step.durationSec != null);
+	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
+	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
 	const resting = $derived(restLeft > 0);
 
-	function next() {
+	/** Move to the next step, or finish. */
+	function advance() {
+		restLeft = 0;
+		restThenAdvance = false;
+		elapsed = 0;
 		if (idx >= instances.length - 1) {
-			running = false;
 			finished = true;
+			running = false;
 			return;
 		}
 		idx += 1;
-		elapsed = 0;
-	}
-	function prev() {
-		if (idx > 0) {
-			idx -= 1;
-			elapsed = 0;
-		}
-	}
-	function startRest(sec = 90) {
-		restLeft = sec;
+		// Timed steps flow automatically; rep-based steps wait for the user.
+		running = instances[idx]?.step.durationSec != null;
 	}
 
+	/** A step is done (timer hit zero, or the user finished the set). */
+	function complete() {
+		const rest = current?.step.restSec ?? 0;
+		if (rest > 0 && idx < instances.length - 1) {
+			running = false;
+			restLeft = rest;
+			restThenAdvance = true;
+		} else {
+			advance();
+		}
+	}
+
+	function jump(i: number) {
+		idx = i;
+		elapsed = 0;
+		restLeft = 0;
+		restThenAdvance = false;
+		finished = false;
+		running = instances[i]?.step.durationSec != null;
+	}
+
+	// Timed step countdown -> auto-complete.
 	$effect(() => {
-		if (!running) return;
+		if (!running || resting || !timed) return;
+		const step = instances[idx]?.step;
+		if (step?.durationSec == null) return;
 		const t = setInterval(() => {
 			elapsed += 1;
-			const step = instances[idx]?.step;
-			if (step?.durationSec != null && elapsed >= step.durationSec) next();
+			if (elapsed >= (step.durationSec as number)) complete();
 		}, 1000);
 		return () => clearInterval(t);
 	});
 
+	// Rest countdown -> auto-advance when it ends.
 	$effect(() => {
-		if (restLeft <= 0) return;
-		const t = setInterval(() => {
-			restLeft = Math.max(0, restLeft - 1);
-		}, 1000);
-		return () => clearInterval(t);
+		if (restLeft > 0) {
+			const t = setInterval(() => {
+				restLeft = Math.max(0, restLeft - 1);
+			}, 1000);
+			return () => clearInterval(t);
+		}
+		if (restThenAdvance) {
+			restThenAdvance = false;
+			advance();
+		}
+		return;
 	});
 
 	function stepDistance(m?: number): string | null {
@@ -99,90 +133,81 @@
 	}
 
 	function stepTarget(step: ClientStep): string {
-		if (step.durationSec != null) return formatClock(step.durationSec);
 		const dist = stepDistance(step.distanceM);
 		const pace = fmtPaceBand(step.targetPaceSecPerKm);
 		if (dist && pace) return `${dist} @ ${pace}`;
 		if (dist) return dist;
 		if (step.sets && step.reps) return `${step.sets} × ${step.reps} reps`;
+		if (step.durationSec) return formatClock(step.durationSec);
 		return step.label;
 	}
 
 	const clock = $derived(remaining != null ? formatClock(remaining) : formatClock(elapsed));
+	const progress = $derived(`${Math.min(idx + 1, instances.length)} / ${instances.length}`);
 </script>
 
 <div class="fixed inset-0 z-30 overflow-y-auto bg-paper">
-	<div class="mx-auto max-w-2xl px-4 py-5">
+	<div class="mx-auto max-w-2xl px-4 py-5 pb-24">
 		<div class="flex items-start justify-between gap-3">
 			<div>
 				<p class="text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 				<h1 class="font-display text-xl font-bold">{session.title ?? 'Workout'}</h1>
 			</div>
-			<button type="button" onclick={onClose} class="px-2 py-1 text-steel hover:text-ink" aria-label="Close">
-				✕
-			</button>
+			<button type="button" onclick={onClose} class="px-2 py-1 text-steel hover:text-ink" aria-label="Close">✕</button>
 		</div>
 
-		{#if workout?.totalDistanceKm || workout?.estimatedDurationMin}
-			<p class="tabular mt-1 text-xs text-steel">
-				{#if workout.totalDistanceKm}≈ {fmtDistance(workout.totalDistanceKm)}{/if}
-				{#if workout.estimatedDurationMin}· ~{workout.estimatedDurationMin} min{/if}
-			</p>
-		{/if}
-
-		<hr class="my-4 border-hairline" />
-
-		{#if resting}
-			<div class="rounded-xl border border-hairline bg-sunken p-4 text-center">
-				<p class="text-xs uppercase tracking-widest text-steel">Rest</p>
-				<p class="tabular mt-1 text-3xl font-medium">{formatClock(restLeft)}</p>
-				<div class="mt-3 flex justify-center gap-2">
-					<button type="button" onclick={() => startRest(restLeft + 30)} class="rounded-md border border-hairline px-3 py-2 text-sm">
-						+30s
-					</button>
-					<button type="button" onclick={() => (restLeft = 0)} class="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper">
-						Skip
-					</button>
+		{#if finished}
+			<div class="mt-6 rounded-xl border border-hairline p-6 text-center">
+				<p class="font-display text-lg font-medium">Workout complete</p>
+				<p class="mt-1 text-sm text-steel">Nice work. Log how it went.</p>
+				<button type="button" onclick={onFinish} class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Log it</button>
+			</div>
+		{:else if resting}
+			<!-- Automatic rest -->
+			<div class="mt-6 rounded-xl border border-hairline bg-sunken p-6 text-center">
+				<p class="text-xs uppercase tracking-widest text-steel">Rest — next up</p>
+				<p class="tabular mt-1 text-4xl font-medium">{formatClock(restLeft)}</p>
+				{#if instances[idx + 1]}
+					<p class="mt-2 text-sm text-steel">
+						Next: {instances[idx + 1]!.step.label}{instances[idx + 1]!.setNo ? ` (set ${instances[idx + 1]!.setNo}/${instances[idx + 1]!.totalSets})` : ''}
+					</p>
+				{/if}
+				<div class="mt-4 flex justify-center gap-2">
+					<button type="button" onclick={() => (restLeft = restLeft + 30)} class="rounded-md border border-hairline px-4 py-2 text-sm">+30s</button>
+					<button type="button" onclick={advance} class="rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
 				</div>
 			</div>
-		{:else if current && !finished}
-			<div class="relative overflow-hidden rounded-xl border border-hairline bg-paper p-4">
+		{:else if current}
+			<div class="relative mt-6 overflow-hidden rounded-xl border border-hairline bg-paper p-4">
 				<div class="absolute right-0 top-0 h-full w-1.5 bg-signal" aria-hidden="true"></div>
 				<div class="flex items-baseline justify-between">
 					<span class="tabular text-xs uppercase tracking-widest text-steel">
-						{current.blockLabel ?? ''}{current.rep ? ` · rep ${current.rep}/${current.totalReps}` : ''}
+						{current.blockLabel ?? ''}{current.setNo ? ` · set ${current.setNo}/${current.totalSets}` : ''}{current.rep ? ` · rep ${current.rep}/${current.totalReps}` : ''}
 					</span>
 					<span class="tabular text-xs uppercase tracking-widest text-signal-ink">{current.step.kind}</span>
 				</div>
 				<h2 class="font-display mt-1 text-lg font-medium">{current.step.label}</h2>
-				<p class="tabular mt-2 text-3xl font-medium leading-none">{clock}</p>
+				<p class="tabular mt-2 text-4xl font-medium leading-none">
+					{repBased ? (current.step.reps ? `${current.step.reps} reps` : formatClock(elapsed)) : clock}
+				</p>
 				<p class="tabular mt-2 text-sm">{stepTarget(current.step)}</p>
 				{#if current.step.note}<p class="mt-2 text-sm text-steel">{current.step.note}</p>{/if}
 
 				<div class="mt-4 flex gap-2">
-					<button
-						type="button"
-						onclick={() => (running = !running)}
-						class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
-					>
-						{running ? 'Pause' : elapsed > 0 ? 'Resume' : 'Start'}
-					</button>
-					<button type="button" onclick={prev} disabled={idx === 0} class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40">
-						‹
-					</button>
-					<button type="button" onclick={next} class="rounded-md border border-hairline px-4 py-3 text-sm">Next ›</button>
+					{#if repBased}
+						<button type="button" onclick={complete} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">Done set</button>
+					{:else}
+						<button type="button" onclick={() => (running = !running)} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">
+							{running ? 'Pause' : elapsed > 0 ? 'Resume' : 'Start'}
+						</button>
+					{/if}
+					<button type="button" onclick={() => jump(Math.max(0, idx - 1))} disabled={idx === 0} class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40">‹</button>
+					<button type="button" onclick={advance} class="rounded-md border border-hairline px-4 py-3 text-sm">Next ›</button>
 				</div>
 				<div class="mt-2 flex gap-2">
-					<button type="button" onclick={() => startRest(90)} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">
-						Rest 90s
-					</button>
+					<button type="button" onclick={() => { restLeft = current?.step.restSec ?? 90; restThenAdvance = true; running = false; }} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">Rest now</button>
 					{#if machine}
-						<button
-							type="button"
-							onclick={() => (showForm = !showForm)}
-							aria-expanded={showForm}
-							class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink"
-						>
+						<button type="button" onclick={() => (showForm = !showForm)} aria-expanded={showForm} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">
 							{showForm ? 'Hide form' : 'Form & muscles'}
 						</button>
 					{/if}
@@ -193,42 +218,24 @@
 						<p class="text-steel"><span class="text-ink">Muscles:</span> {machine.muscles.join(', ')}</p>
 						<p class="mt-1 text-steel"><span class="text-ink">Feel it:</span> {machine.feel}</p>
 						<ul class="mt-2 space-y-1">
-							{#each machine.form as cue (cue)}
-								<li class="text-steel">• {cue}</li>
-							{/each}
+							{#each machine.form as cue (cue)}<li class="text-steel">• {cue}</li>{/each}
 						</ul>
 						<p class="mt-2 text-xs text-steel">Avoid: {machine.mistakes.join('; ')}.</p>
 					</div>
 				{/if}
 			</div>
-		{:else if finished}
-			<div class="rounded-xl border border-hairline p-6 text-center">
-				<p class="font-display text-lg font-medium">Workout complete</p>
-				<p class="mt-1 text-sm text-steel">Nice work. Log how it went.</p>
-				<button type="button" onclick={onFinish} class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
-					Log it
-				</button>
-			</div>
 		{/if}
 
-		<h2 class="mt-6 text-xs uppercase tracking-widest text-steel">Workout stages</h2>
+		<div class="mt-4 flex items-center justify-between">
+			<h2 class="text-xs uppercase tracking-widest text-steel">Workout stages</h2>
+			<span class="tabular text-xs text-steel">{progress}</span>
+		</div>
 		<ul class="mt-2 divide-y divide-hairline border-y border-hairline">
 			{#each instances as inst, i (i)}
 				<li>
-					<button
-						type="button"
-						onclick={() => {
-							idx = i;
-							elapsed = 0;
-							finished = false;
-							restLeft = 0;
-						}}
-						class="flex w-full items-start justify-between gap-3 py-2.5 text-left {i === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink"
-					>
+					<button type="button" onclick={() => jump(i)} class="flex w-full items-start justify-between gap-3 py-2.5 text-left {i === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink">
 						<span class="flex-1">
-							<span class="text-sm"
-								>{inst.blockLabel ? `${inst.blockLabel}: ` : ''}{inst.step.label}{inst.rep ? ` (${inst.rep}/${inst.totalReps})` : ''}</span
-							>
+							<span class="text-sm">{inst.blockLabel ? `${inst.blockLabel}: ` : ''}{inst.step.label}{inst.setNo ? ` (set ${inst.setNo}/${inst.totalSets})` : ''}{inst.rep ? ` (${inst.rep}/${inst.totalReps})` : ''}</span>
 							{#if inst.step.note}<span class="mt-0.5 block text-xs text-steel">{inst.step.note}</span>{/if}
 						</span>
 						<span class="tabular shrink-0 text-xs text-steel">{stepTarget(inst.step)}</span>
@@ -237,7 +244,7 @@
 			{/each}
 		</ul>
 		<p class="mt-4 text-xs text-steel">
-			Rest timer and manual Next — advance at track or on hills. Form cues are guidance, not medical advice.
+			Advances automatically — timed steps count down, strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 </div>
