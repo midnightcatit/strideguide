@@ -13,7 +13,9 @@
     "db:migrate:local": "wrangler d1 migrations apply strideguide-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply strideguide-db --remote",
     "db:seed:local": "wrangler d1 execute strideguide-db --local --file=./seed/seed.sql",
-    "db:seed:remote": "wrangler d1 execute strideguide-db --remote --file=./seed/seed.sql"
+    "db:seed:remote": "wrangler d1 execute strideguide-db --remote --file=./seed/seed.sql",
+    "research:consolidate": "tsx scripts/consolidate-research.ts",
+    "db:seed:research:local": "wrangler d1 execute strideguide-db --local --file=./seed/seed-research.sql"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.9.1",

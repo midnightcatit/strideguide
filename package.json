@@ -19,6 +19,7 @@
     "db:migrate:local": "pnpm --filter @strideguide/api db:migrate:local",
     "db:migrate:remote": "pnpm --filter @strideguide/api db:migrate:remote",
     "db:seed:local": "pnpm --filter @strideguide/api db:seed:local",
+    "research:consolidate": "pnpm --filter @strideguide/api research:consolidate",
     "deploy:api": "pnpm --filter @strideguide/api deploy",
     "deploy:web": "pnpm --filter @strideguide/web deploy"
   },

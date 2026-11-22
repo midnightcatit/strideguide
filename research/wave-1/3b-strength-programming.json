@@ -1,0 +1,319 @@
+{
+  "workstream": "Strength for runners",
+  "subtopic": "Programming for runners",
+  "generated_at": "2026-11-22T14:40:00Z",
+  "claims": [
+    {
+      "topic": "Frequency",
+      "claim": "Distance runners should perform 2-3 strength sessions per week; two sessions per week is likely sufficient for running-economy gains, while three sessions per week is reasonable for off-season or novice strength development.",
+      "evidence": "Systematic review of 24 studies: most interventions that improved running physiology used 2-3 sessions/week; a weak relationship was found between weekly strength frequency and running-economy improvement in 311 runners, suggesting 2 sessions/week is sufficient. The review also notes 3 sessions/week may be superior for non-strength-trained individuals.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Program duration",
+      "claim": "Strength programs should last at least 6-10 weeks; 10-14-week programs produce larger running-economy effects than 6-8-week programs.",
+      "evidence": "Meta-analysis of 22 studies in runners: longer heavy-resistance programs (10-14 weeks) produced larger running-economy effects than shorter programs (6-8 weeks); the review of 24 studies found running-economy benefits after 6-20 weeks, with larger time-trial effects in 8-11-week programs than in 6-week programs.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Running Economy: A Systematic Review and Meta-Analysis",
+        "authors": "Eihara Y, Takao C, Sugiyama M, Maeo S, Terada M, Kanehisa H, Isaka H",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Sets, reps, rest, and failure",
+      "claim": "Prescribe 2-6 sets of 3-10 repetitions per exercise at >70% 1RM or 1-2 repetitions in reserve; beginners should start with 1-2 sets and progress to 3-6 sets; rest 2-3 minutes between heavy sets and avoid training to failure.",
+      "evidence": "Systematic review: heavy resistance training was typically prescribed as 2-6 sets of 3-10 reps at >70% 1RM or to repetition failure; most studies began with 1-2 sets and progressed to 3-6 sets; 2-3 minutes inter-set rest was typical. Training to failure was judged unnecessary and likely to delay recovery compared with non-failure sets.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Intensity: heavy loads",
+      "claim": "Use loads of at least 90% 1RM for at least one key lower-body lift when tolerated; heavy resistance training produces larger running-economy effects than lighter loads or plyometric training.",
+      "evidence": "Meta-analysis of 22 studies: heavy resistance training had a moderate effect on running economy, whereas plyometric training had a trivial effect; loads >=90% 1RM produced larger effects than loads <90% 1RM; 10-14-week programs produced larger effects than 6-8-week programs.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Running Economy: A Systematic Review and Meta-Analysis",
+        "authors": "Eihara Y, Takao C, Sugiyama M, Maeo S, Terada M, Kanehisa H, Isaka H",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Intensity: moderate loads",
+      "claim": "Moderate loads of 40-80% 1RM with 5-15 repetitions also improve running economy and are appropriate for machine accessories, beginners, and in-season maintenance.",
+      "evidence": "Meta-analysis of 5 controlled trials in 93 highly trained runners: 4 of 5 studies used 40-70% 1RM; programs used 2-4 lower-body exercises, 2-3 sessions/week, and improved running economy with a standardized mean difference of -1.42 (95% CI not reported in abstract). The systematic review found moderate loads of 60-80% 1RM with 5-15 reps produced benefits similar to heavy 3-5RM loads.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on Running Economy in Highly Trained Runners: A Systematic Review With Meta-Analysis of Controlled Trials",
+        "authors": "Balsalobre-Fernandez C, Santos-Concejero J, Grivas GV",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000001316",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Session volume",
+      "claim": "Keep strength sessions to about 2-4 lower-body exercises plus 1-2 core or upper-body accessories, with 2-4 sets per exercise; strength work should be added to running rather than substituted for it.",
+      "evidence": "Systematic review of 24 studies: typical programs used 2-4 lower-body exercises and 2-6 sets per exercise; strength training was added to unchanged running training in all included studies. The meta-analysis in highly trained runners similarly used 2-4 lower-body exercises per session.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Exercise selection: lower body",
+      "claim": "Each session should include at least one multi-joint, closed-kinetic-chain lower-body exercise (squat, half-squat, leg press, lunge, or step-up) plus knee flexion/extension and plantar-flexion work.",
+      "evidence": "Systematic review: all included studies used at least one multi-joint, closed-kinetic-chain lower-body exercise; common exercises were squat, half-squat, leg press, lunge, step-up, knee extension, knee flexion, and calf raise. One study used only resistance machines for lower-limb training.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Exercise selection: posterior chain",
+      "claim": "Include hip-hinge and knee-flexion work such as Romanian deadlift, deadlift, hamstring curl, back extension, and hip extension to complement squat and leg-press work.",
+      "evidence": "Systematic review table of successful programs: Romanian deadlift, deadlift, hamstring curls, back extension, and hip extension were used alongside squat/leg-press exercises. Direct evidence isolating posterior-chain exercises for running economy is limited, so the recommendation is based on the content of successful multi-exercise programs.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Exercise selection: single-leg work",
+      "claim": "Include unilateral lower-body work such as split squat, single-leg half-squat, step-up, lunge, or unilateral leg press 1-2 times per week to address limb asymmetry and running-specific stability.",
+      "evidence": "Systematic review: unilateral exercises (single-leg half-squat, step-up, lunges, split squat, unilateral leg press) were used in successful programs; no included trial isolated unilateral work, so the specific added benefit is inferred from program content rather than direct comparison.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Exercise selection: core",
+      "claim": "Core and trunk training (Pilates, planks, anti-extension and anti-rotation exercises) can be included 2-3 times per week; a 12-week Pilates program improved 5-km time and running metabolic cost in trained runners.",
+      "evidence": "Randomized controlled trial in 32 trained runners: 12 weeks of Pilates improved 5-km time from 25.65 to 23.23 minutes versus 25.33 to 24.61 minutes in controls, and improved running metabolic cost; postural-muscle EMG during running decreased. The trial was small and used a Pilates protocol rather than gym-machine core work.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Pilates training improves 5-km run performance by changing metabolic cost and muscle activity in trained runners",
+        "authors": "Finatto P, Silva ESD, Okamura AB, Almada BP, Storniolo JLL, Oliveira HB, Peyre-Tartaruga LA",
+        "year": 2018,
+        "venue": "PLoS One",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1371/journal.pone.0194057",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Machines vs free weights",
+      "claim": "Machine and free-weight resistance training produce similar gains in strength and muscle size when volume and loading are matched, so machine-based templates are a valid option.",
+      "evidence": "Randomized trial in 46 participants: 8 weeks of training with machines or free weights, 2-3 sessions/week per muscle group, 3-4 sets of 4-10 reps, produced similar muscle thickness and strength gains; free weights produced a greater acute testosterone response in men but no difference in training outcomes.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "A Comparison of the Effect of Strength Training on Cycling Performance between Men and Women",
+        "authors": "Schwanbeck SR, Cornish SM, Barss T, Chilibeck PD",
+        "year": 2020,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000003349",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Machine-based programs in runners",
+      "claim": "Machine-based lower-body programs in runners show mixed results: one machine-only program did not improve running economy, while machine-based programs using leg press, leg curl, leg extension, calf raise, and cable hip flexion improved strength and performance; combine machines with free-weight or bodyweight multi-joint work.",
+      "evidence": "Systematic review: one study used only resistance machines for lower-limb heavy resistance training and was among the studies showing no running-economy improvement; other machine-based programs (leg press, knee extension/flexion, hip extension, ankle extension, cable hip flexion, calf raise) improved strength and performance. The review notes most studies combined machines with free weights or bodyweight.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Upper-body accessories",
+      "claim": "Upper-body machine exercises such as seated row, shoulder press, biceps curl, and triceps extension can be programmed 1-2 times per week as accessories for muscular balance and adherence, but there is no runner-specific evidence that they improve running performance.",
+      "evidence": "ACSM position stand recommends balanced resistance training of all major muscle groups, with multi-joint before single-joint and large before small muscle groups; no runner-specific trial has tested seated row, shoulder press, biceps curl, or triceps extension for running performance or injury outcomes.",
+      "confidence": "low",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Scheduling relative to key runs",
+      "claim": "Separate strength training from key runs by at least 24 hours; if strength and running are performed on the same day, place strength at least 3 hours after a hard run or after an easy run, and avoid heavy lower-body strength immediately before a key session.",
+      "evidence": "Systematic review: to limit interference, a recovery period of >3 hours after high-intensity running before strength training is recommended, and at least 24 hours between a strength session and an intensive running session; most included studies used separate days or separate sessions.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Concurrent-training interference",
+      "claim": "Concurrent running training blunts strength and hypertrophy gains more than cycling; higher running frequency and duration increase interference, so keep strength volume moderate and avoid stacking strength on top of high-volume running blocks.",
+      "evidence": "Meta-analysis of 21 studies: concurrent running, but not cycling, produced decrements in both hypertrophy and strength; significant negative relationships were found between endurance frequency/duration and strength/hypertrophy outcomes.",
+      "confidence": "high",
+      "citation": {
+        "title": "Concurrent training: a meta-analysis examining interference of aerobic and resistance exercises",
+        "authors": "Wilson JM, Marin PJ, Rhea MR, Tuson KM, Sforzo GA, Campbell BI",
+        "year": 2012,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0b013e31823a3e2d",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Periodization alongside running",
+      "claim": "Use 2-3 strength sessions per week in the base/preparatory phase and reduce to 1 session per week during the competitive season to maintain gains; stopping strength for 6 weeks returns gains toward baseline.",
+      "evidence": "Systematic review: a 40-week intervention reduced strength from 2 sessions/week in the preparatory phase to 1 session/week in-season and maintained strength and physiological gains; excluding strength after a successful block produced detraining within 6 weeks.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Injury prevention: general sport",
+      "claim": "Strength training is the most effective single exercise modality for reducing sports injury risk, with a pooled relative risk of 0.34 (95% CI 0.24-0.48) and approximately halved overuse injury risk.",
+      "evidence": "Meta-analysis of 25 randomized trials and 26,610 participants: strength training reduced injury risk (RR 0.315, 95% CI 0.207-0.480) and overuse injury risk (RR 0.527); stretching did not reduce injury risk. Findings span multiple sports and age groups, not runners specifically.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "authors": "Lauersen JB, Bertelsen DM, Andersen LB",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2013-092538",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Injury prevention: runners",
+      "claim": "In endurance runners specifically, evidence that exercise-based prevention programs reduce injury is insufficient; pooled results were null overall, although supervised programs showed lower injury risk.",
+      "evidence": "Meta-analysis of 9 articles and 1,904 participants: overall injury risk (p=0.110) and injury rate (p=0.329) did not differ between intervention and control; a post hoc analysis of supervised interventions showed significantly lower injury risk (p<0.001); 7 of 9 studies were low quality and only 4 used strength exercises, generally at low volume and intensity.",
+      "confidence": "medium-high",
+      "citation": {
+        "title": "Do Exercise-Based Prevention Programs Reduce Injury in Endurance Runners? A Systematic Review and Meta-Analysis",
+        "authors": "Wu H, Brooke-Wavell K, Fong DTP, Paquette MR, Blagrove RC",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-024-01993-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Performance and running economy",
+      "claim": "Strength training improves middle- and long-distance running performance, with a pooled effect size of about 0.34 and a running-economy effect of about 0.53; maximal-force training produces the largest effects.",
+      "evidence": "Meta-analysis of controlled trials in endurance athletes: strength training improved performance (SMD 0.34, 95% CI 0.19-0.49) and running economy (SMD 0.53, 95% CI 0.29-0.77); maximal-force training had the largest effect, and benefits were independent of athlete level.",
+      "confidence": "high",
+      "citation": {
+        "title": "Strength training for middle- and long-distance performance: a meta-analysis",
+        "authors": "Berryman N, Mujika I, Arvisais D, Roubeix M, Bosquet L",
+        "year": 2018,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1123/ijspp.2017-0032",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    },
+    {
+      "topic": "Body composition and VO2max",
+      "claim": "Added strength training does not increase body mass in distance runners and does not reduce VO2max; hypertrophy is attenuated when strength is combined with endurance training.",
+      "evidence": "Systematic review: all but one study observed no change in body mass; VO2max was generally unchanged; concurrent endurance training attenuates the hypertrophic response to resistance training. The review found weak evidence that velocity at VO2max improves.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes P",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-22T14:35:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "The best-supported template is 2-3 full-body strength sessions per week, built around 2-4 lower-body exercises (squat/half-squat or leg press, hip hinge, leg curl, calf raise) plus 1-2 core or upper-body accessories. Use 2-6 sets of 3-10 reps at >70% 1RM or 1-2 reps in reserve, with at least one heavy (>=90% 1RM) lift when tolerated, and progress from 1-2 sets for beginners. Schedule strength on separate days or at least 3 hours after a hard run and at least 24 hours before key sessions; reduce to 1 session/week in race season and do not stop for more than 6 weeks.",
+  "unverified": [
+    "Optimal strength taper for the final 1-2 weeks before a goal race: no runner-specific RCT establishes whether to reduce volume, maintain intensity, or stop strength work.",
+    "Whether a 'hard days hard' weekly layout (strength after key runs) is superior to separating strength and running by a full day for long-term outcomes.",
+    "Direct evidence that seated row, shoulder press, biceps curl, or triceps extension improve running performance or reduce running injury in runners.",
+    "Whether machine-only strength programs are as effective as free-weight/bodyweight programs for running economy in runners; current runner evidence is mixed and indirect.",
+    "Optimal weekly set volume per muscle group for runners; recommendations are extrapolated from general resistance-training guidelines and mixed runner trials.",
+    "Whether core training reduces running injury risk; performance RCTs exist but injury outcomes are lacking.",
+    "Whether posterior-chain or single-leg exercises provide benefits beyond the multi-joint squat/leg-press stimulus in runners; no isolated trials.",
+    "Exact %1RM or RIR targets for recreational runners who cannot safely perform 1RM testing; RPE/RIR-based prescription is a practical extrapolation."
+  ],
+  "notes": "Research-only synthesis; no application code or architecture decisions. Machine-template implications: default to leg press, leg curl, leg extension, calf raise, cable hip flexion, and back extension for the lower body, with seated row, shoulder press, biceps curl, and triceps extension as optional upper-body accessories. Use 2 sessions/week as the default full-body frequency; add a third session in the off-season only if recovery allows. Prescribe loads by RIR/RPE when 1RM testing is impractical. Schedule strength after easy runs or at least 3 hours after hard runs, and avoid heavy lower-body work within 24 hours of key sessions. The injury-prevention evidence is strong across sport but not yet established specifically in runners; frame strength as performance- and resilience-oriented rather than guaranteed injury prevention."
+}
