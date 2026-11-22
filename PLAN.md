@@ -746,6 +746,19 @@ introduced through build/peak and scale by race distance — half `2→3 × 3 km
 
 **Still to come**: the AI coach/adaptation layer (M6).
 
+### Card system + layout overhaul (done, live)
+
+- **Primitives**: `Card` (paper = act here, sunken = read here) and `SectionHeader` (mono eyebrow +
+  right meta). Rules: 12px card radius / 8px inner, hairline edges, **no shadows**, rules inset to the
+  padding, **12px intra-group vs 28px section** rhythm, and a nesting rule (a paper card may hold one
+  sunken well; never paper-in-paper).
+- **Today rebuilt**: masthead, Today's session card(s) with a left amber/steel edge, a sunken
+  "week so far" well (adherence ticks + volume against the plan cap), a **Why this session** card, and
+  Quick actions. Rest days show a sunken state plus a next-session peek.
+- **Why card**: collapsed one-line researched claim with a steel citation marker and a Details toggle;
+  expanded adds per-claim lines with markers and a real SOURCES list (DOI links, KB version in the foot).
+- **Week** and **Progress** moved onto the same primitives.
+
 ### Deployed — live (M0 complete)
 
 Provisioned and deployed via the Cloudflare MCP + Wrangler (account `3f513e4b…`):
