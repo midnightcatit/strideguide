@@ -1,5 +1,12 @@
-import type { SessionArchetype, StepBlock, StructuredWorkout, WorkoutStep } from '../types';
+import type {
+	SessionArchetype,
+	StepBlock,
+	StepKind,
+	StructuredWorkout,
+	WorkoutStep,
+} from '../types';
 import { defaultCircuit } from './machines';
+import { COOLDOWN_STRETCHES, WARMUP_DRILLS, type Drill } from './mobility';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { pacesFromVdot, vdotFromBaseline } from './vdot';
 
@@ -184,6 +191,19 @@ function cooldownStep(paces?: TrainingPaces): WorkoutStep {
 	};
 }
 
+function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
+	return {
+		repeat: 1,
+		label,
+		steps: drills.map<WorkoutStep>((d) => ({
+			kind,
+			label: d.name,
+			durationSec: d.durationSec,
+			targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
+		})),
+	};
+}
+
 function singleRunWorkout(
 	type: SessionArchetype,
 	distanceKm: number,
@@ -215,6 +235,7 @@ function singleRunWorkout(
 
 function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorkout {
 	const blocks: StepBlock[] = [
+		drillBlock('Warm-up drills', WARMUP_DRILLS.slice(1), 'warmup'),
 		{ repeat: 1, steps: [warmupStep(paces)] },
 		{
 			repeat: 1,
@@ -232,6 +253,7 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 			],
 		},
 		{ repeat: 1, steps: [cooldownStep(paces)] },
+		drillBlock('Stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
@@ -241,6 +263,7 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 
 function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
 	const blocks: StepBlock[] = [
+		drillBlock('Warm-up drills', WARMUP_DRILLS.slice(1), 'warmup'),
 		{ repeat: 1, steps: [warmupStep(paces)] },
 		{
 			repeat: reps,
@@ -267,6 +290,7 @@ function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout
 			],
 		},
 		{ repeat: 1, steps: [cooldownStep(paces)] },
+		drillBlock('Stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
@@ -279,19 +303,7 @@ function strengthWorkout(
 	reps: number,
 ): StructuredWorkout {
 	const blocks: StepBlock[] = [
-		{
-			repeat: 1,
-			label: 'Warm-up',
-			steps: [
-				{
-					kind: 'warmup',
-					label: 'Activation',
-					durationSec: 300,
-					targetRpe: [2, 3],
-					note: '5 min easy cardio, then dynamic drills (leg swings, hip openers, glute bridges).',
-				},
-			],
-		},
+		drillBlock('Warm-up drills', WARMUP_DRILLS, 'warmup'),
 		{
 			repeat: 1,
 			label: 'Circuit',
@@ -305,20 +317,9 @@ function strengthWorkout(
 				note: `Rest ~60–90s between sets. ${m.muscles.join(', ')}.`,
 			})),
 		},
-		{
-			repeat: 1,
-			label: 'Cool-down',
-			steps: [
-				{
-					kind: 'cooldown',
-					label: 'Stretch',
-					durationSec: 300,
-					note: 'Gentle stretches for the muscles you trained.',
-				},
-			],
-		},
+		drillBlock('Cool-down', COOLDOWN_STRETCHES, 'cooldown'),
 	];
-	return { blocks, estimatedDurationMin: 45 };
+	return { blocks, estimatedDurationMin: 50 };
 }
 
 /* ------------------------------- engine ---------------------------------- */
