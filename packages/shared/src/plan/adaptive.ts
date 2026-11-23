@@ -49,6 +49,8 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 			...(input.baseline.recentTimes == null && fitness.effectiveVdot != null
 				? { effectiveVdot: fitness.effectiveVdot }
 				: {}),
+			...(fitness.likedTypes.length ? { likedTypes: fitness.likedTypes } : {}),
+			...(fitness.dislikedTypes.length ? { dislikedTypes: fitness.dislikedTypes } : {}),
 		},
 	};
 

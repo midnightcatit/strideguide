@@ -86,6 +86,10 @@ export interface Baseline {
 	 * runner has actually been running.
 	 */
 	effectiveVdot?: number;
+	/** Session types the runner rated well, from thumbs feedback. */
+	likedTypes?: string[];
+	/** Session types the runner rated poorly, from thumbs feedback. */
+	dislikedTypes?: string[];
 	/**
 	 * How the runner wants the plan to build: a gentle ease-in, a standard steady
 	 * climb, or a bolder push. Sets how fast weekly volume grows and how the plan
