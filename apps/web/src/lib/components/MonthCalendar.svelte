@@ -7,6 +7,7 @@
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
+	import { isSkipped, skipSession } from '$lib/skipped.svelte';
 	import { modal } from '$lib/actions';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
@@ -124,7 +125,7 @@
 		return first.toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
 	});
 
-	const sheetSessions = $derived(sheetIso ? (byDate.get(sheetIso) ?? []) : []);
+	const sheetSessions = $derived((sheetIso ? (byDate.get(sheetIso) ?? []) : []).filter((s) => !isSkipped(s.id)));
 	const sheetWeek = $derived.by(() => {
 		const iso = sheetIso;
 		if (!iso) return undefined;
@@ -149,16 +150,6 @@
 		monthOffset += delta;
 	}
 
-	function tintFor(s: ClientSession): string {
-		if (s.modality === 'strength') return 'bg-tint-strength';
-		if (s.modality === 'mobility') return 'bg-tint-mobility';
-		if (s.modality === 'recovery' || s.modality === 'walking') return 'bg-tint-easy';
-		if (s.type === 'cross-train') return 'bg-tint-crosstrain';
-		const i = s.prescription?.intensity;
-		if (i === 'hard') return 'bg-tint-hard';
-		if (i === 'steady') return 'bg-tint-steady';
-		return 'bg-tint-easy';
-	}
 
 	async function addFromLibrary(w: LibraryWorkout) {
 		const date = pickerDate;
@@ -254,7 +245,7 @@
 			<section class="border-t border-hairline pt-4 first:border-t-0 first:pt-0">
 				<p class="tabular sticky top-16 z-10 -mx-1 bg-paper px-1 py-1 text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
 				<div class="mt-2 grid gap-3">
-					{#each day.sessions as s (s.id)}
+					{#each day.sessions.filter((s) => !isSkipped(s.id)) as s (s.id)}
 						{@render card(s)}
 					{/each}
 				</div>
@@ -343,6 +334,10 @@
 			playTarget = detailTarget;
 			detailTarget = null;
 		}}
+		onSkip={() => {
+			if (detailTarget) skipSession(detailTarget.id);
+			detailTarget = null;
+		}}
 	/>
 {/if}
 
@@ -351,7 +346,6 @@
 		session={s}
 		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
 		active={false}
-		tint={tintFor(s)}
 		logged={loggedBySession.get(s.id) ?? null}
 		onRemove={s.prescription?.added ? () => removeAdded(s.id) : undefined}
 		onLog={() => (logTarget = s)}

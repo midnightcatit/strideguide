@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, findDrill, findMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, WARMUP_DRILLS, findDrill, findMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -16,6 +16,7 @@
 		onClose,
 		onLog,
 		onStart,
+		onSkip,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -23,6 +24,7 @@
 		onClose: () => void;
 		onLog?: () => void;
 		onStart?: () => void;
+		onSkip?: () => void;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
@@ -38,6 +40,7 @@
 	let showAllRows = $state(false);
 	let openMachine = $state<string | null>(null);
 	let showWhyDetail = $state(false);
+	let showWarmup = $state(false);
 	let openDrill = $state<string | null>(null);
 
 	onMount(async () => {
@@ -170,6 +173,50 @@
 				{#if band}<span class="tabular">{band}</span>{/if}
 				{#if minutes}<span class="tabular">{minutes} min</span>{/if}
 			</div>
+
+			<!-- Controls -->
+			<div class="mt-3 flex items-center gap-1.5">
+				<button type="button" disabled title="Coming soon" aria-label="Link workout, coming soon" class="flex h-9 w-9 items-center justify-center rounded-full border border-paper/20 text-paper/40">
+					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M8.5 11.5a3 3 0 0 1 0-4.2l2-2a3 3 0 0 1 4.2 4.2l-1 1" />
+						<path d="M11.5 8.5a3 3 0 0 1 0 4.2l-2 2a3 3 0 0 1-4.2-4.2l1-1" />
+					</svg>
+				</button>
+				<button
+					type="button"
+					aria-pressed={showWarmup}
+					onclick={() => (showWarmup = !showWarmup)}
+					aria-label="Warm-up"
+					class="flex h-9 w-9 items-center justify-center rounded-full border text-paper/85 hover:border-paper hover:text-paper {showWarmup
+						? 'border-paper bg-paper/15'
+						: 'border-paper/20'}"
+				>
+					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M10 3v14" />
+						<path d="M7.5 5.5 10 3l2.5 2.5" />
+						<path d="M7.5 14.5 10 17l2.5-2.5" />
+						<path d="M3.5 10h2.5" />
+						<path d="M14 10h2.5" />
+					</svg>
+				</button>
+				{#if onLog}
+					<button type="button" onclick={onLog} aria-label="Workout notes" class="flex h-9 w-9 items-center justify-center rounded-full border border-paper/20 text-paper/85 hover:border-paper hover:text-paper">
+						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M5 3.5h7l3 3v10H5z" />
+							<path d="M8 9h4" />
+							<path d="M8 12h4" />
+						</svg>
+					</button>
+				{/if}
+				{#if onSkip}
+					<button type="button" onclick={onSkip} aria-label="Skip this workout for now" class="flex h-9 w-9 items-center justify-center rounded-full border border-paper/20 text-paper/85 hover:border-paper hover:text-paper">
+						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M5 5l6 5-6 5z" />
+							<path d="M13 5v10" />
+						</svg>
+					</button>
+				{/if}
+			</div>
 		</div>
 	</div>
 
@@ -197,6 +244,24 @@
 				{/if}
 			</div>
 			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
+
+			{#if showWarmup}
+				<section class="mt-6" aria-labelledby="warmup">
+					<h2 id="warmup" class="tabular text-xs uppercase tracking-widest text-steel">Warm-up</h2>
+					<p class="mt-1 text-sm text-steel">Do this before the session. Keep it moving, with no long holds.</p>
+					<ul class="mt-2 divide-y divide-hairline">
+						{#each WARMUP_DRILLS as d (d.name)}
+							<li class="flex items-baseline justify-between gap-3 py-2 text-sm">
+								<span class="min-w-0">
+									{d.name}
+									<span class="block text-xs text-steel">{d.why}</span>
+								</span>
+								<span class="tabular shrink-0 text-steel">{formatClock(d.durationSec)}</span>
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
 
 			<!-- Why this workout: one summed-up narrative -->
 			<section class="mt-6" aria-labelledby="why">
