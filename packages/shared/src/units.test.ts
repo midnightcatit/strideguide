@@ -5,6 +5,7 @@ import {
 	formatPace,
 	formatPaceBand,
 	kmToMiles,
+	localizeUnits,
 	milesToKm,
 	pacePerKmToPerMile,
 } from './units';
@@ -30,5 +31,21 @@ describe('units', () => {
 
 	it('formats a pace band', () => {
 		expect(formatPaceBand([295, 305], 'metric')).toBe('4:55–5:05 /km');
+	});
+
+	it('localizes metric prose distances and paces for imperial readers', () => {
+		expect(localizeUnits('a 5 km time trial', 'imperial')).toBe('a 3.1 mi time trial');
+		expect(localizeUnits('ran 16–24 km a week', 'imperial')).toBe('ran 9.9–14.9 mi a week');
+		expect(localizeUnits('a 5-km race and 6 kilometres', 'imperial')).toBe(
+			'a 3.1-mile race and 3.7 mi',
+		);
+		expect(localizeUnits('hold 5:00 /km on easy days', 'imperial')).toBe(
+			'hold 8:03 /mi on easy days',
+		);
+	});
+
+	it('leaves metric prose untouched', () => {
+		const text = 'a 5 km time trial at 5:00 /km';
+		expect(localizeUnits(text, 'metric')).toBe(text);
 	});
 });
