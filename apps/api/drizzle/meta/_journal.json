@@ -57,6 +57,13 @@
       "when": 1795441621587,
       "tag": "0007_wonderful_sebastian_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1795443702027,
+      "tag": "0008_condemned_galactus",
+      "breakpoints": true
     }
   ]
 }

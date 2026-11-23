@@ -81,7 +81,11 @@ plans.get('/current', async (c) => {
 	return c.json({
 		goal,
 		plan,
-		sessionStates: states.map((s) => ({ sessionId: s.sessionId, state: s.state })),
+		sessionStates: states.map((s) => ({
+			sessionId: s.sessionId,
+			state: s.state,
+			progress: s.progress ?? null,
+		})),
 		weeks: weeks.map((w) => ({
 			...w,
 			sessions: sessions
@@ -216,13 +220,14 @@ plans.post(
 		'json',
 		z.object({
 			state: z.union([z.literal('started'), z.literal('skipped'), z.null()]),
+			progress: z.string().max(200).nullable().optional(),
 		}),
 	),
 	async (c) => {
 		const user = c.get('user')!;
 		const db = c.get('db');
 		const id = c.req.param('id');
-		const { state } = c.req.valid('json');
+		const { state, progress } = c.req.valid('json');
 
 		if (!(await sessionOwnedBy(db, user.id, id))) return c.json({ error: 'Not found.' }, 404);
 
@@ -235,10 +240,10 @@ plans.post(
 		} else {
 			await db
 				.insert(schema.sessionStates)
-				.values({ userId: user.id, sessionId: id, state })
+				.values({ userId: user.id, sessionId: id, state, progress: progress ?? null })
 				.onConflictDoUpdate({
 					target: [schema.sessionStates.userId, schema.sessionStates.sessionId],
-					set: { state },
+					set: progress === undefined ? { state } : { state, progress },
 				});
 		}
 		return c.json({ ok: true, state });

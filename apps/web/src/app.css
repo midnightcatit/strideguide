@@ -26,6 +26,7 @@
 	--warn: #b45309;
 	--warn-wash: rgba(180, 83, 9, 0.12);
 	--danger: #b42318;
+	--pressure: #4b6fb0;
 	--tint-easy: #ddebe1;
 	--tint-steady: #f2e6cb;
 	--tint-hard: #f3dcd8;
@@ -72,6 +73,7 @@
 		--warn: #e0a458;
 		--warn-wash: rgba(224, 164, 88, 0.16);
 		--danger: #f2726f;
+		--pressure: #7fa3e0;
 		--tint-easy: #1a2e23;
 		--tint-steady: #332814;
 		--tint-hard: #331f1c;
@@ -119,6 +121,7 @@
 	--warn: #e0a458;
 	--warn-wash: rgba(224, 164, 88, 0.16);
 	--danger: #f2726f;
+	--pressure: #7fa3e0;
 	--tint-easy: #1a2e23;
 	--tint-steady: #332814;
 	--tint-hard: #331f1c;
@@ -480,4 +483,16 @@ summary {
 	scrollbar-width: none;
 }
 
-
+/* Pressure heat for the calendar: one hue, four steps, so it reads as load. */
+.pressure-1 {
+	background: color-mix(in oklab, var(--pressure) 12%, var(--paper));
+}
+.pressure-2 {
+	background: color-mix(in oklab, var(--pressure) 30%, var(--paper));
+}
+.pressure-3 {
+	background: color-mix(in oklab, var(--pressure) 52%, var(--paper));
+}
+.pressure-4 {
+	background: color-mix(in oklab, var(--pressure) 74%, var(--paper));
+}

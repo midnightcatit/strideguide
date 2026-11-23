@@ -35,6 +35,7 @@ settings.put(
 				.max(new Date().getUTCFullYear() - 10)
 				.optional(),
 			eventName: z.string().trim().max(80).optional(),
+			autoAdvance: z.boolean().optional(),
 		}),
 	),
 	async (c) => {

@@ -15,6 +15,8 @@ export interface Prefs {
 	birthYear?: number;
 	/** The event they are training for, in their words (e.g. "Chicago Marathon"). */
 	eventName?: string;
+	/** In the workout player, move to the next step automatically. */
+	autoAdvance?: boolean;
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };

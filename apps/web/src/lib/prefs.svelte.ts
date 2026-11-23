@@ -19,6 +19,7 @@ export async function loadPrefs(): Promise<void> {
 		prefs.name = res.prefs.name;
 		prefs.birthYear = res.prefs.birthYear;
 		prefs.eventName = res.prefs.eventName;
+		prefs.autoAdvance = res.prefs.autoAdvance;
 	} catch {
 		// unauthenticated or offline: keep defaults
 	}
@@ -85,6 +86,16 @@ export function sessionLabel(session: LabelSession): string {
 		if (rep?.distanceM) return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 	}
 	return session.title ?? session.type;
+}
+
+/** Turn auto-advance in the workout player on or off. */
+export async function setAutoAdvance(v: boolean): Promise<void> {
+	prefs.autoAdvance = v;
+	try {
+		await api.putSettings({ autoAdvance: v });
+	} catch {
+		// best-effort
+	}
 }
 
 /** Save the personal details. Empty strings clear a field. */
