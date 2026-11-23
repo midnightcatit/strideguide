@@ -1,11 +1,24 @@
 <script lang="ts">
-	// A settings subpage shows its title and nothing else. It deliberately carries no
-	// back control, so a tap can never land on a previous settings subpage. The way
-	// out of a subpage is the Settings tab in the app header, which goes back to the
-	// settings list at /settings.
-	let { title }: { title: string } = $props();
+	// A settings subpage keeps a back control so the runner can step back to the
+	// settings list, or to a parent, without hunting for the tab. It sticks just
+	// under the app header so it stays reachable while the page scrolls. The
+	// settings list itself uses its own header and carries no back control.
+	let {
+		title,
+		back = '/settings',
+		backLabel = 'Settings',
+	}: { title: string; back?: string; backLabel?: string } = $props();
 </script>
 
-<header class="mb-6">
-	<h1 class="font-display text-2xl font-bold">{title}</h1>
-</header>
+<div
+	class="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-20 -mx-4 mb-4 border-b border-hairline bg-paper/95 px-4 py-1.5 backdrop-blur"
+>
+	<a
+		href={back}
+		class="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-sm text-steel hover:text-ink"
+	>
+		<span aria-hidden="true">‹</span> {backLabel}
+	</a>
+</div>
+
+<h1 class="font-display text-2xl font-bold">{title}</h1>

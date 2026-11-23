@@ -49,8 +49,15 @@ function returnUrl(
 	return url.toString();
 }
 
-/** List the caller's connections and which providers the server can offer. */
-connections.get('/', requireAuth, async (c) => {
+/**
+ * List the caller's connections and which providers the server can offer.
+ *
+ * Served at /connections/list rather than /connections. The Worker route for
+ * this API is run.midnightcatit.com/connections/*, and a trailing wildcard does
+ * not match the bare path, so /connections and /connections/ fall through to the
+ * web app and 404. A path with a segment matches and reaches the API.
+ */
+connections.get('/list', requireAuth, async (c) => {
 	const user = c.get('user')!;
 	const rows = await c
 		.get('db')
