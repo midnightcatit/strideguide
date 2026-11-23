@@ -186,7 +186,10 @@ describe('generatePlan (preferences)', () => {
 		const p = generatePlan({
 			...base,
 			availableDays: [0, 2, 4, 6],
-			baseline: { experience: 'intermediate', crossTraining: ['soccer'], crossTrainingDays: [6] },
+			baseline: {
+				experience: 'intermediate',
+				crossTrainingSchedule: [{ activity: 'soccer', days: [6] }],
+			},
 		});
 		const w1 = p.weeks[0]!.sessions;
 		const sport = w1.find((s) => s.type === 'cross-train');

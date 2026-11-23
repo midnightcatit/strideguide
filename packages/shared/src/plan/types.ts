@@ -63,6 +63,8 @@ export interface PlanInput {
 	targetDate?: string;
 	/** Machine names available at the gym (defaults to the PF set). */
 	equipment?: string[];
+	/** Sports or cross-training sessions logged in the last seven days. */
+	recentCrossTraining?: number;
 	/**
 	 * Optional per-week shaping from the model, aligned to week order. Each choice
 	 * is validated against the profile; anything invalid falls back to the engine.

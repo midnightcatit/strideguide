@@ -26,7 +26,13 @@ export interface AdaptLog {
 	createdAt?: string | number | null;
 }
 
-export type AdjustmentKind = 'missed' | 'volume-under' | 'volume-over' | 'fatigue' | 'run-spike';
+export type AdjustmentKind =
+	| 'missed'
+	| 'volume-under'
+	| 'volume-over'
+	| 'fatigue'
+	| 'run-spike'
+	| 'cross-load';
 
 export interface Adjustment {
 	id: string;
@@ -95,6 +101,26 @@ export function suggestAdjustments(
 			severity: 'info',
 			title: `${missed.length} session${missed.length === 1 ? '' : 's'} missed`,
 			detail: 'Absorb it and carry on. Skip what is gone rather than doubling up.',
+		});
+	}
+
+	// --- cross-training load: the sport is training in its own right ---
+	const typeById = new Map<string, string>();
+	for (const w of weeks) for (const s of w.sessions) typeById.set(s.id, s.type);
+	const weekAgo = addDays(todayIso, -6);
+	const recentCross = logs.filter((l) => {
+		if (!l.sessionId || typeById.get(l.sessionId) !== 'cross-train') return false;
+		const d = isoDay(l.createdAt);
+		return !!d && d >= weekAgo && d <= todayIso;
+	}).length;
+	if (recentCross >= 3) {
+		out.push({
+			id: 'cross-load',
+			kind: 'cross-load',
+			severity: 'info',
+			title: `${recentCross} sports sessions this week`,
+			detail:
+				'The sport counts as a hard session. Keep the running easy and hold the strength at its trimmed size.',
 		});
 	}
 

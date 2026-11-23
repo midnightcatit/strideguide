@@ -320,7 +320,46 @@ plans.post(
 		const availableDays = body.availableDays?.length ? body.availableDays : [0, 2, 4];
 
 		const baseline = (body.baseline ?? {}) as Baseline;
-		const planInput = { profile, baseline, availableDays, startDate, targetDate: body.targetDate };
+
+		// Sports logged in the last seven days. A heavy sport week already carries
+		// load, so the plan trims the strength work to match.
+		const since = Date.now() - 7 * 86400000;
+		const userLogs = await c
+			.get('db')
+			.select()
+			.from(schema.logs)
+			.where(eq(schema.logs.userId, user.id));
+		const recentIds = userLogs
+			.filter((l) => {
+				const raw = l.createdAt as unknown;
+				const t = raw instanceof Date ? raw.getTime() : Number(raw) * 1000;
+				return t >= since && !!l.sessionId;
+			})
+			.map((l) => l.sessionId as string);
+		const recentCrossTraining = recentIds.length
+			? (
+					await Promise.all(
+						chunk(recentIds, 90).map((part) =>
+							c
+								.get('db')
+								.select()
+								.from(schema.sessionsPlan)
+								.where(inArray(schema.sessionsPlan.id, part)),
+						),
+					)
+				)
+					.flat()
+					.filter((row) => row.type === 'cross-train').length
+			: 0;
+
+		const planInput = {
+			profile,
+			baseline,
+			availableDays,
+			startDate,
+			targetDate: body.targetDate,
+			recentCrossTraining,
+		};
 		const baseDraft = generatePlan(planInput);
 
 		// The engine lays the plan out instantly. Then the model shapes each week

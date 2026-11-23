@@ -91,8 +91,8 @@ export interface Baseline {
 	crossTraining?: string[];
 	/** Any other activity, in the user's words. */
 	customActivity?: string;
-	/** Days the user does their cross-training or sport, 0 = Monday. */
-	crossTrainingDays?: number[];
+	/** Each activity and the days it happens on, 0 = Monday. */
+	crossTrainingSchedule?: { activity: string; days: number[] }[];
 	/** Terrain the user mostly runs on. */
 	terrain?: TerrainPreference;
 	/** Free-text niggles the coach should know about. */
@@ -128,6 +128,8 @@ export interface SessionPrescription {
 	/** For strength sessions. */
 	blocks?: StrengthSet[];
 	notes?: string;
+	/** Why this session has the amount it has (shown on the card). */
+	why?: string;
 	/** Structured, guided step sequence (warm-up → set → rest → cool-down). */
 	workout?: StructuredWorkout;
 }

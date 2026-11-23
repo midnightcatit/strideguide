@@ -476,11 +476,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		? [...new Set(input.availableDays)]
 		: [0, 2, 4]
 	).sort((a, b) => a - b);
-	// Days the user plays a sport or does another activity: the running keeps off
-	// them, and a named cross-training session takes their place.
-	const crossDays = (input.baseline.crossTrainingDays ?? [])
-		.filter((d) => allDays.includes(d))
-		.sort((a, b) => a - b);
+	// Each sport or activity on its own days: the running keeps off them, and a
+	// named cross-training session takes their place.
+	const crossPairs: { day: number; activity: string }[] = [];
+	for (const entry of input.baseline.crossTrainingSchedule ?? []) {
+		for (const d of entry.days ?? []) {
+			if (allDays.includes(d)) crossPairs.push({ day: d, activity: entry.activity });
+		}
+	}
+	const crossDays = [...new Set(crossPairs.map((p) => p.day))].sort((a, b) => a - b);
 	const runDays = allDays.filter((d) => !crossDays.includes(d));
 	const days = runDays.length >= 2 ? runDays : allDays;
 	const longDay = days[days.length - 1]!;
@@ -714,9 +718,8 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		// Mobility / stretching on a rest day, when the user asked for it there.
 		// The sport itself, on its day, named.
-		for (const d of crossDays) {
-			const sport = input.baseline.crossTraining?.[0];
-			const title = sport ? sport.charAt(0).toUpperCase() + sport.slice(1) : TITLE['cross-train'];
+		for (const { day: d, activity } of crossPairs) {
+			const title = activity.charAt(0).toUpperCase() + activity.slice(1);
 			sessions.push({
 				day: d,
 				slot: 'AM',
@@ -728,7 +731,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					summary: 'The sport you play, as part of the week.',
 					intensity: 'steady',
 					targetRpe: [4, 7],
-					notes: 'Play as you normally would. We keep the running off this day so it does not stack.',
+					notes: `Play as you normally would. We keep the running off ${title} day so it does not stack.`,
 					workout: crossTrainWorkout(),
 				},
 				durationMin: 45,
@@ -782,7 +785,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 function strengthSession(day: number, slot: string, phase: string, input: PlanInput): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
-	const circuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment);
+	const heavySport = (input.recentCrossTraining ?? 0) >= 3;
+	const fullCircuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment);
+	// A heavy sport week already carries load, so the circuit comes down a size.
+	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
 	const sets = circuit.map((m) => ({
 		machine: m.name,
@@ -794,6 +800,9 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 	}));
 	const type: SessionArchetype = mode === 'machines' ? 'machine-circuit' : 'full-body-strength';
 	const noun = mode === 'bodyweight' ? 'moves' : mode === 'both' ? 'exercises' : 'machines';
+	const why = heavySport
+		? `Trimmed to ${circuit.length} ${noun}. You logged ${input.recentCrossTraining} sports sessions in the last week, which already count as training.`
+		: undefined;
 	return {
 		day,
 		slot,
@@ -809,6 +818,7 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 				mode === 'machines'
 					? 'Log weight per set; add load when you clear the top rep target.'
 					: 'Log reps. Make it harder with a slower lowering phase, a harder variation, or a longer hold.',
+			why,
 			workout: strengthWorkout(circuit, reps),
 		},
 		durationMin: input.baseline.sessionMinutes ?? 45,

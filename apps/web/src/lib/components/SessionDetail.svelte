@@ -286,6 +286,9 @@
 				{/if}
 			</div>
 			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
+			{#if p.why}
+				<p class="mt-3 rounded-lg bg-signal-wash p-3 text-sm leading-relaxed text-signal-ink">{p.why}</p>
+			{/if}
 
 			{#if showWarmup}
 				<section class="mt-6" aria-labelledby="warmup">
