@@ -6,6 +6,7 @@
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
+	import InfoButton from '$lib/components/InfoButton.svelte';
 	import { modal } from '$lib/actions';
 
 	let {
@@ -173,8 +174,28 @@
 
 	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
 		<div class="mx-auto max-w-2xl px-4 py-5 pb-8 reveal">
-			<IntensityLadder intensity={p.intensity} />
-			{#if p.summary}<p class="mt-2 text-sm text-steel">{p.summary}</p>{/if}
+			<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-steel">
+				<IntensityLadder intensity={p.intensity} />
+				{#if p.targetZone}
+					<span class="flex items-center gap-1">
+						{p.targetZone}
+						<InfoButton
+							term="Training zone"
+							definition="Z1 to Z2 is an easy effort you can hold while talking in full sentences. Z3 to Z4 is comfortably hard, where you can speak only a few words at a time."
+						/>
+					</span>
+				{/if}
+				{#if p.targetRpe}
+					<span class="flex items-center gap-1">
+						RPE {p.targetRpe[0]} to {p.targetRpe[1]}
+						<InfoButton
+							term="RPE"
+							definition="How hard the session should feel, on a scale of 1 to 10. One is a walk, ten is everything you have."
+						/>
+					</span>
+				{/if}
+			</div>
+			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
 
 			<!-- Why this workout: one summed-up narrative -->
 			<section class="mt-6" aria-labelledby="why">

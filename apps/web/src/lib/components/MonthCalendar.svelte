@@ -2,7 +2,9 @@
 	import { onMount } from 'svelte';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { fmtDistance } from '$lib/prefs.svelte';
-	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
+	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
+	import { api } from '$lib/api';
+	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { modal } from '$lib/actions';
@@ -12,6 +14,7 @@
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 
 	const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -21,14 +24,16 @@
 	let detailTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
 	let logTarget = $state<ClientSession | null>(null);
+	let pickerDate = $state<string | null>(null);
 
 	// Back (browser or hardware) closes the topmost overlay: a session, then the day sheet.
 	overlayHistory(
-		() => !!(sheetIso || detailTarget || playTarget || logTarget),
+		() => !!(sheetIso || pickerDate || detailTarget || playTarget || logTarget),
 		() => {
 			if (logTarget) logTarget = null;
 			else if (playTarget) playTarget = null;
 			else if (detailTarget) detailTarget = null;
+			else if (pickerDate) pickerDate = null;
 			else sheetIso = null;
 		},
 	);
@@ -144,6 +149,38 @@
 		monthOffset += delta;
 	}
 
+	function tintFor(s: ClientSession): string {
+		if (s.modality === 'strength') return 'bg-tint-strength';
+		if (s.modality === 'mobility') return 'bg-tint-mobility';
+		if (s.modality === 'recovery' || s.modality === 'walking') return 'bg-tint-easy';
+		if (s.type === 'cross-train') return 'bg-tint-crosstrain';
+		const i = s.prescription?.intensity;
+		if (i === 'hard') return 'bg-tint-hard';
+		if (i === 'steady') return 'bg-tint-steady';
+		return 'bg-tint-easy';
+	}
+
+	async function addFromLibrary(w: LibraryWorkout) {
+		const date = pickerDate;
+		pickerDate = null;
+		if (!date) return;
+		try {
+			await api.addWorkout(date, w.id);
+			sheetIso = date;
+			reloadPlan();
+		} catch {
+			// the picker is closed either way; the plan refresh will show the truth
+		}
+	}
+	async function removeAdded(id: string) {
+		try {
+			await api.removeWorkout(id);
+			reloadPlan();
+		} catch {
+			// ignore
+		}
+	}
+
 	/** Upcoming sessions from today, for the list view. */
 	const listDays = $derived.by(() => {
 		const dates = [...byDate.keys()].filter((d) => d >= todayIso).sort();
@@ -212,16 +249,23 @@
 	</div>
 	</div>
 {:else}
-	<div class="mt-4 space-y-6">
+	<div class="mx-auto mt-4 max-w-2xl space-y-6">
 		{#each listDays as day (day.date)}
-			<div>
-				<p class="tabular text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
-				<div class="mt-2 grid gap-3 sm:grid-cols-2">
+			<section class="border-t border-hairline pt-4 first:border-t-0 first:pt-0">
+				<p class="tabular sticky top-16 z-10 -mx-1 bg-paper px-1 py-1 text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
+				<div class="mt-2 grid gap-3">
 					{#each day.sessions as s (s.id)}
 						{@render card(s)}
 					{/each}
 				</div>
-			</div>
+				<button
+					type="button"
+					onclick={() => (pickerDate = day.date)}
+					class="mt-2 text-xs text-signal-ink hover:underline"
+				>
+					＋ Add a workout
+				</button>
+			</section>
 		{/each}
 	</div>
 {/if}
@@ -245,9 +289,20 @@
 						<p class="text-sm text-steel">Rest day. Nothing scheduled.</p>
 					</Card>
 				{/if}
+				<button
+					type="button"
+					onclick={() => (pickerDate = sheetIso)}
+					class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-hairline-strong py-3 text-sm text-signal-ink hover:border-signal"
+				>
+					＋ Add a workout
+				</button>
 			</div>
 		</div>
 	</div>
+{/if}
+
+{#if pickerDate}
+	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
 {/if}
 
 {#if playTarget}
@@ -296,7 +351,9 @@
 		session={s}
 		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
 		active={false}
+		tint={tintFor(s)}
 		logged={loggedBySession.get(s.id) ?? null}
+		onRemove={s.prescription?.added ? () => removeAdded(s.id) : undefined}
 		onLog={() => {
 			sheetIso = null;
 			logTarget = s;

@@ -1,6 +1,6 @@
 /** Client-side plan shapes as returned by the API, plus small display helpers. */
 
-export type Modality = 'running' | 'strength' | 'mobility' | 'recovery';
+export type Modality = 'running' | 'walking' | 'strength' | 'mobility' | 'recovery';
 
 export interface ClientStep {
 	kind: 'warmup' | 'work' | 'recovery' | 'rest' | 'cooldown';
@@ -39,6 +39,10 @@ export interface ClientPrescription {
 	blocks?: { machine: string; sets: { reps: number; weightKg: number }[] }[];
 	notes?: string;
 	workout?: ClientWorkout;
+	/** True when the user added this session from the library (removable). */
+	added?: boolean;
+	/** Library id, when the session was added from the library. */
+	libraryId?: string;
 }
 
 export interface ClientSession {
@@ -101,6 +105,33 @@ export function addDaysIso(iso: string, n: number): string {
 	const d = new Date(`${iso}T00:00:00Z`);
 	d.setUTCDate(d.getUTCDate() + n);
 	return d.toISOString().slice(0, 10);
+}
+
+/** Friendly, plain-English names for the internal session type slugs. */
+export const SESSION_TYPE_LABELS: Record<string, string> = {
+	easy: 'Easy run',
+	recovery: 'Recovery run',
+	long: 'Long run',
+	steady: 'Steady run',
+	tempo: 'Tempo run',
+	threshold: 'Threshold',
+	interval: 'Intervals',
+	hills: 'Hill reps',
+	fartlek: 'Fartlek',
+	strides: 'Strides',
+	progression: 'Progression run',
+	'race-pace': 'Goal pace',
+	race: 'Race',
+	'machine-circuit': 'Strength circuit',
+	'full-body-strength': 'Strength',
+	mobility: 'Mobility',
+	'cross-train': 'Cross-train',
+	'walk-run': 'Walk-run',
+	walk: 'Walk',
+};
+
+export function sessionTypeLabel(type: string): string {
+	return SESSION_TYPE_LABELS[type] ?? type.replace(/-/g, ' ');
 }
 
 export function dayIndexInWeek(weekStart: string, iso: string): number {

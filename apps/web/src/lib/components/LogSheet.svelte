@@ -4,6 +4,7 @@
 	import { fmtPace, prefs } from '$lib/prefs.svelte';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { modal } from '$lib/actions';
+	import InfoButton from '$lib/components/InfoButton.svelte';
 	let {
 		session,
 		eyebrow,
@@ -163,7 +164,7 @@
 		</div>
 		<div class="mt-3 flex items-baseline justify-between">
 			<span class="text-xs text-steel">Pace (auto)</span>
-			<span class="tabular text-lg">{paceSecPerKm ? fmtPace(paceSecPerKm) : '–'}</span>
+			<span class="tabular text-base">{paceSecPerKm ? fmtPace(paceSecPerKm) : '–'}</span>
 		</div>
 		<label class="mt-3 block text-xs text-steel">
 			Avg HR (optional)
@@ -212,7 +213,13 @@
 	{/if}
 
 	<fieldset class="mt-4">
-		<legend class="text-xs uppercase tracking-widest text-steel">Effort (RPE)</legend>
+		<legend class="flex items-center gap-1 text-xs uppercase tracking-widest text-steel">
+			Effort (RPE)
+			<InfoButton
+				term="RPE"
+				definition="How hard the session felt, on a scale of 1 to 10. One is a walk, ten is everything you have."
+			/>
+		</legend>
 		<div class="mt-2 grid grid-cols-5 gap-1">
 			{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as v (v)}
 				<button

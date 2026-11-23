@@ -134,7 +134,7 @@ export const sessionsPlan = sqliteTable(
 			.references(() => planWeeks.id, { onDelete: 'cascade' }),
 		day: integer('day').notNull(),
 		slot: text('slot'),
-		modality: text('modality', { enum: ['running', 'strength', 'mobility', 'recovery'] }).notNull(),
+		modality: text('modality', { enum: ['running', 'walking', 'strength', 'mobility', 'recovery'] }).notNull(),
 		type: text('type').notNull(),
 		title: text('title'),
 		purpose: text('purpose'),
