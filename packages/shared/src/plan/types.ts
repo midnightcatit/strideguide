@@ -41,6 +41,16 @@ export interface PlanDraft {
 	};
 }
 
+/** A quality session kind the model may choose, if the profile allows it. */
+export type QualityKind = 'tempo' | 'hills' | 'interval' | 'race-pace';
+
+/** Per-week choices the model can make; the engine validates every one. */
+export interface WeekShape {
+	qualityKind?: QualityKind;
+	/** One short line on what the week is for. */
+	emphasis?: string;
+}
+
 export interface PlanInput {
 	/** The goal profile driving the plan (from @strideguide/shared/profiles). */
 	profile: { slug: string; name: string; modalityMix: { running: number; strength: number; mobility: number; recovery: number }; progressionRules: { phase: string; weeks: number; volumeStep: number; deload: boolean }[]; sessionTypes: SessionArchetype[]; defaultWeeks: number };
@@ -53,6 +63,11 @@ export interface PlanInput {
 	targetDate?: string;
 	/** Machine names available at the gym (defaults to the PF set). */
 	equipment?: string[];
+	/**
+	 * Optional per-week shaping from the model, aligned to week order. Each choice
+	 * is validated against the profile; anything invalid falls back to the engine.
+	 */
+	weekShapes?: (WeekShape | undefined)[];
 }
 
 export interface TrainingPaces {

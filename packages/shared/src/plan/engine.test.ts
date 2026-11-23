@@ -230,3 +230,35 @@ describe('generatePlan (preferences)', () => {
 		expect(count(growing)).toBeGreaterThan(count(holding));
 	});
 });
+
+describe('generatePlan (model shaping)', () => {
+	const base = {
+		profile: marathon,
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-12-01',
+		targetDate: '2027-05-01',
+		baseline: { experience: 'intermediate' as const },
+	};
+
+	it('applies a model-chosen quality kind when the profile allows it', () => {
+		const p = generatePlan({ ...base, weekShapes: [{ qualityKind: 'hills' }] });
+		expect(p.weeks[0]!.sessions.some((s) => s.type === 'hills')).toBe(true);
+	});
+
+	it('ignores a quality kind the profile does not allow', () => {
+		const p = generatePlan({
+			profile: wholeFitness,
+			availableDays: [1, 3, 5],
+			startDate: '2026-12-01',
+			baseline: { experience: 'beginner' },
+			weekShapes: [{ qualityKind: 'interval' }],
+		});
+		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'interval')).toBe(false);
+	});
+
+	it('keeps the engine plan when a week has no shape', () => {
+		const withShape = generatePlan({ ...base, weekShapes: [undefined, { qualityKind: 'tempo' }] });
+		const without = generatePlan(base);
+		expect(withShape.weeks.length).toBe(without.weeks.length);
+	});
+});

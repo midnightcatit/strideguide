@@ -3,9 +3,10 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { asc, and, desc, eq, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
-import type { Baseline } from '@strideguide/shared';
+import type { Baseline, QualityKind, SessionArchetype } from '@strideguide/shared';
 import { schema } from '../db';
 import { narrateAndStore, templateWeekSummary } from '../lib/narration';
+import { shapePlan } from '../lib/plan-shape';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
 
@@ -112,13 +113,28 @@ plans.post(
 		const startDate = body.startDate ?? new Date().toISOString().slice(0, 10);
 		const availableDays = body.availableDays?.length ? body.availableDays : [0, 2, 4];
 
-		const draft = generatePlan({
-			profile,
-			baseline: (body.baseline ?? {}) as Baseline,
-			availableDays,
-			startDate,
-			targetDate: body.targetDate,
+		const baseline = (body.baseline ?? {}) as Baseline;
+		const planInput = { profile, baseline, availableDays, startDate, targetDate: body.targetDate };
+		const baseDraft = generatePlan(planInput);
+
+		// The engine lays the plan out instantly. Then the model shapes each week
+		// (quality kind and emphasis) within the profile's rules. Bounded and
+		// best-effort, so a slow or invalid answer leaves the engine's plan standing.
+		const allowed = (['tempo', 'hills', 'interval', 'race-pace'] as QualityKind[]).filter((k) =>
+			profile.sessionTypes.includes(k as SessionArchetype),
+		);
+		const shapes = await shapePlan(c.env, {
+			goalName: profile.name,
+			allowed,
+			prefs: baseline as Record<string, unknown>,
+			weeks: baseDraft.weeks.map((w) => ({
+				weekNumber: w.weekNumber,
+				phase: w.phase,
+				volumeKm: w.targetVolumeKm,
+			})),
 		});
+		const draft = shapes ? generatePlan({ ...planInput, weekShapes: shapes }) : baseDraft;
+		const usedAi = !!shapes;
 
 		const goalId = crypto.randomUUID();
 		await db.insert(schema.userGoals).values({
@@ -136,7 +152,7 @@ plans.post(
 			userGoalId: goalId,
 			version: 1,
 			generatedAt: new Date(),
-			model: 'engine',
+			model: usedAi ? 'engine+ai' : 'engine',
 			params: {
 				vdot: draft.meta.vdot ?? null,
 				baseWeeklyKm: draft.meta.baseWeeklyKm,
@@ -145,15 +161,16 @@ plans.post(
 			status: 'active',
 		});
 
-		const weekRows = draft.weeks.map((w) => {
+		const weekRows = draft.weeks.map((w, i) => {
 			const weekId = crypto.randomUUID();
 			return {
 				id: weekId,
 				planId,
 				weekNumber: w.weekNumber,
 				focus: w.focus,
-				// Template summary now; AI narration replaces it in the background.
-				summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
+				// The model's week line if it shaped this week; otherwise a template.
+				summaryText:
+					shapes?.[i]?.emphasis ?? templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
 				startDate: w.startDate,
 				endDate: w.endDate,
 				phase: w.phase,
@@ -198,7 +215,7 @@ plans.post(
 			),
 		);
 
-		return c.json({ planId, goalId, weeks: draft.weeks.length, usedAi: false }, 201);
+		return c.json({ planId, goalId, weeks: draft.weeks.length, usedAi }, 201);
 	},
 );
 

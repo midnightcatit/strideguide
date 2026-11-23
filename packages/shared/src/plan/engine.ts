@@ -525,7 +525,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const goalPace = goalPaceFor(input.profile.slug, paces ?? DEFAULT_PACES);
 		qualityDays.forEach((day, qi) => {
 			let kind: 'race-pace' | 'interval' | 'tempo' | 'hills';
-			if (
+			const shaped = input.weekShapes?.[w]?.qualityKind;
+			if (shaped && input.profile.sessionTypes.includes(shaped)) {
+				// The model's choice, when the profile allows it.
+				kind = shaped;
+			} else if (
 				(phase === 'build' || phase === 'peak') &&
 				qi === 1 &&
 				input.profile.slug !== 'whole-fitness' &&
