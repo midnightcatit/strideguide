@@ -354,17 +354,8 @@
 		tint={tintFor(s)}
 		logged={loggedBySession.get(s.id) ?? null}
 		onRemove={s.prescription?.added ? () => removeAdded(s.id) : undefined}
-		onLog={() => {
-			sheetIso = null;
-			logTarget = s;
-		}}
-		onStart={() => {
-			sheetIso = null;
-			playTarget = s;
-		}}
-		onOpen={() => {
-			sheetIso = null;
-			detailTarget = s;
-		}}
+		onLog={() => (logTarget = s)}
+		onStart={() => (playTarget = s)}
+		onOpen={() => (detailTarget = s)}
 	/>
 {/snippet}
