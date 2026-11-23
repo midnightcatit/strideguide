@@ -12,3 +12,6 @@ GOOGLE_HEALTH_CLIENT_SECRET=""
 # Base64 of 32 random bytes, used to encrypt stored tokens. Generate one with:
 #   openssl rand -base64 32
 CONNECTIONS_KEY=""
+# The exact Authorization header Google sends with Health API push notifications,
+# set as the subscriber's endpoint secret. Unset keeps the webhook inert.
+GOOGLE_HEALTH_WEBHOOK_SECRET=""

@@ -25,4 +25,10 @@ export interface Env {
 	GOOGLE_HEALTH_CLIENT_SECRET?: string;
 	/** Base64-encoded 32-byte key for AES-GCM token encryption. */
 	CONNECTIONS_KEY?: string;
+	/**
+	 * The exact Authorization header value Google sends with Health API push
+	 * notifications, set as the subscriber's endpoint secret. Unset by default, so
+	 * the webhook stays inert until an operator registers a subscriber.
+	 */
+	GOOGLE_HEALTH_WEBHOOK_SECRET?: string;
 }

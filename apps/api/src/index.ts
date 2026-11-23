@@ -8,6 +8,7 @@ import { attachDb, requireSameOrigin } from './middleware/auth';
 import apiRoutes from './routes/api';
 import authRoutes from './routes/auth';
 import connectionRoutes from './routes/connections';
+import webhookRoutes from './routes/webhooks';
 import { schema } from './db';
 import type { AppBindings } from './types';
 
@@ -41,6 +42,9 @@ app.use('/connections/*', requireSameOrigin);
 app.route('/auth', authRoutes);
 app.route('/api', apiRoutes);
 app.route('/connections', connectionRoutes);
+// Provider push notifications. No CSRF origin guard here: Google posts from its
+// own servers and authenticates with the subscriber secret instead.
+app.route('/webhooks', webhookRoutes);
 
 app.notFound((c) => c.json({ error: 'not_found' }, 404));
 app.onError((err, c) => {

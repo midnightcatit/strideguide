@@ -421,6 +421,11 @@ export const connections = sqliteTable(
 			.notNull()
 			.default('connected'),
 		lastSyncedAt: integer('last_synced_at', { mode: 'timestamp' }),
+		/**
+		 * Set by a provider push notification to ask for a sync on the next cron
+		 * pass. The webhook never fetches inline, so it only flips this marker.
+		 */
+		syncRequestedAt: integer('sync_requested_at', { mode: 'timestamp' }),
 		createdAt,
 		updatedAt: integer('updated_at', { mode: 'timestamp' })
 			.notNull()
@@ -469,6 +474,39 @@ export const activities = sqliteTable(
 			t.externalId,
 		),
 		userStartedIdx: index('activities_user_started_idx').on(t.userId, t.startedAt),
+	}),
+);
+
+/**
+ * One row per user, provider and civil day for the daily health metrics we pull
+ * from a connector: resting heart rate, heart rate variability, sleep and steps.
+ * Every column but the key is nullable, so a day with only steps stays valid and
+ * a later sync never overwrites a field with a missing one.
+ */
+export const healthDaily = sqliteTable(
+	'health_daily',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
+		/** Civil day in the user's timezone, formatted YYYY-MM-DD. */
+		date: text('date').notNull(),
+		restingHr: integer('resting_hr'),
+		hrvMs: real('hrv_ms'),
+		sleepMin: integer('sleep_min'),
+		steps: integer('steps'),
+		/** The provider payloads that fed this row, kept for a later reparse. */
+		raw: text('raw', { mode: 'json' }),
+		createdAt,
+	},
+	(t) => ({
+		userProviderDateIdx: uniqueIndex('health_daily_user_provider_date_idx').on(
+			t.userId,
+			t.provider,
+			t.date,
+		),
 	}),
 );
 
