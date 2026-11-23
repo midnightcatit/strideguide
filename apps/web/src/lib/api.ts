@@ -158,6 +158,13 @@ export const api = {
 			body: JSON.stringify({ state, progress }),
 		}),
 
+	/** Save the runner's own note for a session, or clear it with an empty string. */
+	setSessionNotes: (id: string, notes: string) =>
+		req<{ ok: boolean; notes: string }>(`/plans/sessions/${encodeURIComponent(id)}/notes`, {
+			method: 'PATCH',
+			body: JSON.stringify({ notes }),
+		}),
+
 	/** Save a log; if offline, queue it and return an optimistic (pending) log. */
 	log: async (body: unknown): Promise<{ log: unknown }> => {
 		try {

@@ -143,6 +143,8 @@ export const sessionsPlan = sqliteTable(
 		prescription: text('prescription', { mode: 'json' }),
 		durationMin: integer('duration_min'),
 		explanationId: text('explanation_id'),
+		/** The runner's own note for this session, kept so a later rebuild can read it. */
+		notes: text('notes'),
 	},
 	(t) => ({
 		weekIdx: index('sessions_plan_week_idx').on(t.planWeekId),
