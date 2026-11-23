@@ -84,7 +84,9 @@
 	let idx = $state(0);
 	let running = $state(false);
 	let elapsed = $state(0);
-	let countdown = $state(countdownFrom());
+	// No countdown on first entry: the Start or Resume button waits. Steps that
+	// follow get the countdown.
+	let countdown = $state(0);
 	let awaitingNext = $state(false);
 	let finished = $state(false);
 	let restLeft = $state(0);
@@ -144,6 +146,13 @@
 		}
 		if (autoNext) armStep(idx + 1);
 		else awaitingNext = true;
+	}
+
+	/** Skip the rest and move on now. */
+	function skipRest() {
+		restLeft = 0;
+		restThenAdvance = false;
+		afterStep();
 	}
 
 	function toggleAuto() {
@@ -225,6 +234,7 @@
 			idx = saved.idx;
 			elapsed = saved.elapsed ?? 0;
 		}
+		countdown = 0;
 	});
 
 	function stepDistance(m?: number): string | null {
@@ -258,7 +268,8 @@
 	aria-label={sessionLabel(session)}
 	use:modal={close}
 >
-	<div class="mx-auto max-w-2xl px-4 py-5 pb-24">
+	<div class="mx-auto max-w-2xl px-4 pb-24">
+		<div class="sticky top-0 z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5">
 		<div class="flex items-center justify-between">
 			<button type="button" onclick={close} class="-ml-2 px-2 py-2 text-sm text-steel hover:text-ink">‹ Back</button>
 			<div class="flex items-center gap-1">
@@ -280,6 +291,7 @@
 				Auto next {autoNext ? 'on' : 'off'}
 			</button>
 		</div>
+		</div>
 
 		{#if finished}
 			<div class="mt-6 rounded-xl border border-hairline p-6 text-center">
@@ -298,7 +310,7 @@
 				{/if}
 				<div class="mt-4 flex justify-center gap-2">
 					<button type="button" onclick={() => (restLeft = restLeft + 30)} class="rounded-md border border-hairline px-4 py-2 text-sm">+30s</button>
-					<button type="button" onclick={afterStep} class="rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
+					<button type="button" onclick={skipRest} class="rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
 				</div>
 			</div>
 		{:else if awaitingNext}
@@ -328,7 +340,12 @@
 				<h2 class="font-display mt-1 text-lg font-medium">{current.step.label}</h2>
 				{#if countdown > 0}
 					<p class="tabular mt-2 text-4xl font-medium leading-none">{countdown}</p>
-					<p class="mt-1 text-xs uppercase tracking-widest text-signal-ink">Starting in</p>
+					<div class="mt-1 flex items-center gap-3">
+						<span class="text-xs uppercase tracking-widest text-signal-ink">Starting in</span>
+						<button type="button" onclick={() => { countdown = 0; startStep(); }} class="rounded-md border border-hairline px-3 py-1 text-xs text-steel hover:border-signal hover:text-signal-ink">
+							Skip countdown
+						</button>
+					</div>
 				{:else}
 					<p class="tabular mt-2 text-4xl font-medium leading-none">
 						{repBased ? (current.step.reps ? `${current.step.reps} reps` : formatClock(elapsed)) : clock}
@@ -360,10 +377,28 @@
 						</button>
 					{/if}
 					<button type="button" onclick={() => jump(Math.max(0, idx - 1))} disabled={idx === 0} class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40" aria-label="Previous step">‹</button>
-					<button type="button" onclick={() => armStep(idx + 1)} class="rounded-md border border-hairline px-4 py-3 text-sm">Next ›</button>
+					{#if idx >= instances.length - 1}
+						<button type="button" onclick={() => { finished = true; running = false; save(); }} class="rounded-md border border-hairline px-4 py-3 text-sm font-medium">Finish</button>
+					{:else}
+						<button type="button" onclick={() => armStep(idx + 1)} class="rounded-md border border-hairline px-4 py-3 text-sm">Next ›</button>
+					{/if}
 				</div>
 				<div class="mt-2 flex gap-2">
-					<button type="button" onclick={() => { restLeft = current?.step.restSec ?? 90; restThenAdvance = true; running = false; }} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">Rest now</button>
+					{#if running}
+						<button type="button" onclick={() => { restLeft = current?.step.restSec ?? 90; restThenAdvance = true; running = false; }} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">Rest now</button>
+					{:else}
+						<button
+							type="button"
+							onpointerdown={startHold}
+							onpointerup={cancelHold}
+							onpointerleave={cancelHold}
+							onpointercancel={cancelHold}
+							class="relative flex-1 overflow-hidden rounded-md border border-hairline-strong px-4 py-2 text-sm text-steel hover:border-ok hover:text-ok"
+						>
+							<span class="absolute inset-y-0 left-0 bg-ok/25 transition-[width] duration-100 ease-linear" style="width: {hold}%" aria-hidden="true"></span>
+							<span class="relative">{hold > 0 ? 'Keep holding…' : 'Hold to finish and log'}</span>
+						</button>
+					{/if}
 					{#if machine}
 						<button type="button" onclick={() => (showForm = !showForm)} aria-expanded={showForm} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">
 							{showForm ? 'Hide form' : 'Form & muscles'}
@@ -382,21 +417,6 @@
 					</div>
 				{/if}
 			</div>
-		{/if}
-
-		{#if !finished}
-			<!-- Hold to stop and log -->
-			<button
-				type="button"
-				onpointerdown={startHold}
-				onpointerup={cancelHold}
-				onpointerleave={cancelHold}
-				onpointercancel={cancelHold}
-				class="relative mt-4 flex w-full items-center justify-center overflow-hidden rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-danger hover:text-danger"
-			>
-				<span class="absolute inset-y-0 left-0 bg-danger/20" style="width: {hold}%" aria-hidden="true"></span>
-				<span class="relative">{hold > 0 ? 'Keep holding to finish…' : 'Hold to finish and log'}</span>
-			</button>
 		{/if}
 
 		<details class="mt-4">

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { formatDuration, sessionTypeLabel } from '$lib/plan';
-	import { fmtDistance, fmtPace, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPace, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { isStarted } from '$lib/started.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
@@ -17,6 +17,7 @@
 		onOpen,
 		onRemove,
 		onUnskip,
+		onCancelProgress,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -27,7 +28,31 @@
 		onOpen?: () => void;
 		onRemove?: () => void;
 		onUnskip?: () => void;
+		onCancelProgress?: () => void;
 	} = $props();
+
+	// Hold to reset an in-progress session.
+	let cancelHold = $state(0);
+	let cancelTimer: ReturnType<typeof setInterval> | undefined;
+	function startCancel() {
+		if (cancelTimer || !onCancelProgress) return;
+		cancelTimer = setInterval(() => {
+			cancelHold = Math.min(100, cancelHold + 100 / 20);
+			if (cancelHold >= 100) {
+				if (cancelTimer) clearInterval(cancelTimer);
+				cancelTimer = undefined;
+				onCancelProgress?.();
+				cancelHold = 0;
+			}
+		}, 100);
+	}
+	function stopCancel() {
+		if (cancelTimer) {
+			clearInterval(cancelTimer);
+			cancelTimer = undefined;
+		}
+		if (cancelHold < 100) cancelHold = 0;
+	}
 
 	const p = $derived(session.prescription ?? {});
 	const status = $derived<'done' | 'skipped' | 'in-progress' | 'not-started'>(
@@ -61,22 +86,35 @@
 	const isStrength = $derived(session.modality === 'strength');
 	const machines = $derived(p.blocks ?? []);
 	const reps = $derived(machines[0]?.sets?.[0]?.reps ?? 0);
-	const band = $derived(fmtPaceBand(p.targetPaceSecPerKm));
-	const primary = $derived(
-		isRun && p.targetDistanceKm != null
-			? fmtDistance(p.targetDistanceKm)
-			: isStrength
-				? `${machines.length} machines`
-				: (formatDuration(session.durationMin) ?? '–'),
-	);
-	const secondary = $derived(
-		isStrength ? (reps ? `3 × ${reps}` : '3 sets') : (formatDuration(session.durationMin) ?? '–'),
-	);
+	// Facts that fit, as pills, so the card reads at a glance.
+	const pills = $derived.by(() => {
+		const out: { text: string; band?: boolean }[] = [];
+		if (isStrength) {
+			if (machines.length) out.push({ text: `${machines.length} moves` });
+			if (reps) out.push({ text: `3 × ${reps}` });
+			out.push({ text: 'Strength' });
+			return out;
+		}
+		if (p.targetDistanceKm != null) out.push({ text: fmtDistance(p.targetDistanceKm) });
+		const dur = formatDuration(session.durationMin);
+		if (dur) out.push({ text: dur });
+		if (p.intensity) {
+			out.push({
+				text: p.intensity === 'easy' ? 'Easy' : p.intensity === 'steady' ? 'Steady' : 'Hard',
+				band: true,
+			});
+		}
+		if (p.targetPaceSecPerKm) {
+			const mid = Math.round((p.targetPaceSecPerKm[0] + p.targetPaceSecPerKm[1]) / 2);
+			out.push({ text: `≈ ${fmtPace(mid)}` });
+		}
+		return out;
+	});
 	// One line for every card, so run and strength cards stay the same height.
 	const metaLine = $derived.by(() => {
 		if (logged) {
 			const sync = logged.pending ? ' · syncing' : '';
-			if (isStrength && logged.strengthSets?.length) return `Logged · ${logged.strengthSets.length} machines${sync}`;
+			if (isStrength && logged.strengthSets?.length) return `Logged · ${logged.strengthSets.length} moves${sync}`;
 			if (logged.runStats?.distanceKm) {
 				const pace = logged.runStats.avgPaceSecPerKm ? ` · ${fmtPace(logged.runStats.avgPaceSecPerKm)}` : '';
 				return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}${sync}`;
@@ -84,12 +122,7 @@
 			return `Logged${sync}`;
 		}
 		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
-		const bits: string[] = [];
-		if (band) bits.push(band);
-		if (p.targetZone) bits.push(p.targetZone);
-		if (p.targetRpe) bits.push(`RPE ${p.targetRpe[0]}–${p.targetRpe[1]}`);
-		if (session.type === 'race-pace') bits.push('at goal pace');
-		return bits.join(' · ') || 'Effort: see detail';
+		return '';
 	});
 </script>
 
@@ -141,22 +174,17 @@
 
 		<hr class="my-3 border-hairline" />
 
-		<div class="grid grid-cols-2 gap-3">
-			<div class="min-w-0">
-				<p class="tabular truncate text-xl font-medium leading-none">{primary}</p>
-				<p class="mt-1 text-xs text-steel">{isStrength ? 'circuit' : 'prescribed'}</p>
-			</div>
-			<div class="min-w-0">
-				<p class="tabular truncate text-xl font-medium leading-none">{secondary}</p>
-				<p class="mt-1 text-xs text-steel">{isStrength ? 'sets × reps' : 'target'}</p>
-			</div>
+		<div class="flex flex-wrap gap-1.5">
+			{#each pills as pill (pill.text)}
+				<span class="rounded-full border border-hairline px-2.5 py-1 text-xs {pill.band ? 'text-signal-ink' : 'text-ink'}">{pill.text}</span>
+			{/each}
 		</div>
 
 		<hr class="my-3 border-hairline" />
 
 		<div class="mt-auto flex items-center gap-2 pt-3">
 			<span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {statusClass}">{statusLabel}</span>
-			<p class="tabular min-w-0 truncate text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
+			{#if metaLine}<p class="tabular min-w-0 truncate text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>{/if}
 		</div>
 	</div>
 
@@ -221,4 +249,18 @@
 			</button>
 		{/if}
 	</div>
+
+	{#if status === 'in-progress' && onCancelProgress}
+		<button
+			type="button"
+			onpointerdown={startCancel}
+			onpointerup={stopCancel}
+			onpointerleave={stopCancel}
+			onpointercancel={stopCancel}
+			class="relative z-20 mt-2 w-full overflow-hidden rounded-md border border-hairline px-4 py-2 text-xs text-steel hover:border-danger hover:text-danger"
+		>
+			<span class="absolute inset-y-0 left-0 bg-danger/15 transition-[width] duration-100 ease-linear" style="width: {cancelHold}%" aria-hidden="true"></span>
+			<span class="relative">{cancelHold > 0 ? 'Keep holding to reset…' : 'Hold to reset this workout'}</span>
+		</button>
+	{/if}
 </article>

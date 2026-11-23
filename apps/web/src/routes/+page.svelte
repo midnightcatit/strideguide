@@ -107,6 +107,29 @@
 	);
 	const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
+	/** The next session after today, for the look-ahead button. */
+	const nextUp = $derived.by(() => {
+		let best: { date: string; session: ClientSession } | undefined;
+		for (const w of weeks) {
+			if (!w.startDate) continue;
+			for (const s of w.sessions) {
+				const date = addDaysIso(w.startDate, s.day);
+				if (date > todayIso && (!best || date < best.date)) best = { date, session: s };
+			}
+		}
+		return best;
+	});
+	const startHref = $derived(
+		daySessions.length ? '/today' : nextUp ? `/today?date=${nextUp.date}` : '/today',
+	);
+	const startLabel = $derived(
+		daySessions.length
+			? "Start today's session"
+			: nextUp
+				? `Look ahead to ${sessionLabel(nextUp.session)}`
+				: 'Look ahead to your next session',
+	);
+
 	const recentLogs = $derived.by(() => {
 		const byId = new Map<string, ClientSession>();
 		for (const w of weeks) for (const s of w.sessions) byId.set(s.id, s);
@@ -181,10 +204,10 @@
 			{/if}
 		</p>
 		<a
-			href="/today"
+			href={startHref}
 			class="mt-4 flex w-full items-center justify-center rounded-md bg-ink px-5 py-3.5 text-sm font-medium text-paper hover:opacity-90"
 		>
-			{daySessions.length ? "Start today's session" : 'Look ahead to tomorrow'}
+			{startLabel}
 		</a>
 		{#if daySessions.length}
 			<p class="mt-2 text-xs text-steel">{DAY_NAMES[todayIndex]} · the session is on the Today tab, with the warm-up and the reasons behind it</p>

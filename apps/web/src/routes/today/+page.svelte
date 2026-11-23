@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api } from '$lib/api';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -8,7 +9,8 @@
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
-	import { markStarted } from '$lib/started.svelte';
+	import { clearStarted, markStarted } from '$lib/started.svelte';
+	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
@@ -110,6 +112,8 @@
 	}
 
 	onMount(async () => {
+		const wanted = page.url.searchParams.get('date');
+		if (wanted && /^\d{4}-\d{2}-\d{2}$/.test(wanted)) selectedIso = wanted;
 		await ensureAuth();
 		if (auth.user) {
 			await ensurePlan();
@@ -308,6 +312,10 @@
 		}}
 		onOpen={() => (detailTarget = s)}
 		onUnskip={() => (confirm = { kind: 'unskip', id: s.id })}
+		onCancelProgress={() => {
+			clearStarted(s.id);
+			clearProgress(s.id);
+		}}
 	/>
 {/snippet}
 
