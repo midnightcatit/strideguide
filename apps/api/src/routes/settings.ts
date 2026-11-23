@@ -56,6 +56,8 @@ settings.put(
 			equipmentItems: z
 				.array(z.enum(['machines', 'dumbbells', 'barbell', 'kettlebell', 'bands']))
 				.optional(),
+			gymPreset: z.string().max(40).optional(),
+			machineItems: z.array(z.string().max(60)).max(60).optional(),
 		}),
 	),
 	async (c) => {

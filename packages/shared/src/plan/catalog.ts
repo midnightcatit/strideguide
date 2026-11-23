@@ -101,10 +101,15 @@ function bodyweightPool(level?: string): MachineExercise[] {
 
 const freeByTool = (tool: string) => FREEWEIGHT_MOVES.filter((m) => m.equipment === tool);
 
-/** The candidate moves for a mode, before the kit filter and the balancing. */
-function poolFor(mode: EquipmentPreference, level?: string): MachineExercise[] {
+/**
+ * The candidate moves for a mode, before the kit filter and the balancing. Before
+ * the base phase (`loaded` false), a mixed program stays on machines, bodyweight
+ * and dumbbells, then adds the heavier free weights and bands once the base is in.
+ */
+function poolFor(mode: EquipmentPreference, level?: string, loaded = false): MachineExercise[] {
 	const bw = bodyweightPool(level);
 	const machines = [...PF_MACHINES, ...EXTRA_MACHINES];
+	const dumbbells = [...DUMBBELL_MOVES, ...freeByTool('dumbbells')];
 	const free = [
 		...DUMBBELL_MOVES,
 		...freeByTool('dumbbells'),
@@ -117,9 +122,9 @@ function poolFor(mode: EquipmentPreference, level?: string): MachineExercise[] {
 		case 'bodyweight':
 			return dedupeByName(bw);
 		case 'bodyweight-dumbbells':
-			return roundRobin([bw, [...DUMBBELL_MOVES, ...freeByTool('dumbbells')]]);
+			return loaded ? roundRobin([dumbbells, bw]) : dedupeByName(bw);
 		case 'dumbbells':
-			return roundRobin([[...DUMBBELL_MOVES, ...freeByTool('dumbbells')], bw]);
+			return roundRobin([dumbbells, bw]);
 		case 'barbell':
 			return roundRobin([freeByTool('barbell'), bw]);
 		case 'kettlebell':
@@ -129,21 +134,19 @@ function poolFor(mode: EquipmentPreference, level?: string): MachineExercise[] {
 		case 'both':
 			return roundRobin([machines, bw]);
 		case 'full-gym':
-			return roundRobin([machines, free, bands, bw]);
+			return loaded ? roundRobin([machines, free, bands, bw]) : roundRobin([machines, bw]);
 		case 'machines':
 		default:
 			return dedupeByName(machines);
 	}
 }
 
-/** Narrow to the kit the runner has. Bodyweight is always available. */
-function applyKit(pool: MachineExercise[], items?: string[]): MachineExercise[] {
-	if (!items?.length) return pool;
-	const allowed = new Set(items);
-	return pool.filter((m) => {
-		const cat = moveCategory(m);
-		return cat === 'bodyweight' || allowed.has(cat);
-	});
+/** True when a move fits the runner's kit: their categories and their machines. */
+function available(m: MachineExercise, items?: string[], machines?: string[]): boolean {
+	const cat = moveCategory(m);
+	const kitOk = cat === 'bodyweight' || !items?.length || items.includes(cat);
+	const machineOk = cat !== 'machines' || !machines?.length || machines.includes(m.name);
+	return kitOk && machineOk;
 }
 
 /** Pick a balanced circuit: a move per pattern in turn, then anything left. */
@@ -163,8 +166,9 @@ function selectBalanced(pool: MachineExercise[], size: number): MachineExercise[
 
 /**
  * A running-relevant strength circuit for the chosen equipment. `items` narrows
- * the circuit to the runner's kit (ignored when it would leave too few moves),
- * and `level` picks the bodyweight progression rung.
+ * to the runner's categories and `machines` to the machines they have; the filter
+ * never shows equipment the runner lacks, topping up with bodyweight instead.
+ * `level` picks the bodyweight progression rung.
  */
 export function circuitFor(
 	mode: EquipmentPreference = 'machines',
@@ -172,16 +176,14 @@ export function circuitFor(
 	items?: string[],
 	loaded = false,
 	level?: string,
+	machines?: string[],
 ): MachineExercise[] {
 	const size = circuitSize(minutes);
-	const base = poolFor(mode, level);
-
-	// With dumbbells, the base block is bodyweight and the later blocks load it up.
-	if (mode === 'bodyweight-dumbbells' && !loaded) {
-		return selectBalanced(applyKit(bodyweightPool(level), items), size);
-	}
-
-	const withKit = applyKit(base, items);
-	const pool = withKit.length >= Math.min(size, 4) ? withKit : base;
+	const base = poolFor(mode, level, loaded);
+	const filtered = base.filter((m) => available(m, items, machines));
+	// Bodyweight is always available, so a thin kit still fills a full circuit.
+	const pool = filtered.length
+		? dedupeByName([...filtered, ...bodyweightPool(level)])
+		: bodyweightPool(level);
 	return selectBalanced(pool, size);
 }

@@ -567,7 +567,11 @@ function hillsWorkout(
 	});
 }
 
-function strengthWorkout(circuit: MachineExercise[], reps: number): StructuredWorkout {
+function strengthWorkout(
+	circuit: MachineExercise[],
+	reps: number,
+	sets: number,
+): StructuredWorkout {
 	const blocks: StepBlock[] = [
 		drillBlock('Dynamic warm-up', WARMUP_DRILLS, 'warmup'),
 		{
@@ -577,7 +581,7 @@ function strengthWorkout(circuit: MachineExercise[], reps: number): StructuredWo
 				kind: 'work',
 				label: m.name,
 				machine: m.name,
-				sets: 3,
+				sets,
 				reps,
 				restSec: 75,
 				targetRpe: [7, 8],
@@ -1052,17 +1056,16 @@ function strengthSession(
 		input.equipment,
 		loaded,
 		level,
+		input.machines,
 	);
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
+	// Level sets the volume: a beginner does fewer sets, an advanced runner more.
+	const setCount = level === 'beginner' ? 2 : level === 'advanced' ? 4 : 3;
 	const sets = circuit.map((m) => ({
 		machine: m.name,
-		sets: [
-			{ reps, weightKg: 0 },
-			{ reps, weightKg: 0 },
-			{ reps, weightKg: 0 },
-		],
+		sets: Array.from({ length: setCount }, () => ({ reps, weightKg: 0 })),
 	}));
 	const copy = MODE_COPY[mode];
 	const type: SessionArchetype = copy.type;
@@ -1077,12 +1080,12 @@ function strengthSession(
 		title: TITLE[type],
 		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} ${copy.noun} · 3 × ${reps}, control the lowering phase.`,
+			summary: `${sets.length} ${copy.noun} · ${setCount} × ${reps}, control the lowering phase.`,
 			blocks: sets,
 			targetRpe: [7, 8],
 			notes: copy.load,
 			why,
-			workout: strengthWorkout(circuit, reps),
+			workout: strengthWorkout(circuit, reps, setCount),
 		},
 		durationMin: input.baseline.sessionMinutes ?? 45,
 	};

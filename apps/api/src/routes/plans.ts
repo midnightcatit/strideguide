@@ -3,7 +3,12 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { asc, and, desc, eq, gte, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
-import { WORKOUT_LIBRARY, adaptPlan, fitnessState } from '@strideguide/shared/plan';
+import {
+	WORKOUT_LIBRARY,
+	adaptPlan,
+	fitnessState,
+	machinesForPreset,
+} from '@strideguide/shared/plan';
 import type {
 	Baseline,
 	EquipmentItem,
@@ -53,6 +58,12 @@ async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promi
 	} else {
 		await db.insert(schema.settings).values({ userId, prefs: merged });
 	}
+}
+
+/** The machines to build a circuit from: an explicit override, else the gym preset. */
+function resolveMachines(prefs: Prefs): string[] | undefined {
+	if (prefs.machineItems?.length) return prefs.machineItems;
+	return machinesForPreset(prefs.gymPreset);
 }
 
 /** GET current active plan for the user's most recent goal (weeks + sessions). */
@@ -468,6 +479,7 @@ plans.post(
 			targetDate: body.targetDate,
 			crossLoad,
 			equipment: seededBaseline.equipmentItems,
+			machines: resolveMachines(prefs),
 		};
 		const baseDraft = generatePlan(planInput);
 
@@ -595,10 +607,14 @@ plans.post('/adapt', async (c) => {
 	const body = (await c.req.json().catch(() => ({}))) as {
 		equipment?: EquipmentPreference;
 		equipmentItems?: EquipmentItem[];
+		gymPreset?: string;
+		machineItems?: string[];
 	};
 	const patch: Partial<Prefs> = {};
 	if (typeof body.equipment === 'string') patch.equipment = body.equipment;
 	if (Array.isArray(body.equipmentItems)) patch.equipmentItems = body.equipmentItems;
+	if (typeof body.gymPreset === 'string') patch.gymPreset = body.gymPreset;
+	if (Array.isArray(body.machineItems)) patch.machineItems = body.machineItems;
 	if (Object.keys(patch).length) await upsertPrefs(db, user.id, patch);
 	const prefs = await loadPrefs(db, user.id);
 
@@ -692,6 +708,7 @@ plans.post('/adapt', async (c) => {
 		fitness,
 		allowedQuality: allowed,
 		equipment: baseline.equipmentItems,
+		machines: resolveMachines(prefs),
 	} as unknown as Parameters<typeof adaptPlan>[0]);
 
 	if (result.changedFromWeek == null) {

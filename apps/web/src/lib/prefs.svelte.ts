@@ -27,8 +27,28 @@ export async function loadPrefs(): Promise<void> {
 		prefs.restingHr = res.prefs.restingHr;
 		prefs.equipment = res.prefs.equipment;
 		prefs.equipmentItems = res.prefs.equipmentItems;
+		prefs.gymPreset = res.prefs.gymPreset;
+		prefs.machineItems = res.prefs.machineItems;
 	} catch {
 		// unauthenticated or offline: keep defaults
+	}
+}
+
+export async function setGymPreset(gymPreset: Prefs['gymPreset']): Promise<void> {
+	prefs.gymPreset = gymPreset;
+	try {
+		await api.putSettings({ gymPreset });
+	} catch {
+		// best-effort; ui already updated
+	}
+}
+
+export async function setMachineItems(machineItems: Prefs['machineItems']): Promise<void> {
+	prefs.machineItems = machineItems;
+	try {
+		await api.putSettings({ machineItems });
+	} catch {
+		// best-effort; ui already updated
 	}
 }
 

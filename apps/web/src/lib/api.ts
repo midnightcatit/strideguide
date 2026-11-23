@@ -133,6 +133,8 @@ export const api = {
 			| 'both'
 			| 'full-gym';
 		equipmentItems?: ('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[];
+		gymPreset?: string;
+		machineItems?: string[];
 	}) =>
 		req<{
 			changed: boolean;

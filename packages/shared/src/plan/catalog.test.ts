@@ -86,3 +86,27 @@ describe('circuitFor', () => {
 		).toBe(false);
 	});
 });
+
+describe('circuitFor filters and phasing', () => {
+	const FREE = new Set(['dumbbells', 'barbell', 'kettlebell', 'bands']);
+
+	it('never shows equipment the runner does not have', () => {
+		for (const m of circuitFor('machines', 45, ['bands'])) {
+			const cat = moveCategory(m);
+			expect(cat === 'bodyweight' || cat === 'bands').toBe(true);
+		}
+	});
+
+	it('narrows machines to the ones the runner has', () => {
+		for (const m of circuitFor('machines', 60, undefined, false, 'intermediate', ['Leg press'])) {
+			if (moveCategory(m) === 'machines') expect(m.name).toBe('Leg press');
+		}
+	});
+
+	it('adds heavy free weights to a full gym only after the base phase', () => {
+		const base = circuitFor('full-gym', 60, undefined, false, 'intermediate');
+		expect(base.every((m) => !FREE.has(moveCategory(m) as string))).toBe(true);
+		const later = circuitFor('full-gym', 60, undefined, true, 'intermediate');
+		expect(later.some((m) => FREE.has(moveCategory(m) as string))).toBe(true);
+	});
+});

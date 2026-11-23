@@ -5,6 +5,7 @@ export * from './machines';
 export * from './bodyweight';
 export * from './exercises';
 export * from './catalog';
+export * from './gyms';
 export * from './mobility';
 export * from './stretches';
 export * from './explanations';
