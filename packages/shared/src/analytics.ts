@@ -30,7 +30,23 @@ export interface SessionLike {
 export interface WeekLike {
 	weekNumber: number;
 	targetVolumeKm?: number;
+	startDate?: string | null;
+	endDate?: string | null;
+	/** Plan phase: base, build, peak or taper. */
+	phase?: string | null;
 	sessions: SessionLike[];
+}
+
+export interface PlanMeta {
+	weeksTotal: number;
+	weeksElapsed: number;
+	weeksToGo: number;
+	currentWeek?: number;
+	currentPhase?: string;
+	/** Completed sessions as a percentage of planned, 0 to 100. */
+	percent: number;
+	/** Whole days until the target date, when there is one. */
+	daysToRace?: number;
 }
 
 export interface WeekVolume {
@@ -52,6 +68,9 @@ export interface ProgressMetrics {
 	pace: { points: PacePoint[]; fastest?: number; changeSecPerKm?: number };
 	prs: { longestRunKm?: number; fastestPaceSecPerKm?: number; biggestWeekKm?: number };
 	rpe: { avg?: number; count: number };
+	planMeta: PlanMeta;
+	/** ISO dates on which something was logged, for the consistency calendar. */
+	calendar: { trainedDays: string[] };
 }
 
 function dayOf(value: string | number | null | undefined): string | undefined {
@@ -61,7 +80,12 @@ function dayOf(value: string | number | null | undefined): string | undefined {
 	return d.toISOString().slice(0, 10);
 }
 
-export function computeProgress(logs: LogLike[], weeks: WeekLike[]): ProgressMetrics {
+export function computeProgress(
+	logs: LogLike[],
+	weeks: WeekLike[],
+	opts: { targetDate?: string | null; todayIso?: string } = {},
+): ProgressMetrics {
+	const today = opts.todayIso ?? new Date().toISOString().slice(0, 10);
 	const logBySession = new Map<string, LogLike>();
 	for (const l of logs) {
 		if (l.sessionId) logBySession.set(l.sessionId, l);
@@ -146,6 +170,31 @@ export function computeProgress(logs: LogLike[], weeks: WeekLike[]): ProgressMet
 	const recentCompleted =
 		recentWeek?.sessions.filter((s) => logBySession.has(s.id)).length ?? 0;
 
+	// Plan position: how far in, and what phase the current week is.
+	let weeksElapsed = 0;
+	let weeksToGo = 0;
+	let currentWeek: number | undefined;
+	let currentPhase: string | undefined;
+	for (const w of weeks) {
+		if (w.endDate && w.endDate < today) weeksElapsed++;
+		else if (w.startDate && w.startDate > today) weeksToGo++;
+		else if (w.startDate && w.endDate && today >= w.startDate && today <= w.endDate) {
+			currentWeek = w.weekNumber;
+			currentPhase = w.phase ?? undefined;
+		}
+	}
+	let daysToRace: number | undefined;
+	if (opts.targetDate) {
+		const t = Date.parse(`${opts.targetDate}T00:00:00Z`);
+		const n = Date.parse(`${today}T00:00:00Z`);
+		if (!Number.isNaN(t) && !Number.isNaN(n)) {
+			daysToRace = Math.max(0, Math.round((t - n) / 86400000));
+		}
+	}
+	const trainedDays = [
+		...new Set(logs.map((l) => dayOf(l.createdAt)).filter((d): d is string => !!d)),
+	].sort();
+
 	return {
 		adherence: {
 			planned,
@@ -162,5 +211,15 @@ export function computeProgress(logs: LogLike[], weeks: WeekLike[]): ProgressMet
 			biggestWeekKm: recent ? biggestWeekKm : biggestWeekKm,
 		},
 		rpe: { avg: rpeCount ? Math.round((rpeSum / rpeCount) * 10) / 10 : undefined, count: rpeCount },
+		planMeta: {
+			weeksTotal: weeks.length,
+			weeksElapsed,
+			weeksToGo,
+			currentWeek,
+			currentPhase,
+			percent: planned ? Math.round((completed / planned) * 100) : 0,
+			daysToRace,
+		},
+		calendar: { trainedDays },
 	};
 }
