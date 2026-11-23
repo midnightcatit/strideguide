@@ -42,7 +42,7 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		bind:this={el}
-		class="flex items-stretch gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:snap-none sm:px-0"
+		class="scroll-modern flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto -mx-4 px-4 pb-2 sm:mx-0 sm:px-0"
 		role="region"
 		tabindex="0"
 		aria-label="{sessions.length} sessions today, use the arrow keys to scroll"
@@ -50,7 +50,7 @@
 		onscroll={onScroll}
 	>
 		{#each sessions as s (s.id)}
-			<div class="w-[calc(100vw-68px)] max-w-[322px] shrink-0 snap-center sm:w-auto sm:max-w-none">
+			<div class="w-[calc(100vw-68px)] max-w-[360px] shrink-0 snap-center sm:w-[24rem] sm:max-w-none">
 				{@render card(s)}
 			</div>
 		{/each}

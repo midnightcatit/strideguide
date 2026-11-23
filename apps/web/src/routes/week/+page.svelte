@@ -110,7 +110,7 @@
 {:else}
 	<header class="mb-6">
 		<div class="flex items-baseline justify-between gap-3">
-			<a href="/today" class="tabular text-xs uppercase tracking-widest text-steel hover:text-signal-ink">‹ Today</a>
+			<p class="tabular text-xs uppercase tracking-widest text-steel">Week</p>
 			<div class="flex items-center gap-2">
 				<button type="button" onclick={() => selectWeek(weekIndex - 1)} disabled={weekIndex === 0} aria-label="Previous week" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink disabled:opacity-40">‹</button>
 				<span class="tabular text-xs text-steel">W{currentWeek.weekNumber} of {weeks.length}</span>
@@ -176,7 +176,7 @@
 		{#if daySessions.length}
 			<SessionCarousel sessions={daySessions} {card} />
 		{:else}
-			<Card tone="sunken">
+			<Card tone="sunken" frame>
 				<p class="text-sm text-steel">Rest day. Nothing scheduled.</p>
 			</Card>
 		{/if}

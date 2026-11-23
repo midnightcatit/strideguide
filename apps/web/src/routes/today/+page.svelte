@@ -23,6 +23,8 @@
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
 	let selectedIso = $state(todayIso);
+	// Which way the day moved, so the panel slides in the direction you stepped.
+	let dayDir = $state<1 | -1>(1);
 	const isToday = $derived(selectedIso === todayIso);
 
 	const profileName = $derived(
@@ -68,9 +70,11 @@
 	const dayMinutes = $derived(daySessions.reduce((m, s) => m + (s.durationMin ?? 0), 0));
 
 	function stepDay(n: number) {
+		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n);
 	}
 	function goToday() {
+		dayDir = selectedIso < todayIso ? 1 : -1;
 		selectedIso = todayIso;
 	}
 
@@ -109,10 +113,12 @@
 
 {#if store.error}
 	<p class="mt-6 text-sm text-steel">{store.error}</p>
+{:else if !store.loaded}
+	<p class="tabular mt-6 text-sm text-steel">Loading…</p>
 {:else if !weeks.length}
 	<section class="mt-10 text-center">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">No plan yet</p>
-		<h1 class="font-display mt-2 text-2xl font-bold">Let's build your plan.</h1>
+		<h1 class="font-display mt-2 text-2xl font-bold">Build your plan.</h1>
 		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
 			Pick a goal and a race date. We write the sessions and explain each one.
 		</p>
@@ -143,7 +149,6 @@
 				<button type="button" onclick={goToday} class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal">Back to today</button>
 			{/if}
 			<span class="tabular text-xs text-steel sm:hidden">Swipe to change day</span>
-			<a href="/week" class="ml-auto text-xs text-steel hover:text-signal-ink">Week →</a>
 		</div>
 	</header>
 
@@ -159,7 +164,7 @@
 		</button>
 
 		<div
-			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:max-h-[calc(100dvh-16rem)] sm:overflow-y-auto"
+			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:h-[var(--panel-h)] sm:overflow-y-auto"
 			role="group"
 			aria-label="Day panel, swipe left or right to change day"
 			ontouchstart={onTouchStart}
@@ -169,22 +174,26 @@
 
 			{#if note}<p class="mb-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
 
-			<SectionHeader
-				id="day-sessions"
-				eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
-				meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
-			/>
-			{#if daySessions.length}
-				<SessionCarousel sessions={daySessions} {card} />
-			{:else if selWeek}
-				<Card tone="sunken">
-					<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
-				</Card>
-			{:else}
-				<Card tone="sunken">
-					<p class="text-sm text-steel">This day is outside your plan.</p>
-				</Card>
-			{/if}
+			{#key selectedIso}
+				<div class={dayDir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
+					<SectionHeader
+						id="day-sessions"
+						eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
+						meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
+					/>
+					{#if daySessions.length}
+						<SessionCarousel sessions={daySessions} {card} />
+					{:else if selWeek}
+						<Card tone="sunken" frame>
+							<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
+						</Card>
+					{:else}
+						<Card tone="sunken" frame>
+							<p class="text-sm text-steel">This day is outside your plan.</p>
+						</Card>
+					{/if}
+				</div>
+			{/key}
 
 			{#if selWeek}
 				<hr class="my-6 border-hairline" />

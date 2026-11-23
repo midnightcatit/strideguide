@@ -58,7 +58,7 @@
 {:else if !weeks.length}
 	<section class="mt-10 text-center">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">No plan yet</p>
-		<h1 class="font-display mt-2 text-2xl font-bold">Let's build your plan.</h1>
+		<h1 class="font-display mt-2 text-2xl font-bold">Build your plan.</h1>
 		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
 			Pick a goal and a race date. We write the sessions and explain each one.
 		</p>
