@@ -194,7 +194,7 @@
 			{
 				id: 'strength',
 				title: 'How should the strength work fit?',
-				lede: 'Strength protects joints and supports running economy. Two sessions a week is enough; three helps if you have the time. Session length sets how many moves we include.',
+				lede: 'Strength protects joints and supports running economy. Two sessions a week is enough; three helps if you have the time. The daily time sets how long a session can be, and we keep one workout a day, so a run and strength never share a day.',
 				guide: [
 					'Two sessions a week is the usual sweet spot for runners.',
 					'30 minutes is about 5 moves, 45 about 6, 60 or more is 8.',
@@ -709,7 +709,7 @@
 							<button type="button" aria-pressed={strengthDays === n} onclick={() => (strengthDays = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {strengthDays === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
 						{/each}
 					</div>
-					<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Session length</p>
+					<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Time you can train in a day</p>
 					<div class="mt-2 flex gap-2">
 						{#each [30, 45, 60] as n (n)}
 							<button type="button" aria-pressed={sessionMinutes === n} onclick={() => (sessionMinutes = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {sessionMinutes === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n} min</button>

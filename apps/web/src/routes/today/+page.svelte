@@ -5,7 +5,7 @@
 	import { api } from '$lib/api';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
-	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
+	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
@@ -21,6 +21,8 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
+	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
+	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
@@ -28,6 +30,7 @@
 	let playTarget = $state<ClientSession | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
+	let pickerDate = $state<string | null>(null);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -106,6 +109,18 @@
 		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n);
 	}
+	async function addFromLibrary(w: LibraryWorkout) {
+		const date = pickerDate;
+		pickerDate = null;
+		if (!date) return;
+		try {
+			await api.addWorkout(date, w.id);
+			reloadPlan();
+		} catch {
+			// the plan refresh will show the truth
+		}
+	}
+
 	function sessionDate(s: ClientSession): string | undefined {
 		return selWeek?.startDate ? addDaysIso(selWeek.startDate, s.day) : undefined;
 	}
@@ -272,6 +287,14 @@
 				</div>
 			{/key}
 
+			<button
+				type="button"
+				onclick={() => (pickerDate = selectedIso)}
+				class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-hairline-strong py-3 text-sm text-signal-ink hover:border-signal"
+			>
+				＋ Add a workout
+			</button>
+
 			<AdjustmentsCard />
 
 			{#if note}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
@@ -363,4 +386,8 @@
 		onConfirm={confirm.action}
 		onClose={() => (confirm = null)}
 	/>
+{/if}
+
+{#if pickerDate}
+	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
 {/if}

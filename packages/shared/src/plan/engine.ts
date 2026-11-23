@@ -504,15 +504,22 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const volume = volumes[w]!;
 		const weekStart = addDays(input.startDate, w * 7);
 		const weekEnd = addDays(weekStart, 6);
+		let strengthLeft = strengthCount;
 
 		// Ease in: the first week is easy running and strength only.
 		const qualityCount = w === 0 ? 0 : phase === 'taper' || phase === 'base' ? 1 : 2;
 		const qualityDays = pickSpaced(rest, Math.min(qualityCount, rest.length));
 		const usedForRun = new Set([longDay, ...qualityDays]);
-		const easyDays = days.filter((d) => !usedForRun.has(d));
+		const runFree = days.filter((d) => !usedForRun.has(d));
+
+		// Strength gets its own days, never sharing with a run. It takes the days
+		// the running does not, then the last of the easy days.
+		const wantStrength = Math.min(strengthLeft, runFree.length);
+		const strengthDays = runFree.slice(runFree.length - wantStrength);
+		const easyDays = runFree.slice(0, runFree.length - wantStrength);
+		strengthLeft -= wantStrength;
 
 		const load = sportLoad(input);
-		const longKm = round1(clamp(volume * 0.3, 4, 38));
 		const qualityRaw = clamp(volume * 0.16, 3, 14);
 		// A very heavy sport week takes a slice off the quality work. The long run
 		// is left whole, since endurance is the point.
@@ -520,7 +527,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const qualityWhy = load.veryHeavy
 			? `Shortened by about 15 percent. In the last week you logged ${load.describe}, and the long run stays whole.`
 			: undefined;
-		const easyTotal = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
+		let longKm = round1(clamp(volume * 0.3, 4, 38));
+		let easyTotal = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
+		// If strength takes every free day, the long run carries the easy volume so
+		// the week still adds up.
+		if (!easyDays.length) {
+			longKm = round1(longKm + easyTotal);
+			easyTotal = 0;
+		}
 		const easyPer = easyDays.length ? round1(easyTotal / easyDays.length) : 0;
 
 		const sessions: PlannedSession[] = [];
@@ -665,7 +679,6 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		});
 
 		// easy runs (+ strength as a second slot)
-		let strengthLeft = strengthCount;
 		easyDays.forEach((day) => {
 			if (easyPer > 0) {
 				sessions.push({
@@ -686,17 +699,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					durationMin: estDuration(easyPer, easyPace),
 				});
 			}
-			if (strengthLeft > 0) {
-				sessions.push(strengthSession(day, 'PM', phase, input));
-				strengthLeft--;
-			}
 		});
 
-		// any strength still unplaced → attach to quality days in the evening
-		for (const day of qualityDays) {
-			if (strengthLeft <= 0) break;
-			sessions.push(strengthSession(day, 'PM', phase, input));
-			strengthLeft--;
+		// Strength on its own days, in the morning.
+		for (const day of strengthDays) {
+			sessions.push(strengthSession(day, 'AM', phase, input));
 		}
 
 		// Cross-training: when the user has it and the profile allows it, swap the

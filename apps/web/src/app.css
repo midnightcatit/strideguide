@@ -12,9 +12,9 @@
 	--steel: #5b6472;
 	--hairline: #e3e7ee;
 	--hairline-strong: #8a93a3;
-	--signal: #f5a623;
-	--signal-ink: #9a5b06;
-	--signal-wash: rgba(245, 166, 35, 0.16);
+	--signal: #6d5ef0;
+	--signal-ink: #5546d6;
+	--signal-wash: rgba(109, 94, 240, 0.12);
 	--sunken: #eef1f7;
 	/*
 	 * Semantic colour, used sparingly so it keeps its meaning: green means done
@@ -66,9 +66,9 @@
 		--steel: #9aa4b4;
 		--hairline: #232a35;
 		--hairline-strong: #5b6472;
-		--signal: #f5a623;
-		--signal-ink: #f5b954;
-		--signal-wash: rgba(245, 166, 35, 0.18);
+		--signal: #a99bff;
+		--signal-ink: #b9adff;
+		--signal-wash: rgba(169, 155, 255, 0.16);
 		--sunken: #171c25;
 		--ok: #34d399;
 		--ok-wash: rgba(52, 211, 153, 0.16);
@@ -93,9 +93,9 @@
 	--steel: #5b6472;
 	--hairline: #e3e7ee;
 	--hairline-strong: #8a93a3;
-	--signal: #f5a623;
-	--signal-ink: #9a5b06;
-	--signal-wash: rgba(245, 166, 35, 0.16);
+	--signal: #6d5ef0;
+	--signal-ink: #5546d6;
+	--signal-wash: rgba(109, 94, 240, 0.12);
 	--sunken: #eef1f7;
 	--ok: #16a34a;
 	--ok-wash: rgba(22, 163, 74, 0.14);
@@ -118,9 +118,9 @@
 	--steel: #9aa4b4;
 	--hairline: #232a35;
 	--hairline-strong: #5b6472;
-	--signal: #f5a623;
-	--signal-ink: #f5b954;
-	--signal-wash: rgba(245, 166, 35, 0.18);
+	--signal: #a99bff;
+	--signal-ink: #b9adff;
+	--signal-wash: rgba(169, 155, 255, 0.16);
 	--sunken: #171c25;
 	--ok: #34d399;
 	--ok-wash: rgba(52, 211, 153, 0.16);
