@@ -8,3 +8,4 @@ export * from './mobility';
 export * from './explanations';
 export * from './adapt';
 export * from './engine';
+export * from './library';

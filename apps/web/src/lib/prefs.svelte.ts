@@ -16,6 +16,9 @@ export async function loadPrefs(): Promise<void> {
 		const res = await api.getSettings();
 		prefs.units = res.prefs.units ?? 'metric';
 		prefs.weekStart = res.prefs.weekStart ?? 0;
+		prefs.name = res.prefs.name;
+		prefs.birthYear = res.prefs.birthYear;
+		prefs.eventName = res.prefs.eventName;
 	} catch {
 		// unauthenticated or offline: keep defaults
 	}
@@ -82,4 +85,22 @@ export function sessionLabel(session: LabelSession): string {
 		if (rep?.distanceM) return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 	}
 	return session.title ?? session.type;
+}
+
+/** Save the personal details. Empty strings clear a field. */
+export async function setPersonal(
+	fields: { name?: string; birthYear?: number | null; eventName?: string },
+): Promise<void> {
+	if (fields.name !== undefined) prefs.name = fields.name || undefined;
+	if (fields.birthYear !== undefined) prefs.birthYear = fields.birthYear ?? undefined;
+	if (fields.eventName !== undefined) prefs.eventName = fields.eventName || undefined;
+	try {
+		await api.putSettings({
+			name: fields.name,
+			birthYear: fields.birthYear ?? undefined,
+			eventName: fields.eventName,
+		});
+	} catch {
+		// best-effort; the form shows what was typed
+	}
 }

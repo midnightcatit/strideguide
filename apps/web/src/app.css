@@ -153,8 +153,17 @@ html {
 	   Pinch-zoom stays available, so accessibility is preserved; the 16px field
 	   rule below also stops the zoom on focus that iOS Safari adds to small text. */
 	touch-action: manipulation;
-	overscroll-behavior-y: none;
+	/* Keep the native bounce (it is what makes iOS scrolling feel right) and block
+	   only pull-to-refresh, which can reload the page mid-workout. */
+	overscroll-behavior-y: contain;
+	-webkit-overflow-scrolling: touch;
 	-webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		scroll-behavior: smooth;
+	}
 }
 
 /*

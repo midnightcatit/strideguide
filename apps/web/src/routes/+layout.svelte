@@ -84,6 +84,35 @@
 	});
 </script>
 
+{#snippet tabIcon(key: string, size: string)}
+	<svg class={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+		{#if key === 'dashboard'}
+			<rect x="3" y="3" width="6" height="6" rx="1" />
+			<rect x="11" y="3" width="6" height="6" rx="1" />
+			<rect x="3" y="11" width="6" height="6" rx="1" />
+			<rect x="11" y="11" width="6" height="6" rx="1" />
+		{:else if key === 'today'}
+			<path d="M10 2.5a7.5 7.5 0 1 0 7.5 7.5" />
+			<circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
+		{:else if key === 'calendar'}
+			<rect x="3" y="4.5" width="14" height="12" rx="1.5" />
+			<line x1="3" y1="8.5" x2="17" y2="8.5" />
+			<line x1="7" y1="3" x2="7" y2="6" />
+			<line x1="13" y1="3" x2="13" y2="6" />
+		{:else if key === 'coach'}
+			<circle cx="10" cy="10" r="7" />
+			<line x1="10" y1="3.5" x2="10" y2="7" />
+			<line x1="10" y1="13" x2="10" y2="16.5" />
+			<line x1="3.5" y1="10" x2="7" y2="10" />
+			<line x1="13" y1="10" x2="16.5" y2="10" />
+		{:else}
+			<rect x="3" y="12" width="3" height="5" />
+			<rect x="8.5" y="8" width="3" height="9" />
+			<rect x="14" y="4" width="3" height="13" />
+		{/if}
+	</svg>
+{/snippet}
+
 {#if !auth.checked}
 	<div class="min-h-dvh flex items-center justify-center">
 		<p class="tabular text-sm text-steel">Loading…</p>
@@ -93,7 +122,7 @@
 {:else}
 	<div class="min-h-dvh flex flex-col">
 		<header
-			class="sticky top-0 z-30 border-b border-hairline bg-paper/95 backdrop-blur"
+			class="sticky top-0 z-30 border-b border-hairline bg-paper"
 			style="padding-top: env(safe-area-inset-top)"
 		>
 			<div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
@@ -107,7 +136,10 @@
 							class="relative rounded-md px-3 py-1.5 text-sm {tab.active ? 'font-medium text-ink' : 'text-steel hover:text-ink'}"
 						>
 							<span class="tab-pill absolute inset-0 rounded-md bg-sunken" data-active={tab.active} aria-hidden="true"></span>
-							<span class="relative">{tab.label}</span>
+							<span class="relative flex items-center gap-1.5">
+								{@render tabIcon(tab.key, 'h-4 w-4')}
+								{tab.label}
+							</span>
 						</a>
 					{/each}
 				</nav>
@@ -151,7 +183,7 @@
 		</main>
 
 		<nav
-			class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper/95 backdrop-blur sm:hidden"
+			class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper sm:hidden"
 			aria-label="Primary"
 		>
 			<div class="mx-auto grid max-w-2xl grid-cols-5" style="padding-bottom: env(safe-area-inset-bottom)">
@@ -162,32 +194,7 @@
 						class="relative flex h-14 flex-col items-center justify-center gap-1 {tab.active ? 'text-ink' : 'text-steel'}"
 					>
 						<span class="tab-bar absolute top-0 h-0.5 w-8 rounded-full bg-signal-ink" data-active={tab.active} aria-hidden="true"></span>
-						<svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							{#if tab.key === 'dashboard'}
-								<rect x="3" y="3" width="6" height="6" rx="1" />
-								<rect x="11" y="3" width="6" height="6" rx="1" />
-								<rect x="3" y="11" width="6" height="6" rx="1" />
-								<rect x="11" y="11" width="6" height="6" rx="1" />
-							{:else if tab.key === 'today'}
-								<path d="M10 2.5a7.5 7.5 0 1 0 7.5 7.5" />
-								<circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
-							{:else if tab.key === 'calendar'}
-								<rect x="3" y="4.5" width="14" height="12" rx="1.5" />
-								<line x1="3" y1="8.5" x2="17" y2="8.5" />
-								<line x1="7" y1="3" x2="7" y2="6" />
-								<line x1="13" y1="3" x2="13" y2="6" />
-							{:else if tab.key === 'coach'}
-								<circle cx="10" cy="10" r="7" />
-								<line x1="10" y1="3.5" x2="10" y2="7" />
-								<line x1="10" y1="13" x2="10" y2="16.5" />
-								<line x1="3.5" y1="10" x2="7" y2="10" />
-								<line x1="13" y1="10" x2="16.5" y2="10" />
-							{:else}
-								<rect x="3" y="12" width="3" height="5" />
-								<rect x="8.5" y="8" width="3" height="9" />
-								<rect x="14" y="4" width="3" height="13" />
-							{/if}
-						</svg>
+						{@render tabIcon(tab.key, 'h-5 w-5')}
 						<span class="tabular text-[10px] uppercase tracking-normal">{tab.label}</span>
 					</a>
 				{/each}

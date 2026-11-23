@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api } from '$lib/api';
-	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
+	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
@@ -21,10 +21,15 @@
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
-	const greeting = $derived.by(() => {
+	const timeOfDay = $derived.by(() => {
 		const h = new Date().getHours();
 		return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
 	});
+	/** Personal welcome: name and the event when we have them, plain wording otherwise. */
+	const greeting = $derived(
+		prefs.name ? `${timeOfDay}, ${prefs.name}` : timeOfDay,
+	);
+	const eventLine = $derived(prefs.eventName ? `Training for ${prefs.eventName}` : '');
 
 	const profileName = $derived(
 		store.plan?.goal
@@ -142,7 +147,7 @@
 		<h1 class="font-display mt-1 text-2xl font-bold">
 			{daySessions.length ? `${daySessions.length === 1 ? sessionLabel(daySessions[0]) : `${daySessions.length} sessions`} today` : 'Rest day'}
 		</h1>
-		<p class="mt-1 text-sm text-steel">{profileName}{#if todayWeek} · Week {todayWeek.weekNumber}{/if}</p>
+		<p class="mt-1 text-sm text-steel">{eventLine || profileName}{#if todayWeek} · Week {todayWeek.weekNumber}{/if}</p>
 	</header>
 
 	<!-- Start -->
@@ -161,7 +166,7 @@
 			{daySessions.length ? "Start today's session" : 'Look ahead to tomorrow'}
 		</a>
 		{#if daySessions.length}
-			<p class="mt-2 text-xs text-steel">{DAY_NAMES[todayIndex]} · tap a card to see the workout and the why</p>
+			<p class="mt-2 text-xs text-steel">{DAY_NAMES[todayIndex]} · the session is on the Today tab, with the warm-up and the reasons behind it</p>
 		{/if}
 	</Card>
 
