@@ -4,6 +4,7 @@
  */
 
 import { getGoalProfile } from '../goal-profiles';
+import type { BuildPreference } from '../types';
 
 export interface Recommendation {
 	value: number;
@@ -57,5 +58,32 @@ export function recommendSessionMinutes(): Recommendation {
 	return {
 		value: 45,
 		reason: 'About 45 minutes covers a warm-up, the main work and a cool-down for most sessions.',
+	};
+}
+
+/** A suggested build preference from the level, with a plain reason. */
+export function recommendBuildPreference(experience: string | undefined): {
+	value: BuildPreference;
+	reason: string;
+} {
+	const level = experience ?? 'beginner';
+	if (level === 'beginner') {
+		return {
+			value: 'ease-in',
+			reason:
+				'Starting gently and building week on week is the safest way to make running a habit. Switch to a bolder build once the plan starts to feel easy.',
+		};
+	}
+	if (level === 'advanced') {
+		return {
+			value: 'steady',
+			reason:
+				'A steady build keeps the gains coming without crowding recovery. Pick the bolder option if you have raced recently and want more.',
+		};
+	}
+	return {
+		value: 'steady',
+		reason:
+			'A steady climb, about 10 percent a week with every fourth week lighter, suits most runners. Ease in if you are coming back from a break.',
 	};
 }

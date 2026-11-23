@@ -70,6 +70,9 @@ export type StretchingPreference = 'after-runs' | 'rest-days' | 'both' | 'none';
 /** Terrain the user mostly runs on, which biases the quality work. */
 export type TerrainPreference = 'flat' | 'hilly' | 'mixed';
 
+/** How boldly the plan should build, from the self-assessment in onboarding. */
+export type BuildPreference = 'ease-in' | 'steady' | 'ambitious';
+
 export interface Baseline {
 	/** Recent race/time results, keyed loosely (e.g. "5k": "24:30"). */
 	recentTimes?: Record<string, string>;
@@ -77,6 +80,12 @@ export interface Baseline {
 	weeklyKm?: number;
 	/** Self-described experience level. */
 	experience?: 'beginner' | 'intermediate' | 'advanced';
+	/**
+	 * How the runner wants the plan to build: a gentle ease-in, a standard steady
+	 * climb, or a bolder push. Sets how fast weekly volume grows and how the plan
+	 * eases in. Defaults to steady.
+	 */
+	buildPreference?: BuildPreference;
 	/** Equipment the user trains strength with (defaults to machines). */
 	equipment?: EquipmentPreference;
 	/** Strength sessions per week, when the user has a view (1 to 3). */

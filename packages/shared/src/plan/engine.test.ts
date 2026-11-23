@@ -426,4 +426,23 @@ describe('progression (volume builds, sessions differentiate)', () => {
 		const advanced = forLevel('marathon', 'advanced').weeks[0]!.targetVolumeKm;
 		expect(advanced).toBeGreaterThan(beginner);
 	});
+
+	const withBuild = (buildPreference: 'ease-in' | 'steady' | 'ambitious') =>
+		generatePlan({
+			profile: GOAL_PROFILES.find((g) => g.slug === 'marathon')!,
+			baseline: { experience: 'intermediate', buildPreference },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-05-01',
+		});
+
+	it('opens lower and climbs further the bolder the build preference', () => {
+		const ease = withBuild('ease-in');
+		const steady = withBuild('steady');
+		const bold = withBuild('ambitious');
+		const peak = (p: typeof ease) => Math.max(...p.weeks.map((w) => w.targetVolumeKm));
+		expect(ease.weeks[0]!.targetVolumeKm).toBeLessThan(bold.weeks[0]!.targetVolumeKm);
+		expect(peak(ease)).toBeLessThan(peak(steady));
+		expect(peak(steady)).toBeLessThan(peak(bold));
+	});
 });
