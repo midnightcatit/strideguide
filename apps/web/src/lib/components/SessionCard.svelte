@@ -89,6 +89,7 @@
 	// Facts that fit, as pills, so the card reads at a glance.
 	const pills = $derived.by(() => {
 		const out: { text: string; band?: boolean }[] = [];
+		out.push({ text: session.slot === 'PM' ? 'Evening' : 'Morning' });
 		if (isStrength) {
 			if (machines.length) out.push({ text: `${machines.length} moves` });
 			if (reps) out.push({ text: `3 × ${reps}` });

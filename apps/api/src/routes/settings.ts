@@ -35,6 +35,9 @@ settings.put(
 				.max(new Date().getUTCFullYear() - 10)
 				.optional(),
 			eventName: z.string().trim().max(80).optional(),
+			heightCm: z.number().min(90).max(250).nullable().optional(),
+			weightKg: z.number().min(25).max(250).nullable().optional(),
+			restingHr: z.number().int().min(30).max(120).nullable().optional(),
 			autoAdvance: z.boolean().optional(),
 			countdownSec: z.number().int().min(0).max(15).optional(),
 		}),
@@ -48,10 +51,14 @@ settings.put(
 			.from(schema.settings)
 			.where(eq(schema.settings.userId, user.id))
 			.limit(1);
+		// Nulls mean "clear this value", so they are dropped rather than stored.
+		const clean = Object.fromEntries(
+			Object.entries({ ...body }).filter(([, v]) => v !== null && v !== undefined),
+		);
 		const prefs: Prefs = {
 			...DEFAULT_PREFS,
 			...((rows[0]?.prefs as Partial<Prefs>) ?? {}),
-			...body,
+			...clean,
 		};
 		await db
 			.insert(schema.settings)

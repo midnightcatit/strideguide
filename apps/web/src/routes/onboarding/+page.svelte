@@ -8,7 +8,7 @@
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setUnits } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {

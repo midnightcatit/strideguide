@@ -78,7 +78,14 @@
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
 	const stalePlan = $derived(
-		weeks.length > 0 && weeks.some((w) => w.sessions.some((s) => !s.prescription?.workout)),
+		weeks.length > 0 &&
+			weeks.some((w) =>
+				w.sessions.some(
+					(s) =>
+						(s.modality === 'running' || s.modality === 'strength') &&
+						!s.prescription?.workout,
+				),
+			),
 	);
 
 	const dateLabel = $derived(
