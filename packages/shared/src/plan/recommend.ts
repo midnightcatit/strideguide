@@ -4,6 +4,7 @@
  */
 
 import { getGoalProfile } from '../goal-profiles';
+import { formatDistance, type Units } from '../units';
 import type { BuildPreference } from '../types';
 
 export interface Recommendation {
@@ -27,17 +28,19 @@ export function suggestedWeeklyKm(experience: string | undefined, profileSlug: s
 	return Math.round((base[level] ?? 20) * (factor[profileSlug] ?? 0.9));
 }
 
-/** A suggested weekly distance in km, from the experience level and the goal. */
+/** A suggested weekly distance, from the experience level and the goal. The value
+ * is always km (the engine's unit); the reason is written in the runner's units. */
 export function recommendWeeklyKm(
 	experience: string | undefined,
 	profileSlug: string,
+	units: Units = 'metric',
 ): Recommendation {
 	const level = experience ?? 'beginner';
 	const value = suggestedWeeklyKm(experience, profileSlug);
 	const goal = getGoalProfile(profileSlug)?.name ?? 'your goal';
 	return {
 		value,
-		reason: `About ${value} km a week is typical for a ${level} runner training for ${goal}. Most of it should be easy, and the plan builds from here.`,
+		reason: `About ${formatDistance(value, units)} a week is typical for a ${level} runner training for ${goal}. Most of it should be easy, and the plan builds from here.`,
 	};
 }
 

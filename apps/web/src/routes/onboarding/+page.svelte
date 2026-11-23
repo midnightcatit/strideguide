@@ -272,7 +272,7 @@
 	const isLast = $derived(stepIndex >= steps.length - 1);
 	const progress = $derived((Math.min(stepIndex, steps.length - 1) + 1) / steps.length);
 
-	const recWeekly = $derived(recommendWeeklyKm(experience, slug));
+	const recWeekly = $derived(recommendWeeklyKm(experience, slug, prefs.units));
 	const recStrength = $derived(recommendStrengthDays(slug));
 	const recMinutes = $derived(recommendSessionMinutes());
 	const recBuild = $derived(recommendBuildPreference(experience));

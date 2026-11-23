@@ -15,7 +15,7 @@ export const prefs = $state<Prefs>({ ...DEFAULT_PREFS });
 export async function loadPrefs(): Promise<void> {
 	try {
 		const res = await api.getSettings();
-		prefs.units = res.prefs.units ?? 'metric';
+		prefs.units = res.prefs.units ?? DEFAULT_PREFS.units;
 		prefs.weekStart = res.prefs.weekStart ?? 0;
 		prefs.name = res.prefs.name;
 		prefs.birthYear = res.prefs.birthYear;
@@ -86,7 +86,9 @@ interface LabelSession {
 	title?: string | null;
 	type: string;
 	prescription?: {
-		workout?: { blocks?: { repeat?: number; steps?: { kind?: string; distanceM?: number }[] }[] } | null;
+		workout?: {
+			blocks?: { repeat?: number; steps?: { kind?: string; distanceM?: number }[] }[];
+		} | null;
 	} | null;
 }
 
@@ -150,9 +152,11 @@ export async function setAutoAdvance(v: boolean): Promise<void> {
 }
 
 /** Save the personal details. Empty strings clear a field. */
-export async function setPersonal(
-	fields: { name?: string; birthYear?: number | null; eventName?: string },
-): Promise<void> {
+export async function setPersonal(fields: {
+	name?: string;
+	birthYear?: number | null;
+	eventName?: string;
+}): Promise<void> {
 	if (fields.name !== undefined) prefs.name = fields.name || undefined;
 	if (fields.birthYear !== undefined) prefs.birthYear = fields.birthYear ?? undefined;
 	if (fields.eventName !== undefined) prefs.eventName = fields.eventName || undefined;
