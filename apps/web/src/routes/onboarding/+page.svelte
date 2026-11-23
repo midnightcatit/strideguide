@@ -8,7 +8,7 @@
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setUnits, setVitals } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
@@ -28,7 +28,18 @@
 	let notes = $state('');
 
 	// Strength and body preferences.
-	let equipment = $state<'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both'>('both');
+	let equipment = $state<
+		| 'machines'
+		| 'bodyweight'
+		| 'bodyweight-dumbbells'
+		| 'dumbbells'
+		| 'barbell'
+		| 'kettlebell'
+		| 'bands'
+		| 'both'
+		| 'full-gym'
+	>('both');
+	let equipmentItems = $state<('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[]>([]);
 	let strengthDays = $state(2);
 	let sessionMinutes = $state(45);
 	let tunedStrength = $state(false);
@@ -311,7 +322,16 @@
 	];
 
 	const EQUIPMENT: {
-		v: 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
+		v:
+			| 'machines'
+			| 'bodyweight'
+			| 'bodyweight-dumbbells'
+			| 'dumbbells'
+			| 'barbell'
+			| 'kettlebell'
+			| 'bands'
+			| 'both'
+			| 'full-gym';
 		name: string;
 		note: string;
 	}[] = [
@@ -322,7 +342,20 @@
 			name: 'Bodyweight plus dumbbells',
 			note: 'Starts bodyweight, then adds dumbbells as the plan progresses.',
 		},
+		{ v: 'dumbbells', name: 'Dumbbells', note: 'A pair of dumbbells, plus bodyweight.' },
+		{ v: 'barbell', name: 'Barbell', note: 'Barbell and rack work for the heaviest strength.' },
+		{ v: 'kettlebell', name: 'Kettlebell', note: 'Swings and single-leg work with a bell or two.' },
+		{ v: 'bands', name: 'Bands and home kit', note: 'Resistance bands and a chair, for training at home.' },
 		{ v: 'both', name: 'A mix', note: 'Legs from bodyweight, a machine or two up top.' },
+		{ v: 'full-gym', name: 'Full gym', note: 'Machines and free weights, a broad circuit.' },
+	];
+
+	const EQUIPMENT_ITEMS: { v: 'machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands'; name: string }[] = [
+		{ v: 'machines', name: 'Machines' },
+		{ v: 'dumbbells', name: 'Dumbbells' },
+		{ v: 'barbell', name: 'Barbell' },
+		{ v: 'kettlebell', name: 'Kettlebell' },
+		{ v: 'bands', name: 'Bands' },
 	];
 	const STRETCHING: { v: 'after-runs' | 'rest-days' | 'both' | 'none'; name: string; note: string }[] = [
 		{ v: 'after-runs', name: 'After easy runs', note: 'Fits into the cool-down.' },
@@ -480,6 +513,7 @@
 					experience,
 					buildPreference,
 					equipment,
+					...(equipmentItems.length ? { equipmentItems } : {}),
 					strengthDays,
 					sessionMinutes,
 					flexibility: { current: flexCurrent, goal: flexGoal },
@@ -507,6 +541,10 @@
 				},
 				...(needsRaceDate && targetDate ? { targetDate } : {}),
 			};
+
+			// Store the equipment choice first, so plan generation reads it.
+			await setEquipment(equipment);
+			await setEquipmentItems(equipmentItems);
 
 			await Promise.race([
 				api.generatePlan(body),
@@ -766,6 +804,27 @@
 							</button>
 						{/each}
 					</div>
+					{#if equipment !== 'bodyweight'}
+						<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">What you have</p>
+						<div class="mt-2 flex flex-wrap gap-2">
+							{#each EQUIPMENT_ITEMS as item (item.v)}
+								<button
+									type="button"
+									aria-pressed={equipmentItems.includes(item.v)}
+									onclick={() =>
+										(equipmentItems = equipmentItems.includes(item.v)
+											? equipmentItems.filter((x) => x !== item.v)
+											: [...equipmentItems, item.v])}
+									class="rounded-full border px-3 py-1.5 text-sm transition-colors {equipmentItems.includes(item.v)
+										? 'border-signal-ink bg-signal-wash text-signal-ink'
+										: 'border-hairline text-steel hover:border-steel'}"
+								>
+									{item.name}
+								</button>
+							{/each}
+						</div>
+						<p class="mt-2 text-xs text-steel">Pick what you have; leave blank to use everything in the option.</p>
+					{/if}
 				{:else if step.id === 'strength'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Sessions a week</p>
 					<div class="mt-2 flex gap-2">

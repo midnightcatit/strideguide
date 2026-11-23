@@ -62,7 +62,19 @@ export interface GoalProfileData {
 }
 
 /** What the user trains strength with. */
-export type EquipmentPreference = 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
+export type EquipmentPreference =
+	| 'machines'
+	| 'bodyweight'
+	| 'bodyweight-dumbbells'
+	| 'dumbbells'
+	| 'barbell'
+	| 'kettlebell'
+	| 'bands'
+	| 'both'
+	| 'full-gym';
+
+/** Equipment categories a runner may have, used to narrow a circuit to their kit. */
+export type EquipmentItem = 'machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands';
 
 /** When the user wants stretching built into the plan. */
 export type StretchingPreference = 'after-runs' | 'rest-days' | 'both' | 'none';
@@ -98,6 +110,8 @@ export interface Baseline {
 	buildPreference?: BuildPreference;
 	/** Equipment the user trains strength with (defaults to machines). */
 	equipment?: EquipmentPreference;
+	/** The equipment categories the runner actually has, to narrow the circuit to their kit. */
+	equipmentItems?: EquipmentItem[];
 	/** Strength sessions per week, when the user has a view (1 to 3). */
 	strengthDays?: number;
 	/** Typical session length in minutes, used to size circuits. */

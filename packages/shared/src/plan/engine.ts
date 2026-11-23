@@ -1,5 +1,6 @@
 import type {
 	Baseline,
+	EquipmentPreference,
 	Intensity,
 	SessionArchetype,
 	StepBlock,
@@ -32,7 +33,10 @@ function addDays(iso: string, n: number): string {
 	return dateToIso(d);
 }
 function weeksBetween(a: string, b: string): number {
-	return Math.max(1, Math.round((isoToDate(b).getTime() - isoToDate(a).getTime()) / (7 * 86400000)));
+	return Math.max(
+		1,
+		Math.round((isoToDate(b).getTime() - isoToDate(a).getTime()) / (7 * 86400000)),
+	);
 }
 
 /** One-line, research-informed purpose per session archetype. */
@@ -40,11 +44,15 @@ const PURPOSE: Record<SessionArchetype, string> = {
 	easy: 'Aerobic base: builds capillaries and mitochondria so faster running feels easier. You should feel conversational throughout.',
 	recovery: 'Gentle blood flow to speed recovery between harder days. Keep it easy enough to chat.',
 	long: 'Time on feet and fat oxidation, the single biggest driver of endurance. Stay relaxed and even.',
-	tempo: 'Raises lactate threshold so your goal pace feels easier to hold. You should feel "comfortably hard."',
-	threshold: 'Sustained work near threshold lifts the pace you can hold. Steady breathing, not gasping.',
+	tempo:
+		'Raises lactate threshold so your goal pace feels easier to hold. You should feel "comfortably hard."',
+	threshold:
+		'Sustained work near threshold lifts the pace you can hold. Steady breathing, not gasping.',
 	interval: 'Develops VO2max and top-end speed. Hard but controlled reps, full recovery between.',
-	'race-pace': 'Rehearsal at your goal pace. It makes race effort feel familiar, even and sustainable.',
-	strides: 'Short, fast, relaxed bursts that improve running economy and leg speed. Never straining.',
+	'race-pace':
+		'Rehearsal at your goal pace. It makes race effort feel familiar, even and sustainable.',
+	strides:
+		'Short, fast, relaxed bursts that improve running economy and leg speed. Never straining.',
 	hills: 'Strength-endurance: builds power and economy. Power up, control the descent.',
 	fartlek: 'Unstructured speed play that teaches pace changes with less pressure.',
 	race: 'Rehearsal at goal effort. Treat as a hard, purposeful effort.',
@@ -72,6 +80,58 @@ const TITLE: Record<SessionArchetype, string> = {
 	'cross-train': 'Cross-train',
 };
 
+/** Per-equipment wording for a strength session: archetype, noun and load note. */
+const MODE_COPY: Record<
+	EquipmentPreference,
+	{ type: SessionArchetype; noun: string; load: string }
+> = {
+	machines: {
+		type: 'machine-circuit',
+		noun: 'machines',
+		load: 'Log weight per set; add load when you clear the top rep target.',
+	},
+	bodyweight: {
+		type: 'full-body-strength',
+		noun: 'moves',
+		load: 'Log reps. Make it harder with a slower lowering phase, a harder variation, or a longer hold.',
+	},
+	'bodyweight-dumbbells': {
+		type: 'full-body-strength',
+		noun: 'moves',
+		load: 'Log reps early, then weight once dumbbells enter. Progress with load or a slower lowering phase.',
+	},
+	dumbbells: {
+		type: 'full-body-strength',
+		noun: 'dumbbell moves',
+		load: 'Log weight per set; add load when you clear the top reps with good form.',
+	},
+	barbell: {
+		type: 'full-body-strength',
+		noun: 'barbell lifts',
+		load: 'Log weight per set; add load when the top reps feel smooth and controlled.',
+	},
+	kettlebell: {
+		type: 'full-body-strength',
+		noun: 'kettlebell moves',
+		load: 'Log weight per set; add load or reps while the swings stay crisp.',
+	},
+	bands: {
+		type: 'full-body-strength',
+		noun: 'band moves',
+		load: 'Log reps; move to a harder band or slow the return when it gets easy.',
+	},
+	both: {
+		type: 'full-body-strength',
+		noun: 'exercises',
+		load: 'Log weight per set on machines and reps on bodyweight moves.',
+	},
+	'full-gym': {
+		type: 'full-body-strength',
+		noun: 'exercises',
+		load: 'Log weight per set; add load when you clear the top reps with good form.',
+	},
+};
+
 const FOCUS: Record<string, string> = {
 	base: 'Base: build aerobic volume',
 	build: 'Build: add quality',
@@ -81,7 +141,10 @@ const FOCUS: Record<string, string> = {
 
 /* ------------------------------- phases ---------------------------------- */
 
-function phaseSequence(rules: PlanInput['profile']['progressionRules'], totalWeeks: number): string[] {
+function phaseSequence(
+	rules: PlanInput['profile']['progressionRules'],
+	totalWeeks: number,
+): string[] {
 	if (rules.length === 0) return Array.from({ length: totalWeeks }, () => 'base');
 	const sum = rules.reduce((s, r) => s + r.weeks, 0) || totalWeeks;
 	const counts = rules.map((r) => Math.max(1, Math.floor((r.weeks / sum) * totalWeeks)));
@@ -518,7 +581,10 @@ function strengthWorkout(circuit: MachineExercise[], reps: number): StructuredWo
 				reps,
 				restSec: 75,
 				targetRpe: [7, 8],
-				note: `Rest ~60–90s between sets. ${m.muscles.join(', ')}.`,
+				note:
+					m.pattern === 'plyometric'
+						? `Explosive: stop the set when your speed drops. ${m.muscles.join(', ')}.`
+						: `Rest ~60–90s between sets. ${m.muscles.join(', ')}.`,
 			})),
 		},
 		drillBlock('Cool-down', COOLDOWN_STRETCHES, 'cooldown'),
@@ -544,13 +610,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const derived = input.baseline.effectiveVdot;
 	const vdot =
 		measured ??
-		(typeof derived === 'number' && derived >= VDOT_MIN && derived <= VDOT_MAX ? derived : undefined);
+		(typeof derived === 'number' && derived >= VDOT_MIN && derived <= VDOT_MAX
+			? derived
+			: undefined);
 	const paces: TrainingPaces | undefined = vdot ? pacesFromVdot(vdot) : undefined;
 	const easyPace = paces ? (paces.easy[0] + paces.easy[1]) / 2 : 360; // ~6:00/km fallback
 
-	const allDays = ([...new Set(input.availableDays)].length
-		? [...new Set(input.availableDays)]
-		: [0, 2, 4]
+	const allDays = (
+		[...new Set(input.availableDays)].length ? [...new Set(input.availableDays)] : [0, 2, 4]
 	).sort((a, b) => a - b);
 	// Each sport or activity on its own days: the running keeps off them, and a
 	// named cross-training session takes their place.
@@ -717,8 +784,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			// prefer the liked kind. The model's choice, when it made one, stands.
 			if (!shaped && input.baseline.dislikedTypes?.includes(kind)) {
 				const liked = (['tempo', 'hills', 'interval', 'race-pace'] as const).find(
-					(k) =>
-						input.profile.sessionTypes.includes(k) && input.baseline.likedTypes?.includes(k),
+					(k) => input.profile.sessionTypes.includes(k) && input.baseline.likedTypes?.includes(k),
 				);
 				if (liked) kind = liked;
 			}
@@ -933,7 +999,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		const withIntensity = sessions.map((s) => ({
 			...s,
-			prescription: { ...s.prescription, intensity: s.prescription.intensity ?? intensityFor(s.type) },
+			prescription: {
+				...s.prescription,
+				intensity: s.prescription.intensity ?? intensityFor(s.type),
+			},
 		}));
 
 		weeks.push({
@@ -956,16 +1025,34 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	return {
 		profileSlug: input.profile.slug,
 		weeks,
-		meta: { totalWeeks, startDate: input.startDate, targetDate: input.targetDate, vdot, baseWeeklyKm: baseWeeklyKm(input) },
+		meta: {
+			totalWeeks,
+			startDate: input.startDate,
+			targetDate: input.targetDate,
+			vdot,
+			baseWeeklyKm: baseWeeklyKm(input),
+		},
 	};
 }
 
-function strengthSession(day: number, slot: string, phase: string, input: PlanInput): PlannedSession {
+function strengthSession(
+	day: number,
+	slot: string,
+	phase: string,
+	input: PlanInput,
+): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
+	const level = input.baseline.experience ?? 'beginner';
 	const load = sportLoad(input);
 	const heavySport = load.heavy;
 	const loaded = phase !== 'base';
-	const fullCircuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment, loaded);
+	const fullCircuit = circuitFor(
+		mode,
+		input.baseline.sessionMinutes,
+		input.equipment,
+		loaded,
+		level,
+	);
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
@@ -977,10 +1064,10 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 			{ reps, weightKg: 0 },
 		],
 	}));
-	const type: SessionArchetype = mode === 'machines' ? 'machine-circuit' : 'full-body-strength';
-	const noun = mode === 'machines' ? 'machines' : mode === 'both' ? 'exercises' : 'moves';
+	const copy = MODE_COPY[mode];
+	const type: SessionArchetype = copy.type;
 	const why = heavySport
-		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
+		? `Trimmed to ${circuit.length} ${copy.noun}. In the last week you logged ${load.describe}, which already counts as training.`
 		: undefined;
 	return {
 		day,
@@ -990,13 +1077,10 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 		title: TITLE[type],
 		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} ${noun} · 3 × ${reps}, control the lowering phase.`,
+			summary: `${sets.length} ${copy.noun} · 3 × ${reps}, control the lowering phase.`,
 			blocks: sets,
 			targetRpe: [7, 8],
-			notes:
-				mode === 'machines'
-					? 'Log weight per set; add load when you clear the top rep target.'
-					: 'Log reps. Make it harder with a slower lowering phase, a harder variation, or a longer hold.',
+			notes: copy.load,
 			why,
 			workout: strengthWorkout(circuit, reps),
 		},

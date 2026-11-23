@@ -4,8 +4,16 @@ import { z } from 'zod';
 import { asc, and, desc, eq, gte, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import { WORKOUT_LIBRARY, adaptPlan, fitnessState } from '@strideguide/shared/plan';
-import type { Baseline, QualityKind, SessionArchetype } from '@strideguide/shared';
+import type {
+	Baseline,
+	EquipmentItem,
+	EquipmentPreference,
+	QualityKind,
+	SessionArchetype,
+} from '@strideguide/shared';
+import { DEFAULT_PREFS, type Prefs } from '@strideguide/shared/units';
 import { schema } from '../db';
+import type { Db } from '../db';
 import { narrateAndStore, templateWeekSummary } from '../lib/narration';
 import { shapePlan } from '../lib/plan-shape';
 import { checkRateLimit } from '../lib/rate-limit';
@@ -17,6 +25,34 @@ function chunk<T>(items: T[], size: number): T[][] {
 	const out: T[][] = [];
 	for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
 	return out;
+}
+
+/** The runner's app preferences, with defaults merged. */
+async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
+	const rows = await db
+		.select()
+		.from(schema.settings)
+		.where(eq(schema.settings.userId, userId))
+		.limit(1);
+	return { ...DEFAULT_PREFS, ...((rows[0]?.prefs as Partial<Prefs>) ?? {}) };
+}
+
+/** Merge a partial prefs patch into the runner's settings. */
+async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promise<void> {
+	const rows = await db
+		.select()
+		.from(schema.settings)
+		.where(eq(schema.settings.userId, userId))
+		.limit(1);
+	const merged = { ...DEFAULT_PREFS, ...((rows[0]?.prefs as Partial<Prefs>) ?? {}), ...patch };
+	if (rows[0]) {
+		await db
+			.update(schema.settings)
+			.set({ prefs: merged })
+			.where(eq(schema.settings.userId, userId));
+	} else {
+		await db.insert(schema.settings).values({ userId, prefs: merged });
+	}
 }
 
 /** GET current active plan for the user's most recent goal (weeks + sessions). */
@@ -53,10 +89,7 @@ plans.get('/current', async (c) => {
 	const sessions = (
 		await Promise.all(
 			chunk(weekIds, 90).map((part) =>
-				db
-					.select()
-					.from(schema.sessionsPlan)
-					.where(inArray(schema.sessionsPlan.planWeekId, part)),
+				db.select().from(schema.sessionsPlan).where(inArray(schema.sessionsPlan.planWeekId, part)),
 			),
 		)
 	).flat();
@@ -95,7 +128,6 @@ plans.get('/current', async (c) => {
 		logs,
 	});
 });
-
 
 /** Day index (0 = Monday) for an ISO date inside a week starting on weekStart. */
 function dayIndex(weekStart: string, iso: string): number {
@@ -192,11 +224,19 @@ async function sessionOwnedBy(
 	sessionId: string,
 ): Promise<boolean> {
 	const session = (
-		await db.select().from(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, sessionId)).limit(1)
+		await db
+			.select()
+			.from(schema.sessionsPlan)
+			.where(eq(schema.sessionsPlan.id, sessionId))
+			.limit(1)
 	)[0];
 	if (!session) return false;
 	const week = (
-		await db.select().from(schema.planWeeks).where(eq(schema.planWeeks.id, session.planWeekId)).limit(1)
+		await db
+			.select()
+			.from(schema.planWeeks)
+			.where(eq(schema.planWeeks.id, session.planWeekId))
+			.limit(1)
 	)[0];
 	if (!week) return false;
 	const plan = (
@@ -269,16 +309,16 @@ plans.delete('/sessions/:id', async (c) => {
 			.limit(1)
 	)[0];
 	const plan = week
-		? (
-				await db.select().from(schema.plans).where(eq(schema.plans.id, week.planId)).limit(1)
-			)[0]
+		? (await db.select().from(schema.plans).where(eq(schema.plans.id, week.planId)).limit(1))[0]
 		: undefined;
 	const owned = plan
 		? (
 				await db
 					.select()
 					.from(schema.userGoals)
-					.where(and(eq(schema.userGoals.id, plan.userGoalId), eq(schema.userGoals.userId, user.id)))
+					.where(
+						and(eq(schema.userGoals.id, plan.userGoalId), eq(schema.userGoals.userId, user.id)),
+					)
 					.limit(1)
 			)[0]
 		: undefined;
@@ -373,12 +413,18 @@ plans.post(
 			const t = l.startedAt instanceof Date ? l.startedAt.getTime() : null;
 			return t != null && t >= fitSince;
 		});
-		const fitSessionIds = [...new Set(fitLogs.map((l) => l.sessionId).filter((x): x is string => !!x))];
+		const fitSessionIds = [
+			...new Set(fitLogs.map((l) => l.sessionId).filter((x): x is string => !!x)),
+		];
 		const fitSessions = fitSessionIds.length
 			? (
 					await Promise.all(
 						chunk(fitSessionIds, 90).map((part) =>
-							c.get('db').select().from(schema.sessionsPlan).where(inArray(schema.sessionsPlan.id, part)),
+							c
+								.get('db')
+								.select()
+								.from(schema.sessionsPlan)
+								.where(inArray(schema.sessionsPlan.id, part)),
 						),
 					)
 				).flat()
@@ -399,8 +445,11 @@ plans.post(
 			}),
 			{ raceTimes: baseline.recentTimes },
 		);
+		const prefs = await loadPrefs(db, user.id);
 		const seededBaseline: Baseline = {
 			...baseline,
+			...(prefs.equipment ? { equipment: prefs.equipment } : {}),
+			...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
 			...(baseline.effectiveVdot == null && fitness.effectiveVdot != null
 				? { effectiveVdot: fitness.effectiveVdot }
 				: {}),
@@ -418,6 +467,7 @@ plans.post(
 			startDate,
 			targetDate: body.targetDate,
 			crossLoad,
+			equipment: seededBaseline.equipmentItems,
 		};
 		const baseDraft = generatePlan(planInput);
 
@@ -453,7 +503,7 @@ plans.post(
 			userId: user.id,
 			goalProfileSlug: profile.slug,
 			targetDate: body.targetDate ?? null,
-			baseline: (body.baseline ?? null) as Record<string, unknown> | null,
+			baseline: seededBaseline as Record<string, unknown>,
 			availableDays,
 		});
 
@@ -502,7 +552,9 @@ plans.post(
 		});
 
 		// D1 caps bound parameters per statement (100). Keep chunks well under it.
-		const weekValues = weekRows.map(({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest);
+		const weekValues = weekRows.map(
+			({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest,
+		);
 		for (const part of chunk(weekValues, 10)) {
 			await db.insert(schema.planWeeks).values(part);
 		}
@@ -539,6 +591,17 @@ plans.post('/adapt', async (c) => {
 	const user = c.get('user')!;
 	const db = c.get('db');
 
+	// An equipment change arrives here: store it, then rebuild the weeks ahead.
+	const body = (await c.req.json().catch(() => ({}))) as {
+		equipment?: EquipmentPreference;
+		equipmentItems?: EquipmentItem[];
+	};
+	const patch: Partial<Prefs> = {};
+	if (typeof body.equipment === 'string') patch.equipment = body.equipment;
+	if (Array.isArray(body.equipmentItems)) patch.equipmentItems = body.equipmentItems;
+	if (Object.keys(patch).length) await upsertPrefs(db, user.id, patch);
+	const prefs = await loadPrefs(db, user.id);
+
 	const rl = await checkRateLimit(c.env.DB, `adapt:${user.id}`, 30, 3600);
 	if (!rl.ok) return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '600' });
 
@@ -554,7 +617,10 @@ plans.post('/adapt', async (c) => {
 		? (
 				await Promise.all(
 					chunk(weekIds, 90).map((part) =>
-						db.select().from(schema.sessionsPlan).where(inArray(schema.sessionsPlan.planWeekId, part)),
+						db
+							.select()
+							.from(schema.sessionsPlan)
+							.where(inArray(schema.sessionsPlan.planWeekId, part)),
 					),
 				)
 			).flat()
@@ -582,7 +648,11 @@ plans.post('/adapt', async (c) => {
 			})),
 	}));
 
-	const baseline = (goal.baseline ?? {}) as Baseline;
+	const baseline: Baseline = {
+		...((goal.baseline ?? {}) as Baseline),
+		...(prefs.equipment ? { equipment: prefs.equipment } : {}),
+		...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
+	};
 	const userLogs = await db.select().from(schema.logs).where(eq(schema.logs.userId, user.id));
 	const typeById = new Map(sessions.map((s) => [s.id, s.type]));
 	const fitSince = Date.now() - 28 * 86400000;
@@ -612,13 +682,16 @@ plans.post('/adapt', async (c) => {
 	const result = adaptPlan({
 		profile,
 		baseline,
-		availableDays: (goal.availableDays as number[] | null)?.length ? goal.availableDays as number[] : [0, 2, 4],
+		availableDays: (goal.availableDays as number[] | null)?.length
+			? (goal.availableDays as number[])
+			: [0, 2, 4],
 		startDate: existingWeeks[0]?.startDate || todayIso,
 		targetDate: goal.targetDate ?? undefined,
 		existingWeeks,
 		today: todayIso,
 		fitness,
 		allowedQuality: allowed,
+		equipment: baseline.equipmentItems,
 	} as unknown as Parameters<typeof adaptPlan>[0]);
 
 	if (result.changedFromWeek == null) {
@@ -629,7 +702,12 @@ plans.post('/adapt', async (c) => {
 	const changed = result.weeks.filter((w) => w.weekNumber >= result.changedFromWeek!);
 	await db
 		.delete(schema.planWeeks)
-		.where(and(eq(schema.planWeeks.planId, plan.id), gte(schema.planWeeks.weekNumber, result.changedFromWeek!)));
+		.where(
+			and(
+				eq(schema.planWeeks.planId, plan.id),
+				gte(schema.planWeeks.weekNumber, result.changedFromWeek!),
+			),
+		);
 
 	const weekRows = changed.map((w) => {
 		const weekId = crypto.randomUUID();
@@ -658,7 +736,9 @@ plans.post('/adapt', async (c) => {
 		};
 	});
 	// Match the generate path: only the stored week columns are inserted.
-	const weekValues = weekRows.map(({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest);
+	const weekValues = weekRows.map(
+		({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest,
+	);
 	for (const part of chunk(weekValues, 10)) {
 		await db.insert(schema.planWeeks).values(part);
 	}
@@ -669,7 +749,10 @@ plans.post('/adapt', async (c) => {
 
 	await db
 		.update(schema.plans)
-		.set({ generatedAt: new Date(), params: { ...(plan.params as Record<string, unknown>), adaptedAt: new Date().toISOString() } })
+		.set({
+			generatedAt: new Date(),
+			params: { ...(plan.params as Record<string, unknown>), adaptedAt: new Date().toISOString() },
+		})
 		.where(eq(schema.plans.id, plan.id));
 
 	return c.json({

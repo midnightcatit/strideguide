@@ -1,7 +1,16 @@
 <script lang="ts">
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import Switch from '$lib/components/Switch.svelte';
-	import { prefs, setAutoAdvance, setCountdownSec, setUnits, setWeekStart } from '$lib/prefs.svelte';
+	import { api } from '$lib/api';
+	import {
+		prefs,
+		setAutoAdvance,
+		setCountdownSec,
+		setEquipment,
+		setEquipmentItems,
+		setUnits,
+		setWeekStart,
+	} from '$lib/prefs.svelte';
 	import type { Units } from '@strideguide/shared/units';
 
 	const countdown = $derived(prefs.countdownSec ?? 5);
@@ -9,6 +18,55 @@
 
 	function bump(d: number) {
 		void setCountdownSec(countdown + d);
+	}
+
+	type Item = 'machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands';
+	const ITEMS: { v: Item; name: string }[] = [
+		{ v: 'machines', name: 'Machines' },
+		{ v: 'dumbbells', name: 'Dumbbells' },
+		{ v: 'barbell', name: 'Barbell' },
+		{ v: 'kettlebell', name: 'Kettlebell' },
+		{ v: 'bands', name: 'Bands' },
+	];
+	const EQUIPMENT: { v: NonNullable<typeof prefs.equipment>; name: string }[] = [
+		{ v: 'machines', name: 'Machines' },
+		{ v: 'bodyweight', name: 'Bodyweight' },
+		{ v: 'bodyweight-dumbbells', name: 'Bodyweight plus dumbbells' },
+		{ v: 'dumbbells', name: 'Dumbbells' },
+		{ v: 'barbell', name: 'Barbell' },
+		{ v: 'kettlebell', name: 'Kettlebell' },
+		{ v: 'bands', name: 'Bands and home kit' },
+		{ v: 'both', name: 'A mix' },
+		{ v: 'full-gym', name: 'Full gym' },
+	];
+
+	let saving = $state(false);
+	let message = $state('');
+
+	async function rebuild(equipment: typeof prefs.equipment, items: typeof prefs.equipmentItems) {
+		saving = true;
+		message = '';
+		try {
+			await setEquipment(equipment);
+			await setEquipmentItems(items);
+			const res = await api.adaptPlan({ equipment, equipmentItems: items });
+			message = res.changed
+				? 'Updated. The weeks ahead now use this equipment.'
+				: 'Saved. Your current weeks already match.';
+		} catch {
+			message = 'Saved, but the weeks ahead could not be rebuilt just now.';
+		} finally {
+			saving = false;
+		}
+	}
+
+	function pick(equipment: typeof prefs.equipment) {
+		void rebuild(equipment, prefs.equipmentItems);
+	}
+	function toggleItem(v: Item) {
+		const cur = prefs.equipmentItems ?? [];
+		const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
+		void rebuild(prefs.equipment, next);
 	}
 </script>
 
@@ -68,6 +126,46 @@
 			<p class="mt-0.5 text-xs text-steel">Move to the next step by itself. Off means you tap Go to next.</p>
 		</div>
 		<Switch checked={autoNext} label="Auto next" onChange={(v) => setAutoAdvance(v)} />
+	</div>
+
+	<div class="border-t border-hairline pt-6">
+		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Strength equipment</h2>
+		<div class="mt-2 grid gap-2 sm:grid-cols-2">
+			{#each EQUIPMENT as opt (opt.v)}
+				<button
+					type="button"
+					aria-pressed={prefs.equipment === opt.v}
+					disabled={saving}
+					onclick={() => pick(opt.v)}
+					class="rounded-xl border px-4 py-3 text-left text-sm transition-colors disabled:opacity-60 {prefs.equipment === opt.v
+						? 'border-signal-ink bg-signal-wash'
+						: 'border-hairline hover:border-steel'}"
+				>
+					{opt.name}
+				</button>
+			{/each}
+		</div>
+		{#if prefs.equipment && prefs.equipment !== 'bodyweight'}
+			<div class="mt-3 flex flex-wrap gap-2">
+				{#each ITEMS as item (item.v)}
+					<button
+						type="button"
+						aria-pressed={(prefs.equipmentItems ?? []).includes(item.v)}
+						disabled={saving}
+						onclick={() => toggleItem(item.v)}
+						class="rounded-full border px-3 py-1.5 text-sm transition-colors disabled:opacity-60 {(prefs.equipmentItems ?? []).includes(
+							item.v,
+						)
+							? 'border-signal-ink bg-signal-wash text-signal-ink'
+							: 'border-hairline text-steel hover:border-steel'}"
+					>
+						{item.name}
+					</button>
+				{/each}
+			</div>
+		{/if}
+		<p class="mt-2 text-xs text-steel">Changing this rebuilds the weeks ahead with the right moves.</p>
+		{#if message}<p class="mt-2 text-xs text-signal-ink">{message}</p>{/if}
 	</div>
 
 	<div class="border-t border-hairline pt-6">

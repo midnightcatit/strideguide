@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { WORKOUT_LIBRARY, type LibraryWorkout } from '@strideguide/shared/plan';
+	import { WORKOUT_LIBRARY, findMove, moveCategory, type LibraryWorkout } from '@strideguide/shared/plan';
+	import { prefs } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
 
 	let {
@@ -23,6 +24,7 @@
 	];
 	let filter = $state('all');
 	let q = $state('');
+	let myKit = $state(false);
 
 	const tokens = $derived(
 		q
@@ -31,6 +33,22 @@
 			.split(/\s+/)
 			.filter((t) => t.length > 0),
 	);
+
+	/** True when a strength workout's moves all fit the runner's equipment. */
+	function fitsKit(w: LibraryWorkout): boolean {
+		const items = prefs.equipmentItems;
+		if (!items?.length || w.modality !== 'strength') return true;
+		for (const block of w.workout.blocks) {
+			for (const step of block.steps ?? []) {
+				if (step.kind !== 'work') continue;
+				const move = findMove(step.label);
+				if (!move) continue;
+				const cat = moveCategory(move);
+				if (cat !== 'bodyweight' && !items.includes(cat)) return false;
+			}
+		}
+		return true;
+	}
 
 	/** Every search token must appear somewhere in the workout's text. */
 	function matches(w: LibraryWorkout): boolean {
@@ -48,7 +66,7 @@
 				? WORKOUT_LIBRARY.filter((w) => w.type === 'cross-train')
 				: WORKOUT_LIBRARY.filter((w) => w.modality === filter),
 	);
-	const shown = $derived(byFilter.filter(matches));
+	const shown = $derived(byFilter.filter((w) => matches(w) && (!myKit || fitsKit(w))));
 
 	const dateLabel = $derived(
 		new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
@@ -104,6 +122,18 @@
 					{g.label}
 				</button>
 			{/each}
+			{#if prefs.equipmentItems?.length}
+				<button
+					type="button"
+					aria-pressed={myKit}
+					onclick={() => (myKit = !myKit)}
+					class="ml-auto shrink-0 rounded-full border px-3 py-1.5 text-xs {myKit
+						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
+						: 'border-hairline text-steel hover:border-steel'}"
+				>
+					My kit
+				</button>
+			{/if}
 		</div>
 
 		<div class="scroll-modern min-h-0 flex-1 overflow-y-auto p-4">
