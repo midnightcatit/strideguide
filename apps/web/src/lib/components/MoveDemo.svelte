@@ -58,9 +58,6 @@
 		{:else}
 			<span class="text-xs text-steel">One position for this move</span>
 		{/if}
-		{#if media.credit}
-			<span class="text-[0.6875rem] text-steel">Demo: {media.credit}</span>
-		{/if}
 	</div>
 </figure>
 
