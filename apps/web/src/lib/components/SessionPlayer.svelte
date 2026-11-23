@@ -189,8 +189,11 @@
 >
 	<div class="mx-auto max-w-2xl px-4 py-5 pb-24">
 		<div class="flex items-center justify-between">
-			<button type="button" onclick={goHome} class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</button>
-			<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">✕</button>
+			<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-steel hover:text-ink">‹ Back</button>
+			<div class="flex items-center gap-1">
+				<button type="button" onclick={goHome} class="px-2 py-2 text-sm text-steel hover:text-ink">Stride Guide</button>
+				<button type="button" onclick={onClose} class="px-2 py-2 text-steel hover:text-ink" aria-label="Close">✕</button>
+			</div>
 		</div>
 		<h1 class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>
 		<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY } from '@strideguide/shared/plan';
+	import { SHORT_WHY, findMachine, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
-	import type { ClientLog, ClientSession, ClientStep } from '$lib/plan';
+	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { modal } from '$lib/actions';
@@ -11,7 +11,7 @@
 	let {
 		session,
 		eyebrow = '',
-		logged = null,
+		logged,
 		onClose,
 		onLog,
 		onStart,
@@ -27,10 +27,16 @@
 	const p = $derived(session.prescription ?? {});
 	const workout = $derived(p.workout);
 	const band = $derived(fmtPaceBand(p.targetPaceSecPerKm));
+	const dist = $derived(p.targetDistanceKm ?? workout?.totalDistanceKm);
+	const minutes = $derived(session.durationMin ?? workout?.estimatedDurationMin);
 
 	let why = $state<Awaited<ReturnType<typeof api.explanation>> | null>(null);
 	let loading = $state(true);
 	let failed = $state(false);
+	let showAllClaims = $state(false);
+	let showAllSources = $state(false);
+	let showAllRows = $state(false);
+	let openMachine = $state<string | null>(null);
 
 	onMount(async () => {
 		try {
@@ -42,45 +48,89 @@
 		}
 	});
 
+	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
 	const claims = $derived(why?.claims ?? []);
-	const lead = $derived(
-		SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? why?.summary ?? '',
-	);
-	let showAllSources = $state(false);
-	let showAllClaims = $state(false);
-	const visibleClaims = $derived(showAllClaims ? claims.slice(0, 16) : claims.slice(0, 4));
+	const visibleClaims = $derived(showAllClaims ? claims.slice(0, 16) : claims.slice(0, 2));
+
+	/** One row per stage, so a repeated set reads once. */
+	interface Row {
+		label: string;
+		target: string;
+		repeat?: number;
+		sub?: { label: string; target: string }[];
+	}
+
+	const rows = $derived.by<Row[]>(() => {
+		const out: Row[] = [];
+		for (const block of (workout?.blocks ?? []) as ClientBlock[]) {
+			const drill = block.steps.every((s) => s.kind === 'warmup' || s.kind === 'cooldown');
+			if (drill && block.steps.length > 1) {
+				out.push({
+					label: block.label ?? 'Drills',
+					target: `${block.steps.length} drills`,
+					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s) })),
+				});
+			} else if ((block.repeat ?? 1) > 1) {
+				out.push({
+					label: block.label ?? 'Set',
+					target: `× ${block.repeat}`,
+					repeat: block.repeat,
+					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s) })),
+				});
+			} else if (block.steps.length > 1) {
+				out.push({
+					label: block.label ?? 'Block',
+					target: `${block.steps.length} steps`,
+					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s) })),
+				});
+			} else {
+				const s = block.steps[0];
+				if (s) out.push({ label: s.label, target: stepTarget(s) });
+			}
+		}
+		return out;
+	});
+
+	const visibleRows = $derived(showAllRows ? rows : rows.slice(0, 5));
+
+	/** Machines in the order they appear in the workout. */
+	const machines = $derived.by<MachineExercise[]>(() => {
+		const names: string[] = [];
+		for (const block of workout?.blocks ?? []) {
+			for (const s of block.steps) {
+				if (s.machine && !names.includes(s.machine)) names.push(s.machine);
+			}
+		}
+		return names.map((n) => findMachine(n)).filter((m): m is MachineExercise => !!m);
+	});
 
 	function markersFor(source?: string): number[] {
-		if (!source || !why) return [];
-		const idx = why.sources.findIndex((s) => source.startsWith(s.title));
-		return idx >= 0 ? [idx + 1] : [];
+		if (!source) return [];
+		const i = why?.sources.findIndex((s) => s.title === source || s.title.startsWith(source));
+		return i != null && i >= 0 ? [i + 1] : [];
 	}
 
-	function sourceHref(s: { doiUrl?: string }): string | undefined {
-		const v = s.doiUrl?.trim();
-		if (!v) return undefined;
-		if (/^https?:\/\//i.test(v)) return v;
-		if (/^10\.\d{4,}/.test(v)) return `https://doi.org/${v}`;
-		return undefined;
-	}
-
-	/** Home: close the overlay, and go to the dashboard when we are not already there. */
-	function goHome() {
-		onClose();
-		if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-			window.location.href = '/';
-		}
+	function sourceHref(doiUrl?: string): string | undefined {
+		if (!doiUrl) return undefined;
+		if (/^https?:\/\//.test(doiUrl)) return doiUrl;
+		return `https://doi.org/${doiUrl}`;
 	}
 
 	function stepTarget(step: ClientStep): string {
-		if (step.durationSec != null && !step.distanceM) return formatClock(step.durationSec);
-		if (step.sets && step.reps) return `${step.sets} × ${step.reps}`;
-		const dist = step.distanceM != null ? fmtStepDistance(step.distanceM) : null;
-		const pace = fmtPaceBand(step.targetPaceSecPerKm);
-		if (dist && pace) return `${dist} @ ${pace}`;
-		if (dist) return dist;
 		if (step.durationSec != null) return formatClock(step.durationSec);
+		if (step.sets && step.reps) return `${step.sets} × ${step.reps}`;
+		if (step.distanceM != null) {
+			const d = fmtStepDistance(step.distanceM);
+			const pace = fmtPaceBand(step.targetPaceSecPerKm);
+			return pace ? `${d} @ ${pace}` : d;
+		}
 		return '';
+	}
+
+	/** Plain-language line for a machine, built from the researched catalog. */
+	function machineLine(m: MachineExercise): string {
+		const muscles = m.muscles.join(' and ');
+		return `Works your ${muscles}. ${m.feel}`;
 	}
 </script>
 
@@ -92,147 +142,184 @@
 	use:modal={onClose}
 >
 	<header class="border-b border-hairline px-4 py-3">
-		<div class="mx-auto max-w-2xl">
-			<div class="flex items-center justify-between">
-				<button type="button" onclick={goHome} class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</button>
-				<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">✕</button>
+		<div class="mx-auto flex max-w-2xl items-center justify-between gap-2">
+			<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-steel hover:text-ink">
+				‹ Back
+			</button>
+			<div class="flex items-center gap-1">
+				<a href="/" class="px-2 py-2 text-sm text-steel hover:text-ink">Stride Guide</a>
+				<button
+					type="button"
+					onclick={onClose}
+					aria-label="Close"
+					class="px-2 py-2 text-steel hover:text-ink"
+				>
+					✕
+				</button>
 			</div>
-			<h1 class="font-display mt-1 truncate text-xl font-bold">{sessionLabel(session)}</h1>
-			<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 		</div>
 	</header>
 
-	<div class="flex-1 overflow-y-auto overscroll-contain min-h-0">
-		<div class="mx-auto max-w-2xl px-4 py-5 reveal">
-			<!-- About -->
-			<section aria-labelledby="about">
-				<h2 id="about" class="tabular text-xs uppercase tracking-widest text-steel">About</h2>
-				<p class="mt-2 text-sm">{session.purpose ?? 'A session from your plan.'}</p>
-				<div class="mt-3 grid grid-cols-2 gap-3">
-					<div>
-						<p class="tabular text-2xl font-medium leading-none">
-							{#if p.targetDistanceKm}{fmtDistance(p.targetDistanceKm)}{:else}{workout?.totalDistanceKm ? fmtDistance(workout.totalDistanceKm) : `${session.durationMin ?? '–'} min`}{/if}
-						</p>
-						<p class="mt-1 text-xs text-steel">prescribed</p>
-					</div>
-					<div>
-						<p class="tabular text-2xl font-medium leading-none">
-							{#if band}{band}{:else}{session.durationMin ?? '–'} min{/if}
-						</p>
-						<p class="mt-1 text-xs text-steel">{band ? 'target pace' : 'target time'}</p>
-					</div>
-				</div>
-				<div class="mt-3 flex items-center gap-2">
-					<IntensityLadder intensity={p.intensity} />
-					<span class="tabular text-xs uppercase tracking-widest text-steel">{session.type}</span>
-					{#if logged}<span class="tabular text-xs text-signal-ink">logged ✓</span>{/if}
-				</div>
+	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+		<div class="mx-auto max-w-2xl px-4 py-5 pb-8 reveal">
+			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>{/if}
+			<h1 class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
+			<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-steel">
+				{#if dist}<span class="tabular">{fmtDistance(dist)}</span>{/if}
+				{#if band}<span class="tabular">{band}</span>{/if}
+				{#if minutes}<span class="tabular">{minutes} min</span>{/if}
+				<IntensityLadder intensity={p.intensity} />
+			</div>
+			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
+
+			<!-- Why this workout -->
+			<section class="mt-6" aria-labelledby="why">
+				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
+				{#if lead}<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>{/if}
+				{#if loading}
+					<p class="mt-2 text-sm text-steel">Loading the evidence…</p>
+				{:else if failed}
+					<p class="mt-2 text-sm text-steel">The sourced explanation is unavailable right now.</p>
+				{:else if claims.length}
+					<p class="mt-4 tabular text-xs uppercase tracking-widest text-steel">The evidence</p>
+					<ul class="mt-2 space-y-2.5">
+						{#each visibleClaims as cl, i (i)}
+							<li class="text-sm leading-relaxed text-steel">
+								{cl.claim}
+								{#if markersFor(cl.source).length}
+									<span class="tabular ml-1 text-[10px] text-signal-ink">{markersFor(cl.source).map((n) => `[${n}]`).join('')}</span>
+								{/if}
+							</li>
+						{/each}
+					</ul>
+					{#if claims.length > 2}
+						<button
+							type="button"
+							onclick={() => (showAllClaims = !showAllClaims)}
+							aria-expanded={showAllClaims}
+							class="mt-2 text-sm text-signal-ink hover:underline"
+						>
+							{showAllClaims ? 'Show less' : `Read more (${claims.length - 2} more)`}
+						</button>
+					{/if}
+				{/if}
 			</section>
 
 			<!-- What's to come -->
-			{#if workout?.blocks?.length}
-				<hr class="my-5 border-hairline" />
+			{#if rows.length}
+				<hr class="my-6 border-hairline" />
 				<section aria-labelledby="to-come">
 					<h2 id="to-come" class="tabular text-xs uppercase tracking-widest text-steel">What's to come</h2>
 					<ol class="mt-2 divide-y divide-hairline">
-						{#each workout.blocks as block, bi (bi)}
-							{#if (block.repeat ?? 1) > 1}
-								<li class="py-2.5">
-									<p class="tabular text-xs uppercase tracking-widest text-signal-ink">{block.label ?? 'Set'} × {block.repeat}</p>
-									<ul class="mt-1 space-y-1">
-										{#each block.steps as step, si (si)}
-											<li class="flex items-center justify-between gap-3 text-sm">
-												<span class="min-w-0 truncate">{step.label}</span>
-												<span class="tabular shrink-0 text-steel">{stepTarget(step)}</span>
+						{#each visibleRows as row, i (i)}
+							<li class="py-2.5">
+								<div class="flex items-baseline justify-between gap-3 text-sm">
+									<span class="min-w-0 truncate">{row.label}</span>
+									<span class="tabular shrink-0 text-steel">{row.target}</span>
+								</div>
+								{#if row.sub}
+									<ul class="mt-1 space-y-0.5 pl-3 text-xs text-steel">
+										{#each row.sub as s, si (si)}
+											<li class="flex items-baseline justify-between gap-3">
+												<span class="min-w-0 truncate">{s.label}</span>
+												<span class="tabular shrink-0">{s.target}</span>
 											</li>
 										{/each}
 									</ul>
-								</li>
-							{:else}
-								{#each block.steps as step, si (si)}
-									<li class="flex justify-between gap-3 py-2.5 text-sm">
-										<span>{step.label}</span>
-										<span class="tabular text-steel">{stepTarget(step)}</span>
-									</li>
-								{/each}
-							{/if}
+								{/if}
+							</li>
 						{/each}
 					</ol>
+					{#if rows.length > 5}
+						<button
+							type="button"
+							onclick={() => (showAllRows = !showAllRows)}
+							aria-expanded={showAllRows}
+							class="mt-2 text-sm text-signal-ink hover:underline"
+						>
+							{showAllRows ? 'Show less' : `View more (${rows.length - 5} more)`}
+						</button>
+					{/if}
 				</section>
 			{/if}
 
-			<!-- Why this workout -->
-			<hr class="my-5 border-hairline" />
-			<section aria-labelledby="why">
-				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
-				{#if loading}
-					<p class="mt-2 text-sm text-steel">Loading the research…</p>
-				{:else if failed}
-					<p class="mt-2 text-sm text-steel">The sourced explanation isn't available right now.</p>
-				{:else if why}
-					{#if lead}<p class="mt-2 text-sm">{lead}</p>{/if}
-					{#if claims.length}
-						<p class="mt-4 tabular text-xs uppercase tracking-widest text-steel">The evidence</p>
-						<ul class="mt-2 space-y-3">
-							{#each visibleClaims as cl, i (i)}
-								<li class="flex justify-between gap-3 text-sm">
-									<span class="flex-1 text-steel">
-										<span class="text-ink">{cl.topic}.</span>
-										{cl.claim}
-									</span>
-									{#if markersFor(cl.source).length}
-										<span class="tabular shrink-0 text-[10px] text-steel">{markersFor(cl.source).map((n) => `[${n}]`).join('')}</span>
+			<!-- Machines in this session -->
+			{#if machines.length}
+				<hr class="my-6 border-hairline" />
+				<section aria-labelledby="machines">
+					<h2 id="machines" class="tabular text-xs uppercase tracking-widest text-steel">The machines</h2>
+					<ul class="mt-2 space-y-1">
+						{#each machines as m (m.name)}
+							<li>
+								<button
+									type="button"
+									onclick={() => (openMachine = openMachine === m.name ? null : m.name)}
+									aria-expanded={openMachine === m.name}
+									class="flex w-full items-baseline justify-between gap-3 border-b border-hairline py-2.5 text-left text-sm hover:text-signal-ink"
+								>
+									<span class="font-medium">{m.name}</span>
+									<span class="tabular shrink-0 text-xs text-steel">{openMachine === m.name ? '−' : '+'}</span>
+								</button>
+								{#if openMachine === m.name}
+									<div class="pb-3 pt-1">
+										<p class="text-sm leading-relaxed text-steel">{machineLine(m)}</p>
+										<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Form</p>
+										<ul class="mt-1 space-y-1 text-sm">
+											{#each m.form as cue, ci (ci)}
+												<li class="flex gap-2"><span class="text-steel">·</span><span>{cue}</span></li>
+											{/each}
+										</ul>
+										<p class="mt-2 text-xs text-steel">Avoid: {m.mistakes.join('; ').toLowerCase()}.</p>
+									</div>
+								{/if}
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
+
+			<!-- Sources -->
+			{#if why?.sources?.length}
+				<hr class="my-6 border-hairline" />
+				<section aria-labelledby="sources">
+					<h2 id="sources" class="tabular text-xs uppercase tracking-widest text-steel">Sources</h2>
+					<ol class="mt-2 space-y-1 text-xs text-steel">
+						{#each (showAllSources ? why.sources : why.sources.slice(0, 3)) as s, i (i)}
+							<li class="flex gap-2">
+								<span class="tabular shrink-0">[{i + 1}]</span>
+								<span class="min-w-0">
+									{#if sourceHref(s.doiUrl)}
+										<a href={sourceHref(s.doiUrl)} target="_blank" rel="noopener" class="break-words hover:text-signal-ink">{s.title}</a>
+									{:else}
+										{s.title}
 									{/if}
-								</li>
-							{/each}
-						</ul>
-						{#if claims.length > 4}
-							<button
-								type="button"
-								onclick={() => (showAllClaims = !showAllClaims)}
-								aria-expanded={showAllClaims}
-								class="mt-3 text-sm text-signal-ink hover:underline"
-							>
-								{showAllClaims ? 'Show less' : `Read more (${claims.length - 4} more)`}
-							</button>
-						{/if}
+									{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
+								</span>
+							</li>
+						{/each}
+					</ol>
+					{#if why.sources.length > 3}
+						<button
+							type="button"
+							onclick={() => (showAllSources = !showAllSources)}
+							aria-expanded={showAllSources}
+							class="mt-2 text-xs text-signal-ink hover:underline"
+						>
+							{showAllSources ? 'Show fewer sources' : `View all ${why.sources.length} sources`}
+						</button>
 					{/if}
-					{#if why.sources.length}
-						<p class="mt-5 tabular text-xs uppercase tracking-widest text-steel">Sources</p>
-						<ol class="mt-2 space-y-1 text-xs text-steel">
-							{#each (showAllSources ? why.sources.slice(0, 16) : why.sources.slice(0, 3)) as s, i (i)}
-								<li class="flex justify-between gap-3">
-									<span class="min-w-0 flex-1 break-words">
-										<span class="tabular text-steel">{i + 1}</span>
-										{#if sourceHref(s)}<a href={sourceHref(s)} target="_blank" rel="noopener" class="break-all hover:text-signal-ink">{s.title}</a>{:else}{s.title}{/if}{#if s.year}<span class="tabular"> ({s.year})</span>{/if}
-									</span>
-									{#if sourceHref(s)}<span class="text-steel" aria-hidden="true">↗</span>{/if}
-								</li>
-							{/each}
-						</ol>
-						{#if why.sources.length > 3}
-							<button
-								type="button"
-								onclick={() => (showAllSources = !showAllSources)}
-								aria-expanded={showAllSources}
-								class="mt-2 text-xs text-signal-ink hover:underline"
-							>
-								{showAllSources ? 'Show fewer sources' : `View all ${why.sources.length} sources`}
-							</button>
-						{/if}
-					{/if}
-					<p class="mt-5 text-xs text-steel">
-						{#if why.kbVersion}Knowledge base {why.kbVersion}. {/if}Guidance, not medical advice.
-					</p>
-				{/if}
-			</section>
+					{#if why.kbVersion}<p class="mt-3 text-[11px] text-steel">Knowledge base {why.kbVersion}.</p>{/if}
+				</section>
+			{/if}
 		</div>
 	</div>
 
 	<footer class="border-t border-hairline px-4 py-3" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
 		<div class="mx-auto flex max-w-2xl gap-2">
-			{#if onStart && session.prescription?.workout}
-				<button type="button" onclick={onStart} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">Start</button>
+			{#if onStart && workout}
+				<button type="button" onclick={onStart} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">
+					Start
+				</button>
 			{/if}
 			{#if onLog}
 				<button type="button" onclick={onLog} class="flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">
