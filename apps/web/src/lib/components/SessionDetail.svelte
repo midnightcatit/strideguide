@@ -475,15 +475,17 @@
 		</div>
 	</footer>
 
-	{#if showPreview}
-		<PreviewSheet session={session} {machines} onClose={() => (showPreview = false)} />
-	{/if}
+	<PreviewSheet
+		open={showPreview}
+		session={session}
+		{machines}
+		onClose={() => (showPreview = false)}
+	/>
 
-	{#if showNotes}
-		<NotesSheet
-			session={session}
-			onSaved={(notes) => (savedNote = notes)}
-			onClose={() => (showNotes = false)}
-		/>
-	{/if}
+	<NotesSheet
+		open={showNotes}
+		session={session}
+		onSaved={(notes) => (savedNote = notes)}
+		onClose={() => (showNotes = false)}
+	/>
 </div>

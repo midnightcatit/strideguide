@@ -46,13 +46,21 @@
 	--badge-wash: #faeccf;
 
 	/*
-	 * Motion. Every transition pulls from these tokens, so timing stays
-	 * consistent instead of drifting per component.
+	 * Motion. One named set, used everywhere, so timing stays consistent instead
+	 * of drifting per component. Three durations: --dur-1 for a press or a small
+	 * state change, --dur-2 for a standard change (fades, tab switches, route
+	 * cross-fades), --dur-3 for a larger surface entering or leaving (a sheet).
+	 * Two curves: --ease-out is the standard decelerate for anything that enters
+	 * or settles, --ease-emphasized is the stronger curve for sheets and other
+	 * larger surfaces. --ease-in-out stays for anything that both leaves and
+	 * arrives in one movement. The global reduced-motion rule further down zeroes
+	 * all of these, so nothing animates for people who ask for that.
 	 */
-	--dur-1: 120ms;
+	--dur-1: 140ms;
 	--dur-2: 220ms;
 	--dur-3: 340ms;
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
 	/*
@@ -301,7 +309,9 @@ summary,
 
 @media (prefers-reduced-motion: no-preference) {
 	button,
-	a[href] {
+	a[href],
+	[role='button'],
+	summary {
 		transition:
 			transform var(--dur-1) var(--ease-out),
 			color var(--dur-1) var(--ease-out),
@@ -309,7 +319,9 @@ summary,
 			background-color var(--dur-1) var(--ease-out);
 	}
 	button:active,
-	a[href]:active {
+	a[href]:active,
+	[role='button']:active,
+	summary:active {
 		transform: scale(0.98);
 	}
 	.reveal {
@@ -403,7 +415,7 @@ summary,
 	animation: sg-fade-in var(--dur-2) var(--ease-out) both;
 }
 .overlay-sheet {
-	animation: sg-sheet-in var(--dur-3) var(--ease-out) both;
+	animation: sg-sheet-in var(--dur-3) var(--ease-emphasized) both;
 }
 
 /* Card frame. The stage height is a floor: a card grows with its content rather
@@ -436,26 +448,72 @@ summary,
 	opacity: 1;
 }
 
-/* Route change. A short crossfade via the View Transitions API where it is
-   supported; without it navigation is instant, so nothing breaks. */
+/*
+ * Route change. The View Transitions API animates only the content and the
+ * header, each given a view-transition-name, so the rest of the chrome stays put
+ * and only what changed moves: the content cross-fades and rises a few pixels,
+ * the header holds still. The root group is switched off so nothing else is
+ * caught in it. Where the API is missing the navigation is instant, and the
+ * keyed content wrapper replays a short enter instead (see .route-enter below).
+ */
+main {
+	view-transition-name: sg-content;
+}
+.sg-header {
+	view-transition-name: sg-header;
+}
 @keyframes sg-vt-in {
 	from {
 		opacity: 0;
+		transform: translateY(6px);
 	}
 	to {
 		opacity: 1;
+		transform: none;
 	}
 }
-::view-transition-old(root) {
-	animation: none;
-	opacity: 0;
+@keyframes sg-vt-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
 }
+::view-transition-old(root),
 ::view-transition-new(root) {
-	animation: sg-vt-in var(--dur-2) var(--ease-out);
+	animation: none;
 }
+::view-transition-old(sg-content) {
+	animation: sg-vt-out var(--dur-1) var(--ease-out) both;
+}
+::view-transition-new(sg-content) {
+	animation: sg-vt-in var(--dur-2) var(--ease-out) both;
+}
+::view-transition-old(sg-header),
+::view-transition-new(sg-header) {
+	animation: none;
+}
+
+/*
+ * Fallback for browsers without the View Transitions API: the content wrapper,
+ * keyed on the pathname in the layout, replays this short enter on each route
+ * change. It is skipped where the API drives the change (html.vt, set in
+ * app.html) and under reduced motion, so it never double-animates or fights it.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	html:not(.vt) .route-enter {
+		animation: sg-vt-in var(--dur-2) var(--ease-out) both;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	::view-transition-old(root),
-	::view-transition-new(root) {
+	::view-transition-new(root),
+	::view-transition-old(sg-content),
+	::view-transition-new(sg-content),
+	::view-transition-old(sg-header),
+	::view-transition-new(sg-header) {
 		animation: none;
 	}
 }
