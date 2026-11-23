@@ -390,10 +390,10 @@ summary,
 	animation: sg-sheet-in var(--dur-3) var(--ease-out) both;
 }
 
-/* Fixed-height card frame, so run and strength cards (and rest placeholders)
-   are always the same height. Content distributes vertically inside it. */
+/* Card frame. The stage height is a floor: a card grows with its content rather
+   than clipping, so pills and labels always show. */
 .stage-card {
-	height: var(--stage-h);
+	min-height: var(--stage-h);
 	display: flex;
 	flex-direction: column;
 }
