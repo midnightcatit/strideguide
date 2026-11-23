@@ -834,7 +834,14 @@
 								<button
 									type="button"
 									aria-pressed={gymPreset === gym.id}
-									onclick={() => (gymPreset = gymPreset === gym.id ? undefined : gym.id)}
+									onclick={() => {
+										if (gymPreset === gym.id) {
+											gymPreset = undefined;
+										} else {
+											gymPreset = gym.id;
+											equipment = gym.mode;
+										}
+									}}
 									class="rounded-full border px-3 py-1.5 text-sm transition-colors {gymPreset === gym.id
 										? 'border-signal-ink bg-signal-wash text-signal-ink'
 										: 'border-hairline text-steel hover:border-steel'}"

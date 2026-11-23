@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MOVES, circuitFor, findMove, moveCategory } from './catalog';
+import { GYM_PRESETS } from './gyms';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
 import { DYNAMIC_DRILLS, RECOVERY_DRILLS, STRETCHES, findDrill } from './stretches';
 import { WORKOUT_LIBRARY } from './library';
@@ -108,5 +109,17 @@ describe('circuitFor filters and phasing', () => {
 		expect(base.every((m) => !FREE.has(moveCategory(m) as string))).toBe(true);
 		const later = circuitFor('full-gym', 60, undefined, true, 'intermediate');
 		expect(later.some((m) => FREE.has(moveCategory(m) as string))).toBe(true);
+	});
+});
+
+describe('gym presets', () => {
+	it('reference real catalog moves, with unique ids', () => {
+		const ids = GYM_PRESETS.map((p) => p.id);
+		expect(new Set(ids).size).toBe(ids.length);
+		for (const p of GYM_PRESETS) {
+			for (const name of p.machines) {
+				expect(findMove(name), `${p.id} references an unknown machine: ${name}`).toBeTruthy();
+			}
+		}
 	});
 });
