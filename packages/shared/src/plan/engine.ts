@@ -570,7 +570,16 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const weeks: PlannedWeek[] = [];
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
-		const volume = volumes[w]!;
+		// The model may hold or ease a single week (a coach-like microcycle). The
+		// numbers stay deterministic: an intent only scales or holds the plan's own
+		// curve, never sets a distance, and a taper week is left untouched.
+		const intent = input.weekShapes?.[w]?.volumeIntent;
+		let volume = volumes[w]!;
+		if (phase !== 'taper' && intent === 'ease') volume = volume * 0.9;
+		else if (phase !== 'taper' && intent === 'hold') {
+			volume = Math.min(volumes[w - 1] ?? volume, volume);
+		}
+		volume = clamp(round1(volume), 5, 160);
 		const weekStart = addDays(input.startDate, w * 7);
 		const weekEnd = addDays(weekStart, 6);
 		let strengthLeft = strengthCount;
