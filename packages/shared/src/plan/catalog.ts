@@ -6,10 +6,24 @@
 
 import { BODYWEIGHT_MOVES, DUMBBELL_MOVES } from './bodyweight';
 import { PF_MACHINES, type MachineExercise } from './machines';
+import {
+	BAND_HOME_MOVES,
+	BODYWEIGHT_PROGRESSIONS,
+	EXTRA_MACHINES,
+	FREEWEIGHT_MOVES,
+} from './exercises';
 import type { EquipmentPreference } from '../types';
 
-/** Every move we can name: machines first, then bodyweight. */
-export const ALL_MOVES: MachineExercise[] = [...PF_MACHINES, ...BODYWEIGHT_MOVES];
+/** Every move we can name: machines and bodyweight, then the wave-5 expansions. */
+export const ALL_MOVES: MachineExercise[] = [
+	...PF_MACHINES,
+	...BODYWEIGHT_MOVES,
+	...DUMBBELL_MOVES,
+	...EXTRA_MACHINES,
+	...FREEWEIGHT_MOVES,
+	...BAND_HOME_MOVES,
+	...BODYWEIGHT_PROGRESSIONS,
+];
 
 /** Look a move up by name, across both catalogs. */
 export function findMove(name?: string): MachineExercise | undefined {

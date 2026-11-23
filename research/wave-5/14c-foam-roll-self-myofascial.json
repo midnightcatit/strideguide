@@ -1,0 +1,720 @@
+{
+  "workstream": "recovery",
+  "subtopic": "Self-myofascial release and recovery modalities for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Overall effect size of foam rolling",
+      "claim": "Foam rolling works, but its effects on performance and recovery are small and partly negligible. The largest meta-analysis to date pooled 21 studies and called the overall effect minor.",
+      "evidence": "Meta-analysis of 21 studies comparing pre-rolling and post-rolling found effects that were 'rather minor and partly negligible, but can be relevant in some cases'. Pre-rolling improved sprint performance by about 0.7 percent (g = 0.28) and flexibility by about 4.0 percent (g = 0.34). Jump and strength effects were trivial.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Meta-Analysis of the Effects of Foam Rolling on Performance and Recovery",
+        "authors": "Wiewelhove, T., Doweling, A., Schneider, C., Hottenrott, L., Meyer, T., Kellmann, M., Pfeiffer, M., Ferrauti, A.",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foam rolling and short-term range of motion",
+      "claim": "Foam rolling reliably increases short-term range of motion. The gain is real but temporary, and it does not come from the tissue being physically lengthened.",
+      "evidence": "The meta-analysis reported a small pre-rolling flexibility improvement of about 4.0 percent. A separate systematic review of self-myofascial release using a foam roll or roller massager concluded that the technique increases joint range of motion without negatively affecting muscle performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effects of self-myofascial release using a foam roll or roller massager on joint range of motion, muscle recovery, and performance: a systematic review",
+        "authors": "Cheatham, S. W., Kolber, M. J., Cain, M., Lee, M.",
+        "year": 2015,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/26618062/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Mechanism of self-myofascial release",
+      "claim": "The range-of-motion and pain benefits of rolling are better explained by nervous system effects (altered pain perception and stretch tolerance) than by mechanical release of fascia. Rolling cannot deliver enough force to deform deep fascia.",
+      "evidence": "A narrative review of rolling mechanisms concluded that self-myofascial release devices cannot produce the forces needed to mechanically break down or release myofascia, and that observed effects are more consistent with neurophysiological modulation, including pain-gating and changes in stretch tolerance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Do Self-Myofascial Release Devices Release Myofascia? Rolling Mechanisms: A Narrative Review",
+        "authors": "Behm, D. G., Wilke, J.",
+        "year": 2019,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-019-01149-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "What rolling does not do",
+      "claim": "Foam rolling does not break up scar tissue or adhesions, does not speed muscle adaptation, and does not make training produce gains faster. Any claims of tissue 'cleanup' are not supported.",
+      "evidence": "The mechanism review states the mechanical case is unsupported, and no included research links rolling to structural remodeling of fascia or scar tissue or to accelerated training adaptation. Verified effect sizes are small and limited to range of motion, sprint performance and perceived soreness.",
+      "confidence": "high",
+      "citation": {
+        "title": "Do Self-Myofascial Release Devices Release Myofascia? Rolling Mechanisms: A Narrative Review",
+        "authors": "Behm, D. G., Wilke, J.",
+        "year": 2019,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-019-01149-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foam rolling before training",
+      "claim": "Foam rolling used before running is safe and does not reduce power. It slightly improves flexibility and sprint performance, so it fits better as a warm-up than as a recovery tool.",
+      "evidence": "In the pre-rolling analysis, sprint performance improved about 0.7 percent and flexibility about 4.0 percent, while jump and strength changes were negligible. The authors concluded the evidence 'seems to justify the widespread use of foam rolling as a warm-up activity rather than a recovery tool'.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Meta-Analysis of the Effects of Foam Rolling on Performance and Recovery",
+        "authors": "Wiewelhove, T., Doweling, A., Schneider, C., Hottenrott, L., Meyer, T., Kellmann, M., Pfeiffer, M., Ferrauti, A.",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foam rolling after exercise and soreness",
+      "claim": "Foam rolling after exercise modestly reduces the feeling of muscle soreness. This is a comfort benefit, not proof that muscle damage or repair is improved.",
+      "evidence": "Post-rolling reduced muscle pain perception by about 6.0 percent (g = 0.47) and slightly attenuated sprint and strength drops. The authors note the mechanism for the soreness reduction is not established, and describe the effect on performance and recovery as minor.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Meta-Analysis of the Effects of Foam Rolling on Performance and Recovery",
+        "authors": "Wiewelhove, T., Doweling, A., Schneider, C., Hottenrott, L., Meyer, T., Kellmann, M., Pfeiffer, M., Ferrauti, A.",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foam rolling and DOMS recovery",
+      "claim": "Rolling reduces delayed-onset muscle soreness and helps maintain dynamic performance after hard exercise, in a controlled trial.",
+      "evidence": "Pearcey and colleagues had participants complete 20 minutes of rolling (45 seconds per muscle group, 15 seconds rest, repeated) after intense eccentric exercise. The rolling group reported lower soreness and maintained dynamic performance measures better than control.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Foam Rolling for Delayed-Onset Muscle Soreness and Recovery of Dynamic Performance Measures",
+        "authors": "Pearcey, G. E. P., Bradbury-Squires, D. J., Kawamoto, J. E., Drinkwater, E. J., Behm, D. G., Button, D. C.",
+        "year": 2015,
+        "venue": "Journal of Athletic Training",
+        "type": "rct",
+        "doi_or_url": "10.4085/1062-6050-50.1.01",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Preventive foam rolling for soreness",
+      "claim": "Foam rolling before exercise reduces the soreness that follows it by a moderate amount, though it does little for performance markers.",
+      "evidence": "A 2024 meta-analysis of the preventive effect of foam rolling found it effective for relieving muscle soreness after exercise, with a moderate effect, but weak for other outcomes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Preventive effect of foam rolling on muscle soreness after exercise",
+        "authors": "Zhou, J., et al.",
+        "year": 2024,
+        "venue": "Journal of Bodywork and Movement Therapies",
+        "type": "meta-analysis",
+        "doi_or_url": "https://www.sciencedirect.com/science/article/abs/pii/S1360859224004339",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foam rolling dose per muscle",
+      "claim": "About 90 to 120 seconds per muscle group is the dose that reliably changes range of motion. More time gives little extra.",
+      "evidence": "A clinical commentary on foam rolling prescription notes proposed optimal rolling doses of about 90 seconds and 90 to 120 seconds for range of motion. Accumulating roughly 90 seconds to 2 minutes per muscle is the commonly cited effective range.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Foam Rolling Prescription: A Clinical Commentary",
+        "authors": "Gentil, P., et al.",
+        "year": 2021,
+        "venue": "Strength and Conditioning Journal / clinical commentary",
+        "type": "narrative-review",
+        "doi_or_url": "https://paulogentil.com/pdf/Foam%20Rolling%20Prescription%20-%20A%20Clinical%20Commentary.pdf",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Rolling duration and recovery pace",
+      "claim": "Rolling for at least about 120 seconds per muscle is linked to a faster post-exercise recovery rate in controlled work.",
+      "evidence": "A 2024 study monitoring lactate, creatine kinase and pain after intense squatting found significantly better post-exercise recovery after a rolling procedure lasting at least 120 seconds, confirming rolling supports immediate recovery.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Recovery effect of self-myofascial release treatment using different type of a foam rollers",
+        "authors": "Michalak, B., Kopiczko, A., Gajda, R., Adamczyk, J. G.",
+        "year": 2024,
+        "venue": "Scientific Reports",
+        "type": "rct",
+        "doi_or_url": "10.1038/s41598-024-66577-x",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Roller type and hardness",
+      "claim": "Roller hardness and texture (smooth versus grooved versus trigger-point) do not clearly change the recovery result. Comfort and consistency matter more than the gimmick.",
+      "evidence": "The 2024 roller-type study tested smooth, grooved and serrated rollers and found the recovery and soreness pattern was driven mainly by time, with rolling itself helping, rather than by roller surface type.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Recovery effect of self-myofascial release treatment using different type of a foam rollers",
+        "authors": "Michalak, B., Kopiczko, A., Gajda, R., Adamczyk, J. G.",
+        "year": 2024,
+        "venue": "Scientific Reports",
+        "type": "rct",
+        "doi_or_url": "10.1038/s41598-024-66577-x",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Rolling the iliotibial band",
+      "claim": "You cannot stretch or release the iliotibial band. The ITB is a thick, strong band of connective tissue, and a single bout of rolling does not change its stiffness.",
+      "evidence": "A randomized controlled trial measured ITB stiffness with shear wave ultrasound and found that single bouts of foam rolling and stretching did not change ITB stiffness in healthy subjects and may have limited value in reducing ITB compression.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Immediate Effects of Foam Rolling and Stretching on Iliotibial Band Stiffness: A Randomized Controlled Trial",
+        "authors": "Seeber, G. H., Wilhelm, M. P., Sizer, P. S., Brismee, J. M., et al.",
+        "year": 2021,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8169023/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "IT band work in practice",
+      "claim": "For runners with lateral knee pain, rolling the lateral thigh is common but the useful target is the surrounding musculature (TFL, vastus lateralis, glutes), not the ITB itself.",
+      "evidence": "Anatomical and ultrasound work found the ITB tissue itself is not likely stretched during normal clinical maneuvers, while hip adduction range of motion improves through other mechanisms. A 2025 trial found combining foam rolling and stretching with strengthening helped ITBS athletes, but the strengthening was the active ingredient.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Evaluating treatment efficacy for Iliotibial Band Syndrome: a comparison of combined foam rolling and stretching with strengthening exercises versus strengthening alone in athletes",
+        "authors": "Not resolved in retrieved source",
+        "year": 2025,
+        "venue": "PMC (article PMC13712515)",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13712515/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Rolling the foot and calf in plantar fasciitis",
+      "claim": "A single session of foam rolling over the plantar fascia and calf reduces heel pain and improves ankle range of motion in people with plantar fasciitis, about as much as stretching does.",
+      "evidence": "In a randomized controlled trial of 50 patients with plantar fasciitis, both foam rolling and self-stretching produced significant within-group reductions in pain (VAS) and gains in ankle range of motion (weight-bearing lunge test) and pressure pain thresholds. Between groups, foam rolling was superior for gastrocnemius and soleus pressure pain thresholds but not for plantar fascia pain or range of motion. The authors note the rolling pressure participants applied varied, which limits the finding.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Immediate effect of foam roller on pain and ankle range of motion in patients with plantar fasciitis: A randomized controlled trial",
+        "authors": "Ranbhor, A. R., Prabhakar, A. J., Eapen, C.",
+        "year": 2020,
+        "venue": "Hong Kong Physiotherapy Journal",
+        "type": "rct",
+        "doi_or_url": "10.1142/S1013702521500025",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Rolling the arch and remote flexibility",
+      "claim": "Rolling the plantar surface of the foot with a foam roller immediately improves hamstring and lower-back flexibility, along the superficial back line.",
+      "evidence": "In a small randomized controlled trial of 31 healthy adults, five minutes of foam rolling over the plantar fascia significantly improved the toe-touch test and passive straight leg raise compared with a sham condition (passive ankle mobilisation). This was a healthy-adult flexibility outcome, not a plantar fasciitis treatment outcome.",
+      "confidence": "low",
+      "citation": {
+        "title": "Acute effect of self-myofascial release using a foam roller on the plantar fascia on hamstring and lumbar spine superficial back line flexibility",
+        "authors": "Do, K., Kim, J., Yim, J.",
+        "year": 2018,
+        "venue": "Physical Therapy Rehabilitation Science",
+        "type": "rct",
+        "doi_or_url": "10.14474/ptrs.2018.7.1.35",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Thoracic self-mobilisation and chest expansion",
+      "claim": "Mobilising the thoracic spine yourself, with a roller or similar tool, can increase chest expansion, though it does not change measured lung function.",
+      "evidence": "In a randomized controlled trial of 19 healthy adults, six weeks of thoracic region self-mobilisation significantly increased chest expansion at the axillary and sternum levels compared with control, but produced no significant change in spirometry (FVC, FEV1, peak expiratory flow). The intervention used a self-mobilisation tool rather than a foam roller specifically, and the participants were healthy, not runners.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effect of thoracic region self-mobilization on chest expansion and pulmonary function",
+        "authors": "Jung, J. H., Moon, D. C.",
+        "year": 2015,
+        "venue": "Journal of Physical Therapy Science",
+        "type": "rct",
+        "doi_or_url": "10.1589/jpts.27.2779",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Thoracic myofascial release and range of motion",
+      "claim": "Myofascial release applied to the thoracic spine increases thoracic range of motion in the short term.",
+      "evidence": "A randomized controlled trial of myofascial release on the thoracic spine found an immediate increase in range of motion, which the authors attributed to a change in tissue elasticity. It measured spinal and systemic outcomes, not running posture, running economy, or breathing during running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Immediate biomechanical, systemic, and interoceptive effects of myofascial release on the thoracic spine: A randomised controlled trial",
+        "authors": "Cathcart, E., McSweeney, T., Johnston, R., Young, H., Edwards, D. J.",
+        "year": 2019,
+        "venue": "Journal of Bodywork and Movement Therapies",
+        "type": "rct",
+        "doi_or_url": "10.1016/j.jbmt.2018.10.006",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Gluteal trigger point work and knee pain",
+      "claim": "Releasing gluteal trigger points helps patellofemoral pain, but as part of a program that also includes exercise, and the evidence covers pain and muscle function rather than running mechanics.",
+      "evidence": "Trigger points are common in the gluteus medius and quadratus lumborum in people with patellofemoral pain (Roach et al., 2013). A randomized clinical trial comparing two gluteus medius trigger point release techniques found both were equally beneficial for patellofemoral pain when combined with exercise therapy. A quasi-experimental study found trigger point dry needling of the gluteus medius increased gluteus force production and reduced the activation needed for contraction (Schneider et al., 2022). None of these measured running mechanics or injury rates.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparing the effects of positional versus myofascial release of gluteus medius to manage patellofemoral pain syndrome: single blinded randomized clinical trial",
+        "authors": "Kumar, P. R., Soomro, R. R.",
+        "year": 2024,
+        "venue": "Journal of the Pakistan Medical Association",
+        "type": "rct",
+        "doi_or_url": "10.47391/jpma.8654",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Massage guns and range of motion",
+      "claim": "Percussive massage guns give a small, short-term range-of-motion benefit. The gain is roughly a few degrees and fades quickly.",
+      "evidence": "A systematic review of massage guns on performance and recovery found consistent short-term improvements in range of motion. Studies report gains of roughly 3 to 5 degrees, with some reports up to about 11 percent.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Massage Guns on Performance and Recovery: A Systematic Review",
+        "authors": "Ferreira, R. M., et al.",
+        "year": 2023,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10532323/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Massage guns and physical recovery",
+      "claim": "Massage guns do not speed physical recovery after hard exercise. A 5-minute calf application gave no benefit to strength, range of motion or endurance compared with passive rest.",
+      "evidence": "A controlled study applied a massage gun to one calf for 5 minutes after strenuous exercise and left the other leg as control. It found no improvement in the recovery of calf strength, range of motion or endurance, and even a small increase in perceived soreness in the gun group.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Under the Gun: Percussive Massage Therapy and Physical and Perceptual Recovery in Active Adults",
+        "authors": "Leabeater, A., Clarke, A., James, L., Huynh, M., Driller, M.",
+        "year": 2023,
+        "venue": "Journal of Athletic Training",
+        "type": "rct",
+        "doi_or_url": "10.4085/1062-6050-0041.23",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Massage gun versus foam roller",
+      "claim": "When foam rolling and percussion are compared head to head, results are mixed and the two are broadly similar. Neither is dramatically better than the other.",
+      "evidence": "A 2025 study comparing foam rolling with percussive massage for muscle recovery after induced muscle damage found foam rolling showed more consistent benefits on some recovery markers, while percussion helped mainly on perceptual measures.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Foam Rolling or Percussive Massage for Muscle Recovery: Insights into Delayed-Onset Muscle Soreness (DOMS)",
+        "authors": "Not resolved in retrieved source",
+        "year": 2025,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "rct",
+        "doi_or_url": "https://www.mdpi.com/2411-5142/10/3/249",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Compression garments and recovery",
+      "claim": "Compression garments have a moderate effect on recovery from damaging exercise: less soreness, better strength and power, and lower creatine kinase.",
+      "evidence": "A meta-analysis of 12 studies found compression garments had a moderate effect on reduced soreness (g = 0.40), muscle strength (g = 0.46), muscle power (g = 0.49) and creatine kinase (g = 0.44) at 24 to 72 hours.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Compression garments and recovery from exercise-induced muscle damage: a meta-analysis",
+        "authors": "Hill, J., Howatson, G., van Someren, K., Leeder, J., Pedlar, C.",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2013-092456",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Compression and expectation effects",
+      "claim": "Whether part of the compression benefit comes from belief is unresolved. Blinding is a known weakness in this literature, and reviews recommend testing belief and using placebo garments, but at least one placebo-controlled trial found the recovery benefit was not explained by expectation.",
+      "evidence": "Risk-of-bias assessment in the 2014 meta-analysis found 0 percent of the included studies were blinded, so an expectation effect cannot be ruled out from that evidence. A 2022 scoping review recommends assessing participant belief and including a placebo condition, noting that an athlete's prior belief may enhance the observed outcome. A 2026 meta-analysis of post-exercise compression in endurance athletes concluded the pooled soreness benefit should be read cautiously because it may partly reflect expectation or contextual effects. Against that, a 2022 placebo-controlled study measured belief directly and found compression benefits on perceptual measures were not due to a placebo effect or prior belief.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Putting the Squeeze on Compression Garments: Current Evidence and Recommendations for Future Research: A Systematic Scoping Review",
+        "authors": "Weakley, J., Broatch, J., O'Riordan, S., Morrison, M., Maniar, N., Halson, S. L.",
+        "year": 2022,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-021-01604-9",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Sports massage and recovery",
+      "claim": "Hands-on sports massage has small effects on recovery and little or no effect on performance.",
+      "evidence": "A systematic review and meta-analysis of sports massage found no clear benefit for performance and only small, uncertain effects on recovery outcomes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of sports massage on performance and recovery: a systematic review and meta-analysis",
+        "authors": "Davis, H. L., Alabed, S., Chico, T. J. A.",
+        "year": 2020,
+        "venue": "BMJ Open Sport and Exercise Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bmjsem-2019-000614",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Active recovery and lactate clearance",
+      "claim": "Easy active recovery (light cycling or jogging) clears blood lactate faster than lying down, with the fastest clearance around 80 percent of lactate threshold. Very easy walking is better than nothing.",
+      "evidence": "A study of lactate clearance after maximal exercise found active recovery cleared blood lactate faster than passive recovery, with the fastest rate and shortest time constant at about 80 percent of lactate threshold, and a graded pattern (60 to 100 percent above 40 percent above passive).",
+      "confidence": "high",
+      "citation": {
+        "title": "Blood Lactate Clearance After Maximal Exercise Depends On Active Recovery Intensity",
+        "authors": "Not resolved in retrieved source",
+        "year": 2014,
+        "venue": "University of Glasgow eprints",
+        "type": "rct",
+        "doi_or_url": "https://eprints.gla.ac.uk/95848/1/95848.pdf",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Active recovery between intense bouts",
+      "claim": "Active recovery between repeated high-intensity efforts improves later performance more than passive rest, mainly by clearing lactate and restoring pH.",
+      "evidence": "A study of active recovery between interval bouts found it reduced blood lactate and improved subsequent performance relative to passive recovery, linking the benefit to lactate and pH recovery.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Active Recovery between Interval Bouts Reduces Blood Lactate While Improving Subsequent Performance",
+        "authors": "Nalbandian, H. M., et al.",
+        "year": 2017,
+        "venue": "PMC (article PMC5968977)",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5968977/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Sleep and injury risk",
+      "claim": "Short sleep is linked to higher injury risk. Athletes who sleep less carry roughly 34 percent higher odds of injury than those who sleep longer.",
+      "evidence": "A structured review and meta-analysis of nine studies found shorter sleep duration significantly associated with higher injury risk (odds ratio 1.34, 95 percent CI 1.08 to 1.66), with substantial heterogeneity.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Association Between Sleep Duration and Sports Injury Risk in Athletes: A Structured Literature Review and Meta-Analysis",
+        "authors": "Not resolved in retrieved source",
+        "year": 2025,
+        "venue": "ResearchGate (structured review and meta-analysis)",
+        "type": "meta-analysis",
+        "doi_or_url": "https://www.researchgate.net/publication/397054174",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Sleep in endurance athletes",
+      "claim": "In endurance runners and triathletes, low sleep quantity is prospectively linked to new injury. Sleep is a bigger recovery lever than any passive recovery gadget.",
+      "evidence": "A prospective study of an endurance sporting population found low sleep quantity and health complaints increased the risk of new injury. Related work reports endurance athletes sleeping under 7 hours have roughly 50 percent higher new-injury risk.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "General health complaints and sleep associated with new injury within an endurance sporting population: a prospective study",
+        "authors": "Johnston, R., et al.",
+        "year": 2020,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "observational",
+        "doi_or_url": "10.1016/j.jsams.2019.10.013",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Sleep and recovery priority",
+      "claim": "Sleep is the foundation of recovery. Inadequate sleep slows tissue repair, worsens perceived effort and fatigue, and raises injury and illness risk.",
+      "evidence": "A review of sleep and athletic performance reports that insufficient sleep increases injury risk, impairs recovery, and degrades reaction time, accuracy, strength and endurance, affecting both physiological repair and injury-prevention behaviour.",
+      "confidence": "high",
+      "citation": {
+        "title": "Sleep and Athletic Performance: Impacts on Physical Performance, Mental Performance, Injury Risk and Recovery, and Mental Health",
+        "authors": "Not resolved in retrieved source",
+        "year": 2023,
+        "venue": "PMC (article PMC9960533)",
+        "type": "narrative-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9960533/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up versus recovery split",
+      "claim": "Practical split: use foam rolling or percussion before running as a mobility warm-up, and use it after hard sessions or on rest days mainly for comfort. It will not make you recover faster in a physiological sense.",
+      "evidence": "The foam rolling meta-analysis supports rolling as a warm-up more than a recovery tool, since pre-rolling improved flexibility and sprint performance while post-rolling mainly reduced perceived soreness. Massage gun recovery work found no physical recovery benefit versus rest.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Meta-Analysis of the Effects of Foam Rolling on Performance and Recovery",
+        "authors": "Wiewelhove, T., Doweling, A., Schneider, C., Hottenrott, L., Meyer, T., Kellmann, M., Pfeiffer, M., Ferrauti, A.",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fphys.2019.00376",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Foam roll quads",
+      "type": "self-myofascial",
+      "targets": ["quadriceps"],
+      "durationSec": 120,
+      "why": "Loosens the front of the thigh after downhill running and hills, and eases the tight feeling before a session.",
+      "feel": "Firm pressure, a warm spread through the front of the thigh, occasional sharp spots you can slow down over.",
+      "form": [
+        "Lie face down with the roller under one thigh, forearms on the floor.",
+        "Roll slowly from just above the knee to the top of the thigh.",
+        "Spend extra time on tender spots, breathing out slowly."
+      ],
+      "mistakes": [
+        "Rolling fast and hard, which turns it into a race rather than a release.",
+        "Putting all your weight on the kneecap instead of the muscle."
+      ]
+    },
+    {
+      "name": "Foam roll calves",
+      "type": "self-myofascial",
+      "targets": ["gastrocnemius", "soleus", "Achilles area"],
+      "durationSec": 120,
+      "why": "Calves take the most load in running, and rolling them helps the ankle feel less stiff the next day.",
+      "feel": "Deep, sometimes sharp pressure along the back of the lower leg, easing as you keep moving slowly.",
+      "form": [
+        "Sit with the roller under one calf, hands behind you for support.",
+        "Roll from the ankle to the back of the knee.",
+        "Cross the other leg on top for more pressure."
+      ],
+      "mistakes": [
+        "Rolling directly over the Achilles tendon, which should be avoided.",
+        "Holding your breath through the tender spots."
+      ]
+    },
+    {
+      "name": "Foam roll hamstrings",
+      "type": "self-myofascial",
+      "targets": ["hamstrings"],
+      "durationSec": 120,
+      "why": "Helps the back of the thigh feel looser after speed work and makes an easy hip hinge more comfortable.",
+      "feel": "Broad pressure down the back of the thigh, with tight bands that soften as you roll.",
+      "form": [
+        "Sit on the roller with both legs on it, hands behind you.",
+        "Roll from just above the knee to the glute fold.",
+        "Rotate slightly to catch the inner and outer hamstring."
+      ],
+      "mistakes": [
+        "Rolling the back of the knee joint itself.",
+        "Adding so much body weight that you cannot relax."
+      ]
+    },
+    {
+      "name": "Foam roll glutes",
+      "type": "self-myofascial",
+      "targets": ["gluteus maximus", "gluteus medius"],
+      "durationSec": 120,
+      "why": "Eases the hip and butt tightness that builds up with hill running and long sits.",
+      "feel": "Firm, spread-out pressure through the hip, sometimes a pinch near the outer hip.",
+      "form": [
+        "Sit on the roller and lean to one side, one hand behind for balance.",
+        "Roll the outer hip and upper glute slowly.",
+        "Switch sides and match the time."
+      ],
+      "mistakes": [
+        "Rolling onto the lower back or tailbone.",
+        "Rushing the side that feels tighter."
+      ]
+    },
+    {
+      "name": "Ball trigger point for glutes",
+      "type": "self-myofascial",
+      "targets": ["gluteus medius", "piriformis region"],
+      "durationSec": 90,
+      "why": "A tennis or lacrosse ball reaches the deep hip spots a roller cannot press.",
+      "feel": "Sharp, focused pressure that eases into a dull ache as the muscle lets go.",
+      "form": [
+        "Sit or lie on the ball with it under the outer hip.",
+        "Apply gentle body weight and pause on tender spots.",
+        "Breathe slowly for 20 to 30 seconds on each spot."
+      ],
+      "mistakes": [
+        "Bearing down with full body weight at once.",
+        "Digging into the sciatic notch behind the hip."
+      ]
+    },
+    {
+      "name": "Thoracic spine foam roll",
+      "type": "self-myofascial",
+      "targets": ["thoracic spine", "mid-back"],
+      "durationSec": 90,
+      "why": "Improves how easily you can stand tall and breathe, which helps running posture.",
+      "feel": "A gentle spread across the upper back, with small pops as segments move.",
+      "form": [
+        "Lie on the roller across the mid-back, hands supporting the head.",
+        "Roll slowly from the shoulder blades to the base of the ribs.",
+        "Do not roll below the ribcage."
+      ],
+      "mistakes": [
+        "Rolling into the lower back, which has no support for extension there.",
+        "Forcing the neck back instead of supporting it."
+      ]
+    },
+    {
+      "name": "Plantar fascia ball roll",
+      "type": "self-myofascial",
+      "targets": ["plantar fascia", "arch of the foot"],
+      "durationSec": 60,
+      "why": "Eases morning foot stiffness and the arch tightness runners feel after long mileage.",
+      "feel": "Small, precise pressure along the arch, sometimes a light stretch under the foot.",
+      "form": [
+        "Sit and roll a tennis ball under one foot.",
+        "Work slowly from the heel to the ball of the foot.",
+        "Switch feet and match the time."
+      ],
+      "mistakes": [
+        "Rolling hard directly on the heel bone.",
+        "Standing and pushing with full weight too soon."
+      ]
+    },
+    {
+      "name": "Lateral thigh roll (ITB area)",
+      "type": "self-myofascial",
+      "targets": ["vastus lateralis", "tensor fasciae latae"],
+      "durationSec": 90,
+      "why": "Targets the muscles beside the IT band rather than the band itself, which cannot be released.",
+      "feel": "Firm, even pressure along the outer thigh, often tender near the outer hip.",
+      "form": [
+        "Lie on one side with the roller under the outer thigh.",
+        "Roll from the outer hip to just above the knee.",
+        "Keep the top leg on the floor to control pressure."
+      ],
+      "mistakes": [
+        "Believing you are loosening the IT band itself.",
+        "Rolling heavily on a painful outer knee."
+      ]
+    },
+    {
+      "name": "Hip flexor and TFL roll",
+      "type": "self-myofascial",
+      "targets": ["tensor fasciae latae", "hip flexors"],
+      "durationSec": 90,
+      "why": "Eases hip tightness that shows up after sitting all day and before tempo runs.",
+      "feel": "Focused pressure at the front of the hip, sometimes a pinching sensation that eases.",
+      "form": [
+        "Lie face down at a slight angle with the roller under one hip.",
+        "Apply gentle body weight and roll a short range.",
+        "Match time on both sides."
+      ],
+      "mistakes": [
+        "Pressing into the front of the pelvis bone.",
+        "Holding tension in the other leg."
+      ]
+    },
+    {
+      "name": "Adductor roll",
+      "type": "self-myofascial",
+      "targets": ["adductors", "inner thigh"],
+      "durationSec": 90,
+      "why": "Keeps the inner thigh comfortable and supports hip range of motion for a longer stride.",
+      "feel": "Broad, firm pressure along the inner thigh, easing as the muscle warms.",
+      "form": [
+        "Lie face down with one leg out to the side, roller under the inner thigh.",
+        "Roll from the inner knee to the groin, staying on muscle.",
+        "Switch sides and match the time."
+      ],
+      "mistakes": [
+        "Rolling onto the groin or knee joint.",
+        "Using too much speed to avoid the tender part."
+      ]
+    },
+    {
+      "name": "Massage gun on calves",
+      "type": "self-myofascial",
+      "targets": ["gastrocnemius", "soleus"],
+      "durationSec": 120,
+      "why": "Quick, easy warmth and a short-lived loosening of the calves when a foam roller is not handy.",
+      "feel": "Fast buzzing pressure that spreads warmth through the calf.",
+      "form": [
+        "Move slowly up and down the calf on a low to medium setting.",
+        "Keep the head moving, not parked on one spot.",
+        "Stay on the muscle belly, off the tendon and bone."
+      ],
+      "mistakes": [
+        "Pressing into the Achilles tendon or shin bone.",
+        "Expecting it to speed recovery, which it does not."
+      ]
+    },
+    {
+      "name": "Massage gun on quads",
+      "type": "self-myofascial",
+      "targets": ["quadriceps"],
+      "durationSec": 90,
+      "why": "A short mobility pass over the thigh before a run when you want range of motion without a roller.",
+      "feel": "Buzzy, warming pressure, sometimes a tender spot that softens with slow passes.",
+      "form": [
+        "Sweep slowly along the thigh with light pressure.",
+        "Use a low setting and keep moving.",
+        "Finish with a few controlled leg swings."
+      ],
+      "mistakes": [
+        "Holding the device still on one tender point.",
+        "Cranking the speed and depth, which adds soreness, not benefit."
+      ]
+    },
+    {
+      "name": "Compression socks for recovery",
+      "type": "recovery",
+      "targets": ["calves", "lower legs", "circulation"],
+      "durationSec": 7200,
+      "why": "Wearing them for a couple of hours after a long or hard run is linked to less soreness and better strength retention.",
+      "feel": "Even, snug pressure around the calf and ankle, like a firm hug.",
+      "form": [
+        "Put them on within an hour of finishing.",
+        "Wear them for a few hours while resting or travelling.",
+        "Check that they are snug but not pinching or cutting in."
+      ],
+      "mistakes": [
+        "Wearing them too tight around the calf.",
+        "Treating them as a substitute for sleep and easy days."
+      ]
+    },
+    {
+      "name": "Easy walk recovery",
+      "type": "recovery",
+      "targets": ["whole body", "blood flow", "lactate clearance"],
+      "durationSec": 1200,
+      "why": "A relaxed walk the day after a hard session moves blood and eases stiffness without adding training load.",
+      "feel": "Light, easy movement, breathing stays comfortable and conversational.",
+      "form": [
+        "Walk at a casual pace for 15 to 20 minutes.",
+        "Keep it easy, no pace or distance goals.",
+        "Pair it with daylight and a chance to decompress."
+      ],
+      "mistakes": [
+        "Pushing the pace until it becomes a workout.",
+        "Skipping it because it feels too easy to matter."
+      ]
+    },
+    {
+      "name": "Easy spin recovery",
+      "type": "recovery",
+      "targets": ["legs", "lactate clearance", "blood flow"],
+      "durationSec": 1200,
+      "why": "Light cycling clears lactate faster than lying down and gives the legs blood flow without impact.",
+      "feel": "Smooth, low-effort pedalling, legs feel lighter as you go.",
+      "form": [
+        "Spin easy for 15 to 20 minutes with minimal resistance.",
+        "Keep breathing easy the whole time.",
+        "Stop while you still feel fresh."
+      ],
+      "mistakes": [
+        "Turning it into a hard interval session.",
+        "Choosing resistance that loads the legs instead of flushing them."
+      ]
+    }
+  ],
+  "summary_tier_a": "Foam rolling and similar self-myofascial tools reliably increase short-term range of motion and modestly reduce the feeling of soreness, and they do not hurt performance when used before running. What they do not do is break up scar tissue, release the IT band, or speed up training adaptation. Use them before running as a small mobility warm-up and after hard sessions or on rest days for comfort, but treat sleep, easy movement and consistency as the things that actually drive recovery.",
+  "unverified": [
+    "Lacrosse versus tennis ball pressure differences for trigger point work: no head-to-head dosing study found. Applied pressure is treated as a real treatment variable (Curran et al., 2008, compared the pressure two different rollers exert on soft tissue; Szajkowski et al., 2025, tested different ischemic compression force protocols at the pain threshold), but no study compares tennis balls and lacrosse balls directly.",
+    "Whether ball trigger point work on the glutes changes running mechanics or injury rates: not established. Trigger points are common in the gluteus medius in people with patellofemoral pain (Roach et al., 2013) and releasing them, alongside exercise, helps that pain (Kumar and Soomro, 2024), but no study shows gluteal trigger point work changing running mechanics or injury rates."
+  ],
+  "notes": "Evidence quality varies by modality. Foam rolling has the strongest body of work (multiple meta-analyses) and the clearest, if small, effects. Massage guns show short-term range-of-motion gains but no demonstrated physical recovery benefit versus rest. Compression has a moderate pooled effect but nearly all studies are unblinded, so expectation likely contributes. Active recovery and sleep have the strongest physiological grounding. Separately, the running-specific dose recommendations (90 to 120 seconds per muscle) come from clinical commentary and single studies rather than large meta-analyses, so the exact dose carries moderate confidence. No claim here should be read as evidence that any passive modality speeds tissue repair or training adaptation. Verification pass 2026-11-23: 2 substantiated, 2 remained unverified."
+}

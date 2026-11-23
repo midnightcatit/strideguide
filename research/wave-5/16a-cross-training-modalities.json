@@ -1,0 +1,676 @@
+{
+  "workstream": "cross-training",
+  "subtopic": "Cross-training modalities for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Short-term substitution of running",
+      "claim": "Over about 6 weeks, a runner who cannot run can hold VO2max and 2-mile performance with cycling or with water running about as well as with running itself. A short injury block does not have to cost much fitness.",
+      "evidence": "Randomized trial with 32 trained subjects (ages 18 to 26) who trained with equal frequency, duration and intensity in water running, cycling or running for 6 weeks. All three groups had a small but significant VO2max dip and no change in 2-mile time, with no difference between modes. The authors concluded runners who cannot run because of a soft tissue injury can maintain VO2max and 2-mile performance similar to running with either cycling or water running.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of water running and cycling on maximum oxygen consumption and 2-mile run performance",
+        "authors": "Eyestone ED, Fellingham G, George J, Fisher AG",
+        "year": 1993,
+        "venue": "American Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1177/036354659302100107",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Running versus cycling transfer",
+      "claim": "When running-only training is compared directly with cycling-only training, there is no clear difference in sport-specific VO2max or running performance over short to moderate blocks. Cycling can stand in for part of the running volume.",
+      "evidence": "Systematic review and meta-analysis of 7 randomized trials of at least 4 weeks in trained or active people. Treadmill VO2max slightly favored running (Hedges g = -0.32, 95% CI -0.76 to 0.13, p = 0.16), cycle-ergometer VO2max slightly favored cycling (g = -0.34, 95% CI -0.79 to 0.11, p = 0.14), and running performance showed no meaningful difference (g = 0.02, 95% CI -0.62 to 0.66, p = 0.88). All intervals crossed zero.",
+      "confidence": "high",
+      "citation": {
+        "title": "Cross-training between running and cycling: effects on VO2max and running performance, a systematic review and meta-analysis",
+        "authors": "Menges T, Dindorf C, Dully J, Frohlich M",
+        "year": 2026,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fspor.2026.1843803",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Limits of the cross-training evidence",
+      "claim": "The claim that cycling can replace running is weak, not settled. The evidence supports no clear difference between modes, not that they are interchangeable.",
+      "evidence": "The same review cautions that the finding rests on few studies, methodological differences, old training protocols, some studies at high risk of bias, and wide confidence intervals that cross zero. It states plainly that the evidence does not support conclusions about interchangeability or about cross-training maintaining sport-specific performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Cross-training between running and cycling: effects on VO2max and running performance, a systematic review and meta-analysis",
+        "authors": "Menges T, Dindorf C, Dully J, Frohlich M",
+        "year": 2026,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "meta-analysis",
+        "doi_or_url": "10.3389/fspor.2026.1843803",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Specificity of transfer",
+      "claim": "Aerobic transfer between modes is real but incomplete. Swimming transfers least to running VO2max, and no cross-training mode produces gains beyond what sport-specific training gives.",
+      "evidence": "Review of cross-training transfer between cycling, running and swimming found some transfer of VO2max effects between modes, but swim training showed minimum transfer to running, and cross-training effects never exceeded those from the sport-specific training itself.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of cross-training. Transfer of training effects on VO2max between cycling, running and swimming",
+        "authors": "Tanaka H",
+        "year": 1994,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-199418050-00005",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Deep water running versus land training",
+      "claim": "Deep water running is about as effective as land-based training for cardiorespiratory fitness, so it is a real aerobic substitute, not just a way to move.",
+      "evidence": "Systematic review of 11 studies found deep water running comparable to land-based training for cardiorespiratory fitness, physical function and quality of life, with weaker conclusions for the function and quality-of-life domains because fewer studies covered them. The review could not pool data into a meta-analysis because the studies were clinically diverse.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effectiveness of Deep Water Running on Improving Cardiorespiratory Fitness, Physical Function and Quality of Life: A Systematic Review",
+        "authors": "Kwok MMY, So BCL, Heywood S, Lai MCY, Ng SSM",
+        "year": 2022,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/ijerph19159434",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Best running substitute during injury",
+      "claim": "For impact-related injuries such as stress fractures, shin pain and some tendon problems, deep water running is the closest running substitute because it copies the running stride and cadence with no ground reaction force.",
+      "evidence": "Deep water running is described as a non-weightbearing exercise that reduces stress on injured tissue and joints while letting the runner keep a running pattern, which makes it useful for maintaining fitness when land running is not possible.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Deep water running: an effective non-weightbearing exercise for the maintenance of cardiovascular fitness",
+        "authors": "Burns AS",
+        "year": 2001,
+        "venue": "Military Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1093/milmed/166.3.253",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Controlling water running intensity",
+      "claim": "Heart rate is lower in the pool than on land at the same effort, roughly 5 to 15 percent lower, so set pool running by feel or by leg cadence instead of a land heart-rate target.",
+      "evidence": "Reviews of water immersion running describe the hydrostatic and thermal effects that lower heart rate and change breathing for a given effort compared with land exercise, so heart rate under-reads effort in the pool. Coaching sources put the gap at about 10 percent and recommend rating of perceived exertion or cadence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Metabolic responses and mechanisms during water immersion running and exercise",
+        "authors": "Frangolias DD, Rhodes EC",
+        "year": 1996,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-199622010-00004",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Deep water running technique",
+      "claim": "Pool running should look like running: tall posture with a slight forward lean, a high cadence and a full leg cycle, usually with a flotation belt so you keep form without touching the bottom.",
+      "evidence": "Descriptions of deep water running technique specify an upright slightly forward trunk, a circular leg and arm motion, a swing leg brought toward horizontal, elbows near 90 degrees, and a flotation aid to hold the vertical position.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Physiological responses to deep water running in athletes",
+        "authors": "Wilder RP, Brennan DK",
+        "year": 1993,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-199316060-00003",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Elliptical impact and fitness",
+      "claim": "The elliptical is low impact, with forces near walking and less than half those of running, and over a few weeks it held VO2max about as well as running (about a 1.5 percent dip versus about 5 percent for full rest).",
+      "evidence": "Small trial of 20 recently trained runners found VO2max changes of 0.8 percent (running), 1.5 percent (elliptical) and 4.8 percent (detraining) over 3 weeks of matched training, with no significant difference between modes. The study cites earlier work reporting elliptical impact forces equal to walking and less than half of running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Elliptical Cross Training on VO2max in Recently Trained Runners",
+        "authors": "Joubert DP, Oden GL, Estes BC",
+        "year": 2011,
+        "venue": "International Journal of Exercise Science",
+        "type": "rct",
+        "doi_or_url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1241&context=ijes",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Elliptical perceived effort",
+      "claim": "At the same heart rate the elliptical often feels harder in the legs than running, so set the effort by feel and adjust resistance and cadence, and expect a slightly lower heart rate for a given effort.",
+      "evidence": "The elliptical trial noted mixed findings on perceived exertion between running and the elliptical, and reported that subjects found it hard to reach the target heart rate. Other work cited there found whole-body effort equal but leg effort higher on the elliptical.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Elliptical Cross Training on VO2max in Recently Trained Runners",
+        "authors": "Joubert DP, Oden GL, Estes BC",
+        "year": 2011,
+        "venue": "International Journal of Exercise Science",
+        "type": "rct",
+        "doi_or_url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1241&context=ijes",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cycling as the default substitute",
+      "claim": "Cycling, stationary or on the road, is the best-studied low-impact substitute. It loads the same heart and lungs without the pounding and can carry a large share of the aerobic work while an injury heals.",
+      "evidence": "Cycling is the most studied cross-training mode. The running-versus-cycling meta-analysis found no clear VO2max or running performance difference between modes, and the cross-training transfer review places cycling among the modes with real aerobic transfer to running.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of cross-training. Transfer of training effects on VO2max between cycling, running and swimming",
+        "authors": "Tanaka H",
+        "year": 1994,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-199418050-00005",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cycling and running economy",
+      "claim": "Cycling can hold or raise VO2max but may not preserve running economy, so the running performance benefit is usually flat rather than improved.",
+      "evidence": "A direct comparison of run training against cross training measured running economy, foot impact shock and run performance, showing the modes differ in economy and in impact loading even when aerobic fitness is similar. The running-versus-cycling review separately found running performance no better with cross-training than with running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Run training vs. cross training: influence of increased training on running economy, foot impact shock and run performance",
+        "authors": "Pizza FX, Flynn MG, Starling RD, Brolinson PG, Sigg J, Kubitz ER, Davenport WJ",
+        "year": 1995,
+        "venue": "International Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1055/s-2007-972988",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Swimming",
+      "claim": "Swimming builds aerobic fitness with no impact and works the upper body, but it transfers least of the common modes to running. Treat it as a fitness and variety tool, not a running replacement.",
+      "evidence": "The cross-training transfer review found swim training gave minimum transfer of VO2max effects to running, the weakest of the modes compared, so swimming supports general fitness more than running-specific fitness.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of cross-training. Transfer of training effects on VO2max between cycling, running and swimming",
+        "authors": "Tanaka H",
+        "year": 1994,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.2165/00007256-199418050-00005",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Rowing and erg",
+      "claim": "Indoor rowing is low impact and full body and raises peak aerobic capacity, making it a usable non-weightbearing aerobic option for runners who cannot take impact.",
+      "evidence": "A 12-week indoor rowing program in post-menopausal women raised VO2peak, peak stroke volume and peak cardiac output compared with controls, showing rowing drives central aerobic adaptations. Rowing also loads the whole body without ground impact.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Time Course of Cardiorespiratory Adaptations to Rowing Indoor Training in Post-Menopausal Women",
+        "authors": "Araujo RC, Rodrigues GD, et al.",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "rct",
+        "doi_or_url": "10.3390/ijerph20043238",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Incline treadmill walking",
+      "claim": "Incline treadmill walking costs much more energy than flat walking, about double at a 10 percent grade, at walking levels of impact, so it is a low-impact aerobic option when running is too much load.",
+      "evidence": "Biomechanics work reported about 113 percent greater metabolic cost for walking at a 10 percent grade than flat walking at a similar speed. A separate study of the popular 12 percent grade, 3 mph, 30 minute walk found a lower fat contribution but a real aerobic demand.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Predicting the metabolic cost of incline walking from muscle activity and walking mechanics",
+        "authors": "Silder A, Besier T, Delp SL",
+        "year": 2012,
+        "venue": "Journal of Biomechanics",
+        "type": "observational",
+        "doi_or_url": "10.1016/j.jbiomech.2012.03.032",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Stair climbing",
+      "claim": "Stair climbing raises VO2max, roughly 2 to 5 ml/kg/min (about 9 to 17 percent in beginners), from short frequent bouts, so stairs and stair climbers are a time-efficient aerobic cross-training option.",
+      "evidence": "A trial of short stair-climbing bouts in sedentary young women found a 17.1 percent rise in VO2max and a fall in LDL cholesterol over 8 weeks. A scoping review of stair-climbing interventions found most studies reported VO2max gains of 2 to 5 ml/kg/min after at least 8 weeks.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Training effects of short bouts of stair climbing on cardiorespiratory fitness, blood lipids, and homocysteine in sedentary young women",
+        "authors": "Kennedy RA, Boreham CA, Murphy MH, Young IS, Mutrie N",
+        "year": 2005,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1136/bjsm.2002.001131",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cross-country skiing and ski erg",
+      "claim": "Cross-country skiing and the ski erg work the whole body at very high aerobic demand and are low impact, making them a strong winter cross-training mode for runners.",
+      "evidence": "A review of elite cross-country skiers documents their exceptional aerobic capacity and the whole-body upper and lower body demands of the sport, which is why skiing and ski-specific ergometers build large aerobic engines without running impact.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The elite cross-country skier provides unique insights into human exercise physiology",
+        "authors": "Holmberg HC",
+        "year": 2015,
+        "venue": "Scandinavian Journal of Medicine and Science in Sports",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/sms.12601",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Team sport risk",
+      "claim": "Soccer, basketball and tennis are not low-impact substitutes. They add sprinting, jumping, cutting and collisions, and amateur team-sport players most often injure the lower limb, so they raise injury risk rather than lower it.",
+      "evidence": "A study of amateur athletes at a university setting found the lower limbs were the most affected body region across soccer, basketball and volleyball. A review of sport specialization found that high training volume and specializing in one sport raise overuse injury risk, and that multi-sport play only helps when total load stays reasonable.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Sports Injuries Among Amateur Athletes at a University Setting",
+        "authors": "Asperti AM, Fernandes TL, Pedrinelli A, Hernandez AJ",
+        "year": 2017,
+        "venue": "Acta Ortopedica Brasileira",
+        "type": "observational",
+        "doi_or_url": "10.1590/1413-785220172503170115",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Detraining speed",
+      "claim": "When training stops, VO2max falls fastest early, about 7 percent in the first 10 to 12 days in trained people, and keeps dropping over weeks, so the first weeks of an injury are the ones that matter most to cover.",
+      "evidence": "A classic study reported about a 7 percent decline in VO2max in runners and cyclists after 12 days of training interruption. A later meta-analysis found significant VO2max drops after both short and long-term training cessation, with the larger effect in long-term cessation.",
+      "confidence": "high",
+      "citation": {
+        "title": "Time course of loss of adaptations after stopping prolonged intense endurance training",
+        "authors": "Coyle EF, Martin WH, Sinacore DR, Joyner MJ, Hagberg JM, Holloszy JO",
+        "year": 1984,
+        "venue": "Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "10.1152/jappl.1984.57.6.1857",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Holding fitness on less training",
+      "claim": "Fitness holds up on much less volume if intensity is kept. Volume can drop a lot and frequency can fall a little, but the hard efforts need to stay.",
+      "evidence": "The detraining meta-analysis notes that training intensity rather than frequency is what maintains VO2max, and that high-intensity exercise twice a week held VO2max for 15 weeks. A detraining review adds that training volume can be markedly reduced and that cross-training can be effective in maintaining training-induced adaptations.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Short- and Long-Term Detraining on Maximal Oxygen Uptake in Athletes: A Systematic Review and Meta-Analysis",
+        "authors": "Zheng J, Shen Y, Zhang H, Zhu Y, Zhao Z, Ndayisenga J, Nzohabonimana L, et al.",
+        "year": 2022,
+        "venue": "BioMed Research International",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1155/2022/2130993",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Where cross-training cannot substitute",
+      "claim": "Cross-training keeps the engine, meaning the heart, lungs and aerobic enzymes, but not the chassis. Running economy, stride neuromuscular patterns, and the bone and tendon loads running provides are sport-specific and are not replaced by cycling, swimming or the elliptical.",
+      "evidence": "The transfer review stresses that training effects are largely specific to the mode used, and that cross-training never exceeds sport-specific gains. Work on running impact and overuse explains that running supplies repetitive impact loading that other modes do not, and the running-versus-cycling review treats running economy as a separate outcome from VO2max.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Impact and overuse injuries in runners",
+        "authors": "Hreljac A",
+        "year": 2004,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "narrative-review",
+        "doi_or_url": "10.1249/01.MSS.0000126803.66636.DD",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dosing cross-training",
+      "claim": "A dose that matches the trials is 3 to 4 sessions a week of about 30 to 60 minutes at a similar heart rate or effort to the run being replaced. It works best as a supplement to running rather than a total replacement.",
+      "evidence": "The elliptical trial used 4 sessions a week of 30 minutes at about 80 percent of maximum heart rate and maintained fitness, matching the water-running and cycling trial that used equal frequency, duration and intensity across modes. Detraining reviews show that keeping intensity, even on reduced volume, is what protects fitness.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Elliptical Cross Training on VO2max in Recently Trained Runners",
+        "authors": "Joubert DP, Oden GL, Estes BC",
+        "year": 2011,
+        "venue": "International Journal of Exercise Science",
+        "type": "rct",
+        "doi_or_url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1241&context=ijes",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Return-to-running bridge",
+      "claim": "Because water running keeps the running stride and cadence without impact, it is the most natural bridge back to running. Build pool volume, then reintroduce land running gradually as symptoms allow.",
+      "evidence": "Reviews of deep water running describe it as a non-weightbearing mode that preserves a running pattern, which lets a runner keep the movement skill and aerobic base while the injured tissue is protected, then progress back to land running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Deep water running: an effective non-weightbearing exercise for the maintenance of cardiovascular fitness",
+        "authors": "Burns AS",
+        "year": 2001,
+        "venue": "Military Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1093/milmed/166.3.253",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Pool heart-rate offset",
+      "claim": "Heart rate is lower in the pool than on land at the same effort, so a land heart-rate target overstates the work being done in the water. Measured gaps run about 8 to 16 beats per minute, and maximal heart rate is about 8 percent lower in deep water running.",
+      "evidence": "Svedenhag and Seger had 10 trained runners run in water at four submaximal loads and to maximum. For a given oxygen uptake, heart rate was 8 to 11 beats per minute lower in water than on the treadmill, and maximal heart rate was lower in water (172 versus 188 beats per minute). Broman and colleagues found maximal heart rate about 8 percent lower during deep water running than treadmill running in older women. The 5 to 15 percent range is a synthesis of these measured values, not a single reported figure, so set pool running by feel or by cadence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Running on land and in water: comparative exercise physiology",
+        "authors": "Svedenhag J, Seger J",
+        "year": 1992,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/1435164/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Pool heart-rate offset, maximal responses",
+      "claim": "Deep water running lowers maximal heart rate by about 8 percent and maximal oxygen uptake by about 29 percent versus treadmill running, so pool effort cannot be read from land numbers.",
+      "evidence": "Eleven healthy women aged about 70 ran in deep water with a vest and on a treadmill. At maximal work, oxygen uptake was 29 percent lower, heart rate was 8 percent lower and ventilation was 16 percent lower during deep water running. Submaximal deep water running responses were higher than the maximal values alone would suggest, so the gap narrows at lower efforts.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Older women's cardiovascular responses to deep-water running",
+        "authors": "Broman G, Quintana M, Engardt M, Gullstrand L, Jansson E, Kaijser L",
+        "year": 2006,
+        "venue": "Journal of Aging and Physical Activity",
+        "type": "observational",
+        "doi_or_url": "10.1123/japa.14.1.29",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "id": "easy-spin-flush-ride",
+      "title": "Easy spin flush ride",
+      "modality": "cross-train",
+      "activity": "bike",
+      "durationMin": 40,
+      "intensity": "easy",
+      "summary": "A light, smooth spin on a stationary or road bike at a chatty effort, legs turning freely with little resistance.",
+      "purpose": "Moves blood and eases heavy legs the day after a hard run or race without adding impact. Also works as an aerobic top-up when you want a low-load day.",
+      "targetRpe": [
+        3,
+        5
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "steady-stationary-bike-tempo",
+      "title": "Steady stationary bike tempo",
+      "modality": "cross-train",
+      "activity": "bike",
+      "durationMin": 45,
+      "intensity": "steady",
+      "summary": "A sustained ride at a steady effort you can hold with short sentences, breathing deep but controlled.",
+      "purpose": "Carries real aerobic work while an injury heals, and stands in for an easy or steady run when you want to cut impact without losing fitness.",
+      "targetRpe": [
+        5,
+        7
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "road-bike-endurance",
+      "title": "Road bike endurance ride",
+      "modality": "cross-train",
+      "activity": "bike",
+      "durationMin": 75,
+      "intensity": "steady",
+      "summary": "A longer steady ride outdoors at a comfortable aerobic effort, cadence smooth and effort even on the flats.",
+      "purpose": "Builds and holds aerobic base with no running impact. Useful in a base block or when running volume is being held back.",
+      "targetRpe": [
+        5,
+        6
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "aqua-run-recovery",
+      "title": "Aqua run recovery",
+      "modality": "cross-train",
+      "activity": "aqua-run",
+      "durationMin": 35,
+      "intensity": "easy",
+      "summary": "A gentle pool run in deep water with a flotation belt, tall posture and an easy leg cadence, effort light.",
+      "purpose": "Keeps the running motion going with zero impact. Good for the first days of an impact injury or as active recovery.",
+      "targetRpe": [
+        3,
+        5
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "aqua-run-maintenance",
+      "title": "Aqua run maintenance set",
+      "modality": "cross-train",
+      "activity": "aqua-run",
+      "durationMin": 50,
+      "intensity": "steady",
+      "summary": "A steady pool run that feels like a real run effort: high cadence, full leg cycle, effort controlled but honest.",
+      "purpose": "The closest running substitute during an impact injury. Holds aerobic fitness and the running stride when you cannot run on land.",
+      "targetRpe": [
+        6,
+        7
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "swim-easy-aerobic",
+      "title": "Easy aerobic swim",
+      "modality": "cross-train",
+      "activity": "swim",
+      "durationMin": 35,
+      "intensity": "easy",
+      "summary": "A relaxed continuous swim at an easy, sustainable pace with smooth breathing.",
+      "purpose": "Adds aerobic work and upper-body variety with no impact. Best as a fitness and recovery tool rather than a running replacement.",
+      "targetRpe": [
+        3,
+        5
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "swim-steady-continuous",
+      "title": "Steady continuous swim",
+      "modality": "cross-train",
+      "activity": "swim",
+      "durationMin": 40,
+      "intensity": "steady",
+      "summary": "A steady continuous swim, effort even, breathing controlled, with short rests only if needed.",
+      "purpose": "Builds aerobic fitness and works the upper body while sparing the legs and joints. Fits a cross-training day or a day off running.",
+      "targetRpe": [
+        5,
+        7
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "row-steady-erg",
+      "title": "Steady row erg",
+      "modality": "cross-train",
+      "activity": "row",
+      "durationMin": 35,
+      "intensity": "steady",
+      "summary": "A steady indoor row at an even effort, driving with the legs and finishing with the arms, breathing deep.",
+      "purpose": "Full-body aerobic work with no impact. A good non-weightbearing option when running is limited by lower-leg load.",
+      "targetRpe": [
+        5,
+        7
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "row-intervals",
+      "title": "Row erg intervals",
+      "modality": "cross-train",
+      "activity": "row",
+      "durationMin": 25,
+      "intensity": "hard",
+      "summary": "Hard short efforts on the rower with easy paddling between, legs and back driving each stroke.",
+      "purpose": "A high aerobic stimulus in little time with no running impact. Useful when you want intensity without the pounding.",
+      "targetRpe": [
+        7,
+        9
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "elliptical-steady",
+      "title": "Steady elliptical",
+      "modality": "cross-train",
+      "activity": "elliptical",
+      "durationMin": 45,
+      "intensity": "steady",
+      "summary": "A steady elliptical session at a run-like effort, arms and legs working together, effort set by feel.",
+      "purpose": "Low-impact aerobic work that mimics the running motion. A practical stand-in for an easy or steady run during a layoff.",
+      "targetRpe": [
+        5,
+        7
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "elliptical-easy",
+      "title": "Easy elliptical",
+      "modality": "cross-train",
+      "activity": "elliptical",
+      "durationMin": 40,
+      "intensity": "easy",
+      "summary": "An easy elliptical session at a light, comfortable effort with a relaxed stride.",
+      "purpose": "Adds low-impact aerobic volume on a recovery day or when the legs feel beaten up but you want to move.",
+      "targetRpe": [
+        3,
+        5
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "incline-walk-steady",
+      "title": "Incline treadmill walk",
+      "modality": "cross-train",
+      "activity": "walk-incline",
+      "durationMin": 45,
+      "intensity": "steady",
+      "summary": "A brisk walk on an incline at a grade you can hold, effort steady, arms swinging naturally.",
+      "purpose": "Low-impact aerobic work that costs far more energy than flat walking. Good when running load must stay low but you want a real session.",
+      "targetRpe": [
+        5,
+        6
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "stair-climb-intervals",
+      "title": "Stair climb intervals",
+      "modality": "cross-train",
+      "activity": "stairs",
+      "durationMin": 25,
+      "intensity": "hard",
+      "summary": "Hard climbs up stairs or a stair machine with easy descents or flat recovery between efforts.",
+      "purpose": "A short, time-efficient aerobic hit. Best for runners with no calf, Achilles or lower-leg trouble, since it loads those areas.",
+      "targetRpe": [
+        7,
+        9
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "ski-erg-intervals",
+      "title": "Ski erg intervals",
+      "modality": "cross-train",
+      "activity": "ski",
+      "durationMin": 30,
+      "intensity": "hard",
+      "summary": "Hard pulls on the ski erg with easy recovery between, driving down with the whole body.",
+      "purpose": "Whole-body aerobic work with no impact. A strong winter option when you want intensity without running.",
+      "targetRpe": [
+        7,
+        8
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    },
+    {
+      "id": "cross-country-ski-endurance",
+      "title": "Cross-country ski endurance",
+      "modality": "cross-train",
+      "activity": "ski",
+      "durationMin": 60,
+      "intensity": "steady",
+      "summary": "A longer steady ski or roller ski at an even aerobic effort, gliding and striding with rhythm.",
+      "purpose": "Builds a large aerobic base with no running impact. Ideal in winter as a running substitute or supplement.",
+      "targetRpe": [
+        5,
+        7
+      ],
+      "session_shape": [
+        "warm-up",
+        "main set",
+        "cool-down"
+      ]
+    }
+  ],
+  "summary_tier_a": "Cross-training keeps your aerobic engine running when you cannot run. Over about 6 weeks, cycling, deep water running and the elliptical all hold VO2max and running performance about as well as running itself, and deep water running is the closest substitute for an impact injury because it copies the running stride with no ground force. What cross-training does not do is replace running-specific economy, stride skill, or the bone and tendon load running provides, and team sports add impact and injury risk rather than remove it.",
+  "unverified": [
+    "The claim that water running keeps running stride neuromuscular patterns better than cycling does is plausible but not directly tested. The closest evidence is that deep water running muscle activity patterns resemble land running at matched conditions (Masumoto 2013, doi:10.1016/j.gaitpost.2012.09.019), while running and cycling recruit the leg muscles differently (Bijker 2002, doi:10.1007/s00421-002-0663-8). No study reviewed compares the two modes on this outcome directly.",
+    "The 'up to 90 percent of VO2max held on 3 sessions a week' figure is a coaching number, not a peer-reviewed statement. The closest peer-reviewed evidence is that VO2max was maintained when frequency fell from 6 to 2 sessions a week for 15 weeks in trained subjects (Hickson and Rosenkoetter 1981, doi:10.1249/00005768-198101000-00011), and that keeping intensity is what protects VO2max in reduced-training reviews (Neufer 1989). No study reviewed states the 90 percent figure for 3 sessions a week.",
+    "No trial establishes a weekly cross-training dose in exact minutes that fully replaces running with no fitness loss. The substitution trials matched the run being replaced at roughly 3 to 4 sessions a week of about 30 to 60 minutes (Eyestone 1993; Joubert 2011), and reduced-training work kept intensity high on lower volume. Whether a specific cross-training dose can stand in for all running is untested."
+  ],
+  "notes": "Core evidence: Menges 2026 (running versus cycling SR+MA) and Kwok 2022 (deep water running SR) carry most of the substitution claim; Tanaka 1994 carries the specificity limit; Zheng 2022, Coyle 1984 and Mujika and Padilla 2000 carry the detraining and reduced-training angle. The honest framing for the app: cross-training can cover a short injury block or supplement some easy running volume, but it cannot fully replace running for a healthy runner chasing performance, and team sports are a poor low-impact choice. All citations are peer-reviewed except the Joubert 2011 journal article and the coaching notes folded into the moderate-confidence claims. Citations were checked against PubMed or the publisher page. Verification pass 2026-11-23: 1 substantiated (the pool heart-rate offset, now backed by Svedenhag 1992 and Broman 2006), 3 remained unverified."
+}

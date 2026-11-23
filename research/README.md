@@ -10,7 +10,9 @@ Cited knowledge-base source for Stride Guide, produced by parallel research suba
 wave-1/  foundation: running physiology, workout mechanics, strength for runners, adaptive planning
 wave-2/  goal-specific: PF machines, marathon, 5K/10K/half, whole-fitness
 wave-3/  supporting: mobility/recovery, nutrition/sleep, injury prevention, pacing/zone tools
-surveys/ stack research (SvelteKit/Cloudflare, Hono/Drizzle/D1, Google OAuth on Workers)
+wave-4/  adaptive/deload rules
+wave-5/  catalog expansion: strength variants (dumbbells, barbell/KB, bands, bodyweight, machines), a wider stretch and mobility library, more running session types, form drills, cross-training (see wave-5/INDEX.md)
+surveys/ stack research (SvelteKit/Cloudflare, Hono/Drizzle/D1, Google OAuth on Workers). Wave 5 adds exercise databases, form-animation feasibility, and gym equipment inventories.
 ```
 
 ## Claim schema

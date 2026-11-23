@@ -9,7 +9,15 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BODYWEIGHT_MOVES, PF_MACHINES } from '@strideguide/shared/plan';
+import {
+	BAND_HOME_MOVES,
+	BODYWEIGHT_MOVES,
+	BODYWEIGHT_PROGRESSIONS,
+	EXTRA_MACHINES,
+	FREEWEIGHT_MOVES,
+	PF_MACHINES,
+	type MachineExercise,
+} from '@strideguide/shared/plan';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const researchDir = resolve(here, '../../../research');
@@ -91,33 +99,46 @@ function collectFiles(): string[] {
 	return files.sort();
 }
 
-/** The code catalog (machines + bodyweight) mirrors into the exercises table. */
+/** The code catalog (machines + bodyweight + the wave-5 expansions) mirrors into the exercises table. */
 function exerciseRows(): string[] {
-	const machineNames = new Set(PF_MACHINES.map((m) => m.name));
+	const machineNames = new Set([...PF_MACHINES, ...EXTRA_MACHINES].map((m) => m.name));
+	const groups: { moves: MachineExercise[]; refs: string[] }[] = [
+		{ moves: PF_MACHINES, refs: ['wave-1/3b-strength-programming', 'wave-2/4a-pf-machines-form'] },
+		{
+			moves: BODYWEIGHT_MOVES,
+			refs: ['wave-1/3b-strength-programming', 'wave-1/3c-bodyweight-and-machines'],
+		},
+		{ moves: EXTRA_MACHINES, refs: ['wave-5/13e-machine-catalog-additions'] },
+		{
+			moves: FREEWEIGHT_MOVES,
+			refs: ['wave-5/13a-dumbbell-freeweight-exercises', 'wave-5/13b-barbell-kettlebell-power'],
+		},
+		{ moves: BAND_HOME_MOVES, refs: ['wave-5/13c-minimal-equipment-bands-home'] },
+		{ moves: BODYWEIGHT_PROGRESSIONS, refs: ['wave-5/13d-bodyweight-progressions'] },
+	];
 	const rows: string[] = [];
-	for (const m of [...PF_MACHINES, ...BODYWEIGHT_MOVES]) {
-		const isMachine = machineNames.has(m.name);
-		const refs = isMachine
-			? ['wave-1/3b-strength-programming', 'wave-2/4a-pf-machines-form']
-			: ['wave-1/3b-strength-programming', 'wave-1/3c-bodyweight-and-machines'];
-		const whyFull = [m.why, `Feel: ${m.feel}`, `Common mistakes: ${m.mistakes.join('; ')}`].join(
-			'\n\n',
-		);
-		rows.push(
-			`INSERT OR REPLACE INTO exercises (id, name, modality, machine, muscle_groups, form_notes, purpose, why_full, research_refs) VALUES (` +
-				[
-					sqlStr(`ex-${hash(m.name.toLowerCase())}`),
-					sqlStr(m.name),
-					sqlStr('strength'),
-					sqlStr(isMachine ? m.name : null),
-					sqlStr(JSON.stringify(m.muscles)),
-					sqlStr(JSON.stringify(m.form)),
-					sqlStr(m.why),
-					sqlStr(whyFull),
-					sqlStr(JSON.stringify(refs)),
-				].join(', ') +
-				');',
-		);
+	for (const { moves, refs } of groups) {
+		for (const m of moves) {
+			const isMachine = machineNames.has(m.name);
+			const whyFull = [m.why, `Feel: ${m.feel}`, `Common mistakes: ${m.mistakes.join('; ')}`].join(
+				'\n\n',
+			);
+			rows.push(
+				`INSERT OR REPLACE INTO exercises (id, name, modality, machine, muscle_groups, form_notes, purpose, why_full, research_refs) VALUES (` +
+					[
+						sqlStr(`ex-${hash(m.name.toLowerCase())}`),
+						sqlStr(m.name),
+						sqlStr('strength'),
+						sqlStr(isMachine ? m.name : null),
+						sqlStr(JSON.stringify(m.muscles)),
+						sqlStr(JSON.stringify(m.form)),
+						sqlStr(m.why),
+						sqlStr(whyFull),
+						sqlStr(JSON.stringify(refs)),
+					].join(', ') +
+					');',
+			);
+		}
 	}
 	return rows;
 }
@@ -152,7 +173,12 @@ function main(): void {
 			const key = doiUrl || c.citation?.title || JSON.stringify(c.citation);
 			const id = `src-${hash(key.toLowerCase())}`;
 			if (!sources.has(id)) {
-				sources.set(id, { ...c.citation, doi_or_url: doiUrl, title: sanitize(c.citation?.title ?? '') , id });
+				sources.set(id, {
+					...c.citation,
+					doi_or_url: doiUrl,
+					title: sanitize(c.citation?.title ?? ''),
+					id,
+				});
 			}
 			citationIds.push(id);
 			fullParts.push(

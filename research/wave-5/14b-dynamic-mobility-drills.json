@@ -1,0 +1,671 @@
+{
+  "workstream": "mobility",
+  "subtopic": "Dynamic warm-up and joint mobility drills for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "General warm-up and performance",
+      "claim": "A structured warm-up that includes activity beyond stretching improves subsequent physical performance in the large majority of measured outcomes.",
+      "evidence": "Systematic review and meta-analysis of 32 high-quality studies found that warm-up improved performance in 79% of the criteria examined, with little evidence that warming up is detrimental. Because most included studies were not randomized controlled trials, the authors called for more RCTs.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of warming-up on physical performance: a systematic review with meta-analysis",
+        "authors": "Fradkin AJ, Zazryn TR, Smoliga JM",
+        "year": 2010,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "systematic-review",
+        "doi_or_url": "10.1519/JSC.0b013e3181c643a0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic versus static warm-up",
+      "claim": "Dynamic stretching in the warm-up improves sprint and jump performance, while static stretching can reduce it.",
+      "evidence": "Network meta-analysis of lower-limb explosive strength found dynamic stretching significantly improved countermovement jump height (MD 1.60 cm, 95% CI 0.67 to 2.60) and sprint time (MD -0.08 s), while static stretching showed a small significant negative effect on sprint time (MD 0.07 s).",
+      "confidence": "high",
+      "citation": {
+        "title": "A systematic review and net meta-analysis of the effects of different warm-up methods on the acute effects of lower limb explosive strength",
+        "authors": "Multiple authors (BMC Sports Science, Medicine and Rehabilitation)",
+        "year": 2023,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation (PMC10463540)",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10463540/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic stretching dose",
+      "claim": "For explosive performance, roughly 7 to 10 minutes of dynamic stretching in the warm-up gave the largest benefit.",
+      "evidence": "The net meta-analysis reported that dynamic stretching improved jump and sprint outcomes, and the effect was moderated by stretching duration, with the strongest effect size at 7 to 10 minutes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A systematic review and net meta-analysis of the effects of different warm-up methods on the acute effects of lower limb explosive strength",
+        "authors": "Multiple authors (BMC Sports Science, Medicine and Rehabilitation)",
+        "year": 2023,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation (PMC10463540)",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10463540/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic versus static warm-up",
+      "claim": "Putting dynamic stretching rather than static stretching in the warm-up improves both lower-limb performance and range of motion.",
+      "evidence": "Systematic review with meta-analysis in physically active people concluded that dynamic stretching in the warm-up has greater positive effects on lower-limb performance and range of motion than static stretching, and recommends dynamic stretching for sports needing lower-extremity performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Does the Inclusion of Static or Dynamic Stretching in the Warm-Up Routine Improve Jump Height and ROM in Physically Active Individuals? A Systematic Review with Meta-Analysis",
+        "authors": "Multiple authors (Applied Sciences)",
+        "year": 2024,
+        "venue": "Applied Sciences (MDPI)",
+        "type": "meta-analysis",
+        "doi_or_url": "https://www.mdpi.com/2076-3417/14/9/3872",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Static stretching and performance",
+      "claim": "Prolonged static stretching on its own, especially holds longer than about 60 seconds, can transiently reduce maximal strength and power.",
+      "evidence": "Narrative review of acute effects of static and dynamic stretching reported that static stretches of sufficient duration can impair subsequent force and power output. This is why static holds are moved to after training or after the warm-up.",
+      "confidence": "high",
+      "citation": {
+        "title": "A review of the acute effects of static and dynamic stretching on performance",
+        "authors": "Behm DG, Chaouachi A",
+        "year": 2011,
+        "venue": "European Journal of Applied Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s00421-011-1879-2",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Static stretching within a full warm-up",
+      "claim": "Short static stretches added inside an otherwise complete dynamic warm-up do not harm performance.",
+      "evidence": "A controlled trial found no effect of muscle stretching within a full dynamic warm-up on athletic performance, which shows the negative static-stretching effect is driven by long isolated holds in an otherwise incomplete warm-up.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "No effect of muscle stretching within a full, dynamic warm-up on athletic performance",
+        "authors": "Blazevich AJ, Gill ND, Kvorning T, et al.",
+        "year": 2018,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0000000000001539",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up framework",
+      "claim": "The RAMP framework (Raise, Activate and Mobilise, Potentiate) is a widely used structure that sequences warm-up work: raise body temperature, activate and mobilise key joints and muscles, then potentiate with fast or sport-specific work.",
+      "evidence": "RAMP was developed by strength and conditioning coach Ian Jeffreys and is described across coaching and peer-reviewed sources as a structured four-phase warm-up. A 2025 randomized crossover trial describes the phases as Raise (low-intensity aerobic work), Activate (dynamic drills such as lunges and leg swings), Mobilize (hurdle steps, lateral shuffles), and Potentiate (sprints and jumps).",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute effects of the RAMP warm-up on sprint and jump performance in youth soccer players",
+        "authors": "Girginer FG, et al.",
+        "year": 2025,
+        "venue": "Frontiers in Physiology",
+        "type": "rct",
+        "doi_or_url": "10.3389/fphys.2025.1612611",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up framework",
+      "claim": "A RAMP-structured warm-up improved acute sprint and jump performance compared with no warm-up and compared with static stretching.",
+      "evidence": "Randomized controlled crossover trial in 14 youth soccer players (aged 16 to 22) compared no warm-up, static stretching, and RAMP over three sessions. Sprint and jump performance were enhanced after the RAMP warm-up.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Acute effects of the RAMP warm-up on sprint and jump performance in youth soccer players",
+        "authors": "Girginer FG, et al.",
+        "year": 2025,
+        "venue": "Frontiers in Physiology",
+        "type": "rct",
+        "doi_or_url": "10.3389/fphys.2025.1612611",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up intensity for runners",
+      "claim": "For trained runners racing 5000 m, a higher-intensity warm-up improved time trial performance by about 6.4 seconds (0.5%) versus a low-intensity warm-up.",
+      "evidence": "Study in trained long-distance runners found continuous running near 17 km/h during warm-up (versus about 12 km/h) improved 5000 m time trial performance by 6.4 s (0.5%), with the benefit appearing in the opening splits.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of High-Intensity Warm-Up on 5000-Meter Performance Time in Trained Long-Distance Runners",
+        "authors": "Alves MDDJ, et al.",
+        "year": 2023,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10245000/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up intensity for runners",
+      "claim": "A hard or fast warm-up only helps if it is followed by a recovery window of roughly 18 to 20 minutes before the race.",
+      "evidence": "The 5000 m study and related work noted that high-intensity warm-ups produced performance gains when a transition period of 18 to 20 minutes followed; without that recovery window, other studies found no improvement.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of High-Intensity Warm-Up on 5000-Meter Performance Time in Trained Long-Distance Runners",
+        "authors": "Alves MDDJ, et al.",
+        "year": 2023,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10245000/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up intensity for runners",
+      "claim": "Warm-up intensity influences short-distance running performance even when recovery is prolonged.",
+      "evidence": "Paris et al. reported that warm-up intensity influenced running performance despite prolonged recovery, supporting the view that the pace of the warm-up matters, not just its presence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Warm up intensity influences running performance despite prolonged recovery",
+        "authors": "Paris HL, Sinai EC, Leist MA, Crain CM, Keller AM, Malysa W, Renzullo SC",
+        "year": 2021,
+        "venue": "International Journal of Sports Science and Coaching",
+        "type": "rct",
+        "doi_or_url": "10.1177/17479541211004248",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up duration",
+      "claim": "For intermediate-distance running, a shorter warm-up produces less physiological strain and can support performance as well as a long one.",
+      "evidence": "van den Tillaar and colleagues compared short and long warm-ups and found that the shorter option caused less fatigue, which is relevant for runners who cannot afford to burn energy before a hard effort.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of short or long warm-up on intermediate running performance",
+        "authors": "van den Tillaar R, Vatten T, Von Heimburg E",
+        "year": 2017,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0000000000001489",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Stretching and injury prevention",
+      "claim": "Stretching before exercise does not reduce the risk of exercise-related injury.",
+      "evidence": "Evidence-based summary of six trials (N = 5,130) found stretching did not decrease lower-limb soft tissue injuries (relative risk 0.85, 95% CI 0.65 to 1.1). Stretching is therefore not a reliable injury-prevention tool on its own.",
+      "confidence": "high",
+      "citation": {
+        "title": "Stretching for Prevention of Exercise-Related Injury",
+        "authors": "American Family Physician (summary of Cochrane evidence)",
+        "year": 2016,
+        "venue": "American Family Physician",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.aafp.org/afp/2016/1001/p547",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Stretching and soreness",
+      "claim": "Stretching before or after exercise gives only a tiny, not clinically meaningful, reduction in muscle soreness.",
+      "evidence": "Cochrane review found pre-exercise stretching reduced soreness at one day by about half a point on a 100-point scale (mean difference -0.52, 95% CI -11.30 to 10.26), which is far below a meaningful change.",
+      "confidence": "high",
+      "citation": {
+        "title": "Stretching to prevent or reduce muscle soreness after exercise",
+        "authors": "Herbert RD, de Noronha M, Kamper SJ",
+        "year": 2011,
+        "venue": "Cochrane Database of Systematic Reviews",
+        "type": "systematic-review",
+        "doi_or_url": "10.1002/14651858.CD004577.pub3",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Static stretching and injury",
+      "claim": "Routine static stretching does not reduce overall injury rates, and only preliminary evidence suggests it may reduce musculotendinous injuries.",
+      "evidence": "Systematic review of four randomized and three controlled trials concluded there was moderate to strong evidence that routine static stretching does not reduce overall injury rates. Three of the seven studies reported significant reductions in musculotendinous and ligament injuries, which the authors called only preliminary.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A systematic review into the efficacy of static stretching as part of a warm-up for the prevention of exercise-related injury",
+        "authors": "Small K, Mc Naughton L, Matthews M",
+        "year": 2008,
+        "venue": "Research in Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1080/15438620802310784",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Ankle mobility",
+      "claim": "Ankle dorsiflexion range of motion is linked to running and landing mechanics, and a deficit is associated with several lower-limb injuries.",
+      "evidence": "A clinical decision-making review reports that restricted dorsiflexion can reduce force absorption and is a risk factor for lateral ankle sprain, chronic ankle instability, Achilles tendinopathy, metatarsal stress fracture, plantar heel pain, and patellar tendinopathy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Restoring ankle dorsiflexion range of motion in athletes: an individualized clinical decision-making system",
+        "authors": "Multiple authors (PMC12585996)",
+        "year": 2025,
+        "venue": "Frontiers in Sports and Active Living (PMC12585996)",
+        "type": "narrative-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12585996/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Ankle mobility",
+      "claim": "Reduced ankle dorsiflexion mobility can lower sprinting and jumping ability.",
+      "evidence": "A 2024 study on the relationship between ankle dorsiflexion range of motion and performance concluded that reduced dorsiflexion mobility may affect sprinting and jumping ability in young athletes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Relationship between ankle dorsiflexion range of motion and sprinting, jumping and change of direction ability",
+        "authors": "Cerrillo-Sanchis J, et al.",
+        "year": 2024,
+        "venue": "Physical Therapy in Sport",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/38876663/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Gluteal activation",
+      "claim": "People with patellofemoral pain show reduced gluteus medius activity when running, which supports hip and glute activation work for runners with knee pain.",
+      "evidence": "Systematic review of running-related gluteus medius function found the strongest evidence was a moderate and significant reduction in gluteus medius duration of activity when running in people with patellofemoral pain.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Running related gluteus medius function in health and injury: A systematic review with meta-analysis",
+        "authors": "Semciw AI, Green RA, Murley GS, Pizzari T",
+        "year": 2016,
+        "venue": "Journal of Electromyography and Kinesiology",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/27367574/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength and plyometrics for running economy",
+      "claim": "Plyometric training and heavy strength training improve running economy in distance runners, which is why controlled jumps and skips belong in a runner's programme.",
+      "evidence": "Meta-analysis of strength training in middle- and long-distance runners found heavy load and combined methods produced small to moderate running economy improvements, and plyometric training improved running economy at speeds up to 12 km/h.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Multiple authors (Sports Medicine)",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/38165636/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength for running economy",
+      "claim": "Heavy resistance training improves running economy in highly trained runners.",
+      "evidence": "Systematic review with meta-analysis of controlled trials found an overall large beneficial effect of strength training on running economy in highly trained middle- and long-distance runners.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effects of strength training on running economy in highly trained runners: a systematic review with meta-analysis of controlled trials",
+        "authors": "Balsalobre-Fernandez C, Santos-Concejero J, Grivas GV",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/26694507/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Running drills",
+      "claim": "A-skips and B-skips are only moderately related to short-sprint performance and do not by themselves drive faster sprinting, so they train rhythm and front-side mechanics rather than substituting for fast running.",
+      "evidence": "Study of 63 young male athletes found A-skip and B-skip had good inter-rater reliability but only moderate predictive validity for 5 m and 20 m sprint performance, with B-skip the strongest predictor (5 m: beta -0.531, p < 0.01; 20 m: beta -0.322, p < 0.05). The authors noted the drills' direct effectiveness in enhancing sprint speed and acceleration appears constrained, with their value lying in knee elevation and kinematics rather than speed gains.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Development and Validation of a Running Drill Test Battery to Predict 5 m and 20 m Sprint Performance",
+        "authors": "Matijasevic P, Males J, Cikojevic L, Zuvela F, Kuvacic G",
+        "year": 2025,
+        "venue": "International Journal of Exercise Science",
+        "type": "observational",
+        "doi_or_url": "10.70252/LYKE8231",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Recreational runner warm-up dose",
+      "claim": "For most recreational runners a short warm-up is enough, and for easy and steady runs about 5 to 10 minutes fits common practice, scaling up with session intensity.",
+      "evidence": "Randomized crossover trial in 12 recreational distance runners found moderate-duration dynamic stretching within the warm-up (about 60 seconds per leg) improved running economy and running performance. No trial sets an exact 5 to 10 minute threshold, so that figure is coaching practice rather than a measured dose.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Moderate-Duration Dynamic Stretching During Warm-up Improves Running Economy and Running Performance in Recreational Distance Runners",
+        "authors": "Panasci M, Ferrando V, Bisio A, Filipas L, Di Gennaro S, Puce L, Ruggeri P, Faelli E",
+        "year": 2024,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2023-0468",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic stretching physiology",
+      "claim": "Dynamic stretching does not impair performance and can improve range of motion and power.",
+      "evidence": "Review of the current literature on acute dynamic stretching concluded it does not compromise performance and can improve muscle flexibility alongside power, unlike long static holds.",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute effects of dynamic stretching on muscle flexibility and performance: an analysis of the current literature",
+        "authors": "Opplert J, Babault N",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-017-0797-9",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up and injury risk",
+      "claim": "Warm-up is widely used to prepare for activity, but its effect on injury risk specifically is not firmly established by the performance literature.",
+      "evidence": "The performance meta-analysis by Fradkin et al. focused on performance and noted the shortage of randomized controlled trials; injury-prevention claims are separate and, for stretching, are not supported.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of warming-up on physical performance: a systematic review with meta-analysis",
+        "authors": "Fradkin AJ, Zazryn TR, Smoliga JM",
+        "year": 2010,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "systematic-review",
+        "doi_or_url": "10.1519/JSC.0b013e3181c643a0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength training and injury prevention",
+      "claim": "Strength training reduces the risk of acute and overuse sports injuries, while stretching does not reduce injury risk. This is the general case for including hip and glute strengthening in a runner's programme.",
+      "evidence": "Systematic review and meta-analysis of 25 randomized trials (N = 26,610, 3,464 injuries) found strength training reduced sports injuries to less than a third (RR 0.315, 95% CI 0.207 to 0.480) and overuse injuries by about half (RR 0.527, 95% CI 0.373 to 0.746), while stretching had no beneficial effect (RR 0.963, 95% CI 0.846 to 1.095).",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "authors": "Lauersen JB, Bertelsen DM, Andersen LB",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2013-092538",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip strengthening for knee pain",
+      "claim": "In runners and jumpers with patellofemoral pain, a hip and core strengthening programme resolved pain about a week sooner and built more hip strength than a knee-focused programme, though both improved.",
+      "evidence": "Multicenter randomized controlled trial of 199 patients with patellofemoral pain over 6 weeks found both the hip and core and the knee protocols improved pain, function and strength, but the hip and core protocol reduced visual analog pain scores one week earlier and produced greater gains in hip-abductor and hip-extensor strength and posterior core endurance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Strengthening of the hip and core versus knee muscles for the treatment of patellofemoral pain: a multicenter randomized controlled trial",
+        "authors": "Ferber R, Bolgla L, Earl-Boehm JE, Emery C, Hamstra-Wright K",
+        "year": 2015,
+        "venue": "Journal of Athletic Training",
+        "type": "rct",
+        "doi_or_url": "10.4085/1062-6050-49.3.70",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up duration",
+      "claim": "There is no single optimal warm-up duration; a short warm-up can be 5 minutes or less and a long one over 20 minutes, and the right length tracks the session demands and the athlete.",
+      "evidence": "International expert consensus (Delphi study, 23 experts across 12 countries, 3 voting rounds) did not identify an optimal warm-up duration. It agreed a short warm-up may last 5 minutes or less while a long one may exceed about 20 minutes, that many warm-ups run 15 to 20 minutes, and that exercise selection, sequencing and loading may matter more than duration alone.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "International Expert Consensus on Warm-Up Protocols for Athletes: A Delphi Study",
+        "authors": "Boullosa D, Gil-Calvo M, Xenofondos A, Patikas DA, Blazevich AJ, Afonso J, Loturco I, Behm D, Xu K, Babault N, et al.",
+        "year": 2026,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "consensus",
+        "doi_or_url": "10.1123/ijspp.2025-0647",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up and injury prevention",
+      "claim": "A single warm-up does not give immediate injury protection, but preventive strength and balance exercises done regularly may reduce longer-term injury risk.",
+      "evidence": "The international warm-up consensus did not support an immediate injury-protection effect from one warm-up, and only 3 of 8 health and injury statements reached the 80% agreement threshold. The experts agreed that regularly performed preventive strength and balance exercises, whether in the warm-up or elsewhere in training, may reduce longer-term injury risk.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "International Expert Consensus on Warm-Up Protocols for Athletes: A Delphi Study",
+        "authors": "Boullosa D, Gil-Calvo M, Xenofondos A, Patikas DA, Blazevich AJ, Afonso J, Loturco I, Behm D, Xu K, Babault N, et al.",
+        "year": 2026,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "consensus",
+        "doi_or_url": "10.1123/ijspp.2025-0647",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Running drill mechanics",
+      "claim": "During A-skips, B-skips and heel flicks the foot and ankle work through less dorsiflexion and produce less midtarsal power than during distance running, so the drills rehearse front-side mechanics rather than copying running's ankle loading.",
+      "evidence": "Seventeen long-distance runners performed five running drills and a run at 3.88 m/s. The A-skip, B-skip and heel flicks produced smaller ankle, midtarsal and metatarsophalangeal dorsiflexion peaks than running (all p < 0.001), and the A-skip and B-skip produced less midtarsal positive power, while joint moments did not differ from running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A comparison of foot and ankle biomechanics during running drills and distance running",
+        "authors": "Abran G, Berraz A, Dardenne N, Gramage K, Bornheim S, Delvaux F, Croisier JL, Schwartz C",
+        "year": 2025,
+        "venue": "Sports Biomechanics",
+        "type": "observational",
+        "doi_or_url": "10.1080/14763141.2024.2382804",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Leg swings (front to back)",
+      "type": "dynamic",
+      "targets": ["hip flexors", "hamstrings", "hip adductors", "dynamic hip range"],
+      "durationSec": 30,
+      "why": "Gets your hips moving through a useful range before you load them with running.",
+      "feel": "Loose and light at the front and back of the hip, no pinching.",
+      "form": ["Hold a wall or post for balance", "Swing one leg forward and back from the hip, not the knee", "Keep the torso tall and the swing relaxed"],
+      "mistakes": ["Forcing range with a jerky kick", "Rounding the lower back as the leg swings", "Letting the knee bend and straighten to create the swing"]
+    },
+    {
+      "name": "Hip circles",
+      "type": "dynamic",
+      "targets": ["hip joint", "glutes", "hip flexors", "adductors"],
+      "durationSec": 30,
+      "why": "Takes the hip joint through a full smooth circle so it moves freely before running.",
+      "feel": "A smooth loop of motion in the hip, no catch or pinch.",
+      "form": ["Stand tall on one leg or hold support", "Lift the other knee and draw a slow circle with it", "Keep the circle controlled and even"],
+      "mistakes": ["Rushing the circle", "Letting the standing knee collapse inward", "Using the lower back to force the range"]
+    },
+    {
+      "name": "Walking hip openers",
+      "type": "dynamic",
+      "targets": ["hip external rotators", "glutes", "groin", "hip flexors"],
+      "durationSec": 40,
+      "why": "Wakes up the outside of the hip and groin while you travel forward.",
+      "feel": "A stretch across the front hip and a turn in the hip socket.",
+      "form": ["Step forward, lift one knee to hip height", "Turn the knee outward, then step down", "Alternate sides as you walk"],
+      "mistakes": ["Leaning back to lift the knee", "Turning from the lower back instead of the hip", "Dropping the foot heavily"]
+    },
+    {
+      "name": "Ankle rocks",
+      "type": "dynamic",
+      "targets": ["ankle dorsiflexion", "calf", "Achilles", "ankle joint"],
+      "durationSec": 30,
+      "why": "Restores the forward knee-over-toe ankle range that running and landing need.",
+      "feel": "A stretch low in the calf and front of the ankle.",
+      "form": ["Kneel on one knee with the front foot flat", "Drive the front knee forward over the toes", "Keep the heel down and the foot pointing straight ahead"],
+      "mistakes": ["Letting the heel lift", "Turning the foot outward", "Bouncing the knee instead of a smooth rock"]
+    },
+    {
+      "name": "World's greatest stretch",
+      "type": "dynamic",
+      "targets": ["hip flexors", "hamstrings", "thoracic spine", "groin"],
+      "durationSec": 45,
+      "why": "One move that covers hip, hamstring and mid-back at once, before a hard session.",
+      "feel": "A long line from calf to hip, plus a twist through the upper back.",
+      "form": ["Step into a deep lunge", "Place both hands inside the front foot", "Drop the back knee, then reach one hand to the sky and twist"],
+      "mistakes": ["Letting the front knee cave inward", "Twisting from the hips instead of the ribs", "Rushing before a stable lunge is set"]
+    },
+    {
+      "name": "Lunge with rotation",
+      "type": "dynamic",
+      "targets": ["hip flexors", "glutes", "thoracic spine", "quads"],
+      "durationSec": 40,
+      "why": "Loads the hips in a stride-like position and adds the trunk rotation running needs.",
+      "feel": "A stretch at the front of the trailing hip with a turn through the chest.",
+      "form": ["Step into a forward lunge", "Keep the torso tall and the front shin vertical", "Rotate the chest toward the front leg, then step through"],
+      "mistakes": ["Letting the front knee drift past the toes and inward", "Leaning the torso forward", "Rotating the pelvis instead of the ribcage"]
+    },
+    {
+      "name": "Inchworm",
+      "type": "dynamic",
+      "targets": ["hamstrings", "core", "shoulders", "calves"],
+      "durationSec": 40,
+      "why": "Mobilises the whole back line and warms the core and shoulders for a run.",
+      "feel": "A stretch down the back of the legs as the hands walk out.",
+      "form": ["Stand tall, hinge and place hands on the floor", "Walk the hands out to a plank", "Walk the feet toward the hands and stand"],
+      "mistakes": ["Letting the hips sag in the plank", "Bending the knees to hide a tight hamstring", "Rushing the walk-out"]
+    },
+    {
+      "name": "Cat-cow",
+      "type": "dynamic",
+      "targets": ["thoracic spine", "lumbar spine", "core", "spinal mobility"],
+      "durationSec": 30,
+      "why": "Gets the spine moving smoothly through flexion and extension before you run.",
+      "feel": "A gentle wave along the back, no sharp pinch.",
+      "form": ["Start on all fours, hands under shoulders", "Arch the back up, then let it sag with the chest open", "Match the motion to slow breathing"],
+      "mistakes": ["Moving only the lower back", "Forcing the end range", "Speeding up and losing the breath rhythm"]
+    },
+    {
+      "name": "Thoracic rotations (quadruped t-spine)",
+      "type": "dynamic",
+      "targets": ["thoracic spine", "ribs", "shoulders"],
+      "durationSec": 40,
+      "why": "Frees the mid-back so the trunk can rotate with the arms during running.",
+      "feel": "A twist through the upper back with the shoulder opening toward the ceiling.",
+      "form": ["On all fours, place one hand behind the head", "Rotate the elbow down toward the other arm, then up to the sky", "Keep the hips still"],
+      "mistakes": ["Rotating from the hips", "Letting the lower back arch", "Pulling the neck instead of the elbow"]
+    },
+    {
+      "name": "Arm circles",
+      "type": "dynamic",
+      "targets": ["shoulders", "shoulder joint", "upper back"],
+      "durationSec": 30,
+      "why": "Warms the shoulders for the arm swing and counter-rotation of running.",
+      "feel": "Light work around the shoulder with a smooth circle.",
+      "form": ["Stand tall with arms out to the sides", "Draw small fast circles, then bigger slower ones", "Reverse the direction"],
+      "mistakes": ["Shrugging the shoulders to the ears", "Circling from the elbow instead of the shoulder", "Going so big the ribs flare"]
+    },
+    {
+      "name": "Monster walks (banded)",
+      "type": "dynamic",
+      "targets": ["gluteus medius", "gluteus maximus", "hip abductors", "lateral hip"],
+      "durationSec": 40,
+      "why": "Turns on the side hip muscles that keep the knee tracking well over thousands of steps.",
+      "feel": "A burning ache on the outer hip as you hold the stance.",
+      "form": ["Loop a band above the knees or at the ankles", "Sit into a quarter squat", "Step forward and out, keeping tension on the band"],
+      "mistakes": ["Letting the knees cave in", "Standing up out of the squat between steps", "Taking steps so short the band goes slack"]
+    },
+    {
+      "name": "Clamshells (banded)",
+      "type": "dynamic",
+      "targets": ["gluteus medius", "hip external rotators", "glutes"],
+      "durationSec": 40,
+      "why": "Targets the outer hip that stops the knee from dropping inward when you run.",
+      "feel": "A focused burn on the upper outer glute.",
+      "form": ["Lie on your side, knees bent, band above the knees", "Keep the feet together and lift the top knee", "Lower slowly under control"],
+      "mistakes": ["Rolling the pelvis back to open the knee", "Lifting the foot with the knee", "Rushing and losing hip position"]
+    },
+    {
+      "name": "Lateral band walk",
+      "type": "dynamic",
+      "targets": ["gluteus medius", "hip abductors", "glutes"],
+      "durationSec": 40,
+      "why": "Loads the hip in the sideways direction that running and single-leg stance demand.",
+      "feel": "A steady burn on the outside of the hip through the whole set.",
+      "form": ["Band above the knees, quarter squat", "Step sideways, leading with one leg", "Keep the feet pointing forward and the stance low"],
+      "mistakes": ["Dragging the trailing foot with no control", "Standing tall and losing glute tension", "Turning the toes outward"]
+    },
+    {
+      "name": "Banded glute bridge",
+      "type": "dynamic",
+      "targets": ["gluteus maximus", "gluteus medius", "hamstrings", "posterior chain"],
+      "durationSec": 45,
+      "why": "Wakes up the glutes that drive hip extension in every stride.",
+      "feel": "Glutes doing the work, not the lower back or hamstrings.",
+      "form": ["Lie on your back, feet flat, band above the knees", "Press through the heels and lift the hips", "Push the knees gently out against the band, then lower"],
+      "mistakes": ["Arching the lower back at the top", "Pushing through the toes", "Letting the knees drop inward"]
+    },
+    {
+      "name": "A-skips",
+      "type": "dynamic",
+      "targets": ["hip flexors", "calves", "coordination", "front-side running mechanics"],
+      "durationSec": 30,
+      "why": "Rehearses a quick, high knee drive and a snappy foot strike under the body.",
+      "feel": "Light and bouncy, with a strong knee lift and quick ground contact.",
+      "form": ["Drive one knee to hip height", "Let the lower leg drop and strike under the body", "Stay tall with a fast rhythm, not big steps"],
+      "mistakes": ["Reaching the foot out in front", "Leaning back", "Losing the rhythm and slowing to a march"]
+    },
+    {
+      "name": "B-skips",
+      "type": "dynamic",
+      "targets": ["hamstrings", "hip flexors", "coordination", "front-side mechanics"],
+      "durationSec": 30,
+      "why": "Adds a pawing lower-leg action that trains the leg to sweep back and down.",
+      "feel": "A knee lift with the foot flicking out and pawing back down.",
+      "form": ["Lift the knee as in an A-skip", "Extend the lower leg out, then sweep the foot down and back", "Keep the torso tall and rhythm quick"],
+      "mistakes": ["Landing with a locked knee", "Letting the extended leg reach too far forward", "Turning it into a kick"]
+    },
+    {
+      "name": "High knees",
+      "type": "dynamic",
+      "targets": ["hip flexors", "quads", "calves", "cadence"],
+      "durationSec": 30,
+      "why": "Raises knee drive and leg-turnover rate while warming the hips and calves.",
+      "feel": "Fast and light, heart rate rising, feet barely touching the ground.",
+      "form": ["Drive the knees to about hip height", "Stay on the balls of the feet", "Keep the torso tall and the arms pumping"],
+      "mistakes": ["Leaning back to get the knees up", "Landing flat-footed and heavy", "Going slowly and losing the quick rhythm"]
+    },
+    {
+      "name": "Butt kicks",
+      "type": "dynamic",
+      "targets": ["hamstrings", "quads", "calves", "knee flexion"],
+      "durationSec": 30,
+      "why": "Warms the hamstrings and calves and trains a quick heel recovery.",
+      "feel": "A fast flick of the heel toward the glute with a light bounce.",
+      "form": ["Jog forward, flicking the heels up toward the glutes", "Keep the knees pointing down, not forward", "Stay tall and quick"],
+      "mistakes": ["Losing the rhythm and slowing to a walk", "Overstriding as the heels flick back", "Leaning forward from the waist"]
+    },
+    {
+      "name": "Straight-leg runs",
+      "type": "dynamic",
+      "targets": ["hamstrings", "calves", "hip flexors", "stiff-leg mechanics"],
+      "durationSec": 30,
+      "why": "Trains a stiff, quick leg that teaches fast ground contact and hamstring control.",
+      "feel": "Stiff legs, quick contacts, a light prance forward.",
+      "form": ["Keep the legs mostly straight", "Bounce forward off the balls of the feet", "Use a quick, short ground contact"],
+      "mistakes": ["Bending the knees like normal running", "Reaching the legs out in front", "Landing on the heels"]
+    },
+    {
+      "name": "High-knee dribbles",
+      "type": "dynamic",
+      "targets": ["hip flexors", "calves", "cadence", "coordination"],
+      "durationSec": 30,
+      "why": "A short, quick version of high knees that sharpens foot speed and timing.",
+      "feel": "Very fast, tiny steps with the knees coming up quickly.",
+      "form": ["Take short, rapid steps in place or moving slowly", "Lift each knee quickly and lightly", "Stay tall and keep the feet springy"],
+      "mistakes": ["Traveling too far and stretching the steps", "Heavy, flat landings", "Dropping the knee height as you speed up"]
+    },
+    {
+      "name": "Carioca",
+      "type": "dynamic",
+      "targets": ["hip abductors", "hip adductors", "coordination", "lateral movement"],
+      "durationSec": 40,
+      "why": "Warms the hips and groin in the sideways direction and improves coordination.",
+      "feel": "A quick cross-and-open foot pattern with the hips turning freely.",
+      "form": ["Travel sideways, alternating a cross-in-front step and a step behind", "Keep the arms moving with the legs", "Stay light on the feet and rhythmic"],
+      "mistakes": ["Getting tangled by going too slowly", "Turning the shoulders away from the direction of travel", "Letting the feet drag heavily"]
+    },
+    {
+      "name": "Ankling",
+      "type": "dynamic",
+      "targets": ["calves", "Achilles", "ankle stiffness", "ground contact"],
+      "durationSec": 30,
+      "why": "Warms the ankles and calves and trains a stiff, springy push off the ground.",
+      "feel": "A springy bounce from the ankles with the feet barely leaving the ground.",
+      "form": ["Move forward with quick, tiny bounces from the ankles", "Keep the knees almost straight", "Land and push off with a stiff, springy ankle"],
+      "mistakes": ["Bouncing from the knees instead of the ankles", "Going slow and heavy", "Landing on the heels"]
+    }
+  ],
+  "summary_tier_a": "A structured warm-up improves running performance, and the strongest evidence favours dynamic work: dynamic stretching and drills improve sprint, jump and range of motion while long static holds can blunt power. The RAMP framework (Raise, Activate and Mobilise, Potentiate) sequences this well, and short dynamic drills plus a few strides cover most runners in 5 to 10 minutes. Static stretching does not prevent injury, so it does not belong at the front of a run; hip, ankle and glute activation drills earn their place for mechanics and injury resilience.",
+  "unverified": [
+    "Exact minute-by-minute warm-up dose for recreational runners is still not fixed by direct dose-finding trials. The closest evidence is an international expert consensus (Boullosa et al. 2026), which found no optimal duration but placed a short warm-up at 5 minutes or less and a long one above about 20 minutes, and a recreational-runner crossover trial (Panasci et al. 2024) that improved running economy and performance with about 60 seconds per leg of dynamic stretching. No trial sets a measured 5 to 10 minute threshold, so that figure remains coaching practice.",
+    "Whether specific band drills such as clamshells and monster walks prevent knee pain is not established by controlled trials. The nearest evidence is broader: strength training reduced sports injuries to under a third and overuse injuries by about half (Lauersen et al. 2014), and hip and core strengthening resolved patellofemoral pain sooner than knee-focused work (Ferber et al. 2015), but no trial isolated clamshells or monster walks as a knee-pain prevention measure in runners.",
+    "Optimal reps, sets or passes for each running drill (A-skips, carioca) is coaching practice, not a tested dose-response. The running drill validation study (Matijasevic et al. 2025) scored drill quality against sprint times rather than dose, and no trial was found mapping drill volume to sprint mechanics or injury outcomes."
+  ],
+  "notes": "Claim set balances systematic reviews and meta-analyses (Fradkin 2010, Behm and Chaouachi 2011, Opplert and Babault 2018, the 2023 and 2024 stretching meta-analyses, Cochrane soreness review, strength and running economy meta-analyses) with RCTs on warm-up intensity (Alves 2023, Paris 2021, van den Tillaar 2017) and the RAMP trial (Girginer 2025). The RAMP framework itself is coaching literature (Jeffreys) validated indirectly by the 2025 trial. Catalog candidates cover the 22 requested drills in three groups: general mobility (leg swings, hip circles, walking hip openers, ankle rocks, world's greatest stretch, lunge with rotation, inchworm, cat-cow, thoracic rotations, arm circles), banded glute activation (monster walks, clamshells, lateral band walk, banded glute bridge), and running-specific drills (A-skips, B-skips, high knees, butt kicks, straight-leg runs, high-knee dribbles, carioca, ankling). Durations are draft defaults for an app catalog and should be tuned during implementation. Two lower-confidence coaching citations are flagged as such and are used only for drill mechanics and recreational dose, not for performance claims. No em dashes used. Verification pass 2026-11-23: 3 substantiated (the three low-confidence claims were strengthened and re-cited to peer-reviewed sources), 3 remained unverified. The low-confidence static stretching and injury claim was raised to moderate with the Small 2008 DOI and its preliminary musculotendinous finding; the A-skip and B-skip claim was raised to moderate and re-cited to Matijasevic 2025; the recreational dose claim was raised to moderate and re-cited to Panasci 2024. Five new claims were added: Lauersen 2014 (strength training cuts injury risk while stretching does not), Ferber 2015 (hip and core strengthening for patellofemoral pain), two Boullosa 2026 consensus claims (no fixed optimal warm-up duration; no immediate injury protection from a single warm-up), and Abran 2025 (foot and ankle kinematics of skip drills versus running). The On Running and Coach Athletics coaching citations were replaced with peer-reviewed sources. All three unverified items stayed unverified but now name the closest evidence."
+}

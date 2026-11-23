@@ -1,0 +1,688 @@
+{
+  "workstream": "strength",
+  "subtopic": "Dumbbell and free-weight exercise selection for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Strength training and running economy",
+      "claim": "Add 2 to 3 strength sessions a week to a runner's schedule to improve running economy, the oxygen cost of running at a given pace.",
+      "evidence": "A meta-analysis of controlled trials found a large, consistent beneficial effect of strength training on running economy in highly trained middle and long distance runners.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on Running Economy in Highly Trained Runners: A Systematic Review with Meta-Analysis of Controlled Trials",
+        "authors": "Balsalobre-Fernandez C, Santos-Concejero J, Grivas GV",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/26694507/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Heavy loads beat light loads",
+      "claim": "Use heavy loads (about 80 percent of one rep max or above) to improve running economy; light load, submaximal and isometric work showed no clear economy benefit.",
+      "evidence": "A meta-analysis of 31 studies (652 runners) found high-load and combined methods produced small to moderate running economy gains, while submaximal and isometric strength training did not improve running economy versus control.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Saez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11052887/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Near maximal loads",
+      "claim": "Loads at or above 90 percent of one rep max (about 4 reps or fewer per set) gave the clearest running economy improvements.",
+      "evidence": "A subgroup analysis in a meta-analysis found that near-maximal resistance training (90 percent of 1RM or less than or equal to 4RM) produced significant running economy improvements, whereas submaximal strength training did not.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Terada M, Kanehisa H, Isaka T",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9653533/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Combine strength and plyometrics",
+      "claim": "Pair heavy strength work with plyometrics; the combined approach improved running economy more than either method on its own.",
+      "evidence": "The 2024 meta-analysis concluded that combining two or more strength methods (for example heavy load plus plyometric) may induce greater running economy improvement than isolated methods, based on moderate to low certainty of evidence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Saez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11052887/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Age response to heavy training",
+      "claim": "Younger runners (roughly 21 to 31 years) improved running economy more from heavy resistance training than middle-aged runners (roughly 34 to 45 years), whose gain was small.",
+      "evidence": "A subgroup analysis found heavy resistance training produced a moderate running economy improvement in younger runners (effect size about -0.51) but a trivial change in middle-aged runners (about -0.12).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Terada M, Kanehisa H, Isaka T",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9653533/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Calf and Achilles loading",
+      "claim": "Train the calf and Achilles with heavy loading; plantar flexor strength and Achilles tendon stiffness track with better running economy.",
+      "evidence": "A controlled study showed strength training raised plantar flexor strength by about 7 percent and Achilles tendon stiffness by about 16 percent and improved running economy, attributed to a more efficient soleus during ground contact.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Exercise-induced changes in triceps surae tendon stiffness and muscle strength affect running economy in humans",
+        "authors": "Albracht K, Arampatzis A",
+        "year": 2013,
+        "venue": "European Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/23328797/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Soleus mechanism",
+      "claim": "A stronger plantar flexor and stiffer Achilles lower the metabolic cost of running by making the soleus do its work more efficiently.",
+      "evidence": "A controlled longitudinal study found the soleus clears the same mechanical work with better energy efficiency after plantar flexor and Achilles tendon training, which the authors link to improved running economy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Enthalpy efficiency of the soleus muscle contributes to improvements in running economy",
+        "authors": "Bohm S, Mersmann F, Santuz A, Arampatzis A",
+        "year": 2021,
+        "venue": "Proceedings of the Royal Society B",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7893283/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Maximal strength session",
+      "claim": "A short block of maximal strength work (about 4 sets of 4 reps near max) improved running economy and time to exhaustion in distance runners.",
+      "evidence": "A randomized study in trained distance runners found maximal strength training improved running economy at 70 percent of VO2max and extended time to exhaustion at maximal aerobic speed.",
+      "confidence": "high",
+      "citation": {
+        "title": "Maximal strength training improves running economy in distance runners",
+        "authors": "Storen O, Helgerud J, Stoa EM, Hoff J",
+        "year": 2008,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/18460997/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "No mass gain required",
+      "claim": "Strength training usually does not change VO2max or body composition in runners, so economy gains do not require getting heavier or bulkier.",
+      "evidence": "A systematic review concluded that maximal oxygen uptake, blood lactate parameters and body composition appear unaffected by adding strength training to a distance runner's program.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5889786/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Time trial performance",
+      "claim": "A strength training block improves middle and long distance time trial performance, not only economy.",
+      "evidence": "A meta-analysis found that adding a strength training mesocycle improved running, cycling, cross-country skiing and swimming performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Strength Training for Middle- and Long-Distance Performance: A Meta-Analysis",
+        "authors": "Berryman N, Mujika I, Arvisais D, Roubeix M, Binet C, Bosquet L",
+        "year": 2018,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/28459360/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Explosive work also works",
+      "claim": "Both heavy weight training and explosive training improve running economy in endurance athletes, so the style of loading can vary.",
+      "evidence": "A meta-analysis with meta-regression found explosive and heavy weight training were both effective for improving running economy in endurance athletes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Explosive Training and Heavy Weight Training are Effective for Improving Running Economy in Endurance Athletes: A Systematic Review and Meta-Analysis",
+        "authors": "Denadai BS, de Aguiar RA, de Lima LCR, Greco CC, Caputo F",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/27497600/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Unilateral versus bilateral",
+      "claim": "Unilateral work (split squats, single-leg movements) is as effective as bilateral squats for strength and better for change of direction and single-leg qualities.",
+      "evidence": "Two meta-analyses found unilateral and bilateral resistance training produced similar strength gains, with unilateral training showing an advantage for change of direction, and both improved sprint performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of unilateral vs. bilateral resistance training interventions on measures of strength, jump, linear and change of direction speed: a systematic review and meta-analysis",
+        "authors": "Liao KF, Nassis GP, Bishop C, Yang W, Bian C, Li YM",
+        "year": 2022,
+        "venue": "Biology of Sport",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9331349/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Bulgarian split squat",
+      "claim": "The rear-foot-elevated split squat (Bulgarian split squat) is a sound unilateral lower-body builder, comparable to the back squat for strength and better for agility.",
+      "evidence": "A study in academy rugby players found a rear elevated split squat group and a back squat group both improved strength, while the split squat group showed advantages in agility measures.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Unilateral vs. Bilateral Squat Training for Strength, Sprints, and Agility in Academy Rugby Players",
+        "authors": "Speirs DE, Bennett MA, Finn CV, Turner AP",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/26200193/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Reverse lunge knee load",
+      "claim": "The reverse (backward) lunge loads the knee joint less than the forward lunge and the single-leg squat, so it can be a useful choice when managing knee stress.",
+      "evidence": "A kinetic study found knee joint moments were greater in the single-leg squat than the reverse lunge, but not greater in the single-leg squat than the forward lunge, indicating the reverse lunge reduces knee moment.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Joint Kinetics and Kinematics During Common Lower Limb Rehabilitation Exercises",
+        "authors": "Comfort P, Jones PA, Smith LC, Herrington L",
+        "year": 2015,
+        "venue": "Journal of Athletic Training",
+        "type": "observational",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4641539/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Front squat knee load",
+      "claim": "The front squat, including a front-rack dumbbell hold, produced quadriceps activation similar to the back squat with lower knee compressive load.",
+      "evidence": "A biomechanical comparison found the back squat had significantly higher knee compressive force and knee extensor moment than the front squat, while a review found no significant difference in muscle EMG between the two.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A biomechanical comparison of back and front squats in healthy trained individuals",
+        "authors": "Gullett JC, Tillman MD, Gutierrez GM, Chow JW",
+        "year": 2009,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/19002072/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Step-up glute activation",
+      "claim": "Step-ups produce very high gluteus maximus activation, among the highest of common strength exercises.",
+      "evidence": "A systematic review classified step-up and lateral step-up variants as very high gluteus maximus activation (above 60 percent of maximum voluntary isometric contraction).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Gluteus Maximus Activation during Common Strength and Hypertrophy Exercises: A Systematic Review",
+        "authors": "Krause Neto W, Soares EG, Vieira TL, Aguiar R, Chola TA, Sampaio VL, Gama EF",
+        "year": 2020,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7039033/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip thrust versus squat",
+      "claim": "The hip thrust produced more gluteus maximus activation than the back squat and at least as much as the Romanian deadlift.",
+      "evidence": "A study comparing the three exercises found hip thrust gluteus maximus activity was higher than the back squat and not significantly different from the Romanian deadlift at 1RM.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison Between Back Squat, Romanian Deadlift, and Barbell Hip Thrust for Leg and Hip Muscle Activities During Hip Extension",
+        "authors": "Delgado J, Drinkwater EJ, Banyard HG, Haff GG, Nosaka K",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/31356511/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Romanian deadlift and hamstrings",
+      "claim": "The Romanian deadlift loads the hamstrings at longer muscle lengths than knee-dominant hamstring work and favors the biceps femoris.",
+      "evidence": "An EMG comparison of hamstring exercises found the Romanian deadlift and good morning produced strong hamstring activation, and a separate review notes hip-dominant exercises such as the Romanian deadlift favor the biceps femoris at longer muscle lengths than the Nordic curl.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Muscle activation during various hamstring exercises",
+        "authors": "McAllister MJ, Hammond KG, Schilling BK, Ferreria LC, Reed JP, Weiss LW",
+        "year": 2014,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/24149748/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Single-leg Romanian deadlift",
+      "claim": "A dumbbell single-leg Romanian deadlift challenges trunk and hip stabilizers, and holding the dumbbell in the opposite hand to the working leg raises that demand.",
+      "evidence": "A study of dumbbell and flywheel single-leg Romanian deadlift variations found the loading position (same side versus opposite side) changed trunk and hip muscle activation levels.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of loading positions on the activation of trunk and hip muscles during flywheel and dumbbell single-leg Romanian deadlift exercises",
+        "authors": "Mo RCY, Ngai DCW, Ng CCM, Sin KHS, Luk JTC, Ho IMK",
+        "year": 2023,
+        "venue": "Frontiers in Physiology",
+        "type": "observational",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10716453/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nordic hamstring and injury",
+      "claim": "The Nordic hamstring exercise reduced hamstring strain injuries by about half when performed with good compliance.",
+      "evidence": "A meta-analysis of injury prevention programs including the Nordic hamstring exercise found a significant reduction in hamstring injury rates, and a 2024 umbrella review reported reductions up to 51 percent.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Injury Prevention Programs that Include the Nordic Hamstring Exercise on Hamstring Injury Rates in Soccer Players: A Systematic Review and Meta-Analysis",
+        "authors": "Al Attar WSA, Soomro N, Sinclair PJ, Pappas E, Sanders RH",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/27752982/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nordic hamstring adherence",
+      "claim": "The Nordic hamstring exercise builds eccentric hamstring strength, but soreness and low adherence limit how well it works in practice.",
+      "evidence": "An umbrella review found significant and clinically meaningful hamstring injury reduction but noted poor adherence and high dropout, largely due to delayed onset muscle soreness.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Nordic Hamstring Exercise on Performance and Injury in the Lower Extremities: An Umbrella Review",
+        "authors": "Nunes H, Fernandes LG, Martins PN, Ferreira RM",
+        "year": 2024,
+        "venue": "Healthcare (Basel)",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11311354/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abductor weakness and injury",
+      "claim": "Weak hip abductors are associated with running-related injury such as iliotibial band syndrome, so hip work has a rationale, though isolated hip strengthening alone changes running mechanics only modestly.",
+      "evidence": "A systematic review found an association between hip abduction strength and lower extremity running injury, while a 10-week randomized hip strengthening program in trained runners produced moderate strength gains but only modest biomechanical change.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Hip abductor strength and lower extremity running related injury in distance runners: A systematic review",
+        "authors": "Mucha MD, Caldwell W, Schlueter EL, Walters C, Hassen A",
+        "year": 2017,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/27693442/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Injury prevention program trial",
+      "claim": "A core, hip abductor and quadriceps strength program before a first marathon reduced minor injuries but not major injuries and did not improve marathon time.",
+      "evidence": "A randomized study of first-time New York City Marathon runners found strength training reduced self-reported minor injuries but not major injuries, with no improvement in marathon completion time.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Randomized Study of a Strength Training Program to Prevent Injuries in Runners of the New York City Marathon",
+        "authors": "Toresdahl BG, McElheny K, Metzl J, Ammerman B, Chang B, Kinderknecht J",
+        "year": 2020,
+        "venue": "Sports Health",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6931177/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Exercise programs and injury in runners",
+      "claim": "Exercise-based injury prevention in endurance runners is not proven as a whole; pooled data show no reduction in injury risk, but supervised, multicomponent programs two to four times a week were the ones that helped.",
+      "evidence": "A systematic review and meta-analysis found pooled exercise programs gave no reduction in injury risk or rate versus running only, but studies with supervision and higher compliance showed significantly lower injury risk, and the authors concluded evidence was insufficient to recommend general programs.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Do Exercise-Based Prevention Programs Reduce Injury in Endurance Runners? A Systematic Review and Meta-Analysis",
+        "authors": "Wu H, Brooke-Wavell K, Fong DTP, Paquette MR, Blagrove RC",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11127851/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Loaded carries and trunk",
+      "claim": "Loaded carries such as the farmer walk produce high trunk muscle activation and challenge spine stability, and the bilateral farmer walk loads the spine more than a one-sided suitcase carry.",
+      "evidence": "A study of strongman events found the farmer and yoke walks produced greater spinal muscle compression, loading and stiffness than the unilateral suitcase carry, and a recent study quantified high trunk activation during carry and hold variations.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison of different strongman events: trunk muscle activation and lumbar spine motion, load, and stiffness",
+        "authors": "McGill SM, McDermott A, Fenwick CM",
+        "year": 2009,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/19528856/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Free weights versus machines",
+      "claim": "Free weights and machines build similar strength and muscle size; choose free weights when the goal is training balance, coordination and single-leg control.",
+      "evidence": "A meta-analysis found free-weight and machine-based training gave the same relative increases in strength and similar hypertrophy, and a second meta-analysis found strength gains favored free weights only when strength was tested with a free-weight exercise, showing specificity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of free-weight vs. machine-based strength training on maximal strength, hypertrophy and jump performance: a systematic review and meta-analysis",
+        "authors": "Haugen ME, Varvik FT, Larsen S, Haugen AS, van den Tillaar R, Bjornsen T",
+        "year": 2023,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10426227/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Loading prescription",
+      "claim": "Prescribe resistance training at least twice a week with high effort; strength gains are best supported by loads of 80 percent of one rep max or above, 2 to 3 sets, through a full range of motion.",
+      "evidence": "The 2026 ACSM position stand recommends resistance training at least twice weekly with high effort for all major muscle groups, and reports voluntary strength was enhanced by lifting heavier loads (80 percent of 1RM or more), 2 to 3 sets, through a complete range of motion, and at least 2 sessions per week.",
+      "confidence": "high",
+      "citation": {
+        "title": "Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults: An Overview of Reviews (ACSM Position Stand)",
+        "authors": "American College of Sports Medicine",
+        "year": 2026,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12965823/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core training and running economy",
+      "claim": "Core and trunk training can improve running economy, and trunk and upper body fatigue degrade running economy.",
+      "evidence": "An 8-week core training study improved core endurance and running economy in college athletes. A separate trial of combined core and inspiratory muscle training improved running economy at the lactate threshold and 1-hour running performance (Tong et al 2016, Journal of Strength and Conditioning Research), and a randomized crossover trial found trunk and upper body fatigue lowered running economy at a high-intensity steady state (Drum et al 2019, Sports). Evidence in runners still rests on small trials.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of 8-week core training on core endurance and running economy",
+        "authors": "Hung KC, Chung HW, Yu CCW, Lai HC, Sun FH",
+        "year": 2019,
+        "venue": "PLoS One",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6407754/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Upper body for running",
+      "claim": "Upper body and trunk strength has a plausible link to high-intensity running and sprint performance, though direct evidence in distance runners is limited.",
+      "evidence": "A scoping review found associations between upper body maximal strength qualities and high-intensity running and jumping actions, proposing potentiated rate of force development, but noted a lack of direct training studies in distance runners. A randomized crossover trial also found acute upper body and trunk fatigue lowered running economy, which shows the upper body influences running but is not training evidence.",
+      "confidence": "low",
+      "citation": {
+        "title": "Potential Importance of Maximal Upper Body Strength-Generating Qualities and Upper Body Strength Training for Performance of High-Intensity Running and Jumping Actions: A Scoping Review",
+        "authors": "Curovic I, Grecic D, Rhodes D, Alexander J, Harper DJ",
+        "year": 2024,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11679821/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Resistance training and running biomechanics",
+      "claim": "Lower limb resistance training is well supported for running economy and performance, and the recommended combination is strength plus plyometric work.",
+      "evidence": "A narrative review concluded lower limb resistance exercise is effective for improving running economy and performance, with a combination of strength and plyometric training recommended, and isometric training a possible option during high overall training periods.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Resistance Exercise for Improving Running Economy and Running Biomechanics and Decreasing Running-Related Injury Risk: A Narrative Review",
+        "authors": "Suc A, Sarko P, Plesa J, Kozinc Z",
+        "year": 2022,
+        "venue": "Sports (Basel)",
+        "type": "narrative-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9319953/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Goblet squat quadriceps activation",
+      "claim": "At matched relative load the goblet squat produced greater quadriceps activation than the landmine squat, supporting its use to target the quadriceps; no direct goblet squat versus back squat EMG comparison was located.",
+      "evidence": "Sixteen men and 16 women performed goblet and landmine squats loaded at 30 percent of body mass. The goblet squat produced greater vastus medialis and vastus lateralis activation and greater vertical loading, while the landmine squat reduced quadriceps activity and shifted load horizontally.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Differences in Muscle Activity and Kinetics Between the Goblet Squat and Landmine Squat in Men and Women",
+        "authors": "Collins KS, Klawitter LA, Waldera RW, Mahoney SJ, Christensen BK",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/34341315/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Trunk and upper body fatigue and running economy",
+      "claim": "Acute trunk and upper body fatigue lower running economy at a high-intensity steady state, so a fatigue-resistant trunk and upper body support efficient running.",
+      "evidence": "A three-armed randomized crossover pilot trial found both the trunk fatigue and the upper body fatigue conditions adversely affected running economy at a high-intensity steady state compared with control.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Trunk and Upper Body Fatigue Adversely Affect Running Economy: A Three-Armed Randomized Controlled Crossover Pilot Trial",
+        "authors": "Drum SN, Rappelt L, Donath L",
+        "year": 2019,
+        "venue": "Sports (Basel)",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6722636/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Resistance training load dose-response",
+      "claim": "For maximal strength, heavier loads (about 80 percent of one rep max and above) outperform lighter loads, while muscle hypertrophy is similar across a wide load range when effort is matched.",
+      "evidence": "A systematic review with network meta-analysis of resistance training load found strength gains were superior with high-load training, whereas muscle hypertrophy improved to a similar degree across low, moderate and high loads.",
+      "confidence": "high",
+      "citation": {
+        "title": "Resistance Training Load Effects on Muscle Hypertrophy and Strength Gain: Systematic Review and Network Meta-analysis",
+        "authors": "Lopez P, Radaelli R, Taaffe DR, Newton RU, Galvao DA, Trajano GS, Teodoro JL, Kraemer WJ, Hakkinen K, Pinto RS",
+        "year": 2021,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8126497/",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Goblet squat",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["quadriceps", "gluteus maximus", "adductors", "trunk"],
+      "pattern": "squat",
+      "why": "Builds the bilateral squat pattern and teaches the front-loaded trunk position that carries over to running posture, with a load light enough to learn quickly.",
+      "feel": "Fronts of the thighs and glutes, with a steady brace through the middle of the torso.",
+      "form": ["Hold the dumbbell close to your chest with both hands under the top head", "Keep the chest tall and sit down between your feet", "Let the knees travel over the toes while the heels stay planted"],
+      "mistakes": ["Letting the dumbbell drift away from the chest so the torso folds forward", "Rounding the low back at the bottom", "Lifting the heels off the floor"]
+    },
+    {
+      "name": "Front-rack dumbbell squat",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["quadriceps", "gluteus maximus", "upper back", "trunk"],
+      "pattern": "squat",
+      "why": "Loads the quadriceps like a back squat but with lower knee compressive load, and the upright torso trains the trunk strength that running relies on.",
+      "feel": "Thighs and glutes, plus a strong isometric brace in the upper back and abs keeping the weight stacked.",
+      "form": ["Rest one dumbbell on each shoulder with elbows high and forward", "Keep the torso as vertical as you can as you descend", "Drive through the whole foot to stand up"],
+      "mistakes": ["Letting the elbows drop so the weight rolls forward", "Excessive forward lean", "Short, partial reps that skip the hardest position"]
+    },
+    {
+      "name": "Bulgarian split squat",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["quadriceps", "gluteus maximus", "gluteus medius", "hamstrings"],
+      "pattern": "squat",
+      "why": "A single-leg squat that builds each leg on its own and challenges the hip stabilizers that control pelvic drop during running.",
+      "feel": "Front thigh and glute of the working leg, with a stretch at the front hip of the rear leg.",
+      "form": ["Rest the top of the rear foot on a bench behind you", "Lower until the front thigh is near parallel", "Keep the front knee tracking over the middle toes"],
+      "mistakes": ["Standing too close to the bench so the front knee jams forward", "Pushing off the rear foot to cheat the rise", "Letting the front knee cave inward"]
+    },
+    {
+      "name": "Dumbbell reverse lunge",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["quadriceps", "gluteus maximus", "hamstrings"],
+      "pattern": "squat",
+      "why": "Trains single-leg strength and balance with lower knee joint loading than the forward lunge, useful when managing knee stress.",
+      "feel": "Glute and thigh of the front leg doing the push back to standing.",
+      "form": ["Step back and drop the back knee toward the floor", "Keep most of the weight over the front foot", "Push through the front foot to return to standing"],
+      "mistakes": ["Stepping too short so the front knee takes too much load", "Losing balance by leaning forward", "Letting the front knee collapse inward"]
+    },
+    {
+      "name": "Dumbbell step-up",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["gluteus maximus", "quadriceps", "gluteus medius"],
+      "pattern": "squat",
+      "why": "One of the highest gluteus maximus activators and a direct single-leg push pattern similar to the running push-off.",
+      "feel": "Glute of the working leg as it drives you up, with the opposite hip steadying.",
+      "form": ["Place the whole foot on a knee-height box", "Drive up through the top leg without pushing off the floor leg", "Stand tall on the box, then lower under control"],
+      "mistakes": ["Bouncing off the bottom leg to help", "Using a box so high the knee caves", "Dropping down fast instead of lowering"]
+    },
+    {
+      "name": "Single-leg Romanian deadlift",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["hamstrings", "gluteus maximus", "gluteus medius", "trunk"],
+      "pattern": "hinge",
+      "why": "Builds the posterior chain one leg at a time while training the balance and hip control that running stance phase needs.",
+      "feel": "A stretch and pull down the back of the standing thigh and glute, plus a brace through the trunk.",
+      "form": ["Hold the dumbbell in the hand opposite the standing leg", "Hinge at the hip and let the free leg extend behind you", "Keep hips square as you lower, then squeeze the glute to stand"],
+      "mistakes": ["Letting the hip of the raised leg rotate open", "Rounding the low back to reach lower", "Bending the standing knee into a squat"]
+    },
+    {
+      "name": "Dumbbell Romanian deadlift",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["hamstrings", "gluteus maximus", "erector spinae"],
+      "pattern": "hinge",
+      "why": "Loads the hamstrings at long muscle lengths, targeting the biceps femoris that helps decelerate the leg during running.",
+      "feel": "A strong stretch along the back of the thighs as you lower, then the glutes and hamstrings pulling you upright.",
+      "form": ["Hold the dumbbells in front of the thighs with a soft knee bend", "Push the hips back and slide the weights down the legs", "Stop when the hamstrings stretch, then drive the hips forward"],
+      "mistakes": ["Turning it into a squat by bending the knees too much", "Rounding the back as the weight descends", "Hyperextending the low back at the top"]
+    },
+    {
+      "name": "Dumbbell farmer carry",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["trunk", "erector spinae", "forearms", "trapezius", "gluteus medius"],
+      "pattern": "core",
+      "why": "A loaded walk that trains the trunk to stay stiff and stable while the legs move, which mirrors the demand of holding form as running fatigue builds.",
+      "feel": "Deep brace through the torso and grip, with the upper back working to stay tall.",
+      "form": ["Pick up a dumbbell in each hand and stand tall", "Walk with short, controlled steps, ribs stacked over hips", "Keep the shoulders pulled back and down"],
+      "mistakes": ["Leaning back or letting the shoulders round", "Letting one side dip by losing the brace", "Rushing the steps so the trunk sways"]
+    },
+    {
+      "name": "Suitcase carry",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["obliques", "quadratus lumborum", "gluteus medius", "forearms"],
+      "pattern": "core",
+      "why": "A one-sided carry that teaches the trunk to resist side bending, matching the anti-rotation control the pelvis needs against each running stride.",
+      "feel": "The side of the torso opposite the load working to stay level, plus grip on the loaded side.",
+      "form": ["Hold one dumbbell at your side and stand square", "Walk without letting the loaded side drop or lean", "Keep breathing steadily while braced"],
+      "mistakes": ["Leaning away from the weight to balance", "Letting the loaded shoulder sink", "Walking too fast to control the trunk"]
+    },
+    {
+      "name": "Dumbbell overhead press",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["deltoids", "triceps", "upper back", "trunk"],
+      "pattern": "push",
+      "why": "Trains the shoulders and trunk to produce and resist force overhead, supporting the stable upper body posture and arm drive of running.",
+      "feel": "Shoulders and triceps pressing up, with the abs and glutes braced to stop the back arching.",
+      "form": ["Start with dumbbells at shoulder height, palms forward", "Press straight up until the arms lock overhead", "Keep the ribs down and glutes tight throughout"],
+      "mistakes": ["Arching the low back to press the weight up", "Pressing the weights forward instead of overhead", "Shrugging the shoulders into the ears"]
+    },
+    {
+      "name": "Dumbbell floor press",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["pectoralis major", "triceps", "anterior deltoid"],
+      "pattern": "push",
+      "why": "A joint-friendly horizontal press that builds upper body pressing strength, balancing the pulling work so the shoulders stay healthy for arm swing.",
+      "feel": "Chest and back of the arms pressing, with the triceps finishing the lockout.",
+      "form": ["Lie on the floor with knees bent and dumbbells over the chest", "Lower until the upper arms rest on the floor", "Press back up to lockout without flaring the elbows wide"],
+      "mistakes": ["Letting the elbows flare to 90 degrees", "Bouncing off the floor", "Losing the shoulder blade position at the bottom"]
+    },
+    {
+      "name": "One-arm dumbbell row",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["latissimus dorsi", "rhomboids", "middle trapezius", "biceps"],
+      "pattern": "pull",
+      "why": "Builds the pulling muscles of the upper back that hold the shoulders back and support the arm swing and posture through a long run.",
+      "feel": "The middle of the back working as the elbow drives toward the hip.",
+      "form": ["Brace one hand on a bench, back flat and parallel to the floor", "Row the dumbbell to the hip with the elbow close to the body", "Lower under control to a full stretch"],
+      "mistakes": ["Twisting the torso to heave the weight", "Pulling to the chest instead of the hip", "Shrugging the shoulder toward the ear"]
+    },
+    {
+      "name": "Renegade row",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["latissimus dorsi", "trunk", "obliques", "gluteus maximus"],
+      "pattern": "pull",
+      "why": "A row from a plank position that combines back work with anti-rotation trunk control, the same quality that keeps the pelvis steady while running.",
+      "feel": "The back working while the whole trunk fights to stay square and level.",
+      "form": ["Set up in a plank with hands on dumbbells, feet wide for stability", "Row one dumbbell to the ribs without letting the hips rotate", "Replace it and repeat on the other side"],
+      "mistakes": ["Letting the hips rock side to side", "Sagging the low back in the plank", "Setting the feet too narrow to stay stable"]
+    },
+    {
+      "name": "Dumbbell lateral raise",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["lateral deltoid", "supraspinatus", "upper trapezius"],
+      "pattern": "push",
+      "why": "Strengthens the small shoulder muscles that keep the arms relaxed and the swing smooth instead of tensing up on long runs.",
+      "feel": "The outer part of the shoulder lifting the arm out to the side.",
+      "form": ["Stand tall with a light dumbbell at each side", "Raise the arms out to shoulder height with a slight elbow bend", "Lower slowly under control"],
+      "mistakes": ["Using so much weight that the torso swings to help", "Shrugging the shoulders up toward the ears", "Dropping the weights fast"]
+    },
+    {
+      "name": "Single-leg dumbbell calf raise",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["gastrocnemius", "soleus", "foot intrinsics"],
+      "pattern": "posterior-chain",
+      "why": "Targets the plantar flexors whose strength and Achilles tendon stiffness track with better running economy, done one leg at a time to match running.",
+      "feel": "The calf working hard as you rise onto the ball of the foot, with a stretch at the bottom.",
+      "form": ["Stand on one foot on a step with the heel off the edge", "Hold a dumbbell on the working side and lower the heel for a stretch", "Rise up onto the ball of the foot and pause at the top"],
+      "mistakes": ["Bouncing instead of controlling the lower", "Rolling onto the outside of the foot", "Cutting the range short at the bottom"]
+    },
+    {
+      "name": "Nordic hamstring curl",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["hamstrings", "gluteus maximus"],
+      "pattern": "posterior-chain",
+      "why": "A high-eccentric hamstring exercise shown to cut hamstring injury rates, training the muscle at short to mid lengths to complement the hip-hinge work.",
+      "feel": "A strong, controlled pull in the back of the thighs as you resist the fall forward.",
+      "form": ["Kneel with the ankles anchored by a partner or pad", "Keep the hips straight and lower the torso forward as slowly as you can", "Catch yourself with the hands, then push back up"],
+      "mistakes": ["Breaking at the hips to make it easier", "Lowering too fast to control the descent", "Doing too much too soon and getting very sore"]
+    }
+  ],
+  "summary_tier_a": "Lifting weights on top of running, 2 to 3 times a week, reliably improves running economy, the energy cost of running at a given pace, and this does not require gaining bulk. Heavy loads (about 80 to 90 percent of one rep max) drove the clearest gains, and pairing strength work with plyometrics helped more than either alone. Single-leg dumbbell moves matter because running is a single-leg sport, and they also train the balance and hip control that guard against common overuse injuries. The strongest injury-specific evidence is for eccentric hamstring work such as the Nordic curl, while general core and hip work has a clear rationale but mixed proof in runners so far.",
+  "unverified": [
+    "Direct evidence that dumbbell farmer carries or suitcase carries improve running performance or running economy: no such study was found. The carry entries rest on trunk activation and spine stability studies (for example a 2024 study quantifying high trunk activation during carry variations) and on a systematic review of strongman exercise biomechanics that links farmer walk performance to gait measures such as stride length, stride rate and ground contact time, not to running outcomes.",
+    "Direct evidence that dumbbell overhead press, floor press, lateral raise, or bent-over row improve running performance: no training trial in distance runners was found. The upper body entries rest on a scoping review of associations and on a fatigue crossover trial showing upper body and trunk fatigue lower running economy, neither of which shows that upper body training improves running.",
+    "A dose-response for dumbbell loading tested in runners specifically: no dumbbell-only running trial was found. The loading claim comes from general adult resistance training (a 2021 network meta-analysis of load effects and the 2026 ACSM position stand) and from barbell and heavy-load running studies.",
+    "A study isolating single-leg calf raises and measuring running economy or Achilles tendon stiffness in runners: none was found. The calf entry rests on plantar flexor and Achilles studies that used isometric loading (14 weeks of isometric plantar flexion training) and on a 2026 exploratory study in which multi-modal resistance training improved running economy and Achilles tendon stiffness in middle-aged runners without isolating the calf raise."
+  ],
+  "notes": "This file is the evidence base for a dumbbell catalog. Grounding logic for a builder: (1) the strongest running-specific evidence is for heavy, high-effort lower-body loading, so default prescriptions should use loads heavy enough that a set ends around 4 to 8 reps with solid form, not endless light sets; (2) the two strongest injury-specific exercises are the Nordic hamstring curl for hamstrings and step-up and hip-dominant work for the glutes; (3) single-leg variants should lead, because running is unilateral, and they match the change-of-direction and single-leg-strength findings; (4) carries are best framed as trunk stability and grip work, not as running performance work, and a one-sided suitcase carry is the anti-lean choice while the bilateral farmer carry loads the spine more; (5) free weights and machines are largely interchangeable for raw strength, so dumbbells earn their place for balance, coordination and single-leg control, not for superior strength; (6) the injury prevention meta-analysis found pooled exercise programs did not reduce running injury, so copy must not promise injury prevention, only a supported rationale plus the specific hamstring and foot-ankle exceptions; (7) keep all copy free of medical promises. All citations resolve via PubMed or PubMed Central identifiers listed in doi_or_url. Confidence is deliberately lower where evidence comes from non-running populations or single small trials. Verification pass 2026-11-23: 1 substantiated, 4 remained unverified."
+}

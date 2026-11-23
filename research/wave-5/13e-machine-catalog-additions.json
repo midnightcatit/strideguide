@@ -1,0 +1,1006 @@
+{
+  "workstream": "strength",
+  "subtopic": "Machine and cable exercise additions for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Machine versus free-weight transfer",
+      "claim": "Selectorized machines and free weights build muscle and strength to a broadly similar degree when the effort is matched, so a machine-based plan is not inherently inferior for a runner. Strength gains stay somewhat specific to the way they are trained and tested.",
+      "evidence": "Haugen et al. 2023 pooled 13 studies (1016 participants): directly compared dynamic strength SMD 0.084 (95% CI -0.184 to 0.351), with hypertrophy and isometric strength also non-significant, and strength was specific to the test modality.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of free-weight vs. machine-based strength training on maximal strength, hypertrophy and jump performance: a systematic review and meta-analysis",
+        "authors": "Haugen ME, Varvik FT, Bjornsen T, et al.",
+        "year": 2023,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s13102-023-00713-4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Machine versus free-weight transfer",
+      "claim": "When load and effort are matched with velocity-based methods, adaptations in performance and muscle architecture are not meaningfully different between free-weight and machine training. The choice between them is mostly about specificity, balance and what the equipment allows.",
+      "evidence": "Hernandez-Belmonte et al. 2023 longitudinal study using velocity-based training found adaptations in athletic performance and muscle architecture were not meaningfully conditioned by free-weight versus machine-based exercises.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Adaptations in athletic performance and muscle architecture are not meaningfully conditioned by training free-weight versus machine-based exercises",
+        "authors": "Hernandez-Belmonte A, Buendia-Romero A, Franco-Lopez F, Martinez-Cava A, Pallares JG",
+        "year": 2023,
+        "venue": "Journal of Sports Sciences",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/37340878/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Smith machine versus free-weight squat",
+      "claim": "In a direct EMG comparison, the free-weight squat produced higher muscle activity than the Smith machine squat for the gastrocnemius, biceps femoris and vastus medialis, and higher activity averaged across all muscles. The Smith machine still loads the legs but with less lower-leg and stabilising demand.",
+      "evidence": "Schwanbeck et al. 2009 recorded surface EMG during 8RM free-weight and Smith machine squats in trained men: activity was 34% higher in the gastrocnemius, 26% higher in the biceps femoris and 49% higher in the vastus medialis for the free-weight squat, and 43% higher averaged across all muscles (p<0.05).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Comparison of Free Weight Squat to Smith Machine Squat Using Electromyography",
+        "authors": "Schwanbeck SR, Chilibeck PD, Binsted G, et al.",
+        "year": 2009,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0b013e3181b1b181",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Single-joint versus multi-joint lower-body work",
+      "claim": "The leg press and the knee extension build similar vasti and whole-quadriceps size, but only the knee extension grows the rectus femoris, and only the leg press grows the gluteus maximus and adductor magnus. A complete lower-body plan uses both a press or squat pattern and a knee-extension pattern.",
+      "evidence": "Kinoshita et al. 2026 trained one leg with knee extension and the other with leg press for 12 weeks in 17 untrained adults: rectus femoris volume rose with knee extension but not leg press (+1.1%, p=0.379), while leg press added gluteus maximus and adductor magnus growth.",
+      "confidence": "high",
+      "citation": {
+        "title": "Hypertrophic Effects of Single- versus Multi-Joint Exercise: A Direct Comparison between Knee Extension and Leg Press",
+        "authors": "Kinoshita M, Maeo S, Kobayashi Y, et al.",
+        "year": 2026,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0000000000003957",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Highest-value machines: hip extension",
+      "claim": "Hip-extension work trains the gluteus maximus and biceps femoris harder than the back squat. In a direct EMG comparison the hip thrust produced roughly two to three times the mean and peak gluteus maximus activity of the back squat at matched 10RM effort, which is why hip-extension machines and cable setups are central for runners.",
+      "evidence": "Contreras et al. 2015 compared back squat and barbell hip thrust at estimated 10RM: hip thrust upper gluteus maximus mean 69.5% versus 29.4% for the squat, lower gluteus maximus 86.8% versus 45.4%, and biceps femoris mean 40.8% versus 14.9%.",
+      "confidence": "high",
+      "citation": {
+        "title": "A Comparison of Gluteus Maximus, Biceps Femoris, and Vastus Lateralis Electromyographic Activity in the Back Squat and Barbell Hip Thrust Exercises",
+        "authors": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J",
+        "year": 2015,
+        "venue": "Journal of Applied Biomechanics",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1123/jab.2014-0301",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip thrust: transfer caveat",
+      "claim": "Getting stronger at the hip thrust does not by itself make you faster. An 8-week hip thrust programme raised hip thrust strength but did not improve sprint performance, so hip-extension strength is a building block rather than a direct speed fix.",
+      "evidence": "Jarvis et al. 2019 randomised participants to 8 weeks of heavy barbell hip thrusts or control; hip thrust 1RM improved but sprint performance did not.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heavy Barbell Hip Thrusts Do Not Effect Sprint Performance: An 8-Week Randomized Controlled Study",
+        "authors": "Jarvis P, Cassone N, Turner A, et al.",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000002146",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip extension exercises and sprinting",
+      "claim": "Gluteus maximus is activated more in the hip thrust and split squat than in the back squat, and higher gluteus maximus activation was examined against maximal sprinting. This supports hip-extension and single-leg work as useful for runners.",
+      "evidence": "Williams et al. 2021 compared the back squat, split squat and barbell hip thrust: peak gluteus maximus EMG was higher in the hip thrust than the back squat (p=0.024) and the study related gluteus maximus activation to maximal sprinting.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Activation of the Gluteus Maximus During Performance of the Back Squat, Split Squat, and Barbell Hip Thrust and the Relationship With Maximal Sprinting",
+        "authors": "Williams MJ, Gibson NV, Sorbie GG, et al.",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000002651",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip extension exercise comparison",
+      "claim": "The back squat, Romanian deadlift and barbell hip thrust all load the gluteus maximus and hamstrings, with the hip thrust and Romanian deadlift training the hip extensors in a lengthened position and the squat emphasising the quadriceps. Rotating hip-extension and knee-dominant work across a week covers the posterior chain better than any single machine.",
+      "evidence": "Delgado et al. 2019 compared the back squat, Romanian deadlift and barbell hip thrust for leg and hip muscle activity during hip extension, finding the hip-dominant lifts load the gluteus maximus and hamstrings differently from the squat.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison Between Back Squat, Romanian Deadlift, and Barbell Hip Thrust for Leg and Hip Muscle Activities During Hip Extension",
+        "authors": "Delgado J, Drinkwater EJ, Banyard HG, Haff GG, Nosaka K",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000003290",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Trap-bar and hinge patterns",
+      "claim": "The trap-bar (hex bar) deadlift is a hinge pattern that sits between a conventional deadlift and a squat: it keeps much of the hip-extensor demand of the deadlift while adding some quadriceps work and reducing spinal load, making it a joint-friendly posterior-chain option.",
+      "evidence": "Andersen et al. 2018 compared barbell deadlift, hex bar deadlift and hip thrust at 1RM: the barbell deadlift activated the biceps femoris more than the hex bar and hip thrust, while the hex bar deadlift remained a strong hip-extensor exercise with a more upright, squat-like position.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Electromyographic Comparison of Barbell Deadlift, Hex Bar Deadlift, and Hip Thrust Exercises: A Cross-Over Study",
+        "authors": "Andersen V, Fimland MS, Mo DA, et al.",
+        "year": 2018,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000001826",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Calf and Achilles training for running economy",
+      "claim": "Targeted plantar flexor and Achilles tendon training improves running economy. In a 14-week programme, plantar flexor strength rose about 10% and Achilles tendon stiffness about 31%, and the energy cost of running fell roughly 4%, with improved soleus efficiency a contributing factor.",
+      "evidence": "Bohm et al. 2021 used a 14-week muscle-tendon training intervention and found increased plantar flexor strength and Achilles stiffness with a lower energetic cost of running; the soleus fascicle shortening pattern shifted toward a more efficient range.",
+      "confidence": "high",
+      "citation": {
+        "title": "Enthalpy efficiency of the soleus muscle contributes to improvements in running economy",
+        "authors": "Bohm S, Mersmann F, Santuz A, Arampatzis A",
+        "year": 2021,
+        "venue": "Proceedings of the Royal Society B: Biological Sciences",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1098/rspb.2020.2784",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Standing versus seated calf raise",
+      "claim": "The standing calf raise trains both the gastrocnemius and soleus, while bending the knee in the seated calf raise shortens the gastrocnemius and biases the work toward the soleus, a major force producer in running. Runners benefit from training both positions.",
+      "evidence": "Zellers et al. 2020 studied seated and standing heel-rises and note the seated position is generally considered to target the soleus while the gastrocnemii contribute more in the standing position. The triceps surae is the major contributor to propulsion in late stance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Impact of seated and standing positions on triceps surae muscle activation in unilateral Achilles tendon rupture",
+        "authors": "Zellers JA, Brorsson A, Silbernagel KG",
+        "year": 2020,
+        "venue": "Translational Sports Medicine",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1002/tsm2.117",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abduction machine: activation",
+      "claim": "The seated hip abduction machine produces some of the highest gluteus medius and gluteus maximus activation of the abduction exercises tested, reaching a very high level of maximal voluntary contraction. It is an efficient way to load hip abductors that runners often under-train.",
+      "evidence": "Macadam et al. 2015 systematic review of gluteal EMG: the seated hip abduction machine produced the highest gluteus maximus (about 71% MVIC) and gluteus medius (about 80% MVIC) activation among the seated exercises reviewed.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "An Examination of the Gluteal Muscle Activity Associated with Dynamic Hip Abduction and Hip External Rotation Exercise: A Systematic Review",
+        "authors": "Macadam P, Cronin J, Contreras B",
+        "year": 2015,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4595911/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abduction machine versus free weights",
+      "claim": "The hip abduction machine targets the gluteus medius better than free-weight abduction variations while producing less tensor fascia latae activation, which matters when the goal is to strengthen the gluteus medius without overloading the TFL.",
+      "evidence": "de Almeida Paz et al. 2022 compared the hip abduction machine with free weights and found the machine better targeted the gluteus medius while minimising tensor fascia latae activation.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Hip abduction machine is better than free weights to target the gluteus medius while minimizing tensor fascia latae activation",
+        "authors": "de Almeida Paz I, Frigotto B, et al.",
+        "year": 2022,
+        "venue": "Journal of Bodywork and Movement Therapies",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1016/j.jbmt.2022.01.001",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abductor strengthening and patellofemoral pain",
+      "claim": "Hip abductor strengthening improves symptoms and running mechanics in runners with patellofemoral pain. A short programme increased hip abductor strength, reduced pain and changed lower-limb biomechanics during running.",
+      "evidence": "Ferber et al. 2011 ran a 3-week hip abductor strengthening programme in runners with patellofemoral pain syndrome and reported increased strength, reduced pain and changed knee and hip biomechanics.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Changes in Knee Biomechanics After a Hip-Abductor Strengthening Protocol for Runners With Patellofemoral Pain Syndrome",
+        "authors": "Ferber R, Kendall KD, Farr L",
+        "year": 2011,
+        "venue": "Journal of Athletic Training",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.4085/1062-6050-46.2.142",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abductor strength and injury risk",
+      "claim": "Higher eccentric hip abduction strength is associated with a lower risk of developing patellofemoral pain in novice runners starting a running programme, which supports hip abductor work as an injury-prevention measure.",
+      "evidence": "Ramskov et al. 2015 followed novice runners over one year and found an increase in peak eccentric hip abduction strength was associated with reduced risk of developing patellofemoral pain.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "High Eccentric Hip Abduction Strength Reduces the Risk of Developing Patellofemoral Pain Among Novice Runners Initiating a Self-Structured Running Program: A 1-Year Observational Study",
+        "authors": "Ramskov D, Barton C, Nielsen RO, Rasmussen S",
+        "year": 2015,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "cohort",
+        "doi_or_url": "https://doi.org/10.2519/jospt.2015.5091",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abductor strengthening and iliotibial band syndrome",
+      "claim": "Hip abductor strengthening is a key component of conservative treatment for iliotibial band syndrome in runners and is linked with reduced pain and improved function, although the quality of the underlying studies is mixed.",
+      "evidence": "Sanchez-Alvarado et al. 2024 systematic review of conservative treatment for iliotibial band syndrome in runners found hip abductor strengthening formed a key component of programmes that reduced pain and improved function.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of conservative treatment strategies for iliotibial band syndrome on pain and function in runners: a systematic review",
+        "authors": "Sanchez-Alvarado A, et al.",
+        "year": 2024,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.3389/fspor.2024.1386456",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Adductor training: groin injury prevention",
+      "claim": "A single-exercise adductor programme built on the Copenhagen adduction exercise reduced the risk of groin problems in male football players by about 41%. The hip adduction machine or a Copenhagen-style exercise is the direct way to train the hip adductors, which running also loads.",
+      "evidence": "Haroy et al. 2019 cluster-randomised 35 teams (652 players): the intervention group reported 41% fewer groin problems (OR 0.59, 95% CI 0.40 to 0.86, p=0.008).",
+      "confidence": "high",
+      "citation": {
+        "title": "The Adductor Strengthening Programme prevents groin problems among male football players: a cluster-randomised controlled trial",
+        "authors": "Haroy J, Clarsen B, Wiger EG, et al.",
+        "year": 2019,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2017-098937",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Adductor training: strength mechanism",
+      "claim": "The Copenhagen adduction exercise increases eccentric hip adduction strength, a proposed mechanism for its injury-prevention effect. Adductor strength can be trained with a partner exercise or with the hip adduction machine.",
+      "evidence": "Ishoi et al. 2021 showed the Copenhagen adduction exercise increased eccentric hip adduction strength in athletes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Copenhagen adduction exercise can increase eccentric hip adduction strength in athletes",
+        "authors": "Ishoi L, Sorensen CN, Kaae NM, et al.",
+        "year": 2021,
+        "venue": "British Journal of Sports Medicine",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2020-103564",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring eccentric training",
+      "claim": "Programmes that include the Nordic hamstring exercise roughly halve hamstring injury rates across sports. Runners can train the same eccentric knee-flexion quality on a seated leg curl machine by emphasising the lowering phase.",
+      "evidence": "van Dyk et al. 2019 meta-analysis of 15 studies (8459 athletes) found an injury risk ratio of 0.49 (95% CI 0.32 to 0.74) for programmes including the Nordic hamstring exercise.",
+      "confidence": "high",
+      "citation": {
+        "title": "Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: a systematic review and meta-analysis of 8459 athletes",
+        "authors": "van Dyk N, Behan FP, Whiteley R",
+        "year": 2019,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2018-100045",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring eccentric training: umbrella review",
+      "claim": "An umbrella review of Nordic hamstring exercise research confirms benefits for eccentric strength and injury reduction, while noting that eccentric knee-flexor strength alone does not predict injury. This supports using it as part of a broader plan rather than as a single fix.",
+      "evidence": "Nunes et al. 2024 umbrella review of systematic reviews found the Nordic hamstring exercise improves eccentric strength and reduces hamstring injuries, but eccentric strength alone cannot predict injury occurrence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Nordic Hamstring Exercise on Performance and Injury in the Lower Extremities: An Umbrella Review",
+        "authors": "Nunes H, et al.",
+        "year": 2024,
+        "venue": "Healthcare",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.3390/healthcare12151462",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Single-leg versus two-leg training",
+      "claim": "Single-leg and two-leg training improve performance broadly similarly, but single-leg work transfers better to single-leg tasks and adds stability demand. For runners, a mix of bilateral machine work and single-leg variations is reasonable.",
+      "evidence": "Liao et al. 2022 meta-analysis found both unilateral and bilateral resistance training improve performance with no overall difference, while unilateral training had a large effect on unilateral jumping and a small effect on unilateral strength.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of unilateral vs. bilateral resistance training interventions on measures of strength, jump, linear and change of direction speed: a systematic review and meta-analysis",
+        "authors": "Liao KF, Nassis GP, Bishop C, Yang W, Bian C, Li YM",
+        "year": 2022,
+        "venue": "Biology of Sport",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.5114/biolsport.2022.107024",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core and anti-rotation training",
+      "claim": "Core training that includes anti-rotation and anti-extension work supports trunk control, and athletes with lower core stability measures are more prone to lower-extremity injury. The cable woodchop and Pallof press are practical anti-rotation choices on a cable station.",
+      "evidence": "Lupowitz et al. 2023 review of core training in sports physical therapy reports that athletes with lower core stability measures were more prone to lower-extremity injuries and recommends anti-motion core work.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comprehensive Approach to Core Training in Sports Physical Therapy: Optimizing Performance and Minimizing Injuries",
+        "authors": "Lupowitz LG, et al.",
+        "year": 2023,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.26603/001c.84525",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Loaded carries",
+      "claim": "Loaded carries activate the trunk musculature across multiple planes while the body is walking, and the moving carry produces higher bilateral core activation than a matched static hold. A farmer or trap-bar carry trains trunk and grip while walking.",
+      "evidence": "Ellestad et al. 2024 quantified muscle activation during loaded carries and found the moving farmer's carry drove higher bilateral core activation than a matched static hold; an earlier McGill study showed coordinated trunk activation across the carry gait cycle.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Quantification of Muscle Activation During the Loaded Carry Movement Pattern",
+        "authors": "Ellestad SM, et al.",
+        "year": 2024,
+        "venue": "International Journal of Exercise Science",
+        "type": "observational",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11042841/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Back extension and lower back training",
+      "claim": "Back-extension machines with proper pelvic restraint isolate the lumbar extensors better than benches or unrestrained machines, where the glutes and hamstrings take over. Runners who want to train the lower back should use a machine that holds the pelvis.",
+      "evidence": "Steele et al. 2015 reviewed lumbar-extensor exercise specificity and concluded pelvic restraint is the key to isolating the lumbar extensors; without it the hip extensors contribute more than the target muscles.",
+      "confidence": "high",
+      "citation": {
+        "title": "A review of the specificity of exercises designed for conditioning the lumbar extensors",
+        "authors": "Steele J, Bruce-Low S, Smith D",
+        "year": 2015,
+        "venue": "British Journal of Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.1136/bjsports-2013-092197",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Leg press: knee loading",
+      "claim": "The leg press produces no ACL tensile force, but tibiofemoral and patellofemoral compression rise with knee flexion and are lower in a 0 to 50 degree range. Deep pressing is not required for general strength, so a moderate range keeps knee loads reasonable.",
+      "evidence": "Escamilla et al. 2001 tested experienced lifters in squat and leg press variations: no ACL forces were produced in leg press, while knee compressive forces generally increased with flexion, and the authors suggested the functional 0 to 50 degree range.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of technique variations on knee biomechanics during the squat and leg press",
+        "authors": "Escamilla RF, Fleisig GS, Zheng N, et al.",
+        "year": 2001,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1097/00005768-200109000-00020",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Leg extension: knee loading",
+      "claim": "Open-chain knee extension loads the ACL more than weight-bearing exercise, with ACL strain peaking near 10 to 30 degrees of knee flexion, and a more proximal pad position reduces that load. Clients with ACL reconstruction or patellofemoral pain should use a partial range and lighter load.",
+      "evidence": "Escamilla et al. 2012 reviewed knee biomechanics: ACL loading is greater in non-weight-bearing than weight-bearing exercise and peaks between 10 and 30 degrees of knee flexion; a more proximal pad position reduces ACL load during seated knee extension.",
+      "confidence": "high",
+      "citation": {
+        "title": "ACL Strain and Tensile Forces for Weight Bearing and Non-Weight-Bearing Exercises After ACL Reconstruction: A Guide to Exercise Selection",
+        "authors": "Escamilla RF, Macleod TD, Wilk KE, et al.",
+        "year": 2012,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "narrative-review",
+        "doi_or_url": "https://doi.org/10.2519/jospt.2012.3768",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Why the leg and hip machines matter",
+      "claim": "Strength training improves running economy in trained runners, which is the main reason lower-body machines are worth a runner's time. The effect comes from leg, hip and posterior-chain work, not from upper-body machines.",
+      "evidence": "Balsalobre-Fernandez et al. 2016 meta-analysis of controlled trials in highly trained runners found a large beneficial effect on running economy (pooled SMD -1.42, 95% CI -2.23 to -0.60); Blagrove et al. 2018 systematic review found 2 to 8% improvements across studies.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on Running Economy in Highly Trained Runners: A Systematic Review With Meta-Analysis of Controlled Trials",
+        "authors": "Balsalobre-Fernandez C, Santos-Concejero J, Grivas GV",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000001316",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Highest-value machines for runners",
+      "claim": "The highest-value machines and cable stations for runners are the leg, hip and posterior-chain ones: the leg press or squat machine, the leg curl and leg extension, the hip thrust or glute machine, the hip abduction and adduction machines, and the seated and standing calf machines. Upper-body machines such as the lat pulldown, row, chest press and shoulder machines help posture and balance but are secondary for running performance.",
+      "evidence": "Blagrove et al. 2018 systematic review of strength training for middle- and long-distance runners found lower-body strength work drives running-economy and performance gains; upper-body work is not a documented driver of running economy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hack squat versus back squat",
+      "claim": "The hack squat is a guided machine squat that lets a lifter handle a heavy load with the back supported, but at the same relative load the free back squat demands more of the trunk stabilisers. The hack squat trains the legs while asking less of the trunk and lower-back musculature, which is the trade a machine squat makes.",
+      "evidence": "Clark et al. 2019 compared the back squat and hack squat at matched relative loads (65 to 95% of system mass) in trained men: the back squat produced significantly greater erector spinae and external oblique activation, for example lower lumbar erector spinae about 191% versus 110% normalised RMS at 95% load (p<0.001), so the back squat loads the trunk and the hack squat spares it.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Trunk Muscle Activation in the Back and Hack Squat at the Same Relative Loads",
+        "authors": "Clark DR, Lambert MI, Hunter AM",
+        "year": 2019,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/28704312/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Reverse hyperextension",
+      "claim": "The reverse hyperextension loads the posterior chain harder than a standard back extension: in a direct EMG comparison it produced higher erector spinae, gluteus maximus and biceps femoris activity than the hyperextension. It is a legitimate lower-back and posterior-chain exercise when done under control and without swinging.",
+      "evidence": "Cuthbert et al. 2021 recorded EMG in ten trained men during the hyperextension and reverse hyperextension: peak activation was significantly greater in the reverse version by 34.1% to 70.7% across the erector spinae, gluteus maximus and biceps femoris (p<=0.024).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Electromyographical Differences Between the Hyperextension and Reverse-Hyperextension",
+        "authors": "Cuthbert M, Ripley NJ, Suchomel TJ, Alejo R, McMahon JJ, Comfort P",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000004049",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Standing versus seated calf raise",
+      "claim": "Training the calf with the knee straight (standing calf raise) grows the gastrocnemius; training with the knee bent (seated calf raise) does not grow the gastrocnemius but does grow the soleus. A calf plan that uses both positions trains the whole triceps surae rather than the soleus alone.",
+      "evidence": "Kinoshita et al. 2023 trained one leg standing and the other seated for 12 weeks in 14 untrained adults: standing added lateral gastrocnemius (12.4% versus 1.7%), medial gastrocnemius (9.2% versus 0.6%) and whole triceps surae (5.6% versus 2.1%) over seated (all p<=0.011), while soleus growth was similar in both positions (2.1% versus 2.9%, p=0.410). Hebert-Losier et al. 2012 reported the same direction in healthy adults: bending the knee reduced gastrocnemius activity during heel raises while the soleus stayed active.",
+      "confidence": "high",
+      "citation": {
+        "title": "Triceps surae muscle hypertrophy is greater after standing versus seated calf-raise training",
+        "authors": "Kinoshita M, Maeo S, Kobayashi Y, Eihara Y, Ono M, Sato M, Sugiyama T, Kanehisa H, Isaka T",
+        "year": 2023,
+        "venue": "Frontiers in Physiology",
+        "type": "trial",
+        "doi_or_url": "https://doi.org/10.3389/fphys.2023.1272106",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Chest press machine versus bench press",
+      "claim": "A seated chest press machine loads the pectoralis major about as well as a barbell bench press, and a neutral-grip machine press can produce slightly higher clavicular pectoralis activity. The machine is a reasonable way to keep the pushing muscles trained without a spotter.",
+      "evidence": "Coratella et al. 2020 compared free-weight bench press variations with a chest press machine in competitive bodybuilders and reported similar sternocostal pectoralis and anterior deltoid excitation, with triceps and lateral deltoid lower on the machine. Muyor et al. 2023 found the seated chest press with a neutral grip produced significantly greater clavicular pectoralis activity than a barbell bench press in 20 physically active adults.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Specific prime movers' excitation during free-weight bench press variations and chest press machine in competitive bodybuilders",
+        "authors": "Coratella G, Tornatore G, Longo S, Esposito F, Ce E",
+        "year": 2020,
+        "venue": "European Journal of Sport Science",
+        "type": "observational",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/31397215/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Rear delt and lateral raise machine",
+      "claim": "Lateral and rear-delt raises train the middle and posterior deltoid, which the pressing exercises leave relatively quiet. A lateral raise produced the highest posterior deltoid activation of the shoulder exercises tested, so a rear-delt or lateral raise machine is a fair way to keep the shoulder balanced.",
+      "evidence": "Campos et al. 2020 compared the bench press, dumbbell fly, shoulder press and lateral raise in 13 resistance-trained men: the lateral raise produced the highest posterior deltoid activity (24% MVIC) and among the highest medial deltoid activity (30.3% MVIC), while the bench press and dumbbell fly produced low posterior deltoid activity (3.5% and 2.5% MVIC).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Different Shoulder Exercises Affect the Activation of Deltoid Portions in Resistance-Trained Individuals",
+        "authors": "Campos YAC, Vianna JM, Guimaraes MP, Oliveira JLD, Hernandez-Mosqueira C, da Silva SF, Marchetti PH",
+        "year": 2020,
+        "venue": "Journal of Human Kinetics",
+        "type": "observational",
+        "doi_or_url": "https://doi.org/10.2478/hukin-2020-0033",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip abductor strengthening and running mechanics",
+      "claim": "Hip abductor strengthening reliably raises hip abductor strength, but its effect on running mechanics is mixed. In healthy, well-trained runners a 10-week programme changed strength but not running biomechanics, while in runners with medial tibial stress syndrome adding hip abductor work improved pelvic drop and knee alignment. The case for the hip abduction machine is muscle function first, with mechanics benefits shown mainly in symptomatic runners.",
+      "evidence": "Landauer et al. 2026 randomised 48 healthy well-trained runners to 10 weeks of hip abductor and external rotator strengthening or control: strength rose 10.9% to 16.7% but frontal-plane running biomechanics did not change. Lashien et al. 2024 randomised 40 recreational runners with medial tibial stress syndrome: 8 weeks of functional hip abductor training added to usual physiotherapy reduced contralateral pelvic drop and dynamic knee valgus versus physiotherapy alone (p<0.05).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A 10-week randomized controlled hip-strengthening intervention in healthy, well-trained runners: longitudinal and cross-sectional analyses of frontal-plane running biomechanics across running speeds",
+        "authors": "Landauer S, Schwirtz A, Paternoster FK",
+        "year": 2026,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1186/s13102-026-02148-z",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Upper-body and trunk fatigue versus running economy",
+      "claim": "Upper-body and trunk fatigue make running less economical, so holding posture under fatigue is a real part of endurance. This is indirect support for the posture and arm-drive muscles that upper-body and cable work train, even though no trial shows upper-body machine training itself improves running economy.",
+      "evidence": "Drum et al. 2019, a three-armed randomised controlled crossover pilot trial in seven well-trained runners, found that both a trunk fatigue and an upper-body fatigue protocol worsened running economy compared with control at individual anaerobic-threshold pace.",
+      "confidence": "low",
+      "citation": {
+        "title": "Trunk and Upper Body Fatigue Adversely Affect Running Economy: A Three-Armed Randomized Controlled Crossover Pilot Trial",
+        "authors": "Drum SN, Rappelt L, Donath L",
+        "year": 2019,
+        "venue": "Sports (Basel)",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6722636/",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Lat pulldown",
+      "modality": "strength",
+      "equipment": "cable",
+      "muscles": [
+        "latissimus dorsi",
+        "biceps brachii",
+        "rhomboids",
+        "lower trapezius"
+      ],
+      "pattern": "pull",
+      "why": "Builds the back and shoulder muscles that hold posture and support arm swing, which help you stay tall late in a long run.",
+      "feel": "Tension under the armpits and between the shoulder blades, not mainly in the arms.",
+      "form": [
+        "Set the thigh pad snug so the hips stay down.",
+        "Start with the arms straight and shoulders reaching up, then pull the bar to the upper chest by driving the elbows down.",
+        "Return slowly until the arms are straight and the shoulder blades spread."
+      ],
+      "mistakes": [
+        "Leaning back and turning it into a row.",
+        "Pulling the bar behind the neck.",
+        "Shrugging the shoulders toward the ears."
+      ]
+    },
+    {
+      "name": "Seated cable row",
+      "modality": "strength",
+      "equipment": "cable",
+      "muscles": [
+        "latissimus dorsi",
+        "rhomboids",
+        "middle trapezius",
+        "posterior deltoid",
+        "biceps brachii"
+      ],
+      "pattern": "pull",
+      "why": "Trains the upper back and posture muscles that keep the shoulders from rounding on long runs.",
+      "feel": "Work between the shoulder blades and along the sides of the back.",
+      "form": [
+        "Sit tall with a slight knee bend and the chest up.",
+        "Pull the handle to the lower chest while squeezing the shoulder blades together.",
+        "Let the arms straighten and the shoulder blades spread on the return."
+      ],
+      "mistakes": [
+        "Rocking the torso back and forth.",
+        "Shrugging the shoulders.",
+        "Cutting the return short."
+      ]
+    },
+    {
+      "name": "Chest press / pec deck (cable fly)",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "pectoralis major",
+        "anterior deltoid",
+        "triceps brachii"
+      ],
+      "pattern": "push",
+      "why": "Keeps the pushing muscles and shoulders balanced against all the pulling work, which supports posture and a strong arm drive.",
+      "feel": "Effort across the chest and the front of the shoulders.",
+      "form": [
+        "Set the seat so the handles line up with the middle of the chest.",
+        "Press until the arms are straight without locking hard, or bring the handles together for the fly.",
+        "Return under control until the hands are level with the chest."
+      ],
+      "mistakes": [
+        "Seat too high or too low, which shifts the load to the shoulders or neck.",
+        "Letting the shoulders roll forward at the bottom.",
+        "Using heavy weight and turning the fly into a press."
+      ]
+    },
+    {
+      "name": "Hip abduction machine",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "gluteus medius",
+        "gluteus maximus",
+        "gluteus minimus"
+      ],
+      "pattern": "posterior-chain",
+      "why": "Loads the hip abductors that control the pelvis and knee, and targets the gluteus medius better than free weights.",
+      "feel": "Work on the outside of the hip and upper glute, not the front of the hip.",
+      "form": [
+        "Sit tall with the pads on the outside of the thighs.",
+        "Push the knees apart against the pads without leaning back.",
+        "Return slowly and keep tension on the way in."
+      ],
+      "mistakes": [
+        "Using momentum to snap the legs open.",
+        "Leaning the torso back to cheat the range.",
+        "Loading so heavy that the front of the hip takes over."
+      ]
+    },
+    {
+      "name": "Hip adduction machine",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "adductor magnus",
+        "adductor longus",
+        "adductor brevis",
+        "gracilis"
+      ],
+      "pattern": "posterior-chain",
+      "why": "Trains the inner-thigh adductors that running also loads and that help stabilise the leg, a direct way to build the strength behind groin-injury prevention.",
+      "feel": "Work on the inside of the thighs.",
+      "form": [
+        "Sit with the pads on the inside of the knees.",
+        "Squeeze the legs together under control.",
+        "Open slowly back to the start without letting the pads fly."
+      ],
+      "mistakes": [
+        "Bouncing at the end of the squeeze.",
+        "Using a range that pinches the front of the hip.",
+        "Loading too heavy and losing control of the return."
+      ]
+    },
+    {
+      "name": "Hip thrust / glute drive machine",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "gluteus maximus",
+        "biceps femoris",
+        "hamstrings"
+      ],
+      "pattern": "hinge",
+      "why": "The most direct way to load hip extension, which trains the gluteus maximus and hamstrings harder than a squat.",
+      "feel": "Work in the glutes and the back of the thighs, not the lower back.",
+      "form": [
+        "Set the pad across the hips and plant the feet so the shins are near vertical at the top.",
+        "Drive the hips up until the body is straight, squeezing the glutes.",
+        "Lower until the hips are just off the pad and repeat."
+      ],
+      "mistakes": [
+        "Arching the lower back at the top instead of finishing with the glutes.",
+        "Feet too far forward, which turns it into a hamstring move.",
+        "Pushing through the toes and losing the heels."
+      ]
+    },
+    {
+      "name": "Seated calf raise",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "soleus",
+        "gastrocnemius"
+      ],
+      "pattern": "posterior-chain",
+      "why": "Trains the soleus, a major force producer in running, by bending the knee and shifting work away from the gastrocnemius.",
+      "feel": "Deep work in the lower calf and near the Achilles.",
+      "form": [
+        "Place the balls of the feet on the platform with the knees bent about 90 degrees.",
+        "Lower the heels for a full stretch, then press up onto the toes.",
+        "Pause at the top and lower slowly."
+      ],
+      "mistakes": [
+        "Bouncing out of the bottom stretch.",
+        "Cutting the range short.",
+        "Letting the knees drift so the load moves to the quads."
+      ]
+    },
+    {
+      "name": "Standing calf raise",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "gastrocnemius",
+        "soleus"
+      ],
+      "pattern": "posterior-chain",
+      "why": "Trains both calf muscles with the knee straight, adding the gastrocnemius that the seated version leaves out; the two positions together cover the calf.",
+      "feel": "Work high in the calf and a stretch down near the heel.",
+      "form": [
+        "Stand with the balls of the feet on the platform and the knees almost straight.",
+        "Lower the heels for a full stretch, then press up onto the toes.",
+        "Pause at the top and lower slowly."
+      ],
+      "mistakes": [
+        "Bending the knees and turning it into a squat.",
+        "Using a small range with no stretch.",
+        "Bouncing with momentum."
+      ]
+    },
+    {
+      "name": "Smith machine squat",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "quadriceps",
+        "gluteus maximus",
+        "adductor magnus"
+      ],
+      "pattern": "squat",
+      "why": "A guided squat that loads the legs with less balance demand than a free squat, useful when a barbell squat is not comfortable.",
+      "feel": "Work in the front of the thighs and the glutes.",
+      "form": [
+        "Set the bar on the upper back and the feet slightly in front of the bar.",
+        "Sit down and back until the thighs are near parallel, keeping the chest up.",
+        "Drive through the whole foot to stand."
+      ],
+      "mistakes": [
+        "Feet too far under the bar, which pushes the knees forward.",
+        "Letting the heels lift.",
+        "Rounding the lower back at the bottom."
+      ]
+    },
+    {
+      "name": "Hack squat",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "quadriceps",
+        "gluteus maximus"
+      ],
+      "pattern": "squat",
+      "why": "A machine squat that lets you load the quadriceps heavily with the back supported, good for leg strength without spinal loading.",
+      "feel": "Heavy work in the front of the thighs.",
+      "form": [
+        "Set the shoulders under the pads and the feet mid-platform.",
+        "Lower until the knees are bent to a comfortable depth.",
+        "Press through the whole foot to stand without locking hard."
+      ],
+      "mistakes": [
+        "Going deeper than the hips can control, which rounds the lower back.",
+        "Letting the knees cave in.",
+        "Bouncing out of the bottom."
+      ]
+    },
+    {
+      "name": "Pendulum squat",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "quadriceps",
+        "gluteus maximus"
+      ],
+      "pattern": "squat",
+      "why": "A guided squat on a curved arc that keeps the torso upright and loads the quadriceps deeply with a stable path.",
+      "feel": "Deep work in the front of the thighs with the chest staying tall.",
+      "form": [
+        "Set the shoulders under the pads and the feet flat on the platform.",
+        "Lower on the arc until you reach a controlled depth.",
+        "Drive up through the whole foot to stand."
+      ],
+      "mistakes": [
+        "Loading too heavy before the depth is controlled.",
+        "Letting the hips tuck under at the bottom.",
+        "Pushing only through the toes."
+      ]
+    },
+    {
+      "name": "Leg press (single-leg variation)",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "quadriceps",
+        "gluteus maximus",
+        "adductor magnus",
+        "hamstrings"
+      ],
+      "pattern": "squat",
+      "why": "Loads the whole lower body with no spinal load, and a single-leg version adds balance and side-to-side strength that running depends on.",
+      "feel": "Work through the front of the thigh and the glute.",
+      "form": [
+        "Set the feet flat on the platform about hip width, or use one foot for the single-leg version.",
+        "Lower until the knees are bent to a comfortable depth without the hips rolling under.",
+        "Press through the whole foot without locking the knees hard."
+      ],
+      "mistakes": [
+        "Going so deep the tailbone tucks under.",
+        "Letting the heels lift.",
+        "For the single-leg version, letting the knee cave inward."
+      ]
+    },
+    {
+      "name": "Cable pull-through",
+      "modality": "strength",
+      "equipment": "cable",
+      "muscles": [
+        "gluteus maximus",
+        "hamstrings",
+        "erector spinae"
+      ],
+      "pattern": "hinge",
+      "why": "Teaches the hip hinge and loads the glutes and hamstrings with a light spinal load, a good cable alternative to the hip thrust.",
+      "feel": "Stretch in the back of the thighs as you hinge and a squeeze in the glutes at the top.",
+      "form": [
+        "Face away from a low pulley with the rope between the legs.",
+        "Push the hips back and let the rope pull the hands between the legs.",
+        "Squeeze the glutes to stand tall without leaning back."
+      ],
+      "mistakes": [
+        "Turning it into a squat by bending the knees too much.",
+        "Rounding the lower back at the bottom.",
+        "Leaning back and arching at the top."
+      ]
+    },
+    {
+      "name": "Cable woodchop / Pallof press",
+      "modality": "strength",
+      "equipment": "cable",
+      "muscles": [
+        "obliques",
+        "rectus abdominis",
+        "transverse abdominis",
+        "quadratus lumborum"
+      ],
+      "pattern": "core",
+      "why": "Trains the trunk to resist rotation and side bending, which supports the stable pelvis that running needs.",
+      "feel": "Work across the waist and deep in the trunk as you resist the cable pulling you around.",
+      "form": [
+        "Set the pulley at chest height and stand side-on to it.",
+        "For the Pallof press, hold the handle at the chest and press straight out without letting the torso rotate.",
+        "For the woodchop, pull the handle down and across under control, then return slowly."
+      ],
+      "mistakes": [
+        "Letting the torso twist instead of resisting it.",
+        "Using the arms only with no trunk tension.",
+        "Rushing the return."
+      ]
+    },
+    {
+      "name": "Assisted pull-up / dip",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "latissimus dorsi",
+        "biceps brachii",
+        "pectoralis major",
+        "triceps brachii"
+      ],
+      "pattern": "pull",
+      "why": "A scalable way to train pulling and pushing strength for posture and upper-body balance, useful for general fitness more than running speed.",
+      "feel": "Work in the back and arms, with the assist taking part of your body weight.",
+      "form": [
+        "Set the assist so you can complete the reps with good form.",
+        "Pull until the chin clears the bar, or lower until the elbows are bent about 90 degrees for dips.",
+        "Return under control to a full stretch."
+      ],
+      "mistakes": [
+        "Choosing too little assist and using momentum.",
+        "Cutting the range short.",
+        "Shrugging the shoulders at the bottom."
+      ]
+    },
+    {
+      "name": "Back extension / reverse hyper",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "erector spinae",
+        "gluteus maximus",
+        "hamstrings"
+      ],
+      "pattern": "posterior-chain",
+      "why": "Trains the lower back and posterior chain; a machine with pelvic restraint isolates the lumbar extensors better than a bench, and the reverse hyper loads the glutes and hamstrings with a light spinal load.",
+      "feel": "Work along the lower back and into the glutes.",
+      "form": [
+        "Set the pad so the pelvis is held and the hips can move freely.",
+        "Extend smoothly against the pad and stop before the back hyperextends.",
+        "Lower under control without collapsing."
+      ],
+      "mistakes": [
+        "Swinging with the hips and glutes when the goal is the lower back.",
+        "Bouncing into end-range hyperextension.",
+        "Setting the pad so the pelvis lifts."
+      ]
+    },
+    {
+      "name": "Seated leg curl",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "hamstrings",
+        "gastrocnemius"
+      ],
+      "pattern": "posterior-chain",
+      "why": "Isolates the hamstrings through knee flexion; emphasise the lowering phase to train the eccentric quality that protects against hamstring strains.",
+      "feel": "Work in the back of the thigh, not the calf.",
+      "form": [
+        "Line the knee up with the machine pivot and set the pad just above the ankles.",
+        "Pull the pad toward the thighs and keep the hips down.",
+        "Lower slowly to near-full knee extension."
+      ],
+      "mistakes": [
+        "Letting the hips lift off the seat.",
+        "Swinging the pad with momentum.",
+        "Placing the pad on the calf instead of above the ankle."
+      ]
+    },
+    {
+      "name": "Leg extension",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "quadriceps",
+        "rectus femoris"
+      ],
+      "pattern": "knee-extension",
+      "why": "The most direct way to train the quadriceps and the main way to load the rectus femoris, which the leg press barely grows; use a partial range if you have knee pain.",
+      "feel": "Work across the front of the thigh.",
+      "form": [
+        "Set the seat so the knee is near the pivot and the pad sits just above the ankle.",
+        "Extend the knees to near straight without snapping.",
+        "Lower under control."
+      ],
+      "mistakes": [
+        "Swinging the weight up with momentum.",
+        "Locking hard and snapping the knees.",
+        "Going too heavy with a painful knee."
+      ]
+    },
+    {
+      "name": "Rear delt / lateral raise machine",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "posterior deltoid",
+        "lateral deltoid",
+        "trapezius"
+      ],
+      "pattern": "pull",
+      "why": "Trains the shoulder muscles that hold the arms and posture; a low-priority machine for running but useful for balanced shoulders and healthy posture.",
+      "feel": "Work on the back and side of the shoulder.",
+      "form": [
+        "Set the seat so the handles sit at shoulder height.",
+        "Raise the arms out to the sides, or back for the rear delt, to shoulder level.",
+        "Lower under control."
+      ],
+      "mistakes": [
+        "Shrugging the shoulders to lift the weight.",
+        "Using momentum and swinging.",
+        "Raising above shoulder height."
+      ]
+    },
+    {
+      "name": "Farmer / trap-bar carry",
+      "modality": "strength",
+      "equipment": "machine",
+      "muscles": [
+        "forearm flexors",
+        "upper trapezius",
+        "obliques",
+        "quadratus lumborum",
+        "gluteus maximus"
+      ],
+      "pattern": "core",
+      "why": "Loads grip, trunk and lower body while you walk, training the anti-rotation and posture muscles that support a stable stride.",
+      "feel": "Grip and forearms working hard, with the sides of the trunk braced to stay upright.",
+      "form": [
+        "Pick up a heavy weight in each hand, or use a trap bar, with a flat back.",
+        "Stand tall with the shoulders back and the ribs down.",
+        "Walk short, controlled steps for the set distance without letting the weights swing."
+      ],
+      "mistakes": [
+        "Letting the shoulders round forward.",
+        "Leaning to one side or letting the torso sway.",
+        "Taking long strides that make the weights swing."
+      ]
+    }
+  ],
+  "summary_tier_a": "Machines and cables are a legitimate way for runners to train strength: at matched effort they build muscle and strength about as well as free weights, and gains stay specific to how you test them. The highest-value equipment for runners is the leg, hip and posterior-chain kit: the leg press and squat machines, the leg curl and leg extension, the hip thrust or glute machine, the hip abduction and adduction machines, and the seated and standing calf machines. Direct comparisons show hip-extension work loads the glutes and hamstrings harder than a squat, hip abduction machines target the gluteus medius well, and calf and adductor work supports running economy and injury resistance. Upper-body machines such as the lat pulldown, row, chest press and shoulder machines help posture and balance but are secondary for running performance.",
+  "unverified": [
+    "Pendulum squat: no dedicated peer-reviewed EMG or training trial was found for the pendulum squat, so its ranking rests on machine biomechanics and coaching. The closest measured evidence is for other guided squat machines: the hack squat demands less trunk activation than a free back squat at the same relative load (Clark 2019), and no study measures pendulum-squat transfer to running.",
+    "No peer-reviewed study directly measures running-performance transfer from the hip abduction machine, the hip adduction machine, the rear delt or lateral raise machines, the assisted pull-up or dip, or the chest press, and this pass found none. The closest evidence is indirect: machine chest press and lateral raise studies show the muscles are trained (Coratella 2020; Muyor 2023; Campos 2020), and hip abductor strengthening trials change running biomechanics in symptomatic runners but not in healthy well-trained runners (Lashien 2024; Landauer 2026). The assisted pull-up and dip have no running-outcome study at all, so they are recommended for general upper-body fitness, not for running performance.",
+    "No trial shows that upper-body machine training (lat pulldown, row, chest press, shoulder machines) improves running economy or performance; these picks rest on posture and balance reasoning. The closest evidence is indirect: upper-body and trunk fatigue worsen running economy in well-trained runners (Drum 2019), which supports training the posture and arm-drive muscles without a direct running-performance trial.",
+    "The 'common mistakes' lists are coaching consensus and the inverse of the correct technique; no study measured how often each mistake occurs or its injury risk.",
+    "No dedicated trial in healthy runners compares the seated and standing calf raise. The closest evidence is in healthy adults generally: a 12-week within-person trial found the standing calf raise grew the gastrocnemius while the seated version did not, with the soleus growing in both positions (Kinoshita 2023), and healthy-adult heel-raise EMG shows bending the knee reduces gastrocnemius activity without silencing the soleus (Hebert-Losier 2012). The runner-specific emphasis rests on that plus the soleus role in running propulsion."
+  ],
+  "notes": "Research-only synthesis; no app code or architecture decisions. Retrieval: web search plus Crossref REST for DOI and metadata verification; DOIs checked on 2026-11-23. The eight core machines already covered in wave-2 (4a, 4b) are not repeated here; this file adds the wider machine and cable catalogue (hip abduction and adduction, hip thrust or glute drive, seated and standing calf, Smith, hack and pendulum squat, leg press variations, cable pull-through, cable woodchop and Pallof press, assisted pull-up and dip, back extension and reverse hyper, seated leg curl, leg extension, rear delt and lateral raise, farmer and trap-bar carry) and the evidence on machine versus free-weight transfer, single versus multi-joint work, and why the leg, hip and posterior-chain machines are the highest-value picks. Cross-reference 3a-strength-economy-injury.json for the running-economy and injury-prevention base, 3c-bodyweight-and-machines.json for the bodyweight and free-weight framing, and 4a and 4b for the Planet Fitness set. Acute EMG shows which muscles are active and how technique shifts emphasis; it does not prove long-term hypertrophy or injury outcomes, so machine-specific recommendations are rated moderate unless backed by a meta-analysis, a randomised trial or a cohort study. Note that a 2026 systematic review of the Copenhagen adduction exercise for sport performance was found to be retracted (Scandinavian Journal of Medicine & Science in Sports, doi 10.1111/sms.70287) and is not cited; the adductor claims here use the Haroy 2019 randomised trial and the Ishoi 2021 strength study instead. Verification pass 2026-11-23: 8 substantiated, 5 remained unverified."
+}

@@ -1,0 +1,786 @@
+{
+  "workstream": "running",
+  "subtopic": "Running workout variations and session types",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Norwegian 4x4",
+      "claim": "Four, four-minute intervals at 90 to 95 percent of max heart rate with about three minutes of easy recovery between them raise VO2max more than steady moderate running of the same total effort. This is the best supported single session shape for lifting aerobic ceiling.",
+      "evidence": "An 8-week randomized trial in moderately active adults found 4 x 4 min at 90 to 95 percent HRmax gave larger VO2max gains than moderate continuous training or work at lactate threshold. The protocol has since been repeated across healthy adults, older adults and cardiac patients with the same pattern.",
+      "confidence": "high",
+      "citation": {
+        "title": "Aerobic high-intensity intervals improve VO2max more than moderate training",
+        "authors": "Helgerud J, Høydal K, Wang E, Karlsen T, Berg P, Bjerkaas M, Simonsen T, Helgesen C, Hjorth N, Bach R, Hoff J",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/mss.0b013e3180304570",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "HIIT versus continuous",
+      "claim": "High-intensity interval training and continuous endurance training both improve VO2max a lot in healthy young to middle-aged adults. Interval work has a small edge in the pooled data, so it is an efficient way to raise the ceiling when time is short.",
+      "evidence": "A systematic review and meta-analysis of controlled trials pooled interval and continuous endurance training and found both produced large VO2max gains, with interval training showing a modestly larger effect. The authors note the interval advantage is small and both work.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effectiveness of High-Intensity Interval Training (HIT) and Continuous Endurance Training for VO2max Improvements: A Systematic Review and Meta-Analysis of Controlled Trials",
+        "authors": "Milanović Z, Sporiš G, Weston M",
+        "year": 2015,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-015-0365-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Short intervals versus long intervals",
+      "claim": "Short, repeated efforts with short recoveries (for example 30 seconds hard, 15 seconds easy) held near maximal oxygen uptake longer than longer efforts and produced larger VO2max gains in trained cyclists over 10 weeks. This supports short-rep VO2 formats but the direct evidence is from cycling.",
+      "evidence": "An effort-matched randomized study compared 10 weeks of short intervals (30 s work, 15 s recovery) with longer intervals in cyclists. VO2max rose 8.7 percent with short intervals versus 2.6 percent with long intervals, with no difference in total training load.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Short intervals induce superior training adaptations compared with long intervals in cyclists: an effort-matched approach",
+        "authors": "Rønnestad BR, Hansen J, Vegge G, Tønnessen E, Slettaløkken G",
+        "year": 2015,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/sms.12165",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Interval formats and oxygen uptake",
+      "claim": "Among interval formats, the total time the athlete spends near maximal oxygen uptake is the practical driver of adaptation. Work-to-rest ratio and repetition length matter mostly through how long they keep oxygen uptake high, which is why both 4x4 and 30/15 can work and neither is universally best.",
+      "evidence": "A 2025 network meta-analysis of interval methods ranked how much time athletes spent at high oxygen uptake across protocols, and the Rønnestad work ties time above 90 percent VO2max to the VO2max response. Shorter work with shorter rest can accumulate more time near the ceiling than a few long efforts.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison of different interval training methods on athletes' oxygen uptake: a systematic review with pairwise and network meta-analysis",
+        "authors": "Yang Q, Wang J, Guan D",
+        "year": 2025,
+        "venue": "BMC Sports Science, Medicine & Rehabilitation",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s13102-025-01191-6",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Intensity distribution",
+      "claim": "A polarized week that keeps about 80 percent of running easy and 20 percent hard improved key endurance markers more than threshold-heavy, high-intensity-heavy or high-volume-only blocks in well-trained athletes. The pattern is easy days easy, hard days hard.",
+      "evidence": "A controlled 9-week comparison of polarized, threshold, high-intensity and high-volume training in well-trained endurance athletes found the polarized distribution produced the greatest improvements in most measured endurance variables, including VO2peak and time to exhaustion.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Polarized training has greater impact on key endurance variables than threshold, high intensity, or high volume training",
+        "authors": "Stöggl T, Sperlich B",
+        "year": 2014,
+        "venue": "Frontiers in Physiology",
+        "type": "rct",
+        "doi_or_url": "10.3389/fphys.2014.00033",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Polarized training evidence quality",
+      "claim": "Polarized training looks effective for raising VO2max over short blocks, but the evidence is mixed once athlete level and study length vary, so it should be treated as a strong default rather than a proven universal rule.",
+      "evidence": "A 2024 systematic review of polarized intensity distribution concluded the approach appears effective for VO2max, VO2peak and work economy over short-term periods, while noting heterogeneity across studies and athlete levels that limits firm conclusions.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effect of Polarized Training Intensity Distribution on Maximal Oxygen Uptake and Work Economy Among Endurance Athletes: A Systematic Review",
+        "authors": "Nøst HL, Aune MA, van den Tillaar R",
+        "year": 2024,
+        "venue": "Sports (Basel)",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/sports12120326",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Threshold intervals",
+      "claim": "Threshold work split into intervals (cruise intervals) lets a runner accumulate substantial time at or near lactate threshold with less cumulative fatigue than one long continuous effort, which is why elite distance runners repeat threshold reps rather than one long tempo.",
+      "evidence": "A narrative review of lactate-guided threshold interval training within a high-volume, low-intensity model describes splitting threshold work into controlled reps as the common pattern in world-class middle and long distance runners, and links it to mitochondrial signaling through repeated manageable exposures.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Does Lactate-Guided Threshold Interval Training within a High-Volume Low-Intensity Approach Represent the 'Next Step' in the Evolution of Distance Running Training?",
+        "authors": "Casado A, Foster C, Bakken M, Tjelta LI",
+        "year": 2023,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "narrative-review",
+        "doi_or_url": "10.3390/ijerph20053782",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Double threshold days",
+      "claim": "Double threshold days put two controlled threshold sessions in one day, usually six to eight hours apart, each held below the harder threshold by lactate feedback, so total threshold volume rises without any single session becoming brutal.",
+      "evidence": "A Norwegian best-practice review describes double threshold sessions twice a week with blood lactate held around 2 to 4.5 mmol/L, used to accumulate threshold volume within a high-volume, low-intensity program. The practice comes from elite training and is not validated by randomized trials.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Training Session Models in Endurance Sports: A Norwegian Perspective on Best Practice Recommendations",
+        "authors": "Tønnessen E, Sandbakk Ø, Sandbakk SB, Seiler S, Haugen T",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-024-02067-4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yasso 800s",
+      "claim": "The Yasso 800 workout is a useful hard 800 m rep session, but its headline claim, that 10 by 800 m times in minutes and seconds equal marathon hours and minutes, was a personal observation and is not supported as an accurate predictor.",
+      "evidence": "Bart Yasso's 1994 Runner's World observation that 10 x 800 m times track marathon time was never validated in controlled research. Coaches who use the workout describe it as a ballpark within a wide range at best, and note the rep time is set from a goal marathon time rather than predicting it.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Yasso 800s: The Workout, The Calculator + The Prediction Truth",
+        "authors": "Marathon Handbook",
+        "year": 2024,
+        "venue": "Marathon Handbook (coaching article)",
+        "type": "coaching",
+        "doi_or_url": "https://marathonhandbook.com/yasso-800s/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Marathon training and long runs",
+      "claim": "For marathon runners, higher weekly training volume and a longer longest endurance run relate to faster finish times and less pace decline in the race. The long run is the session most tied to marathon outcome.",
+      "evidence": "A cohort study of nearly 1000 marathon and half marathon runners found high weekly volume and a long endurance run were associated with faster finish times and less slowdown in both event groups.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Training for a (half-)marathon: Training volume and longest endurance run related to performance and running injuries",
+        "authors": "Fokkema T, van Damme AADN, Fornerod MWJ, de Vos RJ, Bierma-Zeinstra SMA, van Middelkoop M",
+        "year": 2020,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "cohort",
+        "doi_or_url": "10.1111/sms.13725",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Marathon pacing practice",
+      "claim": "Most recreational marathoners slow in the second half, so practicing goal pace inside long runs is a sensible rehearsal even though the direct performance evidence for pace runs is thin compared with the volume evidence.",
+      "evidence": "Reviews of marathon training and pacing note that race pace is the specific demand, and that recreational runners commonly show positive (slowing) splits. The Fokkema cohort links the long run to reduced pace decline, which is the outcome pace runs aim to train.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Recommendations for marathon runners: on the application of recommender systems and machine learning to support recreational marathon runners",
+        "authors": "Smyth B, Lawlor A, Berndsen J, Feely C",
+        "year": 2021,
+        "venue": "User Modeling and User-Adapted Interaction",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s11257-021-09299-3",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hill interval training",
+      "claim": "Uphill interval training improves 5 km race time and running economy in already trained runners. The effect is small but real and comes mostly through running economy rather than a bigger VO2max.",
+      "evidence": "A randomized controlled trial in trained runners found 6 weeks of uphill interval training improved 5 km time trial performance by about 2 percent, with the hardest uphill intervals improving running economy by about 2.4 percent.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of different uphill interval-training programs on running economy and performance",
+        "authors": "Barnes KR, Hopkins WG, McGuigan MR, Kilding AE",
+        "year": 2013,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.8.6.639",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hill gradient",
+      "claim": "Steeper uphill training (around 7 to 8 percent) improved sprint speed and 800 m time in young middle-distance runners more than shallow 2.5 percent gradients. Steep enough to change mechanics is where the strength and speed transfer comes from.",
+      "evidence": "A randomized controlled trial compared 8 weeks of uphill training at 2.5, 5.1 and 7.6 percent gradients in young middle-distance runners. The 7.6 percent group improved 30 m sprint speed and 800 m time versus control, and the 5.1 percent group improved only 800 m time.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effects of uphill training on the maximal velocity and performance of middle-distance runners: a randomized controlled trial",
+        "authors": "Alemu Y, Tadesse T, Birhanu Z",
+        "year": 2025,
+        "venue": "Scientific Reports",
+        "type": "rct",
+        "doi_or_url": "10.1038/s41598-025-08275-w",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Uphill training overall effect",
+      "claim": "A pooled analysis of uphill running programs found no clear significant effect on knee strength, jumping or aerobic capacity, even though single trials and coaching reports claim strength and economy gains. Hills are best treated as a specific, economy-focused tool rather than a guaranteed strength or VO2max shortcut.",
+      "evidence": "A 2026 systematic review and meta-analysis of uphill running in athletes and recreational adults reported no significant pooled effects on isokinetic knee strength (SMD 0.09, 95 percent CI -0.41 to 0.59, p = .73), jumping performance or aerobic capacity. The authors note the included trials were few and of limited quality, so single-study claims of strength or economy gains are not confirmed at the pooled level.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of uphill running on muscle strength, jumping performance, running time, and aerobic capacity outcomes in athletes and recreational adults: A systematic review and meta-analysis",
+        "authors": "Tham SK, Shager K, Murugiah M, Nguyen M, Wibawa JC, Ahmad MA",
+        "year": 2026,
+        "venue": "Medicine (Baltimore)",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1097/MD.0000000000049977",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Consecutive-day running fatigue",
+      "claim": "Running prolonged efforts on several consecutive days causes more prolonged impairment of muscle contractile function than one single-stage effort of similar total distance and elevation. Consecutive-day loading is a real physiological stress, not just cumulative distance.",
+      "evidence": "A study compared 17 runners who raced 169 km in one stage with 14 who ran about 40 km per day over four days on the same course. Peripheral fatigue of the knee extensors and plantar flexors took longer to recover in the multistage group, while the single-stage group showed greater central fatigue immediately after the race.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Fatigue and Recovery after Single-Stage versus Multistage Ultramarathon Running",
+        "authors": "Besson T, Rossi J, Le Roux Mallouf T, Marechal M, Doutreleau S, Verges S, Millet GY",
+        "year": 2020,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "cohort",
+        "doi_or_url": "10.1249/MSS.0000000000002303",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Race-pace training and durability",
+      "claim": "Regular prolonged sessions that include bouts at goal race pace or above, and a progressive rise in intensity as fatigue develops, are recommended to build fatigue resistance and durability. Specificity at race pace matters more for late-race performance than fitness measured fresh.",
+      "evidence": "A 2025 review of physiological resilience proposes that including prolonged sessions with high-intensity bouts at race pace or above, or a progressive increase in intensity in the face of fatigue, is an effective way to build resilience, alongside high training volume and strength and plyometric work. The review notes the direct data are still scant.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Physiological Resilience: What Is It and How Might It Be Trained?",
+        "authors": "Jones AM, Kirby BS",
+        "year": 2025,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/sms.70032",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Downhill running damage",
+      "claim": "Downhill running causes measurable muscle damage, with delayed soreness, raised creatine kinase and reduced force for days afterward. It should be introduced in small doses and not stacked next to a key race or hard flat session.",
+      "evidence": "A classic controlled study showed downhill running produced soreness across the glutes, quads and lower leg with large creatine kinase rises after a first exposure. A 2024 trial confirmed downhill running impaired maximal voluntary force and muscle damage markers.",
+      "confidence": "high",
+      "citation": {
+        "title": "Delayed onset muscle soreness following repeated bouts of downhill running",
+        "authors": "Byrnes WC, Clarkson PM, White JS, Hsieh SS, Frykman PN, Maughan RJ",
+        "year": 1985,
+        "venue": "Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "10.1152/jappl.1985.59.3.710",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Downhill and running economy",
+      "claim": "After a hard downhill bout, running economy worsens for days, which can drag down the quality of the next sessions. Schedule downhill reps well clear of important flat workouts or races.",
+      "evidence": "A narrative review of downhill running effects and adaptation describes reduced running economy, lower contractile function and raised damage markers persisting for days after an unaccustomed downhill bout.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Downhill Running: What Are The Effects and How Can We Adapt? A Narrative Review",
+        "authors": "Bontemps B, Vercruyssen F, Gruet M, Louis J",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-020-01355-z",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Repeated bout effect",
+      "claim": "The first downhill session is the most damaging. After that exposure the same session causes less soreness and smaller markers of damage, so a short, easy introduction protects the legs for later downhill work.",
+      "evidence": "Repeated downhill bouts attenuate the rise in creatine kinase, soreness and strength loss, a well documented protective effect. A 2024 study in trained female runners confirmed the second bout produced less perceived soreness than the first.",
+      "confidence": "high",
+      "citation": {
+        "title": "Repeated Bout Effect of Downhill Running on Physiological Markers of Effort and Post Exercise Perception of Soreness in Trained Female Distance Runners",
+        "authors": "Tallis J, McMorrow C, Shelley SP, Eustace SJ",
+        "year": 2024,
+        "venue": "Sports (Basel)",
+        "type": "rct",
+        "doi_or_url": "10.3390/sports12060169",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Run-walk method",
+      "claim": "Planned run-walk intervals let non-elite runners reach similar marathon times as continuous running while reporting less muscle pain and fatigue. The benefit is comfort and lower cumulative load, not a faster clock.",
+      "evidence": "A study of marathon runners compared a run-walk strategy with continuous running. Finish times were statistically similar (4:14 versus 4:08) while the run-walk group reported significantly less muscle discomfort. The sample was small.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Does a run/walk strategy decrease cardiac stress during a marathon in non-elite runners?",
+        "authors": "Hottenrott K, Ludyga S, Schulze S, Gronwald T, Jäger FS",
+        "year": 2016,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "rct",
+        "doi_or_url": "10.1016/j.jsams.2014.11.010",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Progression rules",
+      "claim": "The 10 percent weekly mileage rule is a rough guide, not a validated law. The newer cohort evidence points more to single-session distance spikes than to the weekly percentage as the injury trigger.",
+      "evidence": "A 5200-person cohort study classified sessions by how far they exceeded the runner's recent longest effort. Spikes above 10 percent in a single session raised the rate of overuse injury, and risk rose sharply when single-run distance more than doubled. Weekly accumulated distance mattered less.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "How much running is too much? Identifying high-risk running sessions in a 5200-person cohort study",
+        "authors": "Frandsen JS, Hulme A, Parner ET, Møller M, Lindman I, Abrahamson J, Simonsen NS, Jacobsen JS, Ramskov D, Skejø S, Malisoux L, Bertelsen ML, Nielsen RO",
+        "year": 2025,
+        "venue": "British Journal of Sports Medicine",
+        "type": "cohort",
+        "doi_or_url": "10.1136/bjsports-2024-109380",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Taper",
+      "claim": "Cut weekly volume by roughly 41 to 60 percent over a taper of up to 21 days, but keep intensity and frequency the same. Cutting intensity erases most of the benefit, and the best window is often 8 to 14 days.",
+      "evidence": "The Bosquet meta-analysis of tapering studies found the best race performance came from a two-week taper reducing volume by 41 to 60 percent with intensity and frequency unchanged. A 2023 systematic review and meta-analysis reached the same conclusion for tapers of 21 days or less.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of tapering on performance: a meta-analysis",
+        "authors": "Bosquet L, Montpetit J, Arvisais D, Mujika I",
+        "year": 2007,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1249/mss.0b013e31806010e0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hard session frequency and spacing",
+      "claim": "Two to three hard sessions per week is a practical ceiling for the intensity work that matters, with about 48 hours between them so the quality stays high. Hard days hard, easy days genuinely easy, is the pattern that holds up.",
+      "evidence": "A systematic review of high-intensity intermittent training in recreational endurance runners found intervention studies used 2 to 4 sessions per week. General exercise guidance for high-intensity work recommends at least 48 hours between sessions for recovery.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "How does high-intensity intermittent training affect recreational endurance runners? Acute and chronic adaptations: A systematic review",
+        "authors": "García-Pinillos F, Soto-Hermoso VM, Latorre-Román PA",
+        "year": 2017,
+        "venue": "Journal of Sport and Health Science",
+        "type": "systematic-review",
+        "doi_or_url": "10.1016/j.jshs.2016.08.010",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Session ordering across a week",
+      "claim": "Order the week so the two or three quality sessions are separated by easy or recovery running, and keep long-run and quality-work hard days apart. Easy days protect the next hard day, which is why polarizing the week beats stacking moderate days.",
+      "evidence": "The polarized loading work shows the benefit comes from keeping easy work truly easy and concentrating hard work, and the Norwegian session review describes hard sessions spaced within the week with easy distance around them rather than back to back.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Training Session Models in Endurance Sports: A Norwegian Perspective on Best Practice Recommendations",
+        "authors": "Tønnessen E, Sandbakk Ø, Sandbakk SB, Seiler S, Haugen T",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-024-02067-4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Speed work and running economy",
+      "claim": "Short fast running (strides, 200s, brief sprints) improves running economy through neuromuscular and biomechanical changes rather than through a bigger aerobic engine. It is a cheap addition that lifts economy and leg speed without much fatigue.",
+      "evidence": "A review of running economy and its determinants reports that economy is governed by biomechanical and neuromuscular factors and responds to fast, short work and other neuromuscular training, separate from VO2max changes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Running economy: measurement, norms, and determining factors",
+        "authors": "Barnes KR, Kilding AE",
+        "year": 2015,
+        "venue": "Sports Medicine - Open",
+        "type": "narrative-review",
+        "doi_or_url": "10.1186/s40798-015-0007-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Tabata-style running",
+      "claim": "The original Tabata protocol (8 rounds of 20 seconds very hard, 10 seconds rest) raised VO2max and, unlike steady training, also raised anaerobic capacity. Transplanted to running it is short but very hard and best used sparingly.",
+      "evidence": "The original Tabata study in young men compared 20 s at about 170 percent VO2max with 10 s rest against steady moderate training. Both raised VO2max, and only the interval group raised anaerobic capacity. The study used cycling.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of moderate-intensity endurance and high-intensity intermittent training on anaerobic capacity and VO2max",
+        "authors": "Tabata I, Nishimura K, Kouzaki M, Hirai Y, Ogita F, Miyachi M, Yamamoto K",
+        "year": 1996,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1097/00005768-199610000-00018",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Marathon simulation long runs",
+      "claim": "A race simulation long run rehearses the specific demands of race day: goal pace, fuelling, kit and pacing discipline. It is a rehearsal built on the specificity and long-run evidence rather than a separately tested workout.",
+      "evidence": "A 2025 review of physiological resilience recommends prolonged sessions that include bouts at race pace or above, and a progressive rise in intensity in the face of fatigue, as a way to build durability. A 2026 pacing review builds a marathon mesocycle around a marathon simulation (25 km at goal pace) plus race-pace interval blocks. No trial was found that tests the dress rehearsal itself against marathon outcome.",
+      "confidence": "low",
+      "citation": {
+        "title": "Physiological Resilience: What Is It and How Might It Be Trained?",
+        "authors": "Jones AM, Kirby BS",
+        "year": 2025,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/sms.70032",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Back-to-back long runs",
+      "claim": "Back-to-back long runs on consecutive days are used in ultramarathon training to practice running on tired legs and to build fatigue resistance. The direct research is thin: no trial isolates the back-to-back format from total volume, and the closest evidence is on consecutive-day racing rather than training.",
+      "evidence": "Coaching sources and a 2026 negative-split review list back-to-back long runs as a way to train central fatigue resistance for ultra events. The closest controlled evidence is a study of consecutive-day multistage ultramarathon running, which found more prolonged peripheral muscle impairment than a single-stage race of the same distance and elevation. No trial was found that separates the back-to-back format from total training volume.",
+      "confidence": "low",
+      "citation": {
+        "title": "Fatigue and Recovery after Single-Stage versus Multistage Ultramarathon Running",
+        "authors": "Besson T, Rossi J, Le Roux Mallouf T, Marechal M, Doutreleau S, Verges S, Millet GY",
+        "year": 2020,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "cohort",
+        "doi_or_url": "10.1249/MSS.0000000000002303",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cut-down and descending intervals",
+      "claim": "Variable-intensity intervals, including cut-down or descending formats that start harder and finish faster, can raise the time spent above 90 percent of VO2max compared with even-paced intervals of the same duration. The pooled evidence supports the format, though the one running-specific decremental study was not conclusive on its own.",
+      "evidence": "A 2026 systematic review and meta-analysis of 239 HIIT protocols found variable-intensity work intervals increased time near VO2max compared with even-paced intervals (SMD 0.80, p < .01), adding about 165 s (95 percent CI 97 to 223 s), with the largest subcategory effects for variable and decreasing-intensity intervals. A crossover study of decremental versus constant 4 x 4 min sessions found higher time above 90 percent VO2max in cycling but not in running, so the running-specific effect is not settled.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Time spent at or near VO2max during high-intensity interval training: a systematic review and meta-analysis",
+        "authors": "Schoenmakers P, Murray K, White J, Matta G, Bossi AH",
+        "year": 2026,
+        "venue": "BMC Sports Science, Medicine & Rehabilitation",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s13102-026-01766-x",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Fartlek",
+      "claim": "Fartlek runs mix faster surges with easy running by feel, without fixed rep targets or full recoveries. They train pace change, effort control and the ability to surge mid-run, and they fit naturally into easy and long runs.",
+      "evidence": "The mixed-pace continuous format is standard coaching practice for adding speed into base and long running, and the polarized model places this kind of work in the mid-intensity band rather than as a separate maximal session.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Training Session Models in Endurance Sports: A Norwegian Perspective on Best Practice Recommendations",
+        "authors": "Tønnessen E, Sandbakk Ø, Sandbakk SB, Seiler S, Haugen T",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s40279-024-02067-4",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "id": "cruise-intervals",
+      "title": "Cruise intervals (threshold reps)",
+      "modality": "running",
+      "type": "threshold",
+      "durationMin": 55,
+      "intensity": "steady",
+      "summary": "Several reps at threshold pace with short jog recoveries, comfortably hard and controlled.",
+      "purpose": "Accumulate time near lactate threshold with less fatigue than one long tempo, lifting the pace you can hold before lactate climbs.",
+      "targetRpe": [6, 7],
+      "session_shape": [
+        "warm-up 15 min easy with 3 strides",
+        "4 x 6 min at threshold pace with 90 sec easy jog between",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "norwegian-4x4",
+      "title": "Norwegian 4x4 intervals",
+      "modality": "running",
+      "type": "vo2max",
+      "durationMin": 50,
+      "intensity": "hard",
+      "summary": "Four hard four-minute efforts with easy jogs between, breathing hard but in control.",
+      "purpose": "Raise maximal oxygen uptake, the ceiling for all racing distances, in a single well proven session.",
+      "targetRpe": [8, 9],
+      "session_shape": [
+        "warm-up 15 min easy including 3 to 4 strides",
+        "4 x 4 min at 90 to 95 percent max heart rate with 3 min easy jog",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "short-rep-30-15",
+      "title": "30/15 short VO2 intervals",
+      "modality": "running",
+      "type": "vo2max",
+      "durationMin": 40,
+      "intensity": "hard",
+      "summary": "Repeated 30 second hard efforts with 15 second float recoveries, held in tight sets.",
+      "purpose": "Spend more total time near maximal oxygen uptake than a few long reps, building aerobic power with short, sharp efforts.",
+      "targetRpe": [8, 9],
+      "session_shape": [
+        "warm-up 15 min easy",
+        "3 sets of 13 x 30 sec hard with 15 sec float, 3 min easy between sets",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "yasso-800s",
+      "title": "Yasso 800s",
+      "modality": "running",
+      "type": "race-prep",
+      "durationMin": 60,
+      "intensity": "hard",
+      "summary": "Ten 800 m reps at a strong, even pace with equal-time jog recoveries.",
+      "purpose": "A hard aerobic rep session for marathon builds, sometimes used loosely to gauge marathon readiness though it is not an accurate predictor.",
+      "targetRpe": [7, 8],
+      "session_shape": [
+        "warm-up 15 min easy with strides",
+        "10 x 800 m at a strong even pace with equal-time easy jog recovery",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "marathon-pace-block-long-run",
+      "title": "Marathon pace block long run",
+      "modality": "running",
+      "type": "long",
+      "durationMin": 140,
+      "intensity": "steady",
+      "summary": "A long run with a long block at goal marathon pace inside it, otherwise easy.",
+      "purpose": "Combine aerobic volume with repeated exposure to race pace so marathon pace feels routine deep into a run.",
+      "targetRpe": [5, 6],
+      "session_shape": [
+        "60 min easy running",
+        "60 min at marathon pace",
+        "10 min easy cool-down"
+      ]
+    },
+    {
+      "id": "half-marathon-pace-run",
+      "title": "Half marathon pace reps",
+      "modality": "running",
+      "type": "threshold",
+      "durationMin": 60,
+      "intensity": "steady",
+      "summary": "Repeated longer reps at half marathon pace, controlled and even.",
+      "purpose": "Train the pace just below threshold that half marathon racing demands and build comfort holding it under mild fatigue.",
+      "targetRpe": [6, 7],
+      "session_shape": [
+        "warm-up 15 min easy",
+        "3 x 10 min at half marathon pace with 3 min easy jog",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "cutdown-tempo",
+      "title": "Cut-down tempo",
+      "modality": "running",
+      "type": "tempo",
+      "durationMin": 55,
+      "intensity": "steady",
+      "summary": "Threshold reps that shorten and get slightly faster across the set.",
+      "purpose": "Finish faster than you start at a controlled effort, teaching pace change while piling up threshold time.",
+      "targetRpe": [6, 8],
+      "session_shape": [
+        "warm-up 15 min easy",
+        "3 x 10 min at threshold, each rep about 5 sec per km quicker than the last, 2 min easy jog",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "broken-tempo",
+      "title": "Broken tempo",
+      "modality": "running",
+      "type": "threshold",
+      "durationMin": 55,
+      "intensity": "steady",
+      "summary": "A tempo run split into short blocks with brief jogs that are not full recoveries.",
+      "purpose": "Get most of a long tempo's threshold time while keeping form and pace honest through short breaks.",
+      "targetRpe": [6, 7],
+      "session_shape": [
+        "warm-up 15 min easy",
+        "3 x 8 min at threshold with 1 min easy jog between",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "pyramid-intervals",
+      "title": "Pyramid intervals",
+      "modality": "running",
+      "type": "vo2max",
+      "durationMin": 55,
+      "intensity": "hard",
+      "summary": "Hard reps that climb in length to a peak then come back down the same way.",
+      "purpose": "Vary the stimulus within one session and keep it engaging while spending real time at hard effort.",
+      "targetRpe": [7, 9],
+      "session_shape": [
+        "warm-up 15 min easy",
+        "1-2-3-4-3-2-1 min hard with 1 min easy jog between steps",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "ladder-intervals",
+      "title": "Ladder intervals",
+      "modality": "running",
+      "type": "vo2max",
+      "durationMin": 60,
+      "intensity": "hard",
+      "summary": "Track reps over rising and falling distances at a controlled strong pace.",
+      "purpose": "Build aerobic power with distance variety and a fast middle, useful through a 5K to 10K phase.",
+      "targetRpe": [7, 9],
+      "session_shape": [
+        "warm-up 15 min easy with strides",
+        "400-800-1200-1600-1200-800-400 m at 5K to 10K pace with 2 min easy jog",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "short-rep-speed-200-400",
+      "title": "Short rep speed (200s and 400s)",
+      "modality": "running",
+      "type": "speed",
+      "durationMin": 50,
+      "intensity": "hard",
+      "summary": "Fast short reps at mile to 3K pace with generous recoveries.",
+      "purpose": "Sharpen leg speed and running economy without heavy aerobic fatigue, useful in the last weeks before a 5K or 10K.",
+      "targetRpe": [7, 8],
+      "session_shape": [
+        "warm-up 15 min easy with 4 strides",
+        "10 x 200 m at mile to 3K pace with 200 m easy jog",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "tabata-style-run",
+      "title": "Tabata-style running intervals",
+      "modality": "running",
+      "type": "vo2max",
+      "durationMin": 35,
+      "intensity": "hard",
+      "summary": "Short all-out efforts with very short rests, run in two or three sets.",
+      "purpose": "A short, sharp VO2max and anaerobic stimulus for when time is tight, used sparingly because it is very hard.",
+      "targetRpe": [9, 10],
+      "session_shape": [
+        "warm-up 15 min easy with strides",
+        "2 to 3 sets of 8 x 20 sec fast with 10 sec walk, 3 min easy between sets",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "hill-strides",
+      "title": "Hill strides",
+      "modality": "running",
+      "type": "hill",
+      "durationMin": 30,
+      "intensity": "steady",
+      "summary": "Short controlled accelerations up a gentle hill at the end of an easy run.",
+      "purpose": "Add leg power and economy with almost no recovery cost, and low impact loading compared with flat sprints.",
+      "targetRpe": [6, 7],
+      "session_shape": [
+        "20 min easy run",
+        "6 x 10 sec hill strides at about 90 percent effort with walk-back recovery",
+        "5 min easy jog to finish"
+      ]
+    },
+    {
+      "id": "downhill-reps",
+      "title": "Downhill reps",
+      "modality": "running",
+      "type": "hill",
+      "durationMin": 50,
+      "intensity": "hard",
+      "summary": "Controlled fast reps down a moderate hill, jogging back up for recovery.",
+      "purpose": "Practice fast downhill running and build eccentric strength, introduced carefully because the first sessions cause heavy soreness.",
+      "targetRpe": [7, 8],
+      "session_shape": [
+        "warm-up 15 min easy with strides",
+        "4 to 6 x 90 sec downhill at controlled fast effort with easy jog back up",
+        "cool-down 10 min easy, then expect soreness for 2 to 3 days"
+      ]
+    },
+    {
+      "id": "fartlek-pyramid",
+      "title": "Pyramid fartlek",
+      "modality": "running",
+      "type": "fartlek",
+      "durationMin": 45,
+      "intensity": "hard",
+      "summary": "Surges of varying length by feel inside a continuous run, no fixed recovery.",
+      "purpose": "Train pace change and effort control in a flexible format that fits road, trail and busy schedules.",
+      "targetRpe": [7, 8],
+      "session_shape": [
+        "warm-up 15 min easy",
+        "surges by feel: 2 min, 1 min, 30 sec, 1 min, 2 min hard with easy running between",
+        "cool-down 10 min easy"
+      ]
+    },
+    {
+      "id": "double-threshold-day",
+      "title": "Double threshold day",
+      "modality": "running",
+      "type": "threshold",
+      "durationMin": 90,
+      "intensity": "steady",
+      "summary": "Two controlled threshold sessions in one day, hours apart, each held below the harder threshold.",
+      "purpose": "Raise weekly threshold volume without any single session becoming excessive, an elite method to use only with good recovery and monitoring.",
+      "targetRpe": [6, 7],
+      "session_shape": [
+        "AM: 4 x 2000 m at threshold 1 pace (about 2.0 to 3.0 mmol/L lactate) with 1 min jog",
+        "PM (6 to 8 h later): 5 x 1600 m at the same controlled effort with 1 min jog",
+        "keep the rest of the day easy"
+      ]
+    },
+    {
+      "id": "run-walk-intervals",
+      "title": "Run-walk intervals",
+      "modality": "running",
+      "type": "long",
+      "durationMin": 60,
+      "intensity": "easy",
+      "summary": "Steady run-walk cycles by planned ratio, for example run 4 min then walk 1 min.",
+      "purpose": "Cover more distance with lower cumulative impact and less late fatigue, useful for beginners, return from injury and long events.",
+      "targetRpe": [3, 4],
+      "session_shape": [
+        "warm-up 5 min brisk walk or easy jog",
+        "repeat run 4 min, walk 1 min for the set duration",
+        "cool-down 5 min walk"
+      ]
+    },
+    {
+      "id": "back-to-back-long-runs",
+      "title": "Back-to-back long runs",
+      "modality": "running",
+      "type": "long",
+      "durationMin": 150,
+      "intensity": "steady",
+      "summary": "Two long runs on consecutive days, the second on tired legs.",
+      "purpose": "Build fatigue resistance and practice running tired for ultramarathon events, used mainly as a coaching convention.",
+      "targetRpe": [5, 6],
+      "session_shape": [
+        "day 1: long run of about 2.5 h at easy to steady effort",
+        "day 2: long run of about 2 h on fatigued legs at easy effort",
+        "keep both mostly easy and recover well afterward"
+      ]
+    },
+    {
+      "id": "marathon-simulation-run",
+      "title": "Marathon simulation run",
+      "modality": "running",
+      "type": "race-prep",
+      "durationMin": 150,
+      "intensity": "steady",
+      "summary": "A long run in race kit and fuelling with a long block at goal marathon pace.",
+      "purpose": "Rehearse pacing, fuelling, kit and the feel of race pace, placed about 3 to 4 weeks before the marathon.",
+      "targetRpe": [6, 7],
+      "session_shape": [
+        "20 min easy running to start",
+        "about 20 km at goal marathon pace with planned fuelling",
+        "10 min easy cool-down"
+      ]
+    },
+    {
+      "id": "progression-long-run",
+      "title": "Progression long run",
+      "modality": "running",
+      "type": "long",
+      "durationMin": 120,
+      "intensity": "steady",
+      "summary": "A long run that starts easy and finishes the last stretch at or near marathon pace.",
+      "purpose": "Build aerobic volume while teaching a controlled negative split and finishing strong on tired legs.",
+      "targetRpe": [5, 6],
+      "session_shape": [
+        "run easy for the first 70 min",
+        "last 30 to 40 min at or just under marathon pace",
+        "5 min easy cool-down"
+      ]
+    }
+  ],
+  "summary_tier_a": "The best supported hard session for raising VO2max is the Norwegian 4x4 (four minutes hard, three minutes easy, four times), with short-interval formats such as 30/15 offering a comparable stimulus by holding time near maximal oxygen uptake. Threshold work is best done as repeated cruise intervals rather than one long tempo, which is also why double threshold days exist for advanced athletes. Hills improve running economy and 5K pace, but downhill work causes real muscle damage that should be introduced in small doses and kept away from key sessions. Weekly planning should separate 2 to 3 hard days by about 48 hours of easy running, and taper volume down 41 to 60 percent while keeping intensity and frequency.",
+  "unverified": [
+    "No controlled study was found that isolates back-to-back long runs from total training volume. The closest evidence is consecutive-day multistage racing, which causes more prolonged peripheral muscle impairment than a single-stage race, so the format is presented as coaching convention.",
+    "The Yasso 800 marathon-prediction rule has no validating study, positive or negative. It remains a personal observation from 1994, and coaching analyses state plainly that no scientific data show that 10 by 800 m times predict marathon time.",
+    "Marathon simulation runs and race-pace dress rehearsals are coaching practice, recommended in resilience and pacing reviews, but no trial was found that tests the rehearsal itself against marathon outcome."
+  ],
+  "notes": "Research only, no app code touched. Citations were verified through PubMed/PMC metadata, Crossref DOI resolution and journal pages on 2026-11-23. The 30/15 versus 4x4 comparison rests mainly on cycling trials (Ronnestad) plus pooled interval data; the running-specific evidence is thinner. Paces and durations in the catalog are workable defaults; the app computes actual paces from VDOT and unit settings. Formatting follows the human-writing rules: no em dashes, plain language, en dashes only in numeric ranges. Verification pass 2026-11-23: 1 substantiated, 3 remained unverified."
+}

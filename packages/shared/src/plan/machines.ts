@@ -12,12 +12,17 @@ export type MovePattern =
 	| 'hinge'
 	| 'knee-extension'
 	| 'posterior-chain'
-	| 'core';
+	| 'core'
+	| 'plyometric';
 
 export interface MachineExercise {
 	name: string;
 	muscles: string[];
 	pattern: MovePattern;
+	/** Training tool, when the move belongs to one (dumbbells, barbell, kettlebell, bands, home, cable, machine). */
+	equipment?: string;
+	/** Difficulty rung, used by the bodyweight progression ladder. */
+	level?: 'beginner' | 'intermediate' | 'advanced';
 	/** One plain sentence on why this matters for running. */
 	why: string;
 	/** Short "where you should feel it" cue. */
@@ -150,7 +155,9 @@ export function defaultCircuit(
 		'Bicep curl',
 		'Tricep extension',
 	];
-	return want.map((n) => byName.get(n)).filter((m): m is MachineExercise => !!m && available.includes(m.name));
+	return want
+		.map((n) => byName.get(n))
+		.filter((m): m is MachineExercise => !!m && available.includes(m.name));
 }
 
 export function findMachine(name?: string): MachineExercise | undefined {
