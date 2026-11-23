@@ -407,6 +407,8 @@ plans.post(
 			...(baseline.weeklyKm == null && fitness.recentWeeklyKm > 0
 				? { weeklyKm: fitness.recentWeeklyKm }
 				: {}),
+			...(fitness.likedTypes.length ? { likedTypes: fitness.likedTypes } : {}),
+			...(fitness.dislikedTypes.length ? { dislikedTypes: fitness.dislikedTypes } : {}),
 		};
 
 		const planInput = {
@@ -429,6 +431,13 @@ plans.post(
 			goalName: profile.name,
 			allowed,
 			prefs: baseline as Record<string, unknown>,
+			fitness: {
+				recentWeeklyKm: fitness.recentWeeklyKm,
+				rpeTrend: fitness.rpeTrend,
+				likedTypes: fitness.likedTypes,
+				dislikedTypes: fitness.dislikedTypes,
+				samples: fitness.samples,
+			},
 			weeks: baseDraft.weeks.map((w) => ({
 				weekNumber: w.weekNumber,
 				phase: w.phase,

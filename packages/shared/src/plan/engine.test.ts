@@ -353,6 +353,23 @@ describe('generatePlan (model shaping)', () => {
 		expect(withVdot.meta.vdot).toBe(50);
 		expect(without.meta.vdot).toBeUndefined();
 	});
+
+	it('prefers a quality kind the runner rated well over one they rated poorly', () => {
+		const week2Kind = (baseline: {
+			experience: 'intermediate';
+			likedTypes?: string[];
+			dislikedTypes?: string[];
+		}) => {
+			const plan = generatePlan({ ...base, baseline });
+			return plan.weeks[1]!.sessions.find((s) => s.modality === 'running' && s.type !== 'easy')?.type;
+		};
+		// By default the base week is a tempo session.
+		expect(week2Kind({ experience: 'intermediate' })).toBe('tempo');
+		// Rated tempo poorly and hills well, the week leans toward hills instead.
+		expect(week2Kind({ experience: 'intermediate', dislikedTypes: ['tempo'], likedTypes: ['hills'] })).toBe(
+			'hills',
+		);
+	});
 });
 
 describe('progression (volume builds, sessions differentiate)', () => {

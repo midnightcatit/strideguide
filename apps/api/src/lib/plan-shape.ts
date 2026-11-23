@@ -12,6 +12,26 @@ export interface ShapeContext {
 	allowed: QualityKind[];
 	/** Baseline and preferences to reason from. */
 	prefs: Record<string, unknown>;
+	/** What the runner has actually been doing, from their own logs. */
+	fitness?: {
+		recentWeeklyKm?: number;
+		rpeTrend?: 'rising' | 'steady' | 'falling';
+		likedTypes?: string[];
+		dislikedTypes?: string[];
+		samples?: number;
+	};
+}
+
+/** A one-line read of the runner's recent training, or empty when there is none. */
+function fitnessLine(fitness: ShapeContext['fitness']): string {
+	if (!fitness || (fitness.samples ?? 0) <= 0) return '';
+	const bits: string[] = [];
+	if (fitness.recentWeeklyKm) bits.push(`about ${fitness.recentWeeklyKm} km a week`);
+	if (fitness.rpeTrend) bits.push(`effort lately ${fitness.rpeTrend}`);
+	if (fitness.likedTypes?.length) bits.push(`rated ${fitness.likedTypes.join(', ')} well`);
+	if (fitness.dislikedTypes?.length) bits.push(`rated ${fitness.dislikedTypes.join(', ')} poorly`);
+	if (!bits.length) return '';
+	return ` What the runner has actually been doing: ${bits.join('; ')}. Lean toward the sessions they rated well and away from the ones they did not, when the phase allows it.`;
 }
 
 function extractJsonArray(text: string): unknown[] | null {
@@ -47,7 +67,7 @@ You are a running coach shaping a plan the engine has already laid out. For each
 		},
 		{
 			role: 'user',
-			content: `Goal: ${ctx.goalName}. Runner preferences: ${JSON.stringify(ctx.prefs)}. Weeks: ${JSON.stringify(ctx.weeks)}`,
+			content: `Goal: ${ctx.goalName}. Runner preferences: ${JSON.stringify(ctx.prefs)}.${fitnessLine(ctx.fitness)} Weeks: ${JSON.stringify(ctx.weeks)}`,
 		},
 	];
 

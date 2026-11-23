@@ -712,6 +712,17 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					) ?? 'tempo';
 			}
 
+			// A gentle nudge from the runner's own feedback: if the kind the engine
+			// landed on is one they rated down, and one they rated up is allowed here,
+			// prefer the liked kind. The model's choice, when it made one, stands.
+			if (!shaped && input.baseline.dislikedTypes?.includes(kind)) {
+				const liked = (['tempo', 'hills', 'interval', 'race-pace'] as const).find(
+					(k) =>
+						input.profile.sessionTypes.includes(k) && input.baseline.likedTypes?.includes(k),
+				);
+				if (liked) kind = liked;
+			}
+
 			if (kind === 'race-pace') {
 				const rpShape = RACE_PACE_SHAPE[input.profile.slug] ?? RACE_PACE_SHAPE['half-marathon']!;
 				const maxReps = phase === 'peak' ? rpShape.peak : rpShape.build;
