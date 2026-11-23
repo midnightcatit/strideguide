@@ -140,6 +140,7 @@ export const api = {
 						runStats: b.runStats ?? null,
 						strengthSets: b.strengthSets ?? null,
 						rpe: b.rpe ?? null,
+						feedback: b.feedback ?? null,
 						notes: b.notes ?? null,
 						pending: true,
 					},

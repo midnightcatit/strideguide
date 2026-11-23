@@ -28,6 +28,7 @@
 	let runDuration = $state('');
 	let runHr = $state('');
 	let rpe = $state<number | null>(null);
+	let feedback = $state<'up' | 'down' | null>(null);
 	let notes = $state('');
 
 	// --- strength state ---
@@ -106,12 +107,13 @@
 				})),
 			}));
 			const body = isStrength
-				? { sessionId: session.id, strengthSets, rpe, notes: notes || undefined }
+				? { sessionId: session.id, strengthSets, rpe, feedback, notes: notes || undefined }
 				: isCross
 					? {
 							sessionId: session.id,
 							runStats: { ...(durationSec ? { durationSec } : {}) },
 							rpe,
+							feedback,
 							notes: notes || undefined,
 						}
 					: {
@@ -123,6 +125,7 @@
 							...(paceSecPerKm ? { avgPaceSecPerKm: paceSecPerKm } : {}),
 						},
 						rpe,
+						feedback,
 						notes: notes || undefined,
 					};
 			const res = await api.log(body);
@@ -255,6 +258,33 @@
 				</button>
 			{/each}
 		</div>
+	</fieldset>
+
+	<fieldset class="mt-4 border-t border-hairline pt-3">
+		<legend class="text-xs uppercase tracking-widest text-steel">Did this suit you?</legend>
+		<div class="mt-2 grid grid-cols-2 gap-2">
+			<button
+				type="button"
+				aria-pressed={feedback === 'up'}
+				onclick={() => (feedback = feedback === 'up' ? null : 'up')}
+				class="flex h-11 items-center justify-center rounded-md text-sm transition-colors {feedback === 'up'
+					? 'bg-ink font-bold text-paper'
+					: 'border border-hairline text-steel hover:border-steel'}"
+			>
+				Felt good
+			</button>
+			<button
+				type="button"
+				aria-pressed={feedback === 'down'}
+				onclick={() => (feedback = feedback === 'down' ? null : 'down')}
+				class="flex h-11 items-center justify-center rounded-md text-sm transition-colors {feedback === 'down'
+					? 'bg-ink font-bold text-paper'
+					: 'border border-hairline text-steel hover:border-steel'}"
+			>
+				Felt off
+			</button>
+		</div>
+		<p class="mt-1 text-xs text-steel">Optional. It tells your coach which sessions work for you, so the plan leans toward them.</p>
 	</fieldset>
 
 	<label class="mt-4 block border-t border-hairline pt-3 text-xs text-steel">
