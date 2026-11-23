@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 	import { api } from '$lib/api';
@@ -14,59 +15,118 @@
 		setWeekStart,
 	} from '$lib/prefs.svelte';
 	import { GYM_PRESETS, PF_MACHINES, EXTRA_MACHINES } from '@strideguide/shared/plan';
-	import type { Units } from '@strideguide/shared/units';
+	import type { Units, Prefs } from '@strideguide/shared/units';
 
 	const countdown = $derived(prefs.countdownSec ?? 5);
 	const autoNext = $derived(prefs.autoAdvance ?? true);
 	const MACHINES = [...PF_MACHINES, ...EXTRA_MACHINES].map((m) => m.name);
+
+	// Equipment and gym are edited as a draft: taps only change local state, and one
+	// rebuild happens when the runner saves. Discard throws the draft away.
+	type Draft = {
+		equipment: Prefs['equipment'];
+		equipmentItems: NonNullable<Prefs['equipmentItems']>;
+		gymPreset: Prefs['gymPreset'];
+		machineItems: NonNullable<Prefs['machineItems']>;
+	};
+	function readPrefs(): Draft {
+		return {
+			equipment: prefs.equipment,
+			equipmentItems: prefs.equipmentItems ?? [],
+			gymPreset: prefs.gymPreset,
+			machineItems: prefs.machineItems ?? [],
+		};
+	}
+	function same(a: Draft, b: Draft): boolean {
+		return (
+			a.equipment === b.equipment &&
+			a.gymPreset === b.gymPreset &&
+			[...a.equipmentItems].sort().join() === [...b.equipmentItems].sort().join() &&
+			[...a.machineItems].sort().join() === [...b.machineItems].sort().join()
+		);
+	}
+
+	let draft = $state<Draft>(readPrefs());
+	// The values the draft was last seeded from, so an untouched draft can adopt
+	// stored prefs once they load, without clobbering edits in progress.
+	let seeded = $state<Draft>(readPrefs());
+	const saved = $derived(readPrefs());
+	const dirty = $derived(!same(draft, saved));
 	const machineMode = $derived(
-		prefs.equipment === 'machines' || prefs.equipment === 'both' || prefs.equipment === 'full-gym',
+		draft.equipment === 'machines' || draft.equipment === 'both' || draft.equipment === 'full-gym',
 	);
 
-	async function rebuildGym(
-		gymPreset: string | undefined,
-		machineItems: string[] | undefined,
-		mode: typeof prefs.equipment = prefs.equipment,
-	) {
+	$effect(() => {
+		const s = saved;
+		if (untrack(() => same(draft, seeded))) {
+			draft = s;
+			seeded = s;
+		}
+	});
+
+	let saving = $state(false);
+	let message = $state('');
+
+	function pickEquipment(v: Draft['equipment']) {
+		draft.equipment = v;
+	}
+	function toggleItem(v: Item) {
+		const cur = draft.equipmentItems;
+		draft.equipmentItems = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
+	}
+	function pickGym(id: string) {
+		const preset = GYM_PRESETS.find((p) => p.id === id);
+		if (draft.gymPreset === id || !preset) {
+			draft.gymPreset = undefined;
+			return;
+		}
+		// Choosing a gym also suggests its free-weight mode and clears per-machine overrides.
+		draft.gymPreset = id;
+		draft.equipment = preset.mode;
+		draft.machineItems = [];
+	}
+	function toggleMachine(name: string) {
+		const cur = draft.machineItems;
+		draft.machineItems = cur.includes(name) ? cur.filter((x) => x !== name) : [...cur, name];
+	}
+
+	function bump(d: number) {
+		void setCountdownSec(countdown + d);
+	}
+	function discard() {
+		draft = readPrefs();
+		seeded = draft;
+		message = '';
+	}
+
+	async function save() {
 		saving = true;
 		message = '';
+		const next: Draft = {
+			...draft,
+			equipmentItems: [...draft.equipmentItems],
+			machineItems: [...draft.machineItems],
+		};
 		try {
-			await setEquipment(mode);
-			await setGymPreset(gymPreset);
-			await setMachineItems(machineItems);
+			await setEquipment(next.equipment);
+			await setEquipmentItems(next.equipmentItems);
+			await setGymPreset(next.gymPreset);
+			await setMachineItems(next.machineItems);
 			const res = await api.adaptPlan({
-				equipment: mode,
-				equipmentItems: prefs.equipmentItems,
-				gymPreset,
-				machineItems,
+				equipment: next.equipment,
+				equipmentItems: next.equipmentItems,
+				gymPreset: next.gymPreset,
+				machineItems: next.machineItems,
 			});
 			message = res.changed
-				? 'Updated. The weeks ahead now match your gym.'
+				? 'Updated. The weeks ahead now match your equipment.'
 				: 'Saved. Your current weeks already match.';
 		} catch {
 			message = 'Saved, but the weeks ahead could not be rebuilt just now.';
 		} finally {
+			seeded = next;
 			saving = false;
 		}
-	}
-	function pickGym(id: string) {
-		const preset = GYM_PRESETS.find((p) => p.id === id);
-		if (prefs.gymPreset === id || !preset) {
-			void rebuildGym(undefined, prefs.machineItems);
-			return;
-		}
-		// Choosing a gym also suggests its free-weight mode.
-		void rebuildGym(id, undefined, preset.mode);
-	}
-	function toggleMachine(name: string) {
-		const cur = prefs.machineItems ?? [];
-		const next = cur.includes(name) ? cur.filter((x) => x !== name) : [...cur, name];
-		void rebuildGym(prefs.gymPreset, next);
-	}
-
-
-	function bump(d: number) {
-		void setCountdownSec(countdown + d);
 	}
 
 	type Item = 'machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands';
@@ -77,7 +137,7 @@
 		{ v: 'kettlebell', name: 'Kettlebell' },
 		{ v: 'bands', name: 'Bands' },
 	];
-	const EQUIPMENT: { v: NonNullable<typeof prefs.equipment>; name: string }[] = [
+	const EQUIPMENT: { v: NonNullable<Prefs['equipment']>; name: string }[] = [
 		{ v: 'machines', name: 'Machines' },
 		{ v: 'bodyweight', name: 'Bodyweight' },
 		{ v: 'bodyweight-dumbbells', name: 'Bodyweight plus dumbbells' },
@@ -88,35 +148,6 @@
 		{ v: 'both', name: 'A mix' },
 		{ v: 'full-gym', name: 'Full gym' },
 	];
-
-	let saving = $state(false);
-	let message = $state('');
-
-	async function rebuild(equipment: typeof prefs.equipment, items: typeof prefs.equipmentItems) {
-		saving = true;
-		message = '';
-		try {
-			await setEquipment(equipment);
-			await setEquipmentItems(items);
-			const res = await api.adaptPlan({ equipment, equipmentItems: items });
-			message = res.changed
-				? 'Updated. The weeks ahead now use this equipment.'
-				: 'Saved. Your current weeks already match.';
-		} catch {
-			message = 'Saved, but the weeks ahead could not be rebuilt just now.';
-		} finally {
-			saving = false;
-		}
-	}
-
-	function pick(equipment: typeof prefs.equipment) {
-		void rebuild(equipment, prefs.equipmentItems);
-	}
-	function toggleItem(v: Item) {
-		const cur = prefs.equipmentItems ?? [];
-		const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
-		void rebuild(prefs.equipment, next);
-	}
 </script>
 
 <SettingsHeader title="Training" />
@@ -183,10 +214,9 @@
 			{#each EQUIPMENT as opt (opt.v)}
 				<button
 					type="button"
-					aria-pressed={prefs.equipment === opt.v}
-					disabled={saving}
-					onclick={() => pick(opt.v)}
-					class="rounded-xl border px-4 py-3 text-left text-sm transition-colors disabled:opacity-60 {prefs.equipment === opt.v
+					aria-pressed={draft.equipment === opt.v}
+					onclick={() => pickEquipment(opt.v)}
+					class="rounded-xl border px-4 py-3 text-left text-sm transition-colors {draft.equipment === opt.v
 						? 'border-signal-ink bg-signal-wash'
 						: 'border-hairline hover:border-steel'}"
 				>
@@ -194,15 +224,14 @@
 				</button>
 			{/each}
 		</div>
-		{#if prefs.equipment && prefs.equipment !== 'bodyweight'}
+		{#if draft.equipment && draft.equipment !== 'bodyweight'}
 			<div class="mt-3 flex flex-wrap gap-2">
 				{#each ITEMS as item (item.v)}
 					<button
 						type="button"
-						aria-pressed={(prefs.equipmentItems ?? []).includes(item.v)}
-						disabled={saving}
+						aria-pressed={draft.equipmentItems.includes(item.v)}
 						onclick={() => toggleItem(item.v)}
-						class="rounded-full border px-3 py-1.5 text-sm transition-colors disabled:opacity-60 {(prefs.equipmentItems ?? []).includes(
+						class="rounded-full border px-3 py-1.5 text-sm transition-colors {draft.equipmentItems.includes(
 							item.v,
 						)
 							? 'border-signal-ink bg-signal-wash text-signal-ink'
@@ -213,17 +242,16 @@
 				{/each}
 			</div>
 		{/if}
-		<p class="mt-2 text-xs text-steel">Changing this rebuilds the weeks ahead with the right moves.</p>
+		<p class="mt-2 text-xs text-steel">Changing this rebuilds the weeks ahead with the right moves. Save to apply.</p>
 		{#if machineMode}
 			<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Your gym</p>
 			<div class="mt-2 grid gap-2 sm:grid-cols-2">
 				{#each GYM_PRESETS as gym (gym.id)}
 					<button
 						type="button"
-						aria-pressed={prefs.gymPreset === gym.id}
-						disabled={saving}
+						aria-pressed={draft.gymPreset === gym.id}
 						onclick={() => pickGym(gym.id)}
-						class="rounded-xl border px-4 py-2.5 text-left text-sm transition-colors disabled:opacity-60 {prefs.gymPreset ===
+						class="rounded-xl border px-4 py-2.5 text-left text-sm transition-colors {draft.gymPreset ===
 						gym.id
 							? 'border-signal-ink bg-signal-wash'
 							: 'border-hairline hover:border-steel'}"
@@ -238,10 +266,9 @@
 					{#each MACHINES as name (name)}
 						<button
 							type="button"
-							aria-pressed={(prefs.machineItems ?? []).includes(name)}
-							disabled={saving}
+							aria-pressed={draft.machineItems.includes(name)}
 							onclick={() => toggleMachine(name)}
-							class="rounded-full border px-2.5 py-1 text-xs transition-colors disabled:opacity-60 {(prefs.machineItems ?? []).includes(
+							class="rounded-full border px-2.5 py-1 text-xs transition-colors {draft.machineItems.includes(
 								name,
 							)
 								? 'border-signal-ink bg-signal-wash text-signal-ink'
@@ -265,3 +292,26 @@
 		<p class="mt-2 text-xs text-steel">Builds a fresh plan from your goal and current race paces.</p>
 	</div>
 </section>
+
+<div
+	class="sticky z-30 -mx-4 border-t border-hairline bg-paper/95 px-4 py-3 backdrop-blur bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] sm:bottom-0"
+>
+	<div class="flex items-center gap-2">
+		<button
+			type="button"
+			onclick={discard}
+			disabled={!dirty || saving}
+			class="flex-1 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-steel disabled:opacity-40"
+		>
+			Discard
+		</button>
+		<button
+			type="button"
+			onclick={save}
+			disabled={!dirty || saving}
+			class="flex-1 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-paper disabled:opacity-40"
+		>
+			{saving ? 'Saving…' : 'Save'}
+		</button>
+	</div>
+</div>

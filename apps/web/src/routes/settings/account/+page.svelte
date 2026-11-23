@@ -1,14 +1,12 @@
 <script lang="ts">
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
+	import HoldConfirmDialog from '$lib/components/HoldConfirmDialog.svelte';
 	import { api } from '$lib/api';
 	import { auth } from '$lib/auth.svelte';
 
 	let confirmSignOut = $state(false);
-	let confirming = $state(false);
-	let confirmText = $state('');
-	let clearing = $state(false);
-	const canClear = $derived(confirmText.trim() === 'DELETE MY DATA');
+	let confirmDelete = $state(false);
 
 	async function signOut() {
 		await api.logout().catch(() => {});
@@ -16,8 +14,6 @@
 	}
 
 	async function clearData() {
-		if (!canClear) return;
-		clearing = true;
 		try {
 			await api.clearData();
 		} catch {
@@ -54,43 +50,10 @@
 
 	<div class="border-t border-hairline pt-6">
 		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Your data</h2>
-		{#if !confirming}
-			<button type="button" onclick={() => (confirming = true)} class="btn-danger mt-2 w-full rounded-md px-4 py-3 text-sm font-medium hover:opacity-90">
-				Delete my data
-			</button>
-			<p class="mt-2 text-xs text-steel">Deletes your plan and every logged session, including saved workout progress. Your account stays.</p>
-		{:else}
-			<p class="mt-2 text-sm text-steel">
-				This removes your plan and every logged session. This cannot be undone. Type
-				<span class="font-medium text-danger">DELETE MY DATA</span> to confirm.
-			</p>
-			<input
-				bind:value={confirmText}
-				placeholder="DELETE MY DATA"
-				aria-label="Type DELETE MY DATA to confirm"
-				class="mt-2 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
-			/>
-			<div class="mt-2 flex gap-2">
-				<button
-					type="button"
-					onclick={() => {
-						confirming = false;
-						confirmText = '';
-					}}
-					class="flex-1 rounded-md border border-hairline px-4 py-2.5 text-sm hover:text-ink"
-				>
-					Cancel
-				</button>
-				<button
-					type="button"
-					onclick={clearData}
-					disabled={!canClear || clearing}
-					class="btn-danger flex-1 rounded-md px-4 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
-				>
-					{clearing ? 'Deleting…' : 'Delete everything'}
-				</button>
-			</div>
-		{/if}
+		<button type="button" onclick={() => (confirmDelete = true)} class="btn-danger mt-2 w-full rounded-md px-4 py-3 text-sm font-medium hover:opacity-90">
+			Delete my data
+		</button>
+		<p class="mt-2 text-xs text-steel">Deletes your plan and every logged session, including saved workout progress, so you start fresh. Your account stays.</p>
 	</div>
 </section>
 
@@ -102,5 +65,15 @@
 		tone="danger"
 		onConfirm={signOut}
 		onClose={() => (confirmSignOut = false)}
+	/>
+{/if}
+
+{#if confirmDelete}
+	<HoldConfirmDialog
+		title="Delete everything?"
+		body="This removes your plan, every logged session and your saved workout progress. You start fresh from onboarding. There is no undo."
+		holdLabel="Hold to delete everything"
+		onConfirm={clearData}
+		onClose={() => (confirmDelete = false)}
 	/>
 {/if}

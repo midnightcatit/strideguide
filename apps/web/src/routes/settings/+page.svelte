@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { prefs } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
+	import { api } from '$lib/api';
+	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 
-	/** Back to wherever we came from, or the dashboard if there is no history. */
-	function back() {
-		if (typeof window !== 'undefined' && window.history.length > 1) window.history.back();
-		else void goto('/');
+	let confirmSignOut = $state(false);
+
+	async function signOut() {
+		await api.logout().catch(() => {});
+		window.location.href = '/';
 	}
 
 	const categories = [
@@ -31,7 +33,7 @@
 		{
 			href: '/settings/account',
 			label: 'Account',
-			desc: 'Sign out, switch account and your data',
+			desc: 'Switch account and your data',
 			icon: 'M10 3.5l6 2.5v4c0 3.5-2.5 6.2-6 7-3.5-.8-6-3.5-6-7v-4z',
 		},
 		{
@@ -42,10 +44,6 @@
 		},
 	];
 </script>
-
-<button type="button" onclick={back} class="-ml-1 mb-2 inline-flex items-center gap-1 px-1 py-1 text-sm text-steel hover:text-ink">
-	‹ Back
-</button>
 
 <header class="mb-5">
 	<p class="tabular text-xs uppercase tracking-widest text-steel">Settings</p>
@@ -71,3 +69,25 @@
 		</a>
 	{/each}
 </nav>
+
+<div class="mt-6">
+	<button
+		type="button"
+		onclick={() => (confirmSignOut = true)}
+		class="w-full rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+	>
+		Sign out
+	</button>
+	<p class="mt-2 text-xs text-steel">You can sign back in any time with Google.</p>
+</div>
+
+{#if confirmSignOut}
+	<ConfirmSheet
+		title="Sign out?"
+		body="You can sign back in any time with Google."
+		confirmLabel="Sign out"
+		tone="danger"
+		onConfirm={signOut}
+		onClose={() => (confirmSignOut = false)}
+	/>
+{/if}
