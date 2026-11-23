@@ -204,6 +204,8 @@ export const logs = sqliteTable(
 		runStats: text('run_stats', { mode: 'json' }),
 		strengthSets: text('strength_sets', { mode: 'json' }),
 		rpe: real('rpe'),
+		/** How the runner felt about the session, from a quick thumbs up or down. */
+		feedback: text('feedback', { enum: ['up', 'down'] }),
 		notes: text('notes'),
 		source: text('source', { enum: ['manual', 'device', 'import'] })
 			.notNull()

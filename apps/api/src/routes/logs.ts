@@ -46,6 +46,7 @@ logs.post(
 				)
 				.optional(),
 			rpe: z.number().min(1).max(10).nullable().optional(),
+			feedback: z.enum(['up', 'down']).nullable().optional(),
 			notes: z.string().max(2000).optional(),
 			source: z.enum(['manual', 'device', 'import']).default('manual'),
 		}),
@@ -88,6 +89,7 @@ logs.post(
 				runStats: body.runStats ?? null,
 				strengthSets: body.strengthSets ?? null,
 				rpe: body.rpe ?? null,
+				feedback: body.feedback ?? null,
 				notes: body.notes ?? null,
 				source: body.source,
 			})

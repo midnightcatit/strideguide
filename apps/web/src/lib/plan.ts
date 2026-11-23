@@ -83,6 +83,8 @@ export interface ClientLog {
 	} | null;
 	strengthSets: { machine: string; sets: { reps: number; weightKg: number }[] }[] | null;
 	rpe: number | null;
+	/** A quick thumbs up or down on how the session felt, after finishing it. */
+	feedback: 'up' | 'down' | null;
 	notes: string | null;
 	createdAt?: string | number | null;
 	/** True when the log was queued offline and has not synced yet. */
