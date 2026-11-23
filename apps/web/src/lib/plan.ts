@@ -135,7 +135,7 @@ export const SESSION_TYPE_LABELS: Record<string, string> = {
 	progression: 'Progression run',
 	'race-pace': 'Goal pace',
 	race: 'Race',
-	'machine-circuit': 'Strength circuit',
+	'machine-circuit': 'Strength',
 	'full-body-strength': 'Strength',
 	mobility: 'Mobility',
 	'cross-train': 'Cross-train',

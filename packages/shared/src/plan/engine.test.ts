@@ -180,6 +180,56 @@ describe('generatePlan (preferences)', () => {
 		expect(names.some((n) => findMove(n)?.equipment === 'kettlebell')).toBe(true);
 	});
 
+	it('labels a strength session from the moves it contains, not the mode', () => {
+		// A machines-mode circuit whose kit has no machines fills with bodyweight, so
+		// the card must not read as a machine circuit over a bodyweight move. The kit
+		// is the top-level PlanInput.equipment, as the API passes it.
+		const bodyweightOnly = generatePlan({
+			...base,
+			equipment: ['bands'],
+			baseline: { experience: 'intermediate', equipment: 'machines' },
+		});
+		const bw = bodyweightOnly.weeks
+			.flatMap((w) => w.sessions)
+			.find((s) => s.modality === 'strength')!;
+		expect(bw.title).toBe('Strength');
+		expect(bw.type).toBe('full-body-strength');
+		expect(bw.prescription.summary).toContain('moves');
+
+		// A genuine all-machine circuit keeps the machine-circuit archetype, but the
+		// label is still the neutral "Strength".
+		const machineOnly = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'machines' },
+		});
+		const mc = machineOnly.weeks
+			.flatMap((w) => w.sessions)
+			.find((s) => s.modality === 'strength')!;
+		expect(mc.title).toBe('Strength');
+		expect(mc.type).toBe('machine-circuit');
+		expect(mc.prescription.summary).toContain('machines');
+	});
+
+	it('starts an older runner at a lower recommended volume', () => {
+		const young = generatePlan({ ...base, baseline: { experience: 'intermediate', age: 28 } });
+		const old = generatePlan({ ...base, baseline: { experience: 'intermediate', age: 68 } });
+		expect(old.meta.baseWeeklyKm).toBeLessThan(young.meta.baseWeeklyKm);
+	});
+
+	it('builds a lower peak for an older runner at the same starting volume', () => {
+		const peak = (p: ReturnType<typeof generatePlan>) =>
+			Math.max(...p.weeks.map((w) => w.targetVolumeKm));
+		const young = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', weeklyKm: 40, age: 28 },
+		});
+		const old = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', weeklyKm: 40, age: 68 },
+		});
+		expect(peak(old)).toBeLessThan(peak(young));
+	});
+
 	it('sets strength volume by level', () => {
 		const setCount = (experience: 'beginner' | 'advanced') => {
 			const p = generatePlan({ ...base, baseline: { experience, equipment: 'machines' } });

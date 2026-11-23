@@ -8,7 +8,7 @@
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setUnits, setVitals } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
@@ -26,6 +26,14 @@
 	let buildPreference = $state<'ease-in' | 'steady' | 'ambitious'>('steady');
 	let days = $state<number[]>([0, 2, 4, 6]);
 	let notes = $state('');
+
+	// Personal details, asked first. Age drives the plan (see the engine's age
+	// bands); the name is only used in the app. Vitals are optional.
+	let firstName = $state('');
+	let ageInput = $state('');
+	let heightInput = $state('');
+	let weightInput = $state('');
+	let restingHrInput = $state('');
 
 	// Strength and body preferences.
 	let equipment = $state<
@@ -90,6 +98,11 @@
 
 	const selected = $derived(profiles.find((p) => p.slug === slug));
 	const needsRaceDate = $derived(slug !== 'whole-fitness');
+	// The plan review the API stored on the plan, shown in the review step.
+	const planReview = $derived.by(() => {
+		const params = draft?.plan?.params as { review?: unknown } | null | undefined;
+		return typeof params?.review === 'string' ? params.review : '';
+	});
 
 	const vdot = $derived.by(() => {
 		const dist = RACE_DISTANCES.find((d) => d.key === raceKey);
@@ -135,6 +148,16 @@
 	// ranges so the choice is easy: what is typical, what is better, what is a lot.
 	const steps = $derived.by<Step[]>(() => {
 		const out: Step[] = [
+			{
+				id: 'about',
+				title: 'First, a little about you',
+				lede: 'Your age shapes the plan: how much weekly volume it builds and how gently it climbs, since recovery changes with age. Height, weight and resting heart rate are optional and stay private.',
+				guide: [
+					'Your age tunes the training, not your name. The name is only how we greet you.',
+					'Everything here is optional except your age.',
+					'We never show these details to anyone else.',
+				],
+			},
 			{
 				id: 'goal',
 				title: 'What are you training for?',
@@ -284,7 +307,7 @@
 	const isLast = $derived(stepIndex >= steps.length - 1);
 	const progress = $derived((Math.min(stepIndex, steps.length - 1) + 1) / steps.length);
 
-	const recWeekly = $derived(recommendWeeklyKm(experience, slug, prefs.units));
+	const recWeekly = $derived(recommendWeeklyKm(experience, slug, prefs.units, parsedAge() ?? undefined));
 	const recStrength = $derived(recommendStrengthDays(slug));
 	const recMinutes = $derived(recommendSessionMinutes());
 	const recBuild = $derived(recommendBuildPreference(experience));
@@ -399,6 +422,26 @@
 		return typeof v === 'string' ? v.trim() : v == null ? '' : String(v).trim();
 	}
 
+	/** Whole years from the age field, or null when it is not a plausible age. */
+	function parsedAge(): number | null {
+		const n = Number(str(ageInput));
+		return Number.isInteger(n) && n > 0 && n < 120 ? n : null;
+	}
+
+	/** Vitals in stored metric, converted from the runner's units. Null when blank or implausible. */
+	function vitalsToStore(): { heightCm: number | null; weightKg: number | null; restingHr: number | null } {
+		const h = Number(str(heightInput));
+		const w = Number(str(weightInput));
+		const hr = Number(str(restingHrInput));
+		const heightCm = prefs.units === 'imperial' ? h * 2.54 : h;
+		const weightKg = prefs.units === 'imperial' ? w / 2.20462 : w;
+		return {
+			heightCm: Number.isFinite(heightCm) && heightCm >= 120 && heightCm <= 250 ? Math.round(heightCm * 10) / 10 : null,
+			weightKg: Number.isFinite(weightKg) && weightKg >= 25 && weightKg <= 300 ? Math.round(weightKg * 10) / 10 : null,
+			restingHr: Number.isFinite(hr) && hr >= 30 && hr <= 120 ? Math.round(hr) : null,
+		};
+	}
+
 	function toggleDay(d: number) {
 		days = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => a - b);
 	}
@@ -469,6 +512,10 @@
 	}
 
 	function validate(): boolean {
+		if (step.id === 'about' && parsedAge() == null) {
+			error = 'Add your age so we can tune the plan.';
+			return false;
+		}
 		if (step.id === 'date' && !targetDate) {
 			error = 'Pick a race date.';
 			return false;
@@ -543,6 +590,13 @@
 				...(needsRaceDate && targetDate ? { targetDate } : {}),
 			};
 
+			// Store the personal details first, so plan generation reads the age.
+			// Age is kept as a birth year so it stays right over time.
+			const age = parsedAge();
+			const birthYear = age != null ? new Date().getUTCFullYear() - age : null;
+			await setPersonal({ name: str(firstName), birthYear });
+			await setVitals(vitalsToStore());
+
 			// Store the equipment choice first, so plan generation reads it.
 			await setEquipment(equipment);
 			await setEquipmentItems(equipmentItems);
@@ -580,6 +634,13 @@
 		<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
 		<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
 		<p class="mt-2 text-sm text-steel">Have a play with it. This is a preview, so nothing you change here is saved. Your plan is already built and waiting.</p>
+
+		{#if planReview}
+			<div class="mt-4 rounded-xl border border-hairline bg-sunken p-4">
+				<p class="tabular text-xs uppercase tracking-widest text-steel">Your coach's read</p>
+				<p class="mt-2 text-sm leading-relaxed text-ink">{planReview}</p>
+			</div>
+		{/if}
 
 		<div class="mt-5">
 			{#each DAY_NAMES as name, d (d)}
@@ -666,7 +727,71 @@
 			<p class="mt-2 text-sm leading-relaxed text-steel">{step.lede}</p>
 
 			<div class="mt-5">
-				{#if step.id === 'goal'}
+				{#if step.id === 'about'}
+					<div class="grid gap-4">
+						<label class="block">
+							<span class="text-sm font-medium">What should we call you?</span>
+							<input
+								type="text"
+								bind:value={firstName}
+								maxlength="40"
+								placeholder="First name"
+								class="mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+							/>
+						</label>
+						<label class="block">
+							<span class="text-sm font-medium">Age</span>
+							<input
+								type="number"
+								bind:value={ageInput}
+								min="10"
+								max="110"
+								placeholder="40"
+								class="tabular mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+							/>
+							<span class="mt-1 block text-xs text-steel">Used only to tune the plan by age band.</span>
+						</label>
+						<div class="grid grid-cols-3 gap-2">
+							<label class="block">
+								<span class="text-sm font-medium">Height</span>
+								<input
+									type="number"
+									bind:value={heightInput}
+									placeholder={prefs.units === 'imperial' ? '70' : '178'}
+									class="tabular mt-1 w-full min-w-0 rounded-xl border border-hairline bg-paper px-3 py-3 text-sm"
+								/>
+								<span class="mt-1 block text-[10px] uppercase tracking-wide text-steel">
+									{prefs.units === 'imperial' ? 'inches' : 'cm'}
+								</span>
+							</label>
+							<label class="block">
+								<span class="text-sm font-medium">Weight</span>
+								<input
+									type="number"
+									bind:value={weightInput}
+									placeholder={prefs.units === 'imperial' ? '160' : '72'}
+									class="tabular mt-1 w-full min-w-0 rounded-xl border border-hairline bg-paper px-3 py-3 text-sm"
+								/>
+								<span class="mt-1 block text-[10px] uppercase tracking-wide text-steel">
+									{prefs.units === 'imperial' ? 'lb' : 'kg'}
+								</span>
+							</label>
+							<label class="block">
+								<span class="text-sm font-medium">Resting HR</span>
+								<input
+									type="number"
+									bind:value={restingHrInput}
+									min="30"
+									max="120"
+									placeholder="60"
+									class="tabular mt-1 w-full min-w-0 rounded-xl border border-hairline bg-paper px-3 py-3 text-sm"
+								/>
+								<span class="mt-1 block text-[10px] uppercase tracking-wide text-steel">bpm</span>
+							</label>
+						</div>
+						<p class="text-xs text-steel">Height, weight and resting heart rate are optional, and never shown to anyone else.</p>
+					</div>
+				{:else if step.id === 'goal'}
 					<div class="grid gap-2">
 						{#each profiles as p (p.slug)}
 							<button

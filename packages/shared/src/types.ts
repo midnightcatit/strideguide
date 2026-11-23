@@ -93,6 +93,12 @@ export interface Baseline {
 	/** Self-described experience level. */
 	experience?: 'beginner' | 'intermediate' | 'advanced';
 	/**
+	 * Age in whole years, from onboarding (stored as a birth year in settings so it
+	 * stays right over time). Used only to tune training heuristics by age band,
+	 * never for identity. Optional; the plan is age-neutral when it is missing.
+	 */
+	age?: number;
+	/**
 	 * An effective VDOT derived from the runner's own recent logged efforts, when
 	 * they have not given a race time. Used for paces so they reflect what the
 	 * runner has actually been running.
