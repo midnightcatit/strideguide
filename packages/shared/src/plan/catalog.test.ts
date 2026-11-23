@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_MOVES, circuitFor, findMove, moveCategory } from './catalog';
+import { ALL_MOVES, circuitFor, findMove, moveCategory, strengthShape } from './catalog';
 import { GYM_PRESETS } from './gyms';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
 import { DYNAMIC_DRILLS, RECOVERY_DRILLS, STRETCHES, findDrill } from './stretches';
@@ -109,6 +109,23 @@ describe('circuitFor filters and phasing', () => {
 		expect(base.every((m) => !FREE.has(moveCategory(m) as string))).toBe(true);
 		const later = circuitFor('full-gym', 60, undefined, true, 'intermediate');
 		expect(later.some((m) => FREE.has(moveCategory(m) as string))).toBe(true);
+	});
+});
+
+describe('strengthShape', () => {
+	it('reads the moves, not the equipment mode', () => {
+		expect(strengthShape(circuitFor('machines', 60))).toBe('machines');
+		expect(strengthShape(circuitFor('bodyweight', 60))).toBe('bodyweight');
+		// A machines-mode circuit with a kit that has no machines fills with
+		// bodyweight, so it must not be reported as a machine circuit.
+		expect(strengthShape(circuitFor('machines', 60, ['bands']))).toBe('bodyweight');
+	});
+
+	it('calls a blend mixed', () => {
+		const legPress = findMove('Leg press')!;
+		const squat = findMove('Bodyweight squat')!;
+		expect(strengthShape([legPress, squat])).toBe('mixed');
+		expect(strengthShape([])).toBe('mixed');
 	});
 });
 

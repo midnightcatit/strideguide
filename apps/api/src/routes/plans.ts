@@ -16,10 +16,10 @@ import type {
 	QualityKind,
 	SessionArchetype,
 } from '@strideguide/shared';
-import { DEFAULT_PREFS, type Prefs } from '@strideguide/shared/units';
+import { DEFAULT_PREFS, ageFromBirthYear, type Prefs } from '@strideguide/shared/units';
 import { schema } from '../db';
 import type { Db } from '../db';
-import { narrateAndStore, templateWeekSummary } from '../lib/narration';
+import { narrateAndStore, reviewPlan, templateWeekSummary } from '../lib/narration';
 import { shapePlan } from '../lib/plan-shape';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
@@ -457,8 +457,13 @@ plans.post(
 			{ raceTimes: baseline.recentTimes },
 		);
 		const prefs = await loadPrefs(db, user.id);
+		// Age is stored as a birth year in settings, so it stays right over time.
+		// Seed it onto the baseline (unless the body already carried one), where the
+		// engine tunes the plan by age band and the stored goal keeps it for rebuilds.
+		const age = ageFromBirthYear(prefs.birthYear);
 		const seededBaseline: Baseline = {
 			...baseline,
+			...(baseline.age == null && age != null ? { age } : {}),
 			...(prefs.equipment ? { equipment: prefs.equipment } : {}),
 			...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
 			...(baseline.effectiveVdot == null && fitness.effectiveVdot != null
@@ -483,31 +488,43 @@ plans.post(
 		};
 		const baseDraft = generatePlan(planInput);
 
-		// The engine lays the plan out instantly. Then the model shapes each week
-		// (quality kind and emphasis) within the profile's rules. Bounded and
-		// best-effort, so a slow or invalid answer leaves the engine's plan standing.
+		// The engine lays the plan out instantly. Then, in parallel, the model shapes
+		// each week (quality kind and emphasis) within the profile's rules, and writes
+		// a short plan review. Both are bounded and best-effort, so a slow or invalid
+		// answer leaves the engine's plan and a deterministic review standing.
 		const allowed = (['tempo', 'hills', 'interval', 'race-pace'] as QualityKind[]).filter((k) =>
 			profile.sessionTypes.includes(k as SessionArchetype),
 		);
-		const shapes = await shapePlan(c.env, {
-			goalName: profile.name,
-			allowed,
-			prefs: baseline as Record<string, unknown>,
-			fitness: {
-				recentWeeklyKm: fitness.recentWeeklyKm,
-				rpeTrend: fitness.rpeTrend,
-				likedTypes: fitness.likedTypes,
-				dislikedTypes: fitness.dislikedTypes,
-				samples: fitness.samples,
-			},
-			weeks: baseDraft.weeks.map((w) => ({
-				weekNumber: w.weekNumber,
-				phase: w.phase,
-				volumeKm: w.targetVolumeKm,
-			})),
-		});
+		const firstWeekSessions = baseDraft.weeks[0]?.sessions ?? [];
+		const [shapes, review] = await Promise.all([
+			shapePlan(c.env, {
+				goalName: profile.name,
+				allowed,
+				prefs: baseline as Record<string, unknown>,
+				fitness: {
+					recentWeeklyKm: fitness.recentWeeklyKm,
+					rpeTrend: fitness.rpeTrend,
+					likedTypes: fitness.likedTypes,
+					dislikedTypes: fitness.dislikedTypes,
+					samples: fitness.samples,
+				},
+				weeks: baseDraft.weeks.map((w) => ({
+					weekNumber: w.weekNumber,
+					phase: w.phase,
+					volumeKm: w.targetVolumeKm,
+				})),
+			}),
+			reviewPlan(c.env, {
+				goalName: profile.name,
+				totalWeeks: baseDraft.meta.totalWeeks,
+				age: seededBaseline.age,
+				phases: baseDraft.weeks.map((w) => w.phase),
+				strengthPerWeek: firstWeekSessions.filter((s) => s.modality === 'strength').length,
+				firstWeek: firstWeekSessions.map((s) => s.title),
+			}),
+		]);
 		const draft = shapes ? generatePlan({ ...planInput, weekShapes: shapes }) : baseDraft;
-		const usedAi = !!shapes;
+		const usedAi = !!shapes || review.usedAi;
 
 		const goalId = crypto.randomUUID();
 		await db.insert(schema.userGoals).values({
@@ -530,6 +547,9 @@ plans.post(
 				vdot: draft.meta.vdot ?? null,
 				baseWeeklyKm: draft.meta.baseWeeklyKm,
 				totalWeeks: draft.meta.totalWeeks,
+				// The plan review shown in the review step. Unit-free, so it reads the
+				// same whatever units the runner later picks.
+				review: review.text,
 			},
 			status: 'active',
 		});
@@ -664,8 +684,13 @@ plans.post('/adapt', async (c) => {
 			})),
 	}));
 
+	// Keep age current on a rebuild: the stored goal carries it from onboarding, and
+	// the birth year in settings is the fallback for a goal created before that.
+	const storedBaseline = (goal.baseline ?? {}) as Baseline;
+	const age = storedBaseline.age ?? ageFromBirthYear(prefs.birthYear);
 	const baseline: Baseline = {
-		...((goal.baseline ?? {}) as Baseline),
+		...storedBaseline,
+		...(age != null ? { age } : {}),
 		...(prefs.equipment ? { equipment: prefs.equipment } : {}),
 		...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
 	};

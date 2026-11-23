@@ -44,6 +44,25 @@ export function moveCategory(m: MachineExercise): EquipmentItem | 'bodyweight' {
 	return 'bodyweight';
 }
 
+/** What a built circuit is actually made of, read from its moves. */
+export type StrengthShape = 'machines' | 'bodyweight' | 'mixed';
+
+/**
+ * The shape of a strength circuit, taken from the moves actually selected rather
+ * than the equipment mode the runner picked. A machines-mode circuit still tops
+ * up with bodyweight moves when a pattern has no machine, and every mode leans on
+ * bodyweight to fill gaps, so the label has to follow the moves or a card can read
+ * "Machine circuit" over a bodyweight squat. `mixed` covers a blend (machines plus
+ * bodyweight, or free weights plus bodyweight).
+ */
+export function strengthShape(circuit: MachineExercise[]): StrengthShape {
+	if (!circuit.length) return 'mixed';
+	const categories = new Set(circuit.map((m) => moveCategory(m)));
+	if ([...categories].every((c) => c === 'machines')) return 'machines';
+	if ([...categories].every((c) => c === 'bodyweight')) return 'bodyweight';
+	return 'mixed';
+}
+
 /** Circuit size for a session length in minutes. */
 export function circuitSize(minutes?: number): number {
 	if (!minutes) return 6;

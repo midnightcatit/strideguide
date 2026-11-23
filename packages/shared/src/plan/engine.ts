@@ -8,10 +8,10 @@ import type {
 	StructuredWorkout,
 	WorkoutStep,
 } from '../types';
-import { circuitFor } from './catalog';
+import { circuitFor, strengthShape } from './catalog';
 import type { MachineExercise } from './machines';
 import { COOLDOWN_STRETCHES, WARMUP_DRILLS, mobilityRoutine, type Drill } from './mobility';
-import { suggestedWeeklyKm } from './recommend';
+import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
 
@@ -56,7 +56,7 @@ const PURPOSE: Record<SessionArchetype, string> = {
 	hills: 'Strength-endurance: builds power and economy. Power up, control the descent.',
 	fartlek: 'Unstructured speed play that teaches pace changes with less pressure.',
 	race: 'Rehearsal at goal effort. Treat as a hard, purposeful effort.',
-	'machine-circuit': 'Full-body strength circuit: supports running economy and injury resistance.',
+	'machine-circuit': 'Builds the strength that protects joints and improves running economy.',
 	'full-body-strength': 'Builds the strength that protects joints and improves running economy.',
 	mobility: 'Range of motion and activation to keep the stride healthy.',
 	'cross-train': 'Low-impact aerobic work that spares running legs while building fitness.',
@@ -74,60 +74,46 @@ const TITLE: Record<SessionArchetype, string> = {
 	hills: 'Hill reps',
 	fartlek: 'Fartlek',
 	race: 'Race',
-	'machine-circuit': 'Machine circuit',
-	'full-body-strength': 'Full-body strength',
+	// Strength is labelled neutrally, since a session can mix machines, free
+	// weights and bodyweight moves. The equipment wording lives in the summary and
+	// the load note, which are built from the moves actually selected.
+	'machine-circuit': 'Strength',
+	'full-body-strength': 'Strength',
 	mobility: 'Mobility',
 	'cross-train': 'Cross-train',
 };
 
-/** Per-equipment wording for a strength session: archetype, noun and load note. */
-const MODE_COPY: Record<
-	EquipmentPreference,
-	{ type: SessionArchetype; noun: string; load: string }
-> = {
+/**
+ * Per-equipment wording for the load note on a strength session. The session
+ * archetype and noun are not here: they follow the moves actually selected, so a
+ * machines-mode circuit that tops up with bodyweight never reads as machine-only.
+ */
+const MODE_COPY: Record<EquipmentPreference, { load: string }> = {
 	machines: {
-		type: 'machine-circuit',
-		noun: 'machines',
 		load: 'Log weight per set; add load when you clear the top rep target.',
 	},
 	bodyweight: {
-		type: 'full-body-strength',
-		noun: 'moves',
 		load: 'Log reps. Make it harder with a slower lowering phase, a harder variation, or a longer hold.',
 	},
 	'bodyweight-dumbbells': {
-		type: 'full-body-strength',
-		noun: 'moves',
 		load: 'Log reps early, then weight once dumbbells enter. Progress with load or a slower lowering phase.',
 	},
 	dumbbells: {
-		type: 'full-body-strength',
-		noun: 'dumbbell moves',
 		load: 'Log weight per set; add load when you clear the top reps with good form.',
 	},
 	barbell: {
-		type: 'full-body-strength',
-		noun: 'barbell lifts',
 		load: 'Log weight per set; add load when the top reps feel smooth and controlled.',
 	},
 	kettlebell: {
-		type: 'full-body-strength',
-		noun: 'kettlebell moves',
 		load: 'Log weight per set; add load or reps while the swings stay crisp.',
 	},
 	bands: {
-		type: 'full-body-strength',
-		noun: 'band moves',
 		load: 'Log reps; move to a harder band or slow the return when it gets easy.',
 	},
 	both: {
-		type: 'full-body-strength',
-		noun: 'exercises',
 		load: 'Log weight per set on machines and reps on bodyweight moves.',
 	},
 	'full-gym': {
-		type: 'full-body-strength',
-		noun: 'exercises',
 		load: 'Log weight per set; add load when you clear the top reps with good form.',
 	},
 };
@@ -174,7 +160,7 @@ function baseWeeklyKm(input: PlanInput): number {
 	if (typeof input.baseline.weeklyKm === 'number' && input.baseline.weeklyKm > 0) {
 		return input.baseline.weeklyKm;
 	}
-	return suggestedWeeklyKm(input.baseline.experience, input.profile.slug);
+	return suggestedWeeklyKm(input.baseline.experience, input.profile.slug, input.baseline.age);
 }
 
 function volumeCurve(input: PlanInput, phases: string[]): number[] {
@@ -192,7 +178,12 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 		ambitious: { step: 1.2, start: 0.95 },
 	};
 	const build = BUILD[input.baseline.buildPreference ?? 'steady'] ?? BUILD.steady!;
-	const levelStep = (LEVEL_STEP[input.baseline.experience ?? 'beginner'] ?? 1) * build.step;
+	// Age eases the weekly growth rate for masters runners (see ageBuildFactor), so
+	// an older runner's own starting volume is respected but the ramp is gentler.
+	const levelStep =
+		(LEVEL_STEP[input.baseline.experience ?? 'beginner'] ?? 1) *
+		build.step *
+		ageBuildFactor(input.baseline.age);
 	const startFactor = build.start;
 	const out: number[] = [];
 	let prev = base;
@@ -1068,9 +1059,13 @@ function strengthSession(
 		sets: Array.from({ length: setCount }, () => ({ reps, weightKg: 0 })),
 	}));
 	const copy = MODE_COPY[mode];
-	const type: SessionArchetype = copy.type;
+	// The label and noun follow the moves actually selected, not the equipment
+	// mode, so a machine session that tops up with bodyweight reads honestly.
+	const shape = strengthShape(circuit);
+	const type: SessionArchetype = shape === 'machines' ? 'machine-circuit' : 'full-body-strength';
+	const noun = shape === 'machines' ? 'machines' : 'moves';
 	const why = heavySport
-		? `Trimmed to ${circuit.length} ${copy.noun}. In the last week you logged ${load.describe}, which already counts as training.`
+		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
 		: undefined;
 	return {
 		day,
@@ -1080,7 +1075,7 @@ function strengthSession(
 		title: TITLE[type],
 		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} ${copy.noun} · ${setCount} × ${reps}, control the lowering phase.`,
+			summary: `${sets.length} ${noun} · ${setCount} × ${reps}, control the lowering phase.`,
 			blocks: sets,
 			targetRpe: [7, 8],
 			notes: copy.load,
