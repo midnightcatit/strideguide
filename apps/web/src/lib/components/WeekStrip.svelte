@@ -9,6 +9,7 @@
 		todayInWeek = false,
 		loggedBySession,
 		onSelect,
+		onWeekStep,
 	}: {
 		week: ClientWeek | undefined;
 		selectedDay: number;
@@ -16,6 +17,7 @@
 		todayInWeek?: boolean;
 		loggedBySession: { has(id: string): boolean };
 		onSelect: (day: number) => void;
+		onWeekStep?: (delta: 1 | -1) => void;
 	} = $props();
 
 	function level(day: number): number {
@@ -36,6 +38,30 @@
 			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0);
 	}
 </script>
+
+<!-- Week control: the arrows move a whole week at a time. The day tabs below
+     step a single day. -->
+{#if onWeekStep}
+	<div class="mb-1 flex items-center justify-between gap-2">
+		<button
+			type="button"
+			onclick={() => onWeekStep(-1)}
+			aria-label="Previous week"
+			class="flex h-9 w-9 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
+		>
+			‹
+		</button>
+		<span class="tabular text-xs uppercase tracking-widest text-steel">{week ? `W${week.weekNumber}` : 'Week'}</span>
+		<button
+			type="button"
+			onclick={() => onWeekStep(1)}
+			aria-label="Next week"
+			class="flex h-9 w-9 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
+		>
+			›
+		</button>
+	</div>
+{/if}
 
 <div class="grid grid-cols-7 gap-1" role="group" aria-label="Days of the week">
 	{#each DAY_INITIALS as initial, day (day)}
