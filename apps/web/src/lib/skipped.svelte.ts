@@ -1,7 +1,10 @@
 /**
- * Sessions the user skipped "for now". Kept on the device, so a skip hides the
- * card for the day without touching the plan or the server, and can be undone.
+ * Sessions the user skipped "for now". The server is the source of truth, so it
+ * follows the user across devices; this is a per-session cache and an optimistic
+ * local update.
  */
+import { api } from './api';
+
 const KEY = 'sg:skipped';
 
 let ids = $state<Set<string>>(new Set());
@@ -26,9 +29,15 @@ export function isSkipped(id: string): boolean {
 	return ids.has(id);
 }
 
+export function hydrateSkipped(list: string[]): void {
+	ids = new Set(list);
+	persist();
+}
+
 export function skipSession(id: string): void {
 	ids = new Set(ids).add(id);
 	persist();
+	void api.setSessionState(id, 'skipped').catch(() => {});
 }
 
 export function unskipSession(id: string): void {
@@ -36,4 +45,5 @@ export function unskipSession(id: string): void {
 	next.delete(id);
 	ids = next;
 	persist();
+	void api.setSessionState(id, null).catch(() => {});
 }

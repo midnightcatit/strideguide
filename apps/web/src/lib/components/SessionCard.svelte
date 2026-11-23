@@ -4,6 +4,7 @@
 	import { fmtDistance, fmtPace, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { isStarted } from '$lib/started.svelte';
+	import { isSkipped } from '$lib/skipped.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let {
@@ -15,6 +16,7 @@
 		onStart,
 		onOpen,
 		onRemove,
+		onUnskip,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -24,21 +26,36 @@
 		onStart?: () => void;
 		onOpen?: () => void;
 		onRemove?: () => void;
+		onUnskip?: () => void;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
-	const status = $derived<'done' | 'in-progress' | 'not-started'>(
-		logged ? 'done' : isStarted(session.id) ? 'in-progress' : 'not-started',
+	const status = $derived<'done' | 'skipped' | 'in-progress' | 'not-started'>(
+		logged
+			? 'done'
+			: isSkipped(session.id)
+				? 'skipped'
+				: isStarted(session.id)
+					? 'in-progress'
+					: 'not-started',
 	);
 	const statusLabel = $derived(
-		status === 'done' ? 'Done' : status === 'in-progress' ? 'In progress' : 'Not started',
+		status === 'done'
+			? 'Done'
+			: status === 'skipped'
+				? 'Skipped'
+				: status === 'in-progress'
+					? 'In progress'
+					: 'Not started',
 	);
 	const statusClass = $derived(
 		status === 'done'
 			? 'bg-ok-wash text-ok'
-			: status === 'in-progress'
-				? 'bg-signal-wash text-signal-ink'
-				: 'bg-sunken text-steel',
+			: status === 'skipped'
+				? 'bg-ink/10 text-ink'
+				: status === 'in-progress'
+					? 'bg-signal-wash text-signal-ink'
+					: 'bg-sunken text-steel',
 	);
 	const isRun = $derived(session.modality === 'running');
 	const isStrength = $derived(session.modality === 'strength');
@@ -152,6 +169,25 @@
 					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
 				>
 					Log again
+				</button>
+			{/if}
+		{:else if status === 'skipped'}
+			{#if onUnskip}
+				<button
+					type="button"
+					onclick={onUnskip}
+					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
+				>
+					Un-skip
+				</button>
+			{/if}
+			{#if onLog}
+				<button
+					type="button"
+					onclick={onLog}
+					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+				>
+					Log it
 				</button>
 			{/if}
 		{:else}

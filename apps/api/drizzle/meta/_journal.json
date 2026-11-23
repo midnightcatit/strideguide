@@ -43,6 +43,13 @@
       "when": 1795405214216,
       "tag": "0005_sharp_doomsday",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795441068172,
+      "tag": "0006_shallow_salo",
+      "breakpoints": true
     }
   ]
 }

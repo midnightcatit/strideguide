@@ -90,6 +90,8 @@ export interface CurrentPlan {
 	plan: { id: string; params: Record<string, unknown> | null } | null;
 	weeks: ClientWeek[];
 	logs: ClientLog[];
+	/** Per-session started or skipped state, kept on the server. */
+	sessionStates?: { sessionId: string; state: 'started' | 'skipped' }[];
 }
 
 export const DAY_INITIALS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];

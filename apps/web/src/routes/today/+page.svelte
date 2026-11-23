@@ -7,7 +7,7 @@
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
+	import { skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { markStarted } from '$lib/started.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
@@ -19,12 +19,14 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
+	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
+	let confirm = $state<{ kind: 'skip' | 'unskip'; id: string } | null>(null);
 
 	// Back (browser or hardware) closes an open overlay instead of leaving the page.
 	overlayHistory(
@@ -60,8 +62,7 @@
 	const selWeek = $derived(sel?.week);
 	const selDay = $derived(sel?.day ?? todayIndex);
 	const daySessions = $derived(selWeek ? selWeek.sessions.filter((s) => s.day === selDay) : []);
-	const visibleSessions = $derived(daySessions.filter((s) => !isSkipped(s.id)));
-	const skippedCount = $derived(daySessions.length - visibleSessions.length);
+	// Skipped sessions stay on the card list, marked as skipped.
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
@@ -221,8 +222,8 @@
 						eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
 						meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
 					/>
-					{#if visibleSessions.length}
-						<SessionCarousel sessions={visibleSessions} {card} />
+					{#if daySessions.length}
+						<SessionCarousel sessions={daySessions} {card} />
 					{:else if selWeek}
 						<Card tone="sunken" frame>
 							<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
@@ -231,18 +232,6 @@
 						<Card tone="sunken" frame>
 							<p class="text-sm text-steel">This day is outside your plan.</p>
 						</Card>
-					{/if}
-					{#if skippedCount > 0}
-						<p class="mt-2 text-xs text-steel">
-							{skippedCount} skipped for now.
-							<button
-								type="button"
-								onclick={() => daySessions.forEach((s) => unskipSession(s.id))}
-								class="text-signal-ink hover:underline"
-							>
-								Undo
-							</button>
-						</p>
 					{/if}
 				</div>
 			{/key}
@@ -318,5 +307,26 @@
 			playTarget = s;
 		}}
 		onOpen={() => (detailTarget = s)}
+		onUnskip={() => (confirm = { kind: 'unskip', id: s.id })}
 	/>
 {/snippet}
+
+{#if confirm}
+	<ConfirmSheet
+		title={confirm.kind === 'skip' ? 'Skip this workout?' : 'Un-skip this workout?'}
+		body={confirm.kind === 'skip'
+			? 'It stays on your calendar, marked as skipped. You can un-skip it any time.'
+			: 'It goes back to your normal plan for the day.'}
+		confirmLabel={confirm.kind === 'skip' ? 'Skip it' : 'Un-skip'}
+		onConfirm={() => {
+			if (!confirm) return;
+			if (confirm.kind === 'skip') {
+				skipSession(confirm.id);
+				detailTarget = null;
+			} else {
+				unskipSession(confirm.id);
+			}
+		}}
+		onClose={() => (confirm = null)}
+	/>
+{/if}

@@ -108,6 +108,13 @@ export const api = {
 	removeWorkout: (id: string) =>
 		req<{ ok: boolean }>(`/plans/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
+	/** Set or clear a session's started or skipped state. */
+	setSessionState: (id: string, state: 'started' | 'skipped' | null) =>
+		req<{ ok: boolean }>(`/plans/sessions/${encodeURIComponent(id)}/state`, {
+			method: 'POST',
+			body: JSON.stringify({ state }),
+		}),
+
 	/** Save a log; if offline, queue it and return an optimistic (pending) log. */
 	log: async (body: unknown): Promise<{ log: unknown }> => {
 		try {

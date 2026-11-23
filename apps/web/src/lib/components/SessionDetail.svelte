@@ -174,11 +174,10 @@
 	<!-- Coloured header band, tinted by the session's demand -->
 	<div class="relative overflow-hidden bg-ink text-paper">
 		<div
-			class="pointer-events-none absolute inset-0 opacity-25 {logged
-				? 'bg-ok'
-				: session.modality === 'running' && p.intensity === 'hard'
-					? 'bg-signal'
-					: 'bg-steel'}"
+			class="pointer-events-none absolute inset-0 opacity-25 {session.modality === 'running' &&
+			p.intensity === 'hard'
+				? 'bg-signal'
+				: 'bg-steel'}"
 			aria-hidden="true"
 		></div>
 		<header class="relative mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 pt-3">

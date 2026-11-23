@@ -3,6 +3,7 @@
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import { isStarted } from '$lib/started.svelte';
+	import { isSkipped } from '$lib/skipped.svelte';
 
 	let {
 		session,
@@ -14,18 +15,32 @@
 		onOpen?: () => void;
 	} = $props();
 
-	const status = $derived<'done' | 'in-progress' | 'not-started'>(
-		logged ? 'done' : isStarted(session.id) ? 'in-progress' : 'not-started',
+	const status = $derived<'done' | 'skipped' | 'in-progress' | 'not-started'>(
+		logged
+			? 'done'
+			: isSkipped(session.id)
+				? 'skipped'
+				: isStarted(session.id)
+					? 'in-progress'
+					: 'not-started',
 	);
 	const statusLabel = $derived(
-		status === 'done' ? 'Done' : status === 'in-progress' ? 'In progress' : 'Not started',
+		status === 'done'
+			? 'Done'
+			: status === 'skipped'
+				? 'Skipped'
+				: status === 'in-progress'
+					? 'In progress'
+					: 'Not started',
 	);
 	const statusClass = $derived(
 		status === 'done'
 			? 'bg-ok-wash text-ok'
-			: status === 'in-progress'
-				? 'bg-signal-wash text-signal-ink'
-				: 'bg-sunken text-steel',
+			: status === 'skipped'
+				? 'bg-ink/10 text-ink'
+				: status === 'in-progress'
+					? 'bg-signal-wash text-signal-ink'
+					: 'bg-sunken text-steel',
 	);
 	const p = $derived(session.prescription ?? {});
 	const detail = $derived(
