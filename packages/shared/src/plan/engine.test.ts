@@ -316,3 +316,114 @@ describe('generatePlan (model shaping)', () => {
 		expect(withShape.weeks.length).toBe(without.weeks.length);
 	});
 });
+
+describe('progression (volume builds, sessions differentiate)', () => {
+	const levels = ['beginner', 'intermediate', 'advanced'] as const;
+	const slugs = ['marathon', 'half-marathon', '10k', '5k', 'whole-fitness'];
+	const forLevel = (slug: string, experience: (typeof levels)[number]) =>
+		generatePlan({
+			profile: GOAL_PROFILES.find((g) => g.slug === slug)!,
+			baseline: { experience },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+		});
+
+	// The regression this protects: an easy run used to be capped at the long
+	// run's length, so on a light week the two came out identical (a beginner 5K
+	// showed an easy run and a long run both at the same 3.2 mi).
+	it('always keeps an easy run strictly shorter than the long run', () => {
+		for (const slug of slugs) {
+			for (const experience of levels) {
+				const p = forLevel(slug, experience);
+				for (const w of p.weeks) {
+					const long = w.sessions.find((s) => s.type === 'long');
+					const easy = w.sessions.find((s) => s.type === 'easy');
+					if (long && easy) {
+						expect(easy.prescription.targetDistanceKm!).toBeLessThan(
+							long.prescription.targetDistanceKm!,
+						);
+					}
+				}
+			}
+		}
+	});
+
+	it('never lets another run be longer than the long run', () => {
+		for (const slug of slugs) {
+			const p = forLevel(slug, 'intermediate');
+			for (const w of p.weeks) {
+				const runs = w.sessions.filter((s) => s.modality === 'running');
+				const long = runs.find((s) => s.type === 'long');
+				if (!long) continue;
+				for (const r of runs) {
+					expect(r.prescription.targetDistanceKm ?? 0).toBeLessThanOrEqual(
+						long.prescription.targetDistanceKm! + 0.05,
+					);
+				}
+			}
+		}
+	});
+
+	it('progresses the long run across the plan', () => {
+		const p = forLevel('marathon', 'intermediate');
+		const longs = p.weeks.map(
+			(w) => w.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm ?? 0,
+		);
+		// The peak long run is clearly longer than the first week's.
+		expect(Math.max(...longs)).toBeGreaterThan(longs[0]! * 1.15);
+	});
+
+	it('builds the long run without a step over the ~10 percent ceiling', () => {
+		for (const slug of slugs) {
+			const p = forLevel(slug, 'intermediate');
+			const longs = p.weeks.map(
+				(w) => w.sessions.find((s) => s.type === 'long')!.prescription.targetDistanceKm!,
+			);
+			for (let i = 1; i < longs.length; i++) {
+				// Drops are deloads and the taper; a jump up never beats the ceiling.
+				expect(longs[i]!).toBeLessThanOrEqual(longs[i - 1]! * 1.1 + 0.35);
+			}
+		}
+	});
+
+	it('keeps the same run days in the ease-in week as the week after', () => {
+		const p = forLevel('marathon', 'intermediate');
+		const runDays = (wk: (typeof p.weeks)[number]) =>
+			wk.sessions.filter((s) => s.modality === 'running').length;
+		expect(runDays(p.weeks[0]!)).toBe(runDays(p.weeks[1]!));
+	});
+
+	it('keeps the same running days every week, so the week does not jump shape', () => {
+		const p = forLevel('marathon', 'intermediate');
+		const shape = (wk: (typeof p.weeks)[number]) =>
+			wk.sessions
+				.filter((s) => s.modality === 'running')
+				.map((s) => s.day)
+				.join(',');
+		const first = shape(p.weeks[0]!);
+		for (const w of p.weeks) expect(shape(w)).toBe(first);
+	});
+
+	it('never lets a taper week be heavier than the peak', () => {
+		for (const slug of slugs) {
+			const p = forLevel(slug, 'intermediate');
+			const peak = Math.max(...p.weeks.map((w) => w.targetVolumeKm));
+			for (const w of p.weeks.filter((x) => x.phase === 'taper')) {
+				expect(w.targetVolumeKm).toBeLessThanOrEqual(peak);
+			}
+		}
+	});
+
+	it('keeps the ease-in week among the lightest, never the heaviest', () => {
+		const p = forLevel('marathon', 'intermediate');
+		const build = p.weeks.filter((w) => w.phase !== 'taper').map((w) => w.targetVolumeKm);
+		const lightest = Math.min(...build.slice(1));
+		expect(p.weeks[0]!.targetVolumeKm).toBeLessThanOrEqual(lightest * 1.05);
+	});
+
+	it('starts an advanced runner higher than a beginner, same plan', () => {
+		const beginner = forLevel('marathon', 'beginner').weeks[0]!.targetVolumeKm;
+		const advanced = forLevel('marathon', 'advanced').weeks[0]!.targetVolumeKm;
+		expect(advanced).toBeGreaterThan(beginner);
+	});
+});

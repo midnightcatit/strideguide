@@ -10,6 +10,7 @@ import type {
 import { circuitFor } from './catalog';
 import type { MachineExercise } from './machines';
 import { COOLDOWN_STRETCHES, WARMUP_DRILLS, mobilityRoutine, type Drill } from './mobility';
+import { suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { pacesFromVdot, vdotFromBaseline } from './vdot';
 
@@ -110,27 +111,22 @@ function baseWeeklyKm(input: PlanInput): number {
 	if (typeof input.baseline.weeklyKm === 'number' && input.baseline.weeklyKm > 0) {
 		return input.baseline.weeklyKm;
 	}
-	const expFactor = { beginner: 0.55, intermediate: 1, advanced: 1.5 }[
-		input.baseline.experience ?? 'beginner'
-	];
-	const profileFactor: Record<string, number> = {
-		marathon: 1.15,
-		'half-marathon': 1,
-		'10k': 0.8,
-		'5k': 0.65,
-		'whole-fitness': 0.7,
-	};
-	return round1(20 * expFactor * (profileFactor[input.profile.slug] ?? 0.8));
+	return suggestedWeeklyKm(input.baseline.experience, input.profile.slug);
 }
 
 function volumeCurve(input: PlanInput, phases: string[]): number[] {
 	const base = baseWeeklyKm(input);
 	const rules = input.profile.progressionRules;
 	const byPhase = new Map(rules.map((r) => [r.phase, r]));
+	// Level sets how fast the plan builds. Beginners build more gently, advanced
+	// runners a little faster. No positive step may exceed the ~10 percent weekly
+	// ceiling that keeps injury risk down, and deload weeks still step back.
+	const levelStep = { beginner: 0.85, intermediate: 1, advanced: 1.15 }[
+		input.baseline.experience ?? 'beginner'
+	];
 	const out: number[] = [];
 	let prev = base;
 	let peak = base;
-	let phaseIdx = 0;
 	const withinPhase = new Map<string, number>();
 	for (let w = 0; w < phases.length; w++) {
 		const phase = phases[w]!;
@@ -138,18 +134,22 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 		const idx = withinPhase.get(phase) ?? 0;
 		withinPhase.set(phase, idx + 1);
 		let vol: number;
-		if (phase === 'taper') {
-			vol = peak * Math.pow(1 + rule.volumeStep, idx + 1);
+		if (w === 0) {
+			// Ease in: the first week sits just under the runner's current volume and
+			// builds from there, so the plan never opens at a peak.
+			vol = base * 0.9;
+		} else if (phase === 'taper') {
+			vol = peak * Math.pow(1 + Math.min(0, rule.volumeStep), idx + 1);
 		} else if (rule.deload && (idx + 1) % 4 === 0) {
 			vol = prev * 0.7;
 		} else {
-			vol = prev * (1 + rule.volumeStep);
+			const step = Math.min(Math.max(0, rule.volumeStep * levelStep), 0.1);
+			vol = prev * (1 + step);
 		}
 		vol = clamp(round1(vol), 5, 160);
 		if (phase !== 'taper') peak = Math.max(peak, vol);
 		out.push(vol);
 		prev = vol;
-		phaseIdx++;
 	}
 	return out;
 }
@@ -188,13 +188,13 @@ function secsForM(meters: number, paceSecPerKm: number): number {
 	return Math.round((meters / 1000) * paceSecPerKm);
 }
 
-function warmupStep(paces?: TrainingPaces): WorkoutStep {
+function warmupStep(paces: TrainingPaces | undefined, km = WARMUP_KM): WorkoutStep {
 	const p = paces ?? DEFAULT_PACES;
 	return {
 		kind: 'warmup',
 		label: 'Warm-up jog',
-		distanceM: Math.round(WARMUP_KM * 1000),
-		durationSec: secsForM(WARMUP_KM * 1000, p.easy[1]),
+		distanceM: Math.round(km * 1000),
+		durationSec: secsForM(km * 1000, p.easy[1]),
 		targetPaceSecPerKm: paces?.easy,
 		targetZone: 'Z1–Z2',
 		targetRpe: [2, 3],
@@ -202,16 +202,26 @@ function warmupStep(paces?: TrainingPaces): WorkoutStep {
 	};
 }
 
-function cooldownStep(paces?: TrainingPaces): WorkoutStep {
+function cooldownStep(paces: TrainingPaces | undefined, km = COOLDOWN_KM): WorkoutStep {
 	const p = paces ?? DEFAULT_PACES;
 	return {
 		kind: 'cooldown',
 		label: 'Cool-down jog',
-		distanceM: Math.round(COOLDOWN_KM * 1000),
-		durationSec: secsForM(COOLDOWN_KM * 1000, p.easy[1]),
+		distanceM: Math.round(km * 1000),
+		durationSec: secsForM(km * 1000, p.easy[1]),
 		targetPaceSecPerKm: paces?.easy,
 		targetRpe: [1, 3],
 	};
+}
+
+/**
+ * The run warm-up and cool-down for a quality session, scaled to the session so
+ * a light week is not mostly warm-up. A short session gets short, easy bookends.
+ */
+function qualityWarmupCooldown(totalKm: number): { wu: number; cd: number } {
+	const wu = clamp(round1(totalKm * 0.3), 0.6, 1.5);
+	const cd = clamp(round1(totalKm * 0.2), 0.4, 1.0);
+	return { wu, cd };
 }
 
 function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
@@ -261,10 +271,15 @@ function singleRunWorkout(
 	};
 }
 
-function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorkout {
+function tempoWorkout(
+	workKm: number,
+	wuKm: number,
+	cdKm: number,
+	paces?: TrainingPaces,
+): StructuredWorkout {
 	const blocks: StepBlock[] = [
 		drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
-		{ repeat: 1, steps: [warmupStep(paces)] },
+		{ repeat: 1, steps: [warmupStep(paces, wuKm)] },
 		{
 			repeat: 1,
 			label: 'Set',
@@ -272,8 +287,8 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 				{
 					kind: 'work',
 					label: 'Tempo',
-					distanceM: Math.round(qualityKm * 1000),
-					durationSec: secsForM(qualityKm * 1000, (paces ?? DEFAULT_PACES).threshold),
+					distanceM: Math.round(workKm * 1000),
+					durationSec: secsForM(workKm * 1000, (paces ?? DEFAULT_PACES).threshold),
 					targetPaceSecPerKm: paces ? [paces.threshold * 0.99, paces.threshold * 1.03] : undefined,
 					targetZone: 'Z3–Z4',
 					targetRpe: [6, 7],
@@ -281,12 +296,12 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 				},
 			],
 		},
-		{ repeat: 1, steps: [cooldownStep(paces)] },
+		{ repeat: 1, steps: [cooldownStep(paces, cdKm)] },
 		drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
-		totalDistanceKm: round1(WARMUP_KM + qualityKm + COOLDOWN_KM),
+		totalDistanceKm: round1(wuKm + workKm + cdKm),
 	};
 }
 
@@ -337,6 +352,8 @@ const RACE_PACE_SHAPE: Record<string, { distanceM: number; build: number; peak: 
 function repWorkout(opts: {
 	reps: number;
 	distanceM: number;
+	wuKm: number;
+	cdKm: number;
 	pace?: [number, number];
 	fallbackPace: number;
 	label: string;
@@ -352,7 +369,7 @@ function repWorkout(opts: {
 		: (opts.paces ?? DEFAULT_PACES).easy[1];
 	const blocks: StepBlock[] = [
 		drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
-		{ repeat: 1, steps: [warmupStep(opts.paces)] },
+		{ repeat: 1, steps: [warmupStep(opts.paces, opts.wuKm)] },
 		{
 			repeat: opts.reps,
 			label: 'Set',
@@ -377,24 +394,55 @@ function repWorkout(opts: {
 				},
 			],
 		},
-		{ repeat: 1, steps: [cooldownStep(opts.paces)] },
+		{ repeat: 1, steps: [cooldownStep(opts.paces, opts.cdKm)] },
 		drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
-		totalDistanceKm: round1(WARMUP_KM + opts.reps * ((opts.distanceM + recoveryM) / 1000) + COOLDOWN_KM),
+		totalDistanceKm: round1(
+			opts.wuKm + opts.reps * ((opts.distanceM + recoveryM) / 1000) + opts.cdKm,
+		),
 	};
 }
 
-function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
+/**
+ * A rep count and rep distance that fit a rep session inside its work budget, so
+ * a quality day never overtakes the long run. When even one nominal rep does not
+ * fit, the recovery and the rep shrink to fill the budget.
+ */
+function sizeReps(
+	workBudgetKm: number,
+	repM: number,
+	recM: number,
+	maxReps: number,
+): { reps: number; repM: number; recM: number } {
+	const perRep = (repM + recM) / 1000;
+	const fit = Math.floor(workBudgetKm / perRep);
+	if (fit >= 1) return { reps: Math.min(fit, maxReps), repM, recM };
+	const slotM = Math.max(200, Math.round(workBudgetKm * 1000));
+	const rec = Math.min(recM, Math.round(slotM * 0.4));
+	const work = Math.max(200, slotM - rec);
+	return { reps: 1, repM: work, recM: rec };
+}
+
+function intervalWorkout(
+	reps: number,
+	repM: number,
+	recM: number,
+	wuKm: number,
+	cdKm: number,
+	paces?: TrainingPaces,
+): StructuredWorkout {
 	return repWorkout({
 		reps,
-		distanceM: 800,
+		distanceM: repM,
+		wuKm,
+		cdKm,
 		pace: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
 		fallbackPace: (paces ?? DEFAULT_PACES).interval,
 		label: 'Interval',
 		note: 'Even, controlled reps. Stop the set if form breaks down.',
-		recoveryM: 800,
+		recoveryM: recM,
 		recoveryPace: paces?.easy,
 		paces,
 	});
@@ -402,34 +450,47 @@ function intervalWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout
 
 function racePaceWorkout(
 	profileSlug: string,
-	phase: string,
+	reps: number,
+	repM: number,
+	recM: number,
+	wuKm: number,
+	cdKm: number,
 	goalPace: number,
 	paces?: TrainingPaces,
 ): StructuredWorkout {
-	const shape = RACE_PACE_SHAPE[profileSlug] ?? RACE_PACE_SHAPE['half-marathon']!;
-	const reps = phase === 'peak' ? shape.peak : shape.build;
 	return repWorkout({
 		reps,
-		distanceM: shape.distanceM,
+		distanceM: repM,
+		wuKm,
+		cdKm,
 		pace: [goalPace * 0.99, goalPace * 1.01],
 		fallbackPace: goalPace,
 		label: 'Goal pace',
 		note: 'At your goal pace, with even splits and relaxed effort. This is what race day should feel like.',
-		recoveryM: Math.min(800, shape.distanceM),
+		recoveryM: recM,
 		recoveryPace: paces?.easy,
 		paces,
 	});
 }
 
-function hillsWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
+function hillsWorkout(
+	reps: number,
+	repM: number,
+	recM: number,
+	wuKm: number,
+	cdKm: number,
+	paces?: TrainingPaces,
+): StructuredWorkout {
 	return repWorkout({
 		reps,
-		distanceM: 400,
+		distanceM: repM,
+		wuKm,
+		cdKm,
 		pace: paces ? [paces.interval * 1.03, paces.interval * 1.12] : undefined,
 		fallbackPace: (paces ?? DEFAULT_PACES).interval * 1.05,
 		label: 'Hill rep',
 		note: 'Power up with short, quick steps, then jog or walk down to recover.',
-		recoveryM: 400,
+		recoveryM: recM,
 		recoveryPace: paces?.easy,
 		paces,
 	});
@@ -506,33 +567,68 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const weekEnd = addDays(weekStart, 6);
 		let strengthLeft = strengthCount;
 
-		// Ease in: the first week is easy running and strength only.
-		const qualityCount = w === 0 ? 0 : phase === 'taper' || phase === 'base' ? 1 : 2;
-		const qualityDays = pickSpaced(rest, Math.min(qualityCount, rest.length));
-		const usedForRun = new Set([longDay, ...qualityDays]);
+		// A profile with no hard session types (general fitness) never gets a
+		// quality day. Every other profile keeps a constant number of quality slots
+		// across the whole plan, so the week's run days never change shape: in base
+		// and taper fewer of those slots run hard (the rest run easy), and the first
+		// week eases in with every slot easy. A constant shape means the week's
+		// volume follows the plan curve instead of jumping the week quality starts.
+		const hasQuality = input.profile.sessionTypes.some((t) =>
+			['tempo', 'interval', 'hills', 'race-pace', 'threshold', 'strides', 'fartlek'].includes(t),
+		);
+		const qualitySlots = Math.min(hasQuality ? 2 : 0, Math.max(0, rest.length - 1));
+		const hardCount = !hasQuality ? 0 : w === 0 ? 0 : phase === 'base' || phase === 'taper' ? 1 : 2;
+		const slotDays = pickSpaced(rest, qualitySlots);
+		const qualityDays = slotDays.slice(0, Math.min(hardCount, slotDays.length));
+		const softDays = slotDays.filter((d) => !qualityDays.includes(d));
+		const usedForRun = new Set([longDay, ...slotDays]);
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
-		// Strength gets its own days, never sharing with a run. Keep at least one day
-		// for an easy run when there is one, so a week is never a single run.
-		const wantStrength = Math.min(strengthLeft, Math.max(0, runFree.length - 1));
-		const strengthDays = runFree.slice(runFree.length - wantStrength);
-		const easyDays = runFree.slice(0, runFree.length - wantStrength);
+		// Strength gets its own days, never sharing with a run, and takes them before
+		// the remaining days become easy runs.
+		const wantStrength = Math.min(strengthLeft, runFree.length);
+		const strengthDays = runFree.slice(0, wantStrength);
+		const easyDays = [...softDays, ...runFree.slice(wantStrength)];
 		strengthLeft -= wantStrength;
 
 		const load = sportLoad(input);
-		const qualityRaw = clamp(volume * 0.16, 3, 14);
+		// Session shape by goal: the long run's share of the week, and how much of
+		// the week one quality day takes (its whole distance, bookends included).
+		// A 5K leans on quality with a shorter long run; a marathon leans on a
+		// genuinely long, progressive long run.
+		const SHAPE: Record<string, { long: number; quality: number }> = {
+			marathon: { long: 0.34, quality: 0.17 },
+			'half-marathon': { long: 0.33, quality: 0.19 },
+			'10k': { long: 0.3, quality: 0.24 },
+			'5k': { long: 0.3, quality: 0.26 },
+			'whole-fitness': { long: 0.3, quality: 0.12 },
+		};
+		const shape = SHAPE[input.profile.slug] ?? { long: 0.3, quality: 0.16 };
+		// The long run is its own arc: a goal-aware share of the week that grows as
+		// the week grows, with a small floor so a light week still has one.
+		const longKm = round1(clamp(volume * shape.long, 3, 38));
+		// One quality day's whole distance, held under the long run so the long run
+		// is always the longest run and a light week is not one giant quality day.
+		const qualityRaw = clamp(volume * shape.quality, 1.6, 16);
+		const qualityDayKm = round1(Math.min(qualityRaw, longKm * 0.85));
 		// A very heavy sport week takes a slice off the quality work. The long run
 		// is left whole, since endurance is the point.
-		const qualityKm = round1(load.veryHeavy ? qualityRaw * 0.85 : qualityRaw);
+		const qualityKm = round1(load.veryHeavy ? qualityDayKm * 0.85 : qualityDayKm);
 		const qualityWhy = load.veryHeavy
 			? `Shortened by about 15 percent. In the last week you logged ${load.describe}, and the long run stays whole.`
 			: undefined;
-		// The long run is the longest run, never a third of nothing and never most
-		// of the week. An easy run is capped at the long run's length, so a week
-		// with few running days plans less instead of one giant run.
-		const longKm = round1(clamp(volume * 0.32, 4, 38));
-		const remaining = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
-		const easyPer = easyDays.length ? Math.min(longKm, round1(remaining / easyDays.length)) : 0;
+		// Easy runs take what is left, never as long as the long run (at most 80
+		// percent of it) and never below a small floor, so the long run always reads
+		// as the long run while both still progress together across the plan.
+		const leftover = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
+		const easyCap = Math.max(1, round1(longKm * 0.8));
+		const easyPer =
+			easyDays.length && leftover > 0
+				? round1(clamp(leftover / easyDays.length, Math.min(2, leftover), easyCap))
+				: 0;
+		// Quality bookends scale with the session, and the reps fill what is left.
+		const { wu: qWu, cd: qCd } = qualityWarmupCooldown(qualityKm);
+		const qualityWorkKm = Math.max(0.6, round1(qualityKm - qWu - qCd));
 
 		const sessions: PlannedSession[] = [];
 
@@ -583,14 +679,35 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			) {
 				kind = 'hills';
 			} else {
-				kind = 'tempo';
+				// A gentle base or taper session, or the default. Pick a kind the
+				// profile actually lists, so a profile is never handed a hard session
+				// it does not allow (a 5K, for example, lists no tempo work).
+				kind =
+					(['tempo', 'hills', 'interval', 'race-pace'] as const).find((k) =>
+						input.profile.sessionTypes.includes(k),
+					) ?? 'tempo';
 			}
 
 			if (kind === 'race-pace') {
-				const shape = RACE_PACE_SHAPE[input.profile.slug] ?? RACE_PACE_SHAPE['half-marathon']!;
-				const reps = phase === 'peak' ? shape.peak : shape.build;
-				const rpKm = round1((reps * shape.distanceM) / 1000);
-				const workout = racePaceWorkout(input.profile.slug, phase, goalPace, paces);
+				const rpShape = RACE_PACE_SHAPE[input.profile.slug] ?? RACE_PACE_SHAPE['half-marathon']!;
+				const maxReps = phase === 'peak' ? rpShape.peak : rpShape.build;
+				const { reps, repM, recM } = sizeReps(
+					qualityWorkKm,
+					rpShape.distanceM,
+					Math.min(800, rpShape.distanceM),
+					maxReps,
+				);
+				const workout = racePaceWorkout(
+					input.profile.slug,
+					reps,
+					repM,
+					recM,
+					qWu,
+					qCd,
+					goalPace,
+					paces,
+				);
+				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -600,18 +717,19 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE['race-pace'],
 					prescription: {
 						summary: 'Goal-pace reps at your target pace.',
-						targetDistanceKm: workout.totalDistanceKm ?? rpKm,
+						targetDistanceKm: total,
 						targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
 						targetRpe: [7, 8],
 						notes: 'Even splits at goal pace. Rehearsal for race day.',
 						workout,
 						why: qualityWhy,
 					},
-					durationMin: Math.round(((workout.totalDistanceKm ?? rpKm) * goalPace) / 60),
+					durationMin: Math.round((total * goalPace) / 60),
 				});
 			} else if (kind === 'interval') {
-				const reps = clamp(Math.round(qualityKm / 0.8 / 2) * 2, 4, 10);
-				const workout = intervalWorkout(reps, paces);
+				const { reps, repM, recM } = sizeReps(qualityWorkKm, 800, 400, 12);
+				const workout = intervalWorkout(reps, repM, recM, qWu, qCd, paces);
+				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -620,19 +738,20 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					title: TITLE.interval,
 					purpose: PURPOSE.interval,
 					prescription: {
-						summary: 'Interval reps at interval pace, with equal-time recovery.',
-						targetDistanceKm: workout.totalDistanceKm ?? round1((reps * 800) / 1000),
+						summary: 'Interval reps at interval pace, with easy recovery between.',
+						targetDistanceKm: total,
 						targetPaceSecPerKm: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
 						targetRpe: [8, 9],
 						notes: 'Even reps; stop the set if form breaks down.',
 						workout,
 						why: qualityWhy,
 					},
-					durationMin: estDuration((reps * 800) / 1000, paces ? paces.interval : easyPace - 60) + 15,
+					durationMin: estDuration(total, paces ? paces.interval : easyPace - 60) + 10,
 				});
 			} else if (kind === 'hills') {
-				const reps = clamp(Math.round(qualityKm / 0.4 / 2) * 2, 4, 10);
-				const workout = hillsWorkout(reps, paces);
+				const { reps, repM, recM } = sizeReps(qualityWorkKm, 400, 400, 16);
+				const workout = hillsWorkout(reps, repM, recM, qWu, qCd, paces);
+				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -642,16 +761,17 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE.hills,
 					prescription: {
 						summary: 'Hill reps at hard effort, jog or walk down to recover.',
-						targetDistanceKm: workout.totalDistanceKm ?? round1((reps * 400) / 1000),
+						targetDistanceKm: total,
 						targetRpe: [8, 9],
 						notes: 'Power up with short, quick steps. Relax on the way down.',
 						workout,
 						why: qualityWhy,
 					},
-					durationMin: estDuration((reps * 400) / 1000, paces ? paces.interval : easyPace - 60) + 20,
+					durationMin: estDuration(total, paces ? paces.interval : easyPace - 60) + 10,
 				});
 			} else {
-				const workout = tempoWorkout(qualityKm, paces);
+				const workout = tempoWorkout(qualityWorkKm, qWu, qCd, paces);
+				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -661,7 +781,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE.tempo,
 					prescription: {
 						summary: 'Continuous work at threshold pace.',
-						targetDistanceKm: workout.totalDistanceKm ?? qualityKm,
+						targetDistanceKm: total,
 						targetPaceSecPerKm: paces
 							? [paces.threshold * 0.99, paces.threshold * 1.03]
 							: undefined,
@@ -670,7 +790,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						workout,
 						why: qualityWhy,
 					},
-					durationMin: estDuration(qualityKm, paces ? paces.threshold : easyPace - 30),
+					durationMin: estDuration(total, paces ? paces.threshold : easyPace - 30),
 				});
 			}
 		});
@@ -787,8 +907,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			focus: FOCUS[phase] ?? phase,
 			startDate: weekStart,
 			endDate: weekEnd,
+			// The week's running distance, summed from the sessions as planned, so
+			// the number on the card matches what the sessions add up to.
 			targetVolumeKm: round1(
-				longKm + qualityKm * qualityDays.length + easyPer * easyDays.length,
+				withIntensity
+					.filter((s) => s.modality === 'running')
+					.reduce((sum, s) => sum + (s.prescription.targetDistanceKm ?? 0), 0),
 			),
 			sessions: withIntensity.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
 		});
