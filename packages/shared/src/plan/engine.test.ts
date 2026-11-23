@@ -182,6 +182,14 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'hills')).toBe(true);
 	});
 
+	it('eases in with no hard session in the first week', () => {
+		const p = generatePlan({ ...base, baseline: { experience: 'beginner' } });
+		const hard = p.weeks[0]!.sessions.filter((s) =>
+			['tempo', 'interval', 'hills', 'race-pace', 'threshold'].includes(s.type),
+		);
+		expect(hard.length).toBe(0);
+	});
+
 	it('swaps an easy run for cross-training when the profile and user allow it', () => {
 		const p = generatePlan({
 			profile: wholeFitness,
@@ -241,8 +249,9 @@ describe('generatePlan (model shaping)', () => {
 	};
 
 	it('applies a model-chosen quality kind when the profile allows it', () => {
-		const p = generatePlan({ ...base, weekShapes: [{ qualityKind: 'hills' }] });
-		expect(p.weeks[0]!.sessions.some((s) => s.type === 'hills')).toBe(true);
+		// The first week eases in with no hard session, so shape week two.
+		const p = generatePlan({ ...base, weekShapes: [undefined, { qualityKind: 'hills' }] });
+		expect(p.weeks[1]!.sessions.some((s) => s.type === 'hills')).toBe(true);
 	});
 
 	it('ignores a quality kind the profile does not allow', () => {

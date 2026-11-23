@@ -492,7 +492,8 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const weekStart = addDays(input.startDate, w * 7);
 		const weekEnd = addDays(weekStart, 6);
 
-		const qualityCount = phase === 'taper' || phase === 'base' ? 1 : 2;
+		// Ease in: the first week is easy running and strength only.
+		const qualityCount = w === 0 ? 0 : phase === 'taper' || phase === 'base' ? 1 : 2;
 		const qualityDays = pickSpaced(rest, Math.min(qualityCount, rest.length));
 		const usedForRun = new Set([longDay, ...qualityDays]);
 		const easyDays = days.filter((d) => !usedForRun.has(d));
@@ -692,6 +693,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						intensity: 'easy',
 						targetRpe: [3, 4],
 						notes: `Use what you have (${input.baseline.crossTraining.join(', ')}). Keep it easy.`,
+						workout: crossTrainWorkout(),
 					},
 				};
 			}
@@ -704,9 +706,19 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
 		if (flexGap > 0 && phase !== 'taper') {
 			const wanted = flexGap >= 2 ? 2 : 1;
-			const ordered = [2, 4, 1, 3, 5, 0, 6].filter((d) => !days.includes(d));
-			for (const d of ordered.slice(0, wanted)) {
-				sessions.push(mobilitySession(d, input.baseline));
+			const restFirst = [2, 4, 1, 3, 5, 0, 6].filter((d) => !days.includes(d));
+			const trainEvening = [2, 4, 1, 3, 0, 5, 6].filter((d) => days.includes(d));
+			let added = 0;
+			for (const d of restFirst) {
+				if (added >= wanted) break;
+				sessions.push(mobilitySession(d, input.baseline, 'AM'));
+				added++;
+			}
+			// No rest day to use, so add it in the evening after a run.
+			for (const d of trainEvening) {
+				if (added >= wanted) break;
+				sessions.push(mobilitySession(d, input.baseline, 'PM'));
+				added++;
 			}
 		}
 
@@ -779,7 +791,42 @@ function mobilityWorkout(routine: Drill[]): StructuredWorkout {
 	};
 }
 
-function mobilitySession(day: number, baseline: Baseline): PlannedSession {
+function crossTrainWorkout(): StructuredWorkout {
+	return {
+		blocks: [
+			{
+				repeat: 1,
+				steps: [
+					{
+						kind: 'warmup',
+						label: 'Easy start',
+						durationSec: 5 * 60,
+						note: 'Settle in gently and find a rhythm you can hold.',
+					},
+				],
+			},
+			{
+				repeat: 1,
+				steps: [
+					{
+						kind: 'work',
+						label: 'Steady aerobic',
+						durationSec: 25 * 60,
+						targetZone: 'Z2',
+						targetRpe: [3, 4],
+						note: 'Easy and continuous. You can hold a conversation.',
+					},
+				],
+			},
+			{
+				repeat: 1,
+				steps: [{ kind: 'cooldown', label: 'Easy finish', durationSec: 5 * 60 }],
+			},
+		],
+	};
+}
+
+function mobilitySession(day: number, baseline: Baseline, slot = 'AM'): PlannedSession {
 	// A bigger stretch (two or more points) gets the fuller routine; a small
 	// stretch keeps the short maintenance one.
 	const building = (baseline.flexibility?.goal ?? 0) - (baseline.flexibility?.current ?? 0) >= 2;
@@ -787,7 +834,7 @@ function mobilitySession(day: number, baseline: Baseline): PlannedSession {
 	const totalSec = routine.reduce((s, d) => s + d.durationSec, 0);
 	return {
 		day,
-		slot: 'AM',
+		slot,
 		modality: 'mobility',
 		type: 'mobility',
 		title: TITLE.mobility,
