@@ -99,6 +99,15 @@ export const api = {
 			body: JSON.stringify(body),
 		}),
 
+	/** Add a library workout to a day, or remove one the user added. */
+	addWorkout: (date: string, workoutId: string) =>
+		req<{ session: unknown }>('/plans/sessions', {
+			method: 'POST',
+			body: JSON.stringify({ date, workoutId }),
+		}),
+	removeWorkout: (id: string) =>
+		req<{ ok: boolean }>(`/plans/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
 	/** Save a log; if offline, queue it and return an optimistic (pending) log. */
 	log: async (body: unknown): Promise<{ log: unknown }> => {
 		try {

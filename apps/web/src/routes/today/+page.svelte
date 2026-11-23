@@ -207,10 +207,6 @@
 			role="group"
 			aria-label="Day panel"
 		>
-			<AdjustmentsCard />
-
-			{#if note}<p class="mb-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
-
 			{#key selectedIso}
 				<div class={dayDir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
 					<SectionHeader
@@ -231,6 +227,10 @@
 					{/if}
 				</div>
 			{/key}
+
+			<AdjustmentsCard />
+
+			{#if note}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
 
 			{#if selWeek}
 				<hr class="my-6 border-hairline" />

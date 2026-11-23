@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { asc, and, desc, eq, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
+import { WORKOUT_LIBRARY } from '@strideguide/shared/plan';
 import type { Baseline, QualityKind, SessionArchetype } from '@strideguide/shared';
 import { schema } from '../db';
 import { narrateAndStore, templateWeekSummary } from '../lib/narration';
@@ -83,6 +84,136 @@ plans.get('/current', async (c) => {
 		})),
 		logs,
 	});
+});
+
+
+/** Day index (0 = Monday) for an ISO date inside a week starting on weekStart. */
+function dayIndex(weekStart: string, iso: string): number {
+	const days = Math.round(
+		(Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${weekStart}T00:00:00Z`)) / 86400000,
+	);
+	return ((days % 7) + 7) % 7;
+}
+
+/** The user's current plan plus its weeks, or null. */
+async function currentPlanWithWeeks(db: AppBindings['Variables']['db'], userId: string) {
+	const goal = (
+		await db
+			.select()
+			.from(schema.userGoals)
+			.where(eq(schema.userGoals.userId, userId))
+			.orderBy(desc(schema.userGoals.createdAt))
+			.limit(1)
+	)[0];
+	if (!goal) return null;
+	const plan = (
+		await db
+			.select()
+			.from(schema.plans)
+			.where(eq(schema.plans.userGoalId, goal.id))
+			.orderBy(desc(schema.plans.version))
+			.limit(1)
+	)[0];
+	if (!plan) return null;
+	const weeks = await db
+		.select()
+		.from(schema.planWeeks)
+		.where(eq(schema.planWeeks.planId, plan.id))
+		.orderBy(asc(schema.planWeeks.weekNumber));
+	return { goal, plan, weeks };
+}
+
+/** POST /sessions: add a library workout to a day in the user's current plan. */
+plans.post(
+	'/sessions',
+	zValidator(
+		'json',
+		z.object({
+			date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+			workoutId: z.string().min(1).max(60),
+		}),
+	),
+	async (c) => {
+		const user = c.get('user')!;
+		const db = c.get('db');
+		const { date, workoutId } = c.req.valid('json');
+
+		const workout = WORKOUT_LIBRARY.find((w) => w.id === workoutId);
+		if (!workout) return c.json({ error: 'Unknown workout.' }, 400);
+
+		const current = await currentPlanWithWeeks(db, user.id);
+		if (!current) return c.json({ error: 'You need a plan first.' }, 400);
+
+		const week = current.weeks.find(
+			(w) => w.startDate && w.endDate && date >= w.startDate && date <= w.endDate,
+		);
+		if (!week || !week.startDate) {
+			return c.json({ error: 'That day is outside your plan.' }, 400);
+		}
+
+		const session = {
+			id: crypto.randomUUID(),
+			planWeekId: week.id,
+			day: dayIndex(week.startDate, date),
+			slot: 'AM',
+			modality: workout.modality,
+			type: workout.type,
+			title: workout.title,
+			purpose: workout.purpose,
+			prescription: {
+				summary: workout.summary,
+				intensity: workout.intensity,
+				targetRpe: workout.targetRpe,
+				workout: workout.workout,
+				added: true,
+				libraryId: workout.id,
+			},
+			durationMin: workout.durationMin,
+		};
+		await db.insert(schema.sessionsPlan).values(session);
+		return c.json({ session }, 201);
+	},
+);
+
+/** DELETE /sessions/:id: remove a workout the user added (never a planned one). */
+plans.delete('/sessions/:id', async (c) => {
+	const user = c.get('user')!;
+	const db = c.get('db');
+	const id = c.req.param('id');
+
+	const session = (
+		await db.select().from(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, id)).limit(1)
+	)[0];
+	if (!session) return c.json({ error: 'Not found.' }, 404);
+
+	const week = (
+		await db
+			.select()
+			.from(schema.planWeeks)
+			.where(eq(schema.planWeeks.id, session.planWeekId))
+			.limit(1)
+	)[0];
+	const plan = week
+		? (
+				await db.select().from(schema.plans).where(eq(schema.plans.id, week.planId)).limit(1)
+			)[0]
+		: undefined;
+	const owned = plan
+		? (
+				await db
+					.select()
+					.from(schema.userGoals)
+					.where(and(eq(schema.userGoals.id, plan.userGoalId), eq(schema.userGoals.userId, user.id)))
+					.limit(1)
+			)[0]
+		: undefined;
+	if (!owned) return c.json({ error: 'Not found.' }, 404);
+
+	const added = (session.prescription as { added?: boolean } | null)?.added === true;
+	if (!added) return c.json({ error: 'Only workouts you added can be removed.' }, 403);
+
+	await db.delete(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, id));
+	return c.json({ ok: true });
 });
 
 /** POST generate: create a goal plus a generated, narrated plan. */

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ClientLog, ClientSession } from '$lib/plan';
-	import { formatDuration } from '$lib/plan';
+	import { formatDuration, sessionTypeLabel } from '$lib/plan';
 	import { fmtDistance, fmtPace, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 
@@ -12,6 +12,8 @@
 		onLog,
 		onStart,
 		onOpen,
+		onRemove,
+		tint,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -20,6 +22,9 @@
 		onLog?: () => void;
 		onStart?: () => void;
 		onOpen?: () => void;
+		onRemove?: () => void;
+		/** Optional background class (a tonal tint), for lists that separate by type. */
+		tint?: string;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
@@ -60,9 +65,8 @@
 </script>
 
 <article
-	class="stage-card lift relative overflow-hidden rounded-xl border bg-paper p-4 sm:p-5 {active
-		? 'border-signal-ink'
-		: 'border-hairline'}"
+	class="stage-card lift relative overflow-hidden rounded-xl border {tint ??
+		'bg-paper'} p-4 sm:p-5 {active ? 'border-signal-ink' : 'border-hairline'}"
 >
 	<div
 		class="absolute left-0 top-0 h-full w-0.5 {logged
@@ -89,21 +93,21 @@
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
 			<span class="tabular shrink-0 text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-				>{session.type}{#if logged} <span class="text-ok">✓</span>{/if}</span
+				>{sessionTypeLabel(session.type)}{#if logged} <span class="text-ok">✓</span>{/if}</span
 			>
 		</div>
 
-		<h2 class="font-display mt-1.5 truncate text-lg font-medium leading-tight">{sessionLabel(session)}</h2>
+		<h2 class="font-display mt-1.5 truncate text-xl font-semibold leading-tight">{sessionLabel(session)}</h2>
 
 		<hr class="my-3 border-hairline" />
 
 		<div class="grid grid-cols-2 gap-3">
 			<div class="min-w-0">
-				<p class="tabular truncate text-2xl font-medium leading-none">{primary}</p>
+				<p class="tabular truncate text-xl font-medium leading-none">{primary}</p>
 				<p class="mt-1 text-xs text-steel">{isStrength ? 'circuit' : 'prescribed'}</p>
 			</div>
 			<div class="min-w-0">
-				<p class="tabular truncate text-2xl font-medium leading-none">{secondary}</p>
+				<p class="tabular truncate text-xl font-medium leading-none">{secondary}</p>
 				<p class="mt-1 text-xs text-steel">{isStrength ? 'sets × reps' : 'target'}</p>
 			</div>
 		</div>
@@ -130,6 +134,16 @@
 				class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 			>
 				{logged ? 'Log again' : 'Log it'}
+			</button>
+		{/if}
+		{#if onRemove}
+			<button
+				type="button"
+				onclick={onRemove}
+				aria-label="Remove this workout"
+				class="shrink-0 rounded-md border border-hairline-strong px-3 py-3 text-sm text-steel hover:border-danger hover:text-danger"
+			>
+				✕
 			</button>
 		{/if}
 	</div>
