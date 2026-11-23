@@ -61,6 +61,14 @@
 		return undefined;
 	}
 
+	/** Home: close the overlay, and go to the dashboard when we are not already there. */
+	function goHome() {
+		onClose();
+		if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+			window.location.href = '/';
+		}
+	}
+
 	function stepTarget(step: ClientStep): string {
 		if (step.durationSec != null && !step.distanceM) return formatClock(step.durationSec);
 		if (step.sets && step.reps) return `${step.sets} × ${step.reps}`;
@@ -83,7 +91,7 @@
 	<header class="border-b border-hairline px-4 py-3">
 		<div class="mx-auto max-w-2xl">
 			<div class="flex items-center justify-between">
-				<a href="/" class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</a>
+				<button type="button" onclick={goHome} class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</button>
 				<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">✕</button>
 			</div>
 			<h1 class="font-display mt-1 truncate text-xl font-bold">{sessionLabel(session)}</h1>

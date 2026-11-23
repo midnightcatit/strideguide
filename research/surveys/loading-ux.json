@@ -1,0 +1,220 @@
+{
+  "generated_at": "2026-11-23T01:44:33Z",
+  "scope": "Loading-state UX for Stride Guide (running + strength PWA), applied to one case: tapping 'Generate my plan' during onboarding. Covers perceived-wait psychology and the 0.1/1/10 second thresholds, indicator choice (spinner vs skeleton vs progress bar), staged messaging, determinate vs indeterminate, time estimates, accessibility (aria-live, aria-busy, reduced motion), and failure/timeout recovery. Research only; no app code changed. WebFetch used first; Firecrawl used only to locate the labor-illusion citation.",
+  "principles": [
+    {
+      "name": "Three perceptual thresholds",
+      "guidance": "0.1s is the limit for feeling instantaneous; 1s is the limit for uninterrupted flow; 10s is the limit for keeping attention. Under 0.1s show only the result. Between 0.1s and 1s no special feedback is needed. Between 1s and 10s show a looped indicator with a specific label. Over 10s show a determinate indicator or a time estimate plus an escape hatch. For 'Generate my plan', expect 3-10s and design for the 1-10s band first, with a graceful path past 10s.",
+      "source": "Nielsen 1993, NN/g, Response Times: The 3 Important Limits, https://www.nngroup.com/articles/response-times-3-important-limits/"
+    },
+    {
+      "name": "Acknowledge the tap within ~100ms",
+      "guidance": "The wait starts when the finger lands. Change the button's visual state immediately (pressed state, label swap to 'Generating your plan...', inline spinner) before any network work begins. An unacknowledged tap is read as 'nothing happened' and produces double submits. Do not wait for the loading screen to mount before showing feedback.",
+      "source": "NN/g, Progress Indicators Make a Slow System Less Insufferable, https://www.nngroup.com/articles/progress-indicators/"
+    },
+    {
+      "name": "Match the indicator to the wait length",
+      "guidance": "No indicator for waits under ~1s; a flashing indicator is worse than none. Use a looped spinner or skeleton for roughly 2-10s. Use a percent-done bar plus an estimate for 10s or more. A static 'Loading...' label is not sufficient: users cannot distinguish a stuck system from a slow one. Reserve the looped spinner for 2-9s, and lower the determinate cutoff when your duration estimates are highly variable.",
+      "source": "NN/g, Progress Indicators, https://www.nngroup.com/articles/progress-indicators/"
+    },
+    {
+      "name": "Spinner vs skeleton vs progress bar",
+      "guidance": "Skeleton when the final layout of a full page or large region is known and the wait is under ~10s: it mimics the shape and reduces perceived wait. Spinner when a single module or action has unknown duration. Progress bar when progress is measurable. Frame-only skeletons (header plus empty gray boxes with no layout information) are worse than a spinner because they convey nothing. Never use a skeleton for a process that is not a page load.",
+      "source": "NN/g, Skeleton Screens 101, https://www.nngroup.com/articles/skeleton-screens/"
+    },
+    {
+      "name": "Determinate when measurable, indeterminate when not",
+      "guidance": "If you can count stages, items, or bytes, show a determinate bar or a stepper. If generation time is variable (LLM or multi-service API), use an indeterminate indicator but attach a stage label. Never fabricate a percentage. A bar that races to 90% and stalls is worse than no bar because it breaks the expectation it created.",
+      "source": "NN/g, Progress Indicators, https://www.nngroup.com/articles/progress-indicators/"
+    },
+    {
+      "name": "Uncertain and unexplained waits feel longer",
+      "guidance": "A known, finite wait feels shorter than an unknown wait; an explained wait feels shorter than an unexplained one. Say what is happening and roughly how long it should take. Under-promise and over-deliver: allow buffer in the estimate so an early finish is a pleasant surprise. This matters more than raw speed once the wait is unavoidable.",
+      "source": "Maister 1985, The Psychology of Waiting Lines, https://davidmaister.com/articles/the-psychology-of-waiting-lines/"
+    },
+    {
+      "name": "The labor illusion (operational transparency)",
+      "guidance": "Showing real work being done raises perceived value and willingness to wait, even when the result is identical. Surface genuine sub-tasks (reading goals, mapping running days, balancing strength sessions) instead of hiding everything behind one generic spinner. The effect depends on the effort being real; cosmetic theater is a trust risk.",
+      "source": "Buell & Norton 2011, The Labor Illusion, Management Science, https://pubsonline.informs.org/doi/10.1287/mnsc.1110.1376"
+    },
+    {
+      "name": "Progress must be honest and monotonic",
+      "guidance": "Users notice changes in speed. A bar that starts fast and then stalls negates the benefit of showing progress. Start slower and accelerate toward the end so you never over-promise. Never move backward, never loop a completed stage, and never invent a stage to fill time. If the final stage runs long, switch to an honest 'still working' line rather than adding a fake step.",
+      "source": "NN/g, Progress Indicators, https://www.nngroup.com/articles/progress-indicators/"
+    },
+    {
+      "name": "Motion is optional, status is not",
+      "guidance": "Honor prefers-reduced-motion: replace rotation, shimmer, and scale with static text or a subtle opacity change. Never make motion the only signal that work is happening. Keep the status text visible and update it on stage changes, not on animation frames.",
+      "source": "MDN, prefers-reduced-motion, https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+    },
+    {
+      "name": "Announce status without stealing focus",
+      "guidance": "Put stage changes in a polite live region (role=status or aria-live=polite) and set aria-busy=true on the region being updated. Do not move focus to the spinner. Reserve role=alert or aria-live=assertive for the failure, where interruption is warranted. One announcement per stage, not per animation frame.",
+      "source": "WCAG 2.2 SC 4.1.3 Status Messages, https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html"
+    },
+    {
+      "name": "Fail recoverably, never silently",
+      "guidance": "A timeout is a status message, not a dead end. Preserve every onboarding answer, explain what happened in plain language, offer 'Try again' as the primary action, and provide a fallback (starter plan) if generation keeps failing. Detect offline and say so. Never auto-retry in a silent loop. Put the failure in an assertive live region and move focus to the error heading or retry button.",
+      "source": "WCAG 2.2 SC 3.3.1 and 3.3.3; NN/g, Hostile Patterns in Error Messages, https://www.nngroup.com/articles/hostile-error-messages/"
+    }
+  ],
+  "patterns": [
+    {
+      "pattern": "Inline button spinner plus label swap",
+      "when": "The tap-to-first-response window is roughly 0.5-2s and the result replaces the same region. Best default for 'Generate my plan' if generation usually finishes under ~2s.",
+      "pros": "Preserves context, confirms the tap locally, prevents double submits, cheap to build, no layout shift.",
+      "cons": "Too small a signal for waits over ~2s; the label can wrap or shift the button width; needs a separate path for longer waits."
+    },
+    {
+      "pattern": "Section skeleton shaped like the plan preview",
+      "when": "Wait is roughly 2-10s and the final layout is known (week grid, day cards, session rows). Use only for the region that will be replaced.",
+      "pros": "Reduces perceived wait by setting layout expectations; makes the transition feel continuous; works well on mobile.",
+      "cons": "Only as good as the layout match; a wrong skeleton causes visible reflow; shimmer can annoy and needs a reduced-motion fallback; frame-only skeletons are worse than a spinner."
+    },
+    {
+      "pattern": "Staged checklist or stepper",
+      "when": "Generation is genuinely multi-step and takes roughly 3-10s. Three to five stages, each tied to a real sub-task.",
+      "pros": "Operational transparency and labor illusion; converts one long wait into several short ones; gives a sense of progress without a fake percentage.",
+      "cons": "Reads as fake if stages are cosmetic or repeat; the last stage can stall and expose the trick; screen readers get chatty unless announcements are throttled."
+    },
+    {
+      "pattern": "Indeterminate bar plus rotating status text",
+      "when": "Duration is unknown but bounded, roughly 2-10s, and a skeleton does not fit the content shape.",
+      "pros": "Cheap, honest, works on any layout, pairs well with a time estimate.",
+      "cons": "No ETA; animation-only signal fails reduced-motion users unless paired with text; users cannot tell slow from stuck without a timeout path."
+    },
+    {
+      "pattern": "Determinate bar with percent or stage count",
+      "when": "Progress is measurable (stage count, items processed) and the wait is 10s or more, or variable enough that an estimate is unreliable.",
+      "pros": "Most informative; reduces uncertainty; supports an accurate time estimate; lets users decide whether to keep waiting.",
+      "cons": "Requires instrumentation; stalls look worse than with a spinner; overkill and distracting under ~2s."
+    },
+    {
+      "pattern": "Streaming or partial reveal of the plan",
+      "when": "The generator can emit usable output incrementally (week by week, day by day) and the wait is over ~2s.",
+      "pros": "Masks latency with early value; strongest form of operational transparency; users can start reading while the rest completes.",
+      "cons": "Layout shift and reflow; partial content can look broken or final; needs a clear 'still finishing' state and a completion announcement."
+    },
+    {
+      "pattern": "Full-screen overlay with brand animation",
+      "when": "Rare blocking transitions only. Avoid for plan generation that can stay inline.",
+      "pros": "Focuses attention and hides an unavoidable transition.",
+      "cons": "Feels heavy and slow; hides context; focus and screen-reader management is harder; a large brand animation triggers vestibular issues and is the easiest pattern to make feel fake."
+    }
+  ],
+  "staged_messages": {
+    "verdict": "Helps when each message maps to a real sub-task and advances on a believable cadence. Reads as fake when steps are cosmetic, repeat, or linger with no relation to the work. For 'Generate my plan', use three to five stages at roughly 1.2-2.5s each, matching a 6-10s total. Never regress. If the last stage runs long, switch to an honest 'still working' line instead of inventing a new stage. Do not show a stage that completes in under ~400ms; merge it into the next one. Announce each stage once in a polite live region.",
+    "examples": [
+      "Reading your goals and weekly schedule",
+      "Mapping your running days",
+      "Balancing strength sessions",
+      "Setting easy and hard day targets",
+      "Building your first week",
+      "Checking rest and recovery days"
+    ]
+  },
+  "timeout": {
+    "behavior": "Soft threshold at about 8s: keep the indicator, swap the copy to 'Still building your plan...' and keep waiting. Hard threshold at about 30s or 2x the p95 generation time: stop the spinner and show a recovery panel. Preserve all onboarding answers. Primary action 'Try again'; secondary 'Keep waiting' only if the request is still in flight and resumable; tertiary 'Use a starter plan instead' as a fallback. Detect offline and say so. Log the failure with a request id. Never auto-retry silently in a loop. Do not put a time limit on the user reading or acting on the failure.",
+    "copy": {
+      "soft": "Still building your plan. This is taking longer than usual, but we're still on it.",
+      "hard": "We couldn't finish your plan. Your answers are saved. Try again, it usually takes about 10 seconds.",
+      "offline": "You're offline. Reconnect and we'll pick up where you left off.",
+      "retry_button": "Try again",
+      "fallback_button": "Use a starter plan instead",
+      "reassurance": "Nothing you entered was lost."
+    }
+  },
+  "a11y": [
+    {
+      "name": "Polite live region for stages",
+      "guidance": "Use role=status or aria-live=polite with aria-atomic=true on the element that carries the stage text. Update it once per stage. Do not put the spinner itself in the live region and do not announce animation frames.",
+      "source": "WCAG 2.2 SC 4.1.3, https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html"
+    },
+    {
+      "name": "aria-busy on the updating region",
+      "guidance": "Set aria-busy=true on the container whose content is being replaced while generation runs, then set it to false when the plan renders. This tells assistive technology to wait before announcing the new content.",
+      "source": "MDN, aria-busy, https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy"
+    },
+    {
+      "name": "Keep focus on the initiating control",
+      "guidance": "Do not move focus to the spinner or the status text. Keep focus on the 'Generate my plan' button or the onboarding step heading. If the button is disabled, prefer aria-disabled=true with activation guarded so focus is not dropped; a natively disabled button can lose focus in some browsers.",
+      "source": "WCAG 2.2 SC 4.1.3; MDN, aria-busy"
+    },
+    {
+      "name": "Spinner needs a text alternative",
+      "guidance": "Mark the decorative spinner graphic aria-hidden=true and let visible text carry the status. If you use role=progressbar without aria-valuenow, give it an accessible name and keep the visible label in sync. Never rely on motion alone.",
+      "source": "WCAG 2.2 SC 1.1.1 and 4.1.3"
+    },
+    {
+      "name": "Reduced motion",
+      "guidance": "Under @media (prefers-reduced-motion: reduce), stop rotation and shimmer. Replace with static text or a subtle opacity change. Avoid scaling and panning, which are vestibular triggers. The status text must remain.",
+      "source": "MDN, prefers-reduced-motion, https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+    },
+    {
+      "name": "Looping animation over 5s",
+      "guidance": "If a non-essential animation loops for more than 5s, provide pause, stop, or hide. A spinner is usually essential status, but still honor reduced motion. Do not make the only 'working' signal an animation the user cannot stop.",
+      "source": "WCAG 2.2 SC 2.2.2 Pause, Stop, Hide, https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html"
+    },
+    {
+      "name": "Failure is assertive",
+      "guidance": "Announce the failure with role=alert or aria-live=assertive because it is important and time-sensitive. Move focus to the error heading (tabindex=-1) or the 'Try again' button. Do not rely on a toast that disappears.",
+      "source": "WCAG 2.2 SC 4.1.3; NN/g, Hostile Patterns in Error Messages"
+    },
+    {
+      "name": "No time limit on the user's response",
+      "guidance": "The 30s hard timeout applies to the request, not to the user reading the failure or deciding what to do. Do not auto-dismiss the recovery panel. Keep the retry and fallback actions available until the user acts.",
+      "source": "WCAG 2.2 SC 2.2.1 Timing Adjustable, https://www.w3.org/WAI/WCAG22/Understanding/timing-adjustable.html"
+    },
+    {
+      "name": "Contrast and persistence",
+      "guidance": "Status text should meet 4.5:1 contrast and stay visible for the whole wait. Do not put the only status in a tooltip or a color change. Test the flow with VoiceOver or NVDA and confirm one announcement per stage plus one on failure.",
+      "source": "WCAG 2.2 SC 1.4.3 Contrast (Minimum), https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Response Times: The 3 Important Limits (Jakob Nielsen, NN/g)",
+      "url": "https://www.nngroup.com/articles/response-times-3-important-limits/"
+    },
+    {
+      "title": "Progress Indicators Make a Slow System Less Insufferable (Katie Sherwin, NN/g)",
+      "url": "https://www.nngroup.com/articles/progress-indicators/"
+    },
+    {
+      "title": "Skeleton Screens 101 (Samhita Tankala, NN/g)",
+      "url": "https://www.nngroup.com/articles/skeleton-screens/"
+    },
+    {
+      "title": "The Psychology of Waiting Lines (David Maister, 1985)",
+      "url": "https://davidmaister.com/articles/the-psychology-of-waiting-lines/"
+    },
+    {
+      "title": "The Labor Illusion: How Operational Transparency Increases Perceived Value (Buell & Norton, Management Science 2011)",
+      "url": "https://pubsonline.informs.org/doi/10.1287/mnsc.1110.1376"
+    },
+    {
+      "title": "Understanding WCAG 2.2 SC 4.1.3 Status Messages (W3C WAI)",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html"
+    },
+    {
+      "title": "MDN: aria-busy",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy"
+    },
+    {
+      "title": "MDN: aria-live",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-live"
+    },
+    {
+      "title": "MDN: prefers-reduced-motion",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+    },
+    {
+      "title": "Understanding WCAG 2.2 SC 2.2.2 Pause, Stop, Hide (W3C WAI)",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html"
+    },
+    {
+      "title": "Hostile Patterns in Error Messages (Kate Kaplan, NN/g)",
+      "url": "https://www.nngroup.com/articles/hostile-error-messages/"
+    }
+  ]
+}
