@@ -64,7 +64,14 @@
 		? 'border-signal-ink'
 		: 'border-hairline'}"
 >
-	<div class="absolute left-0 top-0 h-full w-0.5 {isStrength ? 'bg-steel' : 'bg-signal-ink'} {active && !logged ? 'breathe' : ''}" aria-hidden="true"></div>
+	<div
+		class="absolute left-0 top-0 h-full w-0.5 {logged
+			? 'bg-ok'
+			: isStrength
+				? 'bg-steel'
+				: 'bg-signal-ink'} {active && !logged ? 'breathe' : ''}"
+		aria-hidden="true"
+	></div>
 
 	{#if onOpen}
 		<button
@@ -82,7 +89,7 @@
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
 			<span class="tabular shrink-0 text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-				>{session.type}{#if logged} ✓{/if}</span
+				>{session.type}{#if logged} <span class="text-ok">✓</span>{/if}</span
 			>
 		</div>
 

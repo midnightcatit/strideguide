@@ -173,7 +173,7 @@
 	</Card>
 
 	<!-- At a glance -->
-	<div class="mt-7 grid grid-cols-3 gap-2">
+	<div class="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-3">
 		<Card tone="sunken">
 			<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
 			<p class="tabular mt-1 text-xl font-medium">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
