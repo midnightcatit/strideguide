@@ -26,16 +26,29 @@
 		step: ClientStep;
 	}
 
+	interface StepRow {
+		key: string;
+		label: string;
+		target: string;
+		index: number;
+		blockLabel?: string;
+		repeat?: number;
+		sets?: number;
+	}
+
 	const workout = $derived(session.prescription?.workout);
-	const instances = $derived.by<Instance[]>(() => {
-		const out: Instance[] = [];
-		for (const b of workout?.blocks ?? []) {
+	// Expanded instances drive the guided flow; rows are the consolidated stage list.
+	const expanded = $derived.by(() => {
+		const instances: Instance[] = [];
+		const rows: StepRow[] = [];
+		(workout?.blocks ?? []).forEach((b, bi) => {
 			const reps = Math.max(1, b.repeat ?? 1);
 			for (let r = 0; r < reps; r++) {
-				for (const s of b.steps) {
+				b.steps.forEach((s, si) => {
 					const sets = s.kind === 'work' && (s.sets ?? 0) > 1 ? (s.sets as number) : 1;
+					const firstIndex = instances.length;
 					for (let k = 0; k < sets; k++) {
-						out.push({
+						instances.push({
 							blockLabel: b.label,
 							rep: reps > 1 ? r + 1 : undefined,
 							totalReps: reps > 1 ? reps : undefined,
@@ -44,11 +57,24 @@
 							step: s,
 						});
 					}
-				}
+					if (r === 0) {
+						rows.push({
+							key: `${bi}-${si}`,
+							label: s.label,
+							target: stepTarget(s),
+							index: firstIndex,
+							blockLabel: reps > 1 ? b.label : undefined,
+							repeat: reps > 1 ? reps : undefined,
+							sets,
+						});
+					}
+				});
 			}
-		}
-		return out;
+		});
+		return { instances, rows };
 	});
+	const instances = $derived(expanded.instances);
+	const stepRows = $derived(expanded.rows);
 
 	let idx = $state(0);
 	let running = $state(false);
@@ -239,25 +265,26 @@
 			</div>
 		{/if}
 
-		<div class="mt-4 flex items-center justify-between">
-			<h2 class="text-xs uppercase tracking-widest text-steel">Workout stages</h2>
-			<span class="tabular text-xs text-steel">{progress}</span>
-		</div>
-		<ul class="mt-2 divide-y divide-hairline border-y border-hairline">
-			{#each instances as inst, i (i)}
-				<li>
-					<button type="button" onclick={() => jump(i)} class="flex w-full items-start justify-between gap-3 py-2.5 text-left {i === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink">
-						<span class="min-w-0 flex-1">
-							<span class="text-sm">{inst.blockLabel ? `${inst.blockLabel}: ` : ''}{inst.step.label}{inst.setNo ? ` (set ${inst.setNo}/${inst.totalSets})` : ''}{inst.rep ? ` (${inst.rep}/${inst.totalReps})` : ''}</span>
-							{#if inst.step.note}<span class="mt-0.5 block text-xs text-steel">{inst.step.note}</span>{/if}
-						</span>
-						<span class="tabular max-w-[45%] shrink-0 truncate text-xs text-steel">{stepTarget(inst.step)}</span>
-					</button>
-				</li>
-			{/each}
-		</ul>
+		<details class="mt-4">
+			<summary class="flex cursor-pointer list-none items-center justify-between">
+				<span class="tabular text-xs uppercase tracking-widest text-steel">Workout stages</span>
+				<span class="tabular text-xs text-steel">{progress}</span>
+			</summary>
+			<ul class="scroll-modern mt-2 max-h-64 divide-y divide-hairline overflow-y-auto border-y border-hairline">
+				{#each stepRows as row (row.key)}
+					<li>
+						<button type="button" onclick={() => jump(row.index)} class="flex w-full items-center justify-between gap-3 py-2.5 text-left {row.index === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink">
+							<span class="min-w-0 truncate text-sm">
+								{row.blockLabel ? `${row.blockLabel} × ${row.repeat}: ` : ''}{row.label}{row.sets && row.sets > 1 ? ` (${row.sets} sets)` : ''}
+							</span>
+							<span class="tabular max-w-[45%] shrink-0 truncate text-xs text-steel">{row.target}</span>
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</details>
 		<p class="mt-4 text-xs text-steel">
-			Timed steps count down on their own, and strength sets rest and move on by themselves. Tap any stage to jump. Form cues are guidance, not medical advice.
+			Timed steps count down on their own, and strength sets rest and move on by themselves. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 </div>

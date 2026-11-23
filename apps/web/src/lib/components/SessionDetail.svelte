@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
+	import { SHORT_WHY } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -42,7 +43,9 @@
 	});
 
 	const claims = $derived(why?.claims ?? []);
-	const headline = $derived(claims[0]?.claim ?? why?.summary ?? session.purpose ?? '');
+	const lead = $derived(
+		SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? why?.summary ?? '',
+	);
 	let showAllSources = $state(false);
 	let showAllClaims = $state(false);
 	const visibleClaims = $derived(showAllClaims ? claims.slice(0, 16) : claims.slice(0, 4));
@@ -167,9 +170,10 @@
 				{:else if failed}
 					<p class="mt-2 text-sm text-steel">The sourced explanation isn't available right now.</p>
 				{:else if why}
-					{#if headline}<p class="mt-2 text-sm">{headline}</p>{/if}
+					{#if lead}<p class="mt-2 text-sm">{lead}</p>{/if}
 					{#if claims.length}
-						<ul class="mt-3 space-y-3">
+						<p class="mt-4 tabular text-xs uppercase tracking-widest text-steel">The evidence</p>
+						<ul class="mt-2 space-y-3">
 							{#each visibleClaims as cl, i (i)}
 								<li class="flex justify-between gap-3 text-sm">
 									<span class="flex-1 text-steel">
