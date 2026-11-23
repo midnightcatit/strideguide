@@ -321,22 +321,22 @@ plans.post(
 
 		const baseline = (body.baseline ?? {}) as Baseline;
 
-		// Sports logged in the last seven days. A heavy sport week already carries
-		// load, so the plan trims the strength work to match.
+		// Sports logged in the last seven days, with how long and how hard. A heavy
+		// sport week already carries load, so the plan trims the strength and quality
+		// work to match.
 		const since = Date.now() - 7 * 86400000;
 		const userLogs = await c
 			.get('db')
 			.select()
 			.from(schema.logs)
 			.where(eq(schema.logs.userId, user.id));
-		const recentIds = userLogs
-			.filter((l) => {
-				const raw = l.createdAt as unknown;
-				const t = raw instanceof Date ? raw.getTime() : Number(raw) * 1000;
-				return t >= since && !!l.sessionId;
-			})
-			.map((l) => l.sessionId as string);
-		const recentCrossTraining = recentIds.length
+		const recentLogs = userLogs.filter((l) => {
+			const raw = l.createdAt as unknown;
+			const t = raw instanceof Date ? raw.getTime() : Number(raw) * 1000;
+			return t >= since && !!l.sessionId;
+		});
+		const recentIds = recentLogs.map((l) => l.sessionId as string);
+		const recentSessions = recentIds.length
 			? (
 					await Promise.all(
 						chunk(recentIds, 90).map((part) =>
@@ -347,10 +347,22 @@ plans.post(
 								.where(inArray(schema.sessionsPlan.id, part)),
 						),
 					)
-				)
-					.flat()
-					.filter((row) => row.type === 'cross-train').length
-			: 0;
+				).flat()
+			: [];
+		const crossIds = new Set(
+			recentSessions.filter((row) => row.type === 'cross-train').map((row) => row.id),
+		);
+		const crossLogs = recentLogs.filter((l) => l.sessionId && crossIds.has(l.sessionId));
+		const crossLoad = {
+			sessions: crossLogs.length,
+			minutes: Math.round(
+				crossLogs.reduce((m, l) => {
+					const stats = (l.runStats ?? {}) as { durationSec?: number };
+					return m + (stats.durationSec ?? 0);
+				}, 0) / 60,
+			),
+			highEffort: crossLogs.filter((l) => (l.rpe ?? 0) >= 7).length,
+		};
 
 		const planInput = {
 			profile,
@@ -358,7 +370,7 @@ plans.post(
 			availableDays,
 			startDate,
 			targetDate: body.targetDate,
-			recentCrossTraining,
+			crossLoad,
 		};
 		const baseDraft = generatePlan(planInput);
 

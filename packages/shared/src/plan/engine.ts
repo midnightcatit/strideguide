@@ -511,8 +511,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const usedForRun = new Set([longDay, ...qualityDays]);
 		const easyDays = days.filter((d) => !usedForRun.has(d));
 
+		const load = sportLoad(input);
 		const longKm = round1(clamp(volume * 0.3, 4, 38));
-		const qualityKm = round1(clamp(volume * 0.16, 3, 14));
+		const qualityRaw = clamp(volume * 0.16, 3, 14);
+		// A very heavy sport week takes a slice off the quality work. The long run
+		// is left whole, since endurance is the point.
+		const qualityKm = round1(load.veryHeavy ? qualityRaw * 0.85 : qualityRaw);
+		const qualityWhy = load.veryHeavy
+			? `Shortened by about 15 percent. In the last week you logged ${load.describe}, and the long run stays whole.`
+			: undefined;
 		const easyTotal = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
 		const easyPer = easyDays.length ? round1(easyTotal / easyDays.length) : 0;
 
@@ -587,6 +594,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetRpe: [7, 8],
 						notes: 'Even splits at goal pace. Rehearsal for race day.',
 						workout,
+						why: qualityWhy,
 					},
 					durationMin: Math.round(((workout.totalDistanceKm ?? rpKm) * goalPace) / 60),
 				});
@@ -607,6 +615,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetRpe: [8, 9],
 						notes: 'Even reps; stop the set if form breaks down.',
 						workout,
+						why: qualityWhy,
 					},
 					durationMin: estDuration((reps * 800) / 1000, paces ? paces.interval : easyPace - 60) + 15,
 				});
@@ -626,6 +635,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetRpe: [8, 9],
 						notes: 'Power up with short, quick steps. Relax on the way down.',
 						workout,
+						why: qualityWhy,
 					},
 					durationMin: estDuration((reps * 400) / 1000, paces ? paces.interval : easyPace - 60) + 20,
 				});
@@ -647,6 +657,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetZone: 'Z3–Z4',
 						targetRpe: [6, 7],
 						workout,
+						why: qualityWhy,
 					},
 					durationMin: estDuration(qualityKm, paces ? paces.threshold : easyPace - 30),
 				});
@@ -785,7 +796,8 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 function strengthSession(day: number, slot: string, phase: string, input: PlanInput): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
-	const heavySport = (input.recentCrossTraining ?? 0) >= 3;
+	const load = sportLoad(input);
+	const heavySport = load.heavy;
 	const fullCircuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment);
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
@@ -801,7 +813,7 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 	const type: SessionArchetype = mode === 'machines' ? 'machine-circuit' : 'full-body-strength';
 	const noun = mode === 'bodyweight' ? 'moves' : mode === 'both' ? 'exercises' : 'machines';
 	const why = heavySport
-		? `Trimmed to ${circuit.length} ${noun}. You logged ${input.recentCrossTraining} sports sessions in the last week, which already count as training.`
+		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
 		: undefined;
 	return {
 		day,
@@ -833,6 +845,32 @@ function mobilityWorkout(routine: Drill[]): StructuredWorkout {
 			drillBlock('Loosen up', dynamic, 'warmup'),
 			drillBlock('Mobility stretches', statics, 'cooldown'),
 		],
+	};
+}
+
+/** Cross-training load tiers, from the last seven days of logged sports. */
+function sportLoad(input: PlanInput): {
+	sessions: number;
+	minutes: number;
+	hard: number;
+	heavy: boolean;
+	veryHeavy: boolean;
+	describe: string;
+} {
+	const l = input.crossLoad;
+	const sessions = l?.sessions ?? 0;
+	const minutes = l?.minutes ?? 0;
+	const hard = l?.highEffort ?? 0;
+	const describe =
+		`${sessions} sports session${sessions === 1 ? '' : 's'}` +
+		(minutes ? ` and ${minutes} minutes of sport` : '');
+	return {
+		sessions,
+		minutes,
+		hard,
+		heavy: sessions >= 3 || minutes >= 180 || hard >= 2,
+		veryHeavy: sessions >= 4 || minutes >= 240 || hard >= 3,
+		describe,
 	};
 }
 

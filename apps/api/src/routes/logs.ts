@@ -45,10 +45,18 @@ logs.post(
 					}),
 				)
 				.optional(),
-			rpe: z.number().min(1).max(10).optional(),
+			rpe: z.number().min(1).max(10).nullable().optional(),
 			notes: z.string().max(2000).optional(),
 			source: z.enum(['manual', 'device', 'import']).default('manual'),
 		}),
+		(result, c) => {
+			if (!result.success) {
+				return c.json(
+					{ error: 'invalid_input', message: 'Some of the details did not look right. Check the form and try again.' },
+					400,
+				);
+			}
+		},
 	),
 	async (c) => {
 		const user = c.get('user')!;

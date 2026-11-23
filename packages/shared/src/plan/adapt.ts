@@ -21,7 +21,7 @@ export interface AdaptWeek {
 
 export interface AdaptLog {
 	sessionId?: string | null;
-	runStats?: { distanceKm?: number } | null;
+	runStats?: { distanceKm?: number; durationSec?: number } | null;
 	rpe?: number | null;
 	createdAt?: string | number | null;
 }
@@ -108,19 +108,25 @@ export function suggestAdjustments(
 	const typeById = new Map<string, string>();
 	for (const w of weeks) for (const s of w.sessions) typeById.set(s.id, s.type);
 	const weekAgo = addDays(todayIso, -6);
-	const recentCross = logs.filter((l) => {
+	const crossLogs = logs.filter((l) => {
 		if (!l.sessionId || typeById.get(l.sessionId) !== 'cross-train') return false;
 		const d = isoDay(l.createdAt);
 		return !!d && d >= weekAgo && d <= todayIso;
-	}).length;
-	if (recentCross >= 3) {
+	});
+	const crossMinutes = Math.round(
+		crossLogs.reduce((m, l) => m + (l.runStats?.durationSec ?? 0), 0) / 60,
+	);
+	const crossHard = crossLogs.filter((l) => (l.rpe ?? 0) >= 7).length;
+	if (crossLogs.length >= 3 || crossMinutes >= 180 || crossHard >= 2) {
+		const bits = [`${crossLogs.length} sports session${crossLogs.length === 1 ? '' : 's'}`];
+		if (crossMinutes) bits.push(`${crossMinutes} minutes`);
+		if (crossHard) bits.push(`${crossHard} of them hard`);
 		out.push({
 			id: 'cross-load',
 			kind: 'cross-load',
 			severity: 'info',
-			title: `${recentCross} sports sessions this week`,
-			detail:
-				'The sport counts as a hard session. Keep the running easy and hold the strength at its trimmed size.',
+			title: 'Your sport is carrying real load',
+			detail: `${bits.join(', ')} this week. The sport counts as training, so the plan trims the strength and quality work. Rebuild to apply it.`,
 		});
 	}
 
