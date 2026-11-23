@@ -1,16 +1,19 @@
 <script lang="ts">
 	import { SHORT_WHY, type MachineExercise } from '@strideguide/shared/plan';
 	import type { ClientSession } from '$lib/plan';
+	import { sessionDrills } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import MoveList from '$lib/components/MoveList.svelte';
+	import DrillList from '$lib/components/DrillList.svelte';
 	import { modal } from '$lib/actions';
 
 	/**
 	 * The Preview sheet: a bottom sheet that opens from the drill-down card. A
-	 * strength session shows its move list, each move expandable to its demo and
-	 * cues. A run with no moves shows an overview instead: what the session is,
-	 * what it is for, and what to expect, all in the runner's own units.
+	 * strength session shows its move list, plus the warm-up drills and the
+	 * stretches that carry a demo, each one expandable. A run with no moves shows
+	 * an overview instead: what the session is, what it is for, and what to
+	 * expect, all in the runner's own units.
 	 */
 	let {
 		session,
@@ -30,6 +33,7 @@
 	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
 	const hasMoves = $derived(machines.length > 0);
 	const moveHeading = $derived(session.type === 'machine-circuit' ? 'The machines' : 'The moves');
+	const drills = $derived(sessionDrills(workout));
 </script>
 
 <div
@@ -96,6 +100,18 @@
 				</div>
 			</dl>
 			<p class="mt-3 text-xs text-steel">This is the shape of the session. The guided player walks you through each part when you start.</p>
+		{/if}
+
+		{#if drills.warmups.length}
+			<h3 class="mt-5 tabular text-xs uppercase tracking-widest text-steel">Warm-ups</h3>
+			<p class="mt-1 text-sm text-steel">Tap a drill to see how it looks and the cues that matter.</p>
+			<div class="mt-2"><DrillList drills={drills.warmups} /></div>
+		{/if}
+
+		{#if drills.stretches.length}
+			<h3 class="mt-5 tabular text-xs uppercase tracking-widest text-steel">Stretches</h3>
+			<p class="mt-1 text-sm text-steel">Tap a stretch to see how it looks and the cues that matter.</p>
+			<div class="mt-2"><DrillList drills={drills.stretches} /></div>
 		{/if}
 	</div>
 </div>

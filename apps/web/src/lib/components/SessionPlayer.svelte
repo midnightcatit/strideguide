@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatClock } from '@strideguide/shared/units';
 	import { goto } from '$app/navigation';
-	import { findMove, mediaForMove } from '@strideguide/shared/plan';
+	import { findDrill, findMove, mediaForMove } from '@strideguide/shared/plan';
 	import { onMount, onDestroy } from 'svelte';
 	import type { ClientSession, ClientStep } from '$lib/plan';
 	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance } from '$lib/prefs.svelte';
@@ -99,6 +99,7 @@
 
 	const current = $derived(instances[idx]);
 	const machine = $derived(findMove(current?.step.machine ?? current?.step.label));
+	const drill = $derived(findDrill(current?.step.label));
 	const timed = $derived(current?.step.durationSec != null);
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
@@ -400,8 +401,9 @@
 							<span class="relative">{hold > 0 ? 'Keep holding…' : 'Hold to finish and log'}</span>
 						</button>
 					{/if}
-					{#if machine}
-						{@const mm = mediaForMove(machine.name)}
+					{#if machine || drill}
+						{@const fname = machine?.name ?? drill?.name ?? ''}
+						{@const mm = mediaForMove(fname)}
 						<button
 							type="button"
 							onclick={() => (showForm = true)}
@@ -417,8 +419,13 @@
 					{/if}
 				</div>
 
-				{#if machine && showForm}
-					<FormSheet move={machine} media={mediaForMove(machine.name)} onClose={() => (showForm = false)} />
+				{#if showForm && (machine || drill)}
+					<FormSheet
+						move={machine}
+						{drill}
+						media={mediaForMove(machine?.name ?? drill?.name ?? '')}
+						onClose={() => (showForm = false)}
+					/>
 				{/if}
 			</div>
 		{/if}

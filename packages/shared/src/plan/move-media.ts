@@ -638,6 +638,173 @@ export const MOVE_MEDIA: Record<string, MoveMedia> = {
 		credit: 'RepDB (repdb.co)',
 		motion: 'fade',
 	},
+	'Leg swings (side to side)': {
+		start: '/moves/leg-swings-side-to-side-0.webp',
+		end: '/moves/leg-swings-side-to-side-1.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'horizontal',
+	},
+	'Ankle rocks': {
+		start: '/moves/ankle-rocks-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Glute stretch': {
+		start: '/moves/glute-stretch-0.jpg',
+		end: '/moves/glute-stretch-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Adductor stretch': {
+		start: '/moves/adductor-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'horizontal',
+	},
+	'Thoracic rotation': {
+		start: '/moves/thoracic-rotation-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Standing hamstring stretch': {
+		start: '/moves/standing-hamstring-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'vertical',
+	},
+	'Seated glute figure-4 stretch': {
+		start: '/moves/seated-glute-figure-4-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Supine figure-4 piriformis stretch': {
+		start: '/moves/supine-figure-4-piriformis-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Seated pigeon-style hip stretch': {
+		start: '/moves/seated-pigeon-style-hip-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Open book thoracic rotation': {
+		start: '/moves/open-book-thoracic-rotation-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Kneeling lat stretch': {
+		start: '/moves/kneeling-lat-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Hip circles': {
+		start: '/moves/hip-circles-0.jpg',
+		end: '/moves/hip-circles-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'horizontal',
+	},
+	'Thoracic rotations (quadruped t-spine)': {
+		start: '/moves/thoracic-rotations-quadruped-t-spine-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Pigeon pose (figure-4 hip stretch)': {
+		start: '/moves/pigeon-pose-figure-4-hip-stretch-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	"World's greatest stretch": {
+		start: '/moves/worlds-greatest-stretch-0.webp',
+		end: '/moves/worlds-greatest-stretch-1.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'horizontal',
+	},
+	"Child's pose": {
+		start: '/moves/childs-pose-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Side lunge adductor rock': {
+		start: '/moves/side-lunge-adductor-rock-0.webp',
+		end: '/moves/side-lunge-adductor-rock-1.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'horizontal',
+	},
+	'Lunge with rotation': {
+		start: '/moves/lunge-with-rotation-0.webp',
+		end: '/moves/lunge-with-rotation-1.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'horizontal',
+	},
+	'Butt kicks': {
+		start: '/moves/butt-kicks-0.jpg',
+		end: '/moves/butt-kicks-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'vertical',
+	},
+	'Foam roll quads': {
+		start: '/moves/foam-roll-quads-0.jpg',
+		end: '/moves/foam-roll-quads-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Foam roll hamstrings': {
+		start: '/moves/foam-roll-hamstrings-0.jpg',
+		end: '/moves/foam-roll-hamstrings-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Foam roll glutes': {
+		start: '/moves/foam-roll-glutes-0.jpg',
+		end: '/moves/foam-roll-glutes-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Thoracic spine foam roll': {
+		start: '/moves/thoracic-spine-foam-roll-0.jpg',
+		end: '/moves/thoracic-spine-foam-roll-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Lateral thigh roll (ITB area)': {
+		start: '/moves/lateral-thigh-roll-itb-area-0.jpg',
+		end: '/moves/lateral-thigh-roll-itb-area-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Plantar fascia ball roll': {
+		start: '/moves/plantar-fascia-ball-roll-0.jpg',
+		end: '/moves/plantar-fascia-ball-roll-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'Knee-to-wall ankle rock': {
+		start: '/moves/knee-to-wall-ankle-rock-0.webp',
+		credit: 'RepDB (repdb.co)',
+		motion: 'fade',
+	},
+	'Ball trigger point for glutes': {
+		start: '/moves/ball-trigger-point-for-glutes-0.jpg',
+		end: '/moves/ball-trigger-point-for-glutes-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	'A-skips or butt kicks': {
+		start: '/moves/a-skips-or-butt-kicks-0.jpg',
+		end: '/moves/a-skips-or-butt-kicks-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'vertical',
+	},
+	'Standing cross-over abductor stretch': {
+		start: '/moves/standing-cross-over-abductor-stretch-0.jpg',
+		end: '/moves/standing-cross-over-abductor-stretch-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'fade',
+	},
+	Carioca: {
+		start: '/moves/carioca-0.jpg',
+		end: '/moves/carioca-1.jpg',
+		credit: 'free-exercise-db (public domain)',
+		motion: 'horizontal',
+	},
 };
 
 /** The demo media for a move name, or undefined when it has none. */
