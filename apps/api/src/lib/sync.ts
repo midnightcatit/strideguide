@@ -95,7 +95,13 @@ function filterFor(dataType: string, since: Date): string {
 	}
 }
 
-/** Fetch every type for the window, bounded by maxPages. */
+/**
+ * Fetch every type for the window, bounded by maxPages.
+ *
+ * Each type is fetched on its own. If one fails (say the token lacks the scope
+ * for that data type), the rest still sync; only a run where every type fails is
+ * treated as an error, so a partial grant does not stall exercise sync.
+ */
 async function pullPoints(
 	accessToken: string,
 	since: Date,
@@ -103,15 +109,23 @@ async function pullPoints(
 ): Promise<GoogleDataPoint[]> {
 	const maxPages = options.maxPages ?? 2;
 	const all: GoogleDataPoint[] = [];
+	let failures = 0;
 	for (const pull of PULLS) {
-		const points = await listDataPointsBounded<GoogleDataPoint>(accessToken, pull.dataType, {
-			filter: filterFor(pull.dataType, since),
-			pageSize: pull.pageSize,
-			method: pull.method,
-			maxPages,
-			baseUrl: options.baseUrl,
-		});
-		all.push(...points);
+		try {
+			const points = await listDataPointsBounded<GoogleDataPoint>(accessToken, pull.dataType, {
+				filter: filterFor(pull.dataType, since),
+				pageSize: pull.pageSize,
+				method: pull.method,
+				maxPages,
+				baseUrl: options.baseUrl,
+			});
+			all.push(...points);
+		} catch {
+			failures += 1;
+		}
+	}
+	if (failures === PULLS.length) {
+		throw new Error('every data type fetch failed');
 	}
 	return all;
 }
