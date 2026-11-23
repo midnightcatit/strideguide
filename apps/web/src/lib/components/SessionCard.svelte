@@ -90,7 +90,6 @@
 	const pills = $derived.by(() => {
 		const out: { text: string; band?: boolean }[] = [];
 		out.push({ text: session.slot === 'PM' ? 'Evening' : 'Morning' });
-		out.push({ text: sessionTypeLabel(session.type), band: true });
 		if (isStrength) {
 			if (machines.length) out.push({ text: `${machines.length} moves` });
 			if (reps) out.push({ text: `3 × ${reps}` });
@@ -100,12 +99,6 @@
 		if (p.targetDistanceKm != null) out.push({ text: fmtDistance(p.targetDistanceKm) });
 		const dur = formatDuration(session.durationMin);
 		if (dur) out.push({ text: dur });
-		if (p.intensity) {
-			out.push({
-				text: p.intensity === 'easy' ? 'Easy' : p.intensity === 'steady' ? 'Steady' : 'Hard',
-				band: true,
-			});
-		}
 		if (p.targetPaceSecPerKm) {
 			const mid = Math.round((p.targetPaceSecPerKm[0] + p.targetPaceSecPerKm[1]) / 2);
 			out.push({ text: `≈ ${fmtPace(mid)}` });
