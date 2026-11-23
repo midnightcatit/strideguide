@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatClock } from '@strideguide/shared/units';
 	import { goto } from '$app/navigation';
-	import { findMachine } from '@strideguide/shared/plan';
+	import { findMove } from '@strideguide/shared/plan';
 	import type { ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
@@ -86,7 +86,7 @@
 	let showForm = $state(true);
 
 	const current = $derived(instances[idx]);
-	const machine = $derived(findMachine(current?.step.machine));
+	const machine = $derived(findMove(current?.step.machine));
 	const timed = $derived(current?.step.durationSec != null);
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);

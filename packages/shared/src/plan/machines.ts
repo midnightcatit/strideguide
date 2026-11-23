@@ -4,11 +4,20 @@
  * Cues mirror the researched exercise library (research/wave-2/4a, 4b).
  */
 
+/** Movement pattern, used to balance push/pull, legs and core. */
+export type MovePattern =
+	| 'pull'
+	| 'push'
+	| 'squat'
+	| 'hinge'
+	| 'knee-extension'
+	| 'posterior-chain'
+	| 'core';
+
 export interface MachineExercise {
 	name: string;
 	muscles: string[];
-	/** Movement pattern, used to balance push/pull and posterior chain. */
-	pattern: 'pull' | 'push' | 'squat' | 'hinge' | 'knee-extension' | 'posterior-chain';
+	pattern: MovePattern;
 	/** One plain sentence on why this matters for running. */
 	why: string;
 	/** Short "where you should feel it" cue. */

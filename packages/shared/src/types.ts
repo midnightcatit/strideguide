@@ -61,6 +61,15 @@ export interface GoalProfileData {
 	defaultWeeks: number;
 }
 
+/** What the user trains strength with. */
+export type EquipmentPreference = 'machines' | 'bodyweight' | 'both';
+
+/** When the user wants stretching built into the plan. */
+export type StretchingPreference = 'after-runs' | 'rest-days' | 'both' | 'none';
+
+/** Terrain the user mostly runs on, which biases the quality work. */
+export type TerrainPreference = 'flat' | 'hilly' | 'mixed';
+
 export interface Baseline {
 	/** Recent race/time results, keyed loosely (e.g. "5k": "24:30"). */
 	recentTimes?: Record<string, string>;
@@ -68,6 +77,24 @@ export interface Baseline {
 	weeklyKm?: number;
 	/** Self-described experience level. */
 	experience?: 'beginner' | 'intermediate' | 'advanced';
+	/** Equipment the user trains strength with (defaults to machines). */
+	equipment?: EquipmentPreference;
+	/** Strength sessions per week, when the user has a view (1 to 3). */
+	strengthDays?: number;
+	/** Typical session length in minutes, used to size circuits. */
+	sessionMinutes?: number;
+	/** Flexibility now and the goal, each 1 (tight) to 5 (very flexible). */
+	flexibility?: { current: number; goal: number };
+	/** When the user wants stretching. */
+	stretching?: StretchingPreference;
+	/** Cross-training the user can do, e.g. bike, swim, rower. */
+	crossTraining?: string[];
+	/** Terrain the user mostly runs on. */
+	terrain?: TerrainPreference;
+	/** Free-text niggles the coach should know about. */
+	niggles?: string;
+	/** Free-text notes from onboarding. */
+	notes?: string;
 }
 
 export interface RunStats {

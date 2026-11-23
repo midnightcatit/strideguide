@@ -139,3 +139,56 @@ describe('handle intensity + race-pace', () => {
 		expect(band[1]).toBeLessThan(420);
 	});
 });
+
+describe('generatePlan (preferences)', () => {
+	const base = {
+		profile: marathon,
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-12-01',
+		targetDate: '2027-05-01',
+	};
+
+	it('uses bodyweight moves for a bodyweight circuit', () => {
+		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', equipment: 'bodyweight' } });
+		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
+		expect(strength.type).toBe('full-body-strength');
+		const names = strength.prescription.blocks!.map((b) => b.machine);
+		expect(names).toContain('Bodyweight squat');
+		expect(names).not.toContain('Leg press');
+	});
+
+	it('uses machine moves for a machines circuit', () => {
+		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', equipment: 'machines' } });
+		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
+		expect(strength.type).toBe('machine-circuit');
+		expect(strength.prescription.blocks!.some((b) => b.machine === 'Leg press')).toBe(true);
+	});
+
+	it('sizes the circuit by session length', () => {
+		const short = generatePlan({ ...base, baseline: { experience: 'intermediate', sessionMinutes: 30 } });
+		const long = generatePlan({ ...base, baseline: { experience: 'intermediate', sessionMinutes: 60 } });
+		const shortN = short.weeks[0]!.sessions.find((s) => s.modality === 'strength')!.prescription.blocks!.length;
+		const longN = long.weeks[0]!.sessions.find((s) => s.modality === 'strength')!.prescription.blocks!.length;
+		expect(longN).toBeGreaterThan(shortN);
+	});
+
+	it('honors a requested strength session count', () => {
+		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', strengthDays: 1 } });
+		expect(p.weeks[0]!.sessions.filter((s) => s.modality === 'strength').length).toBe(1);
+	});
+
+	it('prefers hill reps on hilly terrain', () => {
+		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', terrain: 'hilly' } });
+		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'hills')).toBe(true);
+	});
+
+	it('swaps an easy run for cross-training when the profile and user allow it', () => {
+		const p = generatePlan({
+			profile: wholeFitness,
+			availableDays: [1, 3, 5],
+			startDate: '2026-12-01',
+			baseline: { experience: 'beginner', crossTraining: ['bike'] },
+		});
+		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'cross-train')).toBe(true);
+	});
+});

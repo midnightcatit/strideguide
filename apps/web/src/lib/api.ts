@@ -42,6 +42,14 @@ export interface GeneratePlanInput {
 		recentTimes?: Record<string, string>;
 		weeklyKm?: number;
 		experience?: 'beginner' | 'intermediate' | 'advanced';
+		equipment?: 'machines' | 'bodyweight' | 'both';
+		strengthDays?: number;
+		sessionMinutes?: number;
+		flexibility?: { current: number; goal: number };
+		stretching?: 'after-runs' | 'rest-days' | 'both' | 'none';
+		crossTraining?: string[];
+		terrain?: 'flat' | 'hilly' | 'mixed';
+		niggles?: string;
 		/** Free-text notes from onboarding, passed through to the generation prompt. */
 		notes?: string;
 	};

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, findMachine, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, findMove, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -98,7 +98,7 @@
 				if (s.machine && !names.includes(s.machine)) names.push(s.machine);
 			}
 		}
-		return names.map((n) => findMachine(n)).filter((m): m is MachineExercise => !!m);
+		return names.map((n) => findMove(n)).filter((m): m is MachineExercise => !!m);
 	});
 
 	function sourceHref(doiUrl?: string): string | undefined {
@@ -217,7 +217,7 @@
 			{#if machines.length}
 				<hr class="my-6 border-hairline" />
 				<section aria-labelledby="machines">
-					<h2 id="machines" class="tabular text-xs uppercase tracking-widest text-steel">The machines</h2>
+					<h2 id="machines" class="tabular text-xs uppercase tracking-widest text-steel">The {session.type === 'machine-circuit' ? 'machines' : 'moves'}</h2>
 					<ul class="mt-2 space-y-1">
 						{#each machines as m (m.name)}
 							<li>

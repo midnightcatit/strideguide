@@ -22,6 +22,17 @@
 	let days = $state<number[]>([0, 2, 4, 6]);
 	let notes = $state('');
 
+	// Strength and body preferences.
+	let equipment = $state<'machines' | 'bodyweight' | 'both'>('both');
+	let strengthDays = $state(2);
+	let sessionMinutes = $state(45);
+	let flexCurrent = $state(3);
+	let flexGoal = $state(4);
+	let stretching = $state<'after-runs' | 'rest-days' | 'both' | 'none'>('after-runs');
+	let crossTraining = $state<string[]>([]);
+	let terrain = $state<'flat' | 'hilly' | 'mixed'>('mixed');
+	let niggles = $state('');
+
 	let stepIndex = $state(0);
 	let dir = $state<1 | -1>(1);
 	let submitting = $state(false);
@@ -146,6 +157,74 @@
 				],
 			},
 			{
+				id: 'equipment',
+				title: 'What will you train strength with?',
+				lede: 'Machines fix the path, so it is easy to load and progress. Bodyweight and free weights ask more of your balance and control, and sit closer to the way running works. Both is a good default.',
+				guide: [
+					'Machines: simple to load, easy to repeat week to week.',
+					'Bodyweight: no equipment, and it trains balance and single-leg control.',
+					'Both: legs from bodyweight, a machine or two for the upper body.',
+				],
+			},
+			{
+				id: 'strength',
+				title: 'How should the strength work fit?',
+				lede: 'Strength protects joints and supports running economy. Two sessions a week is enough; three helps if you have the time. Session length sets how many moves we include.',
+				guide: [
+					'Two sessions a week is the usual sweet spot for runners.',
+					'30 minutes is about 5 moves, 45 about 6, 60 or more is 8.',
+					'Make the lowering phase the slow part, then add load or harder variations over time.',
+				],
+			},
+			{
+				id: 'flexibility',
+				title: 'How flexible are you, and where do you want to be?',
+				lede: 'Rate your flexibility today and where you would like it. We build the stretching toward your goal, and only as far as helps.',
+				guide: [
+					'For running, more range is not always better. Train toward the range you need, then hold it.',
+					'Tighter runners often gain most from gentle, regular static stretching.',
+					'Long static holds before hard running can cost a little power, so we place them after.',
+				],
+			},
+			{
+				id: 'stretching',
+				title: 'When do you want to stretch?',
+				lede: 'Dynamic work before running and static stretching after is the usual split. We can add it where it suits you.',
+				guide: [
+					'After easy runs: it fits neatly into the cool-down.',
+					'On rest days: a short mobility session of its own.',
+					'Both, or none: your call. None keeps the plan lean.',
+				],
+			},
+			{
+				id: 'crossTraining',
+				title: 'Any cross-training you can do?',
+				lede: 'Low-impact aerobic work builds fitness while sparing the running legs. Useful when you are sore, or building back from a break.',
+				guide: [
+					'Bike, pool or rower are the usual options. Pick any you can get to.',
+					'We only use it where it fits, never in place of key running.',
+				],
+			},
+			{
+				id: 'terrain',
+				title: 'What do you mostly run on?',
+				lede: 'Terrain shapes the harder sessions. Hills build power and economy, so on hilly ground we lean toward hill work.',
+				guide: [
+					'Flat: road speed work.',
+					'Hilly: hill reps that build strength-endurance.',
+					'Mixed: a blend. Pick this if you are not sure.',
+				],
+			},
+			{
+				id: 'niggles',
+				title: 'Anything niggling or sore?',
+				lede: 'Tell us what to be careful with, and we will keep it in mind when we build the plan. This is not medical advice.',
+				guide: [
+					'For example: a cranky Achilles, a knee that aches on downhills, a tight hamstring.',
+					'If something is sharp or getting worse, see a professional first.',
+				],
+			},
+			{
 				id: 'notes',
 				title: 'Anything your coach should know?',
 				lede: 'This goes straight into the prompt that writes your plan, so write it as a note to a coach.',
@@ -168,6 +247,28 @@
 		{ v: 'advanced', name: 'Advanced', range: '50 km a week or more', note: 'Years of steady, structured training.' },
 	];
 
+	const EQUIPMENT: { v: 'machines' | 'bodyweight' | 'both'; name: string; note: string }[] = [
+		{ v: 'machines', name: 'Machines', note: 'Fixed path, easy to load and repeat.' },
+		{ v: 'bodyweight', name: 'Bodyweight', note: 'No equipment; trains balance and single-leg control.' },
+		{ v: 'both', name: 'Both', note: 'Legs from bodyweight, a machine or two up top.' },
+	];
+	const STRETCHING: { v: 'after-runs' | 'rest-days' | 'both' | 'none'; name: string; note: string }[] = [
+		{ v: 'after-runs', name: 'After easy runs', note: 'Fits into the cool-down.' },
+		{ v: 'rest-days', name: 'On rest days', note: 'A short mobility session.' },
+		{ v: 'both', name: 'Both', note: 'After runs and on rest days.' },
+		{ v: 'none', name: 'None', note: 'Keep the plan lean.' },
+	];
+	const TERRAIN: { v: 'flat' | 'hilly' | 'mixed'; name: string; note: string }[] = [
+		{ v: 'flat', name: 'Flat', note: 'Road speed work.' },
+		{ v: 'hilly', name: 'Hilly', note: 'Hill reps for power and economy.' },
+		{ v: 'mixed', name: 'Mixed', note: 'A blend. Pick this if unsure.' },
+	];
+	const CROSS: { v: string; name: string }[] = [
+		{ v: 'bike', name: 'Bike' },
+		{ v: 'pool', name: 'Pool' },
+		{ v: 'rower', name: 'Rower' },
+	];
+
 	onMount(async () => {
 		try {
 			profiles = (await api.profiles()).profiles;
@@ -178,6 +279,12 @@
 
 	function toggleDay(d: number) {
 		days = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => a - b);
+	}
+
+	function toggleCross(v: string) {
+		crossTraining = crossTraining.includes(v)
+			? crossTraining.filter((x) => x !== v)
+			: [...crossTraining, v];
 	}
 
 	function validate(): boolean {
@@ -225,6 +332,14 @@
 				availableDays: days,
 				baseline: {
 					experience,
+					equipment,
+					strengthDays,
+					sessionMinutes,
+					flexibility: { current: flexCurrent, goal: flexGoal },
+					stretching,
+					terrain,
+					...(crossTraining.length ? { crossTraining } : {}),
+					...(niggles.trim() ? { niggles: niggles.trim() } : {}),
 					...(recentTimes ? { recentTimes } : {}),
 					...(weeklyKm.trim()
 						? {
@@ -383,6 +498,83 @@
 						{/each}
 					</div>
 					<p class="mt-3 text-sm text-steel">{days.length} {days.length === 1 ? 'day' : 'days'} a week.</p>
+				{:else if step.id === 'equipment'}
+					<div class="grid gap-2">
+						{#each EQUIPMENT as opt (opt.v)}
+							<button
+								type="button"
+								aria-pressed={equipment === opt.v}
+								onclick={() => (equipment = opt.v)}
+								class="flex flex-col rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {equipment === opt.v
+									? 'border-signal-ink bg-signal-wash'
+									: 'border-hairline hover:border-steel'}"
+							>
+								<span class="font-display font-medium">{opt.name}</span>
+								<span class="mt-0.5 text-sm text-steel">{opt.note}</span>
+							</button>
+						{/each}
+					</div>
+				{:else if step.id === 'strength'}
+					<p class="tabular text-xs uppercase tracking-widest text-steel">Sessions a week</p>
+					<div class="mt-2 flex gap-2">
+						{#each [1, 2, 3] as n (n)}
+							<button type="button" aria-pressed={strengthDays === n} onclick={() => (strengthDays = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {strengthDays === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
+						{/each}
+					</div>
+					<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Session length</p>
+					<div class="mt-2 flex gap-2">
+						{#each [30, 45, 60] as n (n)}
+							<button type="button" aria-pressed={sessionMinutes === n} onclick={() => (sessionMinutes = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {sessionMinutes === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n} min</button>
+						{/each}
+					</div>
+				{:else if step.id === 'flexibility'}
+					<p class="tabular text-xs uppercase tracking-widest text-steel">Flexibility today</p>
+					<div class="mt-2 flex gap-2">
+						{#each [1, 2, 3, 4, 5] as n (n)}
+							<button type="button" aria-pressed={flexCurrent === n} onclick={() => (flexCurrent = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {flexCurrent === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
+						{/each}
+					</div>
+					<p class="mt-1 text-xs text-steel">1 is tight, 5 is very flexible.</p>
+					<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Goal flexibility</p>
+					<div class="mt-2 flex gap-2">
+						{#each [1, 2, 3, 4, 5] as n (n)}
+							<button type="button" aria-pressed={flexGoal === n} onclick={() => (flexGoal = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {flexGoal === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
+						{/each}
+					</div>
+				{:else if step.id === 'stretching'}
+					<div class="grid gap-2">
+						{#each STRETCHING as opt (opt.v)}
+							<button type="button" aria-pressed={stretching === opt.v} onclick={() => (stretching = opt.v)} class="flex flex-col rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {stretching === opt.v ? 'border-signal-ink bg-signal-wash' : 'border-hairline hover:border-steel'}">
+								<span class="font-display font-medium">{opt.name}</span>
+								<span class="mt-0.5 text-sm text-steel">{opt.note}</span>
+							</button>
+						{/each}
+					</div>
+				{:else if step.id === 'crossTraining'}
+					<div class="flex flex-wrap gap-2">
+						{#each CROSS as opt (opt.v)}
+							<button type="button" aria-pressed={crossTraining.includes(opt.v)} onclick={() => toggleCross(opt.v)} class="rounded-xl border px-4 py-3 text-sm transition-colors {crossTraining.includes(opt.v) ? 'border-signal-ink bg-signal-wash font-medium' : 'border-hairline text-steel hover:border-steel'}">{opt.name}</button>
+						{/each}
+					</div>
+					<p class="mt-3 text-sm text-steel">{crossTraining.length ? `You can cross-train: ${crossTraining.join(', ')}.` : 'None selected. That is fine.'}</p>
+				{:else if step.id === 'terrain'}
+					<div class="grid gap-2">
+						{#each TERRAIN as opt (opt.v)}
+							<button type="button" aria-pressed={terrain === opt.v} onclick={() => (terrain = opt.v)} class="flex flex-col rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {terrain === opt.v ? 'border-signal-ink bg-signal-wash' : 'border-hairline hover:border-steel'}">
+								<span class="font-display font-medium">{opt.name}</span>
+								<span class="mt-0.5 text-sm text-steel">{opt.note}</span>
+							</button>
+						{/each}
+					</div>
+				{:else if step.id === 'niggles'}
+					<textarea
+						bind:value={niggles}
+						rows="3"
+						maxlength="400"
+						placeholder="For example: a cranky Achilles, a knee that aches on downhills…"
+						aria-label="Niggles or injuries"
+						class="w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm leading-relaxed"
+					></textarea>
 				{:else if step.id === 'notes'}
 					<textarea
 						bind:value={notes}

@@ -6,7 +6,8 @@ import type {
 	StructuredWorkout,
 	WorkoutStep,
 } from '../types';
-import { defaultCircuit } from './machines';
+import { circuitFor } from './catalog';
+import type { MachineExercise } from './machines';
 import { COOLDOWN_STRETCHES, WARMUP_DRILLS, type Drill } from './mobility';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { pacesFromVdot, vdotFromBaseline } from './vdot';
@@ -416,10 +417,21 @@ function racePaceWorkout(
 	});
 }
 
-function strengthWorkout(
-	circuit: ReturnType<typeof defaultCircuit>,
-	reps: number,
-): StructuredWorkout {
+function hillsWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
+	return repWorkout({
+		reps,
+		distanceM: 400,
+		pace: paces ? [paces.interval * 1.03, paces.interval * 1.12] : undefined,
+		fallbackPace: (paces ?? DEFAULT_PACES).interval * 1.05,
+		label: 'Hill rep',
+		note: 'Power up with short, quick steps, then jog or walk down to recover.',
+		recoveryM: 400,
+		recoveryPace: paces?.easy,
+		paces,
+	});
+}
+
+function strengthWorkout(circuit: MachineExercise[], reps: number): StructuredWorkout {
 	const blocks: StepBlock[] = [
 		drillBlock('Warm-up drills', WARMUP_DRILLS, 'warmup'),
 		{
@@ -461,8 +473,13 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const longDay = days[days.length - 1]!;
 	const rest = days.slice(0, -1);
 
+	const requestedStrength = input.baseline.strengthDays;
 	const strengthCount =
-		input.profile.slug === 'whole-fitness' ? Math.min(3, Math.max(1, Math.floor(days.length / 2))) : 2;
+		requestedStrength && requestedStrength > 0
+			? clamp(Math.round(requestedStrength), 1, 3)
+			: input.profile.slug === 'whole-fitness'
+				? Math.min(3, Math.max(1, Math.floor(days.length / 2)))
+				: 2;
 
 	const weeks: PlannedWeek[] = [];
 	for (let w = 0; w < totalWeeks; w++) {
@@ -505,7 +522,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// quality sessions
 		const goalPace = goalPaceFor(input.profile.slug, paces ?? DEFAULT_PACES);
 		qualityDays.forEach((day, qi) => {
-			let kind: 'race-pace' | 'interval' | 'tempo';
+			let kind: 'race-pace' | 'interval' | 'tempo' | 'hills';
 			if (
 				(phase === 'build' || phase === 'peak') &&
 				qi === 1 &&
@@ -519,6 +536,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				input.profile.sessionTypes.includes('interval')
 			) {
 				kind = 'interval';
+			} else if (
+				input.baseline.terrain === 'hilly' &&
+				qi === 0 &&
+				input.profile.sessionTypes.includes('hills')
+			) {
+				kind = 'hills';
 			} else {
 				kind = 'tempo';
 			}
@@ -563,6 +586,24 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						workout: intervalWorkout(reps, paces),
 					},
 					durationMin: estDuration((reps * 800) / 1000, paces ? paces.interval : easyPace - 60) + 15,
+				});
+			} else if (kind === 'hills') {
+				const reps = clamp(Math.round(qualityKm / 0.4 / 2) * 2, 4, 10);
+				sessions.push({
+					day,
+					slot: 'AM',
+					modality: 'running',
+					type: 'hills',
+					title: TITLE.hills,
+					purpose: PURPOSE.hills,
+					prescription: {
+						summary: 'Hill reps at hard effort, jog or walk down to recover.',
+						targetDistanceKm: round1((reps * 400) / 1000),
+						targetRpe: [8, 9],
+						notes: 'Power up with short, quick steps. Relax on the way down.',
+						workout: hillsWorkout(reps, paces),
+					},
+					durationMin: estDuration((reps * 400) / 1000, paces ? paces.interval : easyPace - 60) + 20,
 				});
 			} else {
 				sessions.push({
@@ -610,7 +651,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				});
 			}
 			if (strengthLeft > 0) {
-				sessions.push(strengthSession(day, 'PM', phase, input.equipment));
+				sessions.push(strengthSession(day, 'PM', phase, input));
 				strengthLeft--;
 			}
 		});
@@ -618,8 +659,31 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// any strength still unplaced → attach to quality days in the evening
 		for (const day of qualityDays) {
 			if (strengthLeft <= 0) break;
-			sessions.push(strengthSession(day, 'PM', phase, input.equipment));
+			sessions.push(strengthSession(day, 'PM', phase, input));
 			strengthLeft--;
+		}
+
+		// Cross-training: when the user has it and the profile allows it, swap the
+		// last easy run for a low-impact session, sparing the running legs.
+		if (input.baseline.crossTraining?.length && input.profile.sessionTypes.includes('cross-train')) {
+			const idx = [...sessions].reverse().findIndex((s) => s.type === 'easy');
+			if (idx >= 0) {
+				const realIdx = sessions.length - 1 - idx;
+				const easy = sessions[realIdx]!;
+				sessions[realIdx] = {
+					...easy,
+					modality: 'recovery',
+					type: 'cross-train',
+					title: TITLE['cross-train'],
+					purpose: PURPOSE['cross-train'],
+					prescription: {
+						summary: 'Low-impact aerobic work: bike, pool or rower, easy and continuous.',
+						intensity: 'easy',
+						targetRpe: [3, 4],
+						notes: `Use what you have (${input.baseline.crossTraining.join(', ')}). Keep it easy.`,
+					},
+				};
+			}
 		}
 
 		const withIntensity = sessions.map((s) => ({
@@ -645,15 +709,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	};
 }
 
-function strengthSession(
-	day: number,
-	slot: string,
-	phase: string,
-	equipment?: string[],
-): PlannedSession {
-	const circuit = defaultCircuit(equipment);
+function strengthSession(day: number, slot: string, phase: string, input: PlanInput): PlannedSession {
+	const mode = input.baseline.equipment ?? 'machines';
+	const circuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment);
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
-	const sets = circuit.slice(0, 6).map((m) => ({
+	const sets = circuit.map((m) => ({
 		machine: m.name,
 		sets: [
 			{ reps, weightKg: 0 },
@@ -661,20 +721,25 @@ function strengthSession(
 			{ reps, weightKg: 0 },
 		],
 	}));
+	const type: SessionArchetype = mode === 'machines' ? 'machine-circuit' : 'full-body-strength';
+	const noun = mode === 'bodyweight' ? 'moves' : mode === 'both' ? 'exercises' : 'machines';
 	return {
 		day,
 		slot,
 		modality: 'strength',
-		type: 'machine-circuit',
-		title: TITLE['machine-circuit'],
-		purpose: PURPOSE['machine-circuit'],
+		type,
+		title: TITLE[type],
+		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} machines · 3 × ${reps}, control the lowering phase.`,
+			summary: `${sets.length} ${noun} · 3 × ${reps}, control the lowering phase.`,
 			blocks: sets,
 			targetRpe: [7, 8],
-			notes: 'Log weight per set; add load when you clear the top rep target.',
+			notes:
+				mode === 'machines'
+					? 'Log weight per set; add load when you clear the top rep target.'
+					: 'Log reps. Make it harder with a slower lowering phase, a harder variation, or a longer hold.',
 			workout: strengthWorkout(circuit, reps),
 		},
-		durationMin: 45,
+		durationMin: input.baseline.sessionMinutes ?? 45,
 	};
 }
