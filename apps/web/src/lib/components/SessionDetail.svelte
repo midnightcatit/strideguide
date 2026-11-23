@@ -7,6 +7,7 @@
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
+	import MoveDemo from '$lib/components/MoveDemo.svelte';
 	import { isStarted } from '$lib/started.svelte';
 	import { store } from '$lib/planStore.svelte';
 	import { prefs } from '$lib/prefs.svelte';
@@ -466,6 +467,9 @@
 								</button>
 								{#if openMachine === m.name}
 									<div class="pb-3 pt-1">
+										{#if m.media}
+											<div class="mb-3"><MoveDemo media={m.media} name={m.name} /></div>
+										{/if}
 										<p class="text-sm leading-relaxed">{m.why}</p>
 										<p class="mt-2 text-sm leading-relaxed text-steel">{machineLine(m)}</p>
 										<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Form</p>

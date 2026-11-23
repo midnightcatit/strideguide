@@ -23,6 +23,11 @@ export interface MachineExercise {
 	equipment?: string;
 	/** Difficulty rung, used by the bodyweight progression ladder. */
 	level?: 'beginner' | 'intermediate' | 'advanced';
+	/**
+	 * Optional movement frames for the demo. `start` and `end` are the two
+	 * positions, shown as a cross-fade; `credit` records the media source.
+	 */
+	media?: { start: string; end?: string; credit?: string };
 	/** One plain sentence on why this matters for running. */
 	why: string;
 	/** Short "where you should feel it" cue. */
