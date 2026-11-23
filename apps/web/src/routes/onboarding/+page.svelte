@@ -20,6 +20,15 @@
 	let weeklyKm = $state('');
 	let days = $state<number[]>([0, 2, 4, 6]);
 	let submitting = $state(false);
+	let generating = $state(false);
+	let stage = $state(0);
+	let stageTimer: ReturnType<typeof setInterval> | undefined;
+	const STAGES = [
+		'Writing your weeks',
+		'Balancing running and strength',
+		'Adding the reasons behind each session',
+		'Finishing your plan',
+	];
 	let error = $state<string | null>(null);
 
 	// Race anchor (M4d): a recent race time drives training paces.
@@ -80,6 +89,11 @@
 		}
 		submitting = true;
 		error = null;
+		generating = true;
+		stage = 0;
+		stageTimer = setInterval(() => {
+			stage = Math.min(STAGES.length - 1, stage + 1);
+		}, 2200);
 
 		const recentTimes =
 			vdot && raceTime.trim() && RACE_DISTANCES.some((d) => d.key === raceKey)
@@ -104,11 +118,19 @@
 			...(needsRaceDate && targetDate ? { targetDate } : {}),
 		};
 		try {
-			await api.generatePlan(body);
+			await Promise.race([
+				api.generatePlan(body),
+				new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 25000)),
+			]);
 			window.location.href = '/';
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Could not generate the plan.';
-			submitting = false;
+			error =
+				e instanceof Error && e.message === 'timeout'
+					? 'That took longer than expected. Your answers are still here, so give it another go.'
+					: 'We could not build the plan just now. Try again.';
+			generating = false;
+		} finally {
+			if (stageTimer) clearInterval(stageTimer);
 		}
 	}
 </script>
@@ -233,3 +255,13 @@
 		{submitting ? 'Generating…' : `Generate my ${selected?.name ?? ''} plan`}
 	</button>
 </section>
+
+{#if generating}
+	<div class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-paper/95 px-6 text-center backdrop-blur">
+		<span class="breathe h-3 w-3 rounded-full bg-signal-ink" aria-hidden="true"></span>
+		<div role="status" aria-live="polite">
+			<p class="font-display text-lg font-medium">{STAGES[stage]}…</p>
+			<p class="mt-1 text-sm text-steel">This usually takes a few seconds.</p>
+		</div>
+	</div>
+{/if}

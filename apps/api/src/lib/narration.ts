@@ -1,3 +1,6 @@
+import { eq } from 'drizzle-orm';
+import { schema } from '../db';
+import type { Db } from '../db';
 import type { Env } from '../env';
 import { runAi, type AiMessage } from './ai';
 
@@ -70,5 +73,53 @@ function extractJsonArray(text: string): unknown[] | null {
 		return Array.isArray(value) ? value : null;
 	} catch {
 		return null;
+	}
+}
+
+export interface StoredWeek {
+	id: string;
+	weekNumber: number;
+	phase: string;
+	targetVolumeKm: number;
+}
+
+/**
+ * Best-effort AI narration run AFTER the plan is already saved (via waitUntil),
+ * so onboarding never waits on the model. Updates week summaries in place when it
+ * succeeds, and always records the job.
+ */
+export async function narrateAndStore(env: Env, db: Db, weeks: StoredWeek[]): Promise<void> {
+	try {
+		const narration = await narrateWeeks(
+			env,
+			weeks.map((w) => ({
+				weekNumber: w.weekNumber,
+				phase: w.phase,
+				targetVolumeKm: w.targetVolumeKm,
+			})),
+		);
+		if (narration.usedAi) {
+			for (let i = 0; i < weeks.length; i++) {
+				const summary = narration.summaries[i];
+				if (summary) {
+					await db
+						.update(schema.planWeeks)
+						.set({ summaryText: summary })
+						.where(eq(schema.planWeeks.id, weeks[i]!.id));
+				}
+			}
+		}
+		await db.insert(schema.aiJobs).values({
+			id: crypto.randomUUID(),
+			type: 'plan_narration',
+			status: narration.usedAi ? 'ok' : 'error',
+			modelUsed: narration.model ?? 'template',
+			latencyMs: 0,
+		});
+	} catch {
+		await db
+			.insert(schema.aiJobs)
+			.values({ id: crypto.randomUUID(), type: 'plan_narration', status: 'error', modelUsed: 'template' })
+			.catch(() => {});
 	}
 }

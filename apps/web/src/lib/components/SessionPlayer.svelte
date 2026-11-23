@@ -144,6 +144,13 @@
 	}
 
 	const clock = $derived(remaining != null ? formatClock(remaining) : formatClock(elapsed));
+
+	function goHome() {
+		onClose();
+		if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+			window.location.href = '/';
+		}
+	}
 	const progress = $derived(`${Math.min(idx + 1, instances.length)} / ${instances.length}`);
 </script>
 
@@ -156,7 +163,7 @@
 >
 	<div class="mx-auto max-w-2xl px-4 py-5 pb-24">
 		<div class="flex items-center justify-between">
-			<a href="/" class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</a>
+			<button type="button" onclick={goHome} class="text-sm text-steel hover:text-signal-ink">‹ Stride Guide</button>
 			<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">✕</button>
 		</div>
 		<h1 class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>

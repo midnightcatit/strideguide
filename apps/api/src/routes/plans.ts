@@ -5,7 +5,7 @@ import { asc, and, desc, eq, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import type { Baseline } from '@strideguide/shared';
 import { schema } from '../db';
-import { narrateWeeks } from '../lib/narration';
+import { narrateAndStore, templateWeekSummary } from '../lib/narration';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
 
@@ -145,25 +145,19 @@ plans.post(
 			status: 'active',
 		});
 
-		const narration = await narrateWeeks(
-			c.env,
-			draft.weeks.map((w) => ({
-				weekNumber: w.weekNumber,
-				phase: w.phase,
-				targetVolumeKm: w.targetVolumeKm,
-			})),
-		);
-
-		const weekRows = draft.weeks.map((w, i) => {
+		const weekRows = draft.weeks.map((w) => {
 			const weekId = crypto.randomUUID();
 			return {
 				id: weekId,
 				planId,
 				weekNumber: w.weekNumber,
 				focus: w.focus,
-				summaryText: narration.summaries[i] ?? '',
+				// Template summary now; AI narration replaces it in the background.
+				summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
 				startDate: w.startDate,
 				endDate: w.endDate,
+				phase: w.phase,
+				targetVolumeKm: w.targetVolumeKm,
 				sessionRows: w.sessions.map((s) => ({
 					id: crypto.randomUUID(),
 					planWeekId: weekId,
@@ -180,7 +174,7 @@ plans.post(
 		});
 
 		// D1 caps bound parameters per statement (100). Keep chunks well under it.
-		const weekValues = weekRows.map(({ sessionRows: _s, ...rest }) => rest);
+		const weekValues = weekRows.map(({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest);
 		for (const part of chunk(weekValues, 10)) {
 			await db.insert(schema.planWeeks).values(part);
 		}
@@ -190,15 +184,21 @@ plans.post(
 			await db.insert(schema.sessionsPlan).values(part);
 		}
 
-		await db.insert(schema.aiJobs).values({
-			id: crypto.randomUUID(),
-			type: 'plan_narration',
-			status: narration.usedAi ? 'ok' : 'error',
-			modelUsed: narration.model ?? 'template',
-			latencyMs: 0,
-		});
+		// Narrate after responding, so the user never waits on the model.
+		c.executionCtx.waitUntil(
+			narrateAndStore(
+				c.env,
+				db,
+				weekRows.map((w) => ({
+					id: w.id,
+					weekNumber: w.weekNumber,
+					phase: w.phase,
+					targetVolumeKm: w.targetVolumeKm,
+				})),
+			),
+		);
 
-		return c.json({ planId, goalId, weeks: draft.weeks.length, usedAi: narration.usedAi }, 201);
+		return c.json({ planId, goalId, weeks: draft.weeks.length, usedAi: false }, 201);
 	},
 );
 
