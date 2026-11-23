@@ -32,6 +32,50 @@ pnpm dev          # api (wrangler dev :8787) + web (vite :5173) in parallel
 The web dev server proxies `/api/*` and `/auth/*` to the API Worker on `:8787`, so cookies and
 OAuth work same-origin. Google OAuth callback for dev is `http://localhost:8787/auth/google/callback`.
 
+## Google Health connector
+
+The app can link Google Health so workouts and daily activity from a Pixel Watch or
+Fitbit show up here. The foundation is in place: OAuth, encrypted token storage, and a
+Settings > Connections page. Live data fetching is not wired up yet, and the nightly
+cron only lists the connected rows.
+
+Google Health is the only connector. Apple Health is not offered: it needs a native
+app, which is out of scope for a PWA.
+
+### Secrets
+
+Three secrets, set the same way as the others above (`.dev.vars` locally,
+`wrangler secret put` in production):
+
+| Secret | What it is |
+|---|---|
+| `GOOGLE_HEALTH_CLIENT_ID` | Google Health OAuth client id. |
+| `GOOGLE_HEALTH_CLIENT_SECRET` | Google Health OAuth client secret. |
+| `CONNECTIONS_KEY` | Base64 of 32 random bytes, used to encrypt stored tokens. `openssl rand -base64 32`. |
+
+The client id and secret may be left unset; the connector then shows as "not set up"
+and the rest of the app runs unchanged. When `GOOGLE_HEALTH_CLIENT_ID` and
+`GOOGLE_HEALTH_CLIENT_SECRET` are empty, the flow falls back to the Google sign-in
+client (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`).
+
+### Scopes and the authorize request
+
+Verified from the Google Health docs (https://developers.google.com/health/scopes):
+
+- `https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly`
+- `https://www.googleapis.com/auth/googlehealth.profile.readonly`
+
+The profile scope is what lets us read the account id at `users/me/identity`. The
+authorize request sends `access_type=offline` and `prompt=consent`; without them Google
+does not return a refresh token, which a later sync needs to stay signed in.
+
+### Redirect URI
+
+Register `https://run.midnightcatit.com/connections/google-health/callback` with the
+Google Cloud OAuth client. Locally it is
+`http://localhost:8787/connections/google-health/callback`. The web dev server proxies
+`/connections` to the API Worker, so the flow stays same-origin.
+
 ## How development and deployment work (read this once)
 
 There are **three copies of the app**:

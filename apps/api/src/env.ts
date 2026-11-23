@@ -18,4 +18,11 @@ export interface Env {
 	GOOGLE_CLIENT_SECRET: string;
 	SESSION_SECRET: string;
 	OPENROUTER_API_KEY: string;
+
+	// Health connector secrets. All optional: when the client id and secret are
+	// unset the provider shows as not configured and stays inert.
+	GOOGLE_HEALTH_CLIENT_ID?: string;
+	GOOGLE_HEALTH_CLIENT_SECRET?: string;
+	/** Base64-encoded 32-byte key for AES-GCM token encryption. */
+	CONNECTIONS_KEY?: string;
 }

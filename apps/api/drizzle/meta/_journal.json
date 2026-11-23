@@ -78,6 +78,13 @@
       "when": 1795469750271,
       "tag": "0010_material_hellfire_club",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1795472824532,
+      "tag": "0011_cultured_red_shift",
+      "breakpoints": true
     }
   ]
 }

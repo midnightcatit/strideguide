@@ -397,6 +397,81 @@ export const summaries = sqliteTable(
 	}),
 );
 
+/**
+ * A linked external account. One row per user and provider. Tokens are stored
+ * encrypted (AES-GCM), never in the clear; the crypto lives in the API, so the
+ * columns hold base64 ciphertext.
+ */
+export const connections = sqliteTable(
+	'connections',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
+		/** The account's id at the provider, so a reconnect maps to the same person. */
+		providerUserId: text('provider_user_id'),
+		accessTokenEnc: text('access_token_enc'),
+		refreshTokenEnc: text('refresh_token_enc'),
+		/** Space or comma separated, as the provider returned it. */
+		scopes: text('scopes'),
+		tokenExpiresAt: integer('token_expires_at', { mode: 'timestamp' }),
+		status: text('status', { enum: ['connected', 'error'] })
+			.notNull()
+			.default('connected'),
+		lastSyncedAt: integer('last_synced_at', { mode: 'timestamp' }),
+		createdAt,
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	(t) => ({
+		userProviderIdx: uniqueIndex('connections_user_provider_idx').on(t.userId, t.provider),
+	}),
+);
+
+/**
+ * An activity pulled from a connector. Normalized to metric so it can be matched
+ * against planned sessions; `raw` keeps the provider payload for a later reparse.
+ */
+export const activities = sqliteTable(
+	'activities',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
+		/** The activity's id at the provider, unique per provider. */
+		externalId: text('external_id').notNull(),
+		modality: text('modality', {
+			enum: ['running', 'walking', 'strength', 'mobility', 'recovery', 'cross-train'],
+		}).notNull(),
+		type: text('type'),
+		startedAt: integer('started_at', { mode: 'timestamp' }).notNull(),
+		durationSec: integer('duration_sec'),
+		distanceM: real('distance_m'),
+		avgPaceSecPerKm: real('avg_pace_sec_per_km'),
+		avgHr: integer('avg_hr'),
+		maxHr: integer('max_hr'),
+		calories: integer('calories'),
+		source: text('source'),
+		route: text('route', { mode: 'json' }),
+		raw: text('raw', { mode: 'json' }),
+		sessionId: text('session_id').references(() => sessionsPlan.id, { onDelete: 'set null' }),
+		matchConfidence: real('match_confidence'),
+		createdAt,
+	},
+	(t) => ({
+		providerExternalIdx: uniqueIndex('activities_provider_external_idx').on(
+			t.provider,
+			t.externalId,
+		),
+		userStartedIdx: index('activities_user_started_idx').on(t.userId, t.startedAt),
+	}),
+);
+
 /** Recent API errors, so production failures are inspectable without tailing. */
 export const appErrors = sqliteTable('app_errors', {
 	id: text('id').primaryKey(),

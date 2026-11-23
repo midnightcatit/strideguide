@@ -1,5 +1,14 @@
-# Stride Guide — local secrets. Copy to .dev.vars and fill in. NEVER commit .dev.vars.
+# Stride Guide local secrets. Copy to .dev.vars and fill in. NEVER commit .dev.vars.
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 SESSION_SECRET=""
 OPENROUTER_API_KEY=""
+
+# Health connectors. Leave unset to run with the connector off (it shows as not
+# configured). Google Health falls back to the Google sign-in client above when its
+# own values are empty.
+GOOGLE_HEALTH_CLIENT_ID=""
+GOOGLE_HEALTH_CLIENT_SECRET=""
+# Base64 of 32 random bytes, used to encrypt stored tokens. Generate one with:
+#   openssl rand -base64 32
+CONNECTIONS_KEY=""

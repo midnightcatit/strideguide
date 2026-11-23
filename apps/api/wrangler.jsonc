@@ -34,6 +34,10 @@
     {
       "pattern": "run.midnightcatit.com/auth/*",
       "zone_name": "midnightcatit.com"
+    },
+    {
+      "pattern": "run.midnightcatit.com/connections/*",
+      "zone_name": "midnightcatit.com"
     }
   ]
 }

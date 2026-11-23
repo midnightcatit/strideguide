@@ -36,11 +36,50 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 	return (await res.json()) as T;
 }
 
+/** Like req, but for root-level routes (/connections) rather than /api. */
+async function reqRoot<T>(path: string, init?: RequestInit): Promise<T> {
+	let res: Response;
+	try {
+		res = await fetch(path, {
+			credentials: 'include',
+			headers: { 'content-type': 'application/json' },
+			...init,
+		});
+	} catch (e) {
+		if (isOnline()) reportClientError('api-network', `${init?.method ?? 'GET'} ${path}`, e);
+		throw e;
+	}
+	if (!res.ok) {
+		let message = `Something went wrong (${res.status}). Try again.`;
+		try {
+			const body = (await res.clone().json()) as { message?: string; error?: string };
+			if (body?.message) message = body.message;
+			else if (body?.error) message = body.error;
+		} catch {
+			// keep the generic message
+		}
+		throw new Error(message);
+	}
+	return (await res.json()) as T;
+}
+
 export interface ApiUser {
 	id: string;
 	email: string;
 	name?: string | null;
 	avatarUrl?: string | null;
+}
+
+/** One connector row on the Settings > Connections page. */
+export interface ConnectionStatus {
+	id: 'google-health';
+	label: string;
+	/** True when the server has this provider's OAuth client configured. */
+	configured: boolean;
+	connected: boolean;
+	status: 'connected' | 'error' | null;
+	lastSyncedAt: string | null;
+	scopes: string | null;
 }
 
 export interface GeneratePlanInput {
@@ -205,8 +244,16 @@ export const api = {
 		return { sent, remaining: outbox().length };
 	},
 
-	getSettings: () => req<{ prefs: Prefs }>('/settings'),
+	/** Health connectors: which are set up on the server, and which are linked. */
+	connections: () => reqRoot<{ providers: ConnectionStatus[] }>('/connections'),
 
+	/** Where to send the browser to begin linking a provider. */
+	connectionConnectUrl: (provider: string) => `/connections/${provider}/start`,
+
+	disconnectConnection: (provider: string) =>
+		reqRoot<{ ok: boolean }>(`/connections/${provider}/disconnect`, { method: 'POST' }),
+
+	getSettings: () => req<{ prefs: Prefs }>('/settings'),
 	putSettings: (body: Partial<Prefs>) =>
 		req<{ prefs: Prefs }>('/settings', { method: 'PUT', body: JSON.stringify(body) }),
 
