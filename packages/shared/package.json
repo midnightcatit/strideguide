@@ -12,7 +12,8 @@
     "./profiles": "./src/goal-profiles.ts",
     "./plan": "./src/plan/index.ts",
     "./units": "./src/units.ts",
-    "./analytics": "./src/analytics.ts"
+    "./analytics": "./src/analytics.ts",
+    "./writing": "./src/writing.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

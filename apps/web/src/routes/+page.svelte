@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api } from '$lib/api';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -11,6 +12,12 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	let note = $state<string | null>(null);
+
+	// Send a signed-in user with no plan to onboarding, once per session, unless
+	// they have said "not now". The session guard means the Dashboard tab still
+	// shows the empty state instead of bouncing them straight back.
+	const DISMISS_KEY = 'sg:onboardingDismissed';
+	const REDIRECT_KEY = 'sg:onboardingRedirected';
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
@@ -46,11 +53,29 @@
 	);
 	onMount(async () => {
 		await ensureAuth();
-		if (auth.user) {
-			await ensurePlan();
-			note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
+		if (!auth.user) return;
+		await ensurePlan();
+		note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
+
+		let dismissed = false;
+		let alreadyRedirected = false;
+		try {
+			dismissed = localStorage.getItem(DISMISS_KEY) === '1';
+			alreadyRedirected = sessionStorage.getItem(REDIRECT_KEY) === '1';
+		} catch {}
+		if (!store.error && !store.plan?.weeks?.length && !dismissed && !alreadyRedirected) {
+			try {
+				sessionStorage.setItem(REDIRECT_KEY, '1');
+			} catch {}
+			await goto('/onboarding');
 		}
 	});
+
+	function notNow() {
+		try {
+			localStorage.setItem(DISMISS_KEY, '1');
+		} catch {}
+	}
 </script>
 
 {#if store.error}
@@ -63,6 +88,13 @@
 			Pick a goal and a race date. We write the sessions and explain each one.
 		</p>
 		<a href="/onboarding" class="mt-6 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Build my plan</a>
+		<button
+			type="button"
+			onclick={notNow}
+			class="mx-auto mt-3 block text-xs text-steel hover:text-signal-ink"
+		>
+			Not now
+		</button>
 	</section>
 {:else}
 	<header class="mb-6">
