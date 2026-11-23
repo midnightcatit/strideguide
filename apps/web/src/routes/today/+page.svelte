@@ -89,30 +89,6 @@
 		selectedIso = todayIso;
 	}
 
-	// Horizontal swipe on the day panel changes day. A deliberate swipe only, so a
-	// vertical scroll never flips the day.
-	let startX = 0;
-	let startY = 0;
-	let tracking = false;
-	function onTouchStart(e: TouchEvent) {
-		const t = e.touches[0];
-		if (!t) return;
-		startX = t.clientX;
-		startY = t.clientY;
-		tracking = true;
-	}
-	function onTouchEnd(e: TouchEvent) {
-		if (!tracking) return;
-		tracking = false;
-		const t = e.changedTouches[0];
-		if (!t) return;
-		const dx = t.clientX - startX;
-		const dy = t.clientY - startY;
-		if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-			stepDay(dx < 0 ? 1 : -1);
-		}
-	}
-
 	onMount(async () => {
 		await ensureAuth();
 		if (auth.user) {
@@ -155,15 +131,34 @@
 					: sessionLabel(daySessions[0])
 				: 'Rest day'}
 		</h1>
-		<div class="mt-3 flex items-center gap-2">
-			{#if !isToday}
+		{#if !isToday}
+			<div class="mt-3">
 				<button type="button" onclick={goToday} class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal">Back to today</button>
-			{/if}
-			<span class="tabular text-xs text-steel sm:hidden">Swipe to change day</span>
-		</div>
+			</div>
+		{/if}
 	</header>
 
-	<!-- Day panel with flanking arrows (laptop) and swipe (phone) -->
+	<!-- Day controls on phones; laptops get the flanking arrows. -->
+	<div class="mb-3 flex items-center gap-2 sm:hidden">
+		<button
+			type="button"
+			onclick={() => stepDay(-1)}
+			aria-label="Previous day"
+			class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
+		>
+			‹
+		</button>
+		<button
+			type="button"
+			onclick={() => stepDay(1)}
+			aria-label="Next day"
+			class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
+		>
+			›
+		</button>
+	</div>
+
+	<!-- Day panel with flanking arrows (laptop) -->
 	<div class="flex items-stretch gap-2">
 		<button
 			type="button"
@@ -177,9 +172,7 @@
 		<div
 			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:h-[var(--panel-h)] sm:overflow-y-auto"
 			role="group"
-			aria-label="Day panel, swipe left or right to change day"
-			ontouchstart={onTouchStart}
-			ontouchend={onTouchEnd}
+			aria-label="Day panel"
 		>
 			<AdjustmentsCard />
 

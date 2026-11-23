@@ -33,7 +33,6 @@
 	let why = $state<Awaited<ReturnType<typeof api.explanation>> | null>(null);
 	let loading = $state(true);
 	let failed = $state(false);
-	let showAllClaims = $state(false);
 	let showAllSources = $state(false);
 	let showAllRows = $state(false);
 	let openMachine = $state<string | null>(null);
@@ -49,8 +48,6 @@
 	});
 
 	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
-	const claims = $derived(why?.claims ?? []);
-	const reasons = $derived(showAllClaims ? claims.slice(0, 16) : []);
 
 	/** One row per stage, so a repeated set reads once. */
 	interface Row {
@@ -103,12 +100,6 @@
 		}
 		return names.map((n) => findMachine(n)).filter((m): m is MachineExercise => !!m);
 	});
-
-	function markersFor(source?: string): number[] {
-		if (!source) return [];
-		const i = why?.sources.findIndex((s) => s.title === source || s.title.startsWith(source));
-		return i != null && i >= 0 ? [i + 1] : [];
-	}
 
 	function sourceHref(doiUrl?: string): string | undefined {
 		if (!doiUrl) return undefined;
@@ -171,7 +162,7 @@
 			</div>
 			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
 
-			<!-- Why this workout: one narrative, short then the reasons why -->
+			<!-- Why this workout: one summed-up narrative -->
 			<section class="mt-6" aria-labelledby="why">
 				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
 				{#if lead}<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>{/if}
@@ -179,32 +170,8 @@
 					<p class="mt-3 text-sm text-steel">Loading the reasoning…</p>
 				{:else if failed}
 					<p class="mt-3 text-sm text-steel">The sourced explanation is unavailable right now.</p>
-				{:else}
-					{#if why?.summary}
-						<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
-					{/if}
-					{#if claims.length}
-						{#if showAllClaims}
-							<ul class="mt-3 space-y-2.5">
-								{#each reasons as cl, i (i)}
-									<li class="text-sm leading-relaxed text-steel">
-										{cl.claim}
-										{#if markersFor(cl.source).length}
-											<span class="tabular ml-1 text-[10px] text-signal-ink">{markersFor(cl.source).map((n) => `[${n}]`).join('')}</span>
-										{/if}
-									</li>
-								{/each}
-							</ul>
-						{/if}
-						<button
-							type="button"
-							onclick={() => (showAllClaims = !showAllClaims)}
-							aria-expanded={showAllClaims}
-							class="mt-2 text-sm text-signal-ink hover:underline"
-						>
-							{showAllClaims ? 'Show less' : `Read more (${Math.min(claims.length, 16)} reasons)`}
-						</button>
-					{/if}
+				{:else if why?.summary}
+					<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
 				{/if}
 			</section>
 
