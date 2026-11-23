@@ -262,7 +262,8 @@
 								</button>
 								{#if openMachine === m.name}
 									<div class="pb-3 pt-1">
-										<p class="text-sm leading-relaxed text-steel">{machineLine(m)}</p>
+										<p class="text-sm leading-relaxed">{m.why}</p>
+										<p class="mt-2 text-sm leading-relaxed text-steel">{machineLine(m)}</p>
 										<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Form</p>
 										<ul class="mt-1 space-y-1 text-sm">
 											{#each m.form as cue, ci (ci)}
