@@ -8,6 +8,7 @@
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
+	import { daySwipe } from '$lib/actions';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
@@ -115,6 +116,11 @@
 	function stepDay(n: number) {
 		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n);
+	}
+	// The week control moves the whole window; the day control moves a single day.
+	function stepWeek(n: number) {
+		dayDir = n >= 0 ? 1 : -1;
+		selectedIso = addDaysIso(selectedIso, n * 7);
 	}
 	async function addFromLibrary(w: LibraryWorkout) {
 		const date = pickerDate;
@@ -224,40 +230,20 @@
 		</div>
 	</header>
 
-	<!-- Sticky day nav: the phone day arrows sit above the week strip, both stay put. -->
+	<!-- Sticky week control: the week arrows and the day tabs both stay put. -->
 	<div class="sticky top-16 z-20 -mx-4 mb-2 border-b border-hairline bg-paper px-4 pt-1 pb-2">
-		<div class="mb-1 flex items-center justify-between gap-2 sm:hidden">
-			<button
-				type="button"
-				onclick={() => stepDay(-1)}
-				aria-label="Previous day"
-				class="flex h-9 w-9 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
-			>
-				‹
-			</button>
-			<span class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</span>
-			<button
-				type="button"
-				onclick={() => stepDay(1)}
-				aria-label="Next day"
-				class="flex h-9 w-9 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
-			>
-				›
-			</button>
-		</div>
-		{#if selWeek}
-			<WeekStrip
-				week={selWeek}
-				selectedDay={selDay}
-				{todayIndex}
-				{todayInWeek}
-				{loggedBySession}
-				onSelect={selectDay}
-			/>
-		{/if}
+		<WeekStrip
+			week={selWeek}
+			selectedDay={selDay}
+			{todayIndex}
+			{todayInWeek}
+			{loggedBySession}
+			onSelect={selectDay}
+			onWeekStep={stepWeek}
+		/>
 	</div>
 
-	<!-- Day panel with flanking arrows (laptop) -->
+	<!-- Day panel: swipe it to step a day, or use the flanking arrows (laptop). -->
 	<div class="flex items-stretch gap-2">
 		<button
 			type="button"
@@ -272,6 +258,7 @@
 			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:h-[var(--panel-h)] sm:overflow-y-auto"
 			role="group"
 			aria-label="Day panel"
+			use:daySwipe={stepDay}
 		>
 			{#key selectedIso}
 				<div class={dayDir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
