@@ -521,4 +521,154 @@ plans.post(
 	},
 );
 
+/**
+ * POST /adapt: rebuild the weeks that have not started yet, from the runner's
+ * own logs and feedback. Deterministic and instant, no AI in the path. Past
+ * weeks are never touched.
+ */
+plans.post('/adapt', async (c) => {
+	const user = c.get('user')!;
+	const db = c.get('db');
+
+	const rl = await checkRateLimit(c.env.DB, `adapt:${user.id}`, 30, 3600);
+	if (!rl.ok) return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '600' });
+
+	const found = await currentPlanWithWeeks(db, user.id);
+	if (!found) return c.json({ error: 'no_plan' }, 404);
+	const { goal, plan, weeks } = found;
+
+	const profile = GOAL_PROFILES.find((p) => p.slug === goal.goalProfileSlug);
+	if (!profile) return c.json({ error: 'unknown_profile' }, 400);
+
+	const weekIds = weeks.map((w) => w.id);
+	const sessions = weekIds.length
+		? (
+				await Promise.all(
+					chunk(weekIds, 90).map((part) =>
+						db.select().from(schema.sessionsPlan).where(inArray(schema.sessionsPlan.planWeekId, part)),
+					),
+				)
+			).flat()
+		: [];
+
+	const existingWeeks = weeks.map((w) => ({
+		weekNumber: w.weekNumber,
+		phase: w.phase ?? 'base',
+		focus: w.focus ?? '',
+		startDate: w.startDate ?? '',
+		endDate: w.endDate ?? '',
+		targetVolumeKm: 0,
+		sessions: sessions
+			.filter((s) => s.planWeekId === w.id)
+			.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? ''))
+			.map((s) => ({
+				day: s.day,
+				slot: s.slot ?? 'AM',
+				modality: s.modality,
+				type: s.type,
+				title: s.title ?? '',
+				purpose: s.purpose ?? '',
+				prescription: (s.prescription ?? {}) as Record<string, unknown>,
+				durationMin: s.durationMin ?? 0,
+			})),
+	}));
+
+	const baseline = (goal.baseline ?? {}) as Baseline;
+	const userLogs = await db.select().from(schema.logs).where(eq(schema.logs.userId, user.id));
+	const typeById = new Map(sessions.map((s) => [s.id, s.type]));
+	const fitSince = Date.now() - 28 * 86400000;
+	const fitness = fitnessState(
+		userLogs
+			.filter((l) => l.startedAt instanceof Date && l.startedAt.getTime() >= fitSince)
+			.map((l) => {
+				const stats = (l.runStats ?? {}) as { distanceKm?: number; durationSec?: number };
+				return {
+					sessionId: l.sessionId,
+					type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
+					date: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
+					distanceKm: stats.distanceKm ?? null,
+					durationSec: stats.durationSec ?? null,
+					rpe: l.rpe ?? null,
+					feedback: (l.feedback as 'up' | 'down' | null) ?? null,
+				};
+			}),
+		{ raceTimes: baseline.recentTimes },
+	);
+
+	const todayIso = new Date().toISOString().slice(0, 10);
+	const allowed = (['tempo', 'hills', 'interval', 'race-pace'] as QualityKind[]).filter((k) =>
+		profile.sessionTypes.includes(k as SessionArchetype),
+	);
+
+	const result = adaptPlan({
+		profile,
+		baseline,
+		availableDays: (goal.availableDays as number[] | null)?.length ? goal.availableDays as number[] : [0, 2, 4],
+		startDate: existingWeeks[0]?.startDate || todayIso,
+		targetDate: goal.targetDate ?? undefined,
+		existingWeeks,
+		today: todayIso,
+		fitness,
+		allowedQuality: allowed,
+	} as unknown as Parameters<typeof adaptPlan>[0]);
+
+	if (result.changedFromWeek == null) {
+		return c.json({ changed: false, changedFromWeek: null, swapped: [] });
+	}
+
+	// Replace the weeks ahead, leaving past weeks and their logs untouched.
+	const changed = result.weeks.filter((w) => w.weekNumber >= result.changedFromWeek!);
+	await db
+		.delete(schema.planWeeks)
+		.where(and(eq(schema.planWeeks.planId, plan.id), gte(schema.planWeeks.weekNumber, result.changedFromWeek!)));
+
+	const weekRows = changed.map((w) => {
+		const weekId = crypto.randomUUID();
+		return {
+			id: weekId,
+			planId: plan.id,
+			weekNumber: w.weekNumber,
+			focus: w.focus,
+			summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
+			startDate: w.startDate,
+			endDate: w.endDate,
+			phase: w.phase,
+			targetVolumeKm: w.targetVolumeKm,
+			sessionRows: w.sessions.map((s) => ({
+				id: crypto.randomUUID(),
+				planWeekId: weekId,
+				day: s.day,
+				slot: s.slot,
+				modality: s.modality,
+				type: s.type,
+				title: s.title,
+				purpose: s.purpose,
+				prescription: s.prescription,
+				durationMin: s.durationMin,
+			})),
+		};
+	});
+	// Match the generate path: only the stored week columns are inserted.
+	const weekValues = weekRows.map(({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest);
+	for (const part of chunk(weekValues, 10)) {
+		await db.insert(schema.planWeeks).values(part);
+	}
+	const sessionRows = weekRows.flatMap((w) => w.sessionRows);
+	for (const part of chunk(sessionRows, 8)) {
+		await db.insert(schema.sessionsPlan).values(part);
+	}
+
+	await db
+		.update(schema.plans)
+		.set({ generatedAt: new Date(), params: { ...(plan.params as Record<string, unknown>), adaptedAt: new Date().toISOString() } })
+		.where(eq(schema.plans.id, plan.id));
+
+	return c.json({
+		changed: true,
+		changedFromWeek: result.changedFromWeek,
+		swapped: result.swapped,
+		weeks: changed.length,
+	});
+});
+
 export default plans;

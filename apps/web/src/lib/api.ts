@@ -109,6 +109,14 @@ export const api = {
 			body: JSON.stringify(body),
 		}),
 
+	/** Rebuild the weeks ahead from the runner's own logs and feedback. */
+	adaptPlan: () =>
+		req<{
+			changed: boolean;
+			changedFromWeek: number | null;
+			swapped: { week: number; from: string; to: string }[];
+		}>('/plans/adapt', { method: 'POST' }),
+
 	/** Add a library workout to a day, or remove one the user added. */
 	addWorkout: (date: string, workoutId: string) =>
 		req<{ session: unknown }>('/plans/sessions', {
