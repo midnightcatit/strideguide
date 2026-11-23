@@ -1,4 +1,5 @@
 import type {
+	Baseline,
 	Intensity,
 	SessionArchetype,
 	StepBlock,
@@ -8,7 +9,7 @@ import type {
 } from '../types';
 import { circuitFor } from './catalog';
 import type { MachineExercise } from './machines';
-import { COOLDOWN_STRETCHES, WARMUP_DRILLS, type Drill } from './mobility';
+import { COOLDOWN_STRETCHES, WARMUP_DRILLS, mobilityRoutine, type Drill } from './mobility';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { pacesFromVdot, vdotFromBaseline } from './vdot';
 
@@ -222,6 +223,7 @@ function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
 			label: d.name,
 			durationSec: d.durationSec,
 			targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
+			note: d.why,
 		})),
 	};
 }
@@ -686,6 +688,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		}
 
+		// Mobility / stretching on a rest day, when the user asked for it there.
+		const wantsStretch =
+			input.baseline.stretching === 'rest-days' || input.baseline.stretching === 'both';
+		if (wantsStretch && phase !== 'taper') {
+			const restDay = pickRestDay(days);
+			if (restDay !== undefined) sessions.push(mobilitySession(restDay, input.baseline));
+		}
+
 		const withIntensity = sessions.map((s) => ({
 			...s,
 			prescription: { ...s.prescription, intensity: s.prescription.intensity ?? intensityFor(s.type) },
@@ -741,5 +751,45 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 			workout: strengthWorkout(circuit, reps),
 		},
 		durationMin: input.baseline.sessionMinutes ?? 45,
+	};
+}
+
+/** A day with no training, preferring midweek, for a mobility session. */
+function pickRestDay(trainingDays: number[]): number | undefined {
+	const set = new Set(trainingDays);
+	return [2, 4, 0, 1, 3, 5, 6].find((d) => !set.has(d));
+}
+
+function mobilityWorkout(routine: Drill[]): StructuredWorkout {
+	const dynamic = routine.slice(0, 2);
+	const statics = routine.slice(2);
+	return {
+		blocks: [
+			drillBlock('Loosen up', dynamic, 'warmup'),
+			drillBlock('Stretches', statics, 'cooldown'),
+		],
+	};
+}
+
+function mobilitySession(day: number, baseline: Baseline): PlannedSession {
+	const building = (baseline.flexibility?.goal ?? 0) > (baseline.flexibility?.current ?? 0);
+	const routine = mobilityRoutine(building);
+	const totalSec = routine.reduce((s, d) => s + d.durationSec, 0);
+	return {
+		day,
+		slot: 'AM',
+		modality: 'mobility',
+		type: 'mobility',
+		title: TITLE.mobility,
+		purpose: PURPOSE.mobility,
+		prescription: {
+			summary: building
+				? 'A short mobility session, with a little more work toward your flexibility goal.'
+				: 'A short mobility session to keep the range you already have.',
+			intensity: 'easy',
+			targetRpe: [1, 3],
+			workout: mobilityWorkout(routine),
+		},
+		durationMin: Math.max(8, Math.round(totalSec / 60)),
 	};
 }

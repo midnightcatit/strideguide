@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, findMove, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, findDrill, findMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -36,6 +36,7 @@
 	let showAllSources = $state(false);
 	let showAllRows = $state(false);
 	let openMachine = $state<string | null>(null);
+	let openDrill = $state<string | null>(null);
 
 	onMount(async () => {
 		try {
@@ -99,6 +100,17 @@
 			}
 		}
 		return names.map((n) => findMove(n)).filter((m): m is MachineExercise => !!m);
+	});
+
+	/** Stretches and drills in the order they appear, for a mobility session. */
+	const drills = $derived.by<Drill[]>(() => {
+		const names: string[] = [];
+		for (const block of workout?.blocks ?? []) {
+			for (const s of block.steps) {
+				if (s.label && !names.includes(s.label) && findDrill(s.label)) names.push(s.label);
+			}
+		}
+		return names.map((n) => findDrill(n)).filter((d): d is Drill => !!d);
 	});
 
 	function sourceHref(doiUrl?: string): string | undefined {
@@ -210,6 +222,43 @@
 							{showAllRows ? 'Show less' : `View more (${rows.length - 5} more)`}
 						</button>
 					{/if}
+				</section>
+			{/if}
+
+			<!-- Stretches in a mobility session -->
+			{#if session.type === 'mobility' && drills.length}
+				<hr class="my-6 border-hairline" />
+				<section aria-labelledby="stretches">
+					<h2 id="stretches" class="tabular text-xs uppercase tracking-widest text-steel">The stretches</h2>
+					<ul class="mt-2 space-y-1">
+						{#each drills as d (d.name)}
+							<li>
+								<button
+									type="button"
+									onclick={() => (openDrill = openDrill === d.name ? null : d.name)}
+									aria-expanded={openDrill === d.name}
+									class="flex w-full items-baseline justify-between gap-3 border-b border-hairline py-2.5 text-left text-sm hover:text-signal-ink"
+								>
+									<span class="font-medium">{d.name}</span>
+									<span class="tabular shrink-0 text-xs text-steel">{openDrill === d.name ? '−' : '+'}</span>
+								</button>
+								{#if openDrill === d.name}
+									<div class="pb-3 pt-1">
+										<p class="text-sm leading-relaxed">{d.why}</p>
+										<p class="mt-2 text-sm leading-relaxed text-steel">{d.feel} Targets {d.targets.join(', ')}.</p>
+										<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Form</p>
+										<ul class="mt-1 space-y-1 text-sm text-steel">
+											{#each d.form as f (f)}<li>{f}</li>{/each}
+										</ul>
+										<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Watch for</p>
+										<ul class="mt-1 space-y-1 text-sm text-steel">
+											{#each d.mistakes as m (m)}<li>{m}</li>{/each}
+										</ul>
+									</div>
+								{/if}
+							</li>
+						{/each}
+					</ul>
 				</section>
 			{/if}
 

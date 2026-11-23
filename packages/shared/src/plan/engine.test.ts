@@ -191,4 +191,42 @@ describe('generatePlan (preferences)', () => {
 		});
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'cross-train')).toBe(true);
 	});
+
+	it('adds a mobility session on a rest day when stretching is wanted there', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 2, 4],
+			baseline: { experience: 'intermediate', stretching: 'rest-days', flexibility: { current: 3, goal: 4 } },
+		});
+		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
+		expect(mobility.length).toBe(1);
+		expect([0, 2, 4]).not.toContain(mobility[0]!.day);
+	});
+
+	it('adds no mobility session when stretching is off', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 2, 4],
+			baseline: { experience: 'intermediate', stretching: 'none' },
+		});
+		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'mobility')).toBe(false);
+	});
+
+	it('gives a longer mobility routine when the flexibility goal is higher', () => {
+		const growing = generatePlan({
+			...base,
+			availableDays: [0, 2, 4],
+			baseline: { experience: 'intermediate', stretching: 'rest-days', flexibility: { current: 2, goal: 5 } },
+		});
+		const holding = generatePlan({
+			...base,
+			availableDays: [0, 2, 4],
+			baseline: { experience: 'intermediate', stretching: 'rest-days', flexibility: { current: 4, goal: 4 } },
+		});
+		const count = (p: typeof growing) =>
+			p.weeks[0]!.sessions
+				.find((s) => s.type === 'mobility')!
+				.prescription.workout!.blocks.flatMap((b) => b.steps).length;
+		expect(count(growing)).toBeGreaterThan(count(holding));
+	});
 });
