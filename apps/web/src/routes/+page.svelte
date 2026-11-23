@@ -11,6 +11,8 @@
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
+	import ProgressRing from '$lib/components/ProgressRing.svelte';
+	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let note = $state<string | null>(null);
@@ -88,6 +90,23 @@
 		}
 		return count;
 	});
+	const weeksLike = $derived<WeekLike[]>(
+		(store.plan?.weeks ?? []).map((w) => ({
+			weekNumber: w.weekNumber,
+			startDate: w.startDate,
+			endDate: w.endDate,
+			phase: w.phase,
+			sessions: w.sessions,
+		})),
+	);
+	const planMeta = $derived(
+		store.plan
+			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null })
+					.planMeta
+			: null,
+	);
+	const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+
 	const recentLogs = $derived.by(() => {
 		const byId = new Map<string, ClientSession>();
 		for (const w of weeks) for (const s of w.sessions) byId.set(s.id, s);
@@ -171,6 +190,26 @@
 			<p class="mt-2 text-xs text-steel">{DAY_NAMES[todayIndex]} · the session is on the Today tab, with the warm-up and the reasons behind it</p>
 		{/if}
 	</Card>
+
+	{#if planMeta}
+		<section aria-labelledby="goal" class="mt-5">
+			<Card>
+				<div class="flex items-center gap-4">
+					<ProgressRing percent={planMeta.percent} size={64} />
+					<div class="min-w-0">
+						<p class="tabular text-xs uppercase tracking-widest text-steel">Plan progress</p>
+						<p class="font-display mt-0.5 text-lg font-semibold">
+							{#if planMeta.currentWeek}Week {planMeta.currentWeek} of {planMeta.weeksTotal}{:else}{planMeta.weeksTotal} weeks{/if}{#if planMeta.currentPhase}
+								· {cap(planMeta.currentPhase)}{/if}
+						</p>
+						<p class="mt-0.5 text-sm text-steel">
+							{#if planMeta.daysToRace != null}{planMeta.daysToRace} days to race · {planMeta.weeksToGo} weeks to go{:else}{planMeta.weeksToGo} weeks to go{/if}
+						</p>
+					</div>
+				</div>
+			</Card>
+		</section>
+	{/if}
 
 	<!-- At a glance -->
 	<div class="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-3">

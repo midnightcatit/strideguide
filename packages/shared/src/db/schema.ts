@@ -115,6 +115,8 @@ export const planWeeks = sqliteTable(
 			.notNull()
 			.references(() => plans.id, { onDelete: 'cascade' }),
 		weekNumber: integer('week_number').notNull(),
+		/** Plan phase for the week: base, build, peak or taper. */
+		phase: text('phase'),
 		focus: text('focus'),
 		summaryText: text('summary_text'),
 		startDate: text('start_date'),

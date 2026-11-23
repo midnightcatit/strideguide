@@ -5,6 +5,7 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	onMount(() => {
@@ -12,9 +13,19 @@
 	});
 
 	const weeksLike = $derived<WeekLike[]>(
-		(store.plan?.weeks ?? []).map((w) => ({ weekNumber: w.weekNumber, sessions: w.sessions })),
+		(store.plan?.weeks ?? []).map((w) => ({
+			weekNumber: w.weekNumber,
+			startDate: w.startDate,
+			endDate: w.endDate,
+			phase: w.phase,
+			sessions: w.sessions,
+		})),
 	);
-	const metrics = $derived(store.plan ? computeProgress(store.logs, weeksLike) : null);
+	const metrics = $derived(
+		store.plan
+			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null })
+			: null,
+	);
 	const hasLogs = $derived(store.logs.length > 0);
 
 	const profileName = $derived(
@@ -28,9 +39,48 @@
 		return Math.max(1, ...metrics.volume.byWeek.flatMap((w) => [w.plannedKm, w.actualKm]));
 	});
 
+	const phaseSegments = $derived.by(() => {
+		const weeks = store.plan?.weeks ?? [];
+		const segs: { phase: string; count: number }[] = [];
+		for (const w of weeks) {
+			const ph = w.phase ?? 'base';
+			const last = segs[segs.length - 1];
+			if (last && last.phase === ph) last.count++;
+			else segs.push({ phase: ph, count: 1 });
+		}
+		return segs;
+	});
+	const phaseColour = (p: string) =>
+		p === 'build' ? 'bg-ink/45' : p === 'peak' ? 'bg-ink/70' : p === 'taper' ? 'bg-ink/25' : 'bg-ink/15';
+
+	const monthCells = $derived.by(() => {
+		const now = new Date();
+		const y = now.getUTCFullYear();
+		const m = now.getUTCMonth();
+		const first = new Date(Date.UTC(y, m, 1));
+		const firstDow = (first.getUTCDay() + 6) % 7;
+		const start = new Date(Date.UTC(y, m, 1 - firstDow));
+		const trained = new Set(metrics?.calendar.trainedDays ?? []);
+		const todayIso = now.toISOString().slice(0, 10);
+		const cells: { key: string; day: number; inMonth: boolean; trained: boolean; today: boolean }[] = [];
+		for (let i = 0; i < 42; i++) {
+			const d = new Date(start.getTime() + i * 86400000);
+			const key = d.toISOString().slice(0, 10);
+			cells.push({
+				key,
+				day: d.getUTCDate(),
+				inMonth: d.getUTCMonth() === m,
+				trained: trained.has(key),
+				today: key === todayIso,
+			});
+		}
+		return cells;
+	});
+	const monthName = new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
 	const PACE_H = 72;
 	const paceGeom = $derived.by(() => {
-		const pts = metrics?.pace.points ?? [];
+		const pts = (metrics?.pace.points ?? []).filter((p) => p.intensity !== 'easy');
 		if (pts.length < 3) return null;
 		const paces = pts.map((p) => p.paceSecPerKm);
 		const min = Math.min(...paces);
@@ -63,6 +113,34 @@
 			<a href="/" class="mt-4 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Go to today</a>
 		</Card>
 	{:else}
+		<section aria-labelledby="p-plan" class="mb-7">
+			<SectionHeader id="p-plan" eyebrow="Plan progress" meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go" />
+			<Card>
+				<div class="flex items-center gap-4">
+					<ProgressRing percent={metrics.planMeta.percent} size={96} stroke={9} />
+					<div class="min-w-0">
+						<p class="font-display text-lg font-semibold">
+							{#if metrics.planMeta.currentWeek}Week {metrics.planMeta.currentWeek} of {metrics.planMeta.weeksTotal}{:else}{metrics.planMeta.weeksTotal} weeks{/if}
+						</p>
+						{#if metrics.planMeta.currentPhase}
+							<p class="mt-0.5 text-sm text-steel">In the {metrics.planMeta.currentPhase} block</p>
+						{/if}
+						{#if metrics.planMeta.daysToRace != null}
+							<p class="mt-0.5 text-sm text-steel">{metrics.planMeta.daysToRace} days to race</p>
+						{/if}
+					</div>
+				</div>
+				{#if phaseSegments.length > 1}
+					<div class="mt-4 flex h-2 w-full overflow-hidden rounded-full" role="img" aria-label="Plan phases">
+						{#each phaseSegments as seg (seg.phase + seg.count)}
+							<div class={phaseColour(seg.phase)} style="width: {(seg.count / metrics.planMeta.weeksTotal) * 100}%"></div>
+						{/each}
+					</div>
+					<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
+				{/if}
+			</Card>
+		</section>
+
 		<section aria-labelledby="p-adherence" class="mb-7">
 			<SectionHeader id="p-adherence" eyebrow="Adherence" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged" />
 			<Card tone="sunken">
@@ -78,11 +156,35 @@
 			</Card>
 		</section>
 
+		<section aria-labelledby="p-consistency" class="mb-7">
+			<SectionHeader id="p-consistency" eyebrow="Consistency" meta={monthName} />
+			<Card tone="sunken">
+				<div class="mx-auto max-w-sm">
+					<div class="grid grid-cols-7 gap-1">
+						{#each ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as d, i (i)}
+							<span class="tabular py-1 text-center text-[10px] uppercase tracking-wide text-steel">{d}</span>
+						{/each}
+						{#each monthCells as c (c.key)}
+							<span
+								class="flex aspect-square items-center justify-center rounded-md border text-[10px] {c.trained
+									? 'border-ok bg-ok text-paper'
+									: c.inMonth
+										? 'border-hairline text-steel'
+										: 'border-transparent text-hairline'} {c.today ? 'ring-1 ring-signal-ink' : ''}"
+								aria-label="{c.key}{c.trained ? ', trained' : ''}"
+							>{c.day}</span>
+						{/each}
+					</div>
+					<p class="mt-2 text-xs text-steel">A filled day is a day you trained. Rest days stay open on purpose.</p>
+				</div>
+			</Card>
+		</section>
+
 		<section aria-labelledby="p-volume" class="mb-7">
 			<SectionHeader id="p-volume" eyebrow="Volume by week" meta="{fmtDistance(metrics.volume.totalActualKm)} / {fmtDistance(metrics.volume.totalPlannedKm)}" />
 			<Card tone="sunken">
 				<div class="flex items-end gap-1" style="height: 96px" role="img" aria-label="Weekly distance logged against planned">
-					{#each metrics.volume.byWeek as w (w.week)}
+					{#each metrics.volume.byWeek.slice(-8) as w (w.week)}
 						{@const h = Math.round((w.actualKm / volumeMax) * 84)}
 						{@const ph = Math.round((w.plannedKm / volumeMax) * 84)}
 						<div class="relative flex-1" title="Week {w.week}: {fmtDistance(w.actualKm)} of {fmtDistance(w.plannedKm)}">
@@ -92,7 +194,7 @@
 					{/each}
 				</div>
 				<p class="mt-3 text-xs text-steel">
-					Bar is distance logged, hairline tick is planned.{#if metrics.volume.changePct !== undefined} Last change {metrics.volume.changePct > 0 ? '+' : ''}{metrics.volume.changePct}%.{/if}
+					Last 8 weeks. Bar is distance logged, hairline tick is planned.{#if metrics.volume.changePct !== undefined} Last change {metrics.volume.changePct > 0 ? '+' : ''}{metrics.volume.changePct}%.{/if}
 				</p>
 			</Card>
 		</section>
@@ -103,28 +205,18 @@
 				{#if metrics.intensity.completed === 0}
 					<p class="text-xs text-steel">No completed sessions yet.</p>
 				{:else}
-					<ul class="space-y-3">
-						{#each [{ k: 'easy', l: 'Easy' }, { k: 'steady', l: 'Steady' }, { k: 'hard', l: 'Hard' }] as band (band.k)}
-							{@const n = metrics.intensity[band.k as 'easy' | 'steady' | 'hard']}
-							{@const w = Math.round((n / metrics.intensity.completed) * 100)}
-							<li>
-								<div class="flex items-baseline justify-between text-sm">
-									<span class="flex items-center gap-2">
-										<span class="inline-flex gap-0.5" aria-hidden="true">
-											{#each [1, 2, 3] as i (i)}
-												<span class="h-2 w-2 rounded-[1px] {i <= (band.k === 'hard' ? 3 : band.k === 'steady' ? 2 : 1) ? 'bg-ink' : 'bg-ink/25'}"></span>
-											{/each}
-										</span>
-										{band.l}
-									</span>
-									<span class="tabular text-steel">{n}</span>
-								</div>
-								<div class="mt-1 h-1 w-full rounded-full bg-hairline">
-									<div class="h-1 rounded-full bg-ink" style="width: {w}%"></div>
-								</div>
-							</li>
-						{/each}
-					</ul>
+					{@const total = metrics.intensity.easy + metrics.intensity.steady + metrics.intensity.hard || 1}
+					<div class="flex h-4 w-full overflow-hidden rounded-full" role="img" aria-label="{metrics.intensity.easy} easy, {metrics.intensity.steady} steady, {metrics.intensity.hard} hard">
+						<div class="bg-ink/25" style="width: {(metrics.intensity.easy / total) * 100}%"></div>
+						<div class="bg-ink/55" style="width: {(metrics.intensity.steady / total) * 100}%"></div>
+						<div class="bg-ink" style="width: {(metrics.intensity.hard / total) * 100}%"></div>
+					</div>
+					<div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-steel">
+						<span class="tabular">Easy {metrics.intensity.easy}</span>
+						<span class="tabular">Steady {metrics.intensity.steady}</span>
+						<span class="tabular">Hard {metrics.intensity.hard}</span>
+					</div>
+					<p class="mt-2 text-xs text-steel">Most running should sit easy. This is a split of what you have logged.</p>
 				{/if}
 			</Card>
 		</section>
@@ -133,7 +225,7 @@
 			<SectionHeader id="p-pace" eyebrow="Pace trend" />
 			<Card tone="sunken">
 				{#if !paceGeom}
-					<p class="text-xs text-steel">Log at least 3 runs to see a pace trend. Fewer points aren't meaningful.</p>
+					<p class="text-xs text-steel">Log at least 3 long or quality runs to see a pace trend. Fewer points aren't meaningful.</p>
 				{:else}
 					<svg viewBox="0 0 100 {PACE_H}" preserveAspectRatio="none" class="w-full" style="height: {PACE_H}px" role="img" aria-label="Logged run paces over time">
 						{#each paceGeom as p, i (i)}
@@ -141,7 +233,7 @@
 						{/each}
 					</svg>
 					<p class="mt-3 text-xs text-steel">
-						One dot per logged run, higher is faster.
+						Long and quality runs only. Easy runs are left out on purpose, so the trend is not hidden by them.
 						{#if metrics.pace.changeSecPerKm !== undefined}
 							{metrics.pace.changeSecPerKm > 0 ? 'Recent runs are faster on average by ' : 'Recent runs are slower on average by '}{convertPaceDelta(Math.abs(metrics.pace.changeSecPerKm))}{paceDeltaUnit()}.
 						{/if}

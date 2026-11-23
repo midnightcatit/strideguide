@@ -1,0 +1,1 @@
+ALTER TABLE `plan_weeks` ADD `phase` text;

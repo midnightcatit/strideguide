@@ -368,6 +368,7 @@ plans.post(
 				id: weekId,
 				planId,
 				weekNumber: w.weekNumber,
+				phase: w.phase,
 				focus: w.focus,
 				// The model's week line if it shaped this week; otherwise a template.
 				summaryText:
