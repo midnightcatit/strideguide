@@ -29,7 +29,7 @@
 	const tabs = $derived([
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
 		{ href: '/today', key: 'today', label: 'Today', active: page.url.pathname.startsWith('/today') },
-		{ href: '/week', key: 'week', label: 'Week', active: page.url.pathname.startsWith('/week') },
+		{ href: '/week', key: 'week', label: 'Calendar', active: page.url.pathname.startsWith('/week') },
 		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 		{ href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') },
 	]);
