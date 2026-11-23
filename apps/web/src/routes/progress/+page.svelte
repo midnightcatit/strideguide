@@ -1,16 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
-	import { fitnessState } from '@strideguide/shared/plan';
+	import { fitnessState, type HealthDay, type RecoverySignal } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
+	import { api } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
+	let recovery = $state<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] } | null>(
+		null,
+	);
+
 	onMount(() => {
 		void ensurePlan();
+		void api
+			.recovery()
+			.then((r) => (recovery = r))
+			.catch(() => {
+				// no health data, or the call failed; the section simply does not show
+			});
 	});
 
 	const weeksLike = $derived<WeekLike[]>(
@@ -28,6 +39,12 @@
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
+
+	function fmtSleep(min: number): string {
+		const h = Math.floor(min / 60);
+		const m = Math.round(min % 60);
+		return m ? `${h}h ${m}m` : `${h}h`;
+	}
 
 	// What the runner's own logs add up to: paces, weekly distance, effort trend,
 	// and which session types they rated well. The same read seeds a rebuild.
@@ -166,6 +183,43 @@
 				</Card>
 			</section>
 		{/if}
+		{#if recovery?.available && recovery.signal && (recovery.signal.avgRestingHr || recovery.signal.avgHrvMs || recovery.signal.avgSleepMin)}
+			<section aria-labelledby="p-recovery" class="mb-7">
+				<SectionHeader id="p-recovery" eyebrow="Recovery" meta="{recovery.signal.days} days" />
+				<Card tone="sunken">
+					<ul class="space-y-1 text-sm">
+						{#if recovery.signal.avgRestingHr}
+							<li class="flex justify-between">
+								<span>Resting heart rate</span>
+								<span class="tabular">{recovery.signal.avgRestingHr} bpm</span>
+							</li>
+						{/if}
+						{#if recovery.signal.avgHrvMs}
+							<li class="flex justify-between">
+								<span>HRV</span>
+								<span class="tabular">{recovery.signal.avgHrvMs} ms</span>
+							</li>
+						{/if}
+						{#if recovery.signal.avgSleepMin}
+							<li class="flex justify-between">
+								<span>Sleep</span>
+								<span class="tabular">{fmtSleep(recovery.signal.avgSleepMin)}</span>
+							</li>
+						{/if}
+					</ul>
+					{#if recovery.signal.strained}
+						<p class="mt-3 text-sm leading-relaxed text-steel">
+							Your recent numbers look strained. The plan favours easing the volume until they settle.
+						</p>
+					{:else}
+						<p class="mt-3 text-sm leading-relaxed text-steel">
+							Your recent numbers look steady against your own baseline.
+						</p>
+					{/if}
+					<p class="mt-2 text-xs text-steel">From the health data you have connected.</p>
+				</Card>
+			</section>
+		{/if}
 		<section aria-labelledby="p-plan" class="mb-7">
 			<SectionHeader id="p-plan" eyebrow="Plan progress" meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go" />
 			<Card>
@@ -249,6 +303,11 @@
 				<p class="mt-3 text-xs text-steel">
 					Last 8 weeks. Bar is distance logged, hairline tick is planned.{#if metrics.volume.changePct !== undefined} Last change {metrics.volume.changePct > 0 ? '+' : ''}{metrics.volume.changePct}%.{/if}
 				</p>
+				{#if metrics.imported.sessions}
+					<p class="mt-1 text-xs text-steel">
+						Of that, {fmtDistance(metrics.imported.km)} came from {metrics.imported.sessions} imported workout{metrics.imported.sessions === 1 ? '' : 's'}.
+					</p>
+				{/if}
 			</Card>
 		</section>
 

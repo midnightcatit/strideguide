@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { suggestAdjustments, type AdaptWeek } from '@strideguide/shared/plan';
+	import { onMount } from 'svelte';
+	import { suggestAdjustments, type AdaptWeek, type RecoverySignal } from '@strideguide/shared/plan';
 	import { store, reloadPlan } from '$lib/planStore.svelte';
 	import { api } from '$lib/api';
 	import Card from '$lib/components/Card.svelte';
@@ -9,8 +10,20 @@
 	let dismissed = $state<string[]>([]);
 	let adapting = $state(false);
 	let adaptNote = $state<string | null>(null);
+	let recoverySignal = $state<RecoverySignal | null>(null);
 
 	const todayIso = new Date().toISOString().slice(0, 10);
+
+	onMount(() => {
+		void api
+			.recovery()
+			.then((r) => {
+				if (r.available) recoverySignal = r.signal;
+			})
+			.catch(() => {
+				// no health data; the plan adapts on training alone
+			});
+	});
 
 	const adjustments = $derived.by(() => {
 		if (!store.plan) return [];
@@ -21,7 +34,9 @@
 			targetVolumeKm: w.targetVolumeKm ?? null,
 			sessions: w.sessions,
 		}));
-		return suggestAdjustments(store.logs, weeks, todayIso).filter((a) => !dismissed.includes(a.id));
+		return suggestAdjustments(store.logs, weeks, todayIso, recoverySignal ?? undefined).filter(
+			(a) => !dismissed.includes(a.id),
+		);
 	});
 
 	$effect(() => {

@@ -1,0 +1,1 @@
+ALTER TABLE `activities` ADD `match_state` text DEFAULT 'proposed' NOT NULL;

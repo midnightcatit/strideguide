@@ -32,7 +32,8 @@ export type AdjustmentKind =
 	| 'volume-over'
 	| 'fatigue'
 	| 'run-spike'
-	| 'cross-load';
+	| 'cross-load'
+	| 'recovery';
 
 export interface Adjustment {
 	id: string;
@@ -63,10 +64,13 @@ function addDays(iso: string, n: number): string {
  *  - fatigue: 3+ consecutive logged sessions at RPE >= 8 = lighter week
  *  - single-run spike: a run >10% longer than the previous 30-day longest
  */
+
+import type { RecoverySignal } from './recovery';
 export function suggestAdjustments(
 	logs: AdaptLog[],
 	weeks: AdaptWeek[],
 	todayIso: string,
+	recovery?: RecoverySignal,
 ): Adjustment[] {
 	const out: Adjustment[] = [];
 	const loggedIds = new Set(logs.filter((l) => l.sessionId).map((l) => l.sessionId as string));
@@ -226,6 +230,21 @@ export function suggestAdjustments(
 			});
 			break;
 		}
+	}
+
+	// --- recovery: resting HR up, HRV down or short sleep, when health data exists ---
+	if (recovery?.strained) {
+		const bits: string[] = [];
+		if (recovery.restingHrElevated) bits.push('resting heart rate is up');
+		if (recovery.hrvSuppressed) bits.push('HRV is down');
+		if (recovery.shortSleep) bits.push('sleep has been short');
+		out.push({
+			id: 'recovery',
+			kind: 'recovery',
+			severity: 'info',
+			title: 'Recovery looks strained',
+			detail: `Your recent health data suggests ${bits.join(', ')}. Ease the volume and keep the effort easy until it settles.`,
+		});
 	}
 
 	return out;

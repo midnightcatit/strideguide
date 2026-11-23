@@ -34,11 +34,21 @@ describe('computeProgress', () => {
 
 	it('computes planned vs actual volume per week', () => {
 		expect(m.volume.byWeek).toEqual([
-			{ week: 1, plannedKm: 11, actualKm: 11.2 },
-			{ week: 2, plannedKm: 6, actualKm: 0 },
+			{ week: 1, plannedKm: 11, actualKm: 11.2, importedKm: 0 },
+			{ week: 2, plannedKm: 6, actualKm: 0, importedKm: 0 },
 		]);
 		expect(m.volume.totalPlannedKm).toBe(17);
 		expect(m.volume.totalActualKm).toBe(11.2);
+	});
+
+	it('separates imported volume from what was logged by hand', () => {
+		const withImport: LogLike[] = [
+			...logs,
+			{ sessionId: 's3', source: 'import', runStats: { distanceKm: 6.1, avgPaceSecPerKm: 340 }, createdAt: '2026-11-08T10:00:00Z' },
+		];
+		const mi = computeProgress(withImport, weeks);
+		expect(mi.imported).toEqual({ sessions: 1, km: 6.1 });
+		expect(mi.volume.byWeek[1]).toEqual({ week: 2, plannedKm: 6, actualKm: 6.1, importedKm: 6.1 });
 	});
 
 	it('counts completed sessions by intensity band', () => {

@@ -1,7 +1,8 @@
 /** Thin typed client for the Hono API. Same-origin: /api/* on the Worker. */
 import type { GoalProfileData } from '@strideguide/shared';
 import type { Prefs } from '@strideguide/shared/units';
-import type { CurrentPlan } from './plan';
+import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
+import type { ClientActivity, CurrentPlan } from './plan';
 import { cachePlan, cachedPlan, isOnline, outbox, queueLog, removeFromOutbox } from './offline';
 import { reportClientError } from './clientErrors';
 
@@ -252,6 +253,24 @@ export const api = {
 
 	disconnectConnection: (provider: string) =>
 		reqRoot<{ ok: boolean }>(`/connections/${provider}/disconnect`, { method: 'POST' }),
+
+	/** Imported activities, each with its proposed or confirmed match to the plan. */
+	activities: () => req<{ activities: ClientActivity[] }>('/activities'),
+
+	/** Confirm an activity's match. Omit sessionId to accept the proposed one. */
+	confirmActivity: (id: string, sessionId?: string) =>
+		req<{ ok: boolean; sessionId: string; confidence: number }>(
+			`/activities/${encodeURIComponent(id)}/confirm`,
+			{ method: 'POST', body: JSON.stringify(sessionId ? { sessionId } : {}) },
+		),
+
+	/** Reject a proposed match, so the activity is not offered against that session again. */
+	rejectActivity: (id: string) =>
+		req<{ ok: boolean }>(`/activities/${encodeURIComponent(id)}/reject`, { method: 'POST' }),
+
+	/** Daily recovery context, when a connector has supplied any. */
+	recovery: () =>
+		req<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] }>('/recovery'),
 
 	getSettings: () => req<{ prefs: Prefs }>('/settings'),
 	putSettings: (body: Partial<Prefs>) =>
