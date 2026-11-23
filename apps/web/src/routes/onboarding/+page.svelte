@@ -281,6 +281,11 @@
 		}
 	});
 
+	/** A number input binds as a number, a text input as a string; normalise both. */
+	function str(v: unknown): string {
+		return typeof v === 'string' ? v.trim() : v == null ? '' : String(v).trim();
+	}
+
 	function toggleDay(d: number) {
 		days = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => a - b);
 	}
@@ -346,9 +351,11 @@
 			}, 2200);
 
 			const recentTimes =
-				vdot && raceTime.trim() && RACE_DISTANCES.some((d) => d.key === raceKey)
-					? { [raceKey]: raceTime.trim() }
+				vdot && str(raceTime) && RACE_DISTANCES.some((d) => d.key === raceKey)
+					? { [raceKey]: str(raceTime) }
 					: undefined;
+
+			const weeklyNum = str(weeklyKm) ? Number(str(weeklyKm)) : undefined;
 
 			const body: GeneratePlanInput = {
 				goalProfileSlug: slug,
@@ -362,17 +369,17 @@
 					stretching,
 					terrain,
 					...(crossTraining.length ? { crossTraining } : {}),
-					...(niggles.trim() ? { niggles: niggles.trim() } : {}),
+					...(str(niggles) ? { niggles: str(niggles) } : {}),
 					...(recentTimes ? { recentTimes } : {}),
-					...(weeklyKm.trim()
+					...(weeklyNum != null && Number.isFinite(weeklyNum) && weeklyNum > 0
 						? {
 								weeklyKm:
 									prefs.units === 'imperial'
-										? Math.round(milesToKm(Number(weeklyKm)) * 10) / 10
-										: Number(weeklyKm),
+										? Math.round(milesToKm(weeklyNum) * 10) / 10
+										: weeklyNum,
 							}
 						: {}),
-					...(notes.trim() ? { notes: notes.trim() } : {}),
+					...(str(notes) ? { notes: str(notes) } : {}),
 				},
 				...(needsRaceDate && targetDate ? { targetDate } : {}),
 			};
