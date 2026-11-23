@@ -49,8 +49,11 @@
 		onkeydown={onKeydown}
 		onscroll={onScroll}
 	>
-		{#each sessions as s (s.id)}
-			<div class="w-[calc(100vw-68px)] max-w-[360px] shrink-0 snap-center sm:w-[24rem] sm:max-w-none">
+		{#each sessions as s, i (s.id)}
+			<div
+				class="reveal w-[calc(100vw-68px)] max-w-[360px] shrink-0 snap-center sm:w-[24rem] sm:max-w-none"
+				style="animation-delay: {i * 45}ms"
+			>
 				{@render card(s)}
 			</div>
 		{/each}

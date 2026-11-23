@@ -124,9 +124,9 @@
 </script>
 
 <div class="fixed inset-0 z-40 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Log session" use:modal={onClose}>
-	<button type="button" aria-label="Close" onclick={onClose} class="absolute inset-0 bg-ink/30"></button>
+	<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
 	<div
-		class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
+		class="overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
 		style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))"
 	>
 	<div class="flex items-center justify-between">

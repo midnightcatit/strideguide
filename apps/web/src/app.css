@@ -265,6 +265,34 @@ summary {
 	animation: sg-enter-up var(--dur-3) var(--ease-out) both;
 }
 
+/* Overlay motion: a backdrop fades, a sheet or card rises and settles. */
+@keyframes sg-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes sg-sheet-in {
+	from {
+		opacity: 0;
+		transform: translateY(16px) scale(0.99);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.overlay-fade {
+	animation: sg-fade-in var(--dur-2) var(--ease-out) both;
+}
+.overlay-sheet {
+	animation: sg-sheet-in var(--dur-3) var(--ease-out) both;
+}
+
 /* Fixed-height card frame, so run and strength cards (and rest placeholders)
    are always the same height. Content distributes vertically inside it. */
 .stage-card {

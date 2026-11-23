@@ -138,7 +138,7 @@
 </script>
 
 <div
-	class="fixed inset-0 z-40 flex flex-col bg-paper"
+	class="overlay-fade fixed inset-0 z-40 flex flex-col bg-paper"
 	role="dialog"
 	aria-modal="true"
 	aria-label={sessionLabel(session)}

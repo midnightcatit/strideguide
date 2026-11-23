@@ -3,7 +3,7 @@
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_INITIALS, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
+	import { type ClientSession, DAY_INITIALS, DAY_NAMES, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
@@ -11,7 +11,7 @@
 	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import Card from '$lib/components/Card.svelte';
-	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import MonthCalendar from '$lib/components/MonthCalendar.svelte';
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
@@ -19,7 +19,6 @@
 	let weekIndex = $state(0);
 	let selectedDay = $state(todayIndex);
 	let view = $state<'week' | 'month'>('week');
-	let monthOffset = $state(0);
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
@@ -53,92 +52,6 @@
 			todayIso >= currentWeek.startDate &&
 			todayIso <= currentWeek.endDate,
 	);
-
-	/** All sessions keyed by ISO date, for the month view. */
-	const byDate = $derived.by(() => {
-		const map = new Map<string, ClientSession[]>();
-		for (const w of weeks) {
-			if (!w.startDate) continue;
-			for (const s of w.sessions) {
-				const key = addDaysIso(w.startDate, s.day);
-				const list = map.get(key) ?? [];
-				list.push(s);
-				map.set(key, list);
-			}
-		}
-		return map;
-	});
-
-	/** Training pressure for one session: time under load, weighted by intensity. */
-	function sessionLoad(s: ClientSession): number {
-		const band =
-			s.prescription?.intensity === 'hard' ? 3 : s.prescription?.intensity === 'steady' ? 2 : 1;
-		return (s.durationMin ?? 30) * band;
-	}
-	function loadLevel(load: number): number {
-		if (load <= 0) return 0;
-		if (load < 45) return 1;
-		if (load < 85) return 2;
-		if (load < 130) return 3;
-		return 4;
-	}
-	function levelClass(level: number): string {
-		return ['bg-transparent', 'bg-ink/5', 'bg-ink/15', 'bg-ink/30', 'bg-ink/50'][level] ?? 'bg-transparent';
-	}
-
-	const monthCells = $derived.by(() => {
-		const now = new Date();
-		const first = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + monthOffset, 1));
-		const y = first.getUTCFullYear();
-		const m = first.getUTCMonth();
-		const firstDow = (first.getUTCDay() + 6) % 7; // Monday = 0
-		const start = new Date(Date.UTC(y, m, 1 - firstDow));
-		const cells: {
-			iso: string;
-			day: number;
-			inMonth: boolean;
-			isToday: boolean;
-			load: number;
-			km: number;
-			count: number;
-		}[] = [];
-		for (let i = 0; i < 42; i++) {
-			const d = new Date(start.getTime() + i * 86400000);
-			const key = d.toISOString().slice(0, 10);
-			const sessions = byDate.get(key) ?? [];
-			cells.push({
-				iso: key,
-				day: d.getUTCDate(),
-				inMonth: d.getUTCMonth() === m,
-				isToday: key === todayIso,
-				load: sessions.reduce((sum, s) => sum + sessionLoad(s), 0),
-				km: sessions
-					.filter((s) => s.modality === 'running')
-					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0),
-				count: sessions.length,
-			});
-		}
-		return cells;
-	});
-	const monthLabel = $derived.by(() => {
-		const now = new Date();
-		const first = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + monthOffset, 1));
-		return first.toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
-	});
-
-	function stepMonth(delta: number) {
-		monthOffset += delta;
-	}
-	function openDate(key: string) {
-		const idx = weeks.findIndex(
-			(w) => w.startDate && w.endDate && key >= w.startDate && key <= w.endDate,
-		);
-		if (idx >= 0) {
-			weekIndex = idx;
-			selectedDay = (new Date(`${key}T00:00:00Z`).getUTCDay() + 6) % 7;
-		}
-		view = 'week';
-	}
 
 	function dayLevel(day: number): number {
 		const ds = currentWeek?.sessions.filter((s) => s.day === day) ?? [];
@@ -215,19 +128,12 @@
 					<button type="button" onclick={() => selectWeek(weekIndex - 1)} disabled={weekIndex === 0} aria-label="Previous week" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink disabled:opacity-40">‹</button>
 					<span class="tabular text-xs text-steel">W{currentWeek.weekNumber} of {weeks.length}</span>
 					<button type="button" onclick={() => selectWeek(weekIndex + 1)} disabled={weekIndex >= weeks.length - 1} aria-label="Next week" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink disabled:opacity-40">›</button>
-				{:else}
-					<button type="button" onclick={() => stepMonth(-1)} aria-label="Previous month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
-					<button type="button" onclick={() => (monthOffset = 0)} class="tabular text-xs text-steel hover:text-ink">Today</button>
-					<button type="button" onclick={() => stepMonth(1)} aria-label="Next month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">›</button>
 				{/if}
 			</div>
 		</div>
 		{#if view === 'week'}
 			<h1 class="font-display mt-1 text-2xl font-bold">{currentWeek.focus ?? 'This week'}</h1>
 			{#if currentWeek.summaryText}<p class="mt-0.5 text-sm text-steel">{currentWeek.summaryText}</p>{/if}
-		{:else}
-			<h1 class="font-display mt-1 text-2xl font-bold">{monthLabel}</h1>
-			<p class="mt-0.5 text-sm text-steel">Training pressure per day.</p>
 		{/if}
 		<div class="mt-3 inline-flex rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
 			<button type="button" aria-pressed={view === 'week'} onclick={() => (view = 'week')} class="rounded-md px-3 py-1.5 text-xs {view === 'week' ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}">Week</button>
@@ -298,38 +204,7 @@
 		{/if}
 	</section>
 	{:else}
-		<!-- Month view: a day grid shaded by training pressure -->
-		<div class="mx-auto max-w-md">
-			<div class="grid grid-cols-7 gap-1">
-				{#each DAY_INITIALS as initial, i (i)}
-					<span class="tabular py-1 text-center text-[10px] uppercase tracking-wide text-steel">{initial}</span>
-				{/each}
-				{#each monthCells as cell (cell.iso)}
-					{@const level = loadLevel(cell.load)}
-					<button
-						type="button"
-						onclick={() => openDate(cell.iso)}
-						aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}"
-						class="relative flex aspect-square flex-col items-center justify-center rounded-md border transition-colors {cell.inMonth
-							? 'border-hairline'
-							: 'border-transparent opacity-40'} {levelClass(level)}"
-					>
-						<span class="tabular text-xs">{cell.day}</span>
-						{#if cell.km}<span class="tabular text-[9px] text-steel">{fmtDistance(cell.km)}</span>{/if}
-						{#if cell.isToday}
-							<span class="absolute bottom-1 h-0.5 w-4 rounded-full bg-signal-ink" aria-hidden="true"></span>
-						{/if}
-					</button>
-				{/each}
-			</div>
-			<div class="mt-3 flex items-center justify-center gap-2 text-xs text-steel">
-				<span>Less</span>
-				{#each [0, 1, 2, 3, 4] as l (l)}
-					<span class="h-3 w-3 rounded-[2px] border border-hairline {levelClass(l)}" aria-hidden="true"></span>
-				{/each}
-				<span>More pressure</span>
-			</div>
-		</div>
+		<MonthCalendar />
 	{/if}
 {/if}
 

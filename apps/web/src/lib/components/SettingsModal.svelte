@@ -50,10 +50,10 @@
 	aria-label="Settings"
 	use:modal={onClose}
 >
-	<button type="button" aria-label="Close settings" onclick={onClose} class="absolute inset-0 bg-ink/30"></button>
+	<button type="button" aria-label="Close settings" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
 
 	<div
-		class="relative w-full max-w-md max-h-[92dvh] overflow-y-auto scroll-modern rounded-t-2xl border border-hairline bg-paper p-5 sm:rounded-2xl"
+		class="overlay-sheet relative w-full max-w-md max-h-[92dvh] overflow-y-auto scroll-modern rounded-t-2xl border border-hairline bg-paper p-5 sm:rounded-2xl"
 		style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))"
 	>
 		<div class="flex items-center justify-between">
