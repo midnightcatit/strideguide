@@ -17,6 +17,27 @@
 	--signal-wash: rgba(232, 163, 61, 0.14);
 	--sunken: #eceeea;
 	--tap-min: 44px;
+
+	/*
+	 * Motion. Every transition pulls from these tokens, so timing stays
+	 * consistent instead of drifting per component.
+	 */
+	--dur-1: 120ms;
+	--dur-2: 220ms;
+	--dur-3: 340ms;
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+	/*
+	 * Frame. Both heights derive from the viewport and are clamped, so the shape
+	 * scales with the screen instead of a hard pixel value. `svh` (not `dvh`) is
+	 * the small viewport height, so the shape does not jump when mobile browser
+	 * chrome shows or hides.
+	 * --stage-h is the session card height; --panel-h is the day panel on laptop,
+	 * where the flanking arrows stretch to match it exactly.
+	 */
+	--stage-h: clamp(17rem, 34svh, 21rem);
+	--panel-h: clamp(26rem, calc(100svh - 14rem), 46rem);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -80,6 +101,16 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
+/*
+ * Clip horizontal overflow at the page edge. The day-change slide translates a
+ * card a few pixels sideways; without this, a phone shows a transient sideways
+ * scroll. `clip` (not `hidden`) so it never becomes a scroll container and the
+ * sticky header keeps working.
+ */
+html {
+	overflow-x: clip;
+}
+
 .tabular {
 	font-family: var(--font-data);
 	font-variant-numeric: tabular-nums slashed-zero;
@@ -120,17 +151,17 @@ body {
 	button,
 	a[href] {
 		transition:
-			transform 120ms ease-out,
-			color 120ms ease-out,
-			border-color 120ms ease-out,
-			background-color 120ms ease-out;
+			transform var(--dur-1) var(--ease-out),
+			color var(--dur-1) var(--ease-out),
+			border-color var(--dur-1) var(--ease-out),
+			background-color var(--dur-1) var(--ease-out);
 	}
 	button:active,
 	a[href]:active {
-		transform: scale(0.985);
+		transform: scale(0.98);
 	}
 	.reveal {
-		animation: sg-reveal 200ms ease-out both;
+		animation: sg-reveal var(--dur-2) var(--ease-out) both;
 	}
 }
 
@@ -142,6 +173,124 @@ body {
 	to {
 		opacity: 1;
 		transform: none;
+	}
+}
+
+/*
+ * Day-change motion. Direction-aware: stepping forward enters from the right,
+ * stepping back enters from the left, matching the arrow you pressed. The
+ * reduced-motion rule above zeroes these out.
+ */
+@keyframes sg-enter-right {
+	from {
+		opacity: 0;
+		transform: translateX(14px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sg-enter-left {
+	from {
+		opacity: 0;
+		transform: translateX(-14px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sg-enter-up {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.sg-enter-right {
+	animation: sg-enter-right var(--dur-2) var(--ease-out) both;
+}
+
+.sg-enter-left {
+	animation: sg-enter-left var(--dur-2) var(--ease-out) both;
+}
+
+.sg-enter-up {
+	animation: sg-enter-up var(--dur-3) var(--ease-out) both;
+}
+
+/* Fixed-height card frame, so run and strength cards (and rest placeholders)
+   are always the same height. Content distributes vertically inside it. */
+.stage-card {
+	height: var(--stage-h);
+	display: flex;
+	flex-direction: column;
+}
+
+/* Tab indicators. One element per tab, scaled in when active, so switching
+   reads as motion rather than a hard colour swap. */
+.tab-pill,
+.tab-bar {
+	transition:
+		transform var(--dur-2) var(--ease-out),
+		opacity var(--dur-2) var(--ease-out);
+	transform-origin: center;
+	opacity: 0;
+}
+.tab-pill {
+	transform: scaleX(0.4);
+}
+.tab-bar {
+	transform: scaleX(0);
+}
+.tab-pill[data-active='true'],
+.tab-bar[data-active='true'] {
+	transform: none;
+	opacity: 1;
+}
+
+/* Route change. A short crossfade via the View Transitions API where it is
+   supported; without it navigation is instant, so nothing breaks. */
+@keyframes sg-vt-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+::view-transition-old(root) {
+	animation: none;
+	opacity: 0;
+}
+::view-transition-new(root) {
+	animation: sg-vt-in var(--dur-2) var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
+}
+
+/* Quiet lift on hover, for cards that are click targets. */
+@media (prefers-reduced-motion: no-preference) {
+	.lift {
+		transition:
+			transform var(--dur-2) var(--ease-out),
+			border-color var(--dur-2) var(--ease-out),
+			box-shadow var(--dur-2) var(--ease-out);
+	}
+	.lift:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 18px -12px rgba(25, 28, 34, 0.45);
 	}
 }
 

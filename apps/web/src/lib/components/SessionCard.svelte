@@ -60,7 +60,7 @@
 </script>
 
 <article
-	class="relative overflow-hidden rounded-xl border bg-paper p-4 sm:p-5 transition-colors {active
+	class="stage-card lift relative overflow-hidden rounded-xl border bg-paper p-4 sm:p-5 {active
 		? 'border-signal-ink'
 		: 'border-hairline'}"
 >
@@ -75,13 +75,13 @@
 		></button>
 	{/if}
 
-	<div class="pointer-events-none relative z-10">
+	<div class="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col">
 		<div class="flex items-baseline justify-between gap-3">
-			<span class="flex items-center gap-2">
-				<span class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
+			<span class="flex min-w-0 items-center gap-2">
+				<span class="tabular truncate text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
-			<span class="tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
+			<span class="tabular shrink-0 text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
 				>{session.type}{#if logged} ✓{/if}</span
 			>
 		</div>
@@ -91,22 +91,22 @@
 		<hr class="my-3 border-hairline" />
 
 		<div class="grid grid-cols-2 gap-3">
-			<div>
-				<p class="tabular text-2xl font-medium leading-none">{primary}</p>
+			<div class="min-w-0">
+				<p class="tabular truncate text-2xl font-medium leading-none">{primary}</p>
 				<p class="mt-1 text-xs text-steel">{isStrength ? 'circuit' : 'prescribed'}</p>
 			</div>
-			<div>
-				<p class="tabular text-2xl font-medium leading-none">{secondary}</p>
+			<div class="min-w-0">
+				<p class="tabular truncate text-2xl font-medium leading-none">{secondary}</p>
 				<p class="mt-1 text-xs text-steel">{isStrength ? 'sets × reps' : 'target'}</p>
 			</div>
 		</div>
 
 		<hr class="my-3 border-hairline" />
 
-		<p class="tabular truncate text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
+		<p class="tabular mt-auto truncate pt-3 text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
 	</div>
 
-	<div class="relative z-20 mt-4 flex gap-2">
+	<div class="relative z-20 mt-4 flex shrink-0 gap-2">
 		{#if onStart && session.prescription?.workout}
 			<button
 				type="button"

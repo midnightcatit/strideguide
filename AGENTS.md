@@ -15,7 +15,7 @@ API side, SvelteKit PWA on the web side, a pure shared package in between). Full
 pnpm install
 pnpm dev                 # api (wrangler dev :8787) + web (vite :5173)
 pnpm typecheck           # tsc + svelte-check across all packages
-pnpm test                # vitest (see testing philosophy)
+pnpm -r --if-present run test   # vitest, packages/shared only (see testing philosophy)
 pnpm build               # build api + web
 pnpm db:generate         # schema.ts -> migration file
 pnpm db:migrate:local    # apply to local D1
