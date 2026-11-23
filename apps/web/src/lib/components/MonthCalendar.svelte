@@ -8,6 +8,7 @@
 	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { isSkipped, skipSession } from '$lib/skipped.svelte';
+	import { markStarted } from '$lib/started.svelte';
 	import { modal } from '$lib/actions';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
@@ -16,6 +17,7 @@
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
+	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
 
 	const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -240,22 +242,35 @@
 	</div>
 	</div>
 {:else}
-	<div class="mx-auto mt-4 max-w-2xl space-y-6">
+	<div class="mx-auto mt-4 max-w-2xl space-y-4">
 		{#each listDays as day (day.date)}
-			<section class="border-t border-hairline pt-4 first:border-t-0 first:pt-0">
-				<p class="tabular sticky top-16 z-10 -mx-1 bg-paper px-1 py-1 text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
-				<div class="mt-2 grid gap-3">
-					{#each day.sessions.filter((s) => !isSkipped(s.id)) as s (s.id)}
-						{@render card(s)}
-					{/each}
+			<section class="rounded-2xl border border-hairline bg-sunken/50 p-3 shadow-[0_1px_4px_rgba(25,28,34,0.07)]">
+				<div class="flex items-center justify-between gap-2">
+					<p class="tabular text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
+					<button
+						type="button"
+						onclick={() => (pickerDate = day.date)}
+						class="text-xs text-signal-ink hover:underline"
+					>
+						＋ Add
+					</button>
 				</div>
-				<button
-					type="button"
-					onclick={() => (pickerDate = day.date)}
-					class="mt-2 text-xs text-signal-ink hover:underline"
-				>
-					＋ Add a workout
-				</button>
+				<div class="relative mt-2">
+					<div class="scroll-modern flex snap-x gap-2 overflow-x-auto pb-1">
+						{#each day.sessions.filter((s) => !isSkipped(s.id)) as s (s.id)}
+							<MiniSessionCard
+								session={s}
+								logged={loggedBySession.get(s.id) ?? null}
+								onOpen={() => (detailTarget = s)}
+							/>
+						{/each}
+					</div>
+					<div
+						class="pointer-events-none absolute inset-y-0 right-0 w-8"
+						style="background: linear-gradient(to left, var(--sunken), transparent)"
+						aria-hidden="true"
+					></div>
+				</div>
 			</section>
 		{/each}
 	</div>
@@ -331,6 +346,7 @@
 			detailTarget = null;
 		}}
 		onStart={() => {
+			if (detailTarget) markStarted(detailTarget.id);
 			playTarget = detailTarget;
 			detailTarget = null;
 		}}
@@ -349,7 +365,10 @@
 		logged={loggedBySession.get(s.id) ?? null}
 		onRemove={s.prescription?.added ? () => removeAdded(s.id) : undefined}
 		onLog={() => (logTarget = s)}
-		onStart={() => (playTarget = s)}
+		onStart={() => {
+			markStarted(s.id);
+			playTarget = s;
+		}}
 		onOpen={() => (detailTarget = s)}
 	/>
 {/snippet}

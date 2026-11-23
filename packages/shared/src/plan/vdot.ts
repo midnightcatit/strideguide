@@ -30,6 +30,10 @@ function velocityForVo2(vo2: number): number {
 }
 
 /** VDOT from a race performance. */
+/** Plausible VDOT range. Outside it, the input is treated as a mistake. */
+export const VDOT_MIN = 20;
+export const VDOT_MAX = 90;
+
 export function vdotFromRace(distanceM: number, timeSec: number): number {
 	const minutes = timeSec / 60;
 	const v = distanceM / minutes; // m/min
@@ -70,17 +74,23 @@ export function vdotFromBaseline(recentTimes?: Record<string, string>): number |
 		const secs = parseTime(raw);
 		if (!dist || !secs || secs <= 0) continue;
 		const v = vdotFromRace(dist, secs);
-		if (v > 0 && Number.isFinite(v) && (best === undefined || v > best)) best = v;
+		// Only trust a plausible VDOT. A typo, or a time read in the wrong unit,
+		// would otherwise set impossible paces and tiny sessions.
+		if (Number.isFinite(v) && v >= VDOT_MIN && v <= VDOT_MAX && (best === undefined || v > best)) {
+			best = v;
+		}
 	}
 	return best;
 }
 
-/** Parse "24:30" or "1:45:00" or "h:mm:ss" into seconds. */
+/** Parse "24:30" or "1:45:00" or "h:mm:ss" into seconds. A bare number is minutes. */
 export function parseTime(raw: string): number | undefined {
 	const parts = raw.trim().split(':').map((p) => Number(p));
-	if (parts.some((n) => Number.isNaN(n))) return undefined;
+	if (parts.some((n) => Number.isNaN(n) || n < 0)) return undefined;
 	let secs = 0;
 	for (const p of parts) secs = secs * 60 + p;
+	// "36" means 36:00, not 36 seconds. Race times are entered in minutes.
+	if (parts.length === 1) secs *= 60;
 	return secs;
 }
 

@@ -25,4 +25,16 @@ describe('vdot', () => {
 	it('derives a VDOT from baseline times', () => {
 		expect(vdotFromBaseline({ '10k': '45:00' })).toBeGreaterThan(40);
 	});
+
+	it('reads a bare number as minutes', () => {
+		expect(parseTime('36')).toBe(2160);
+		expect(parseTime('0:36')).toBe(36);
+	});
+
+	it('ignores an implausible race time instead of setting impossible paces', () => {
+		// 36 minutes for a 5K is a beginner: valid.
+		expect(vdotFromBaseline({ '5k': '36' })).toBeGreaterThan(20);
+		// 36 seconds for a 5K is impossible: dropped, so no paces are set.
+		expect(vdotFromBaseline({ '5k': '0:36' })).toBeUndefined();
+	});
 });

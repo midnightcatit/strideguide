@@ -3,6 +3,7 @@
 	import { formatDuration, sessionTypeLabel } from '$lib/plan';
 	import { fmtDistance, fmtPace, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
+	import { isStarted } from '$lib/started.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let {
@@ -26,6 +27,19 @@
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
+	const status = $derived<'done' | 'in-progress' | 'not-started'>(
+		logged ? 'done' : isStarted(session.id) ? 'in-progress' : 'not-started',
+	);
+	const statusLabel = $derived(
+		status === 'done' ? 'Done' : status === 'in-progress' ? 'In progress' : 'Not started',
+	);
+	const statusClass = $derived(
+		status === 'done'
+			? 'bg-ok-wash text-ok'
+			: status === 'in-progress'
+				? 'bg-signal-wash text-signal-ink'
+				: 'bg-sunken text-steel',
+	);
 	const isRun = $derived(session.modality === 'running');
 	const isStrength = $derived(session.modality === 'strength');
 	const machines = $derived(p.blocks ?? []);
@@ -123,19 +137,19 @@
 
 		<hr class="my-3 border-hairline" />
 
-		<p class="tabular mt-auto truncate pt-3 text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
+		<div class="mt-auto flex items-center gap-2 pt-3">
+			<span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {statusClass}">{statusLabel}</span>
+			<p class="tabular min-w-0 truncate text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
+		</div>
 	</div>
 
 	<div class="relative z-20 mt-4 flex shrink-0 items-center gap-2">
-		{#if logged}
-			<span class="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-ok-wash px-4 py-3 text-sm font-semibold text-ok">
-				Done
-			</span>
+		{#if status === 'done'}
 			{#if onLog}
 				<button
 					type="button"
 					onclick={onLog}
-					class="shrink-0 rounded-md px-3 py-3 text-xs text-steel hover:text-signal-ink"
+					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
 				>
 					Log again
 				</button>
@@ -147,7 +161,7 @@
 					onclick={onStart}
 					class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
 				>
-					Start
+					{status === 'in-progress' ? 'Resume' : 'Start'}
 				</button>
 			{/if}
 			{#if onLog}

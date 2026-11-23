@@ -6,7 +6,7 @@
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
+	import { type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -91,12 +91,16 @@
 	const recentLogs = $derived.by(() => {
 		const byId = new Map<string, ClientSession>();
 		for (const w of weeks) for (const s of w.sessions) byId.set(s.id, s);
-		return store.logs
-			.filter((l) => l.sessionId)
-			.slice()
-			.sort((a, b) => logMs(b.createdAt) - logMs(a.createdAt))
-			.slice(0, 3)
-			.map((l) => ({ log: l, session: l.sessionId ? byId.get(l.sessionId) : undefined }));
+		// One row per session: a re-log or an edit replaces the previous entry.
+		const seen = new Set<string>();
+		const out: { log: ClientLog; session: ClientSession | undefined }[] = [];
+		for (const l of [...store.logs].sort((a, b) => logMs(b.createdAt) - logMs(a.createdAt))) {
+			if (!l.sessionId || seen.has(l.sessionId)) continue;
+			seen.add(l.sessionId);
+			out.push({ log: l, session: byId.get(l.sessionId) });
+			if (out.length === 3) break;
+		}
+		return out;
 	});
 	onMount(async () => {
 		await ensureAuth();
