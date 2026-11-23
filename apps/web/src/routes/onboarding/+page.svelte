@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { parseTime, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
+	import { VDOT_MAX, VDOT_MIN, parseTime, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
@@ -67,8 +67,11 @@
 		const dist = RACE_DISTANCES.find((d) => d.key === raceKey);
 		const secs = parseTime(raceTime);
 		if (!dist || !secs || secs <= 0) return undefined;
-		return vdotFromRace(dist.meters, secs);
+		const v = vdotFromRace(dist.meters, secs);
+		// Ignore an implausible time rather than set impossible paces.
+		return v >= VDOT_MIN && v <= VDOT_MAX ? v : undefined;
 	});
+	const raceTimeLooksOff = $derived(str(raceTime) !== '' && !vdot);
 	const paces = $derived(vdot ? pacesFromVdot(vdot) : undefined);
 	const goalPace = $derived.by(() => {
 		if (!paces) return undefined;
@@ -507,6 +510,11 @@
 							class="tabular min-w-0 flex-1 rounded-xl border border-hairline-strong bg-paper px-4 py-3 text-sm"
 						/>
 					</div>
+					{#if raceTimeLooksOff}
+						<p class="mt-2 text-xs text-warn">
+							That time looks off for {RACE_DISTANCES.find((d) => d.key === raceKey)?.label}. Write it in minutes, like 36 or 36:00. Leave it blank if you are not sure.
+						</p>
+					{/if}
 					{#if paces && goalPace}
 						<div class="mt-3 rounded-xl border border-hairline p-4">
 							<p class="text-xs uppercase tracking-widest text-steel">Your training paces</p>

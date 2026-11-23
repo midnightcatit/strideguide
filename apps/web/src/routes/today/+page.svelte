@@ -8,6 +8,7 @@
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
+	import { markStarted } from '$lib/started.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
@@ -312,7 +313,10 @@
 		active={isToday}
 		logged={loggedBySession.get(s.id) ?? null}
 		onLog={() => (logTarget = s)}
-		onStart={() => (playTarget = s)}
+		onStart={() => {
+			markStarted(s.id);
+			playTarget = s;
+		}}
 		onOpen={() => (detailTarget = s)}
 	/>
 {/snippet}

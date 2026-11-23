@@ -7,6 +7,7 @@
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
+	import { isStarted } from '$lib/started.svelte';
 	import { modal } from '$lib/actions';
 
 	let {
@@ -41,6 +42,27 @@
 	let openMachine = $state<string | null>(null);
 	let showWhyDetail = $state(false);
 	let showWarmup = $state(false);
+	const statusLabel = $derived(logged ? 'Done' : isStarted(session.id) ? 'In progress' : 'Not started');
+
+	/** Plain-English meaning of each step, so "What's to come" is not just labels. */
+	const STEP_INFO: Record<string, string> = {
+		'Warm-up jog': 'An easy jog to raise your heart rate and warm the muscles before the hard work.',
+		'Dynamic warm-up': 'Moving drills like leg swings and skips that wake up the joints before you run. No long holds here.',
+		'Cool-down jog': 'An easy jog to bring your heart rate down after the session.',
+		'Cool-down stretches': 'Gentle holds of about 30 to 45 seconds each, to settle the muscles you used.',
+		'Recovery jog': 'An easy jog between hard efforts, to bring your breathing back down before the next one.',
+		Set: 'One round of the work below, repeated as many times as the block says.',
+		Circuit: 'A round of the moves listed, done one after another, then repeated.',
+		Tempo: 'A steady run at a comfortably hard pace, between easy running and a race effort. Breathing is strong and you can speak a few words.',
+		Threshold: 'The pace just below where your legs start to burn. Training here lifts the pace you can hold.',
+		Interval: 'Short, hard repeats with recovery between them, run faster than race pace. They raise your aerobic ceiling.',
+		'Goal pace': 'Reps at the pace you want on race day, to rehearse how it should feel.',
+		'Hill rep': 'A hard climb of about a minute, then walk or jog down to recover. Builds power and strength-endurance.',
+		Stride: 'A short, relaxed burst of speed, about 20 seconds, building to near your top speed. It is not a sprint.',
+	};
+	function stepInfo(label: string): string | undefined {
+		return STEP_INFO[label];
+	}
 	let openDrill = $state<string | null>(null);
 
 	onMount(async () => {
@@ -152,9 +174,11 @@
 	<!-- Coloured header band, tinted by the session's demand -->
 	<div class="relative overflow-hidden bg-ink text-paper">
 		<div
-			class="pointer-events-none absolute inset-0 opacity-25 {session.modality === 'running' && p.intensity === 'hard'
-				? 'bg-signal'
-				: 'bg-steel'}"
+			class="pointer-events-none absolute inset-0 opacity-25 {logged
+				? 'bg-ok'
+				: session.modality === 'running' && p.intensity === 'hard'
+					? 'bg-signal'
+					: 'bg-steel'}"
 			aria-hidden="true"
 		></div>
 		<header class="relative mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 pt-3">
@@ -169,28 +193,24 @@
 			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-paper/70">{eyebrow}</p>{/if}
 			<h1 class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
 			<div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-paper/85">
+				<span class="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {logged
+					? 'bg-paper/25 text-paper'
+					: 'bg-paper/15 text-paper/80'}">{statusLabel}</span>
 				{#if dist}<span class="tabular">{fmtDistance(dist)}</span>{/if}
 				{#if band}<span class="tabular">{band}</span>{/if}
 				{#if minutes}<span class="tabular">{minutes} min</span>{/if}
 			</div>
 
 			<!-- Controls -->
-			<div class="mt-3 flex items-center gap-1.5">
-				<button type="button" disabled title="Coming soon" aria-label="Link workout, coming soon" class="flex h-9 w-9 items-center justify-center rounded-full border border-paper/20 text-paper/40">
+			<div class="mt-4 flex gap-2">
+				<button type="button" disabled title="Coming soon" class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/40">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M8.5 11.5a3 3 0 0 1 0-4.2l2-2a3 3 0 0 1 4.2 4.2l-1 1" />
 						<path d="M11.5 8.5a3 3 0 0 1 0 4.2l-2 2a3 3 0 0 1-4.2-4.2l1-1" />
 					</svg>
+					<span class="text-[10px] uppercase tracking-wide">Link</span>
 				</button>
-				<button
-					type="button"
-					aria-pressed={showWarmup}
-					onclick={() => (showWarmup = !showWarmup)}
-					aria-label="Warm-up"
-					class="flex h-9 w-9 items-center justify-center rounded-full border text-paper/85 hover:border-paper hover:text-paper {showWarmup
-						? 'border-paper bg-paper/15'
-						: 'border-paper/20'}"
-				>
+				<button type="button" aria-pressed={showWarmup} onclick={() => (showWarmup = !showWarmup)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border px-1 py-2 text-paper/85 hover:border-paper hover:text-paper {showWarmup ? 'border-paper bg-paper/15' : 'border-paper/15'}">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M10 3v14" />
 						<path d="M7.5 5.5 10 3l2.5 2.5" />
@@ -198,22 +218,25 @@
 						<path d="M3.5 10h2.5" />
 						<path d="M14 10h2.5" />
 					</svg>
+					<span class="text-[10px] uppercase tracking-wide">Warm-up</span>
 				</button>
 				{#if onLog}
-					<button type="button" onclick={onLog} aria-label="Workout notes" class="flex h-9 w-9 items-center justify-center rounded-full border border-paper/20 text-paper/85 hover:border-paper hover:text-paper">
+					<button type="button" onclick={onLog} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M5 3.5h7l3 3v10H5z" />
 							<path d="M8 9h4" />
 							<path d="M8 12h4" />
 						</svg>
+						<span class="text-[10px] uppercase tracking-wide">Notes</span>
 					</button>
 				{/if}
 				{#if onSkip}
-					<button type="button" onclick={onSkip} aria-label="Skip this workout for now" class="flex h-9 w-9 items-center justify-center rounded-full border border-paper/20 text-paper/85 hover:border-paper hover:text-paper">
+					<button type="button" onclick={onSkip} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M5 5l6 5-6 5z" />
 							<path d="M13 5v10" />
 						</svg>
+						<span class="text-[10px] uppercase tracking-wide">Skip</span>
 					</button>
 				{/if}
 			</div>
@@ -294,14 +317,24 @@
 						{#each visibleRows as row, i (i)}
 							<li class="py-2.5">
 								<div class="flex items-baseline justify-between gap-3 text-sm">
-									<span class="min-w-0 truncate">{row.label}</span>
+									<span class="flex min-w-0 items-center gap-1">
+										<span class="truncate">{row.label}</span>
+										{#if stepInfo(row.label)}
+											<InfoButton term={row.label} definition={stepInfo(row.label)!} />
+										{/if}
+									</span>
 									<span class="tabular shrink-0 text-steel">{row.target}</span>
 								</div>
 								{#if row.sub}
 									<ul class="mt-1 space-y-0.5 pl-3 text-xs text-steel">
 										{#each row.sub as s, si (si)}
 											<li class="flex items-baseline justify-between gap-3">
-												<span class="min-w-0 truncate">{s.label}</span>
+												<span class="flex min-w-0 items-center gap-1">
+													<span class="truncate">{s.label}</span>
+													{#if stepInfo(s.label)}
+														<InfoButton term={s.label} definition={stepInfo(s.label)!} />
+													{/if}
+												</span>
 												<span class="tabular shrink-0">{s.target}</span>
 											</li>
 										{/each}
