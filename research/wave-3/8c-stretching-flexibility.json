@@ -1,0 +1,69 @@
+{
+  "workstream": "mobility",
+  "subtopic": "Stretching and flexibility for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Static stretching before running",
+      "claim": "Long static stretches before hard running can reduce power and are not recommended when the goal is performance, though tighter runners can still benefit from gentle, short static work.",
+      "evidence": "A scoping review of a single stretching session on running economy and performance concludes that healthy athletes with normal flexibility should not hold static stretches of 60 seconds or more before a running event, while less flexible runners appear to gain from brief static stretching.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Impact of a Single Stretching Session on Running Performance and Running Economy: A Scoping Review",
+        "authors": "Konrad A, Mocnik R, Nakamura M, Sudi K, Tilp M",
+        "year": 2021,
+        "venue": "Frontiers in Physiology",
+        "type": "scoping review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7857312/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic stretching in the warm-up",
+      "claim": "Dynamic stretching in the warm-up improves running economy and performance, so the pre-run work should be movement, not long holds.",
+      "evidence": "A controlled study found that moderate-duration dynamic stretching during warm-up improved running economy and running performance in recreational distance runners, whereas static work did not.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Moderate-Duration Dynamic Stretching During Warm-up Improves Running Economy and Running Performance in Recreational Distance Runners",
+        "authors": "Panasci M, Ferrando V, Bisio A, Filipas L, Di Gennaro S, Puce L, Ruggeri P, Faelli E",
+        "year": 2024,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "controlled study",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/39608347/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "How long to hold a stretch",
+      "claim": "Brief static stretches, under about 45 seconds, have little effect on performance, while holds of 60 seconds or more can reduce strength and power. For range of motion, 30 to 45 seconds per muscle is a sensible dose.",
+      "evidence": "A review of the acute effects of static and dynamic stretching reports static stretch induced performance impairments, and a later systematic review describes a dose-response where holds beyond 60 seconds lead to larger performance deficits.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A review of the acute effects of static and dynamic stretching on performance",
+        "authors": "Behm DG, Chaouachi A",
+        "year": 2011,
+        "venue": "European Journal of Applied Physiology",
+        "type": "review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/21373870/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Static versus dynamic for range of motion",
+      "claim": "Static stretching increases range of motion slightly more than dynamic, so when the goal is flexibility, gentle static holds after running or on rest days are the right tool.",
+      "evidence": "A study comparing dynamic and static stretching within warm-up protocols found the static condition increased sit-and-reach range of motion more than the dynamic condition.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of dynamic and static stretching within general and activity specific warm-up protocols",
+        "authors": "Samson M, Button DC, Chaouachi A, Behm DG",
+        "year": 2012,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "study",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3737866/",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "summary_tier_a": "Stretching is best used with care. Dynamic movement in the warm-up improves running economy, while long static holds before hard running can cost a little power, so keep them short or move them after. Hold static stretches for around 30 to 45 seconds, after running or on rest days. Train toward the range you actually need rather than chasing more, and expect the range you gain to be specific to the muscles and positions you stretch.",
+  "notes": "Backs the flexibility question, the stretching preference, and the mobility session content."
+}
