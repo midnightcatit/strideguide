@@ -198,6 +198,21 @@ describe('generatePlan (preferences)', () => {
 		expect(w1.some((s) => s.day === 6 && s.modality === 'running')).toBe(false);
 	});
 
+	it('never puts a run and strength on the same day', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 2, 4, 6],
+			baseline: { experience: 'intermediate', strengthDays: 2 },
+		});
+		for (const w of p.weeks) {
+			const byDay = new Map<number, string[]>();
+			for (const s of w.sessions) byDay.set(s.day, [...(byDay.get(s.day) ?? []), s.modality]);
+			for (const mods of byDay.values()) {
+				expect(mods.includes('running') && mods.includes('strength')).toBe(false);
+			}
+		}
+	});
+
 	it('eases in with no hard session in the first week', () => {
 		const p = generatePlan({ ...base, baseline: { experience: 'beginner' } });
 		const hard = p.weeks[0]!.sessions.filter((s) =>
