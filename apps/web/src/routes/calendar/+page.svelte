@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import MonthCalendar from '$lib/components/MonthCalendar.svelte';
+	import EmptyState from '$lib/components/EmptyState.svelte';
+	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	onMount(() => {
 		void ensurePlan();
@@ -17,7 +19,15 @@
 {#if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !(store.plan?.weeks?.length)}
-	<p class="mt-6 text-sm text-steel">No plan yet. <a href="/onboarding" class="text-signal-ink hover:underline">Build one →</a></p>
+	<EmptyState
+		eyebrow="No plan yet"
+		title="Build your plan."
+		body="Pick a goal and a race date. We write the sessions and explain each one."
+		primaryLabel="Build my plan"
+		primaryHref="/onboarding"
+	>
+		{#snippet icon()}<SessionIcon type="easy" size="h-5 w-5" />{/snippet}
+	</EmptyState>
 {:else}
 	<MonthCalendar />
 {/if}

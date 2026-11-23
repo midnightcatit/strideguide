@@ -37,6 +37,7 @@
 	let showAllSources = $state(false);
 	let showAllRows = $state(false);
 	let openMachine = $state<string | null>(null);
+	let showWhyDetail = $state(false);
 	let openDrill = $state<string | null>(null);
 
 	onMount(async () => {
@@ -206,7 +207,16 @@
 				{:else if failed}
 					<p class="mt-3 text-sm text-steel">The sourced explanation is unavailable right now.</p>
 				{:else if why?.summary}
-					<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
+					{#if showWhyDetail}
+						<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
+						<button type="button" onclick={() => (showWhyDetail = false)} class="mt-2 text-sm text-signal-ink hover:underline">
+							Show less
+						</button>
+					{:else}
+						<button type="button" onclick={() => (showWhyDetail = true)} class="mt-2 text-sm text-signal-ink hover:underline">
+							Why, in detail
+						</button>
+					{/if}
 				{/if}
 			</section>
 
