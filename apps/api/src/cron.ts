@@ -17,6 +17,24 @@ export async function handleScheduled(
 ): Promise<void> {
 	const kind = event.cron === '0 8 * * 1' ? 'weekly' : 'nightly';
 	ctx.waitUntil(runSummary(env, kind));
+	ctx.waitUntil(enqueueConnectionSyncs(env));
+}
+
+/**
+ * Health connector sync fan-out. A scheduled job only enqueues work; it never
+ * calls a provider inline. This is a deliberate no-op for now so the foundation
+ * ships without live provider fetching. When the fetchers land, the loop body
+ * enqueues one sync per connected row (a queue message or a job row).
+ */
+async function enqueueConnectionSyncs(env: Env): Promise<void> {
+	const db = getDb(env);
+	const rows = await db
+		.select({ id: schema.connections.id })
+		.from(schema.connections)
+		.where(eq(schema.connections.status, 'connected'));
+	for (const _row of rows) {
+		// TODO(connectors): enqueue a sync job for this connection.
+	}
 }
 
 async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {

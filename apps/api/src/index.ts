@@ -7,6 +7,7 @@ import type { Env } from './env';
 import { attachDb, requireSameOrigin } from './middleware/auth';
 import apiRoutes from './routes/api';
 import authRoutes from './routes/auth';
+import connectionRoutes from './routes/connections';
 import { schema } from './db';
 import type { AppBindings } from './types';
 
@@ -30,13 +31,16 @@ const corsFor = cors({
 
 app.use('/api/*', corsFor);
 app.use('/auth/*', corsFor);
+app.use('/connections/*', corsFor);
 
 // CSRF origin guard on all state-changing routes (M0-SEC-03).
 app.use('/api/*', requireSameOrigin);
 app.use('/auth/logout', requireSameOrigin);
+app.use('/connections/*', requireSameOrigin);
 
 app.route('/auth', authRoutes);
 app.route('/api', apiRoutes);
+app.route('/connections', connectionRoutes);
 
 app.notFound((c) => c.json({ error: 'not_found' }, 404));
 app.onError((err, c) => {

@@ -32,6 +32,34 @@ pnpm dev          # api (wrangler dev :8787) + web (vite :5173) in parallel
 The web dev server proxies `/api/*` and `/auth/*` to the API Worker on `:8787`, so cookies and
 OAuth work same-origin. Google OAuth callback for dev is `http://localhost:8787/auth/google/callback`.
 
+## Health connectors (Strava, Google Health)
+
+The app can link an outside training app so runs you do off-plan count here. The
+foundation is in place: OAuth, encrypted token storage, and a Settings > Connections
+page. Live data fetching is not wired up yet, and the nightly cron only lists the
+connected rows.
+
+Set the client credentials for each provider you want to offer. Both are optional:
+with them unset the provider shows as "not set up" and the rest of the app runs
+unchanged.
+
+| Var | What it is |
+|---|---|
+| `GOOGLE_HEALTH_CLIENT_ID` / `GOOGLE_HEALTH_CLIENT_SECRET` | Google Health OAuth client. Falls back to `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` when empty. |
+| `STRAVA_CLIENT_ID` / `STRAVA_CLIENT_SECRET` | Strava API client. |
+| `CONNECTIONS_KEY` | Base64 of 32 random bytes, used to encrypt stored tokens. Generate with `openssl rand -base64 32`. |
+
+Register these redirect URIs with each provider:
+
+- Strava: `https://run.midnightcatit.com/connections/strava/callback`
+- Google Health: `https://run.midnightcatit.com/connections/google-health/callback`
+
+Locally the same paths are `http://localhost:8787/connections/<provider>/callback`. The web dev
+server proxies `/connections` to the API Worker, so the flow stays same-origin.
+
+Secrets live in `apps/api/.dev.vars` locally and go to production with `wrangler secret put`, the
+same as the others above.
+
 ## How development and deployment work (read this once)
 
 There are **three copies of the app**:
