@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_MOVES, findMove } from './catalog';
+import { ALL_MOVES, circuitFor, findMove, moveCategory } from './catalog';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
 import { DYNAMIC_DRILLS, RECOVERY_DRILLS, STRETCHES, findDrill } from './stretches';
 import { WORKOUT_LIBRARY } from './library';
@@ -53,5 +53,36 @@ describe('drill catalog', () => {
 		expect(findDrill('Standing hamstring stretch')?.durationSec).toBeGreaterThan(0);
 		expect(findDrill('Hip circles')).toBeTruthy();
 		expect(findDrill('Foam roll calves')).toBeTruthy();
+	});
+});
+
+describe('circuitFor', () => {
+	it('draws moves from the chosen equipment', () => {
+		expect(circuitFor('kettlebell', 45).some((m) => m.equipment === 'kettlebell')).toBe(true);
+		expect(
+			circuitFor('bands', 45).some((m) => m.equipment === 'bands' || m.equipment === 'home'),
+		).toBe(true);
+	});
+
+	it('balances patterns and avoids duplicates', () => {
+		const c = circuitFor('machines', 60);
+		const names = c.map((m) => m.name);
+		expect(new Set(names).size).toBe(names.length);
+		expect(new Set(c.map((m) => m.pattern)).size).toBeGreaterThanOrEqual(3);
+	});
+
+	it('narrows to the equipment the runner actually has', () => {
+		for (const m of circuitFor('full-gym', 45, ['bands'])) {
+			const cat = moveCategory(m);
+			expect(cat === 'bodyweight' || cat === 'bands').toBe(true);
+		}
+	});
+
+	it('keeps advanced progressions out of a beginner circuit', () => {
+		expect(
+			circuitFor('bodyweight', 60, undefined, false, 'beginner').some(
+				(m) => m.level === 'advanced',
+			),
+		).toBe(false);
 	});
 });

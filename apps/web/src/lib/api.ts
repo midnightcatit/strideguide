@@ -52,7 +52,17 @@ export interface GeneratePlanInput {
 		weeklyKm?: number;
 		experience?: 'beginner' | 'intermediate' | 'advanced';
 		buildPreference?: 'ease-in' | 'steady' | 'ambitious';
-		equipment?: 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
+		equipment?:
+			| 'machines'
+			| 'bodyweight'
+			| 'bodyweight-dumbbells'
+			| 'dumbbells'
+			| 'barbell'
+			| 'kettlebell'
+			| 'bands'
+			| 'both'
+			| 'full-gym';
+		equipmentItems?: ('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[];
 		strengthDays?: number;
 		sessionMinutes?: number;
 		flexibility?: { current: number; goal: number };
@@ -109,13 +119,26 @@ export const api = {
 			body: JSON.stringify(body),
 		}),
 
-	/** Rebuild the weeks ahead from the runner's own logs and feedback. */
-	adaptPlan: () =>
+	/** Rebuild the weeks ahead from the runner's own logs and feedback. Optionally
+	 * change the equipment first, for a strength-equipment change. */
+	adaptPlan: (body?: {
+		equipment?:
+			| 'machines'
+			| 'bodyweight'
+			| 'bodyweight-dumbbells'
+			| 'dumbbells'
+			| 'barbell'
+			| 'kettlebell'
+			| 'bands'
+			| 'both'
+			| 'full-gym';
+		equipmentItems?: ('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[];
+	}) =>
 		req<{
 			changed: boolean;
 			changedFromWeek: number | null;
 			swapped: { week: number; from: string; to: string }[];
-		}>('/plans/adapt', { method: 'POST' }),
+		}>('/plans/adapt', { method: 'POST', body: JSON.stringify(body ?? {}) }),
 
 	/** Add a library workout to a day, or remove one the user added. */
 	addWorkout: (date: string, workoutId: string) =>
@@ -182,13 +205,27 @@ export const api = {
 		req<{
 			ref: string;
 			summary: string;
-			claims: { topic: string; claim: string; evidence?: string; confidence?: string; source?: string }[];
-			sources: { title: string; authors?: string; year?: number; venue?: string; doiUrl?: string }[];
+			claims: {
+				topic: string;
+				claim: string;
+				evidence?: string;
+				confidence?: string;
+				source?: string;
+			}[];
+			sources: {
+				title: string;
+				authors?: string;
+				year?: number;
+				venue?: string;
+				doiUrl?: string;
+			}[];
 			kbVersion?: string;
 		}>(`/explanations?type=${encodeURIComponent(type)}`),
 
 	latestSummary: () =>
-		req<{ summary: { id: string; kind: string; body: string; createdAt: string } | null }>('/summaries'),
+		req<{ summary: { id: string; kind: string; body: string; createdAt: string } | null }>(
+			'/summaries',
+		),
 
 	clearData: () => req<{ ok: boolean }>('/me/data', { method: 'DELETE' }),
 

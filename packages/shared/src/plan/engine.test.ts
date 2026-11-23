@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GOAL_PROFILES } from '../goal-profiles';
 import { generatePlan } from './engine';
+import { findMove } from './catalog';
 
 const marathon = GOAL_PROFILES.find((p) => p.slug === 'marathon')!;
 const wholeFitness = GOAL_PROFILES.find((p) => p.slug === 'whole-fitness')!;
@@ -65,9 +66,7 @@ describe('generatePlan (marathon)', () => {
 	});
 
 	it('builds structured workouts (warm-up, set, cool-down)', () => {
-		const interval = plan.weeks
-			.flatMap((w) => w.sessions)
-			.find((s) => s.type === 'interval');
+		const interval = plan.weeks.flatMap((w) => w.sessions).find((s) => s.type === 'interval');
 		expect(interval).toBeTruthy();
 		const w = interval!.prescription.workout;
 		expect(w).toBeTruthy();
@@ -149,7 +148,10 @@ describe('generatePlan (preferences)', () => {
 	};
 
 	it('uses bodyweight moves for a bodyweight circuit', () => {
-		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', equipment: 'bodyweight' } });
+		const p = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'bodyweight' },
+		});
 		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
 		expect(strength.type).toBe('full-body-strength');
 		const names = strength.prescription.blocks!.map((b) => b.machine);
@@ -158,17 +160,39 @@ describe('generatePlan (preferences)', () => {
 	});
 
 	it('uses machine moves for a machines circuit', () => {
-		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', equipment: 'machines' } });
+		const p = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'machines' },
+		});
 		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
 		expect(strength.type).toBe('machine-circuit');
 		expect(strength.prescription.blocks!.some((b) => b.machine === 'Leg press')).toBe(true);
 	});
 
+	it('uses the chosen equipment for a strength session', () => {
+		const p = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'kettlebell' },
+		});
+		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
+		expect(strength.type).toBe('full-body-strength');
+		const names = strength.prescription.blocks!.map((b) => b.machine);
+		expect(names.some((n) => findMove(n)?.equipment === 'kettlebell')).toBe(true);
+	});
+
 	it('sizes the circuit by session length', () => {
-		const short = generatePlan({ ...base, baseline: { experience: 'intermediate', sessionMinutes: 30 } });
-		const long = generatePlan({ ...base, baseline: { experience: 'intermediate', sessionMinutes: 60 } });
-		const shortN = short.weeks[0]!.sessions.find((s) => s.modality === 'strength')!.prescription.blocks!.length;
-		const longN = long.weeks[0]!.sessions.find((s) => s.modality === 'strength')!.prescription.blocks!.length;
+		const short = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', sessionMinutes: 30 },
+		});
+		const long = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', sessionMinutes: 60 },
+		});
+		const shortN = short.weeks[0]!.sessions.find((s) => s.modality === 'strength')!.prescription
+			.blocks!.length;
+		const longN = long.weeks[0]!.sessions.find((s) => s.modality === 'strength')!.prescription
+			.blocks!.length;
 		expect(longN).toBeGreaterThan(shortN);
 	});
 
@@ -277,9 +301,9 @@ describe('generatePlan (preferences)', () => {
 			baseline: { experience: 'intermediate', flexibility: { current: 3, goal: 4 } },
 		});
 		const count = (p: typeof growing) =>
-			p.weeks[0]!.sessions
-				.find((s) => s.type === 'mobility')!
-				.prescription.workout!.blocks.flatMap((b) => b.steps).length;
+			p.weeks[0]!.sessions.find((s) => s.type === 'mobility')!.prescription.workout!.blocks.flatMap(
+				(b) => b.steps,
+			).length;
 		expect(count(growing)).toBeGreaterThan(count(holding));
 	});
 });
@@ -361,14 +385,15 @@ describe('generatePlan (model shaping)', () => {
 			dislikedTypes?: string[];
 		}) => {
 			const plan = generatePlan({ ...base, baseline });
-			return plan.weeks[1]!.sessions.find((s) => s.modality === 'running' && s.type !== 'easy')?.type;
+			return plan.weeks[1]!.sessions.find((s) => s.modality === 'running' && s.type !== 'easy')
+				?.type;
 		};
 		// By default the base week is a tempo session.
 		expect(week2Kind({ experience: 'intermediate' })).toBe('tempo');
 		// Rated tempo poorly and hills well, the week leans toward hills instead.
-		expect(week2Kind({ experience: 'intermediate', dislikedTypes: ['tempo'], likedTypes: ['hills'] })).toBe(
-			'hills',
-		);
+		expect(
+			week2Kind({ experience: 'intermediate', dislikedTypes: ['tempo'], likedTypes: ['hills'] }),
+		).toBe('hills');
 	});
 });
 

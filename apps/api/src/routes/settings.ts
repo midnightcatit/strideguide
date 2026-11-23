@@ -40,6 +40,22 @@ settings.put(
 			restingHr: z.number().int().min(30).max(120).nullable().optional(),
 			autoAdvance: z.boolean().optional(),
 			countdownSec: z.number().int().min(0).max(15).optional(),
+			equipment: z
+				.enum([
+					'machines',
+					'bodyweight',
+					'bodyweight-dumbbells',
+					'dumbbells',
+					'barbell',
+					'kettlebell',
+					'bands',
+					'both',
+					'full-gym',
+				])
+				.optional(),
+			equipmentItems: z
+				.array(z.enum(['machines', 'dumbbells', 'barbell', 'kettlebell', 'bands']))
+				.optional(),
 		}),
 	),
 	async (c) => {

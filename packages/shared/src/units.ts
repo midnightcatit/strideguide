@@ -5,6 +5,8 @@
 
 export type Units = 'metric' | 'imperial';
 
+import type { EquipmentItem, EquipmentPreference } from './types';
+
 export interface Prefs {
 	units: Units;
 	/** 0 = Monday, 1 = Sunday. */
@@ -25,6 +27,10 @@ export interface Prefs {
 	autoAdvance?: boolean;
 	/** Seconds to count down before a step starts, 0 to 15. */
 	countdownSec?: number;
+	/** What the runner trains strength with. Drives the circuit the engine builds. */
+	equipment?: EquipmentPreference;
+	/** The equipment categories the runner has, to narrow the circuit to their kit. */
+	equipmentItems?: EquipmentItem[];
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };
