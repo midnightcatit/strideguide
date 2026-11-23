@@ -10,6 +10,7 @@ export * from './stretches';
 export * from './explanations';
 export * from './adapt';
 export * from './fitness';
+export * from './adaptive';
 export * from './engine';
 export * from './library';
 export * from './library-extra';

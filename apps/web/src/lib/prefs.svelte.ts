@@ -6,6 +6,7 @@ import {
 	type Prefs,
 	type Units,
 } from '@strideguide/shared/units';
+import { sessionTypeLabel } from './plan';
 import { api } from './api';
 
 /** Reactive app preferences (units, week start). Mutate properties; don't reassign. */
@@ -89,16 +90,23 @@ interface LabelSession {
 	} | null;
 }
 
-/** A unit-correct display label: "6 × 800 m" (metric) / "6 × 0.50 mi" (imperial). */
+/** The workout name for a card title: the plan's title, or a readable type. */
 export function sessionLabel(session: LabelSession): string {
+	return session.title ?? sessionTypeLabel(session.type);
+}
+
+/**
+ * The rep scheme for a session that repeats a measured rep, e.g. "6 × 800 m".
+ * Null when the session is not a measured-rep workout, so a card can skip it.
+ */
+export function repSchemeLabel(session: LabelSession): string | null {
 	const blocks = session.prescription?.workout?.blocks ?? [];
 	const setBlock = blocks.find((b) => (b.repeat ?? 1) > 1);
-	if (setBlock) {
-		const steps = setBlock.steps ?? [];
-		const rep = steps.find((st) => st.kind === 'work' && st.distanceM) ?? steps[0];
-		if (rep?.distanceM) return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
-	}
-	return session.title ?? session.type;
+	if (!setBlock) return null;
+	const steps = setBlock.steps ?? [];
+	const rep = steps.find((st) => st.kind === 'work' && st.distanceM);
+	if (!rep?.distanceM) return null;
+	return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 }
 
 /** Height, weight and resting heart rate. Pass null to clear a value. */
