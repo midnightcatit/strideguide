@@ -18,4 +18,9 @@
 		Form cues and explanations are guidance, not medical advice. If something hurts in a sharp or
 		worsening way, see a professional.
 	</p>
+	<p class="text-sm">
+		<a href="/privacy" class="text-signal-ink underline-offset-2 hover:underline">Privacy Policy</a>
+		<span class="text-steel"> · </span>
+		<a href="/terms" class="text-signal-ink underline-offset-2 hover:underline">Terms of Service</a>
+	</p>
 </section>

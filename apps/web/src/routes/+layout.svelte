@@ -14,6 +14,11 @@
 
 	let { children } = $props();
 
+	// Pages that must render without signing in, because the OAuth consent screen
+	// and reviewers open them directly. They get a bare shell, no app chrome.
+	const PUBLIC_PATHS = new Set(['/privacy', '/terms']);
+	const isPublic = $derived(PUBLIC_PATHS.has(page.url.pathname));
+
 	let pending = $state(0);
 	// Set when a newer service worker takes control; we offer a reload instead of
 	// forcing one, so an in-progress form or request is never interrupted.
@@ -115,6 +120,12 @@
 {#if !auth.checked}
 	<div class="min-h-dvh flex items-center justify-center">
 		<p class="tabular text-sm text-steel">Loading…</p>
+	</div>
+{:else if isPublic}
+	<div class="min-h-dvh">
+		<main class="mx-auto w-full max-w-2xl px-5 py-10">
+			{@render children()}
+		</main>
 	</div>
 {:else if !auth.user}
 	<SignIn />
