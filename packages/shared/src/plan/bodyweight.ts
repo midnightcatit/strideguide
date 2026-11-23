@@ -177,11 +177,6 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 		name: 'Goblet squat',
 		muscles: ['quadriceps', 'glutes'],
 		pattern: 'squat',
-		media: {
-			start: '/moves/goblet-squat/0.jpg',
-			end: '/moves/goblet-squat/1.jpg',
-			credit: 'free-exercise-db (public domain)',
-		},
 		why: 'The squat with load, to build the leg drive behind every stride.',
 		feel: 'Front of the thighs and glutes.',
 		form: [
@@ -208,11 +203,6 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 		name: 'Dumbbell Romanian deadlift',
 		muscles: ['hamstrings', 'glutes'],
 		pattern: 'hinge',
-		media: {
-			start: '/moves/dumbbell-romanian-deadlift/0.jpg',
-			end: '/moves/dumbbell-romanian-deadlift/1.jpg',
-			credit: 'free-exercise-db (public domain)',
-		},
 		why: 'Loads the hamstrings that brake every stride.',
 		feel: 'Back of the thighs and the glutes.',
 		form: [
@@ -226,11 +216,6 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 		name: 'Dumbbell row',
 		muscles: ['mid-back', 'biceps'],
 		pattern: 'pull',
-		media: {
-			start: '/moves/dumbbell-row/0.jpg',
-			end: '/moves/dumbbell-row/1.jpg',
-			credit: 'free-exercise-db (public domain)',
-		},
 		why: 'Balances the pushing work and keeps the upper back strong.',
 		feel: 'Between the shoulder blades and the arm.',
 		form: [
@@ -244,11 +229,6 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 		name: 'Dumbbell shoulder press',
 		muscles: ['shoulders', 'triceps'],
 		pattern: 'push',
-		media: {
-			start: '/moves/dumbbell-shoulder-press/0.jpg',
-			end: '/moves/dumbbell-shoulder-press/1.jpg',
-			credit: 'free-exercise-db (public domain)',
-		},
 		why: 'Holds the shoulders and arm swing together over a long run.',
 		feel: 'Shoulders and the back of the arms.',
 		form: [
@@ -262,11 +242,6 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 		name: 'Dumbbell calf raise',
 		muscles: ['calves', 'Achilles'],
 		pattern: 'posterior-chain',
-		media: {
-			start: '/moves/dumbbell-calf-raise/0.jpg',
-			end: '/moves/dumbbell-calf-raise/1.jpg',
-			credit: 'free-exercise-db (public domain)',
-		},
 		why: 'Loads the calves and Achilles that take every step.',
 		feel: 'Calves, with a stretch at the bottom.',
 		form: [

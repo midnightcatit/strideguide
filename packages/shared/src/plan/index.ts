@@ -6,6 +6,7 @@ export * from './bodyweight';
 export * from './exercises';
 export * from './catalog';
 export * from './gyms';
+export * from './move-media';
 export * from './mobility';
 export * from './stretches';
 export * from './explanations';

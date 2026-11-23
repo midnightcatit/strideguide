@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { formatClock } from '@strideguide/shared/units';
 	import { goto } from '$app/navigation';
-	import { findMove } from '@strideguide/shared/plan';
+	import { findMove, mediaForMove } from '@strideguide/shared/plan';
 	import { onMount, onDestroy } from 'svelte';
 	import type { ClientSession, ClientStep } from '$lib/plan';
 	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
+	import FormSheet from '$lib/components/FormSheet.svelte';
 	import { markStarted } from '$lib/started.svelte';
 	import { getProgress, setProgress } from '$lib/sessionProgress.svelte';
 
@@ -97,7 +98,7 @@
 	let holdTimer: ReturnType<typeof setInterval> | undefined;
 
 	const current = $derived(instances[idx]);
-	const machine = $derived(findMove(current?.step.machine));
+	const machine = $derived(findMove(current?.step.machine ?? current?.step.label));
 	const timed = $derived(current?.step.durationSec != null);
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
@@ -400,21 +401,24 @@
 						</button>
 					{/if}
 					{#if machine}
-						<button type="button" onclick={() => (showForm = !showForm)} aria-expanded={showForm} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">
-							{showForm ? 'Hide form' : 'Form & muscles'}
+						{@const mm = mediaForMove(machine.name)}
+						<button
+							type="button"
+							onclick={() => (showForm = true)}
+							aria-haspopup="dialog"
+							class="flex flex-1 items-center justify-center gap-2 rounded-md border border-hairline px-3 py-2 text-sm text-steel hover:border-steel hover:text-ink"
+						>
+							{#if mm}
+								<img src={mm.start} alt="" class="h-6 w-6 rounded object-contain" />
+							{/if}
+							Form
+							<span aria-hidden="true">▾</span>
 						</button>
 					{/if}
 				</div>
 
 				{#if machine && showForm}
-					<div class="mt-3 border-t border-hairline pt-3 text-sm">
-						<p class="text-steel"><span class="text-ink">Muscles:</span> {machine.muscles.join(', ')}</p>
-						<p class="mt-1 text-steel"><span class="text-ink">Feel it:</span> {machine.feel}</p>
-						<ul class="mt-2 space-y-1">
-							{#each machine.form as cue (cue)}<li class="text-steel">• {cue}</li>{/each}
-						</ul>
-						<p class="mt-2 text-xs text-steel">Avoid: {machine.mistakes.join('; ')}.</p>
-					</div>
+					<FormSheet move={machine} media={mediaForMove(machine.name)} onClose={() => (showForm = false)} />
 				{/if}
 			</div>
 		{/if}

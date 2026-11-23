@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, WARMUP_DRILLS, findDrill, findMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, WARMUP_DRILLS, findDrill, findMove, mediaForMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -467,8 +467,8 @@
 								</button>
 								{#if openMachine === m.name}
 									<div class="pb-3 pt-1">
-										{#if m.media}
-											<div class="mb-3"><MoveDemo media={m.media} name={m.name} /></div>
+										{#if mediaForMove(m.name)}
+											<div class="mb-3"><MoveDemo media={mediaForMove(m.name)!} name={m.name} /></div>
 										{/if}
 										<p class="text-sm leading-relaxed">{m.why}</p>
 										<p class="mt-2 text-sm leading-relaxed text-steel">{machineLine(m)}</p>
