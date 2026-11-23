@@ -73,16 +73,13 @@ export function convertPaceDelta(secPerKm: number): number {
 	return prefs.units === 'imperial' ? Math.round(secPerKm * 1.609344) : Math.round(secPerKm);
 }
 
-/** A step/rep distance in the user's units. Reps under a kilometre read in metres in both systems. */
+/** A step/rep distance in the user's units (metres for short metric steps, miles for imperial). */
 export function fmtStepDistance(meters: number): string {
-	// Short reps are stated in metres the world over ("6 × 800 m", "2 × 400 m"),
-	// so keep metres below a kilometre even for imperial users.
-	if (meters < 1000) return `${Math.round(meters)} m`;
 	if (prefs.units === 'imperial') {
 		const mi = meters / 1609.344;
 		return `${mi.toFixed(mi < 10 ? 2 : 1)} mi`;
 	}
-	return `${Math.round((meters / 1000) * 10) / 10} km`;
+	return meters < 1000 ? `${Math.round(meters)} m` : `${Math.round((meters / 1000) * 10) / 10} km`;
 }
 
 interface LabelSession {
@@ -93,17 +90,23 @@ interface LabelSession {
 	} | null;
 }
 
-/** A human-readable label: the workout name plus the rep scheme, e.g. "Intervals · 6 × 800 m". */
+/** The workout name for a card title: the plan's title, or a readable type. */
 export function sessionLabel(session: LabelSession): string {
-	const base = session.title ?? sessionTypeLabel(session.type);
+	return session.title ?? sessionTypeLabel(session.type);
+}
+
+/**
+ * The rep scheme for a session that repeats a measured rep, e.g. "6 × 800 m".
+ * Null when the session is not a measured-rep workout, so a card can skip it.
+ */
+export function repSchemeLabel(session: LabelSession): string | null {
 	const blocks = session.prescription?.workout?.blocks ?? [];
 	const setBlock = blocks.find((b) => (b.repeat ?? 1) > 1);
-	if (setBlock) {
-		const steps = setBlock.steps ?? [];
-		const rep = steps.find((st) => st.kind === 'work' && st.distanceM) ?? steps[0];
-		if (rep?.distanceM) return `${base} · ${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
-	}
-	return base;
+	if (!setBlock) return null;
+	const steps = setBlock.steps ?? [];
+	const rep = steps.find((st) => st.kind === 'work' && st.distanceM);
+	if (!rep?.distanceM) return null;
+	return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 }
 
 /** Height, weight and resting heart rate. Pass null to clear a value. */

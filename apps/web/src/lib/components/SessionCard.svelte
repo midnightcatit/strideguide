@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { formatDuration, sessionTypeLabel } from '$lib/plan';
-	import { fmtDistance, fmtPace, sessionLabel } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPace, repSchemeLabel, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { isStarted } from '$lib/started.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
@@ -96,6 +96,8 @@
 			out.push({ text: 'Strength' });
 			return out;
 		}
+		const scheme = repSchemeLabel(session);
+		if (scheme) out.push({ text: scheme });
 		if (p.targetDistanceKm != null) out.push({ text: fmtDistance(p.targetDistanceKm) });
 		const dur = formatDuration(session.durationMin);
 		if (dur) out.push({ text: dur });

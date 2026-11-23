@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { asc, and, desc, eq, inArray } from 'drizzle-orm';
+import { asc, and, desc, eq, gte, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
-import { WORKOUT_LIBRARY, fitnessState } from '@strideguide/shared/plan';
+import { WORKOUT_LIBRARY, adaptPlan, fitnessState } from '@strideguide/shared/plan';
 import type { Baseline, QualityKind, SessionArchetype } from '@strideguide/shared';
 import { schema } from '../db';
 import { narrateAndStore, templateWeekSummary } from '../lib/narration';
