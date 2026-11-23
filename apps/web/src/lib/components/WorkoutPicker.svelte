@@ -19,11 +19,36 @@
 		{ key: 'strength', label: 'Strength' },
 		{ key: 'mobility', label: 'Mobility' },
 		{ key: 'recovery', label: 'Recovery' },
+		{ key: 'cross-train', label: 'Cross' },
 	];
 	let filter = $state('all');
-	const shown = $derived(
-		filter === 'all' ? WORKOUT_LIBRARY : WORKOUT_LIBRARY.filter((w) => w.modality === filter),
+	let q = $state('');
+
+	const tokens = $derived(
+		q
+			.trim()
+			.toLowerCase()
+			.split(/\s+/)
+			.filter((t) => t.length > 0),
 	);
+
+	/** Every search token must appear somewhere in the workout's text. */
+	function matches(w: LibraryWorkout): boolean {
+		if (tokens.length === 0) return true;
+		const hay = [w.title, w.summary, w.purpose, w.type, w.modality, ...w.tags]
+			.join(' ')
+			.toLowerCase();
+		return tokens.every((t) => hay.includes(t));
+	}
+
+	const byFilter = $derived(
+		filter === 'all'
+			? WORKOUT_LIBRARY
+			: filter === 'cross-train'
+				? WORKOUT_LIBRARY.filter((w) => w.type === 'cross-train')
+				: WORKOUT_LIBRARY.filter((w) => w.modality === filter),
+	);
+	const shown = $derived(byFilter.filter(matches));
 
 	const dateLabel = $derived(
 		new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
@@ -55,6 +80,17 @@
 			<button type="button" onclick={onClose} aria-label="Close" class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink">✕</button>
 		</div>
 
+		<div class="shrink-0 border-b border-hairline px-4 py-3">
+			<input
+				type="search"
+				bind:value={q}
+				enterkeyhint="search"
+				aria-label="Search workouts"
+				placeholder="Search workouts"
+				class="w-full rounded-xl border border-hairline bg-paper px-3 py-2 text-base text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none sm:text-sm"
+			/>
+		</div>
+
 		<div class="scroll-modern flex shrink-0 gap-2 overflow-x-auto border-b border-hairline px-4 py-2">
 			{#each FILTERS as g (g.key)}
 				<button
@@ -71,6 +107,11 @@
 		</div>
 
 		<div class="scroll-modern min-h-0 flex-1 overflow-y-auto p-4">
+			{#if shown.length === 0}
+				<p class="px-1 py-8 text-center text-sm text-steel">
+					No workouts match "{q.trim()}". Try another word, or clear the search.
+				</p>
+			{:else}
 			<ul class="grid gap-2 sm:grid-cols-2">
 				{#each shown as w (w.id)}
 					<li>
@@ -88,6 +129,7 @@
 					</li>
 				{/each}
 			</ul>
+			{/if}
 		</div>
 	</div>
 </div>

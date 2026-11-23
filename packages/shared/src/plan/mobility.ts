@@ -97,7 +97,10 @@ export const COOLDOWN_STRETCHES: Drill[] = [
 		targets: ['calves', 'Achilles'],
 		why: 'Calves and Achilles take the load of every step, so they tighten after running.',
 		feel: 'A stretch at the back of the lower leg.',
-		form: ['Back leg straight, heel pressed down.', 'Lean into the wall until you feel the stretch.'],
+		form: [
+			'Back leg straight, heel pressed down.',
+			'Lean into the wall until you feel the stretch.',
+		],
 		mistakes: ['Bouncing instead of holding', 'Back foot turned out'],
 		ref: STRETCH_REF,
 	},
@@ -151,7 +154,10 @@ export const EXTRA_STRETCHES: Drill[] = [
 		targets: ['adductors', 'inner thigh'],
 		why: 'Keeps the inner thigh supple, which supports a steady, straight stride.',
 		feel: 'A stretch along the inner thigh.',
-		form: ['Widen the feet and shift weight to one side.', 'Keep the moving knee tracking over the foot.'],
+		form: [
+			'Widen the feet and shift weight to one side.',
+			'Keep the moving knee tracking over the foot.',
+		],
 		mistakes: ['Bouncing', 'Letting the knee collapse inward'],
 		ref: STRETCH_REF,
 	},
@@ -161,7 +167,10 @@ export const EXTRA_STRETCHES: Drill[] = [
 		targets: ['mid-back', 'shoulders'],
 		why: 'Restores rotation in the upper back, which keeps the arm swing free.',
 		feel: 'A gentle twist through the upper back.',
-		form: ['Lie on your side, knees bent.', 'Open the top arm across the body and follow it with your eyes.'],
+		form: [
+			'Lie on your side, knees bent.',
+			'Open the top arm across the body and follow it with your eyes.',
+		],
 		mistakes: ['Forcing the twist', 'Letting the knees lift'],
 		ref: STRETCH_REF,
 	},
@@ -176,12 +185,6 @@ export const EXTRA_STRETCHES: Drill[] = [
 		ref: STRETCH_REF,
 	},
 ];
-
-/** Look a drill up by name, for the detail view. */
-export function findDrill(name?: string): Drill | undefined {
-	if (!name) return undefined;
-	return [...WARMUP_DRILLS, ...COOLDOWN_STRETCHES, ...EXTRA_STRETCHES].find((d) => d.name === name);
-}
 
 /**
  * A short mobility session. A flexibility goal beyond the current range adds the

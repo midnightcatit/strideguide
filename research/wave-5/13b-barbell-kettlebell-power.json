@@ -1,0 +1,716 @@
+{
+  "workstream": "strength",
+  "subtopic": "Barbell, kettlebell and plyometric power work for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Heavy lifts and running economy",
+      "claim": "Adding heavy resistance training to a distance runner's programme improves running economy.",
+      "evidence": "Meta-analysis of controlled trials in high-level middle- and long-distance runners found a large beneficial effect on running economy (SMD -1.42, 95% CI -2.23 to -0.60) from programmes that combined low to high intensity resistance work with plyometrics, performed 2 to 3 times per week for 8 to 12 weeks.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Effects of Strength Training on Running Economy in Highly Trained Runners: A Systematic Review With Meta-Analysis of Controlled Trials",
+        "authors": "Balsalobre-Fernandez C, Santos-Concejero J, Grivas GV",
+        "year": 2016,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1519/JSC.0000000000001316",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Broad effect of strength training",
+      "claim": "Strength training improves running economy, time trial performance over 1.5 to 10 km and sprint speed in middle- and long-distance runners, but the finding is not universal across studies.",
+      "evidence": "Systematic review of 24 controlled studies concluded there is good evidence that strength training (heavy resistance, explosive resistance or plyometric, applied for at least 4 weeks) improves running economy, time trial performance and anaerobic speed qualities, while maximal oxygen uptake and body composition are largely unaffected. The authors note the improvement was not consistent in every study.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Heavy vs explosive",
+      "claim": "Both heavy weight training and explosive (lighter, fast) training improve running economy in endurance athletes.",
+      "evidence": "Systematic review with meta-analysis of endurance athletes found that heavy weight training and explosive training were both effective for improving running economy, without a clear winner between them.",
+      "confidence": "high",
+      "citation": {
+        "title": "Explosive Training and Heavy Weight Training are Effective for Improving Running Economy in Endurance Athletes: A Systematic Review and Meta-Analysis",
+        "authors": "Denadai BS, de Aguiar RA, de Lima LCR, Greco CC, Caputo F",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-016-0604-z",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Method, load and running speed",
+      "claim": "Load matters. High-load (at or above 80% of 1RM) and combined methods improved running economy, plyometrics helped mainly at slower running speeds, and submaximal or isometric loads did not beat a control.",
+      "evidence": "Meta-analysis of middle- and long-distance runners: high loads produced a small improvement (ES -0.266, p = 0.039), combined methods a moderate improvement (ES -0.426, p = 0.018), plyometrics a small improvement at speeds at or below 12.00 km/h (ES -0.307, p = 0.028), while submaximal and isometric training showed no improvement versus control. Gains from high loads were larger at higher running speeds and in runners with a higher VO2max.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Saez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-023-01978-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Heavy vs plyometric head to head",
+      "claim": "Heavy resistance training may be slightly more effective than plyometric training for running economy and time trial performance in long-distance runners, especially with near-maximal loads and at least 10 weeks of training.",
+      "evidence": "Systematic review and meta-analysis comparing the two modalities found heavy resistance training, particularly near-maximal loads (at or above 90% of 1RM or around a 4RM), gave larger benefits for running economy and time trial performance. In young runners the effect was moderate (g = -0.51, 95% CI -0.83 to -0.19) and trivial in middle-aged runners.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Terada M, Kanehisa H, Isaka T",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Maximal strength training",
+      "claim": "A short block of maximal strength training (about 3 to 4 sets of 4 reps at roughly 90% of 1RM) improves running economy and time to exhaustion in trained runners.",
+      "evidence": "Randomised study in distance runners: 8 weeks of maximal strength training improved running economy at 70% of VO2max and time to exhaustion at maximal aerobic speed, with no loss of aerobic capacity.",
+      "confidence": "high",
+      "citation": {
+        "title": "Maximal strength training improves running economy in distance runners",
+        "authors": "Storen O, Helgerud J, Stoa EM, Hoff J",
+        "year": 2008,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0b013e318168da2f",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Longer-term strength gains",
+      "claim": "A long strength-training block improves maximal and reactive strength, running economy and velocity at VO2max without harming aerobic capacity or body composition.",
+      "evidence": "Randomised study of distance runners found that 40 weeks of strength training significantly improved maximal and reactive strength qualities, running economy and velocity at VO2max, with no decrement in VO2max.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effect of Strength Training on Performance Indicators in Distance Runners",
+        "authors": "Beattie K, Carson BP, Lyons M, Rossiter A, Kenny IC",
+        "year": 2017,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0000000000001464",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Mechanism of transfer",
+      "claim": "Heavy strength work raises power and speed at VO2max and time to exhaustion, likely through delayed recruitment of less efficient type II fibres, better neuromuscular efficiency, a shift of type IIX fibres toward fatigue-resistant IIA, and stiffer muscle-tendon units.",
+      "evidence": "Narrative review of concurrent endurance and heavy or explosive strength training in runners and cyclists summarises these proposed mechanisms for improved endurance performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Optimizing strength training for running and cycling endurance performance: A review",
+        "authors": "Ronnestad BR, Mujika I",
+        "year": 2014,
+        "venue": "Scandinavian Journal of Medicine and Science in Sports",
+        "type": "narrative-review",
+        "doi_or_url": "10.1111/sms.12104",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Complex training",
+      "claim": "Pairing heavy resistance with plyometrics in the same session (complex training) improved strength, jump ability, running economy and 5 km performance more than heavy lifting alone in well-trained runners.",
+      "evidence": "Randomised study in well-trained male distance runners: complex training and heavy resistance training both raised 1RM strength (about 17% and 19%), but complex training added greater gains in neuromuscular and running economy measures and improved 5 km performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of complex training versus heavy resistance training on neuromuscular adaptation, running economy and 5-km performance in well-trained distance runners",
+        "authors": "Li F, Wang R, Newton RU, Sutton D, Shi Y, Ding H",
+        "year": 2019,
+        "venue": "PeerJ",
+        "type": "rct",
+        "doi_or_url": "10.7717/peerj.6787",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Kettlebell swing mechanics",
+      "claim": "The kettlebell swing is a ballistic hip-hinge that loads the hip extensors hard and keeps the lower limb stiff, rather than a squat pattern.",
+      "evidence": "Mechanical analysis of the two-hand kettlebell swing describes it as a hip-hinge movement with high hip extensor involvement and limited knee flexion, and it is widely used as a power-building hinge.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Mechanical demands of the two-hand kettlebell swing exercise",
+        "authors": "Lake JP, Lauder MA",
+        "year": 2012,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "observational",
+        "doi_or_url": "10.1519/JSC.0b013e3182674896",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Kettlebell training outcome",
+      "claim": "Kettlebell swing training can improve or maintain strength, power and aerobic fitness in trained populations, but direct evidence for running economy or race performance is thin.",
+      "evidence": "Controlled studies show kettlebell training raises fitness proxies rather than running economy directly: 6 weeks of biweekly kettlebell swing training increased half-squat 1RM by 9.8% and vertical jump by 19.8% in trained men, and 4 weeks of high-intensity kettlebell snatch intervals increased VO2max by about 6% in female collegiate athletes. Continuous one-arm kettlebell swing training maintained or improved fitness assessment outcomes in US Air Force personnel. No study directly measured kettlebell training effects on running economy or race times in runners.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Continuous One-Arm Kettlebell Swing Training on Physiological Parameters in US Air Force Personnel: A Pilot Study",
+        "authors": "Wade M, O'Hara R, Caldwell L, Ordway J, Bryant D",
+        "year": 2016,
+        "venue": "Journal of Special Operations Medicine",
+        "type": "pilot-study",
+        "doi_or_url": "10.55460/f5aw-fa8q",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Kettlebell swing and strength",
+      "claim": "Six weeks of kettlebell swing training increased maximal and explosive strength in trained men.",
+      "evidence": "Controlled study in trained men found 6 weeks of biweekly kettlebell swing training raised half-squat 1RM by 9.8% and vertical jump height by 19.8%, with gains similar to jump squat training, supporting the swing as a general strength and power stimulus.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Kettlebell Swing Training Improves Maximal and Explosive Strength",
+        "authors": "Lake JP, Lauder MA",
+        "year": 2012,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "controlled-trial",
+        "doi_or_url": "10.1519/JSC.0b013e31825c2c9b",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Kettlebell and aerobic capacity",
+      "claim": "A short kettlebell interval programme increased aerobic capacity in trained female athletes.",
+      "evidence": "Controlled study in 17 female collegiate soccer players found 4 weeks of a 15:15 kettlebell snatch protocol (three sessions per week) increased VO2max by about 2.3 ml/kg/min, roughly 6%, while a circuit weight-training control group showed no change. This supports kettlebell work as a conditioning option, though it does not measure running economy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of Kettlebell Training on Aerobic Capacity",
+        "authors": "Falatic JA, Plato PA, Holder C, Finch D, Han K, Cisar CJ",
+        "year": 2015,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "controlled-trial",
+        "doi_or_url": "10.1519/JSC.0000000000000845",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Velocity loss and proximity to failure",
+      "claim": "Stopping a heavy set before big velocity loss (about 20%) yields similar squat strength gains with fewer reps and greater jump improvement than pushing to a larger velocity loss (about 40%).",
+      "evidence": "Randomised study compared two squat programmes that differed only in the velocity loss allowed per set: 20% versus 40%. The lower-loss group gained similar squat strength but improved countermovement jump more (9.5% versus 3.5%) despite about 40% fewer repetitions, while the higher-loss group produced more hypertrophy and a greater loss of type IIX fibres.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of velocity loss during resistance training on athletic performance, strength gains and muscle adaptations",
+        "authors": "Pareja-Blanco F, Rodriguez-Rosell D, Sanchez-Medina L, et al.",
+        "year": 2017,
+        "venue": "Scandinavian Journal of Medicine and Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/sms.12678",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Velocity-based training in practice",
+      "claim": "Velocity loss during a set is a practical in-session gauge of effort, and the chosen threshold shapes strength, neuromuscular and hypertrophy outcomes.",
+      "evidence": "Randomised bench press study found that different velocity-loss thresholds produced different combinations of strength, neuromuscular and hypertrophy adaptations, supporting velocity loss as a way to set effort without training to failure.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of velocity loss in the bench press exercise on strength gains, neuromuscular adaptations, and muscle hypertrophy",
+        "authors": "Pareja-Blanco F, Alcazar J, Cornejo-Daza PJ, et al.",
+        "year": 2020,
+        "venue": "Scandinavian Journal of Medicine and Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/sms.13768",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Plyometrics and the stretch-shortening cycle",
+      "claim": "Plyometric jump training improves the reactive strength index, a marker of stretch-shortening cycle function and reactive leg stiffness.",
+      "evidence": "Systematic review with meta-analysis of healthy people across the lifespan found plyometric jump training improved reactive strength index, the ratio of jump height to ground contact time used to describe how well an athlete uses the stretch-shortening cycle.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Plyometric Jump Training on the Reactive Strength Index in Healthy Individuals Across the Lifespan: A Systematic Review with Meta-analysis",
+        "authors": "Ramirez-Campillo R, Thapa RK, Afonso J, et al.",
+        "year": 2023,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-023-01824-1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Leg stiffness and running",
+      "claim": "Leg and vertical stiffness model how the lower body stores and releases elastic energy in the stretch-shortening cycle, and relate to running performance.",
+      "evidence": "Literature overview concludes that vertical, leg and joint stiffness provide a useful model for the store and release of elastic energy in the musculotendinous unit and relate to running performance, though the relationship with actual race outcomes is not perfectly consistent.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Application of Leg, Vertical, and Joint Stiffness in Running Performance: A Literature Overview",
+        "authors": "Struzik A, Karamanidis K, Lorimer A, Keogh JWL, Gajewski J",
+        "year": 2021,
+        "venue": "Applied Bionics and Biomechanics",
+        "type": "narrative-review",
+        "doi_or_url": "10.1155/2021/9914278",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "What plyometrics change in the tissue",
+      "claim": "Plyometric training increases tendon (passive) stiffness, while isometric training increases muscle (active) stiffness, so the two train different parts of the spring.",
+      "evidence": "Randomised within-subject study compared 12 weeks of plyometric and isometric training of the plantar flexors and found plyometric training altered tendon properties while isometric training altered active muscle stiffness, indicating distinct mechanical adaptations.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of plyometric and isometric training on muscle and tendon stiffness in vivo",
+        "authors": "Kubo K, Ishigaki T, Ikebukuro T",
+        "year": 2017,
+        "venue": "Physiological Reports",
+        "type": "rct",
+        "doi_or_url": "10.14814/phy2.13374",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Very low-volume plyometrics",
+      "claim": "A very small dose works. Six weeks of about 5 minutes of daily double-legged hopping improved running economy in amateur runners.",
+      "evidence": "Randomised controlled trial allocated 34 amateur runners to a hopping group or control. Over six weeks the hopping group performed about 5 minutes of double-legged hopping daily with progressive loading, and improved running economy while peak oxygen uptake and respiratory exchange ratio were unchanged.",
+      "confidence": "high",
+      "citation": {
+        "title": "Progressive daily hopping exercise improves running economy in amateur runners: a randomized and controlled trial",
+        "authors": "Engeroff T, Kalo K, Merrifield R, Groneberg D, Wilke J",
+        "year": 2023,
+        "venue": "Scientific Reports",
+        "type": "rct",
+        "doi_or_url": "10.1038/s41598-023-31697-3",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Plyometric warm-up",
+      "claim": "A plyometric warm-up acutely improved running economy in recreational endurance athletes compared with a control warm-up.",
+      "evidence": "Counterbalanced crossover study in 12 recreationally active students compared control, plyometric and resistance warm-ups; the plyometric warm-up improved running economy relative to control.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Plyometric Warm-Up Protocol Improves Running Economy in Recreational Endurance Athletes",
+        "authors": "Wei C, Yu L, Duncan B, Renfree A",
+        "year": 2020,
+        "venue": "Frontiers in Physiology",
+        "type": "rct",
+        "doi_or_url": "10.3389/fphys.2020.00169",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Injury prevention",
+      "claim": "Strength training reduces sports injury risk, cutting injuries to under one third and overuse injuries by roughly half.",
+      "evidence": "Meta-analysis of 25 randomised trials including 26,610 participants found strength training produced the strongest injury-prevention effect of the interventions studied (RR 0.315, 95% CI 0.207 to 0.480), while stretching showed no benefit.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of exercise interventions to prevent sports injuries: a systematic review and meta-analysis of randomised controlled trials",
+        "authors": "Lauersen JB, Bertelsen DM, Andersen LB",
+        "year": 2014,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2013-092538",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength training as injury prevention",
+      "claim": "Strength training is a dose-dependent and safe way to prevent both acute and overuse sports injuries.",
+      "evidence": "Follow-up systematic review, qualitative analysis and meta-analysis concluded that strength training is superior, dose-dependent and safe for preventing acute and overuse injuries across sports.",
+      "confidence": "high",
+      "citation": {
+        "title": "Strength training as superior, dose-dependent and safe prevention of acute and overuse sports injuries: a systematic review, qualitative analysis and meta-analysis",
+        "authors": "Lauersen JB, Andersen TE, Andersen LB",
+        "year": 2018,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2018-099078",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength to sprint transfer",
+      "claim": "Increases in lower-body strength transfer positively to sprint performance.",
+      "evidence": "Systematic review with meta-analysis found that gains in lower-body strength transfer to improved sprint performance, which supports heavy lifting for runners who also need top-end speed.",
+      "confidence": "high",
+      "citation": {
+        "title": "Increases in lower-body strength transfer positively to sprint performance: a systematic review with meta-analysis",
+        "authors": "Seitz LB, Reyes A, Tran TT, Saez de Villarreal E, Haff GG",
+        "year": 2014,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-014-0227-1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip thrust and the glutes",
+      "claim": "The barbell hip thrust activates the gluteus maximus and biceps femoris more than the back squat, and greater gluteus maximus activation in the hip thrust relates to faster maximal sprinting.",
+      "evidence": "EMG comparison in trained women found the barbell hip thrust produced greater mean and peak gluteus maximus and biceps femoris activity than the back squat at estimated 10RM loads. A later study reported that greater gluteus maximus activation during the barbell hip thrust related to maximal running speed.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Comparison of Gluteus Maximus, Biceps Femoris, and Vastus Lateralis Electromyography Amplitude in the Back Squat and Barbell Hip Thrust Exercises",
+        "authors": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J",
+        "year": 2015,
+        "venue": "Journal of Applied Biomechanics",
+        "type": "observational",
+        "doi_or_url": "10.1123/jab.2015-0054",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Step-up and glute activation",
+      "claim": "Loaded step-up variations produce some of the highest gluteus maximus activations among common loaded exercises, ahead of many bilateral lifts.",
+      "evidence": "Systematic review of gluteus maximus activation during loaded hip-extension exercises (Journal of Sports Science and Medicine, 19(1), 195-203) classified many exercises as very high activation (above 60% MVIC) and found the step-up and its variations generally produced the highest levels, followed by deadlifts, hip thrusts, lunges and squats.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Gluteus Maximus Activation during Common Strength and Hypertrophy Exercises: A Systematic Review",
+        "authors": "Neto WK, Soares EG, Vieira TL, Aguiar R, Chola TA, Sampaio VL, Gama EF",
+        "year": 2020,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7039033/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Trap-bar deadlift and glute activation",
+      "claim": "The hex bar (trap bar) deadlift produces very high gluteus maximus activation, above 60% of maximal voluntary isometric contraction.",
+      "evidence": "Systematic review of 16 electromyography studies listed the hex bar deadlift among the loaded exercises with very high gluteus maximus activation (above 60% MVIC), alongside step-up variations, barbell hip thrusts, conventional deadlifts, lunges and squats. Step-up variations produced the highest levels overall.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Gluteus Maximus Activation during Common Strength and Hypertrophy Exercises: A Systematic Review",
+        "authors": "Neto WK, Soares EG, Vieira TL, Aguiar R, Chola TA, Sampaio VL, Gama EF",
+        "year": 2020,
+        "venue": "Journal of Sports Science and Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7039033/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Concurrent training interference",
+      "claim": "Combining strength and endurance training does not usually blunt strength or endurance in most runners, and doing strength before endurance with adequate recovery limits acute interference.",
+      "evidence": "Systematic review with meta-analysis on concurrent strength and endurance training found interference is limited and depends on sex and training status. Reviews of session order report that resistance before aerobic training develops maximal strength better, and that separating sessions by about three hours reduces acute interference.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Concurrent Strength and Endurance Training: A Systematic Review and Meta-Analysis on the Impact of Sex and Training Status on Interference and Performance",
+        "authors": "Huiberts RO, Wust RCI, van der Zwaard S",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-023-01934-w",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dose guidance",
+      "claim": "A workable dose is heavy lifting 2 to 3 times per week for low reps at or above 80% of 1RM, plus low-volume plyometrics 2 to 3 times per week, progressed gradually.",
+      "evidence": "Synthesised from the strength-training review and meta-analyses above, which found benefit from heavy and plyometric work performed 2 to 3 times per week over 8 to 12 weeks and longer, and from standard plyometric guidance of low volume and low frequency.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Plyometric safety and contraindications",
+      "claim": "Plyometrics need a strength base, should not be done on consecutive days, and should not be done when fatigued; depth jumps are for advanced athletes only.",
+      "evidence": "NSCA position statement on explosive and plyometric training states that when taught and supervised properly these exercises do not carry excessive injury risk, that athletes should have a strength base first (a common prerequisite is a parallel squat at about 1.5 times bodyweight for lower-body plyometrics and depth jumps), that depth jumps suit only a small proportion of athletes, that the same muscle and joint complex should not be trained on consecutive days, and that drills should not be performed when fatigued.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "NSCA Position Statement: Explosive Exercises and Training and Plyometric Exercise",
+        "authors": "National Strength and Conditioning Association",
+        "year": 1993,
+        "venue": "National Strength and Conditioning Association",
+        "type": "position-stand",
+        "doi_or_url": "https://www.nsca.com/education/articles/kinetic-select/plyometric-exercises/",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Barbell back squat",
+      "modality": "strength",
+      "equipment": "barbell",
+      "muscles": ["quadriceps", "gluteus maximus", "adductors", "trunk"],
+      "pattern": "squat",
+      "why": "Builds the leg and trunk strength that underpins running economy and holds form late in long efforts.",
+      "feel": "Whole-body bracing with a strong drive up out of the bottom.",
+      "form": [
+        "Brace the trunk and keep the chest tall before descending.",
+        "Sit down and back to about parallel or slightly below.",
+        "Drive the floor away and keep the knees tracking over the toes."
+      ],
+      "mistakes": [
+        "Letting the knees cave inward.",
+        "Hips rising first so the chest folds forward.",
+        "Bouncing out of the bottom without control."
+      ]
+    },
+    {
+      "name": "Barbell front squat",
+      "modality": "strength",
+      "equipment": "barbell",
+      "muscles": ["quadriceps", "gluteus maximus", "upper back", "trunk"],
+      "pattern": "squat",
+      "why": "Puts the load forward so the trunk works harder and the upright position carries over to running posture.",
+      "feel": "Tall torso with the elbows high and the weight resting on the front of the shoulders.",
+      "form": [
+        "Rest the bar on the front of the shoulders with the elbows up.",
+        "Squat down keeping the torso close to vertical.",
+        "Stand tall without letting the elbows drop."
+      ],
+      "mistakes": [
+        "Elbows dropping, which tips the bar forward.",
+        "Excessive forward lean.",
+        "Gripping hard enough to hurt the wrists instead of letting the shoulder rack carry the load."
+      ]
+    },
+    {
+      "name": "Trap-bar deadlift",
+      "modality": "strength",
+      "equipment": "barbell",
+      "muscles": ["gluteus maximus", "quadriceps", "hamstrings", "spinal erectors", "grip"],
+      "pattern": "hinge",
+      "why": "A strong, more upright way to load the whole posterior chain with less stress on the lower back than a straight-bar pull.",
+      "feel": "Heavy pull from the floor with a neutral spine and the hips and shoulders rising together.",
+      "form": [
+        "Stand inside the bar with the feet about hip width.",
+        "Hinge to the handles, brace, then push the floor away.",
+        "Lock out tall with the glutes without leaning back."
+      ],
+      "mistakes": [
+        "Rounding the lower back.",
+        "Jerking the bar off the floor.",
+        "Over-arching at the top."
+      ]
+    },
+    {
+      "name": "Romanian deadlift",
+      "modality": "strength",
+      "equipment": "barbell",
+      "muscles": ["hamstrings", "gluteus maximus", "spinal erectors"],
+      "pattern": "hinge",
+      "why": "Trains the hamstrings at length, the fibres that brake and then drive each stride.",
+      "feel": "A long stretch down the back of the legs as the hips travel backwards.",
+      "form": [
+        "Stand with the bar at the thighs, feet hip width.",
+        "Push the hips back and let the bar slide down the legs.",
+        "Stop when the hamstrings are stretched, then squeeze back to standing."
+      ],
+      "mistakes": [
+        "Bending the knees so much it becomes a squat.",
+        "Rounding the back at the bottom.",
+        "Letting the bar drift away from the legs."
+      ]
+    },
+    {
+      "name": "Barbell hip thrust",
+      "modality": "strength",
+      "equipment": "barbell",
+      "muscles": ["gluteus maximus", "hamstrings"],
+      "pattern": "hinge",
+      "why": "Loads the glutes harder than a squat and trains the hip extension that pushes every stride.",
+      "feel": "A hard squeeze at the top with the ribs down and the hips level.",
+      "form": [
+        "Rest the upper back on a bench with the bar padded over the hips.",
+        "Drive the hips up until the body is flat from knees to shoulders.",
+        "Squeeze the glutes, then lower under control."
+      ],
+      "mistakes": [
+        "Arching the lower back instead of finishing with the glutes.",
+        "Pushing through the toes and losing the heels.",
+        "Letting the hips drop fast each rep."
+      ]
+    },
+    {
+      "name": "Loaded step-up",
+      "modality": "strength",
+      "equipment": "barbell",
+      "muscles": ["gluteus maximus", "quadriceps", "hamstrings", "trunk"],
+      "pattern": "squat",
+      "why": "Builds single-leg strength and balance, matching the one-leg-at-a-time demand of running.",
+      "feel": "A controlled stand-up on one leg with the other knee driving up.",
+      "form": [
+        "Place the whole foot on a box at roughly knee height.",
+        "Drive through that leg to stand tall.",
+        "Lower slowly under control to the start."
+      ],
+      "mistakes": [
+        "Pushing off the trailing foot.",
+        "Box too high, so the hip hikes up.",
+        "Dropping down quickly instead of lowering."
+      ]
+    },
+    {
+      "name": "Two-hand kettlebell swing",
+      "modality": "strength",
+      "equipment": "kettlebell",
+      "muscles": ["gluteus maximus", "hamstrings", "spinal erectors", "trunk"],
+      "pattern": "hinge",
+      "why": "A ballistic hinge that trains explosive hip extension and a stiff, springy lower body.",
+      "feel": "The bell floats up from a snap of the hips, not a lift of the arms.",
+      "form": [
+        "Hinge back with the hips and let the bell pass between the legs.",
+        "Snap the hips forward so the bell rises to about chest height.",
+        "Guide the bell back down and repeat the hinge."
+      ],
+      "mistakes": [
+        "Squatting the swing instead of hinging.",
+        "Lifting with the shoulders.",
+        "Letting the back round at the bottom."
+      ]
+    },
+    {
+      "name": "Kettlebell goblet squat",
+      "modality": "strength",
+      "equipment": "kettlebell",
+      "muscles": ["quadriceps", "gluteus maximus", "trunk"],
+      "pattern": "squat",
+      "why": "Teaches an upright squat with the load at the chest, a simple way to build leg strength with one bell.",
+      "feel": "The bell cradled at the chest with the elbows tucked inside the knees at the bottom.",
+      "form": [
+        "Hold the bell at the chest with both hands.",
+        "Squat down between the knees keeping the chest up.",
+        "Stand tall and finish with a squeeze of the glutes."
+      ],
+      "mistakes": [
+        "Elbows drifting outside the knees.",
+        "Heels lifting off the floor.",
+        "Rushing the descent."
+      ]
+    },
+    {
+      "name": "Single-leg kettlebell deadlift",
+      "modality": "strength",
+      "equipment": "kettlebell",
+      "muscles": ["hamstrings", "gluteus maximus", "hip stabilizers"],
+      "pattern": "hinge",
+      "why": "Trains hip-hinge strength and balance on one leg, close to the demand of a single stride.",
+      "feel": "A slow hip hinge on one leg with the free leg trailing straight back.",
+      "form": [
+        "Stand on one leg with the bell in the opposite hand.",
+        "Hinge the hips back as the free leg extends behind.",
+        "Return to standing tall without losing balance."
+      ],
+      "mistakes": [
+        "Opening the hip of the standing leg.",
+        "Rounding the back.",
+        "Bending the standing knee too much."
+      ]
+    },
+    {
+      "name": "Turkish get-up",
+      "modality": "strength",
+      "equipment": "kettlebell",
+      "muscles": ["trunk", "gluteus maximus", "shoulders", "hip stabilizers"],
+      "pattern": "core",
+      "why": "A slow, full-body sequence that builds trunk control, shoulder stability and hip mobility.",
+      "feel": "A patient roll from lying to standing with the bell held overhead.",
+      "form": [
+        "Start lying on your back with the bell pressed overhead.",
+        "Move through each stage slowly and deliberately.",
+        "Keep the eyes on the bell and the arm locked throughout."
+      ],
+      "mistakes": [
+        "Rushing the transitions.",
+        "Letting the arm bend or drift off vertical.",
+        "Using momentum instead of control."
+      ]
+    },
+    {
+      "name": "Jump squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "gluteus maximus", "hamstrings", "calves"],
+      "pattern": "plyometric",
+      "why": "A fast stretch-shortening drill that trains the legs to produce force quickly.",
+      "feel": "A short, springy dip and a light, quick jump.",
+      "form": [
+        "Start standing with the feet about hip width.",
+        "Dip quickly and jump as high as you can.",
+        "Land softly and reset before the next rep."
+      ],
+      "mistakes": [
+        "Deep, slow squats instead of a quick dip.",
+        "Landing stiff-legged and heavy.",
+        "Chasing height at the expense of clean landings."
+      ]
+    },
+    {
+      "name": "Box jump",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "gluteus maximus", "calves", "trunk"],
+      "pattern": "plyometric",
+      "why": "Trains explosive leg drive and a confident, controlled landing.",
+      "feel": "A quick dip and a jump that lands quiet on the box.",
+      "form": [
+        "Stand a step back from a sturdy box.",
+        "Jump and land with both feet flat on top.",
+        "Stand tall, then step back down."
+      ],
+      "mistakes": [
+        "Box too high, so form breaks down.",
+        "Landing on the toes or with the knees caving in.",
+        "Jumping down instead of stepping off."
+      ]
+    },
+    {
+      "name": "Pogo hops",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["calves", "foot and ankle", "quadriceps"],
+      "pattern": "plyometric",
+      "why": "Ground-level hops that train stiffness and short ground contacts, the spring runners rely on.",
+      "feel": "Fast, small bounces off the balls of the feet.",
+      "form": [
+        "Stay tall and bounce on the balls of the feet.",
+        "Keep the knees nearly straight and the contacts short.",
+        "Land and rebound straight away."
+      ],
+      "mistakes": [
+        "Bending the knees so much it becomes a squat.",
+        "Heels landing hard each bounce.",
+        "Long, slow ground contacts."
+      ]
+    },
+    {
+      "name": "Depth drop",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "gluteus maximus", "calves"],
+      "pattern": "plyometric",
+      "why": "Teaches the legs to absorb and rebound from landing forces, useful for downhill running.",
+      "feel": "A quiet, springy landing that rebounds straight up.",
+      "form": [
+        "Step off a low box and land on both feet.",
+        "Absorb softly and rebound quickly.",
+        "Start low and raise the box only when landings stay clean."
+      ],
+      "mistakes": [
+        "Starting from too high a box.",
+        "Landing with straight, locked legs.",
+        "Sticking the landing instead of rebounding."
+      ]
+    }
+  ],
+  "summary_tier_a": "Heavy lifting and low-level plyometrics both raise running economy, and the effect shows up in time trials as well as in the lab. High loads (at or above 80% of 1RM) and combined heavy-plus-plyometric work look strongest, and gains are larger at higher running speeds and in fitter runners. Plyometrics improve the stretch-shortening cycle and leg stiffness, and even a few minutes of daily hopping helps. Kettlebell work is a sound ballistic hinge but has little direct evidence for running economy, and dose stays small: 2 to 3 strength and plyometric sessions a week, kept clear of hard running.",
+  "unverified": [
+    "No study was found directly measuring kettlebell training effects on running economy, time trial performance or race times in runners. The closest evidence is on fitness proxies: kettlebell swing training improved maximal and explosive strength (Lake and Lauder 2012), a kettlebell snatch interval protocol improved aerobic capacity (Falatic et al 2015), and an acute kettlebell swing warm-up did not change sprint times (Kartages et al 2019). Kettlebell support for running rests on strength, power and general fitness proxies, not on a measured running-economy or race-time effect.",
+    "No trial of trap-bar (hex-bar) deadlift training on running economy in runners was located; trap-bar evidence concerns strength, power and jump or sprint transfer, plus an acute hex-bar deadlift post-activation study on cycling performance (Sosa et al 2026). A known review of the runner strength literature also states that no hip thrust or trap bar deadlift trial in runners was found. A direct causal effect of trap-bar deadlift training on running economy therefore remains unproven."
+  ],
+  "notes": "Scope: barbell, kettlebell and plyometric power work for runners. Evidence is strongest for heavy resistance and plyometric training improving running economy (multiple meta-analyses) and for strength training reducing injury risk. Direction of effect for velocity-based training is supported by RCTs in strength-trained men, not runners specifically, so treat the dose details as transferable guidance rather than direct runner evidence. Sources retrieved 2026-11-23 via web and literature-index search. Where a claim is a synthesis across sources, the closest primary source is cited. All running-economy figures are reported at the speeds used in the original studies, which is why speed qualifies several findings. Verification pass 2026-11-23: 1 substantiated, 2 remained unverified. The Journal of Sports Science and Medicine gluteus maximus review was verified as 19(1):195-203, 2020 (PMID 32132843, PMCID PMC7039033) with full authors Neto WK, Soares EG, Vieira TL, Aguiar R, Chola TA, Sampaio VL, Gama EF; the journal registers no DOI for that article, so the PMCID URL is cited and that unverified note was closed. The kettlebell and trap-bar deadlift running economy gaps both stayed unverified. The previously low-confidence kettlebell claim was raised to moderate and now carries two controlled studies (Lake and Lauder 2012 for strength; Falatic et al 2015 for aerobic capacity); the Wade 2016 venue was corrected from Journal of Strength and Conditioning Research to Journal of Special Operations Medicine, and its title and authors were corrected."
+}

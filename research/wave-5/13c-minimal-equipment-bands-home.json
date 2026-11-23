@@ -1,0 +1,799 @@
+{
+  "workstream": "strength",
+  "subtopic": "Minimal-equipment and home strength for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Bands versus conventional load",
+      "claim": "Elastic bands and tubing build strength about as well as free weights or machines when effort, load and volume are matched.",
+      "evidence": "Systematic review and meta-analysis of 8 randomized controlled trials found no significant difference in upper-limb or lower-limb strength gains between elastic resistance training and conventional resistance training. The authors concluded elastic resistance produces similar strength gains across different populations and program designs.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of training with elastic resistance versus conventional resistance on muscular strength: A systematic review and meta-analysis",
+        "authors": "Lopes JSS, Machado AF, Micheletti JK, de Almeida AC, Cavina AP, Pastre CM",
+        "year": 2019,
+        "venue": "SAGE Open Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1177/2050312119831116",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Band tension mechanics",
+      "claim": "A band is easy at the start of a rep and hardest at the end range, and its load depends on how far it is stretched plus how it is anchored, not on the colour alone.",
+      "evidence": "Narrative review of elastic resistance mechanics states that bands provide an ascending, position- and configuration-dependent resistance profile set by band stiffness, pre-stretch, anchoring position and movement range. The review reports variable resistance (including band loading) can produce comparable or in some contexts superior maximal strength gains.",
+      "confidence": "high",
+      "citation": {
+        "title": "Elastic Resistance Bands in Sports Medicine and Rehabilitation: A Narrative Review of Neuromuscular Mechanisms, Prescription, and Functional Applications",
+        "authors": "Guzman-Munoz E, et al.",
+        "year": 2026,
+        "venue": "Journal of Clinical Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "10.3390/jcm15187086",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Bands for low-load populations",
+      "claim": "Band programs raise muscle mass and physical capacity even when the absolute load is light.",
+      "evidence": "Twelve weeks of elastic band training increased lean mass and physical capacity in older women with sarcopenic obesity, and a separate trial in middle-aged and older adults reported band and tube strength gains in the range of 16 to 44 percent, matching weight-machine training in the same trial.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of Elastic Band Exercise on Lean Mass and Physical Capacity in Older Women with Sarcopenic Obesity: A Randomized Controlled Trial",
+        "authors": "Liao CD, Tsauo JY, Lin LF, Huang SW, Ku JW, Chou LC, Liou TH",
+        "year": 2018,
+        "venue": "Scientific Reports",
+        "type": "rct",
+        "doi_or_url": "10.1038/s41598-018-20677-6",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength training and running economy",
+      "claim": "Adding strength training to a distance runner's running improves running economy, time trial performance and sprint speed, though not in every study.",
+      "evidence": "Systematic review of 24 controlled studies found good evidence that strength training improves running economy, time trial performance and anaerobic speed qualities, while maximal oxygen uptake and body composition are mostly unchanged. Two to three sessions per week using a mix of modalities is recommended.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Heavy load versus plyometric for economy",
+      "claim": "Strength training with near-maximal loads improves running economy and time trial performance more than plyometric training, and the effect grows with longer programs.",
+      "evidence": "Systematic review and meta-analysis found heavy resistance training gave a small effect on running economy (g = -0.32) versus a trivial effect for plyometrics (g = -0.13). Effects were larger with loads at or above 90 percent of 1RM and with programs of 10 to 14 weeks rather than 6 to 8 weeks.",
+      "confidence": "high",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Explosive and heavy both work",
+      "claim": "Both heavy weight training and lighter explosive training improve running economy in endurance athletes, with no clear winner between them.",
+      "evidence": "Systematic review with meta-analysis of endurance athletes found heavy weight training and explosive training were both effective for improving running economy.",
+      "confidence": "high",
+      "citation": {
+        "title": "Explosive Training and Heavy Weight Training are Effective for Improving Running Economy in Endurance Athletes: A Systematic Review and Meta-Analysis",
+        "authors": "Denadai BS, de Aguiar RA, de Lima LCR, Greco CC, Caputo F",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-016-0604-z",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Near-maximal loading",
+      "claim": "Intensity matters: training close to maximal force (around a 4RM) improved running economy and time to exhaustion in well-trained runners.",
+      "evidence": "Randomised study had distance runners train squats with a near-maximal load (about a 4RM, roughly 85 to 90 percent of 1RM) and found improved running economy and time to exhaustion alongside large strength gains.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Maximal strength training improves running economy in distance runners",
+        "authors": "Storen O, Helgerud J, Stoa EM, Hoff J",
+        "year": 2008,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "rct",
+        "doi_or_url": "10.1249/MSS.0b013e318168da2f",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Isometric training",
+      "claim": "Isometric strength training added twice a week improved endurance running performance, matching plyometric training, with less fatigue.",
+      "evidence": "Randomised controlled study in endurance runners added isometric training or plyometric training twice a week for 6 weeks. Both improved 2.4 km time trial time, maximal aerobic speed, jump height and isometric strength versus control, and the isometric group improved running economy.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Isometric Strength and Plyometric Training on Running Performance: A Randomized Controlled Study",
+        "authors": "Lum D, Barbosa TM, Aziz AR, Balasekaran G",
+        "year": 2023,
+        "venue": "Research Quarterly for Exercise and Sport",
+        "type": "rct",
+        "doi_or_url": "10.1080/02701367.2021.1969330",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Tendon stiffness and economy",
+      "claim": "Training that increases Achilles tendon stiffness is linked to better running economy, supporting isometric and stiff-leg work.",
+      "evidence": "Study in highly trained distance runners found changes in Achilles tendon stiffness related to changes in running economy. A narrative review of tendon adaptation reports 14 weeks of isometric training at 90 percent of maximal voluntary contraction increased tendon-aponeurosis stiffness.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Changes in tendon stiffness and running economy in highly trained distance runners",
+        "authors": "Fletcher JR, Esau SP, MacIntosh BR",
+        "year": 2010,
+        "venue": "European Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "10.1007/s00421-010-1582-8",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Isometric and plyometric tendon effects",
+      "claim": "Both isometric and plyometric training can raise tendon stiffness, which is one mechanism behind economy gains.",
+      "evidence": "Controlled study compared plyometric and isometric training and found both changed muscle and tendon mechanical properties, with isometric training increasing tendon stiffness in the trained plantar flexors.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of plyometric and isometric training on muscle and tendon stiffness in vivo",
+        "authors": "Kubo K, Ishiguro N, Sakuraba K, Itoh C, Gomi T, Kashiwagi T",
+        "year": 2017,
+        "venue": "Physiological Reports",
+        "type": "rct",
+        "doi_or_url": "10.14814/phy2.13374",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring injury prevention",
+      "claim": "Adding the Nordic hamstring curl to a training or warm-up program roughly halves hamstring injury rates.",
+      "evidence": "Systematic review and meta-analysis of 8459 athletes across sports found programs that include the Nordic hamstring exercise reduced hamstring injuries by up to 51 percent (overall injury risk ratio 0.49, 95 percent CI 0.32 to 0.74).",
+      "confidence": "high",
+      "citation": {
+        "title": "Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: a systematic review and meta-analysis of 8459 athletes",
+        "authors": "van Dyk N, Behan FP, Whiteley R",
+        "year": 2019,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2018-100045",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring prevention volume",
+      "claim": "Nordic curl programs need consistency to work, with a build-up then a maintenance dose of around 48 reps per week.",
+      "evidence": "Umbrella review of systematic reviews found the Nordic hamstring exercise reduced hamstring injuries by up to 51 percent but that high adherence was required, and recommended a high-volume block followed by low-volume maintenance targeting about 48 reps per week.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Nordic Hamstring Exercise on Performance and Injury in the Lower Extremities: An Umbrella Review",
+        "authors": "Chavarro-Nieto C, Beaven R, Caplan N, Glover R, Meechan D, Estevez-Rodriguez L, et al.",
+        "year": 2024,
+        "venue": "Healthcare (Basel)",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/healthcare12151462",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring architecture",
+      "claim": "Eccentric hamstring work changes muscle architecture in ways linked to lower injury risk.",
+      "evidence": "Randomised trial found the Nordic hamstring exercise increased biceps femoris fascicle length and thickness, and the authors relate longer fascicles to reduced hamstring strain injury risk.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Impact of the Nordic hamstring and hip extension exercises on hamstring architecture and morphology: implications for injury prevention",
+        "authors": "Bourne MN, Duhig SJ, Timmins RG, Williams MD, Opar DA, Al Najjar A, Kerr GK, Shield AJ",
+        "year": 2017,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1136/bjsports-2016-096130",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip and glute strengthening for injury",
+      "claim": "Hip abductor and gluteal strengthening reduces pain and improves function in runners with patellofemoral pain and iliotibial band syndrome.",
+      "evidence": "Systematic review with meta-analysis found combined hip and knee strengthening was more effective than knee strengthening alone for pain and activity in patellofemoral pain (level 1a evidence). A separate review of iliotibial band syndrome in runners found hip abductor strengthening was a key component that reduced pain and improved function.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Hip and Knee Strengthening Is More Effective Than Knee Strengthening Alone for Reducing Pain and Improving Activity in Individuals With Patellofemoral Pain: A Systematic Review With Meta-analysis",
+        "authors": "Nascimento LR, Teixeira-Salmela LF, Souza RB, Resende RA",
+        "year": 2018,
+        "venue": "Journal of Orthopaedic and Sports Physical Therapy",
+        "type": "meta-analysis",
+        "doi_or_url": "10.2519/jospt.2018.7365",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip strengthening for knee pain",
+      "claim": "Hip muscle strengthening is effective for reducing pain and improving function in patellofemoral pain.",
+      "evidence": "Systematic review found the majority of included studies showed hip muscle strengthening reduced pain and improved function in people with patellofemoral pain.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effectiveness of hip muscle strengthening in patellofemoral pain syndrome patients: a systematic review",
+        "authors": "Santos TRT, Oliveira BA, Ocarino JM, Holt KG, Fonseca ST",
+        "year": 2015,
+        "venue": "Brazilian Journal of Physical Therapy",
+        "type": "systematic-review",
+        "doi_or_url": "10.1590/bjpt-rbf.2014.0088",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Single-leg training transfer",
+      "claim": "Unilateral and bilateral lower-body training do not transfer equally, and single-leg work carries over better to single-leg and sprint tasks.",
+      "evidence": "Controlled study found unilateral and bilateral lower-body resistance training produced different transfer to sprint and change-of-direction performance, with single-leg work improving unilateral qualities more. A separate systematic review found unilateral training was more effective for improving unilateral strength such as the Bulgarian split squat.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Unilateral and bilateral lower-body resistance training does not transfer equally to sprint and change of direction performance",
+        "authors": "Appleby BB, Cormack SJ, Newton RU",
+        "year": 2020,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0000000000003035",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Low load to failure",
+      "claim": "Light loads taken close to failure build about as much muscle as heavy loads, though heavy loads are still needed for maximal strength.",
+      "evidence": "Meta-analysis of 21 studies found hypertrophy was similar between low-load (at or below 60 percent of 1RM) and high-load training when sets went to momentary failure, while gains in maximal strength (1RM) were greater with heavy loads.",
+      "confidence": "high",
+      "citation": {
+        "title": "Muscular adaptations in low- versus high-load resistance training: A meta-analysis",
+        "authors": "Schoenfeld BJ, Wilson JM, Lowery RP, Krieger JW",
+        "year": 2016,
+        "venue": "European Journal of Sport Science",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1080/17461391.2014.989922",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Repetition tempo",
+      "claim": "Slow controlled reps are not magic: rep durations from about 0.5 to 8 seconds give similar muscle growth, and very slow reps over 10 seconds are worse.",
+      "evidence": "Meta-analysis of 8 studies found similar hypertrophy when repetition duration ranged from 0.5 to 8 seconds to concentric failure, and concluded volitionally very slow durations (over 10 seconds per rep) are inferior for hypertrophy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of Repetition Duration During Resistance Training on Muscle Hypertrophy: A Systematic Review and Meta-Analysis",
+        "authors": "Schoenfeld BJ, Ogborn D, Krieger JW",
+        "year": 2015,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-015-0304-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Sets and frequency",
+      "claim": "At least two sets and two sessions per week are needed to raise strength, and higher-load multi-set training three times a week ranks best for strength.",
+      "evidence": "Bayesian network meta-analysis found a 95 percent probability that resistance training with at least two sets or two sessions per week increased strength. Higher-load, multi-set, thrice-weekly training ranked highest for strength; higher-load, multi-set, twice-weekly training ranked highest for hypertrophy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Resistance training prescription for muscle strength and hypertrophy in healthy adults: a systematic review and Bayesian network meta-analysis",
+        "authors": "Currier BS, McLeod JC, Banfield L, Beyene J, Welton NJ, D'Souza AC, Keogh JAL, Lin L, Coletta G, Yang A, Colquhoun R, Phillips SM",
+        "year": 2023,
+        "venue": "British Journal of Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1136/bjsports-2023-106807",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Low-load with blood flow restriction",
+      "claim": "Very light loads combined with blood flow restriction build muscle about as well as heavy loads and lift strength more than light load alone.",
+      "evidence": "Meta-analysis comparing high-load training with low-load training plus blood flow restriction found similar hypertrophy between the two, while high-load training produced greater maximal strength gains. The authors conclude blood flow restriction is a valid way to raise strength when heavy loading is not tolerated.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Magnitude of Muscle Strength and Mass Adaptations Between High-Load Resistance Training Versus Low-Load Resistance Training Associated with Blood-Flow Restriction: A Systematic Review and Meta-Analysis",
+        "authors": "Lixandrao ME, Ugrinowitsch C, Berton R, Vechin FC, Conceicao MS, Damas F, Libardi CA, Roschel H",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-017-0795-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Blood flow restriction safety",
+      "claim": "Blood flow restriction has an agreed position stand on safe pressure and cuff use, and works at very low loads, which suits home training with no heavy weights.",
+      "evidence": "Position stand from an international consensus group sets out methodology, pressure prescription, cuff width guidance and safety considerations for blood flow restriction training, and states it is effective with low loads.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Blood Flow Restriction Exercise: Considerations of Methodology, Application, and Safety",
+        "authors": "Patterson SD, Hughes L, Warmington S, Burr J, Scott BR, Owens J, et al.",
+        "year": 2019,
+        "venue": "Frontiers in Physiology",
+        "type": "position-stand",
+        "doi_or_url": "10.3389/fphys.2019.00533",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Suspension straps",
+      "claim": "Suspension training such as TRX improves strength and performance and raises core and stabiliser demand because the support is unstable.",
+      "evidence": "Systematic review of muscle activation found suspension training increased activity in core and stabiliser muscles. A study of TRX suspension training found greater gains in strength and specific fitness than comparison training over five weeks and beyond.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Study on the influence of TRX suspension training on physical fitness and performance",
+        "authors": "Wang Z, et al.",
+        "year": 2025,
+        "venue": "Frontiers in Physiology",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12535740/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Load with a weighted vest",
+      "claim": "A weighted vest is a usable way to add load at home and has improved strength and physical performance in trials.",
+      "evidence": "Randomised trial of weighted vest use in ambulatory older adults assessed whether the vest improved strength and physical performance markers, and a body of follow-up work supports vest-loaded exercise for strength and bone preservation.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A randomized trial of weighted vest use in ambulatory older adults",
+        "authors": "Greendale GA, Hirsch SH, Hahn TJ",
+        "year": 2000,
+        "venue": "Journal of the American Geriatrics Society",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/10733058/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Weighted vest and running",
+      "claim": "A weighted-vest warm-up improved running performance, driven partly by greater leg stiffness.",
+      "evidence": "Study found a warm-up with a weighted vest produced a very large enhancement of peak running speed (about 2.9 percent) and a moderate increase in leg stiffness, which are running-relevant mechanisms.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Warm-up with a weighted vest improves running performance via leg stiffness and running economy",
+        "authors": "Barnes KR, Hopkins WG, McGuigan MR, Kilding AE",
+        "year": 2015,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "rct",
+        "doi_or_url": "https://www.sciencedirect.com/science/article/abs/pii/S1440244013005227",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Plyometrics for economy",
+      "claim": "Short-term plyometric training improved running economy in highly trained middle- and long-distance runners.",
+      "evidence": "Controlled study found nine weeks of plyometric training improved running economy in highly trained runners, alongside improvements in leg stiffness and 3 km time trial performance, without changing maximal oxygen uptake.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Short-term plyometric training improves running economy in highly trained middle and long distance runners",
+        "authors": "Saunders PU, Telford RD, Pyne DB, Peltola EM, Cunningham RB, Gore CJ, Hawley JA",
+        "year": 2006,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/R-18235.1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Loaded training versus unloaded",
+      "claim": "Training while wearing a weighted vest and a loaded backpack did not clearly beat unloaded training for general fitness in a military trial, so carrying added load is not a proven way to raise general strength.",
+      "evidence": "Randomised military study had one group train in a weighted vest and backpack and another train without load. Both groups improved peak oxygen uptake and fitness test scores by similar amounts, so the loaded condition gave no measurable advantage in this population. An earlier six-week weighted-vest study found the vest group improved some measures by roughly twice as much as controls, but the group differences did not reach significance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of training with and without a load on military fitness tests and marksmanship",
+        "authors": "Swain DP, Ringleb SI, Naik DN, Butowicz CM",
+        "year": 2011,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0b013e318220dbcf",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Load carriage training adaptation",
+      "claim": "Repeated training with a loaded pack lowers the energy cost of carrying that load over several weeks.",
+      "evidence": "Review of the physiological and biomechanical aspects of carrying loads in packs reports that training with loads can improve energy efficiency, since walking with backpack loads over several weeks decreases the energy cost of the task. It also notes the load sits best close to the body centre of gravity.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Load carriage using packs: a review of physiological, biomechanical and medical aspects",
+        "authors": "Knapik J, Harman E, Reynolds K",
+        "year": 1996,
+        "venue": "Applied Ergonomics",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/0003-6870(96)00013-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Minimal dose sessions",
+      "claim": "Short strength sessions work for runners: as little as about 30 minutes of strength training per week improved maximal running performance in female recreational runners.",
+      "evidence": "Randomised trial assigned 41 female recreational runners to strength training of about 30 minutes or 1 hour per week, or to running only. The findings suggest 30 minutes or 1 hour of strength work per week was enough to increase maximal running performance. Time to exhaustion improved more with twice-weekly circuit training (about 23 percent) than once weekly (about 13 percent).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of minimal dose of strength training on running performance in female recreational runners",
+        "authors": "Stohanzl M, Balas J, Draper N",
+        "year": 2018,
+        "venue": "Journal of Sports Medicine and Physical Fitness",
+        "type": "rct",
+        "doi_or_url": "10.23736/S0022-4707.17.07124-9",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Short sessions and running economy",
+      "claim": "A short resistance session of roughly 20 to 24 minutes, done twice a week for 10 weeks, improved running economy by about 2 percent in middle-aged recreational runners, though 5 km time did not change.",
+      "evidence": "Randomised trial had 20 middle-aged recreational runners do plyometric or resistance training twice a week for 10 weeks, with sessions of about 20 minutes and 24 minutes. Both groups improved running economy by about 2 percent across running speeds with no change in 5 km time, and the change in calf raise strength related to the running economy change.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effects of plyometric versus resistance training on running economy and 5-km running time in middle-aged recreational runners",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Kanehisa H, Isaka T",
+        "year": 2024,
+        "venue": "European Journal of Sport Science",
+        "type": "rct",
+        "doi_or_url": "10.1002/ejsc.12197",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Band load is not fixed",
+      "claim": "Band load is not a fixed number: tension rises as the band stretches and depends on band stiffness and length, colour codes are not a consistent load scale, and manufacturer charts can overestimate tension.",
+      "evidence": "Measurements of eight Thera-Band colours at elongations from 25 to 250 percent found tension rose with stretch for every colour, differed between colours, and was lower than the manufacturer chart for nearly all bands, by 13 to 44 percent on average. The authors conclude the manufacturer tension values are overestimates and recommend caution in using them to set load.",
+      "confidence": "high",
+      "citation": {
+        "title": "Thera-band elastic band tension: reference values for physical activity",
+        "authors": "Uchida MC, Nishida MM, Sampaio RAC, Moritani T, Arai H",
+        "year": 2016,
+        "venue": "Journal of Physical Therapy Science",
+        "type": "biomechanical-study",
+        "doi_or_url": "10.1589/jpts.28.1266",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Estimating band load",
+      "claim": "Documented equations can estimate the load of a specific band from how far it is stretched, but the equations are band-specific rather than a universal band-to-dumbbell conversion.",
+      "evidence": "Bands were profiled with a force sensor at a standard 200 cm length and stretched to 11 distances. The authors derived equations predicting load in kilograms from the percentage of elongation for each Theraband intensity, with a coefficient of determination of 0.977 to 0.995, and present them as a way to estimate external load for a given band.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Examining Elastic Band Properties for Exercise Prescription: AGUEDA Equations",
+        "authors": "Fernandez-Gamez B, Pulido-Munoz A, Olvera-Rojas M, Solis-Urra P, Corral-Perez J, Morales JS, Jimenez-Pavon D, Mora-Gonzalez J, Esteban-Cornejo I",
+        "year": 2025,
+        "venue": "Physiotherapy Research International",
+        "type": "biomechanical-study",
+        "doi_or_url": "10.1002/pri.70010",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Band versus dumbbell equivalence",
+      "claim": "Equivalence between elastic tubes and dumbbells is not established, so the two are not interchangeable as equal loads.",
+      "evidence": "Cross-sectional study compared upper-limb muscle activation across exercises using dumbbells and elastic tubes. The authors state that evidence of elastic tubing equivalence to other equipment, including dumbbells, remains insufficient, and tested the hypothesis that the two do not produce the same response.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison of Upper-Limb Muscle Activation Levels in Different Physical Fitness Exercises Using Dumbbells and Elastic Tubes",
+        "authors": "Martin-Ruiz J, Ruiz-Sanchis L, Tamarit Grancha I, Gallego Cervero C, Vicente-Mampel J, Baraja-Vegas L",
+        "year": 2025,
+        "venue": "Sports Health",
+        "type": "cross-sectional",
+        "doi_or_url": "10.1177/19417381251353769",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Mini-band lateral walk",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["gluteus medius", "gluteus minimus", "hip abductors"],
+      "pattern": "posterior-chain",
+      "why": "Builds the hip abductors that keep the pelvis level and the knee tracking straight through each stance.",
+      "feel": "Burning on the outside of the hips as you fight the band trying to pull the knees together.",
+      "form": [
+        "Loop a mini-band just above the knees or around the ankles.",
+        "Sit into a quarter squat with the feet pointing forward.",
+        "Step sideways, leading with the heel, and keep constant tension without letting the trailing foot snap in."
+      ],
+      "mistakes": [
+        "Letting the knees cave inward between steps.",
+        "Standing tall so the feet drag, which removes the load.",
+        "Taking rushed tiny steps instead of controlled ones."
+      ]
+    },
+    {
+      "name": "Banded clamshell",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["gluteus medius", "gluteus maximus", "hip external rotators"],
+      "pattern": "posterior-chain",
+      "why": "Targets the hip rotators that control the knee and pelvis, a common weak link in runners with knee pain.",
+      "feel": "A focused squeeze high on the side of the hip, with no lower back or hip flexor takeover.",
+      "form": [
+        "Lie on your side with a mini-band above the knees and the knees bent to about 90 degrees.",
+        "Keep the feet together and the pelvis stacked, then open the top knee without rolling the hips back.",
+        "Pause briefly at the top and lower with control."
+      ],
+      "mistakes": [
+        "Rolling the top hip backward to fake more range.",
+        "Letting the feet drift apart so the knee does the work instead of the glute.",
+        "Rushing reps without a pause at the top."
+      ]
+    },
+    {
+      "name": "Banded glute bridge",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["gluteus maximus", "hamstrings", "deep hip rotators"],
+      "pattern": "hinge",
+      "why": "Loads the hip extensors that drive the push-off in every stride, with a band adding resistance at the top.",
+      "feel": "Glutes doing the lifting, with the lower back staying quiet.",
+      "form": [
+        "Lie on your back with a long band looped over the hips and held down at the sides, or a mini-band above the knees.",
+        "Tuck the ribs down and press through the heels to lift the hips.",
+        "Finish with the hips level and the glutes tight, then lower slowly."
+      ],
+      "mistakes": [
+        "Arching the lower back to gain height instead of squeezing the glutes.",
+        "Pushing through the toes so the hamstrings cramp.",
+        "Letting the knees splay out or fall in."
+      ]
+    },
+    {
+      "name": "Band Romanian deadlift",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["hamstrings", "gluteus maximus", "spinal erectors"],
+      "pattern": "hinge",
+      "why": "Turns a hip hinge into a hamstring exercise that matches the lengthened position the hamstrings reach in running.",
+      "feel": "A stretch down the back of the thighs as you hinge, then the glutes pulling you upright.",
+      "form": [
+        "Stand on the middle of a long band with both feet and hold the ends at the hips.",
+        "Soft knees, hinge at the hips and send the hips back while the chest lowers.",
+        "Stand tall by driving the hips forward and tightening the glutes."
+      ],
+      "mistakes": [
+        "Round the lower back instead of hinging at the hips.",
+        "Bending the knees so much it becomes a squat.",
+        "Letting the band pull your shoulders forward."
+      ]
+    },
+    {
+      "name": "Band pull-apart",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["upper back", "rear deltoids", "rotator cuff"],
+      "pattern": "pull",
+      "why": "Balances the pushing and rounded-shoulder posture that long hours of running and desk work encourage.",
+      "feel": "A squeeze between the shoulder blades.",
+      "form": [
+        "Hold a long band at chest height with the arms straight.",
+        "Pull the hands apart until the arms form a T and the shoulder blades pinch together.",
+        "Return slowly without letting the band snap back."
+      ],
+      "mistakes": [
+        "Shrugging the shoulders up toward the ears.",
+        "Arching the lower back to move more band.",
+        "Using a band so heavy the elbows bend."
+      ]
+    },
+    {
+      "name": "Banded squat",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["quadriceps", "gluteus maximus", "adductors", "trunk"],
+      "pattern": "squat",
+      "why": "Builds the leg and trunk strength that underpins running economy when a barbell is not available.",
+      "feel": "Pressure around the hips with a strong push up out of the bottom.",
+      "form": [
+        "Stand on a long band with the feet shoulder width and loop the top over the shoulders or hold the ends at the shoulders.",
+        "Sit down and back to a comfortable depth with the chest tall.",
+        "Drive the floor away and keep the knees tracking over the toes."
+      ],
+      "mistakes": [
+        "Letting the knees cave inward under the band.",
+        "Hips rising first so the chest folds.",
+        "Cutting depth short as the band gets heavy."
+      ]
+    },
+    {
+      "name": "Dumbbell goblet squat",
+      "modality": "strength",
+      "equipment": "dumbbells",
+      "muscles": ["quadriceps", "gluteus maximus", "adductors", "trunk"],
+      "pattern": "squat",
+      "why": "A single dumbbell adds real load to the squat and teaches a tall trunk that carries over to running posture.",
+      "feel": "Front-loaded and braced, with the elbows tucked and the torso upright.",
+      "form": [
+        "Hold one dumbbell or a loaded backpack vertically against the chest.",
+        "Squat down between the feet with the chest tall and the knees tracking out.",
+        "Stand by driving through the whole foot and squeezing the glutes."
+      ],
+      "mistakes": [
+        "Letting the weight pull the chest forward.",
+        "Heels lifting off the floor.",
+        "Knees caving inward as you stand."
+      ]
+    },
+    {
+      "name": "Bulgarian split squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "gluteus maximus", "hip abductors", "trunk"],
+      "pattern": "squat",
+      "why": "A single-leg push that mimics running's one-leg-at-a-time load and exposes side-to-side strength gaps.",
+      "feel": "Deep burn in the front leg with the hip and glute doing much of the work.",
+      "form": [
+        "Place the back foot on a chair or step with the front foot a stride ahead.",
+        "Lower straight down until the front thigh is about parallel, front shin fairly upright.",
+        "Push through the front foot to stand, keeping the torso tall."
+      ],
+      "mistakes": [
+        "Standing too close to the chair so the front knee shoots far past the toes.",
+        "Pushing off the back foot instead of loading the front leg.",
+        "Letting the front knee cave inward."
+      ]
+    },
+    {
+      "name": "Single-leg Romanian deadlift",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["hamstrings", "gluteus maximus", "deep hip rotators", "foot stabilisers"],
+      "pattern": "hinge",
+      "why": "Trains balance, hamstring length and single-leg hip control, all of which a runner needs on each stance.",
+      "feel": "A hamstring stretch on the standing leg while the raised leg reaches back and the hips stay level.",
+      "form": [
+        "Stand on one leg with a slight knee bend, holding a dumbbell or no load.",
+        "Hinge at the hip and reach the free leg straight back until the torso nears parallel.",
+        "Return to standing by driving the hips forward, keeping the pelvis square."
+      ],
+      "mistakes": [
+        "Letting the raised-leg hip pop open and rotate toward the ceiling.",
+        "Rounding the lower back to reach lower.",
+        "Bending the standing knee so it becomes a one-leg squat."
+      ]
+    },
+    {
+      "name": "Step-up onto a chair",
+      "modality": "strength",
+      "equipment": "home",
+      "muscles": ["quadriceps", "gluteus maximus", "hamstrings", "hip abductors"],
+      "pattern": "squat",
+      "why": "A single-leg push in a tall, run-like position that mirrors the drive phase of a stride.",
+      "feel": "The whole standing leg working as you press up, with the glute finishing the rep.",
+      "form": [
+        "Face a sturdy chair or step that puts the thigh around parallel.",
+        "Plant the whole foot on the box and press up, driving the opposite knee forward.",
+        "Lower under control and tap the floor lightly rather than bouncing."
+      ],
+      "mistakes": [
+        "Pushing hard off the trailing foot on the ground.",
+        "Choosing a box so high the hip hikes up.",
+        "Dropping down fast instead of lowering with control."
+      ]
+    },
+    {
+      "name": "Nordic hamstring curl",
+      "modality": "strength",
+      "equipment": "home",
+      "muscles": ["hamstrings", "gluteus maximus", "calf"],
+      "pattern": "hinge",
+      "why": "The best-evidenced way to cut hamstring injury risk, and it needs only a partner or an anchor.",
+      "feel": "Deep eccentric load through the back of the thighs as you resist falling forward.",
+      "form": [
+        "Kneel with the ankles anchored under a couch leg or held by a partner.",
+        "Keep the hips straight and lower the torso forward as slowly as you can.",
+        "Catch with the hands and push back up, or use hands to assist on the way down if needed."
+      ],
+      "mistakes": [
+        "Bending at the hips so the hamstrings unload.",
+        "Dropping quickly instead of resisting the fall.",
+        "Adding reps before you can control the descent."
+      ]
+    },
+    {
+      "name": "Backpack loaded push-up",
+      "modality": "strength",
+      "equipment": "home",
+      "muscles": ["chest", "triceps", "front shoulders", "trunk"],
+      "pattern": "push",
+      "why": "A backpack of books lets the humble push-up be progressed for a long time without a bench or barbell.",
+      "feel": "Chest and arms working against the extra load across the back, with the body held in one line.",
+      "form": [
+        "Wear a loaded backpack snugly so it does not slide toward the head.",
+        "Set the hands slightly wider than the shoulders and hold a plank line from head to heel.",
+        "Lower the chest to just above the floor and press back up."
+      ],
+      "mistakes": [
+        "Letting the hips sag so the lower back arches.",
+        "Flaring the elbows out to 90 degrees.",
+        "Loading the pack so heavy that the body line breaks."
+      ]
+    },
+    {
+      "name": "Backpack inverted row",
+      "modality": "strength",
+      "equipment": "home",
+      "muscles": ["upper back", "lats", "rear deltoids", "biceps"],
+      "pattern": "pull",
+      "why": "Trains the pulling pattern runners rarely load, which supports posture and a stable trunk.",
+      "feel": "A strong pull between the shoulder blades with the body staying rigid.",
+      "form": [
+        "Lie under a sturdy table or low bar and grip the edge with both hands.",
+        "Hold a straight body line with the heels on the floor.",
+        "Pull the chest up to the edge, then lower slowly."
+      ],
+      "mistakes": [
+        "Piking the hips to make it easier.",
+        "Shrugging toward the ears instead of pulling with the back.",
+        "Using a table that is not stable or rated for the load."
+      ]
+    },
+    {
+      "name": "Suspension strap row",
+      "modality": "strength",
+      "equipment": "bands",
+      "muscles": ["upper back", "lats", "rear deltoids", "trunk"],
+      "pattern": "pull",
+      "why": "Suspension straps let you scale a row from nearly upright to near-horizontal with one tool.",
+      "feel": "Back working hard while the core fights to keep the body stiff.",
+      "form": [
+        "Hold the handles with the arms straight and walk the feet forward to set the difficulty.",
+        "Keep the body rigid and pull the chest up to the hands.",
+        "Lower with control and keep constant tension."
+      ],
+      "mistakes": [
+        "Letting the hips sag so it becomes a lower-back arch.",
+        "Pulling with the arms only instead of driving the elbows back.",
+        "Walking the feet back too far before you are ready."
+      ]
+    },
+    {
+      "name": "Isometric split squat hold",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "gluteus maximus", "hip abductors", "trunk"],
+      "pattern": "core",
+      "why": "A low-fatigue way to add intense loading, which is useful in a race week or when you cannot recover from heavy reps.",
+      "feel": "A steady burn in the front leg and a braced trunk, with breathing the hardest part.",
+      "form": [
+        "Set up in a split stance or a lunge position.",
+        "Lower into the hold and press the front foot into the floor as hard as you can.",
+        "Hold for the set time while breathing steadily and keeping the pelvis level."
+      ],
+      "mistakes": [
+        "Holding the breath the entire time.",
+        "Letting the front knee drift inward.",
+        "Choosing a hold depth so low the position collapses."
+      ]
+    },
+    {
+      "name": "Single-leg calf raise off a step",
+      "modality": "strength",
+      "equipment": "home",
+      "muscles": ["gastrocnemius", "soleus", "foot stabilisers"],
+      "pattern": "posterior-chain",
+      "why": "Strong calves and Achilles tendons support the stiffness that relates to better running economy.",
+      "feel": "A deep stretch at the bottom of the calf and a strong lift through the ball of the foot.",
+      "form": [
+        "Stand with the ball of one foot on a step edge and hold a rail for balance.",
+        "Drop the heel below the step for a full stretch.",
+        "Rise up as high as you can onto the ball of the foot, then lower slowly."
+      ],
+      "mistakes": [
+        "Bouncing with tiny fast reps instead of full range.",
+        "Rolling onto the outside of the foot.",
+        "Leaning on the rail so the calf does less work."
+      ]
+    }
+  ],
+  "summary_tier_a": "Elastic bands, a single dumbbell, a chair and a backpack cover nearly all the strength work a runner needs, because band training builds strength about as well as weights when effort and volume are matched. The payoff is running economy and time trial performance, with rapid gains from near-maximal or isometric work and steady gains from longer programs of 10 weeks and up. Progress with little load by taking reps near failure, adding sets and reps, slowing the descent, pausing, holding isometrics and shifting to single-leg versions. Keep hamstrings and hips strong too: Nordic curls roughly halve hamstring injury rates and hip strengthening eases patellofemoral and iliotibial band pain.",
+  "unverified": [
+    "No study located trains runners with a load carried in a backpack as a strength or performance method. The closest evidence is load-carriage work in military populations, where training in a weighted vest and backpack did not clearly beat unloaded training (Swain 2011), and reviews showing repeated load-carriage practice lowers the energy cost of carrying a load (Knapik 1996). Weighted-vest work in runners exists (Barnes 2015), so the backpack-as-load idea for runners is still extrapolated from vest and general resistance-training evidence rather than measured directly.",
+    "No trial located directly compares a home strength session of under 20 minutes against a longer gym session for running economy, so a straight equivalence is untested. The closest evidence is minimal-dose work in runners: about 30 minutes of strength training per week improved maximal running performance in female recreational runners (Stohanzl 2018), and resistance sessions of roughly 20 to 24 minutes improved running economy in middle-aged recreational runners (Eihara 2024). Neither study is a head-to-head duration comparison."
+  ],
+  "notes": "Scope was minimal-kit and home strength for runners, covering bands and loops, one or no dumbbells, a chair or step, a backpack, suspension straps, and pull-up or door anchors. The strongest claims are band-versus-weights equivalence (Lopes 2019 random-trial meta-analysis), strength training improving running economy (Blagrove 2018, Eihara 2022, Denadai 2017), isometric training improving running performance with low fatigue (Lum 2023), Nordic hamstring injury prevention (van Dyk 2019), and low-load training to failure matching heavy loads for hypertrophy (Schoenfeld 2016). Several sources are from older or lower-load populations (bands in older adults) or non-runner athletes (blood flow restriction, suspension training), so those claims are marked moderate. Progressions for little or no load, namely tempo, paused reps, isometric holds, single-leg emphasis, added reps or sets and increased range, are supported by the tempo, low-load and unilateral literature rather than by one runner-specific trial. Catalog moves are chosen for running relevance and a small footprint. All citations were retrieved on 2026-11-23; DOIs and URLs were checked against PubMed or publisher pages where possible. Verification pass 2026-11-23: 1 substantiated and removed (band load and band-to-dumbbell equivalence, now backed by Uchida 2016, Fernandez-Gamez 2025 and Martin-Ruiz 2025), 2 remained unverified (backpack loading in runners, and the sub-20-minute versus longer session comparison). The short-session item is now partly substantiated by minimal-dose runner trials (Stohanzl 2018, Eihara 2024), with the direct duration comparison still untested. No claim carried low confidence; the new claims are moderate except band load measurement (high)."
+}

@@ -1,0 +1,845 @@
+{
+  "workstream": "running",
+  "subtopic": "Running technique, form drills and gait training",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "The running cycle",
+      "claim": "A running stride is one full cycle from one foot strike to the next strike of the same foot. It has a stance phase, a swing phase, and, unlike walking, a flight phase where neither foot is on the ground. The stance phase is commonly split into an absorption (braking) half and a propulsion (push-off) half.",
+      "evidence": "Novacheck's widely cited review describes running gait as a cycle of stance, swing and float phases, distinct from walking because both feet leave the ground. Later overviews give jogging stance at roughly 40% of the cycle with swing plus flight making up the rest, and describe the absorption then propulsion split within stance.",
+      "confidence": "high",
+      "citation": {
+        "title": "The biomechanics of running",
+        "authors": "Novacheck TF",
+        "year": 1998,
+        "venue": "Gait & Posture",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/S0966-6362(97)00038-6",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cadence and step rate",
+      "claim": "A small increase in step rate (about 5 to 10%) shifts load away from the knee and hip. In a controlled 3D study, raising preferred step rate by 10% reduced mechanical energy absorption at every joint, shortened step length, lowered centre of mass vertical travel, cut braking impulse, and reduced peak knee flexion and peak hip adduction.",
+      "evidence": "Heiderscheit and colleagues measured hip, knee and ankle mechanics across step rate conditions from minus 10% to plus 10% of preferred. All joints absorbed more energy when step rate fell; step length, vertical excursion, braking impulse and peak knee flexion fell as step rate rose, and hip adduction moments fell when step rate increased.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of step rate manipulation on joint mechanics during running",
+        "authors": "Heiderscheit BC, Chumanov ES, Michalski MP, Wille CM, Ryan MB",
+        "year": 2011,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0b013e3181ebedf4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cadence and injury or performance",
+      "claim": "Despite the clear biomechanical changes, there is not enough evidence to say that changing step rate reliably reduces injury or improves running performance. Reviewers rate the injury and performance evidence as very limited.",
+      "evidence": "A 2022 systematic review and meta-analysis of step rate change concluded that evidence for effects on injury and performance is insufficient to draw firm conclusions. It found very limited evidence that increasing step rate raised perceived exertion and awkwardness and slightly increased metabolic energy cost, while confirming biomechanical benefits.",
+      "confidence": "high",
+      "citation": {
+        "title": "What is the Effect of Changing Running Step Rate on Injury, Performance and Biomechanics? A Systematic Review and Meta-analysis",
+        "authors": "Anderson LM, Martin JF, Barton CJ, Bonanno DR",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s40798-022-00504-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cadence and patellofemoral pain",
+      "claim": "A 10% increase in step rate reduced pain and improved function in runners with patellofemoral pain, with gains held at 4 weeks and 3 months. This is the strongest clinical result for a single cadence change, but it comes from one trial in a specific injured group.",
+      "evidence": "A randomized study retrained runners with patellofemoral pain to run at a 10% higher step rate. It reported improved running kinematics and better clinical outcomes at 4 weeks and 3 months versus the comparison group.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A 10% Increase in Step Rate Improves Running Kinematics and Clinical Outcomes in Runners With Patellofemoral Pain at 4 Weeks and 3 Months",
+        "authors": "Bramah C, Preece SJ, Gill N, Herrington L",
+        "year": 2019,
+        "venue": "The American Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1177/0363546519879693",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cadence and running economy",
+      "claim": "Changing cadence is not a reliable way to save energy. In observational data, higher stride frequency is only weakly linked to better running economy, and forcing a higher preferred cadence tends to raise, not lower, oxygen and energy cost.",
+      "evidence": "A 2024 meta-analysis of observational studies found a weak association between higher stride frequency and better running economy. The step rate review found very limited evidence that raising preferred step rate increased metabolic energy consumption and perceived effort.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Relationship Between Running Biomechanics and Running Economy: A Systematic Review and Meta-Analysis of Observational Studies",
+        "authors": "Van Hooren B, Jukic I, Cox M, Frenken KG, Bautista I, Moore IS",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-024-01997-3",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cadence training and economy",
+      "claim": "Trained step frequency work may improve running economy in some runners, separate from simply running at a higher cadence. One small trial found economy improved in well-trained female runners after step frequency training, but the result has not been broadly replicated.",
+      "evidence": "Quinn and colleagues trained 11 well-trained female runners to run at 180 steps per minute for 15 minutes a day over 10 days and reported improved running economy (Journal of Strength and Conditioning Research 35(9):2511-2517, DOI 10.1519/JSC.0000000000003206). The sample is small and specific, no peer-reviewed replication was found, and the 2022 systematic review of step rate change found no reliable economy or performance benefit from raising cadence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Step Frequency Training Improves Running Economy in Well-Trained Female Runners",
+        "authors": "Quinn TJ, Dempsey SL, LaRoche DP, Mackenzie AM, Cook SB",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0000000000003206",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "The 180 steps per minute rule",
+      "claim": "180 steps per minute is not a universal target. It came from watching elite race cadence, and it ignores real differences between runners tied to speed, height, leg length, footwear and the task. Cadence should be treated as individual and speed dependent.",
+      "evidence": "A 2026 narrative review traces the 180 figure to observations of competitive distance runners and argues it fails to account for large inter-individual and contextual variability. The same review treats universal cadence targets as an unsupported belief.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Heel-Strike Fallacy and Cadence Beliefs in Distance Running: A Narrative Review",
+        "authors": "Patoz A, Gindre C, Lussiana T, Breine B",
+        "year": 2026,
+        "venue": "Sports Medicine - Open",
+        "type": "narrative-review",
+        "doi_or_url": "10.1186/s40798-026-01120-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foot strike prevalence",
+      "claim": "Most long-distance runners who race overground land on the rearfoot. A meta-analysis of prevalence data found about 79% of long-distance overground runners rearfoot strike, rising to about 86% in some subsets.",
+      "evidence": "Bovalino and Kingsley pooled prevalence studies of overground distance runners and found rearfoot striking dominant, at roughly 79% overall. Elite fields show the same rearfoot dominance.",
+      "confidence": "high",
+      "citation": {
+        "title": "Foot Strike Patterns During Overground Distance Running: A Systematic Review and Meta-Analysis",
+        "authors": "Bovalino SP, Kingsley MIC",
+        "year": 2021,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s40798-021-00369-9",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foot strike and performance",
+      "claim": "Switching to a forefoot strike is not automatically better and is not proven to improve running economy or performance. Any shift in landing pattern moves load around rather than removing it.",
+      "evidence": "A 2020 systematic review and meta-analysis compared non-rearfoot with rearfoot running for injury and running economy. It found no consistent economy or performance advantage for non-rearfoot striking and highlighted the risks of changing pattern.",
+      "confidence": "high",
+      "citation": {
+        "title": "What are the Benefits and Risks Associated with Changing Foot Strike Pattern During Running? A Systematic Review and Meta-analysis of Injury, Running Economy, and Biomechanics",
+        "authors": "Anderson LM, Bonanno DR, Hart HF, Barton CJ",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-019-01238-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Forefoot landing and calf load",
+      "claim": "Moving toward a forefoot strike shifts load to the ankle, calf and Achilles rather than removing it, and retraining trials report new calf and Achilles problems in runners who make the change. The review of the evidence warns of these risks, so switching pattern is not a default fix.",
+      "evidence": "A 2020 systematic review and meta-analysis of changing foot strike pattern set out to weigh the benefits and the risks of moving away from a rearfoot strike. It reported that the change alters load distribution and carries risk of new lower leg problems rather than a clear net benefit.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "What are the Benefits and Risks Associated with Changing Foot Strike Pattern During Running? A Systematic Review and Meta-analysis of Injury, Running Economy, and Biomechanics",
+        "authors": "Anderson LM, Bonanno DR, Hart HF, Barton CJ",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-019-01238-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foot strike and impact loading",
+      "claim": "Forefoot striking reduces vertical impact load rates more than increasing cadence does. In a randomized comparison, forefoot retraining cut the average vertical load rate by about 50% and the instantaneous load rate by about 42%, while cadence retraining produced only a small, later reduction.",
+      "evidence": "Thirty-nine rearfoot-striking recreational runners with cadence at or below 170 steps per minute were randomized to cadence or forefoot retraining. The forefoot group had large load rate reductions held to 6 months; the cadence group reduced only the average load rate by about 16% and only at 6 months.",
+      "confidence": "high",
+      "citation": {
+        "title": "Transition to forefoot strike reduces load rates more effectively than altered cadence",
+        "authors": "Futrell EE, Gross KD, Reisman D, Mullineaux DR, Davis IS",
+        "year": 2020,
+        "venue": "Journal of Sport and Health Science",
+        "type": "rct",
+        "doi_or_url": "10.1016/j.jshs.2019.07.006",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Barefoot running and foot strike",
+      "claim": "Habitually barefoot runners do not all forefoot strike. Landings vary with speed, surface and individual, so barefoot style is not one single pattern, and it is not a clean model to copy.",
+      "evidence": "Hatala and colleagues measured foot strike in habitually barefoot runners and found that many did not use a forefoot strike, concluding that speed and other factors shape landing pattern rather than barefoot running dictating one style.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Variation in foot strike patterns during running among habitually barefoot populations",
+        "authors": "Hatala KG, Dingwall HL, Wunderlich RE, Richmond BG",
+        "year": 2013,
+        "venue": "PLoS One",
+        "type": "observational",
+        "doi_or_url": "10.1371/journal.pone.0052548",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Gait retraining and injury",
+      "claim": "Gait retraining aimed at lowering impact loading reduced running injuries in novice runners. In a randomized trial with 1-year follow-up, the retrained group had about 62% fewer injuries than controls.",
+      "evidence": "Chan and colleagues randomized novice runners to a two-week gait retraining program or a control condition and followed them for a year. The retrained group showed lower impact loading and a large reduction in injury occurrence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Gait Retraining for the Reduction of Injury Occurrence in Novice Distance Runners: 1-Year Follow-up of a Randomized Controlled Trial",
+        "authors": "Chan ZYS, Zhang JH, Au IPH, An WW, Shum GLK, Ng GYF, Cheung RTH",
+        "year": 2018,
+        "venue": "The American Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1177/0363546517736277",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Gait retraining and performance",
+      "claim": "Gait retraining changes step rate and knee mechanics and lowers vertical loading rates, and it does not appear to harm running performance. Whether it improves performance is not established.",
+      "evidence": "A 2022 systematic review with meta-analysis of gait retraining in distance runners concluded that retraining altered step rate and knee kinematics, lowered vertical loading rates, and had no measured effect on running performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Effectiveness of Gait Retraining on Running Kinematics, Kinetics, Performance, Pain, and Injury in Distance Runners: A Systematic Review With Meta-analysis",
+        "authors": "Doyle E, Doyle TLA, Bonacci J, Fuller JT",
+        "year": 2022,
+        "venue": "Journal of Orthopaedic & Sports Physical Therapy",
+        "type": "meta-analysis",
+        "doi_or_url": "10.2519/jospt.2022.10585",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Metronome and feedback retraining",
+      "claim": "Auditory feedback such as a metronome can raise step rate in novice and recreational runners in a short program and can be used at home without equipment beyond a phone. The change is to cadence, not yet proven to change injury or performance by itself.",
+      "evidence": "Huber and Verhoff ran a pragmatic protocol with one instructional session and a handful of independent sessions over two weeks and reported increased cadence. Separate feedback studies show runners can shift mechanics with visual or auditory cueing.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A One Session Gait Retraining Protocol with Metronome Augmentation Increases Cadence in Novice and Recreational Runners",
+        "authors": "Huber A, Verhoff D",
+        "year": 2024,
+        "venue": "International Journal of Sports Physical Therapy",
+        "type": "observational",
+        "doi_or_url": "10.26603/001c.90909",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Vertical oscillation",
+      "claim": "Less vertical oscillation (less up and down bounce) is associated with better running economy. The link is real but small, so trimming bounce is a marginal gain, not a big one.",
+      "evidence": "A 2024 meta-analysis found smaller vertical oscillation and greater vertical and leg stiffness were moderately associated with better running economy, with the authors noting higher stride frequency may lower vertical oscillation.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Relationship Between Running Biomechanics and Running Economy: A Systematic Review and Meta-Analysis of Observational Studies",
+        "authors": "Van Hooren B, Jukic I, Cox M, Frenken KG, Bautista I, Moore IS",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-024-01997-3",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Ground contact time",
+      "claim": "Ground contact time has only a trivial overall relationship with running economy, so a shorter contact time is not automatically better. There appears to be a narrow optimal range, and most runners already sit near it.",
+      "evidence": "The 2024 meta-analysis reported a trivial, non-significant association between contact time and economy, and between duty factor and economy. Moore and colleagues showed runners naturally select contact times and leg stiffness close to the metabolic optimum.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Humans Optimize Ground Contact Time and Leg Stiffness to Minimize the Metabolic Cost of Running",
+        "authors": "Moore IS, Ashford KJ, Cross C, Hope J, Jones HSR, McCarthy-Ryan M",
+        "year": 2019,
+        "venue": "Frontiers in Sports and Active Living",
+        "type": "observational",
+        "doi_or_url": "10.3389/fspor.2019.00053",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Overstriding",
+      "claim": "Overstriding means landing with the foot well in front of the body, which raises braking forces and impact loading. Raising step rate shortens the step and moves the foot closer to under the body, which reduces braking impulse.",
+      "evidence": "Heiderscheit and colleagues showed braking impulse and step length fall as step rate rises. A wearable study found landing position relative to the body predicts braking, supporting the link between overstriding and braking forces.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Predicting overstriding with wearable IMUs during treadmill and overground running",
+        "authors": "Baker LM, Preece SJ, Breen DE, Jones RK, Bishwakarma R, Jones A",
+        "year": 2024,
+        "venue": "Scientific Reports",
+        "type": "observational",
+        "doi_or_url": "10.1038/s41598-024-56888-4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Arm swing",
+      "claim": "Arm swing is mostly about balance and managing rotation, not pushing you forward. It contributes only a small share of forward propulsion and lift, but removing it makes running cost more.",
+      "evidence": "Arellano and Kram showed that stopping the arms from swinging or crossing them raised metabolic cost by roughly 3% to 13% depending on position, showing the arms save energy when swung naturally. Later work reports arm swing contributes only about 5% to 10% of total lift and little to forward drive.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The metabolic cost of human running: is swinging the arms worth it?",
+        "authors": "Arellano CJ, Kram R",
+        "year": 2014,
+        "venue": "Journal of Experimental Biology",
+        "type": "observational",
+        "doi_or_url": "10.1242/jeb.100420",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Active arm swing",
+      "claim": "Whether arm swing is actively driven by muscle or is a passive mass damper is contested. A 2025 simulation argues it is actively controlled and saves energy, but direct human measurements found the shoulder muscles fire mainly to stabilize the shoulder and that restricting arm swing did not change running cost, which favours the passive view.",
+      "evidence": "Koo and colleagues simulated active, passive and fixed arm conditions in a running model and reported that active arm swing reduced torso angular motion and metabolic energy use. Pontzer and colleagues measured deltoid activity, kinematics and oxygen cost in 10 adults running and walking and found the anterior and posterior deltoid fired largely together to stabilize the shoulder rather than alternately to drive the arm, with restricting arm swing having no measurable effect on locomotor cost. The modelling result and the human result disagree.",
+      "confidence": "low",
+      "citation": {
+        "title": "Active Arm Swing During Running Improves Rotational Stability of the Upper Body and Metabolic Energy Efficiency",
+        "authors": "Koo YJ, Ogihara N, Koo S",
+        "year": 2025,
+        "venue": "Annals of Biomedical Engineering",
+        "type": "observational",
+        "doi_or_url": "10.1007/s10439-025-03688-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Arm swing control in people",
+      "claim": "In direct human experiments, arm swing behaves largely as a passive mass damper: the shoulder muscles fire mainly to stabilize the shoulder rather than to drive the arm, and stopping the arms from swinging did not change the metabolic cost of running.",
+      "evidence": "Pontzer and colleagues measured deltoid muscle activity, kinematics and oxygen consumption in 10 healthy adults during walking and running under control, no arms and arm weights conditions. Anterior and posterior deltoid activity was largely simultaneous, which fits stabilization rather than driving, and restricting arm swing had no effect on locomotor cost (walking P=0.10, running P=0.14). They concluded the arms act as passive mass dampers that reduce torso and head rotation, with upper body movement mainly powered by the legs.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Control and function of arm swing in human walking and running",
+        "authors": "Pontzer H, Holloway JH 4th, Raichlen DA, Lieberman DE",
+        "year": 2009,
+        "venue": "Journal of Experimental Biology",
+        "type": "observational",
+        "doi_or_url": "10.1242/jeb.024927",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Posture and forward lean",
+      "claim": "A large forward trunk lean hurts running economy and shifts work onto less efficient leg extensor muscles. A small, controlled lean may be fine, but a pronounced one is not a free performance gain.",
+      "evidence": "Carson and colleagues tested a range of forward lean angles and lean strategies. Large forward lean reduced running economy and increased reliance on less efficient extensor leg muscles, with ankle- and torso-based leans behaving differently.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effect of forward postural lean on running economy, kinematics, and muscle activation",
+        "authors": "Carson NM, Aslan DH, Ortega JD",
+        "year": 2024,
+        "venue": "PLoS One",
+        "type": "observational",
+        "doi_or_url": "10.1371/journal.pone.0302249",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Posture and economy",
+      "claim": "Trunk posture is only weakly related to running economy and performance. A larger swing of the trunk forward and back tracked with worse economy, but posture explained little of the differences between runners.",
+      "evidence": "Folland and colleagues measured a range of technique variables against economy and performance in trained runners. Trunk lean range related to higher energy cost, and mean forward lean was only weakly related to performance, explaining a small share of the variance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Running Technique is an Important Component of Running Economy and Performance",
+        "authors": "Folland JP, Allen SJ, Black MI, Handsaker JC, Forrester SE",
+        "year": 2017,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0000000000001245",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Trunk angle and joint load",
+      "claim": "Trunk flexion redistributes joint load rather than removing it. More trunk flexion reduces knee extensor work and patellofemoral stress but raises hip extensor demand, so there is a trade-off rather than a clear win.",
+      "evidence": "Teng and Powers found a high degree of trunk flexion increased positive hip work while reducing knee work and patellofemoral stress. Warrener and colleagues similarly found greater trunk flexion raised hip extensor moments and impact transient peaks while lowering knee extensor moments.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Influence of trunk posture on lower extremity energetics during running",
+        "authors": "Teng HL, Powers CM",
+        "year": 2015,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0000000000000436",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Technique and running economy",
+      "claim": "Technique explains a meaningful part of running economy and performance in trained runners, but no single cue dominates. Several small variables add up rather than one magic fix.",
+      "evidence": "Folland and colleagues found that a combination of technique variables, including pelvis vertical oscillation during ground contact and knee angles, contributed to running economy and performance in trained runners.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Running Technique is an Important Component of Running Economy and Performance",
+        "authors": "Folland JP, Allen SJ, Black MI, Handsaker JC, Forrester SE",
+        "year": 2017,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "observational",
+        "doi_or_url": "10.1249/MSS.0000000000001245",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Drills and plyometrics",
+      "claim": "Jump and plyometric training is the part of form and drills work with the best performance evidence: it improves running economy and can improve distance performance, likely through stiffer, better-using tendons. Classic drills themselves are not proven to improve running performance.",
+      "evidence": "Meta-analyses of jump and plyometric training in endurance runners report improvements in running economy and physical performance. A systematic review of running drills compared drill mechanics with running but did not show drills improve running performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of jump training on physical fitness and athletic performance in endurance runners: A meta-analysis",
+        "authors": "Ramirez-Campillo R, Andrade DC, García-Pinillos F, Negra Y, Boullosa D, Moran J",
+        "year": 2021,
+        "venue": "Journal of Sports Sciences",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1080/02640414.2021.1916261",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Drill mechanics vs running",
+      "claim": "Classic drills do not simply copy running mechanics. Measured at the foot and ankle, A-skip, B-skip and heel flicks produced smaller dorsiflexion than running, and A-skip and B-skip produced less midtarsal power, so a drill is a targeted movement, not a stand-in for running.",
+      "evidence": "Abran and colleagues compared five common drills (A-skip, B-skip, bounding, heel flicks, straight leg running) with distance running at 3.88 m/s using kinematics, kinetics, power and EMG. Drills differed notably from running at the ankle, midtarsal and metatarsophalangeal joints.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A comparison of foot and ankle biomechanics during running drills and distance running",
+        "authors": "Abran G, Berraz A, Dardenne N, Gramage K, Bornheim S, Delvaux F, Croisier JL, Schwartz C",
+        "year": 2025,
+        "venue": "Sports Biomechanics",
+        "type": "observational",
+        "doi_or_url": "10.1080/14763141.2024.2382804",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Feedback and cueing",
+      "claim": "Real-time visual and auditory feedback can change running mechanics quickly in well-trained runners, which is why metronome and mirror-style cueing is useful for teaching a new pattern. The change shows the cue works, not that the new pattern is better.",
+      "evidence": "Eriksson and colleagues gave well-trained runners visual and auditory feedback on mechanics and measured immediate changes, showing that cueing alters running technique in trained athletes.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Immediate effect of visual and auditory feedback to control the running mechanics of well-trained athletes",
+        "authors": "Eriksson M, Halvorsen KA, Gullstrand L",
+        "year": 2011,
+        "venue": "Journal of Sports Sciences",
+        "type": "observational",
+        "doi_or_url": "10.1080/02640414.2010.523088",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength work and economy",
+      "claim": "Heavy strength and plyometric training are better supported for improving running economy than form drills are. Strength work, especially with heavier loads, has the strongest evidence for economy and performance in middle and long-distance runners.",
+      "evidence": "A 2024 systematic review and meta-analysis of strength training methods in middle and long-distance runners reported improvements in running economy and performance, with heavy resistance training showing particular benefit.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effect of Strength Training Methods on Middle-Distance and Long-Distance Runners' Athletic Performance: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos C, Ramirez-Campillo R, Moran J, Sáez de Villarreal E",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-024-02018-z",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "What is unproven",
+      "claim": "Claims that a specific form style prevents injury or improves performance are mostly unproven. The evidence supports targeted changes for specific problems (such as raising cadence for knee pain or lowering load in novices), not a single correct way to run.",
+      "evidence": "Across the step rate, foot strike and gait retraining reviews, biomechanical changes are consistent while injury and performance benefits are limited or absent, and reviewers repeatedly call for more and higher-quality trials.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "What is the Effect of Changing Running Step Rate on Injury, Performance and Biomechanics? A Systematic Review and Meta-analysis",
+        "authors": "Anderson LM, Martin JF, Barton CJ, Bonanno DR",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s40798-022-00504-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Classic drills and running performance",
+      "claim": "Classic running drills are not shown to improve distance running performance. A 15-week controlled trial in recreational runners found that adding running drills to an interval program did not improve the biomechanical parameters of running, and drills differ from running at the ankle and midtarsal joints.",
+      "evidence": "Azevedo and colleagues added running drills to a 15-week interval program in 30 recreational runners (control and experimental groups) and concluded that including the drills was not an efficient way to change the biomechanical parameters of running. Abran and colleagues compared five common drills with running at 3.88 m/s and found A-skip, B-skip and heel flicks produced less ankle and midtarsal motion than running, so a drill is not a stand-in for running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Usage of Running Drills in an Interval Training Program: Implications Related to Biomechanical Parameters of Running",
+        "authors": "Azevedo APS, Mezencio B, Valvassori R, Anjos FOM, Barbanti VJ, Amadio AC, Serrao JC",
+        "year": 2015,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/JSC.0000000000000831",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Foot strike and injury prevention",
+      "claim": "Foot strike pattern is not established to prevent injury in healthy runners. A systematic review found only low evidence linking foot strike technique to running related injury, and a 12 month prospective study found non-rearfoot strikers were if anything more likely to be injured, most often at the calf and Achilles.",
+      "evidence": "Burke and colleagues reviewed foot strike technique against running related injuries and found low evidence for a relationship. The 12 month prospective RISC study found non-rearfoot strike associated with prospective injury, with calf and Achilles the most common sites, and previous prospective cohort studies (for example Warr and colleagues) found no difference in injury rates, mileage or 2-mile time between foot strike groups.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Risk Factors for Injuries in Runners: A Systematic Review of Foot Strike Technique and Its Classification at Impact",
+        "authors": "Burke A, Dillon S, O'Connor S, Whyte EF, Gore S, Moran KA",
+        "year": 2021,
+        "venue": "Orthopaedic Journal of Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1177/23259671211020283",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Changing foot strike, long term benefit",
+      "claim": "Changing to a midfoot or forefoot strike is not shown to improve economy, reduce injury or improve performance in the long term, and the supporting case for switching is weak.",
+      "evidence": "Hamill and Gruber reviewed the evidence for changing footstrike and concluded that moving to a mid or forefoot strike does not improve running economy, does not remove the risk of injury, and lacks long term prospective support. Prospective studies of those who switched found no significant difference in injury rates between habitual rearfoot and mid or forefoot strikers.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Is changing footstrike pattern beneficial to runners?",
+        "authors": "Hamill J, Gruber AH",
+        "year": 2017,
+        "venue": "Journal of Sport and Health Science",
+        "type": "narrative-review",
+        "doi_or_url": "10.1016/j.jshs.2017.02.004",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Forward lean angle",
+      "claim": "No single optimal forward lean angle is established. The classic study that reported a best angle found the most economical runners leaned slightly more, about 5.9 degrees, but a 2024 controlled study found that increasing lean up to about 8 degrees worsened economy, and that how the lean is produced (from the ankle or the trunk) matters, so a target degree count is not supported.",
+      "evidence": "Williams and Cavanagh grouped distance runners by economy and found the most economical group had a slightly greater mean trunk lean (5.9 degrees) than the middle (3.3) and least (2.4) economical groups. Carson and colleagues tested a range of lean angles and lean strategies and found that increased forward lean worsened running economy regardless of strategy. The two studies conflict, so no single angle is established.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Relationship between distance running mechanics, running economy, and performance",
+        "authors": "Williams KR, Cavanagh PR",
+        "year": 1987,
+        "venue": "Journal of Applied Physiology",
+        "type": "observational",
+        "doi_or_url": "10.1152/jappl.1987.63.3.1236",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Cadence above 180 steps per minute",
+      "claim": "There is no evidence that cadence above roughly 180 steps per minute helps most runners. A 2025 systematic review of cadence modification and a study of elite marathoners both found wide individual variation rather than a single beneficial target, and cadence rises naturally with speed.",
+      "evidence": "Figueiredo and colleagues systematically reviewed 18 studies of cadence modification for biomechanics and injury prevention and reported typical recreational cadence of 150 to 170 steps per minute with elite runners often above 180, without a case for a universal target. A study of elite marathoners found a mean near 182 steps per minute but large individual variation by runner and a natural rise of about four to five steps per minute per mile as pace increased.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Influence of Running Cadence on Biomechanics and Injury Prevention: A Systematic Review",
+        "authors": "Figueiredo I, Reis E Silva M, Sousa JE",
+        "year": 2025,
+        "venue": "Cureus",
+        "type": "systematic-review",
+        "doi_or_url": "10.7759/cureus.90322",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "A-march",
+      "type": "drill",
+      "targets": ["hip flexors", "postural control", "foot strike position under the hips", "ankle stiffness"],
+      "durationSec": 30,
+      "why": "Teaches you to land under your hips instead of out in front, with a tall posture and no rush.",
+      "feel": "Tall and controlled, a light pop off the ground with each step, no lean back.",
+      "form": [
+        "Stand tall, then drive one knee up to about hip height",
+        "Let the lower leg swing down and snap the foot down under your hip",
+        "Stay tall, keep the ankle firm, and step in place as you travel slowly forward"
+      ],
+      "mistakes": [
+        "Kicking the foot out in front of the knee",
+        "Leaning back with the chest",
+        "Slamming the foot straight-legged"
+      ]
+    },
+    {
+      "name": "A-skip",
+      "type": "drill",
+      "targets": ["hip flexors", "step rate", "foot placement", "postural control"],
+      "durationSec": 30,
+      "why": "A springy version of the march that trains a quick, light foot strike near the hip and a bouncing rhythm.",
+      "feel": "Light and rhythmic, a small hop between steps, ground contact short and quiet.",
+      "form": [
+        "Drive one knee to hip height while you hop off the other foot",
+        "Land the raised leg under your hip, not in front",
+        "Keep a tall torso and let the arms drive with the legs"
+      ],
+      "mistakes": [
+        "Reaching the foot forward instead of down",
+        "Flat, heavy landings with no bounce",
+        "Over-striding so the drill turns into slow running"
+      ]
+    },
+    {
+      "name": "B-skip",
+      "type": "drill",
+      "targets": ["hamstrings", "front-side mechanics", "foot strike under the hips", "rhythm"],
+      "durationSec": 30,
+      "why": "Adds a reach-and-pull action so the leg learns to extend then sweep back down under the body.",
+      "feel": "Coordinated and springy, the leg reaches out then folds and pulls down and back.",
+      "form": [
+        "Start with an A-skip knee drive",
+        "Extend the lower leg briefly in front, then sweep it down and back under the hip",
+        "Keep the torso tall and the motion flowing, not held at the front"
+      ],
+      "mistakes": [
+        "Pausing with the leg extended out front",
+        "Bending at the waist as the leg reaches",
+        "Landing with a straight, braced leg"
+      ]
+    },
+    {
+      "name": "C-skip",
+      "type": "drill",
+      "targets": ["hip flexors", "hip range", "ground contact rhythm"],
+      "durationSec": 30,
+      "why": "A circle-style skip that opens the hip through a big range and keeps a bouncy, quick-contact feel.",
+      "feel": "Free through the hip, a circular swing, light and springy on each contact.",
+      "form": [
+        "Drive the knee up and out, then swing the lower leg through a circular path",
+        "Land under the hip and bounce straight into the next rep",
+        "Stay tall and relaxed through the shoulders"
+      ],
+      "mistakes": [
+        "Forcing range with a jerky kick",
+        "Rounding the back to create the circle",
+        "Letting it turn into a slow, laboured stride"
+      ]
+    },
+    {
+      "name": "High knees (running high knees)",
+      "type": "drill",
+      "targets": ["hip flexors", "step rate", "front-side lean", "postural control"],
+      "durationSec": 20,
+      "why": "Trains fast knee lift and quick ground contacts, which supports a higher natural step rate.",
+      "feel": "Quick and light, feet tapping down fast and under you.",
+      "form": [
+        "Stay tall with a small forward lean from the ankles",
+        "Drive each knee up to about hip height and put the foot down fast and light",
+        "Keep the arms moving in time with the legs"
+      ],
+      "mistakes": [
+        "Leaning back at the trunk",
+        "Bending at the waist so the knees never rise",
+        "Stomping instead of a quick, quiet contact"
+      ]
+    },
+    {
+      "name": "Butt kicks (heel flicks)",
+      "type": "drill",
+      "targets": ["hamstrings", "knee flexion speed", "recovery leg action"],
+      "durationSec": 20,
+      "why": "Works the folding action of the recovery leg so the heel comes up and through quickly.",
+      "feel": "Fast and snappy, heels tapping up toward the glutes, feet landing under you.",
+      "form": [
+        "Run forward slowly and flick each heel up toward the glute",
+        "Keep the thigh roughly vertical, let the lower leg fold",
+        "Stay tall and keep the contacts light and quick"
+      ],
+      "mistakes": [
+        "Kicking the heel up behind with a bent-over torso",
+        "Reaching the foot forward on landing",
+        "Rushing so far that posture collapses"
+      ]
+    },
+    {
+      "name": "Ankling",
+      "type": "drill",
+      "targets": ["ankle stiffness", "calf and foot spring", "foot landing quality"],
+      "durationSec": 20,
+      "why": "Trains a firm ankle and a quick, springy foot contact, which is what quiet landing depends on.",
+      "feel": "Springy and bouncy, like the feet are popping off the ground.",
+      "form": [
+        "Move forward with small steps using only the ankles, no knee lift",
+        "Keep the ankles stiff and push off through the ball of the foot",
+        "Keep the knees almost still and the torso tall"
+      ],
+      "mistakes": [
+        "Bending the knees to make the movement",
+        "Landing flat and heavy",
+        "Shuffling without any push-off"
+      ]
+    },
+    {
+      "name": "Straight-leg bounds",
+      "type": "drill",
+      "targets": ["elastic leg stiffness", "push-off power", "triple extension"],
+      "durationSec": 25,
+      "why": "Trains stiff, springy legs and a strong push-off, which supports efficient elastic running.",
+      "feel": "Powerful and bouncy, a long bound off each leg with a firm ankle.",
+      "form": [
+        "Bound forward from one leg to the other with the landing leg nearly straight",
+        "Push off hard through the hip, knee and ankle",
+        "Land under the body and use the arms to drive"
+      ],
+      "mistakes": [
+        "Landing with the foot far in front of the body",
+        "Bending the knee too much so it becomes a run",
+        "Slowing down and losing the bounce"
+      ]
+    },
+    {
+      "name": "Cadence ladder with a metronome",
+      "type": "drill",
+      "targets": ["step rate", "ground contact time", "rhythm", "central pattern learning"],
+      "durationSec": 60,
+      "why": "Uses a metronome to nudge your step rate up by about 5% at a time so a quicker rhythm feels normal.",
+      "feel": "Nervous and quick at first, then smoother as the faster rhythm settles in.",
+      "form": [
+        "Beat the metronome at your current step rate for one minute",
+        "Step up 5% at a time, spending a minute at each rate",
+        "Keep the steps short and light; do not reach further, just turn over faster"
+      ],
+      "mistakes": [
+        "Jumping straight to a much higher cadence",
+        "Lengthening the stride to hit the beat",
+        "Tensing the shoulders and arms"
+      ]
+    },
+    {
+      "name": "Quick feet / fast feet",
+      "type": "drill",
+      "targets": ["step rate", "ground contact time", "ankle stiffness"],
+      "durationSec": 15,
+      "why": "Short bursts of very fast, light steps teach the legs to turn over quickly without reaching.",
+      "feel": "Fast and light, feet buzzing under you with short contacts.",
+      "form": [
+        "Take short, fast steps in place or over a few metres",
+        "Keep the contacts quiet and under the hips",
+        "Stay tall and let the arms move fast with the legs"
+      ],
+      "mistakes": [
+        "Leaning forward and reaching for the ground",
+        "Big slow strides instead of quick feet",
+        "Holding the breath and tensing up"
+      ]
+    },
+    {
+      "name": "Wall drill (lean and posture)",
+      "type": "drill",
+      "targets": ["trunk posture", "lean from the ankles", "hip and torso alignment"],
+      "durationSec": 20,
+      "why": "Shows you what a small lean from the ankles feels like, so you do not fold at the waist.",
+      "feel": "A firm straight line from ankle to shoulder, gentle pressure in the hands on the wall.",
+      "form": [
+        "Stand facing a wall with hands on it, feet a step back",
+        "Lean from the ankles so the body forms a straight line",
+        "Drive one knee up while keeping the straight line, then switch"
+      ],
+      "mistakes": [
+        "Bending at the hips so the butt sticks out",
+        "Rounding the lower back",
+        "Pushing so hard you lose the straight line"
+      ]
+    },
+    {
+      "name": "Arm swing drill (set the tempo)",
+      "type": "drill",
+      "targets": ["arm swing", "torso rotation control", "cadence rhythm"],
+      "durationSec": 30,
+      "why": "Trains a relaxed arm swing that sets a quicker rhythm and keeps the torso from twisting.",
+      "feel": "Relaxed and rhythmic, arms moving front to back, shoulders quiet.",
+      "form": [
+        "Bend the elbows to about 90 degrees and swing front to back",
+        "Drive the hand back no further than the hip and forward to about chest height",
+        "Keep the shoulders relaxed and the torso facing forward"
+      ],
+      "mistakes": [
+        "Swinging the arms across the body",
+        "Shrugging the shoulders up toward the ears",
+        "Pumping the arms so hard the torso twists"
+      ]
+    },
+    {
+      "name": "Quiet landing cue drill",
+      "type": "technique",
+      "targets": ["impact loading", "foot placement", "ankle and calf control"],
+      "durationSec": 45,
+      "why": "Cueing a silent landing naturally shortens the step and lowers impact load without thinking about foot strike.",
+      "feel": "Soft and quiet, like running on thin ice, with short contacts under the body.",
+      "form": [
+        "Run a short stretch and try to make each footfall silent",
+        "Let the step shorten on its own; do not reach for the ground",
+        "Stay tall and keep the turnover quick"
+      ],
+      "mistakes": [
+        "Staring at the feet and slowing down",
+        "Landing flat and heavy",
+        "Forcing a forefoot strike instead of a light, near-flat landing"
+      ]
+    },
+    {
+      "name": "Stride rate check (count your steps)",
+      "type": "technique",
+      "targets": ["step rate awareness", "self-monitoring"],
+      "durationSec": 60,
+      "why": "Gives you your real step rate so any cadence work starts from a number, not a guess.",
+      "form": [
+        "Run at an easy, steady pace",
+        "Count the times your right foot hits the ground in 30 seconds and double it for one foot",
+        "Multiply by two again for total steps per minute, and repeat on another day"
+      ],
+      "feel": "Calm and even, an easy pace you could hold for a while.",
+      "mistakes": [
+        "Counting both feet and then doubling again",
+        "Changing pace mid-count",
+        "Treating one count as a fixed target instead of a starting point"
+      ]
+    },
+    {
+      "name": "Barefoot grass strides",
+      "type": "technique",
+      "targets": ["foot and ankle feedback", "landing quality", "calf and foot strength"],
+      "durationSec": 40,
+      "why": "Grass strides give honest feedback about landing softly and landing under the body, at low risk on soft ground.",
+      "feel": "Awake and sensitive in the feet, a soft, quick contact.",
+      "form": [
+        "On soft grass, run a few relaxed strides at a moderate pace",
+        "Let the feet land under you and stay light",
+        "Keep the effort easy and stop if the calves or feet tire"
+      ],
+      "mistakes": [
+        "Doing too much too soon and loading the calves and Achilles",
+        "Striking the ground hard to test it",
+        "Running barefoot on hard pavement"
+      ]
+    },
+    {
+      "name": "Pogo hops",
+      "type": "drill",
+      "targets": ["ankle and leg stiffness", "calves", "elastic rebound"],
+      "durationSec": 20,
+      "why": "Builds the stiff, springy ankle and leg that make quiet, quick landings possible.",
+      "feel": "Springy, a fast bounce with minimal ground time.",
+      "form": [
+        "Hop in place off both feet, keeping the knees nearly straight",
+        "Use the ankles to bounce, staying tall",
+        "Keep contacts short and springy, not deep and slow"
+      ],
+      "mistakes": [
+        "Bending the knees a lot and squatting into each hop",
+        "Landing flat-footed and heavy",
+        "Doing high volume before the calves are ready"
+      ]
+    },
+    {
+      "name": "Overstriding fix (step under the hip)",
+      "type": "technique",
+      "targets": ["foot placement", "braking forces", "step length"],
+      "durationSec": 45,
+      "why": "Targets the common habit of reaching the foot far in front, which raises braking and impact forces.",
+      "feel": "Short and light, the foot touching down almost under the hip.",
+      "form": [
+        "Run at an easy pace with a slightly quicker turnover",
+        "Aim to let the foot land close to under your hips",
+        "Keep the shin roughly vertical at contact and stay tall"
+      ],
+      "mistakes": [
+        "Over-correcting into a forced forefoot landing",
+        "Slowing down so much the stride becomes a jog in place",
+        "Bending at the waist to reach the hips forward"
+      ]
+    }
+  ],
+  "summary_tier_a": "Technique can shift loading and, in specific cases, pain, but it rarely improves performance on its own. Raising cadence by about 5 to 10% moves load off the knee and hip and helped runners with knee pain, and gait retraining lowered impact loading and injured novice runners less often, without showing a performance benefit. Foot strike is individual: most distance runners rearfoot strike, and switching to a forefoot landing moves load to the calf and Achilles rather than removing it. Less bounce and better technique are tied to slightly better economy, but no single form fix is proven, and the best-supported drills are jump and plyometric work plus targeted cues for a specific problem.",
+  "unverified": [
+    "Whether arm swing training improves distance running performance. Arm swing affects balance and energy cost, and restricting arm motion marginally slowed short sprints in one study (about 1.6% over 30 m, Brooks and colleagues 2022, Gait & Posture 94:114-118), but no trial shows that a distance-running arm swing technique change improves race performance."
+  ],
+  "notes": "Foot strike and cadence evidence is strongest for biomechanics and for specific clinical or novice groups, and weakest for performance. For a technique and drills section, frame drills as skill and elasticity work with modest, indirect support, not as proven performance fixes. For a future form-animation feature, the safest animation variables are step rate, step length and foot landing position relative to the hips (overstriding), plus vertical oscillation, since these have the clearest supporting data and are measurable from a phone or wearable. Avoid teaching a universal foot strike or a fixed 180 steps per minute. Cite the 2022 step rate review, the 2020 foot strike review, the 2022 gait retraining review, and the 2024 biomechanics and economy meta-analysis as the anchor sources. Verification pass 2026-11-23: 4 substantiated, 1 remained unverified."
+}

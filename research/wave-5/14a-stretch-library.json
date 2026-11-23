@@ -1,0 +1,804 @@
+{
+  "workstream": "mobility",
+  "subtopic": "Static and PNF stretch library for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Hold duration",
+      "claim": "Hold time matters less than total time under stretch. Holds around 30 seconds and holds of 60 seconds or more gain similar range of motion, so a runner gets most of the flexibility benefit from 30 to 45 second holds without the long-hold downside.",
+      "evidence": "Dose-response meta-analysis of static stretching found flexibility gains rise with volume up to about 4 minutes per muscle group per session and about 10 minutes per week, with no added benefit beyond that. The international Delphi consensus reports that range of motion improves with as little as 5 seconds of stretch but that 30 to 60 seconds per muscle is the usual recommendation.",
+      "confidence": "high",
+      "citation": {
+        "title": "Optimising the Dose of Static Stretching to Improve Flexibility: A Systematic Review, Meta-analysis and Multivariate Meta-regression",
+        "authors": "Ingram LA, et al.",
+        "year": 2025,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/39614059/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dose",
+      "claim": "For long-term flexibility, roughly 2 to 3 sets per muscle held about 30 seconds each, and at least 4 minutes per muscle, 5 days per week, is the dose the expert panel supports. More than that adds little.",
+      "evidence": "The Delphi consensus recommends 2 to 3 sets daily, each held for about 30 seconds, and a minimum of 4 minutes of static stretching per muscle group, 5 days per week, for chronic range of motion gains. The dose-response meta-analysis independently found no added flexibility benefit beyond about 4 minutes per session or 10 minutes per week.",
+      "confidence": "high",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hold duration and performance",
+      "claim": "Static holds under about 60 seconds per muscle cause little to no loss of strength or power. The clear performance decrements show up mainly with holds of 60 seconds and longer, and at high stretch intensity.",
+      "evidence": "Review of acute static and dynamic stretching concluded that short-duration static stretching (under about 90 seconds total) at an intensity below the point of discomfort produces no detrimental effect on performance, while sustained longer holds can. The same review notes dynamic stretching either has no effect or can augment performance.",
+      "confidence": "high",
+      "citation": {
+        "title": "A review of the acute effects of static and dynamic stretching on performance",
+        "authors": "Behm DG, Chaouachi A",
+        "year": 2011,
+        "venue": "European Journal of Applied Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s00421-011-1879-2",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Static stretching before hard running",
+      "claim": "Long static holds done right before hard running can reduce power and explosive performance, so they belong after a session, not immediately before a workout or race.",
+      "evidence": "Meta-analysis found pre-exercise static stretching has significant and practically relevant negative acute effects on maximal muscle strength and explosive muscular performance, with the detrimental effects mainly limited to longer durations of 60 seconds or more.",
+      "confidence": "high",
+      "citation": {
+        "title": "Does pre-exercise static stretching inhibit maximal muscular performance? A meta-analytical review",
+        "authors": "Simic L, Sarabon N, Markovic G",
+        "year": 2013,
+        "venue": "Scandinavian Journal of Medicine and Science in Sports",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1111/j.1600-0838.2012.01444.x",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Static stretching before hard running",
+      "claim": "The average performance cost of pre-exercise static stretching is small but real, on the order of 3 to 4 percent for strength and power tasks, and larger when the total stretch dose is long.",
+      "evidence": "Systematic review of acute effects of muscle stretching on physical performance reported a weighted mean performance decrement of about 3.4 percent, with effects growing with longer stretch durations and stretch intensity at or beyond the point of discomfort.",
+      "confidence": "high",
+      "citation": {
+        "title": "Acute effects of muscle stretching on physical performance, range of motion, and injury incidence in healthy active individuals: a systematic review",
+        "authors": "Behm DG, Blazevich AJ, Kay AD, McHugh M",
+        "year": 2016,
+        "venue": "Applied Physiology, Nutrition, and Metabolism",
+        "type": "systematic-review",
+        "doi_or_url": "10.1139/apnm-2015-0235",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "30 versus 60 second holds",
+      "claim": "A 30 second hold appears to sit below the threshold where power drops. In a controlled comparison, a single 30 second hold had negligible effect on jump power, while a 60 second hold lowered jump height and peak power.",
+      "evidence": "Crossover study comparing 30 second and 60 second continuous static stretching found muscular power output in a multi-joint task was impaired immediately after the 60 second condition but not after 30 seconds, suggesting a duration threshold.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Differential effects of 30- vs. 60-second static muscle stretching on vertical jump performance",
+        "authors": "Pinto MD, Wilhelm EN, et al.",
+        "year": 2014,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/24936897/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "PNF versus static",
+      "claim": "PNF and static stretching produce similar gains in range of motion. PNF is not clearly better, so a runner can pick whichever feels more controlled and comfortable.",
+      "evidence": "Meta-analysis of hip flexion range of motion found PNF stretching was not more effective than static stretching for increasing hamstring extensibility.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effectiveness of PNF versus static stretching on increasing hip-flexion range of motion",
+        "authors": "Lempke L, Wilkinson R, Murray C, Stanek J",
+        "year": 2018,
+        "venue": "Journal of Sport Rehabilitation",
+        "type": "systematic-review",
+        "doi_or_url": "10.1123/jsr.2016-0098",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "PNF versus static",
+      "claim": "For building range of motion over weeks, static and PNF stretching are both better than ballistic or dynamic bouncing, and there is no significant difference between static and PNF.",
+      "evidence": "Systematic review with meta-analysis of chronic stretching found significantly greater range of motion gains for static and PNF stretching compared with ballistic or dynamic stretching, and no significant difference between static and PNF techniques.",
+      "confidence": "high",
+      "citation": {
+        "title": "Chronic effects of stretching on range of motion with consideration of potential moderating variables: a systematic review with meta-analysis",
+        "authors": "Konrad A, Alizadeh S, Daneshjoo A, Anvar SH, Graham A, Zahiri A, et al.",
+        "year": 2024,
+        "venue": "Journal of Sport and Health Science",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/j.jshs.2023.06.002",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "PNF before hard running",
+      "claim": "PNF done right before power or speed work carries a similar small penalty to long static holds, about 3 to 4 percent, so it is also better placed after running.",
+      "evidence": "Systematic review of acute stretching effects reported PNF stretching before power and speed tasks was associated with a weighted reduction in performance of about 3.8 percent.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Acute effects of muscle stretching on physical performance, range of motion, and injury incidence in healthy active individuals: a systematic review",
+        "authors": "Behm DG, Blazevich AJ, Kay AD, McHugh M",
+        "year": 2016,
+        "venue": "Applied Physiology, Nutrition, and Metabolism",
+        "type": "systematic-review",
+        "doi_or_url": "10.1139/apnm-2015-0235",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic stretching warm-up",
+      "claim": "For a pre-run warm-up, dynamic stretching beats static. In runners, a moderate duration of dynamic stretching in the warm-up improved running economy and how long they could run, while 60 seconds of static stretching did not.",
+      "evidence": "Randomized crossover study in recreational distance runners compared warm-ups of running plus static stretching, running plus dynamic stretching, and running alone. Dynamic stretching improved running economy at submaximal pace and increased time to exhaustion and total running distance compared with both static stretching and no stretching. Static stretching produced no significant improvement.",
+      "confidence": "high",
+      "citation": {
+        "title": "Moderate-Duration Dynamic Stretching During Warm-up Improves Running Economy and Running Performance in Recreational Distance Runners",
+        "authors": "Panasci M, Ferrando V, et al.",
+        "year": 2024,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2023-0468",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dynamic stretching warm-up",
+      "claim": "Static and dynamic stretching do not affect running economy the same way. Dynamic stretching in the warm-up supported running economy better than static in recreational endurance runners.",
+      "evidence": "Study of static and dynamic stretching during warm-up in recreational endurance runners examined running economy and perception of effort, finding the dynamic condition favorable relative to static for economy and effort at submaximal running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effect of Static and Dynamic Stretching during Warm-Up on Running Economy and Perception of Effort in Recreational Endurance Runners",
+        "authors": "Faelli E, Panasci M, Ferrando V, et al.",
+        "year": 2021,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "rct",
+        "doi_or_url": "10.3390/ijerph18168386",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Less flexible runners",
+      "claim": "Less flexible runners benefit most. Adults with poor baseline flexibility gained more range of motion from static stretching than adults of average flexibility, so tight runners should expect the biggest return.",
+      "evidence": "Dose-response meta-analysis found significantly larger improvements in flexibility for adults with poor baseline flexibility compared with adults with average baseline flexibility (p = 0.01). Related acute work also noted that lower starting flexibility leaves more room for gain.",
+      "confidence": "high",
+      "citation": {
+        "title": "Optimising the Dose of Static Stretching to Improve Flexibility: A Systematic Review, Meta-analysis and Multivariate Meta-regression",
+        "authors": "Ingram LA, et al.",
+        "year": 2025,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/39614059/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Dose",
+      "claim": "Once a runner stretches at all consistently, the exact dose matters less than showing up. In pooled data, neither stretching volume, intensity, nor frequency changed the size of the long-term range of motion gain much.",
+      "evidence": "Chronic stretching meta-analysis found a significant overall moderate effect on range of motion and reported that neither volume, intensity, nor frequency of stretching played a significant moderating role, though females gained more than males.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Chronic effects of stretching on range of motion with consideration of potential moderating variables: a systematic review with meta-analysis",
+        "authors": "Konrad A, Alizadeh S, Daneshjoo A, Anvar SH, Graham A, Zahiri A, et al.",
+        "year": 2024,
+        "venue": "Journal of Sport and Health Science",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1016/j.jshs.2023.06.002",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Timing",
+      "claim": "If the goal is flexibility, keep hard static and PNF work in its own session or after the run. Separated from performance, static stretching still builds range of motion without the acute performance cost.",
+      "evidence": "Review of acute static and dynamic stretching concluded that static stretching used in a separate training session, rather than immediately before performance, provides health related range of motion benefits.",
+      "confidence": "high",
+      "citation": {
+        "title": "A review of the acute effects of static and dynamic stretching on performance",
+        "authors": "Behm DG, Chaouachi A",
+        "year": 2011,
+        "venue": "European Journal of Applied Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.1007/s00421-011-1879-2",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Injury prevention",
+      "claim": "Stretching is not injury prevention. Stretching before or after exercise does not usefully reduce injury risk and does not prevent muscle soreness, so it should not be sold to runners as a way to stay injury free.",
+      "evidence": "Systematic review of stretching before and after exercise found the pooled reduction in muscle soreness 24 hours after exercise was only about 0.9 mm on a 100 mm scale, and that stretching before exercising did not produce a practically useful reduction in injury risk (pooled hazard ratio 0.95, 95 percent CI 0.78 to 1.16).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of stretching before and after exercising on muscle soreness and risk of injury: systematic review",
+        "authors": "Herbert RD, Gabriel M",
+        "year": 2002,
+        "venue": "BMJ",
+        "type": "systematic-review",
+        "doi_or_url": "10.1136/bmj.325.7362.468",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring injury prevention",
+      "claim": "For hamstring injury in runners, eccentric strength work is the proven tool, not stretching. Eccentric hamstring training cut injury rates by roughly 57 to 70 percent.",
+      "evidence": "Systematic review and meta-analysis of hamstring injury prevention and risk factor management found eccentric training reduced the incidence of hamstring injury by 56.8 to 70.0 percent.",
+      "confidence": "high",
+      "citation": {
+        "title": "Evidence-Based Hamstring Injury Prevention and Risk Factor Management: A Systematic Review and Meta-analysis of Clinical Trials",
+        "authors": "Rudisill SS, et al.",
+        "year": 2023,
+        "venue": "American Journal of Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/35384731/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Ankle range and injury",
+      "claim": "Restricted ankle dorsiflexion is linked to lower limb tendon problems. Reduced dorsiflexion range has been associated with higher risk of patellar tendon injury and, in runners, is a plausible contributor to Achilles and calf overload.",
+      "evidence": "Prospective cohort study found reduced ankle dorsiflexion range was associated with higher risk of patellar tendon injury among volleyball players. Running specific Achilles links appear in review literature but are less consistently established.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Reduced ankle dorsiflexion range may increase the risk of patellar tendon injury among volleyball players",
+        "authors": "Malliaras P, Cook JL, Kent P",
+        "year": 2006,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "cohort",
+        "doi_or_url": "10.1016/j.jsams.2006.03.015",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Ankle range and Achilles tendinopathy",
+      "claim": "Limited ankle dorsiflexion is associated with a higher risk of mid-portion Achilles tendinopathy. In a prospective military cohort, recruits who developed Achilles tendinopathy had more limited non-weight-bearing ankle dorsiflexion with the knee bent at baseline than those who did not.",
+      "evidence": "Prospective cohort of 70 male military recruits followed through six months of army basic training. Five developed mid-portion Achilles tendinopathy, and their baseline non-weight-bearing ankle dorsiflexion with the knee bent was more limited (reported group means 27.40 and 21.10 degrees, p = 0.025). Lower extremity movement quality on a lateral step down test did not differ between groups. The cohort was young male recruits rather than civilian runners, so the running link rests on a training population, not a pure running cohort.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Limited ankle dorsiflexion increases the risk for mid-portion Achilles tendinopathy in infantry recruits: a prospective cohort study",
+        "authors": "Rabin A, Kozol Z, Finestone AS",
+        "year": 2014,
+        "venue": "Journal of Foot and Ankle Research",
+        "type": "cohort",
+        "doi_or_url": "10.1186/s13047-014-0048-3",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Calf stretching",
+      "claim": "Calf stretching works to improve ankle dorsiflexion. A gastrocnemius stretch increased ankle dorsiflexion range of motion, and the result did not depend on subtalar joint position.",
+      "evidence": "Randomized study of gastrocnemius stretching found gains in ankle dorsiflexion range of motion, with subtalar joint position during the stretch not influencing the gains.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Subtalar joint position during gastrocnemius stretching and ankle dorsiflexion range of motion",
+        "authors": "Johanson M, Baer J, Hovermale H, Phouthavong P",
+        "year": 2008,
+        "venue": "Journal of Athletic Training",
+        "type": "rct",
+        "doi_or_url": "10.4085/1062-6050-43.2.172",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hamstring stretching",
+      "claim": "A single hamstring stretch does not measurably change running mechanics. In a randomized trial, a short bout of straight-leg raise hamstring stretching raised flexibility but left pelvis, hip, and knee swing kinematics unchanged, so stretching right before a session does not alter stride mechanics.",
+      "evidence": "Randomized controlled trial in 34 recreational athletes. Three straight-leg raise hamstring stretches increased measured flexibility (p < .001) but produced no between-group change in anterior pelvic tilt, hip flexion, or knee extension at maximum hip flexion or maximum knee extension during treadmill running at 70 percent of age-predicted maximum heart rate. The authors concluded that a single session of stretch did not change pelvis, hip, or knee running kinematics.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Acute Lower Extremity Running Kinematics After a Hamstring Stretch",
+        "authors": "Hammonds ALD, Laudner KG, McCaw S, McLoda TA",
+        "year": 2012,
+        "venue": "Journal of Athletic Training",
+        "type": "rct",
+        "doi_or_url": "10.4085/1062-6050-47.1.5",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Warm-up dosing",
+      "claim": "For a warm-up, the expert panel supports only short static holds (about 30 seconds per muscle, under 60) or dynamic stretching before high-intensity running, and advises against longer static holds and intense stretching before maximal strength or power efforts.",
+      "evidence": "Delphi consensus reached agreement that static stretching longer than 60 seconds per muscle group should be avoided before maximal strength or power activities, and that short static holds combined with dynamic stretching are appropriate in movement preparation.",
+      "confidence": "high",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Recovery",
+      "claim": "Stretching after a run does not speed recovery. The consensus is that stretching does not meaningfully improve post-exercise recovery of strength or reduce soreness.",
+      "evidence": "Delphi consensus found agreement that stretch training does not acutely enhance post-exercise recovery, consistent with earlier systematic review evidence that stretching does not reduce delayed onset muscle soreness.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Alternative modalities",
+      "claim": "Foam rolling is a reasonable substitute for static stretching when a muscle is too tender to stretch. Over weeks the two build range of motion to a similar degree.",
+      "evidence": "Systematic review and meta-analysis comparing static stretch training with foam rolling training found no significant difference in the long-term increase in joint range of motion, though static stretching was favored when the intervention lasted 4 weeks or less.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Static Stretch Training versus Foam Rolling Training Effects on Range of Motion: A Systematic Review and Meta-Analysis",
+        "authors": "Konrad A, Alizadeh S, Anvar SH, et al.",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1007/s40279-024-02041-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Running economy",
+      "claim": "Stretching can support running economy in some settings, but it is modality and timing dependent. Static stretching before running does not clearly improve economy, while dynamic work does.",
+      "evidence": "Review of the acute and chronic effects of stretching on running economy found effects depend on stretching modality, intensity, and timing, with dynamic stretching more consistently favorable for running economy than static stretching before running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Acute and Chronic Effects of Stretching on Running Economy: A Systematic Review",
+        "authors": "Warneke K, et al.",
+        "year": 2025,
+        "venue": "Sports Medicine - Open",
+        "type": "systematic-review",
+        "doi_or_url": "10.1186/s40798-025-00859-0",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Flexibility extremes",
+      "claim": "More flexibility is not automatically safer. Military studies show a U shaped pattern, in which both the least and the most flexible people have higher injury rates than those in the middle, so pushing range of motion to an extreme is not a route to staying injury free.",
+      "evidence": "Review of physical fitness and injury prevention across military cohorts reports that either too much or too little flexibility increases injury risk, a U shaped relationship with the lowest risk toward the middle of the range. This sits alongside evidence that stretching itself does not prevent injury.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Importance of Physical Fitness for Injury Prevention: Part 2",
+        "authors": "Knapik JJ",
+        "year": 2015,
+        "venue": "Journal of Special Operations Medicine",
+        "type": "narrative-review",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/26125174/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Technique",
+      "claim": "Stretch intensity does not need to be painful. Moderate intensity at the point of mild discomfort increases range of motion about as well as pushing to the limit of tolerance, and it is safer and easier to repeat.",
+      "evidence": "Systematic review of static stretching intensity found that submaximal intensity produced similar range of motion gains to near maximal intensity in a number of acute studies, and a controlled trial found low intensity stretching produced a greater relative change in range of motion than high intensity.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effects of Static Stretching Intensity on Range of Motion and Strength: A Systematic Review",
+        "authors": "Bryant J, Cooper DJ, Peters DM, Cook MD",
+        "year": 2023,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10123604/",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Standing straight-knee calf stretch",
+      "type": "static",
+      "targets": ["gastrocnemius", "Achilles tendon", "ankle joint"],
+      "durationSec": 40,
+      "why": "Restores the ankle dorsiflexion you need to land and push off without overloading the Achilles.",
+      "feel": "A firm pull up the back of the lower leg, just above the heel.",
+      "form": [
+        "Stand facing a wall with both hands on it and step one foot back, heel down and toes pointing straight ahead.",
+        "Keep the back knee straight and press the back heel into the floor as you lean forward.",
+        "Hold for 40 seconds, then repeat on the other leg."
+      ],
+      "mistakes": [
+        "Letting the back heel lift off the floor.",
+        "Turning the back toes outward so the stretch moves to the side of the leg.",
+        "Bouncing instead of holding still."
+      ]
+    },
+    {
+      "name": "Bent-knee calf stretch (soleus)",
+      "type": "static",
+      "targets": ["soleus", "Achilles tendon", "ankle joint"],
+      "durationSec": 40,
+      "why": "Targets the deeper calf muscle that does most of the load bearing during distance running.",
+      "feel": "A pull low in the calf near the ankle, deeper than the straight-knee version.",
+      "form": [
+        "Set up the same back-foot stance as the standing calf stretch.",
+        "Bend the back knee and keep the heel flat, lowering your hips slightly.",
+        "Hold for 40 seconds, then switch legs."
+      ],
+      "mistakes": [
+        "Straightening the back knee, which turns it back into a gastrocnemius stretch.",
+        "Letting the heel come up as the knee bends.",
+        "Leaning too far forward and losing balance."
+      ]
+    },
+    {
+      "name": "Knee-to-wall ankle rock",
+      "type": "dynamic",
+      "targets": ["gastrocnemius", "soleus", "ankle joint capsule"],
+      "durationSec": 30,
+      "why": "Warms the ankle into dorsiflexion with movement, matching how the joint is used in gait.",
+      "feel": "A rhythmic stretch through the front and back of the ankle as the knee travels forward.",
+      "form": [
+        "Kneel with the front foot flat and the toes a few inches from a wall.",
+        "Drive the front knee forward toward the wall, keeping the heel down.",
+        "Rock in and out for 30 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Letting the heel lift to reach the wall.",
+        "Letting the knee collapse inward instead of tracking over the toes.",
+        "Rushing the movement so it becomes a bounce."
+      ]
+    },
+    {
+      "name": "Standing hamstring stretch",
+      "type": "static",
+      "targets": ["hamstrings"],
+      "durationSec": 40,
+      "why": "Addresses hamstring tightness that can pull on the pelvis and alter stride mechanics.",
+      "feel": "A pull along the back of the thigh, from just under the glute toward the knee.",
+      "form": [
+        "Place one heel on a low step with the leg straight and toes pointing up.",
+        "Keep the back straight and hinge forward from the hips until you feel a pull.",
+        "Hold for 40 seconds, then switch legs."
+      ],
+      "mistakes": [
+        "Rounding the lower back instead of hinging from the hips.",
+        "Locking the standing knee hard.",
+        "Pushing into sharp knee or back pain."
+      ]
+    },
+    {
+      "name": "Supine hamstring stretch with strap",
+      "type": "pNF",
+      "targets": ["hamstrings"],
+      "durationSec": 40,
+      "why": "Uses a gentle contraction to relax the hamstring, useful for runners who guard a tight or previously strained hamstring.",
+      "feel": "A pull behind the thigh that eases after you push against the strap.",
+      "form": [
+        "Lie on your back with a strap or towel looped around one foot.",
+        "Raise the leg until you feel a stretch, keep the knee nearly straight.",
+        "Gently push the leg against the strap for 6 seconds, relax, then ease the leg a little closer and hold for 30 seconds.",
+        "Switch legs."
+      ],
+      "mistakes": [
+        "Lifting the hips off the floor to gain range.",
+        "Pushing hard enough to cramp the hamstring.",
+        "Holding your breath during the contraction."
+      ]
+    },
+    {
+      "name": "Seated glute figure-4 stretch",
+      "type": "static",
+      "targets": ["gluteus maximus", "piriformis", "hip external rotators"],
+      "durationSec": 40,
+      "why": "Eases the deep hip rotators and glutes that tighten with hills and long sitting.",
+      "feel": "A pull deep in the buttock of the crossed leg.",
+      "form": [
+        "Sit tall on a chair and cross one ankle over the opposite knee.",
+        "Keep the back straight and lean forward from the hips until you feel a pull in the glute.",
+        "Hold for 40 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Rounding the back to lean further.",
+        "Pressing down hard on the crossed knee.",
+        "Letting the stretch move into the low back instead of the glute."
+      ]
+    },
+    {
+      "name": "Supine figure-4 piriformis stretch",
+      "type": "static",
+      "targets": ["piriformis", "gluteus maximus", "hip external rotators"],
+      "durationSec": 40,
+      "why": "Targets the piriformis, a common source of deep buttock and referred leg discomfort in runners.",
+      "feel": "A focused pull deep in the buttock, sometimes with a light stretch into the upper thigh.",
+      "form": [
+        "Lie on your back with both knees bent and feet flat.",
+        "Cross one ankle over the opposite thigh, then reach through and pull the supporting thigh toward your chest.",
+        "Hold for 40 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Yanking the thigh toward the chest too fast.",
+        "Lifting the head and shoulders off the floor.",
+        "Ignoring tingling or nerve like pain down the leg and pushing through it."
+      ]
+    },
+    {
+      "name": "Seated pigeon-style hip stretch",
+      "type": "pNF",
+      "targets": ["gluteus maximus", "piriformis", "hip external rotators"],
+      "durationSec": 40,
+      "why": "Reaches the outer hip and rotators that limit hip extension during push-off.",
+      "feel": "A broad pull across the outside of the hip and buttock.",
+      "form": [
+        "Sit with the front shin angled across in front and the back leg extended behind you.",
+        "Square the hips and stay tall, resting weight over the front hip.",
+        "Contract the glute gently for 6 seconds, relax, then hold for 30 seconds.",
+        "Switch sides."
+      ],
+      "mistakes": [
+        "Collapsing onto one hip and twisting the pelvis.",
+        "Letting the front knee lift off the floor under load.",
+        "Producing pinching in the front of the hip and ignoring it."
+      ]
+    },
+    {
+      "name": "Kneeling hip flexor stretch",
+      "type": "static",
+      "targets": ["iliopsoas", "rectus femoris", "hip flexors"],
+      "durationSec": 40,
+      "why": "Opens the front of the hip so you can reach full hip extension in your stride.",
+      "feel": "A pull in the front of the hip and upper thigh of the kneeling leg.",
+      "form": [
+        "Kneel on one knee with the other foot forward and flat.",
+        "Tuck the pelvis under and squeeze the glute of the kneeling leg.",
+        "Gently press the hips forward and hold for 40 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Arching the lower back instead of tucking the pelvis.",
+        "Letting the front knee drift ahead of the ankle.",
+        "Leaning the torso forward and losing the hip stretch."
+      ]
+    },
+    {
+      "name": "Standing quad stretch",
+      "type": "static",
+      "targets": ["quadriceps", "rectus femoris"],
+      "durationSec": 40,
+      "why": "Keeps the front of the thigh long so the knee can flex freely through the stride.",
+      "feel": "A pull down the front of the thigh of the bent leg.",
+      "form": [
+        "Stand tall, holding a wall for balance, and pull one heel toward the glute.",
+        "Keep the knees close together and the pelvis tucked.",
+        "Hold for 40 seconds, then switch legs."
+      ],
+      "mistakes": [
+        "Letting the knee flare out to the side.",
+        "Arching the back and flaring the ribs.",
+        "Pulling the heel so hard it jams the knee."
+      ]
+    },
+    {
+      "name": "Seated butterfly adductor stretch",
+      "type": "static",
+      "targets": ["adductors", "hip internal rotators"],
+      "durationSec": 40,
+      "why": "Loosens the inner thigh, which contributes to hip and groin stiffness on longer runs.",
+      "feel": "A pull along the inner thigh on both sides.",
+      "form": [
+        "Sit tall with the soles of the feet together and knees out to the sides.",
+        "Hold the feet and let the knees settle down, or lean forward slightly from the hips.",
+        "Hold for 40 seconds."
+      ],
+      "mistakes": [
+        "Pressing the knees down with the hands.",
+        "Rounding the back to force the lean.",
+        "Bouncing the knees."
+      ]
+    },
+    {
+      "name": "Side lunge adductor rock",
+      "type": "dynamic",
+      "targets": ["adductors", "hips", "ankles"],
+      "durationSec": 30,
+      "why": "Warms the inner thigh and hips through range before running or lateral work.",
+      "feel": "A pull through the inner thigh of the straight leg as you shift sideways.",
+      "form": [
+        "Stand with feet wide and shift your weight to one side, bending that knee.",
+        "Push the hips back while the other leg stays straight and the heel planted.",
+        "Rock side to side for 30 seconds."
+      ],
+      "mistakes": [
+        "Letting the bent knee travel past the toes.",
+        "Lifting the heel of the straight leg.",
+        "Going fast and losing control."
+      ]
+    },
+    {
+      "name": "Standing cross-over abductor stretch",
+      "type": "static",
+      "targets": ["abductors", "tensor fasciae latae", "iliotibial band"],
+      "durationSec": 40,
+      "why": "Eases the outer hip and TFL that can irritate the outside of the knee in runners.",
+      "feel": "A pull along the outside of the hip and thigh of the crossed leg.",
+      "form": [
+        "Stand tall holding a wall and cross one leg behind the other.",
+        "Push the hip of the back leg out to the side and lean the torso the other way.",
+        "Hold for 40 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Forcing the hip out hard and jamming the joint.",
+        "Twisting the torso and taking the stretch out of the hip.",
+        "Letting the feet drift close together and losing balance."
+      ]
+    },
+    {
+      "name": "Open book thoracic rotation",
+      "type": "dynamic",
+      "targets": ["thoracic spine", "obliques", "chest"],
+      "durationSec": 30,
+      "why": "Restores upper back rotation so arm swing and breathing are not tied to a stiff spine.",
+      "feel": "A gentle twist through the mid back and a stretch across the chest.",
+      "form": [
+        "Lie on your side with hips and knees bent to 90 degrees and arms together in front.",
+        "Keeping the knees still, sweep the top arm open across the body and follow it with your eyes.",
+        "Move in and out for 30 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Letting the knees roll open with the arm.",
+        "Jerking the arm down to force the twist.",
+        "Holding the breath."
+      ]
+    },
+    {
+      "name": "Cat-cow thoracic mobility",
+      "type": "dynamic",
+      "targets": ["thoracic spine", "erector spinae"],
+      "durationSec": 40,
+      "why": "Keeps the upper back and rib cage moving so posture stays tall late in a run.",
+      "feel": "A wave of extension and flexion through the spine.",
+      "form": [
+        "Start on hands and knees with a neutral spine.",
+        "Arch the back and lift the chest on an inhale, then round the back and tuck the chin on an exhale.",
+        "Continue slowly for 40 seconds."
+      ],
+      "mistakes": [
+        "Moving only from the lower back and neck.",
+        "Rushing the reps.",
+        "Letting the elbows lock and the shoulders shrug."
+      ]
+    },
+    {
+      "name": "Kneeling lat stretch",
+      "type": "static",
+      "targets": ["latissimus dorsi", "thoracic spine", "shoulders"],
+      "durationSec": 40,
+      "why": "Opens the lats so the shoulders can swing freely and you can breathe deeply while running.",
+      "feel": "A pull down the side of the torso from the armpit to the hip.",
+      "form": [
+        "Kneel and place both hands on a chair or bench in front of you.",
+        "Sink the hips back and drop the chest between the arms, reaching long.",
+        "Hold for 40 seconds."
+      ],
+      "mistakes": [
+        "Shrugging the shoulders toward the ears.",
+        "Rounding only the low back instead of lengthening the sides.",
+        "Bending the elbows to reduce the stretch."
+      ]
+    },
+    {
+      "name": "Doorway chest stretch",
+      "type": "static",
+      "targets": ["pectoralis major", "pectoralis minor", "anterior shoulder"],
+      "durationSec": 40,
+      "why": "Counters the rounded upper body that builds from long sitting and carries into running posture.",
+      "feel": "A pull across the front of the chest and shoulder.",
+      "form": [
+        "Stand in a doorway with one forearm on the frame, elbow at shoulder height.",
+        "Step gently forward with the same-side foot until you feel a stretch across the chest.",
+        "Hold for 40 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Letting the elbow drop below shoulder height.",
+        "Over-twisting the torso and pinching the shoulder.",
+        "Stepping too far and stressing the front of the shoulder joint."
+      ]
+    },
+    {
+      "name": "Cross-body shoulder stretch",
+      "type": "static",
+      "targets": ["posterior shoulder", "deltoid", "rotator cuff"],
+      "durationSec": 40,
+      "why": "Keeps the back of the shoulder loose so the arm swing stays relaxed over long distances.",
+      "feel": "A pull on the back and outside of the shoulder.",
+      "form": [
+        "Bring one arm straight across the chest at shoulder height.",
+        "Use the other arm to draw it closer, keeping the shoulder down.",
+        "Hold for 40 seconds, then switch arms."
+      ],
+      "mistakes": [
+        "Letting the stretched shoulder shrug up toward the ear.",
+        "Pulling at the elbow joint instead of the upper arm.",
+        "Twisting the torso to fake more range."
+      ]
+    },
+    {
+      "name": "Neck side bend (upper trapezius stretch)",
+      "type": "static",
+      "targets": ["upper trapezius", "levator scapulae", "neck"],
+      "durationSec": 30,
+      "why": "Releases neck and shoulder tension that can creep in over a long run and affect head position.",
+      "feel": "A light pull on the side of the neck and top of the shoulder.",
+      "form": [
+        "Sit or stand tall with the shoulders relaxed and level.",
+        "Tilt one ear gently toward the shoulder without lifting the shoulder.",
+        "Hold for 30 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Pulling the head down with the hand.",
+        "Shrugging the opposite shoulder up.",
+        "Tilting the head forward or back instead of to the side."
+      ]
+    },
+    {
+      "name": "Sleeper shoulder internal rotation stretch",
+      "type": "static",
+      "targets": ["posterior shoulder", "rotator cuff"],
+      "durationSec": 40,
+      "why": "Maintains the shoulder's internal rotation that upper body and arm swing work can tighten.",
+      "feel": "A pull at the back of the shoulder of the arm being rotated.",
+      "form": [
+        "Lie on your side on the shoulder you want to stretch, arm out at 90 degrees and elbow bent to 90.",
+        "Use the other hand to gently press the forearm toward the floor.",
+        "Hold for 40 seconds, then switch sides."
+      ],
+      "mistakes": [
+        "Rolling onto the back to avoid the stretch.",
+        "Pressing too hard and forcing the shoulder.",
+        "Letting the elbow drift away from the body."
+      ]
+    },
+    {
+      "name": "Ankle circles and alphabet",
+      "type": "dynamic",
+      "targets": ["ankle joint", "foot intrinsics", "calf"],
+      "durationSec": 30,
+      "why": "Primes the ankle and foot for varied ground contact before a run.",
+      "feel": "A free, easy circling sensation through the whole ankle with no pinching.",
+      "form": [
+        "Seated or standing with one foot lifted, draw slow circles in each direction.",
+        "Then trace the letters of the alphabet with the foot.",
+        "Spend about 30 seconds per foot."
+      ],
+      "mistakes": [
+        "Moving only from the toes and not the ankle.",
+        "Rushing the letters into a blur.",
+        "Pushing into a painful range."
+      ]
+    },
+    {
+      "name": "World's greatest stretch",
+      "type": "dynamic",
+      "targets": ["hip flexors", "thoracic spine", "hamstrings", "adductors"],
+      "durationSec": 40,
+      "why": "Covers hips, groin, hamstrings and upper back in one flowing move, good as a pre-run sequence.",
+      "feel": "A stretch that moves from the groin and hip into a twist through the mid back.",
+      "form": [
+        "Step into a deep lunge and place both hands inside the front foot.",
+        "Drop the back knee slightly, then rotate the inside arm up toward the ceiling.",
+        "Return, step through to the other side and repeat for 40 seconds."
+      ],
+      "mistakes": [
+        "Letting the front knee collapse inward.",
+        "Rushing the rotation and losing balance.",
+        "Letting the back knee slam onto the floor."
+      ]
+    }
+  ],
+  "summary_tier_a": "Static and PNF stretching build and maintain range of motion, and less flexible runners gain the most. Effective holds are shorter than folklore suggests: roughly 30 to 45 seconds per muscle, 2 to 3 sets, at least 4 minutes per muscle 5 days a week, with no added benefit from longer or more frequent work. Long static and PNF holds of 60 seconds or more done right before hard running reduce power by about 3 to 4 percent, so keep them after the run or in a separate session and use dynamic stretching in the warm-up, which has improved running economy and performance in runners. Stretching is not injury prevention and does not speed recovery; for hamstring injury, eccentric strength work is the proven tool.",
+  "unverified": [
+    "The exact numeric threshold for adequate ankle dorsiflexion in runners is not pinned to a single primary study. Clinical reviews settle on a minimum of about 5 to 10 degrees for normal gait, and sports and rehabilitation reviews repeat a walking requirement of roughly 10 to 20 degrees, but no running specific primary study fixes a cutoff for injury or performance. The closest clinical anchor found here is Searle and colleagues (2018), who state that a minimum of 5 to 10 degrees of ankle dorsiflexion is generally agreed to be required for normal gait.",
+    "Optimal hold time within the 30 to 45 second window has not been tested directly against running performance. The clearest duration evidence comes from non-running tasks: a controlled comparison found a 30 second hold left vertical jump power essentially unchanged while a 60 second hold lowered it (Pinto and colleagues, 2014), and a short versus moderate threshold of under 45 seconds versus 60 seconds or more recurs in that literature. A scoping review of stretching and running (Konrad and colleagues, 2021) found that stretch duration and technique influenced running economy and performance but did not isolate a 30 to 45 second optimum.",
+    "Whether PNF gives runners any practical edge over static stretching, beyond equal range of motion gains, is not clearly demonstrated. No head to head PNF versus static trial in runners shows an advantage. The closest running work tested PNF of the quadriceps or triceps surae before running and found no acute change in running economy (Konrad and colleagues, 2022), and a scoping review found only one running study that used PNF, reporting a running economy change rather than a comparison against static work."
+  ],
+  "notes": "Hold times in the catalog use 40 seconds for static and PNF work (inside the evidence supported 30 to 45 second window) and 30 seconds for dynamic drills, which are meant to be repeated as movement rather than held. Targets, form and mistakes are standard anatomical and coaching detail, not claims of effect. The dose, timing and performance findings are the evidence backed core and should drive how the app schedules these: static and PNF after runs or in dedicated sessions, dynamic work before hard running. Foam rolling is covered in the sibling foam roll workstream and is a reasonable substitute when a muscle is tender to stretch. Verification pass 2026-11-23: 1 substantiated, 3 remained unverified."
+}

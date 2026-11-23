@@ -1,0 +1,890 @@
+{
+  "workstream": "strength",
+  "subtopic": "Bodyweight progressions and regressions for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Strength training and running economy",
+      "claim": "Adding strength training improves running economy in middle and long distance runners. The size of the gain depends on the method and the speed it is tested at.",
+      "evidence": "A 2024 systematic review with meta-analysis pooled controlled trials and found high load training produced a small improvement in running economy (ES = -0.266, p = 0.039) and combined methods produced a moderate improvement (ES = -0.426, p = 0.018). Effects appeared at speeds from about 8.6 to 17.9 km/h for heavy loads. Submaximal load and isometric training showed no clear economy benefit.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos, C., Ramirez-Campillo, R., Moran, J., Saez de Villarreal, E.",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-023-01978-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Which loading actually improves economy",
+      "claim": "Heavy loads and plyometric work are the strength methods with the clearest economy benefit. Heavy load work seems to help most at faster speeds and in runners with a higher VO2max; plyometric work helps more at slower speeds (at or below about 12 km/h).",
+      "evidence": "The 2024 meta-analysis reports plyometric training improved running economy at speeds at or below 12.0 km/h (ES = -0.307, p = 0.028) and heavy load work at higher speeds. Moderator analysis showed running speed and VO2max changed the size of the heavy load effect.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of Strength Training Programs in Middle- and Long-Distance Runners' Economy at Different Running Speeds: A Systematic Review with Meta-analysis",
+        "authors": "Llanos-Lagos, C., Ramirez-Campillo, R., Moran, J., Saez de Villarreal, E.",
+        "year": 2024,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-023-01978-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nordic curl and hamstring injury rates",
+      "claim": "Programs that include the Nordic hamstring exercise reduce hamstring injury rates. The pooled reduction across soccer studies is roughly half.",
+      "evidence": "An umbrella review of the Nordic hamstring exercise reports that programs including it reduce hamstring injury risk, and cites a pooled risk ratio of about 0.49 (95% CI 0.32 to 0.74) in favour of the exercise. Benefit depends heavily on doing the work consistently.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Effects of Nordic Hamstring Exercise on Performance and Injury in the Lower Extremities: An Umbrella Review",
+        "authors": "Nunes, H., Fernandes, L. G., Martins, P. N., Ferreira, R. M.",
+        "year": 2024,
+        "venue": "Healthcare (Basel)",
+        "type": "systematic-review",
+        "doi_or_url": "10.3390/healthcare12151462",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nordic curl and eccentric hamstring strength",
+      "claim": "Nordic curl training reliably increases eccentric hamstring strength and lengthens the hamstring muscle fascicles. The change in muscle architecture is one reason it is useful for injury reduction.",
+      "evidence": "A meta-analysis of 12 studies found Nordic training increased knee flexor eccentric strength (SMD 0.68 on isokinetic tests, SMD 1.11 on the Nordic device) and increased biceps femoris long head fascicle length (SMD 0.97).",
+      "confidence": "high",
+      "citation": {
+        "title": "Effect of Nordic Hamstring Exercise Training on Knee Flexors Eccentric Strength and Fascicle Length: A Systematic Review and Meta-Analysis",
+        "authors": "Medeiros, D. M., Marchiori, C., Baroni, B. M.",
+        "year": 2020,
+        "venue": "Journal of Sport Rehabilitation",
+        "type": "systematic-review",
+        "doi_or_url": "10.1123/jsr.2019-0388",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Eccentric training and muscle architecture",
+      "claim": "Eccentric hamstring training, including the Nordic curl, increases fascicle length and muscle thickness and lowers pennation angle. Longer fascicles let the muscle tolerate stretch better, which is the proposed link to fewer strains.",
+      "evidence": "A systematic review with meta-analysis of 10 studies found eccentric training increased fascicle length (MD 1.97 mm, 95% CI 1.48 to 2.46), increased muscle thickness (MD 0.10 mm), and decreased pennation angle (MD 2.36 degrees) compared with control.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Effects of Eccentric Training on Biceps Femoris Architecture and Strength: A Systematic Review with Meta-Analysis",
+        "authors": "Gerard, R., Gojon, L., Decleve, P., Van Cant, J.",
+        "year": 2020,
+        "venue": "Journal of Athletic Training",
+        "type": "systematic-review",
+        "doi_or_url": "10.4085/1062-6050-194-19",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nordic curl training volume",
+      "claim": "Low and high volume Nordic curl programs both build eccentric strength and change muscle architecture, so a large weekly dose is not required to get the adaptation.",
+      "evidence": "A systematic review with meta-analyses found very large eccentric strength gains after 6 or more weeks in both high volume (g = 2.12) and low volume (g = 2.28) Nordic programs, with similar changes in fascicle length and pennation angle.",
+      "confidence": "high",
+      "citation": {
+        "title": "The Effect of Nordic Hamstring Exercise Intervention Volume on Eccentric Strength and Muscle Architecture Adaptations: A Systematic Review and Meta-analyses",
+        "authors": "Cuthbert, M., Ripley, N., McMahon, J. J., Evans, M., Haff, G. G., Comfort, P.",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-019-01178-7",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Eccentric hamstring strength as a screening test",
+      "claim": "Eccentric hamstring strength measured on the Nordic device does not predict who will get a hamstring injury. Low strength alone is not a reliable warning sign, so the exercise is used to train the tissue rather than to screen individuals.",
+      "evidence": "A systematic review with meta-analysis of 6 studies and about 1100 athletes found no significant difference in absolute knee flexor strength between later injured and uninjured limbs (SMD -0.22, 95% CI -0.50 to 0.05).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Is Pre-season Eccentric Strength Testing During the Nordic Hamstring Exercise Associated with Future Hamstring Strain Injury? A Systematic Review and Meta-analysis",
+        "authors": "Opar, D. A., Timmins, R. G., Behan, F. P., Hickey, J. T., van Dyk, N., Price, K., Maniar, N.",
+        "year": 2021,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-021-01474-1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Achilles tendinopathy: heavy slow resistance versus eccentric",
+      "claim": "For midportion Achilles tendinopathy, heavy slow resistance training and the traditional eccentric program both work and give similar results at 12 weeks and at one year. Loading is the active ingredient, not the eccentric label by itself.",
+      "evidence": "A randomized controlled trial of 58 patients with chronic midportion Achilles tendinopathy compared 12 weeks of heavy slow resistance (HSR) with eccentric training (ECC). Both groups improved in pain and function with no significant difference between them, and both held up at 52 weeks.",
+      "confidence": "high",
+      "citation": {
+        "title": "Heavy Slow Resistance Versus Eccentric Training as Treatment for Achilles Tendinopathy: A Randomized Controlled Trial",
+        "authors": "Beyer, R., Kongsgaard, M., Hougs Kjaer, B., Ohlenschlaeger, T., Kjaer, M., Magnusson, S. P.",
+        "year": 2015,
+        "venue": "The American Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1177/0363546515584760",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Alfredson eccentric heel drop protocol",
+      "claim": "The Alfredson eccentric heel drop protocol reduces pain and improves function in chronic Achilles tendinopathy and beats concentric-only training. It is a proven heavy loading option even though it is not uniquely better than other loading schemes.",
+      "evidence": "The original Alfredson study of recreational athletes with midportion Achilles tendinopathy found the eccentric group was superior to the concentric group (82 percent versus 36 percent satisfied). Later work shows the benefit comes from heavy loading rather than the eccentric phase alone.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heavy-Load Eccentric Calf Muscle Training for the Treatment of Chronic Achilles Tendinosis",
+        "authors": "Alfredson, H., Pietila, T., Jonsson, P., Lorentzon, R.",
+        "year": 1998,
+        "venue": "The American Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1177/03635465980260030301",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Alfredson versus combined loading",
+      "claim": "The Alfredson eccentric program and a combined concentric-eccentric program produce no difference in clinical outcome for Achilles tendinopathy. Either approach is acceptable.",
+      "evidence": "A randomized controlled trial comparing Alfredson eccentric loading with Silbernagel combined concentric-eccentric loading found no difference in clinical effects between the two programs.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "No Difference in Clinical Effects When Comparing Alfredson Eccentric and Silbernagel Combined Concentric-Eccentric Loading in Achilles Tendinopathy: A Randomized Controlled Trial",
+        "authors": "Habets, B., van Cingel, R. E. H., Backx, F. J. G., Huisstede, B. M. A.",
+        "year": 2021,
+        "venue": "Orthopaedic Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "https://journals.sagepub.com/doi/abs/10.1177/23259671211031254",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Isometric holds for Achilles pain relief",
+      "claim": "Heavy isometric calf holds do not reliably give immediate pain relief in chronic midportion Achilles tendinopathy. The strong early promise seen for patellar tendon does not transfer cleanly to the Achilles.",
+      "evidence": "A quasi-randomized clinical trial found isometric exercises did not produce immediate analgesic benefit in patients with chronic midportion Achilles tendinopathy.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Isometric exercises do not provide immediate pain relief in Achilles tendinopathy: A quasi-randomized clinical trial",
+        "authors": "van der Vlist, A. C., van Veldhoven, P. L. J., van Oosterom, R. F., Verhaar, J. A. N., de Vos, R. J.",
+        "year": 2020,
+        "venue": "Scandinavian Journal of Medicine and Science in Sports",
+        "type": "rct",
+        "doi_or_url": "10.1111/sms.13728",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Isometrics for tendinopathy overall",
+      "claim": "Isometric exercise helps tendon pain and function overall, but it is not superior to isotonic loading or, in some sites, to walking. It is a reasonable option rather than a special cure.",
+      "evidence": "A systematic review and meta-analysis of randomized trials found no strong evidence that isometric exercise is superior for immediate or short term pain relief compared with isotonic exercise, other treatments, or no treatment.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effectiveness of isometric exercise in the management of tendinopathy: a systematic review and meta-analysis of randomised trials",
+        "authors": "Clifford, C., Challoumas, D., McLean, M., Millar, N. L.",
+        "year": 2020,
+        "venue": "BMJ Open Sport and Exercise Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://bmjopensem.bmj.com/content/6/1/e000760",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Bent-knee versus straight-knee calf work",
+      "claim": "Bent-knee calf raises load the soleus and the deeper part of the Achilles; straight-knee raises load the gastrocnemius. Training both covers the calf and Achilles across the range running uses.",
+      "evidence": "Surface electromyography during eccentric calf exercise shows gastrocnemius and soleus activity changes with knee position (extended versus flexed). A qualitative study of expert clinicians also reports that changing knee position is used to target the soleus (knee flexed) versus the gastrocnemius (knee extended).",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Electromyographic analysis of an eccentric calf muscle exercise in persons with and without Achilles tendinopathy",
+        "authors": "Reid, D., McNair, P. J., Johnson, S., Potts, G., Witvrouw, E., Mahieu, N.",
+        "year": 2012,
+        "venue": "Physical Therapy in Sport",
+        "type": "observational",
+        "doi_or_url": "https://www.sciencedirect.com/science/article/abs/pii/S1466853X11000782",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Calf load intensity and time under tension",
+      "claim": "Calf and Achilles tissue adaptation responds to load intensity and to time under tension. Heavier or longer-duration contractions raise the stimulus when external load cannot easily rise, though a clinical benefit in Achilles tendinopathy from tuning these doses has not been shown.",
+      "evidence": "A factorial feasibility trial (LOADIT) in 48 men with midportion Achilles tendinopathy tested 6 versus 18 repetition maximum against high versus low time under tension over 12 weeks. All groups improved in pain and function, but the trial was powered for feasibility, not for group differences, and exercise fidelity and adherence fell below the preset threshold, so it did not show that one dose beats another. The tissue-adaptation rationale it rests on, that load intensity and longer contraction duration drive tendon stiffness adaptation, comes from mechanistic reviews rather than from clinical trial outcomes.",
+      "confidence": "low",
+      "citation": {
+        "title": "LOAD-intensity and time-under-tension of exercises for men who have Achilles tendinopathy (the LOADIT trial): a randomised feasibility trial",
+        "authors": "Hasani, F., Haines, T., Munteanu, S. E., Schoch, P., Vicenzino, B., Malliaras, P.",
+        "year": 2021,
+        "venue": "BMC Sports Science, Medicine and Rehabilitation",
+        "type": "rct",
+        "doi_or_url": "10.1186/s13102-021-00279-z",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Unilateral training and single-leg performance",
+      "claim": "Unilateral (one leg) resistance training improves single-leg strength and jump more than bilateral training. Running is a single-leg action, so single-leg work is the closer match.",
+      "evidence": "A systematic review with meta-analysis of controlled studies found unilateral training was at least as good as bilateral for most outcomes and specifically better for single-leg tasks. An 8-week study within that literature found unilateral training improved the one-repetition maximum of the Bulgarian split squat more than bilateral training. The single-leg advantage shows up clearest in single-leg tests, while straight line sprint changes are similar between the two approaches.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of unilateral vs. bilateral resistance training interventions on measures of strength, jump, linear and change of direction speed: a systematic review and meta-analysis",
+        "authors": "Liao, K. F., Nassis, G. P., Bishop, C., Yang, W., Bian, C., Li, Y. M.",
+        "year": 2022,
+        "venue": "Biology of Sport",
+        "type": "systematic-review",
+        "doi_or_url": "10.5114/biolsport.2022.107024",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core training and performance",
+      "claim": "Core training improves core endurance and has a small to moderate carryover to sport performance measures. It is not a direct driver of running speed, but it supports trunk control and posture.",
+      "evidence": "A systematic review with meta-analysis found core training had moderate effects on trunk muscle endurance, linear sprint speed, and change of direction, with small effects on maximal muscle strength and moderate effects on sport-specific performance.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Core training and performance: a systematic review with meta-analysis",
+        "authors": "Rodriguez-Perea, A., Reyes-Ferrada, W., Jerez-Mayorga, D., Chirosa Rios, L., Van den Tillar, R., Chirosa Rios, I., Martinez-Garcia, D.",
+        "year": 2023,
+        "venue": "Biology of Sport",
+        "type": "systematic-review",
+        "doi_or_url": "10.5114/biolsport.2023.123319",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core training and running economy",
+      "claim": "A short core training block improved running economy, static balance and core endurance in a small group of male college athletes. The finding rests on one small trial, so the effect on economy is suggestive rather than settled.",
+      "evidence": "An 8-week randomized study split 21 male college athletes into a core training group and a control group. The core group improved static balance, core endurance and running economy compared with control. The sample is small and from a single trial, so the economy result should be treated as preliminary.",
+      "confidence": "low",
+      "citation": {
+        "title": "Effects of 8-week core training on core endurance and running economy",
+        "authors": "Hung, K. C., Chung, H. W., Yu, C. C. W., Lai, H. C., Sun, F. H.",
+        "year": 2019,
+        "venue": "PLOS ONE",
+        "type": "rct",
+        "doi_or_url": "10.1371/journal.pone.0213158",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Balance training and ankle sprain risk",
+      "claim": "Balance and proprioceptive training cut the risk of ankle sprain by about a third in athletic groups. The benefit is largest in people who have already sprained an ankle.",
+      "evidence": "A systematic review and meta-analysis found balance training reduced ankle sprain incidence, with a pooled risk ratio of 0.62 (95% CI 0.43 to 0.90), about a 38 percent reduction. Related reviews report reductions of roughly 35 to 43 percent.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of proprioceptive training on the incidence of ankle sprain in athletes: systematic review and meta-analysis",
+        "authors": "de Vasconcelos, G. S., Cini, A., Sbruzzi, G., Lima, C. S.",
+        "year": 2018,
+        "venue": "Clinical Rehabilitation",
+        "type": "systematic-review",
+        "doi_or_url": "10.1177/0269215518788683",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Proprioceptive training effect size",
+      "claim": "Proprioceptive training programs reduce ankle sprain occurrence in sporting groups, with a pooled reduction around 35 percent and a number needed to treat of about 17.",
+      "evidence": "A meta-analysis of 7 trials found a significant reduction in ankle sprains favouring proprioceptive training (RR = 0.65, 95% CI about 0.55 to 0.78), with a number needed to treat near 17.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effectiveness of proprioceptive training in preventing ankle sprains in sporting populations: a systematic review and meta-analysis",
+        "authors": "Schiftan, G. S., Ross, L. A., Hahne, A. J.",
+        "year": 2015,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "systematic-review",
+        "doi_or_url": "https://www.jsams.org/article/s1440-2440(14)00074-7/fulltext",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Strength training and running injury prevention",
+      "claim": "A strength program in the 12 weeks before a first marathon reduced the number of runners who missed training and reduced overuse injury in that group. The evidence base across studies is mixed but leans positive for hip-focused work.",
+      "evidence": "A randomized trial of first-time New York City Marathon runners found the strength training group had fewer injured runners and fewer missed training days than the observation group. A separate novice runner trial found a hip-focused strength program reduced lower limb overuse injuries while an ankle-focused program did not.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "A Randomized Study of a Strength Training Program to Prevent Injuries in Runners of the New York City Marathon",
+        "authors": "Toresdahl, B. G., McElheny, K., Metzl, J., Ammerman, B., Chang, B., Kinderknecht, J.",
+        "year": 2020,
+        "venue": "Sports Health",
+        "type": "rct",
+        "doi_or_url": "10.1177/1941738119877180",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip versus ankle focus in novice runners",
+      "claim": "In novice runners, a physiotherapist-guided hip and core strength program reduced lower limb overuse injuries, while an ankle and foot program did not. The hip and core group had about a third fewer lower limb injuries than the control group, and the ankle and foot group showed more acute injuries.",
+      "evidence": "A three-arm randomized trial (Run RCT) assigned 325 adult novice runners to hip and core, ankle and foot, or control (static stretching) groups for 24 weeks, all following the same running program. The hip and core group had fewer lower limb injuries than control (hazard ratio 0.66, 95 percent confidence interval 0.45 to 0.97), with the weekly prevalence of overuse injuries 39 percent lower and substantial overuse injuries 52 percent lower. The ankle and foot group did not reduce overuse injuries and had a higher incidence of acute injuries than control (hazard ratio 3.60, 95 percent confidence interval 1.20 to 10.86). The program was hip and core together, not hip work alone.",
+      "confidence": "high",
+      "citation": {
+        "title": "Hip and core exercise programme prevents running-related overuse injuries in adult novice recreational runners: a three-arm randomised controlled trial (Run RCT)",
+        "authors": "Leppanen, M., Viiala, J., Kaikkonen, P., Tokola, K., Vasankari, T., Nigg, B. M., Krosshaug, T., Werthner, P., Parkkari, J., Pasanen, K.",
+        "year": 2024,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1136/bjsports-2023-107926",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nordic curl and sprint performance",
+      "claim": "Nordic curl training does not harm sprint performance and may slightly improve it over time, so it can be added without a speed cost.",
+      "evidence": "A systematic review with meta-analysis of intervention studies in team sport players found Nordic hamstring exercise had a positive effect on sprint performance (about -0.04 s, 95% CI -0.08 to -0.01), meaning a small speed gain.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effects of the Nordic hamstring exercise on sprint performance and eccentric knee flexor strength: A systematic review and meta-analysis of intervention studies among team sport players",
+        "authors": "Bautista, I. J., Vicente-Mampel, J., Baraja-Vegas, L., Segarra, V., Martin, F., Van Hooren, B.",
+        "year": 2021,
+        "venue": "Journal of Science and Medicine in Sport",
+        "type": "systematic-review",
+        "doi_or_url": "10.1016/j.jsams.2021.03.009",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Eccentric exercise for hamstring injury prevention",
+      "claim": "Eccentric hamstring exercise is a central part of evidence-based hamstring injury prevention, and the protection depends on completing the program, not just doing it occasionally.",
+      "evidence": "A systematic review and meta-analysis of randomized controlled trials on hamstring injury prevention concluded eccentric-based programs reduce injury, and compliance analyses show the protective effect tracks how much of the program athletes actually complete.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Evidence-based hamstring injury prevention and risk factor management: a systematic review and meta-analysis of randomized controlled trials",
+        "authors": "Rudisill, S. S., Varady, N. H., Kucharik, M. P., Eberlin, C. T., Martin, S. D.",
+        "year": 2023,
+        "venue": "The American Journal of Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1177/03635465221083998",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Eccentric exercise for Achilles tendinopathy",
+      "claim": "Heavy eccentric loading helps Achilles tendinopathy more than wait-and-see or passive treatments, but the eccentric component alone is not what makes it work. Whole-muscle loading and progressive load matter.",
+      "evidence": "A narrative review of eccentric exercise for Achilles tendinopathy concluded heavy eccentric exercise was superior to wait-and-see and modality-based treatments, and that heavy slow resistance may be as good or better, indicating that loading rather than the eccentric-only pattern drives the result.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Eccentric Exercise for Achilles Tendinopathy: A Narrative Review and Clinical Decision-Making Considerations",
+        "authors": "Jayaseelan, D. J., Mischke, J. J., Strazzulla, R. L.",
+        "year": 2019,
+        "venue": "Journal of Functional Morphology and Kinesiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.3390/jfmk4020034",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Progressive overload and variation",
+      "claim": "Progress should be planned as systematic variation of volume and intensity over time. The body adapts quickly to a fixed program, so at least some change is needed for continued progress.",
+      "evidence": "The American College of Sports Medicine position stand on progression models in resistance training states that variation, or periodization, is the systematic alteration of program variables, and that systematic variation of volume and intensity is most effective for long term progression.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Progression when load cannot increase",
+      "claim": "When you cannot add weight, you can still create overload by changing the exercise: harder leverage (for example moving to a one-leg version), more range of motion, slower tempo, a longer pause, or a less stable position.",
+      "evidence": "The ACSM position stand lists range of motion, speed of movement, muscle groups trained, and intensity and volume among the variables that can be manipulated for progression. Applied coaching sources describe leverage, range of motion, tempo, and unilateral shifts as the standard set of overload levers for bodyweight training.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Slow and eccentric tempo as overload",
+      "claim": "Slowing the lowering (eccentric) phase increases time under tension and the load on the tissue, and eccentric focused training drives its own adaptations such as greater strength and muscle length changes.",
+      "evidence": "A systematic review of chronic adaptations to eccentric training found eccentric training produces specific adaptations including greater strength gains and, in some measures, distinct architectural changes compared with concentric training. Eccentric-only overload is a recognized way to advance a bodyweight movement.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Chronic Adaptations to Eccentric Training: A Systematic Review",
+        "authors": "Douglas, J., Pearson, S., Ross, A., McGuigan, M.",
+        "year": 2017,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s40279-016-0628-4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Weekly set and rep targets",
+      "claim": "Guidance on weekly sets, reps and load comes from resistance training trials, not from running-specific work. For healthy adults, at least two sets per exercise and two to three sessions a week are advised, with about two to three sets per exercise for strength and about 10 sets per muscle group per week for muscle growth. Loads from roughly 30 to 100 percent of one-rep max build muscle when sets are taken close to failure.",
+      "evidence": "The 2026 American College of Sports Medicine position stand pooled 137 systematic reviews and more than 30,000 adults. It found two sets beat one set, strength gains plateaued past about two to three sets per exercise, and hypertrophy improved up to about 18 to 20 weekly sets per muscle group, with loads from about 30 to 100 percent of one-rep max producing similar growth when effort is near failure. These targets are for general adults; the translation onto each bodyweight rung is an application of the guidance, not a separately trialled dose.",
+      "confidence": "high",
+      "citation": {
+        "title": "American College of Sports Medicine Position Stand. Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults: An Overview of Reviews",
+        "authors": "Currier, B. S., D'Souza, A. C., Fiatarone Singh, M. A., et al.",
+        "year": 2026,
+        "venue": "Medicine and Science in Sports and Exercise",
+        "type": "position-stand",
+        "doi_or_url": "10.1249/MSS.0000000000003897",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Knee position and calf muscle recruitment",
+      "claim": "Bending the knee during a calf raise shifts activity toward the soleus and away from the gastrocnemius. This is a shift in recruitment, not a clean isolation of the soleus.",
+      "evidence": "A surface electromyography study in healthy adults found that plantarflexion with the knee flexed raised soleus activity and lowered medial gastrocnemius activity, with no evidence that the soleus compensates to offset the reduced gastrocnemius output. An earlier EMG study of an eccentric calf exercise in people with and without Achilles tendinopathy also reported that gastrocnemius and soleus activity changed with knee position.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults",
+        "authors": "Kovacs, B., Csala, D., Yang, S., Tihanyi, J., Gu, Y., Hortobagyi, T.",
+        "year": 2024,
+        "venue": "Biology Open",
+        "type": "observational",
+        "doi_or_url": "10.1242/bio.061810",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Chair or box squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "glutes"],
+      "pattern": "squat",
+      "level": "beginner",
+      "why": "Teaches the squat pattern to a depth you can already reach, so it is the first rung for anyone new to loaded leg work.",
+      "feel": "Front of the thighs and glutes working as you sit back and stand.",
+      "form": [
+        "Stand in front of a chair, feet about shoulder width apart.",
+        "Push the hips back and lower until you lightly touch the seat.",
+        "Stand by driving through the mid foot with the knees tracking over the toes."
+      ],
+      "mistakes": [
+        "Dropping onto the seat and bouncing out of the bottom.",
+        "Letting the knees cave inward.",
+        "Rocking onto the toes and lifting the heels."
+      ]
+    },
+    {
+      "name": "Bodyweight squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "glutes", "hamstrings"],
+      "pattern": "squat",
+      "level": "beginner",
+      "why": "Builds the base leg strength and range that feed the push off in every stride.",
+      "feel": "Whole thigh and glute fatigue building across the set.",
+      "form": [
+        "Feet about shoulder width, toes turned slightly out.",
+        "Sit the hips down and back to at least thigh parallel.",
+        "Keep the chest tall and heels down as you stand."
+      ],
+      "mistakes": [
+        "Cutting the depth short.",
+        "Heels lifting off the floor.",
+        "Losing balance forward onto the toes."
+      ]
+    },
+    {
+      "name": "Split squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "glutes", "hamstrings"],
+      "pattern": "squat",
+      "level": "intermediate",
+      "why": "Trains one leg at a time in a split stance that is close to how running loads each leg.",
+      "feel": "Front thigh and glute of the leading leg doing most of the work.",
+      "form": [
+        "Stagger the feet with the back heel lifted and torso tall.",
+        "Lower the back knee toward the floor.",
+        "Push through the front foot to stand back up."
+      ],
+      "mistakes": [
+        "Stance too short, pushing the front knee too far forward.",
+        "Torso leaning forward over the front thigh.",
+        "Front knee collapsing inward."
+      ]
+    },
+    {
+      "name": "Bulgarian split squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "glutes", "hamstrings", "hip adductors"],
+      "pattern": "squat",
+      "level": "advanced",
+      "why": "Adds load and a balance demand to the single-leg squat, building the hip and thigh strength used late in a hard run.",
+      "feel": "Deep stretch and work in the front hip and thigh.",
+      "form": [
+        "Place the back foot on a chair or step.",
+        "Lower the back knee straight down.",
+        "Keep most of the weight over the front leg."
+      ],
+      "mistakes": [
+        "Chair too high, so the back knee slams down.",
+        "Front foot too close to the chair.",
+        "Bouncing out of the bottom position."
+      ]
+    },
+    {
+      "name": "Assisted pistol squat",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["quadriceps", "glutes", "hip stabilizers"],
+      "pattern": "squat",
+      "level": "advanced",
+      "why": "Builds very high single-leg strength and control, the top rung for the squat family without added weight.",
+      "feel": "Intense work in the standing leg with the free leg held forward.",
+      "form": [
+        "Hold a support and reach one leg forward off the floor.",
+        "Sit back and down, keeping the standing heel down.",
+        "Stand by pressing the whole foot into the floor."
+      ],
+      "mistakes": [
+        "Losing the heel at the bottom.",
+        "Knee diving inward.",
+        "Falling backward because the free leg drops."
+      ]
+    },
+    {
+      "name": "Glute bridge",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["glutes", "hamstrings"],
+      "pattern": "hinge",
+      "level": "beginner",
+      "why": "Wakes up the hip extensors that drive each stride, the base of the hinge family.",
+      "feel": "Glute squeeze at the top with mild hamstring work.",
+      "form": [
+        "Lie on your back with knees bent and feet flat.",
+        "Drive the hips up until the body forms a line from knees to shoulders.",
+        "Squeeze the glutes at the top and lower with control."
+      ],
+      "mistakes": [
+        "Arching the low back instead of using the glutes.",
+        "Pushing through the toes.",
+        "Rushing the reps and losing control."
+      ]
+    },
+    {
+      "name": "Single-leg Romanian deadlift",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["hamstrings", "glutes", "spinal erectors"],
+      "pattern": "hinge",
+      "level": "intermediate",
+      "why": "Trains the hip hinge and hamstring control used when the leg reaches back on the ground and swing.",
+      "feel": "A stretch through the back of the standing thigh as you hinge.",
+      "form": [
+        "Balance on one leg with a slight knee bend.",
+        "Hinge at the hip, tipping the torso forward as the free leg reaches back.",
+        "Return to standing by squeezing the glute."
+      ],
+      "mistakes": [
+        "Rounding the back as you hinge.",
+        "Twisting the hips open.",
+        "Bending the knee into a squat instead of hinging."
+      ]
+    },
+    {
+      "name": "Assisted Nordic curl",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["hamstrings"],
+      "pattern": "hinge",
+      "level": "advanced",
+      "why": "Builds the eccentric hamstring strength linked to fewer hamstring injuries, starting with hands ready to catch.",
+      "feel": "A strong pull through the back of the thigh as you resist falling forward.",
+      "form": [
+        "Kneel with the heels anchored and the hands ready to catch the floor.",
+        "Lower the torso forward as slowly as you can control.",
+        "Push off the floor to return to the top."
+      ],
+      "mistakes": [
+        "Falling fast and catching hard.",
+        "Piking the hips instead of keeping the body straight.",
+        "Doing too many reps too soon and getting very sore."
+      ]
+    },
+    {
+      "name": "Incline push-up",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["pectorals", "triceps", "anterior deltoids", "core"],
+      "pattern": "push",
+      "level": "beginner",
+      "why": "Builds push-up strength at a height that matches current ability, the first rung of the push ladder.",
+      "feel": "Chest, shoulders, and arms working, noticeably easier than the floor.",
+      "form": [
+        "Place the hands on a bench or step.",
+        "Keep the body straight from head to heels.",
+        "Lower the chest to the surface and press back up."
+      ],
+      "mistakes": [
+        "Hips sagging toward the floor.",
+        "Elbows flaring out to 90 degrees.",
+        "Head dropping forward ahead of the chest."
+      ]
+    },
+    {
+      "name": "Push-up",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["pectorals", "triceps", "anterior deltoids", "core"],
+      "pattern": "push",
+      "level": "intermediate",
+      "why": "Trains the whole body to stay rigid while the arms work, much like holding form late in a run.",
+      "feel": "Chest and triceps working with a tight core holding the line.",
+      "form": [
+        "Hands under the shoulders with the body in one line.",
+        "Lower until the elbows are about 90 degrees.",
+        "Press up without letting the hips drop."
+      ],
+      "mistakes": [
+        "Hips sagging or piking up.",
+        "Stopping short of full depth.",
+        "Craning the neck forward."
+      ]
+    },
+    {
+      "name": "Archer push-up",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["pectorals", "triceps", "core", "serratus anterior"],
+      "pattern": "push",
+      "level": "advanced",
+      "why": "Loads one arm harder than the other, a step toward the single-arm push-up and a strong upper-body rung.",
+      "feel": "Much more work in the arm you are leaning toward.",
+      "form": [
+        "Set the hands wide and lower toward one hand with that elbow bending.",
+        "Keep the other arm straighter, sliding it out.",
+        "Press back to center and repeat on the other side."
+      ],
+      "mistakes": [
+        "Twisting the hips instead of staying square.",
+        "Dropping the chest too fast.",
+        "Letting the body break the straight line."
+      ]
+    },
+    {
+      "name": "Table row",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["lats", "rhomboids", "biceps", "posterior deltoids"],
+      "pattern": "pull",
+      "level": "beginner",
+      "why": "The first pull that balances all the pushing and supports upright posture when running.",
+      "feel": "Work between the shoulder blades and in the arms.",
+      "form": [
+        "Lie under a sturdy table and grip the edge.",
+        "Pull the chest up toward the edge.",
+        "Lower with control to straight arms."
+      ],
+      "mistakes": [
+        "Hips sagging toward the floor.",
+        "Yanking with the arms only.",
+        "Not reaching full arm extension at the bottom."
+      ]
+    },
+    {
+      "name": "Inverted row",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["lats", "rhomboids", "biceps", "core"],
+      "pattern": "pull",
+      "level": "intermediate",
+      "why": "Builds the upper-body pull and grip that hold running posture together when tired.",
+      "feel": "Shoulder blades pulling together with the arms working.",
+      "form": [
+        "Hang under a bar or sturdy edge with the body straight.",
+        "Pull the chest to the bar.",
+        "Lower until the arms are straight."
+      ],
+      "mistakes": [
+        "Letting the hips drop.",
+        "Shrugging the shoulders up toward the ears.",
+        "Stopping the pull short of the top."
+      ]
+    },
+    {
+      "name": "Feet-elevated inverted row",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["lats", "rhomboids", "biceps", "core"],
+      "pattern": "pull",
+      "level": "advanced",
+      "why": "A harder row that also challenges the core to hold the body rigid, the top rung of the pull ladder.",
+      "feel": "More load through the back and arms plus a braced core.",
+      "form": [
+        "Set the feet on a bench under a high bar.",
+        "Keep the body in one straight line.",
+        "Pull the chest to the bar and lower slowly."
+      ],
+      "mistakes": [
+        "Hips sagging toward the floor.",
+        "Jerking the reps instead of pulling smoothly.",
+        "Poking the head forward to reach the bar."
+      ]
+    },
+    {
+      "name": "Double-leg calf raise",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["gastrocnemius", "soleus"],
+      "pattern": "posterior-chain",
+      "level": "beginner",
+      "why": "Builds the calf and Achilles capacity that absorbs every foot strike, the base calf rung.",
+      "feel": "Squeeze in the calves with a strong burn over the set.",
+      "form": [
+        "Stand tall and rise onto the balls of the feet.",
+        "Pause briefly at the top.",
+        "Lower slowly back to the floor."
+      ],
+      "mistakes": [
+        "Bouncing quickly through the reps.",
+        "Rolling onto the outside of the foot.",
+        "Barely rising and skipping the top."
+      ]
+    },
+    {
+      "name": "Single-leg calf raise",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["gastrocnemius", "soleus"],
+      "pattern": "posterior-chain",
+      "level": "intermediate",
+      "why": "Loads one calf at full bodyweight, matching the single-leg push of running.",
+      "feel": "Much harder calf work on the working side.",
+      "form": [
+        "Stand on one foot and hold a support for balance.",
+        "Rise as high as possible onto the ball of the foot.",
+        "Lower slowly, letting the heel drop below the step if using one."
+      ],
+      "mistakes": [
+        "Leaning on the support and unloading the calf.",
+        "Cutting the range short.",
+        "Rushing and losing balance."
+      ]
+    },
+    {
+      "name": "Eccentric heel drop",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["gastrocnemius", "soleus", "Achilles tendon"],
+      "pattern": "posterior-chain",
+      "level": "intermediate",
+      "why": "The heavily loaded lowering phase used in Achilles loading programs, a proven option for calf and tendon strength.",
+      "feel": "Controlled stretch and load through the calf and Achilles.",
+      "form": [
+        "Rise on both feet on a step, then shift onto one leg.",
+        "Lower the heel slowly below the step over 3 to 5 seconds.",
+        "Use both feet to rise back to the top."
+      ],
+      "mistakes": [
+        "Dropping the heel fast instead of lowering with control.",
+        "Rolling the ankle at the bottom.",
+        "Doing too many reps at once and getting very sore."
+      ]
+    },
+    {
+      "name": "Bent-knee soleus raise",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["soleus", "Achilles tendon"],
+      "pattern": "posterior-chain",
+      "level": "intermediate",
+      "why": "The bent knee shifts load to the soleus, the calf that works most in running, and to the deeper part of the Achilles.",
+      "feel": "Deep, lower calf work close to the Achilles.",
+      "form": [
+        "Sit or stand with the knees bent about 90 degrees.",
+        "Press through the ball of the foot to raise the heel.",
+        "Lower slowly under control."
+      ],
+      "mistakes": [
+        "Straightening the knee and losing the soleus focus.",
+        "Rushing the reps.",
+        "Rolling onto the whole foot instead of the ball."
+      ]
+    },
+    {
+      "name": "Dead bug",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["deep abdominal wall", "hip flexors"],
+      "pattern": "core",
+      "level": "beginner",
+      "why": "Teaches the core to hold the trunk steady while the limbs move, exactly what running demands of the trunk.",
+      "feel": "Deep abdominal tension with the low back staying flat.",
+      "form": [
+        "Lie on your back with arms up and knees bent over the hips.",
+        "Slowly lower one arm and the opposite leg.",
+        "Return to the start and switch sides."
+      ],
+      "mistakes": [
+        "Low back arching off the floor.",
+        "Moving the limbs too fast.",
+        "Holding the breath through the rep."
+      ]
+    },
+    {
+      "name": "Side plank",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["obliques", "glutes", "deep abdominal wall"],
+      "pattern": "core",
+      "level": "intermediate",
+      "why": "Builds the side core that keeps the pelvis level through each single-leg stance.",
+      "feel": "Work along the side of the torso and hip.",
+      "form": [
+        "Lie on one side and prop on the forearm with the elbow under the shoulder.",
+        "Lift the hips until the body is in a straight line.",
+        "Hold for the set time, then switch sides."
+      ],
+      "mistakes": [
+        "Letting the hips drop.",
+        "Rolling the top shoulder forward.",
+        "Holding the breath and bracing too hard."
+      ]
+    },
+    {
+      "name": "Ab wheel rollout",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["abdominals", "lats", "hip flexors"],
+      "pattern": "core",
+      "level": "advanced",
+      "why": "Demands core control under a long lever, matching the need to stay tall and stable late in a run.",
+      "feel": "Deep core tension with a stretch through the front of the trunk.",
+      "form": [
+        "Kneel holding the wheel under the shoulders.",
+        "Roll forward while keeping the back flat.",
+        "Pull back with the core rather than the arms."
+      ],
+      "mistakes": [
+        "Letting the low back sag toward the floor.",
+        "Rolling out too far too soon.",
+        "Pulling back with the arms and hips instead of the core."
+      ]
+    },
+    {
+      "name": "Single-leg balance, eyes closed",
+      "modality": "strength",
+      "equipment": "bodyweight",
+      "muscles": ["ankle stabilizers", "foot intrinsics", "glutes"],
+      "pattern": "core",
+      "level": "advanced",
+      "why": "Trains the ankle and foot to hold steady without vision, useful on uneven ground and after an ankle sprain.",
+      "feel": "Small corrections firing in the ankle and foot.",
+      "form": [
+        "Stand on one foot with the hands relaxed.",
+        "Close the eyes once you feel steady.",
+        "Hold without touching down, then switch sides."
+      ],
+      "mistakes": [
+        "Gripping hard with the toes.",
+        "Locking the knee straight.",
+        "Letting the hips shift all to one side."
+      ]
+    }
+  ],
+  "summary_tier_a": "Bodyweight work can be progressed with no added load by moving through a ladder of harder versions of each running-relevant pattern. Evidence supports heavy, moderate tempo loading and slow eccentric work as the main drivers: Nordic curls cut hamstring injuries roughly in half and lengthen hamstring fascicles, and heavy slow resistance and eccentric heel drops both help the Achilles, with loading rather than the eccentric label doing the work. Unilateral training improves single-leg strength more than two-leg training, which matches running, and balance training cuts ankle sprain risk by about a third. When weight cannot increase, add difficulty with harder leverage, more range, slower tempo, pauses, and single-leg variants, and vary volume and intensity over weeks.",
+  "unverified": [
+    "Specific tempos (for example 3 to 5 second lowering, 1 to 2 second pause) are practical coaching defaults, not values fixed by a running trial. A 2026 randomized trial in runners did use high time under tension in bodyweight strength work and found neuromuscular gains but no change in running economy or 3000-meter performance over four weeks, and general resistance training research finds that a wide range of moderate tempos give similar results. No study sets the exact second values for these rungs.",
+    "The single-leg to push-up to pull ordering within a session is program design judgement, not an evidence-ranked sequence. General resistance training guidance suggests larger multi-joint exercises before smaller ones, but a meta-analysis found exercise order had no clear influence on muscle outcomes, and no running-specific trial ranks the squat, push and pull sequence for runners."
+  ],
+  "notes": "Ladder logic for the app: each pattern has a beginner, intermediate and advanced rung so a user can be progressed or regressed by swapping the movement, not by needing equipment. Movement rungs named in the brief but left out of the 22-item cap, and usable as extra rungs, include: tempo squat (add to the squat family as a dosing variant), diamond push-up and decline push-up (push), towel row and feet-elevated variants beyond the two listed (pull), the single-leg glute bridge (hinge), hollow hold and bird dog and front plank (core). Dosing: when an easy movement can be done well past about 30 controlled reps, move up a rung or slow the tempo; when an advanced rung breaks form before 6 to 8 reps, regress a rung. Eccentric and slow work is the main lever when load cannot rise. Achilles and hamstring work should build gradually to manage soreness, and Nordics are best progressed from assisted and can be placed in the cool down. All units and prescriptions here are movement-based; keep them metric and free of added-weight assumptions. Verification pass 2026-11-23: 2 substantiated, 2 remained unverified."
+}

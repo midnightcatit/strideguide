@@ -1,0 +1,802 @@
+{
+  "workstream": "mobility",
+  "subtopic": "Yoga, Pilates and breathwork for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Yoga and balance",
+      "claim": "Yoga improves balance in older adults. The pooled effect is moderate and survives sensitivity analysis.",
+      "evidence": "A 2023 systematic review and meta-analysis of randomized controlled trials in community-dwelling older adults found yoga significantly improved balance (SMD 0.81) after sensitivity analysis, alongside gains in mobility and lower-body flexibility.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of yoga on physical and psychological health among community-dwelling older adults: A systematic review and meta-analysis",
+        "authors": "Ko, K. Y., Kwok, Z. C. M., Chan, H. Y. L.",
+        "year": 2023,
+        "venue": "International Journal of Older People Nursing",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1111/opn.12562",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga and balance",
+      "claim": "Yoga can improve balance and lower the fear of falling in healthy people of mixed ages, though bone outcomes are mixed.",
+      "evidence": "A 2025 systematic review of 18 randomized controlled trials in healthy individuals reported benefits for balance and some fall-related measures. Effects on bone mineral density and bone turnover markers were inconsistent.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of yoga on balance, falls, and bone metabolism: a systematic review of randomized controlled trials in healthy individuals",
+        "authors": "Bajaj, P., Nagendra, L., Bajaj, A., Samuel, M., Chandran, M.",
+        "year": 2025,
+        "venue": "Osteoporosis International",
+        "type": "systematic-review",
+        "doi_or_url": "10.1007/s00198-024-07307-x",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga, flexibility and the honest limit",
+      "claim": "Yoga builds lower-body flexibility and balance but does not raise aerobic capacity. It is not an endurance intervention.",
+      "evidence": "A 2021 meta-analysis of yoga in older adults found moderate positive effects on muscle strength, balance, mobility and lower-body flexibility, but no significant effect on cardiorespiratory endurance or upper-body flexibility.",
+      "confidence": "high",
+      "citation": {
+        "title": "Meta-Analysis of the Effect of Yoga Practice on Physical Fitness in the Elderly",
+        "authors": "Shin, S.",
+        "year": 2021,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "meta-analysis",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8583600/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga compared with conventional exercise",
+      "claim": "For general functional fitness, yoga performs about as well as a matched stretching and strengthening program.",
+      "evidence": "An 8-week randomized controlled trial in 118 sedentary healthy adults found Hatha yoga produced functional fitness gains similar to a structured stretching-strengthening group. Yoga was not superior, which is the useful point.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Yoga Is as Good as Stretching-Strengthening Exercises in Improving Functional Fitness Outcomes: Results From a Randomized Controlled Trial",
+        "authors": "Gothe, N. P., McAuley, E.",
+        "year": 2016,
+        "venue": "The Journals of Gerontology: Series A",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5864160/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga and running performance",
+      "claim": "Brief yoga before running has only a small effect on performance. Motivational preparation moved the needle more.",
+      "evidence": "A controlled trial in distance runners found that a motivational preparatory intervention improved performance significantly more than brief yoga exercises or control. The yoga group improved but the effect was small.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of brief yoga exercises and motivational preparatory interventions in distance runners: results of a controlled trial",
+        "authors": "Donohue, B., Miller, A., Beisecker, M., Houser, D., Valdez, R., Tiller, S., Taymar, T.",
+        "year": 2006,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/16371493/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga and athletes",
+      "claim": "Adding yoga to track and field training improves flexibility and balance, with moderate strength gains.",
+      "evidence": "A 2025 systematic review of yoga in track and field athletes reported significant improvements in flexibility and balance and moderate strength gains. Performance outcomes such as speed were less consistent.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of yoga on selected performance metrics and mental health of track and field athletes: A systematic review",
+        "authors": "Singh, D., Kalra, S., Mohammad, M., Munjal, J., Danish, M., Ajmera, P.",
+        "year": 2025,
+        "venue": "Journal of Bodywork and Movement Therapies",
+        "type": "systematic-review",
+        "doi_or_url": "10.1016/j.jbmt.2025.08.006",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yogic breathing and running effort",
+      "claim": "Three weeks of yogic breathing practice let runners run faster at the same perceived effort.",
+      "evidence": "Runners who practiced three styles of yogic breathing for 30 minutes a day, 6 days a week for 3 weeks improved self-selected running velocity at both fixed effort levels (RPE 4 and RPE 7) compared with controls.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of 3 Weeks Yogic Breathing Techniques on Sub-maximal Running Responses",
+        "authors": "Clifton, C. L., Killen, L. G., Green, J. M., O'Neal, E. K., Swain, J. C., Frisbie, C. M.",
+        "year": 2023,
+        "venue": "International Journal of Exercise Science",
+        "type": "rct",
+        "doi_or_url": "10.70252/OLEG4431",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yogic breathing and running economy",
+      "claim": "Yogic breathing improved lung function but did not clearly improve running economy. These are different outcomes.",
+      "evidence": "A 3-week trial found yoga breathing raised forced vital capacity and FEV1, but had no significant effect on running economy. Lower perceived effort at high intensity was the main observed change.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of 3 Weeks Yogic Breathing Practice on Ventilation and Running Economy",
+        "authors": "Seltmann, C. L., Killen, L. G., Green, J. M., O'Neal, E. K., Swain, J. C., Frisbie, C. M.",
+        "year": 2020,
+        "venue": "International Journal of Exercise Science",
+        "type": "rct",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7039472/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Pilates and running performance",
+      "claim": "Twelve weeks of Pilates training improved 5 km time and lowered the metabolic cost of running in trained runners.",
+      "evidence": "In a 12-week controlled trial, trained runners cut 5 km time (about 29.29 to 28.42 minutes) and reduced the metabolic cost of running, changes the authors linked to better control and stabilization of the lumbopelvic region.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Pilates training improves 5-km run performance by changing metabolic cost and muscle activity in trained runners",
+        "authors": "Finatto, P., Silva, E. S., Okamura, A. B., Almada, B. P., Storniolo, J. L. L., Oliveira, H. B., Peyre-Tartaruga, L. A.",
+        "year": 2018,
+        "venue": "PLoS One",
+        "type": "rct",
+        "doi_or_url": "10.1371/journal.pone.0194057",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Pilates and running mechanics",
+      "claim": "Mat Pilates produced only a small, non-significant change in knee valgus during running in a small trial. No injury-relevant effect was shown.",
+      "evidence": "A 12-week mat-based Pilates trial in 34 young healthy adults (31 completed) reduced dynamic knee valgus during running by about 5.1 cm, but the repeated-measures analysis found the change was not statistically significant. Injury rates were not measured, and the authors called for a larger or supervised trial before drawing conclusions.",
+      "confidence": "low",
+      "citation": {
+        "title": "Impact of Pilates mat-based exercises on knee kinematics during running",
+        "authors": "González, J., Ortiz, A.",
+        "year": 2023,
+        "venue": "Journal of Bodywork and Movement Therapies",
+        "type": "rct",
+        "doi_or_url": "10.1016/j.jbmt.2022.09.005",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core training and running economy",
+      "claim": "Core training reliably improves core endurance, but the knock-on gain in running economy is small and inconsistent.",
+      "evidence": "An 8-week core training study lowered core muscle fatigue and improved core endurance, yet effects on running economy were limited. A separate Swiss ball study is discussed in its own claim.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of 8-week core training on core endurance and running economy",
+        "authors": "Hung, K. C., Chung, H. W., Yu, C. C. W., Lai, H. C., Sun, F. H.",
+        "year": 2019,
+        "venue": "PLoS One",
+        "type": "rct",
+        "doi_or_url": "10.1371/journal.pone.0213158",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core training and the honest null",
+      "claim": "Improving core stability does not automatically improve running economy.",
+      "evidence": "Six weeks of Swiss ball core training significantly improved lumbopelvic stability but produced no differences in running economy, VO2max, or trunk muscle EMG activity. Better core control alone did not make running cheaper.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effect of short-term Swiss ball training on core stability and running economy",
+        "authors": "Stanton, R., Reaburn, P. R., Humphries, B.",
+        "year": 2004,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "10.1519/1533-4287(2004)18<522:TEOSSB>2.0.CO;2",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Integrated core training and economy",
+      "claim": "A 6-week integrated core program improved joint symmetry and metabolic economy in trained runners.",
+      "evidence": "Trained runners who added a 6-week integrated core routine improved range-of-motion symmetry (left and right hip differences) and metabolic economy compared with controls who kept running only.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "An integrated core training program improves joint symmetry and metabolic economy in trained runners",
+        "authors": "Gottschall, J. S., Hastings, B.",
+        "year": 2019,
+        "venue": "The Journal of Sports Medicine and Physical Fitness",
+        "type": "rct",
+        "doi_or_url": "10.23736/S0022-4707.19.09619-1",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core fatigue and running economy",
+      "claim": "Trunk muscle fatigue worsens running economy, which is the mechanism core work is meant to protect against.",
+      "evidence": "A three-armed crossover pilot found that fatiguing the trunk and upper body lowered running economy in seven well-trained runners. Later studies confirm that trunk fatigue alters lower-limb mechanics, work and stiffness, but they do not replicate the running-economy effect, and the pilot's sample was only seven runners, so treat the size of the economy effect as provisional.",
+      "confidence": "low",
+      "citation": {
+        "title": "Trunk and Upper Body Fatigue Adversely Affect Running Economy: A Three-Armed Randomized Controlled Crossover Pilot Trial",
+        "authors": "Drum, S. N., Rappelt, L., Donath, L.",
+        "year": 2019,
+        "venue": "Sports (Basel)",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/31430880/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Core stability and running mechanics",
+      "claim": "Reducing core stability changes lower-extremity running mechanics, but it does not prove that more core work prevents injury.",
+      "evidence": "Experimentally reducing core stability in novice runners altered lower-extremity biomechanics. The authors noted that the link between those mechanics and actual injury risk in runners is still not well understood.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Reducing Core Stability Influences Lower Extremity Biomechanics in Novice Runners",
+        "authors": "Chaudhari, A. M. W., Van Horn, M. R., Monfort, S. M., Pan, X., Onate, J. A., Best, T. M.",
+        "year": 2020,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "observational",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7239732/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Hip and core exercise and injury prevention",
+      "claim": "A hip and core exercise program reduced running-related overuse injuries in novice runners.",
+      "evidence": "The three-arm Run RCT randomized 325 novice recreational runners and found the hip and core program lowered lower-extremity overuse injuries compared with the control group. This is among the strongest injury-prevention signals for trunk and hip work.",
+      "confidence": "high",
+      "citation": {
+        "title": "Hip and core exercise programme prevents running-related overuse injuries in adult novice recreational runners: a three-arm randomised controlled trial (Run RCT)",
+        "authors": "Leppanen, M., Viiala, J., Kaikkonen, P., Tokola, K., Vasankari, T., Nigg, B. M., Krosshaug, T., Werthner, P., Parkkari, J., Pasanen, K.",
+        "year": 2024,
+        "venue": "British Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1136/bjsports-2023-107926",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Clinical Pilates and injury risk",
+      "claim": "Clinical Pilates improves functional movement in recreational runners, which may lower injury risk but has not been shown to cut injuries.",
+      "evidence": "A 6-week clinical Pilates course in recreational runners significantly improved functional movement screening scores. The study measured movement quality, not injury rates, so the injury claim stays indirect.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Effect of Clinical Pilates on Functional Movement in Recreational Runners",
+        "authors": "Laws, A., Williams, S., Wilson, C.",
+        "year": 2017,
+        "venue": "International Journal of Sports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1055/s-0043-111893",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Breathwork and stress",
+      "claim": "Breathwork lowers self-reported stress, anxiety and depressive symptoms compared with non-breathwork controls, with small to medium effects.",
+      "evidence": "A 2023 meta-analysis of randomized controlled trials found significant small to medium effects of breathing practices, mostly slow-paced, on subjective stress, anxiety and depression. Most included studies had moderate risk of bias, which softens the confidence.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effect of breathwork on stress and mental health: A meta-analysis of randomised-controlled trials",
+        "authors": "Fincham, G. W., Strauss, C., Montero-Marin, J., Cavanagh, K.",
+        "year": 2023,
+        "venue": "Scientific Reports",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1038/s41598-022-27247-y",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Slow-paced breathing and sleep",
+      "claim": "Daily slow-paced breathing improved subjective sleep quality and night-time vagal activity over 30 days.",
+      "evidence": "A 30-day randomized trial compared slow-paced breathing with social media use. Sleep quality improved and cardiac vagal activity at night increased in the breathing group.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Influence of a 30-Day Slow-Paced Breathing Intervention Compared to Social Media Use on Subjective Sleep Quality and Cardiac Vagal Activity",
+        "authors": "Laborde, S., Hosang, T., Mosley, E., Dosseville, F., Aly, M., Allen, M. S.",
+        "year": 2019,
+        "venue": "Journal of Clinical Medicine",
+        "type": "rct",
+        "doi_or_url": "10.3390/jcm8020193",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Paced breathing and insomnia",
+      "claim": "Slow paced breathing before bed improved sleep quality in people with insomnia.",
+      "evidence": "A 2015 randomized trial had participants with insomnia do 20 minutes of slow paced breathing before sleep. Vagal activity rose and sleep quality improved.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Efficacy of paced breathing for insomnia: enhances vagal activity and improves sleep quality",
+        "authors": "Tsai, H. J., Kuo, T. B. J., Lee, G. S., et al.",
+        "year": 2015,
+        "venue": "Psychophysiology",
+        "type": "rct",
+        "doi_or_url": "10.1111/psyp.12333",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga and sleep",
+      "claim": "Yoga improves sleep quality in women with sleep problems, with mostly mild side effects.",
+      "evidence": "A 2020 systematic review and meta-analysis of randomized controlled trials found yoga improved sleep quality and insomnia symptoms in women with sleep complaints.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The effect of yoga on sleep quality and insomnia in women with sleep problems: a systematic review and meta-analysis",
+        "authors": "Wang, W. L., Chen, K. H., Pan, Y. C., Yang, S. N., Chan, Y. Y.",
+        "year": 2020,
+        "venue": "BMC Psychiatry",
+        "type": "meta-analysis",
+        "doi_or_url": "10.1186/s12888-020-02566-4",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Slow-paced breathing and athletes",
+      "claim": "Slow-paced breathing is put forward as support for endurance, well-being and sleep in athletes, but the athlete evidence is thinner than the general evidence.",
+      "evidence": "A 2021 review set out mechanisms by which slow-paced breathing could aid endurance, well-being and sleep in athletes, but it is a synthesis rather than a trial. Later randomized work has not supported a recovery benefit: slow-paced breathing added to sprint interval training did not improve recovery or performance. The athlete evidence stays thinner than the general stress and sleep evidence.",
+      "confidence": "low",
+      "citation": {
+        "title": "Using Slow-Paced Breathing to Foster Endurance, Well-Being, and Sleep Quality in Athletes During the COVID-19 Pandemic",
+        "authors": "Borges, U., Lobinger, B., Javelle, F., Watson, M., Mosley, E., Laborde, S.",
+        "year": 2021,
+        "venue": "Frontiers in Psychology",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fpsyg.2021.624655",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Slow-paced breathing and recovery",
+      "claim": "Slow-paced breathing did not improve recovery or performance after sprint interval training.",
+      "evidence": "A 4-week trial found that daily slow-paced breathing added no performance or physiological benefit when combined with sprint interval training. This is a useful counterweight to broad recovery claims.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "No Evidence for the Efficacy of Slow-Paced Breathing as a Recovery Strategy After Sprint Interval Training",
+        "authors": "Raidl, P., Wessner, B., et al.",
+        "year": 2026,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "rct",
+        "doi_or_url": "10.1123/ijspp.2025-0138",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Breathing rate and heart rate variability",
+      "claim": "Breathing near six breaths per minute raises heart rate variability more than box breathing or 4-7-8 breathing.",
+      "evidence": "A crossover study compared square, 4-7-8 and 6 breaths-per-minute conditions and found breathing at 6 bpm increased heart rate variability measures more than the other patterns, with small to medium effects and a higher risk of over-breathing.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparing the Effects of Square, 4-7-8, and 6 Breaths-per-Minute Breathing Conditions on Heart Rate Variability, CO2 Levels, and Mood",
+        "authors": "Marchant, J., Khazan, I., Cressman, M., Steffen, P.",
+        "year": 2025,
+        "venue": "PubMed (peer-reviewed journal article)",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/39864026/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Brief breathwork and mood",
+      "claim": "Five minutes of cyclic sighing improved mood and lowered physiological arousal compared with mindfulness meditation.",
+      "evidence": "A randomized study found brief daily breathwork, especially cyclic sighing (extended exhalations), improved mood and reduced respiratory rate more than mindfulness meditation over the study period.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Brief structured respiration practices enhance mood and reduce physiological arousal",
+        "authors": "Balban, M. Y., Neri, E., Kogon, M. M., Weed, L., Nouriani, B., Jo, B., Holl, G., Zeitzer, J. M., Spiegel, D., Huberman, A. D.",
+        "year": 2023,
+        "venue": "Cell Reports Medicine",
+        "type": "rct",
+        "doi_or_url": "10.1016/j.xcrm.2022.100895",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Breathwork dose",
+      "claim": "Very short or fast-only breathing sessions help less. Repeated practice over minutes, not seconds, is what works.",
+      "evidence": "A 2023 systematic review of 58 trials found stress-reducing breathwork avoided fast-only breathing and sessions under 5 minutes, and included guided training, multiple sessions and long-term practice.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Breathing Practices for Stress and Anxiety Reduction: Conceptual Framework of Implementation Guidelines Based on a Systematic Review of the Published Literature",
+        "authors": "Bentley, T. G. K., D'Andrea-Penna, G., Rakic, M., Arce, N., LaFaille, M., Berman, R., Cooley, K., Sprimont, P.",
+        "year": 2023,
+        "venue": "PubMed Central (peer-reviewed journal article)",
+        "type": "systematic-review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10741869/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nasal breathing and running intensity",
+      "claim": "Nasal breathing is comfortable and adequate at low intensity, but the evidence for it during hard running is limited and mixed.",
+      "evidence": "A 2022 review of breathing strategies for runners concluded that nasal breathing is useful at low intensity for airway and cognitive reasons, while direct experimental evidence during high-intensity running is limited and some protocols increase breathing work.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Breath Tools: A Synthesis of Evidence-Based Breathing Strategies to Enhance Human Running",
+        "authors": "Harbour, E., Stoggl, T., Schwameder, H., Finkenzeller, T.",
+        "year": 2022,
+        "venue": "Frontiers in Physiology",
+        "type": "narrative-review",
+        "doi_or_url": "10.3389/fphys.2022.813243",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Nasal breathing and maximal performance",
+      "claim": "Nasal-only breathing does not improve maximal oxygen uptake and reduces maximal ventilation.",
+      "evidence": "An early crossover study found nose-only breathing lowered maximal ventilation compared with mouth breathing, and gave no VO2max advantage. Later work agrees that nasal airflow has a ceiling as intensity rises.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparison of maximal oxygen consumption with oral and nasal breathing",
+        "authors": "Morton, A. R., King, K., Papalia, S., Goodman, C., Turley, K. R., Wilmore, J. H.",
+        "year": 1995,
+        "venue": "PubMed (peer-reviewed journal article)",
+        "type": "rct",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/8599744/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga and Pilates are not a substitute",
+      "claim": "Yoga and Pilates add mobility, balance and core control, but they are not a substitute for running or strength training. Running economy gains come mainly from lower-limb strength and plyometric work.",
+      "evidence": "A 2022 narrative review of resistance exercise in endurance runners found robust evidence that lower-limb resistance and plyometric training improve running economy and performance and reduce injury risk. Mobility and core practices serve a different role.",
+      "confidence": "high",
+      "citation": {
+        "title": "Resistance Exercise for Improving Running Economy and Running Biomechanics and Decreasing Running-Related Injury Risk: A Narrative Review",
+        "authors": "Suc, A., Sarko, P., Plesa, J., Kozinc, Z.",
+        "year": 2022,
+        "venue": "Sports (Basel)",
+        "type": "narrative-review",
+        "doi_or_url": "10.3390/sports10070098",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Yoga and Pilates as cross-training (coaching view)",
+      "claim": "Coaching guidance treats yoga and Pilates as cross-training that fills gaps in mobility and core control rather than as performance drivers.",
+      "evidence": "Runner-focused coaching writing frames yoga and Pilates as ways to offset the repetitive stride, build hip and core control, and support recovery, while keeping the main performance work in running and strength training.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "The Benefits of Yoga for Runners, Backed by Research",
+        "authors": "Runner's World",
+        "year": 2024,
+        "venue": "Runner's World",
+        "type": "coaching",
+        "doi_or_url": "https://www.runnersworld.com/training/a32713561/yoga-benefits-for-runners/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Box breathing and recovery",
+      "claim": "Box breathing does not improve recovery after hard exercise. In a direct comparison it left heart rate and perceived effort higher than breathing near six breaths per minute.",
+      "evidence": "A randomized crossover trial had 40 active adults complete three HIIT sessions, each followed by spontaneous breathing, box breathing (4-4-4-4) or slow breathing at six breaths per minute. Box breathing left heart rate higher (about 165 versus 155 bpm) and perceived exertion higher (Borg about 17.3 versus 15.3) than six-breaths-per-minute breathing and spontaneous breathing. No protocol changed recovery time, and six breaths per minute was the better recovery pattern.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Box breathing or six breaths per minute: Which strategy improves athletes post-HIIT cardiovascular recovery?",
+        "authors": "Kasap, M., Aydin, G. R.",
+        "year": 2025,
+        "venue": "PLoS One",
+        "type": "rct",
+        "doi_or_url": "10.1371/journal.pone.0336615",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "4-7-8 versus six breaths per minute",
+      "claim": "No popular pattern such as 4-7-8 breathing is shown superior to slow breathing near six breaths per minute. The direct comparison favored six breaths per minute.",
+      "evidence": "A crossover study compared square breathing, 4-7-8 breathing and slow breathing at six breaths per minute. Breathing at six per minute produced the largest rise in heart rate variability, with 4-7-8 lower and a higher risk of over-breathing. The authors note that support for square and 4-7-8 patterns is weak.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Comparing the Effects of Square, 4-7-8, and 6 Breaths-per-Minute Breathing Conditions on Heart Rate Variability, CO2 Levels, and Mood",
+        "authors": "Marchant, J., Khazan, I., Cressman, M., Steffen, P.",
+        "year": 2025,
+        "venue": "Applied Psychophysiology and Biofeedback",
+        "type": "rct",
+        "doi_or_url": "10.1007/s10484-025-09688-z",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "catalog_candidates": [
+    {
+      "name": "Downward dog",
+      "type": "static",
+      "targets": ["hamstrings", "calves", "shoulders", "spine"],
+      "durationSec": 45,
+      "why": "Lengthens the whole back line of the legs and opens the shoulders, which tightens up from running posture.",
+      "feel": "A long stretch down the back of the legs and a gentle pull across the shoulders. Mild is fine, sharp is not.",
+      "form": [
+        "Start on hands and knees, then lift the hips up and back.",
+        "Press the floor away, spread the fingers, keep a slight bend in the knees.",
+        "Let the heels sink toward the floor without forcing them down."
+      ],
+      "mistakes": [
+        "Locking the knees and rounding the lower back to chase straight legs.",
+        "Letting the shoulders shrug up around the ears."
+      ]
+    },
+    {
+      "name": "Pigeon pose (figure-4 hip stretch)",
+      "type": "static",
+      "targets": ["glutes", "piriformis", "hip external rotators"],
+      "durationSec": 45,
+      "why": "Releases the outer hip and glute that tighten with hill running and long sitting.",
+      "feel": "A deep stretch through the back of the hip on the front leg. Should be strong but never pinching in the knee.",
+      "form": [
+        "From all fours, bring one knee forward and lay the shin across the mat.",
+        "Slide the other leg straight back and let the hips settle square.",
+        "Keep the front foot flexed and walk the hands forward to deepen."
+      ],
+      "mistakes": [
+        "Letting the hip on the front-leg side roll off to the side.",
+        "Loading the knee joint instead of the hip, especially if the knee protests."
+      ]
+    },
+    {
+      "name": "Warrior II",
+      "type": "static",
+      "targets": ["quads", "glutes", "hips", "ankles", "adductors"],
+      "durationSec": 40,
+      "why": "Builds hip and leg strength while stretching the inner thigh, and trains the balance and ankle stability runners rely on.",
+      "feel": "A steady burn in the front thigh and a stretch along the inner thigh of the back leg.",
+      "form": [
+        "Step the feet wide, turn the front foot out and the back foot in slightly.",
+        "Bend the front knee toward 90 degrees, tracking over the toes.",
+        "Reach the arms out long and level, gaze over the front hand."
+      ],
+      "mistakes": [
+        "Front knee caving inward instead of tracking over the toes.",
+        "Leaning the torso forward over the front thigh."
+      ]
+    },
+    {
+      "name": "Child's pose",
+      "type": "static",
+      "targets": ["lower back", "hips", "shoulders", "lats"],
+      "durationSec": 60,
+      "why": "A calm reset for the lower back and hips that doubles as a breathing position between harder work.",
+      "feel": "A gentle spread through the lower back and hips, and a soft opening across the shoulders.",
+      "form": [
+        "Kneel with the big toes together and knees apart to hip width.",
+        "Sit the hips back toward the heels and walk the hands forward.",
+        "Rest the forehead down and breathe into the back of the ribs."
+      ],
+      "mistakes": [
+        "Pushing the hips down with force when the knees or hips feel pinched.",
+        "Holding the breath instead of using it to settle."
+      ]
+    },
+    {
+      "name": "Cat-cow",
+      "type": "dynamic",
+      "targets": ["spine", "core", "thoracic mobility"],
+      "durationSec": 45,
+      "why": "Wakes up the spine and mid-back before or after a run, moving the segment runners keep stiff.",
+      "feel": "A smooth wave along the spine, with the mid-back and belly moving in and out of the floor.",
+      "form": [
+        "Start on hands and knees with a neutral spine.",
+        "Inhale, drop the belly and lift the chest and tailbone (cow).",
+        "Exhale, round the spine and tuck the chin and tailbone (cat)."
+      ],
+      "mistakes": [
+        "Moving only the lower back instead of the whole spine.",
+        "Rushing the breath so the movement turns jerky."
+      ]
+    },
+    {
+      "name": "Half-kneeling hip flexor stretch",
+      "type": "static",
+      "targets": ["hip flexors", "quads", "rectus femoris"],
+      "durationSec": 45,
+      "why": "Counters the shortened hip flexors that come with lots of sitting and running.",
+      "feel": "A stretch at the front of the hip and thigh of the back leg. Mild low-back pressure is a sign to ease off.",
+      "form": [
+        "Kneel on one knee with the other foot flat in front, both knees near 90 degrees.",
+        "Tuck the pelvis under and gently push the hips forward.",
+        "Reach the same-side arm overhead and lean slightly away to bias the stretch."
+      ],
+      "mistakes": [
+        "Arching the lower back instead of tucking the pelvis.",
+        "Letting the back knee drift outward away from the body."
+      ]
+    },
+    {
+      "name": "Single-leg balance (standing)",
+      "type": "static",
+      "targets": ["ankle stabilizers", "gluteus medius", "foot intrinsics"],
+      "durationSec": 40,
+      "why": "Trains the ankle and hip stability that keeps each footfall controlled on uneven ground.",
+      "feel": "A quiet wobble that settles as the small foot and hip muscles take over.",
+      "form": [
+        "Stand tall and lift one foot off the floor, knee slightly soft.",
+        "Fix the gaze on a still point ahead.",
+        "Progress by closing the eyes or standing on a folded towel."
+      ],
+      "mistakes": [
+        "Gripping the toes hard to stay still instead of letting the ankle adjust.",
+        "Letting the standing hip drop or the knee cave inward."
+      ]
+    },
+    {
+      "name": "Glute bridge",
+      "type": "core",
+      "targets": ["glutes", "hamstrings", "deep core"],
+      "durationSec": 40,
+      "why": "Builds the hip drive runners use to extend the leg, without loading the knees or spine.",
+      "feel": "A strong squeeze in the glutes, with the work leaving the lower back alone.",
+      "form": [
+        "Lie on your back, knees bent, feet flat and hip width.",
+        "Press through the heels and lift the hips until the body forms a line.",
+        "Squeeze the glutes at the top, then lower slowly."
+      ],
+      "mistakes": [
+        "Arching the lower back at the top instead of squeezing the glutes.",
+        "Pushing through the toes so the quads take over."
+      ]
+    },
+    {
+      "name": "Single-leg glute bridge",
+      "type": "core",
+      "targets": ["glutes", "hamstrings", "deep core", "hip stability"],
+      "durationSec": 30,
+      "why": "Trains one hip at a time, which exposes the side-to-side differences runners develop.",
+      "feel": "Much harder on one leg, with a deep burn in the glute and a pull to keep the hips level.",
+      "form": [
+        "Set up as for a glute bridge, then lift one foot off the floor.",
+        "Drive the standing heel down and lift the hips level.",
+        "Keep the hips square, do not let the free side sag."
+      ],
+      "mistakes": [
+        "Letting the pelvis tilt down on the side of the lifted leg.",
+        "Rushing reps and losing control at the top."
+      ]
+    },
+    {
+      "name": "Dead bug",
+      "type": "core",
+      "targets": ["deep core", "trunk anti-extension", "hip flexors"],
+      "durationSec": 45,
+      "why": "Teaches the core to hold the spine still while the legs move, which mirrors running.",
+      "feel": "A quiet, steady tension across the belly, with the lower back staying glued down.",
+      "form": [
+        "Lie on your back with the knees and hips at 90 degrees, arms up.",
+        "Slowly lower one arm and the opposite leg toward the floor.",
+        "Return to the start and alternate sides, keeping the back flat."
+      ],
+      "mistakes": [
+        "Letting the lower back arch off the floor as the leg lowers.",
+        "Moving fast and losing the connection between ribs and pelvis."
+      ]
+    },
+    {
+      "name": "Bird dog",
+      "type": "core",
+      "targets": ["deep core", "glutes", "spinal stabilizers"],
+      "durationSec": 45,
+      "why": "Builds the core and glute control that keeps the trunk steady through a single-leg stance.",
+      "feel": "A stable, braced back with a small shake as you resist rotation.",
+      "form": [
+        "Start on hands and knees with a neutral spine.",
+        "Reach the opposite arm and leg out long and level.",
+        "Hold, then return with control and switch sides."
+      ],
+      "mistakes": [
+        "Lifting the leg so high the lower back arches.",
+        "Twisting the hips open instead of keeping them square."
+      ]
+    },
+    {
+      "name": "Side plank",
+      "type": "core",
+      "targets": ["obliques", "gluteus medius", "lateral trunk"],
+      "durationSec": 30,
+      "why": "Trains the lateral hip and trunk that keep the pelvis level as you run.",
+      "feel": "A firm line of tension down the side of the body, from shoulder to outer hip.",
+      "form": [
+        "Lie on one side propped on the forearm, elbow under the shoulder.",
+        "Lift the hips so the body forms a straight line.",
+        "Hold, then lower with control and repeat on the other side."
+      ],
+      "mistakes": [
+        "Letting the hips sink toward the floor.",
+        "Rolling the top shoulder forward instead of staying stacked."
+      ]
+    },
+    {
+      "name": "The hundred (Pilates)",
+      "type": "core",
+      "targets": ["deep abdominals", "hip flexors", "breathing"],
+      "durationSec": 45,
+      "why": "Builds endurance in the deep core while syncing the breath, useful for holding good posture late in a run.",
+      "feel": "A deep burn in the belly, with the effort coming from holding the ribs down, not from the neck.",
+      "form": [
+        "Lie on your back, lift the head and shoulders, legs in tabletop.",
+        "Extend the legs to a challenging but stable angle.",
+        "Pump the arms by the sides 5 times in and 5 times out, keeping the back flat."
+      ],
+      "mistakes": [
+        "Straining the neck instead of the abdominals.",
+        "Letting the lower back lift off the floor as the legs extend."
+      ]
+    },
+    {
+      "name": "Leg circles (Pilates)",
+      "type": "core",
+      "targets": ["hip mobility", "core control", "adductors"],
+      "durationSec": 40,
+      "why": "Keeps the hip mobile while the core holds the pelvis still, which is the control running needs.",
+      "feel": "A smooth circle in the hip with the pelvis staying quiet underneath.",
+      "form": [
+        "Lie on your back with one leg up toward the ceiling.",
+        "Draw a small, controlled circle with the leg.",
+        "Keep the pelvis anchored and reverse direction at the end."
+      ],
+      "mistakes": [
+        "Drawing circles so large the pelvis rocks side to side.",
+        "Using momentum instead of slow control."
+      ]
+    },
+    {
+      "name": "Diaphragmatic breathing",
+      "type": "breath",
+      "targets": ["diaphragm", "lower ribs"],
+      "durationSec": 120,
+      "why": "Trains the breathing muscles to work from the belly, which can lower the effort of breathing during runs.",
+      "feel": "A slow rise and fall of the belly with the shoulders still, and a calmer, slower pace.",
+      "form": [
+        "Lie on your back with one hand on the belly and one on the chest.",
+        "Breathe in slowly so the belly hand rises more than the chest hand.",
+        "Breathe out slowly and fully, and let the belly fall."
+      ],
+      "mistakes": [
+        "Pushing the belly out with force instead of letting the breath fill it.",
+        "Forcing long counts that create tension or lightheadedness."
+      ]
+    },
+    {
+      "name": "Box breathing (4-4-4-4)",
+      "type": "breath",
+      "targets": ["autonomic balance", "breath control"],
+      "durationSec": 120,
+      "why": "A simple, countable rhythm to settle the heart and nerves before a hard session or after a stressful day.",
+      "feel": "A steady, even rhythm with short pauses that feels grounding once the count locks in.",
+      "form": [
+        "Sit or lie down and breathe in through the nose for 4 counts.",
+        "Hold for 4, breathe out for 4, hold for 4.",
+        "Repeat for a few minutes, keeping the shoulders relaxed."
+      ],
+      "mistakes": [
+        "Forcing the holds so long that you strain or gasp.",
+        "Chasing the count on the first breath instead of easing into it."
+      ]
+    },
+    {
+      "name": "Nasal breathing on an easy run",
+      "type": "breath",
+      "targets": ["nasal airway", "ventilatory control"],
+      "durationSec": 180,
+      "why": "Keeps easy runs genuinely easy by capping effort, and trains a relaxed breathing pattern at low intensity.",
+      "feel": "A slower, quieter breath through the nose with the mouth closed, comfortable only while the pace stays light.",
+      "form": [
+        "At an easy pace, breathe only through the nose.",
+        "If you feel air hunger, slow down rather than open the mouth.",
+        "Switch to mouth or nose-and-mouth breathing the moment intensity rises."
+      ],
+      "mistakes": [
+        "Forcing nasal-only breathing during hard or fast running.",
+        "Treating it as a rule rather than an easy-day tool."
+      ]
+    },
+    {
+      "name": "Slow-paced breathing near 6 breaths per minute",
+      "type": "breath",
+      "targets": ["autonomic balance", "recovery and sleep"],
+      "durationSec": 300,
+      "why": "Aim for about 6 breaths per minute in the evening to settle the system and support sleep quality.",
+      "feel": "A slow, even breath with a long relaxed exhale, and a settling feeling in the chest and belly.",
+      "form": [
+        "Sit or lie down and breathe in for about 4 to 5 seconds.",
+        "Breathe out for about 5 to 6 seconds, slightly longer than the inhale.",
+        "Keep going for 5 to 10 minutes, staying comfortable throughout."
+      ],
+      "mistakes": [
+        "Breathing so deeply that you feel dizzy or tingly, which means slow down the volume.",
+        "Expecting an instant performance boost, since recovery evidence is mixed."
+      ]
+    }
+  ],
+  "summary_tier_a": "Yoga reliably improves balance and lower-body flexibility, and it improves sleep quality in people with sleep complaints, but it does not raise aerobic capacity and is not an endurance intervention. Pilates and core training improve core endurance and lumbopelvic control, and one 12-week Pilates trial improved 5 km time and running economy in trained runners, though other core studies show no running-economy change, so the performance size is uncertain. A hip and core program cut overuse injuries in novice runners, which is the strongest injury signal here. Breathwork, mostly slow-paced, has small to medium effects on stress and anxiety, better evidence for sleep than for recovery, and nasal breathing is useful at low intensity but not a race-performance fix. Yoga and Pilates belong in a runner's plan as mobility, balance and core control, alongside continuing running and strength work.",
+  "unverified": [
+    "That yoga specifically prevents running-related injuries. No controlled trial has measured running injury rates under a yoga program. The closest evidence is observational: a survey of 570 performance-oriented parkrunners found stretching or yoga was linked to more injuries overall, although the association became a near-significant protective trend (p = 0.05) once runners who were using it to rehab a past injury were excluded. The injury-prevention claim remains unproven.",
+    "That Pilates reduces running injury rates. No trial has measured running injuries under a Pilates program. The evidence covers proxies only: a 6-week clinical Pilates course improved functional movement screening in recreational runners (Laws 2017), and a 12-week mat Pilates program reduced knee valgus during running by 5.1 cm but without statistical significance (González 2023). The injury claim stays indirect.",
+    "That nasal-only breathing improves race performance. No study shows a race-performance benefit, and direct evidence points the other way: nose-only breathing lowers maximal ventilation and gives no VO2max advantage (Morton 1995), and later work finds nasal airflow has a ceiling as intensity rises while remaining adequate at low intensity. Low-intensity use is supported, a race-performance effect is not."
+  ],
+  "notes": "Research only, no app code touched. Evidence base is mixed in strength: yoga balance and flexibility, breathwork for stress and sleep, and hip and core injury prevention in novice runners have solid pooled or randomized support. Running-economy claims from Pilates and isolated core programs rest on small trials with inconsistent results, so they are marked moderate or low. Venue is given as the outlet where it was confirmed; a few citations show the repository (PubMed or PubMed Central) as venue where the journal was not re-verified, and the doi_or_url always resolves. Two sources use the honest nulls (Stanton 2004 for core and running economy, Raidl 2026 for slow-paced breathing and recovery) to counter overclaiming. Catalog candidates list durationSec as a starting prescription for a runner app, to be adjusted per user. Verification pass 2026-11-23: 2 substantiated, 3 remained unverified."
+}
