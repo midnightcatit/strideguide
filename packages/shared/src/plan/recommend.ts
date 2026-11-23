@@ -10,11 +10,10 @@ export interface Recommendation {
 	reason: string;
 }
 
-/** A suggested weekly distance in km, from the experience level and the goal. */
-export function recommendWeeklyKm(
-	experience: string | undefined,
-	profileSlug: string,
-): Recommendation {
+/** A typical weekly distance in km for a level and goal, the shared basis for
+ * both the onboarding suggestion and the engine's own fallback, so the plan a
+ * runner gets matches the number onboarding suggested. */
+export function suggestedWeeklyKm(experience: string | undefined, profileSlug: string): number {
 	const level = experience ?? 'beginner';
 	const base: Record<string, number> = { beginner: 20, intermediate: 35, advanced: 55 };
 	const factor: Record<string, number> = {
@@ -24,7 +23,16 @@ export function recommendWeeklyKm(
 		'5k': 0.75,
 		'whole-fitness': 0.85,
 	};
-	const value = Math.round((base[level] ?? 20) * (factor[profileSlug] ?? 0.9));
+	return Math.round((base[level] ?? 20) * (factor[profileSlug] ?? 0.9));
+}
+
+/** A suggested weekly distance in km, from the experience level and the goal. */
+export function recommendWeeklyKm(
+	experience: string | undefined,
+	profileSlug: string,
+): Recommendation {
+	const level = experience ?? 'beginner';
+	const value = suggestedWeeklyKm(experience, profileSlug);
 	const goal = getGoalProfile(profileSlug)?.name ?? 'your goal';
 	return {
 		value,
