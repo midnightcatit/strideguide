@@ -6,6 +6,7 @@ import {
 	type Prefs,
 	type Units,
 } from '@strideguide/shared/units';
+import { sessionTypeLabel } from './plan';
 import { api } from './api';
 
 /** Reactive app preferences (units, week start). Mutate properties; don't reassign. */
@@ -72,13 +73,16 @@ export function convertPaceDelta(secPerKm: number): number {
 	return prefs.units === 'imperial' ? Math.round(secPerKm * 1.609344) : Math.round(secPerKm);
 }
 
-/** A step/rep distance in the user's units (metres for short metric steps, miles for imperial). */
+/** A step/rep distance in the user's units. Reps under a kilometre read in metres in both systems. */
 export function fmtStepDistance(meters: number): string {
+	// Short reps are stated in metres the world over ("6 × 800 m", "2 × 400 m"),
+	// so keep metres below a kilometre even for imperial users.
+	if (meters < 1000) return `${Math.round(meters)} m`;
 	if (prefs.units === 'imperial') {
 		const mi = meters / 1609.344;
 		return `${mi.toFixed(mi < 10 ? 2 : 1)} mi`;
 	}
-	return meters < 1000 ? `${Math.round(meters)} m` : `${Math.round((meters / 1000) * 10) / 10} km`;
+	return `${Math.round((meters / 1000) * 10) / 10} km`;
 }
 
 interface LabelSession {
@@ -89,16 +93,17 @@ interface LabelSession {
 	} | null;
 }
 
-/** A unit-correct display label: "6 × 800 m" (metric) / "6 × 0.50 mi" (imperial). */
+/** A human-readable label: the workout name plus the rep scheme, e.g. "Intervals · 6 × 800 m". */
 export function sessionLabel(session: LabelSession): string {
+	const base = session.title ?? sessionTypeLabel(session.type);
 	const blocks = session.prescription?.workout?.blocks ?? [];
 	const setBlock = blocks.find((b) => (b.repeat ?? 1) > 1);
 	if (setBlock) {
 		const steps = setBlock.steps ?? [];
 		const rep = steps.find((st) => st.kind === 'work' && st.distanceM) ?? steps[0];
-		if (rep?.distanceM) return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
+		if (rep?.distanceM) return `${base} · ${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 	}
-	return session.title ?? session.type;
+	return base;
 }
 
 /** Height, weight and resting heart rate. Pass null to clear a value. */
