@@ -31,7 +31,13 @@
 	let playTarget = $state<ClientSession | null>(null);
 	let logTarget = $state<ClientSession | null>(null);
 	let pickerDate = $state<string | null>(null);
-	let confirm = $state<{ kind: 'skip' | 'unskip'; id: string } | null>(null);
+	let confirm = $state<{
+		title: string;
+		body: string;
+		confirmLabel: string;
+		tone?: 'default' | 'danger';
+		action: () => void;
+	} | null>(null);
 
 	// Back (browser or hardware) closes the topmost overlay: a session, then the day sheet.
 	overlayHistory(
@@ -149,6 +155,29 @@
 	onMount(() => {
 		void ensurePlan();
 	});
+
+	function confirmIfFuture(_s: ClientSession, label: string, action: () => void): boolean {
+		const d = sheetIso;
+		if (d && d > todayIso) {
+			confirm = {
+				title: `${label} a future workout?`,
+				body: `This one is on ${d}. ${label} it anyway?`,
+				confirmLabel: `${label} anyway`,
+				action,
+			};
+			return true;
+		}
+		return false;
+	}
+	function startSession(s: ClientSession) {
+		if (confirmIfFuture(s, 'Start', () => { markStarted(s.id); playTarget = s; })) return;
+		markStarted(s.id);
+		playTarget = s;
+	}
+	function logSession(s: ClientSession) {
+		if (confirmIfFuture(s, 'Log', () => (logTarget = s))) return;
+		logTarget = s;
+	}
 
 	function stepMonth(delta: number) {
 		monthOffset += delta;
@@ -357,7 +386,16 @@
 			detailTarget = null;
 		}}
 		onSkip={() => {
-			if (detailTarget) confirm = { kind: 'skip', id: detailTarget.id };
+			if (detailTarget)
+				confirm = {
+					title: 'Skip this workout?',
+					body: 'It stays on your calendar, marked as skipped. You can un-skip it any time.',
+					confirmLabel: 'Skip it',
+					action: () => {
+						skipSession(detailTarget!.id);
+						detailTarget = null;
+					},
+				};
 		}}
 	/>
 {/if}
@@ -370,12 +408,15 @@
 		logged={loggedBySession.get(s.id) ?? null}
 		onRemove={s.prescription?.added ? () => removeAdded(s.id) : undefined}
 		onLog={() => (logTarget = s)}
-		onStart={() => {
-			markStarted(s.id);
-			playTarget = s;
-		}}
+		onStart={() => startSession(s)}
 		onOpen={() => (detailTarget = s)}
-		onUnskip={() => (confirm = { kind: 'unskip', id: s.id })}
+		onUnskip={() =>
+			(confirm = {
+				title: 'Un-skip this workout?',
+				body: 'It goes back to your normal plan for the day.',
+				confirmLabel: 'Un-skip',
+				action: () => unskipSession(s.id),
+			})}
 		onCancelProgress={() => {
 			clearStarted(s.id);
 			clearProgress(s.id);
@@ -385,20 +426,11 @@
 
 {#if confirm}
 	<ConfirmSheet
-		title={confirm.kind === 'skip' ? 'Skip this workout?' : 'Un-skip this workout?'}
-		body={confirm.kind === 'skip'
-			? 'It stays on your calendar, marked as skipped. You can un-skip it any time.'
-			: 'It goes back to your normal plan for the day.'}
-		confirmLabel={confirm.kind === 'skip' ? 'Skip it' : 'Un-skip'}
-		onConfirm={() => {
-			if (!confirm) return;
-			if (confirm.kind === 'skip') {
-				skipSession(confirm.id);
-				detailTarget = null;
-			} else {
-				unskipSession(confirm.id);
-			}
-		}}
+		title={confirm.title}
+		body={confirm.body}
+		confirmLabel={confirm.confirmLabel}
+		tone={confirm.tone ?? 'default'}
+		onConfirm={confirm.action}
 		onClose={() => (confirm = null)}
 	/>
 {/if}

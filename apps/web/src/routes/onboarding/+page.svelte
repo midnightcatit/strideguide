@@ -34,7 +34,7 @@
 	let flexGoal = $state(4);
 	let customActivity = $state('');
 	let showMoreCross = $state(false);
-	let crossDays = $state<number[]>([]);
+	let crossSchedule = $state<Record<string, number[]>>({});
 	let crossTraining = $state<string[]>([]);
 	let terrain = $state<'flat' | 'hilly' | 'mixed'>('mixed');
 	let niggles = $state('');
@@ -327,10 +327,14 @@
 		days = days.includes(d) ? days.filter((x) => x !== d) : [...days, d].sort((a, b) => a - b);
 	}
 
-	function toggleCrossDay(d: number) {
-		crossDays = crossDays.includes(d)
-			? crossDays.filter((x) => x !== d)
-			: [...crossDays, d].sort((a, b) => a - b);
+	function toggleCrossDay(key: string, d: number) {
+		const cur = crossSchedule[key] ?? [];
+		const next = cur.includes(d) ? cur.filter((x) => x !== d) : [...cur, d].sort((a, b) => a - b);
+		crossSchedule = { ...crossSchedule, [key]: next };
+	}
+	function crossLabel(id: string): string {
+		if (id === 'custom') return customActivity.trim() || 'Your activity';
+		return CROSS.find((c) => c.v === id)?.name ?? id;
 	}
 
 	function toggleCross(v: string) {
@@ -437,7 +441,15 @@
 					sessionMinutes,
 					flexibility: { current: flexCurrent, goal: flexGoal },
 					...(customActivity.trim() ? { customActivity: customActivity.trim() } : {}),
-					...(crossDays.length ? { crossTrainingDays: crossDays } : {}),
+					...(() => {
+						const schedule = [
+							...crossTraining.map((a) => ({ activity: crossLabel(a), days: crossSchedule[a] ?? [] })),
+							...(customActivity.trim()
+								? [{ activity: customActivity.trim(), days: crossSchedule.custom ?? [] }]
+								: []),
+						].filter((e) => e.days.length);
+						return schedule.length ? { crossTrainingSchedule: schedule } : {};
+					})(),
 					terrain,
 					...(crossTraining.length ? { crossTraining } : {}),
 					...(str(niggles) ? { niggles: str(niggles) } : {}),
@@ -742,28 +754,35 @@
 						/>
 						<span class="mt-1 block text-xs text-steel">Your coach uses this to shape the plan. Anything you pick or write stays gentle, so it never crowds the running.</span>
 					</label>
-					<div class="mt-4">
-						<p class="tabular text-xs uppercase tracking-widest text-steel">Which days do you usually do this?</p>
-						<div class="mt-2 flex justify-between gap-1">
-							{#each DAY_INITIALS as initial, d (d)}
-								<button
-									type="button"
-									aria-pressed={crossDays.includes(d)}
-									onclick={() => toggleCrossDay(d)}
-									class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {crossDays.includes(d)
-										? 'bg-ink font-bold text-paper'
-										: 'border border-hairline text-steel hover:border-steel'}"
-								>
-									{initial}
-								</button>
+					{#if crossTraining.length || customActivity.trim()}
+						<div class="mt-5 grid gap-4">
+							<p class="tabular text-xs uppercase tracking-widest text-steel">Which days?</p>
+							{#each [...crossTraining, ...(customActivity.trim() ? ['custom'] : [])] as key (key)}
+								<div>
+									<p class="text-sm font-medium">{crossLabel(key)}</p>
+									<div class="mt-1 flex justify-between gap-1">
+										{#each DAY_INITIALS as initial, d (d)}
+											<button
+												type="button"
+												aria-pressed={(crossSchedule[key] ?? []).includes(d)}
+												onclick={() => toggleCrossDay(key, d)}
+												class="tabular flex h-11 flex-1 items-center justify-center rounded-lg text-sm transition-colors {(crossSchedule[key] ?? []).includes(
+													d,
+												)
+													? 'bg-ink font-bold text-paper'
+													: 'border border-hairline text-steel hover:border-steel'}"
+											>
+												{initial}
+											</button>
+										{/each}
+									</div>
+								</div>
 							{/each}
+							<p class="text-xs text-steel">
+								We keep the running off those days and put the sport there instead. Leave a row blank if it varies.
+							</p>
 						</div>
-						<p class="mt-2 text-xs text-steel">
-							{crossDays.length
-								? `We keep the running off ${crossDays.map((d) => DAY_NAMES[d]).join(', ')} and put the sport there instead.`
-								: 'Skip this if it varies. We will still count it when you log it.'}
-						</p>
-					</div>
+					{/if}
 				{:else if step.id === 'terrain'}
 					<div class="grid gap-2">
 						{#each TERRAIN as opt (opt.v)}

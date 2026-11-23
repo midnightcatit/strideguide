@@ -38,6 +38,8 @@ export interface ClientPrescription {
 	targetRpe?: [number, number];
 	blocks?: { machine: string; sets: { reps: number; weightKg: number }[] }[];
 	notes?: string;
+	/** Why this session has the amount it has. */
+	why?: string;
 	workout?: ClientWorkout;
 	/** True when the user added this session from the library (removable). */
 	added?: boolean;

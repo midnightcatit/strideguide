@@ -131,7 +131,7 @@
 		? 'bg-ok-wash'
 		: active
 			? 'bg-signal-wash'
-			: 'bg-paper'} {active ? 'border-signal-ink' : 'border-hairline'} {onOpen
+			: 'bg-cool-wash'} {active ? 'border-signal-ink' : 'border-hairline'} {onOpen
 		? 'shadow-[0_1px_3px_rgba(25,28,34,0.06)]'
 		: ''}"
 >
@@ -179,6 +179,10 @@
 				<span class="rounded-full border border-hairline px-2.5 py-1 text-xs {pill.band ? 'text-signal-ink' : 'text-ink'}">{pill.text}</span>
 			{/each}
 		</div>
+
+		{#if p.why}
+			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-steel">{p.why}</p>
+		{/if}
 
 		<hr class="my-3 border-hairline" />
 

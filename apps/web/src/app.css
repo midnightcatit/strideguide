@@ -7,26 +7,28 @@
  * amber TEXT uses `--signal-ink` for AA contrast on paper.
  */
 :root {
-	--paper: #f4f5f2;
-	--ink: #191c22;
-	--steel: #5a6473;
-	--hairline: #d8dbd6;
-	--hairline-strong: #848c96;
-	--signal: #e8a33d;
-	--signal-ink: #8a5c12;
-	--signal-wash: rgba(232, 163, 61, 0.14);
-	--sunken: #eceeea;
+	--paper: #fbfcfe;
+	--ink: #14161b;
+	--steel: #5b6472;
+	--hairline: #e3e7ee;
+	--hairline-strong: #8a93a3;
+	--signal: #f5a623;
+	--signal-ink: #9a5b06;
+	--signal-wash: rgba(245, 166, 35, 0.16);
+	--sunken: #eef1f7;
 	/*
 	 * Semantic colour, used sparingly so it keeps its meaning: green means done
 	 * or logged, amber means attention, red is reserved for problems. Base is
 	 * neutral, so a colour always reads as a signal (NN/g: colour as signifier).
 	 */
-	--ok: #2f7d4f;
-	--ok-wash: rgba(47, 125, 79, 0.14);
+	--ok: #16a34a;
+	--ok-wash: rgba(22, 163, 74, 0.14);
 	--warn: #b45309;
 	--warn-wash: rgba(180, 83, 9, 0.12);
-	--danger: #b42318;
-	--pressure: #4b6fb0;
+	--danger: #dc2626;
+	--cool: #2f6df6;
+	--cool-wash: rgba(47, 109, 246, 0.1);
+	--pressure: #3b6fe0;
 	--tint-easy: #ddebe1;
 	--tint-steady: #f2e6cb;
 	--tint-hard: #f3dcd8;
@@ -59,20 +61,22 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--paper: #101318;
-		--ink: #e9eae6;
-		--steel: #98a0ae;
-		--hairline: #2a2f38;
-		--hairline-strong: #6b7484;
-		--signal: #f2b451;
-		--signal-ink: #f2b451;
-		--signal-wash: rgba(242, 180, 81, 0.16);
-		--sunken: #0b0e12;
-		--ok: #63c98d;
-		--ok-wash: rgba(99, 201, 141, 0.16);
+		--paper: #0f1218;
+		--ink: #f3f5f9;
+		--steel: #9aa4b4;
+		--hairline: #232a35;
+		--hairline-strong: #5b6472;
+		--signal: #f5a623;
+		--signal-ink: #f5b954;
+		--signal-wash: rgba(245, 166, 35, 0.18);
+		--sunken: #171c25;
+		--ok: #34d399;
+		--ok-wash: rgba(52, 211, 153, 0.16);
 		--warn: #e0a458;
 		--warn-wash: rgba(224, 164, 88, 0.16);
 		--danger: #f2726f;
+		--cool: #7fb0ff;
+		--cool-wash: rgba(127, 176, 255, 0.14);
 		--pressure: #7fa3e0;
 		--tint-easy: #1a2e23;
 		--tint-steady: #332814;
@@ -84,20 +88,22 @@
 }
 
 :root[data-theme='light'] {
-	--paper: #f4f5f2;
-	--ink: #191c22;
-	--steel: #5a6473;
-	--hairline: #d8dbd6;
-	--hairline-strong: #848c96;
-	--signal: #e8a33d;
-	--signal-ink: #8a5c12;
-	--signal-wash: rgba(232, 163, 61, 0.14);
-	--sunken: #eceeea;
-	--ok: #2f7d4f;
-	--ok-wash: rgba(47, 125, 79, 0.14);
+	--paper: #fbfcfe;
+	--ink: #14161b;
+	--steel: #5b6472;
+	--hairline: #e3e7ee;
+	--hairline-strong: #8a93a3;
+	--signal: #f5a623;
+	--signal-ink: #9a5b06;
+	--signal-wash: rgba(245, 166, 35, 0.16);
+	--sunken: #eef1f7;
+	--ok: #16a34a;
+	--ok-wash: rgba(22, 163, 74, 0.14);
 	--warn: #b45309;
 	--warn-wash: rgba(180, 83, 9, 0.12);
-	--danger: #b42318;
+	--danger: #dc2626;
+	--cool: #2f6df6;
+	--cool-wash: rgba(47, 109, 246, 0.1);
 	--tint-easy: #ddebe1;
 	--tint-steady: #f2e6cb;
 	--tint-hard: #f3dcd8;
@@ -107,20 +113,22 @@
 }
 
 :root[data-theme='dark'] {
-	--paper: #101318;
-	--ink: #e9eae6;
-	--steel: #98a0ae;
-	--hairline: #2a2f38;
-	--hairline-strong: #6b7484;
-	--signal: #f2b451;
-	--signal-ink: #f2b451;
-	--signal-wash: rgba(242, 180, 81, 0.16);
-	--sunken: #0b0e12;
-	--ok: #63c98d;
-	--ok-wash: rgba(99, 201, 141, 0.16);
+	--paper: #0f1218;
+	--ink: #f3f5f9;
+	--steel: #9aa4b4;
+	--hairline: #232a35;
+	--hairline-strong: #5b6472;
+	--signal: #f5a623;
+	--signal-ink: #f5b954;
+	--signal-wash: rgba(245, 166, 35, 0.18);
+	--sunken: #171c25;
+	--ok: #34d399;
+	--ok-wash: rgba(52, 211, 153, 0.16);
 	--warn: #e0a458;
 	--warn-wash: rgba(224, 164, 88, 0.16);
 	--danger: #f2726f;
+	--cool: #7fb0ff;
+	--cool-wash: rgba(127, 176, 255, 0.14);
 	--pressure: #7fa3e0;
 	--tint-easy: #1a2e23;
 	--tint-steady: #332814;
@@ -145,6 +153,8 @@
 	--color-warn: var(--warn);
 	--color-warn-wash: var(--warn-wash);
 	--color-danger: var(--danger);
+	--color-cool: var(--cool);
+	--color-cool-wash: var(--cool-wash);
 	--color-tint-easy: var(--tint-easy);
 	--color-tint-steady: var(--tint-steady);
 	--color-tint-hard: var(--tint-hard);
