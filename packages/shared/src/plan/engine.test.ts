@@ -343,6 +343,16 @@ describe('generatePlan (model shaping)', () => {
 		expect(eased.weeks[last]!.targetVolumeKm).toBe(plain.weeks[last]!.targetVolumeKm);
 		expect(eased.weeks[last]!.phase).toBe('taper');
 	});
+
+	it('takes paces from an effective VDOT when no race time is given', () => {
+		const withVdot = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', effectiveVdot: 50 },
+		});
+		const without = generatePlan({ ...base, baseline: { experience: 'intermediate' } });
+		expect(withVdot.meta.vdot).toBe(50);
+		expect(without.meta.vdot).toBeUndefined();
+	});
 });
 
 describe('progression (volume builds, sessions differentiate)', () => {

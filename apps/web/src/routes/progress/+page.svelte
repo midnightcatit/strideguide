@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
+	import { fitnessState } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
@@ -27,6 +28,26 @@
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
+
+	// What the runner's own logs add up to: paces, weekly distance, effort trend,
+	// and which session types they rated well. The same read seeds a rebuild.
+	const fitness = $derived.by(() => {
+		const typeById = new Map<string, string>();
+		for (const w of store.plan?.weeks ?? []) {
+			for (const s of w.sessions) typeById.set(s.id, s.type);
+		}
+		return fitnessState(
+			store.logs.map((l) => ({
+				sessionId: l.sessionId,
+				type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
+				date: (l.createdAt ?? null) as string | number | null,
+				distanceKm: l.runStats?.distanceKm ?? null,
+				durationSec: l.runStats?.durationSec ?? null,
+				rpe: l.rpe,
+				feedback: l.feedback,
+			})),
+		);
+	});
 
 	const profileName = $derived(
 		store.plan?.goal
@@ -113,6 +134,38 @@
 			<a href="/" class="mt-4 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Go to today</a>
 		</Card>
 	{:else}
+		{#if fitness.samples > 0}
+			<section aria-labelledby="p-fitness" class="mb-7">
+				<SectionHeader id="p-fitness" eyebrow="Your fitness" meta="{fitness.samples} logged" />
+				<Card>
+					<ul class="space-y-1 text-sm">
+						{#if fitness.effectiveVdot}
+							<li class="flex justify-between">
+								<span>Training paces set from your runs</span>
+								<span class="tabular">VDOT {Math.round(fitness.effectiveVdot)}</span>
+							</li>
+						{/if}
+						<li class="flex justify-between">
+							<span>Recent weekly distance</span>
+							<span class="tabular">{fmtDistance(fitness.recentWeeklyKm)}</span>
+						</li>
+						{#if fitness.rpeTrend}
+							<li class="flex justify-between">
+								<span>Effort trend</span>
+								<span class="tabular">{fitness.rpeTrend}</span>
+							</li>
+						{/if}
+					</ul>
+					{#if fitness.likedTypes.length || fitness.dislikedTypes.length}
+						<p class="mt-3 text-sm leading-relaxed text-steel">
+							{#if fitness.likedTypes.length}You rated {fitness.likedTypes.join(' and ')} well.{/if}
+							{#if fitness.dislikedTypes.length} You rated {fitness.dislikedTypes.join(' and ')} less well.{/if}
+							The plan leans toward what works for you.
+						</p>
+					{/if}
+				</Card>
+			</section>
+		{/if}
 		<section aria-labelledby="p-plan" class="mb-7">
 			<SectionHeader id="p-plan" eyebrow="Plan progress" meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go" />
 			<Card>
