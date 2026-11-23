@@ -4,11 +4,10 @@
 
 	/**
 	 * A movement demo from two still frames. Only two poses exist per move, so the
-	 * motion is implied: the end pose is revealed with a short, eased directional
-	 * wipe that lands in the direction the body moves, with a brief hold at each
-	 * end. This reads as movement far better than a plain dissolve, keeps working
-	 * offline and adds no runtime JavaScript. With reduced motion, playback turns
-	 * into a manual start/end toggle.
+	 * motion is implied: the end pose cross-fades in over the start pose, holding
+	 * at each end, so the pair reads like a short looping clip. It runs on CSS
+	 * keyframes, keeps working offline, and adds no runtime JavaScript. With
+	 * reduced motion, playback turns into a manual start/finish toggle.
 	 */
 	let {
 		media,
@@ -31,7 +30,7 @@
 
 <figure class="demo">
 	<div
-		class="frame-wrap motion-{media.motion}"
+		class="frame-wrap"
 		class:playing={playing && animated}
 		class:show-end={showEnd}
 		role="img"
@@ -82,70 +81,24 @@
 		height: 100%;
 		object-fit: contain;
 	}
+	/*
+	 * The end pose sits on top and fades in over the start pose, then back out,
+	 * so the two frames read as one short looping clip instead of a wipe.
+	 */
 	.b {
 		opacity: 0;
-		clip-path: inset(0 0 100% 0);
 	}
-	/* Directional reveal, matching how the body actually travels. */
-	.motion-horizontal .b {
-		clip-path: inset(0 100% 0 0);
-	}
-	.motion-fade .b {
-		clip-path: none;
-	}
-
-	/* Eased wipe out and back, with a hold at each end. */
 	.playing .b {
-		animation: reveal 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+		animation: demo-crossfade 3s var(--ease-in-out) infinite;
 	}
-	.playing.motion-horizontal .b {
-		animation-name: reveal-x;
-	}
-	.playing.motion-fade .b {
-		animation-name: reveal-fade;
-	}
-
-	@keyframes reveal {
-		0%,
-		12% {
-			clip-path: inset(0 0 100% 0);
-			opacity: 0;
-		}
-		45%,
-		55% {
-			clip-path: inset(0 0 0 0);
-			opacity: 1;
-		}
-		88%,
-		100% {
-			clip-path: inset(0 0 100% 0);
-			opacity: 0;
-		}
-	}
-	@keyframes reveal-x {
-		0%,
-		12% {
-			clip-path: inset(0 100% 0 0);
-			opacity: 0;
-		}
-		45%,
-		55% {
-			clip-path: inset(0 0 0 0);
-			opacity: 1;
-		}
-		88%,
-		100% {
-			clip-path: inset(0 100% 0 0);
-			opacity: 0;
-		}
-	}
-	@keyframes reveal-fade {
+	/* Hold each pose, ease across to the other, then hold again at the far end. */
+	@keyframes demo-crossfade {
 		0%,
 		12% {
 			opacity: 0;
 		}
-		45%,
-		55% {
+		42%,
+		58% {
 			opacity: 1;
 		}
 		88%,
@@ -154,9 +107,8 @@
 		}
 	}
 
-	/* Manual start/end toggle (reduced motion). */
+	/* Manual start/finish toggle (reduced motion). */
 	.show-end .b {
 		opacity: 1;
-		clip-path: none;
 	}
 </style>
