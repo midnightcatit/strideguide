@@ -725,7 +725,6 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						intensity: 'easy',
 						targetRpe: [3, 4],
 						notes: `Use what you have (${input.baseline.crossTraining.join(', ')}). Keep it easy.`,
-						workout: crossTrainWorkout(),
 					},
 				};
 			}
@@ -747,7 +746,6 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					intensity: 'steady',
 					targetRpe: [4, 7],
 					notes: `Play as you normally would. We keep the running off ${title} day so it does not stack.`,
-					workout: crossTrainWorkout(),
 				},
 				durationMin: 45,
 			});
@@ -881,41 +879,6 @@ function sportLoad(input: PlanInput): {
 		heavy: sessions >= 3 || minutes >= 180 || hard >= 2,
 		veryHeavy: sessions >= 4 || minutes >= 240 || hard >= 3,
 		describe,
-	};
-}
-
-function crossTrainWorkout(): StructuredWorkout {
-	return {
-		blocks: [
-			{
-				repeat: 1,
-				steps: [
-					{
-						kind: 'warmup',
-						label: 'Easy start',
-						durationSec: 5 * 60,
-						note: 'Settle in gently and find a rhythm you can hold.',
-					},
-				],
-			},
-			{
-				repeat: 1,
-				steps: [
-					{
-						kind: 'work',
-						label: 'Steady aerobic',
-						durationSec: 25 * 60,
-						targetZone: 'Z2',
-						targetRpe: [3, 4],
-						note: 'Easy and continuous. You can hold a conversation.',
-					},
-				],
-			},
-			{
-				repeat: 1,
-				steps: [{ kind: 'cooldown', label: 'Easy finish', durationSec: 5 * 60 }],
-			},
-		],
 	};
 }
 

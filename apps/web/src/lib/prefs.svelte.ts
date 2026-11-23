@@ -21,6 +21,9 @@ export async function loadPrefs(): Promise<void> {
 		prefs.eventName = res.prefs.eventName;
 		prefs.autoAdvance = res.prefs.autoAdvance;
 		prefs.countdownSec = res.prefs.countdownSec;
+		prefs.heightCm = res.prefs.heightCm;
+		prefs.weightKg = res.prefs.weightKg;
+		prefs.restingHr = res.prefs.restingHr;
 	} catch {
 		// unauthenticated or offline: keep defaults
 	}
@@ -96,6 +99,26 @@ export function sessionLabel(session: LabelSession): string {
 		if (rep?.distanceM) return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 	}
 	return session.title ?? session.type;
+}
+
+/** Height, weight and resting heart rate. Pass null to clear a value. */
+export async function setVitals(fields: {
+	heightCm?: number | null;
+	weightKg?: number | null;
+	restingHr?: number | null;
+}): Promise<void> {
+	if (fields.heightCm !== undefined) prefs.heightCm = fields.heightCm ?? undefined;
+	if (fields.weightKg !== undefined) prefs.weightKg = fields.weightKg ?? undefined;
+	if (fields.restingHr !== undefined) prefs.restingHr = fields.restingHr ?? undefined;
+	try {
+		await api.putSettings({
+			heightCm: fields.heightCm ?? undefined,
+			weightKg: fields.weightKg ?? undefined,
+			restingHr: fields.restingHr ?? undefined,
+		});
+	} catch {
+		// best-effort
+	}
 }
 
 /** Seconds to count down before a step starts. */

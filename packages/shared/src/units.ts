@@ -15,6 +15,12 @@ export interface Prefs {
 	birthYear?: number;
 	/** The event they are training for, in their words (e.g. "Chicago Marathon"). */
 	eventName?: string;
+	/** Height in centimetres. Stored metric; shown in the chosen units. */
+	heightCm?: number;
+	/** Body weight in kilograms. Stored metric; shown in the chosen units. */
+	weightKg?: number;
+	/** Resting heart rate, beats per minute. */
+	restingHr?: number;
 	/** In the workout player, move to the next step automatically. */
 	autoAdvance?: boolean;
 	/** Seconds to count down before a step starts, 0 to 15. */
