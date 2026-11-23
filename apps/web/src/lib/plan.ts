@@ -1,5 +1,7 @@
 /** Client-side plan shapes as returned by the API, plus small display helpers. */
 
+import { findDrill, type Drill } from '@strideguide/shared/plan';
+
 export type Modality = 'running' | 'walking' | 'strength' | 'mobility' | 'recovery';
 
 export interface ClientStep {
@@ -162,3 +164,30 @@ export function formatDuration(min?: number | null): string | null {
 	return `${m} min`;
 }
 
+/** The warm-up drills and the stretches named by a workout, each in order. */
+export interface SessionDrills {
+	warmups: Drill[];
+	stretches: Drill[];
+}
+
+/**
+ * Pull the named drills back out of a workout so the detail view and the
+ * preview can show a demo for each. Warm-up steps land in `warmups`, every
+ * other drill-named step (the cool-down and mobility holds) in `stretches`.
+ * Steps without a matching library drill are skipped.
+ */
+export function sessionDrills(workout?: ClientWorkout | null): SessionDrills {
+	const warmups: Drill[] = [];
+	const stretches: Drill[] = [];
+	const seen = new Set<string>();
+	for (const block of workout?.blocks ?? []) {
+		for (const s of block.steps) {
+			if (!s.label || seen.has(s.label)) continue;
+			const d = findDrill(s.label);
+			if (!d) continue;
+			seen.add(s.label);
+			(s.kind === 'warmup' ? warmups : stretches).push(d);
+		}
+	}
+	return { warmups, stretches };
+}
