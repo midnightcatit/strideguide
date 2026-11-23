@@ -73,9 +73,15 @@ plans.get('/current', async (c) => {
 		)
 	).flat();
 
+	const states = await db
+		.select()
+		.from(schema.sessionStates)
+		.where(eq(schema.sessionStates.userId, user.id));
+
 	return c.json({
 		goal,
 		plan,
+		sessionStates: states.map((s) => ({ sessionId: s.sessionId, state: s.state })),
 		weeks: weeks.map((w) => ({
 			...w,
 			sessions: sessions
@@ -172,6 +178,70 @@ plans.post(
 		};
 		await db.insert(schema.sessionsPlan).values(session);
 		return c.json({ session }, 201);
+	},
+);
+
+/** True when the session belongs to a plan owned by this user. */
+async function sessionOwnedBy(
+	db: AppBindings['Variables']['db'],
+	userId: string,
+	sessionId: string,
+): Promise<boolean> {
+	const session = (
+		await db.select().from(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, sessionId)).limit(1)
+	)[0];
+	if (!session) return false;
+	const week = (
+		await db.select().from(schema.planWeeks).where(eq(schema.planWeeks.id, session.planWeekId)).limit(1)
+	)[0];
+	if (!week) return false;
+	const plan = (
+		await db.select().from(schema.plans).where(eq(schema.plans.id, week.planId)).limit(1)
+	)[0];
+	if (!plan) return false;
+	const goal = (
+		await db
+			.select()
+			.from(schema.userGoals)
+			.where(and(eq(schema.userGoals.id, plan.userGoalId), eq(schema.userGoals.userId, userId)))
+			.limit(1)
+	)[0];
+	return !!goal;
+}
+
+/** POST /sessions/:id/state: set or clear a session's started or skipped state. */
+plans.post(
+	'/sessions/:id/state',
+	zValidator(
+		'json',
+		z.object({
+			state: z.union([z.literal('started'), z.literal('skipped'), z.null()]),
+		}),
+	),
+	async (c) => {
+		const user = c.get('user')!;
+		const db = c.get('db');
+		const id = c.req.param('id');
+		const { state } = c.req.valid('json');
+
+		if (!(await sessionOwnedBy(db, user.id, id))) return c.json({ error: 'Not found.' }, 404);
+
+		if (state === null) {
+			await db
+				.delete(schema.sessionStates)
+				.where(
+					and(eq(schema.sessionStates.userId, user.id), eq(schema.sessionStates.sessionId, id)),
+				);
+		} else {
+			await db
+				.insert(schema.sessionStates)
+				.values({ userId: user.id, sessionId: id, state })
+				.onConflictDoUpdate({
+					target: [schema.sessionStates.userId, schema.sessionStates.sessionId],
+					set: { state },
+				});
+		}
+		return c.json({ ok: true, state });
 	},
 );
 

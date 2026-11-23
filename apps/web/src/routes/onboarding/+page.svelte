@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { VDOT_MAX, VDOT_MIN, parseTime, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
+	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
+	import TimeInput from '$lib/components/TimeInput.svelte';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
@@ -58,20 +59,28 @@
 		{ key: 'half', label: 'Half marathon', meters: 21097.5 },
 	];
 	let raceKey = $state('10k');
-	let raceTime = $state('');
+	// Race time is held in seconds and edited with pickers, so nothing is misread.
+	let raceSecs = $state(0);
 
 	const selected = $derived(profiles.find((p) => p.slug === slug));
 	const needsRaceDate = $derived(slug !== 'whole-fitness');
 
 	const vdot = $derived.by(() => {
 		const dist = RACE_DISTANCES.find((d) => d.key === raceKey);
-		const secs = parseTime(raceTime);
-		if (!dist || !secs || secs <= 0) return undefined;
-		const v = vdotFromRace(dist.meters, secs);
+		if (!dist || raceSecs <= 0) return undefined;
+		const v = vdotFromRace(dist.meters, raceSecs);
 		// Ignore an implausible time rather than set impossible paces.
 		return v >= VDOT_MIN && v <= VDOT_MAX ? v : undefined;
 	});
-	const raceTimeLooksOff = $derived(str(raceTime) !== '' && !vdot);
+	const raceTimeLooksOff = $derived(raceSecs > 0 && !vdot);
+	function fmtRace(secs: number): string {
+		const h = Math.floor(secs / 3600);
+		const m = Math.floor((secs % 3600) / 60);
+		const sec = secs % 60;
+		return h > 0
+			? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+			: `${m}:${String(sec).padStart(2, '0')}`;
+	}
 	const paces = $derived(vdot ? pacesFromVdot(vdot) : undefined);
 	const goalPace = $derived.by(() => {
 		if (!paces) return undefined;
@@ -353,10 +362,7 @@
 				stage = Math.min(STAGES.length - 1, stage + 1);
 			}, 2200);
 
-			const recentTimes =
-				vdot && str(raceTime) && RACE_DISTANCES.some((d) => d.key === raceKey)
-					? { [raceKey]: str(raceTime) }
-					: undefined;
+			const recentTimes = vdot ? { [raceKey]: fmtRace(raceSecs) } : undefined;
 
 			const weeklyNum = str(weeklyKm) ? Number(str(weeklyKm)) : undefined;
 
@@ -492,27 +498,21 @@
 						class="tabular w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
 					/>
 				{:else if step.id === 'race'}
-					<div class="flex gap-2">
-						<select
-							bind:value={raceKey}
-							aria-label="Race distance"
-							class="tabular max-w-[45%] shrink-0 rounded-xl border border-hairline-strong bg-paper px-3 py-3 text-sm"
-						>
-							{#each RACE_DISTANCES as d (d.key)}
-								<option value={d.key}>{d.label}</option>
-							{/each}
-						</select>
-						<input
-							bind:value={raceTime}
-							placeholder="45:00"
-							inputmode="numeric"
-							aria-label="Race time (mm:ss)"
-							class="tabular min-w-0 flex-1 rounded-xl border border-hairline-strong bg-paper px-4 py-3 text-sm"
-						/>
+					<select
+						bind:value={raceKey}
+						aria-label="Race distance"
+						class="tabular w-full rounded-xl border border-hairline-strong bg-paper px-3 py-3 text-sm"
+					>
+						{#each RACE_DISTANCES as d (d.key)}
+							<option value={d.key}>{d.label}</option>
+						{/each}
+					</select>
+					<div class="mt-3">
+						<TimeInput seconds={raceSecs} onChange={(secs) => (raceSecs = secs)} />
 					</div>
 					{#if raceTimeLooksOff}
 						<p class="mt-2 text-xs text-warn">
-							That time looks off for {RACE_DISTANCES.find((d) => d.key === raceKey)?.label}. Write it in minutes, like 36 or 36:00. Leave it blank if you are not sure.
+							That time looks off for {RACE_DISTANCES.find((d) => d.key === raceKey)?.label}. Check the pickers, or leave them at zero if you are not sure.
 						</p>
 					{/if}
 					{#if paces && goalPace}
@@ -525,7 +525,7 @@
 								<li class="flex justify-between text-signal-ink"><span>Goal pace</span><span class="tabular">{fmtPace(goalPace)}</span></li>
 							</ul>
 							<p class="mt-2 text-xs text-steel">
-								From your {RACE_DISTANCES.find((d) => d.key === raceKey)?.label} in {raceTime} (VDOT {Math.round(vdot!)}).
+								From your {RACE_DISTANCES.find((d) => d.key === raceKey)?.label} in {fmtRace(raceSecs)} (VDOT {Math.round(vdot!)}).
 							</p>
 						</div>
 					{/if}

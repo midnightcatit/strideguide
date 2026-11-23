@@ -1,7 +1,9 @@
 /**
- * Sessions the user has started but not yet logged. Kept on the device, so a
- * session can read as "in progress" between opening the player and logging it.
+ * Sessions the user has started but not yet logged. The server is the source of
+ * truth; this is a per-session cache and an optimistic local update.
  */
+import { api } from './api';
+
 const KEY = 'sg:started';
 
 let ids = $state<Set<string>>(new Set());
@@ -26,10 +28,16 @@ export function isStarted(id: string): boolean {
 	return ids.has(id);
 }
 
+export function hydrateStarted(list: string[]): void {
+	ids = new Set(list);
+	persist();
+}
+
 export function markStarted(id: string): void {
 	if (ids.has(id)) return;
 	ids = new Set(ids).add(id);
 	persist();
+	void api.setSessionState(id, 'started').catch(() => {});
 }
 
 export function clearStarted(id: string): void {
@@ -38,4 +46,5 @@ export function clearStarted(id: string): void {
 	next.delete(id);
 	ids = next;
 	persist();
+	void api.setSessionState(id, null).catch(() => {});
 }

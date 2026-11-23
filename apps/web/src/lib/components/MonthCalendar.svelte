@@ -7,7 +7,7 @@
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { isSkipped, skipSession } from '$lib/skipped.svelte';
+	import { skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { markStarted } from '$lib/started.svelte';
 	import { modal } from '$lib/actions';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -18,6 +18,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
+	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 
 	const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -28,6 +29,7 @@
 	let playTarget = $state<ClientSession | null>(null);
 	let logTarget = $state<ClientSession | null>(null);
 	let pickerDate = $state<string | null>(null);
+	let confirm = $state<{ kind: 'skip' | 'unskip'; id: string } | null>(null);
 
 	// Back (browser or hardware) closes the topmost overlay: a session, then the day sheet.
 	overlayHistory(
@@ -127,7 +129,7 @@
 		return first.toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
 	});
 
-	const sheetSessions = $derived((sheetIso ? (byDate.get(sheetIso) ?? []) : []).filter((s) => !isSkipped(s.id)));
+	const sheetSessions = $derived(sheetIso ? (byDate.get(sheetIso) ?? []) : []);
 	const sheetWeek = $derived.by(() => {
 		const iso = sheetIso;
 		if (!iso) return undefined;
@@ -257,7 +259,7 @@
 				</div>
 				<div class="relative mt-2">
 					<div class="scroll-modern flex snap-x gap-2 overflow-x-auto pb-1">
-						{#each day.sessions.filter((s) => !isSkipped(s.id)) as s (s.id)}
+						{#each day.sessions as s (s.id)}
 							<MiniSessionCard
 								session={s}
 								logged={loggedBySession.get(s.id) ?? null}
@@ -351,8 +353,7 @@
 			detailTarget = null;
 		}}
 		onSkip={() => {
-			if (detailTarget) skipSession(detailTarget.id);
-			detailTarget = null;
+			if (detailTarget) confirm = { kind: 'skip', id: detailTarget.id };
 		}}
 	/>
 {/if}
@@ -370,5 +371,26 @@
 			playTarget = s;
 		}}
 		onOpen={() => (detailTarget = s)}
+		onUnskip={() => (confirm = { kind: 'unskip', id: s.id })}
 	/>
 {/snippet}
+
+{#if confirm}
+	<ConfirmSheet
+		title={confirm.kind === 'skip' ? 'Skip this workout?' : 'Un-skip this workout?'}
+		body={confirm.kind === 'skip'
+			? 'It stays on your calendar, marked as skipped. You can un-skip it any time.'
+			: 'It goes back to your normal plan for the day.'}
+		confirmLabel={confirm.kind === 'skip' ? 'Skip it' : 'Un-skip'}
+		onConfirm={() => {
+			if (!confirm) return;
+			if (confirm.kind === 'skip') {
+				skipSession(confirm.id);
+				detailTarget = null;
+			} else {
+				unskipSession(confirm.id);
+			}
+		}}
+		onClose={() => (confirm = null)}
+	/>
+{/if}

@@ -147,6 +147,27 @@ export const sessionsPlan = sqliteTable(
 	}),
 );
 
+/**
+ * Per-session state that is not part of the plan: skipped or started. Kept on the
+ * server so it follows the user across devices; the client caches it per session.
+ */
+export const sessionStates = sqliteTable(
+	'session_states',
+	{
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		sessionId: text('session_id').notNull(),
+		state: text('state', { enum: ['started', 'skipped'] }).notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.userId, t.sessionId] }),
+	}),
+);
+
 export const exercises = sqliteTable(
 	'exercises',
 	{
