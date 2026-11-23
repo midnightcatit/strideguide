@@ -19,6 +19,7 @@
 	// forcing one, so an in-progress form or request is never interrupted.
 	let updateReady = $state(false);
 	let stopConfirm = $state(false);
+	let signOutConfirm = $state(false);
 
 	// Onboarding hides the nav: the plan is the point, and almost everything else
 	// depends on it. A sticky close with a confirmation takes you back instead.
@@ -203,17 +204,40 @@
 		{/if}
 
 		{#if onboarding}
-			<button
-				type="button"
-				onclick={() => (stopConfirm = true)}
-				aria-label="Stop building your plan"
-				class="fixed right-3 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-hairline bg-paper/95 text-steel hover:text-ink"
-				style="top: calc(env(safe-area-inset-top) + 0.5rem)"
-			>
-				✕
-			</button>
+			<div class="fixed right-3 z-40 flex items-center gap-2" style="top: calc(env(safe-area-inset-top) + 0.5rem)">
+				<button
+					type="button"
+					onclick={() => (signOutConfirm = true)}
+					class="rounded-full border border-hairline bg-paper/95 px-3 py-2 text-xs text-steel hover:text-ink"
+				>
+					Sign out
+				</button>
+				<button
+					type="button"
+					onclick={() => (stopConfirm = true)}
+					aria-label="Stop building your plan"
+					class="flex h-11 w-11 items-center justify-center rounded-full border border-hairline bg-paper/95 text-steel hover:text-ink"
+				>
+					✕
+				</button>
+			</div>
 		{/if}
 	</div>
+{/if}
+
+{#if signOutConfirm}
+	<ConfirmSheet
+		title="Sign out?"
+		body="You can sign back in any time with Google."
+		confirmLabel="Sign out"
+		tone="danger"
+		onConfirm={async () => {
+			signOutConfirm = false;
+			await api.logout().catch(() => {});
+			window.location.href = '/';
+		}}
+		onClose={() => (signOutConfirm = false)}
+	/>
 {/if}
 
 {#if stopConfirm}

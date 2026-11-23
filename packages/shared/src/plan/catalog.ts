@@ -4,7 +4,7 @@
  * can mix the two.
  */
 
-import { BODYWEIGHT_MOVES } from './bodyweight';
+import { BODYWEIGHT_MOVES, DUMBBELL_MOVES } from './bodyweight';
 import { PF_MACHINES, type MachineExercise } from './machines';
 import type { EquipmentPreference } from '../types';
 
@@ -62,6 +62,7 @@ export function circuitFor(
 	mode: EquipmentPreference = 'machines',
 	minutes?: number,
 	allowed?: string[],
+	loaded = false,
 ): MachineExercise[] {
 	const size = circuitSize(minutes);
 	const machines = ordered(
@@ -71,6 +72,10 @@ export function circuitFor(
 	const bodyweight = ordered(BODYWEIGHT_MOVES, BODYWEIGHT_ORDER);
 
 	if (mode === 'bodyweight') return bodyweight.slice(0, size);
+	// With dumbbells, the base block is bodyweight and the later blocks load it up.
+	if (mode === 'bodyweight-dumbbells') {
+		return (loaded ? ordered(DUMBBELL_MOVES, BODYWEIGHT_ORDER) : bodyweight).slice(0, size);
+	}
 	if (mode === 'both') {
 		const mixed: MachineExercise[] = [];
 		for (let i = 0; i < Math.max(machines.length, bodyweight.length); i++) {

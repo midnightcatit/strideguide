@@ -62,7 +62,7 @@ export interface GoalProfileData {
 }
 
 /** What the user trains strength with. */
-export type EquipmentPreference = 'machines' | 'bodyweight' | 'both';
+export type EquipmentPreference = 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
 
 /** When the user wants stretching built into the plan. */
 export type StretchingPreference = 'after-runs' | 'rest-days' | 'both' | 'none';

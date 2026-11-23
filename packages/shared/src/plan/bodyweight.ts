@@ -166,3 +166,89 @@ export const BODYWEIGHT_MOVES: MachineExercise[] = [
 		mistakes: ['Letting the lower back arch off the floor', 'Moving too fast to control'],
 	},
 ];
+
+/**
+ * Dumbbell variants of the bodyweight moves, used when the user has dumbbells.
+ * The bodyweight circuit is used in the base block, then these load it up as the
+ * plan progresses.
+ */
+export const DUMBBELL_MOVES: MachineExercise[] = [
+	{
+		name: 'Goblet squat',
+		muscles: ['quadriceps', 'glutes'],
+		pattern: 'squat',
+		why: 'The squat with load, to build the leg drive behind every stride.',
+		feel: 'Front of the thighs and glutes.',
+		form: [
+			'Hold one dumbbell at the chest, feet shoulder-width.',
+			'Sit back and down, chest tall, knees over the toes.',
+			'Drive up through the whole foot.',
+		],
+		mistakes: ['Knees caving inward', 'Letting the chest drop'],
+	},
+	{
+		name: 'Dumbbell split squat',
+		muscles: ['quadriceps', 'glutes', 'balance'],
+		pattern: 'squat',
+		why: 'Single-leg strength with load, for steadiness when you tire.',
+		feel: 'Front thigh and glute of the front leg.',
+		form: [
+			'Stagger the feet, a dumbbell in each hand.',
+			'Drop the back knee toward the floor, torso upright.',
+			'Push through the front foot to stand.',
+		],
+		mistakes: ['Stepping too narrow', 'Leaning the torso forward'],
+	},
+	{
+		name: 'Dumbbell Romanian deadlift',
+		muscles: ['hamstrings', 'glutes'],
+		pattern: 'hinge',
+		why: 'Loads the hamstrings that brake every stride.',
+		feel: 'Back of the thighs and the glutes.',
+		form: [
+			'Stand tall with dumbbells in front of the thighs.',
+			'Hinge at the hip, back flat, dumbbells close to the legs.',
+			'Stop at a hamstring stretch, then stand tall.',
+		],
+		mistakes: ['Rounding the lower back', 'Bending the knees too much'],
+	},
+	{
+		name: 'Dumbbell row',
+		muscles: ['mid-back', 'biceps'],
+		pattern: 'pull',
+		why: 'Balances the pushing work and keeps the upper back strong.',
+		feel: 'Between the shoulder blades and the arm.',
+		form: [
+			'Brace one hand on a bench, dumbbell in the other.',
+			'Pull the dumbbell to the hip, elbow close to the body.',
+			'Lower under control.',
+		],
+		mistakes: ['Twisting the torso', 'Yanking with the arm only'],
+	},
+	{
+		name: 'Dumbbell shoulder press',
+		muscles: ['shoulders', 'triceps'],
+		pattern: 'push',
+		why: 'Holds the shoulders and arm swing together over a long run.',
+		feel: 'Shoulders and the back of the arms.',
+		form: [
+			'Dumbbells at shoulder height, palms forward.',
+			'Press overhead without arching the back.',
+			'Lower under control to the shoulders.',
+		],
+		mistakes: ['Arching the lower back', 'Pressing in front of the body'],
+	},
+	{
+		name: 'Dumbbell calf raise',
+		muscles: ['calves', 'Achilles'],
+		pattern: 'posterior-chain',
+		why: 'Loads the calves and Achilles that take every step.',
+		feel: 'Calves, with a stretch at the bottom.',
+		form: [
+			'Stand tall with dumbbells, feet flat on a step if you have one.',
+			'Rise onto the balls of the feet, pause, then lower slowly.',
+			'Keep the weight over the big toe.',
+		],
+		mistakes: ['Bouncing', 'Rolling onto the outside of the foot'],
+	},
+];
