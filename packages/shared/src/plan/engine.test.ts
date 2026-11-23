@@ -198,6 +198,18 @@ describe('generatePlan (preferences)', () => {
 		expect(w1.some((s) => s.day === 6 && s.modality === 'running')).toBe(false);
 	});
 
+	it('keeps the long run sane on a short week', () => {
+		const p = generatePlan({
+			profile: wholeFitness,
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			baseline: { experience: 'beginner', weeklyKm: 19.3 },
+		});
+		const long = p.weeks[0]!.sessions.find((s) => s.type === 'long')!;
+		// The long run stays near a third of the week, not most of it.
+		expect(long.prescription.targetDistanceKm!).toBeLessThan(9);
+	});
+
 	it('never puts a run and strength on the same day', () => {
 		const p = generatePlan({
 			...base,
@@ -231,15 +243,17 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'cross-train')).toBe(true);
 	});
 
-	it('adds a mobility session on a rest day when stretching is wanted there', () => {
+	it('pairs the mobility session with a day that already has a session', () => {
 		const p = generatePlan({
 			...base,
 			availableDays: [0, 2, 4],
 			baseline: { experience: 'intermediate', flexibility: { current: 3, goal: 4 } },
 		});
-		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
+		const w1 = p.weeks[0]!;
+		const mobility = w1.sessions.filter((s) => s.type === 'mobility');
 		expect(mobility.length).toBe(1);
-		expect([0, 2, 4]).not.toContain(mobility[0]!.day);
+		const day = mobility[0]!.day;
+		expect(w1.sessions.some((s) => s.day === day && s.type !== 'mobility')).toBe(true);
 	});
 
 	it('adds no mobility session when stretching is off', () => {

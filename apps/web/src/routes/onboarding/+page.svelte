@@ -4,7 +4,7 @@
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
-	import type { LibraryWorkout } from '@strideguide/shared/plan';
+	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, type LibraryWorkout } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
@@ -27,9 +27,11 @@
 	let notes = $state('');
 
 	// Strength and body preferences.
-	let equipment = $state<'machines' | 'bodyweight' | 'both'>('both');
+	let equipment = $state<'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both'>('both');
 	let strengthDays = $state(2);
 	let sessionMinutes = $state(45);
+	let tunedStrength = $state(false);
+	let tunedMinutes = $state(false);
 	let flexCurrent = $state(3);
 	let flexGoal = $state(4);
 	let customActivity = $state('');
@@ -257,6 +259,16 @@
 	const isLast = $derived(stepIndex >= steps.length - 1);
 	const progress = $derived((Math.min(stepIndex, steps.length - 1) + 1) / steps.length);
 
+	const recWeekly = $derived(recommendWeeklyKm(experience, slug));
+	const recStrength = $derived(recommendStrengthDays(slug));
+	const recMinutes = $derived(recommendSessionMinutes());
+
+	// Default the strength answers to the recommendation until the user changes them.
+	$effect(() => {
+		if (!tunedStrength) strengthDays = recStrength.value;
+		if (!tunedMinutes) sessionMinutes = recMinutes.value;
+	});
+
 	const flexGap = $derived(Math.max(0, flexGoal - flexCurrent));
 	const flexCadence = $derived.by(() => {
 		if (flexGap <= 0)
@@ -277,10 +289,19 @@
 		];
 	});
 
-	const EQUIPMENT: { v: 'machines' | 'bodyweight' | 'both'; name: string; note: string }[] = [
+	const EQUIPMENT: {
+		v: 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
+		name: string;
+		note: string;
+	}[] = [
 		{ v: 'machines', name: 'Machines', note: 'Fixed path, easy to load and repeat.' },
 		{ v: 'bodyweight', name: 'Bodyweight', note: 'No equipment; trains balance and single-leg control.' },
-		{ v: 'both', name: 'Both', note: 'Legs from bodyweight, a machine or two up top.' },
+		{
+			v: 'bodyweight-dumbbells',
+			name: 'Bodyweight plus dumbbells',
+			note: 'Starts bodyweight, then adds dumbbells as the plan progresses.',
+		},
+		{ v: 'both', name: 'A mix', note: 'Legs from bodyweight, a machine or two up top.' },
 	];
 	const STRETCHING: { v: 'after-runs' | 'rest-days' | 'both' | 'none'; name: string; note: string }[] = [
 		{ v: 'after-runs', name: 'After easy runs', note: 'Fits into the cool-down.' },
@@ -454,14 +475,12 @@
 					...(crossTraining.length ? { crossTraining } : {}),
 					...(str(niggles) ? { niggles: str(niggles) } : {}),
 					...(recentTimes ? { recentTimes } : {}),
-					...(weeklyNum != null && Number.isFinite(weeklyNum) && weeklyNum > 0
-						? {
-								weeklyKm:
-									prefs.units === 'imperial'
-										? Math.round(milesToKm(weeklyNum) * 10) / 10
-										: weeklyNum,
-							}
-						: {}),
+					weeklyKm:
+						weeklyNum != null && Number.isFinite(weeklyNum) && weeklyNum > 0
+							? prefs.units === 'imperial'
+								? Math.round(milesToKm(weeklyNum) * 10) / 10
+								: weeklyNum
+							: recWeekly.value,
 					...(str(notes) ? { notes: str(notes) } : {}),
 				},
 				...(needsRaceDate && targetDate ? { targetDate } : {}),
@@ -554,7 +573,7 @@
 {:else}
 	<section class="mx-auto max-w-xl">
 		<header>
-		<div class="flex items-center justify-between gap-3">
+		<div class="flex items-center justify-between gap-3 pr-32 sm:pr-0">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">
 				Step {Math.min(stepIndex, steps.length - 1) + 1} of {steps.length}
 			</p>
@@ -664,12 +683,18 @@
 						<input
 							type="number"
 							bind:value={weeklyKm}
-							placeholder="25"
+							placeholder={prefs.units === 'imperial'
+								? String(Math.round(recWeekly.value / 1.609344))
+								: String(recWeekly.value)}
 							aria-label="Typical weekly distance"
 							class="tabular w-24 min-w-0 shrink-0 rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
 						/>
 						<span class="min-w-0 text-sm text-steel">{distanceUnit()} per week</span>
 					</div>
+					<p class="mt-3 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">
+						{recWeekly.reason}
+						{#if !weeklyKm.trim()} Leave it blank to use this.{/if}
+					</p>
 				{:else if step.id === 'days'}
 					<div class="flex justify-between gap-1">
 						{#each DAY_INITIALS as initial, d (d)}
@@ -706,15 +731,17 @@
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Sessions a week</p>
 					<div class="mt-2 flex gap-2">
 						{#each [1, 2, 3] as n (n)}
-							<button type="button" aria-pressed={strengthDays === n} onclick={() => (strengthDays = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {strengthDays === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
+							<button type="button" aria-pressed={strengthDays === n} onclick={() => { strengthDays = n; tunedStrength = true; }} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {strengthDays === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
 						{/each}
 					</div>
+					<p class="mt-3 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">{recStrength.reason}</p>
 					<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Time you can train in a day</p>
 					<div class="mt-2 flex gap-2">
 						{#each [30, 45, 60] as n (n)}
-							<button type="button" aria-pressed={sessionMinutes === n} onclick={() => (sessionMinutes = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {sessionMinutes === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n} min</button>
+							<button type="button" aria-pressed={sessionMinutes === n} onclick={() => { sessionMinutes = n; tunedMinutes = true; }} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {sessionMinutes === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n} min</button>
 						{/each}
 					</div>
+					<p class="mt-3 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">{recMinutes.reason}</p>
 				{:else if step.id === 'flexibility'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Flexibility today</p>
 					<div class="mt-2 flex gap-2">

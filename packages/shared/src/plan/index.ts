@@ -9,3 +9,4 @@ export * from './explanations';
 export * from './adapt';
 export * from './engine';
 export * from './library';
+export * from './recommend';

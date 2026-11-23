@@ -512,9 +512,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const usedForRun = new Set([longDay, ...qualityDays]);
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
-		// Strength gets its own days, never sharing with a run. It takes the days
-		// the running does not, then the last of the easy days.
-		const wantStrength = Math.min(strengthLeft, runFree.length);
+		// Strength gets its own days, never sharing with a run. Keep at least one day
+		// for an easy run when there is one, so a week is never a single run.
+		const wantStrength = Math.min(strengthLeft, Math.max(0, runFree.length - 1));
 		const strengthDays = runFree.slice(runFree.length - wantStrength);
 		const easyDays = runFree.slice(0, runFree.length - wantStrength);
 		strengthLeft -= wantStrength;
@@ -527,15 +527,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const qualityWhy = load.veryHeavy
 			? `Shortened by about 15 percent. In the last week you logged ${load.describe}, and the long run stays whole.`
 			: undefined;
-		let longKm = round1(clamp(volume * 0.3, 4, 38));
-		let easyTotal = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
-		// If strength takes every free day, the long run carries the easy volume so
-		// the week still adds up.
-		if (!easyDays.length) {
-			longKm = round1(longKm + easyTotal);
-			easyTotal = 0;
-		}
-		const easyPer = easyDays.length ? round1(easyTotal / easyDays.length) : 0;
+		// The long run is the longest run, never a third of nothing and never most
+		// of the week. An easy run is capped at the long run's length, so a week
+		// with few running days plans less instead of one giant run.
+		const longKm = round1(clamp(volume * 0.32, 4, 38));
+		const remaining = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
+		const easyPer = easyDays.length ? Math.min(longKm, round1(remaining / easyDays.length)) : 0;
 
 		const sessions: PlannedSession[] = [];
 
@@ -762,18 +759,21 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
 		if (flexGap > 0 && phase !== 'taper') {
 			const wanted = flexGap >= 2 ? 2 : 1;
-			const restFirst = [2, 4, 1, 3, 5, 0, 6].filter((d) => !days.includes(d));
-			const trainEvening = [2, 4, 1, 3, 0, 5, 6].filter((d) => days.includes(d));
+			// Mobility is short, so it pairs with a day that already has a session,
+			// easing onto an easy or strength day first. A rest day is the fallback.
+			const rank = (d: number) => {
+				const types = sessions.filter((s) => s.day === d).map((s) => s.type);
+				if (types.some((t) => t === 'easy')) return 0;
+				if (types.some((t) => t === 'machine-circuit' || t === 'full-body-strength')) return 1;
+				if (types.length) return 2;
+				return 3;
+			};
+			const candidates = [2, 4, 1, 3, 0, 5, 6].sort((a, b) => rank(a) - rank(b));
 			let added = 0;
-			for (const d of restFirst) {
+			for (const d of candidates) {
 				if (added >= wanted) break;
-				sessions.push(mobilitySession(d, input.baseline, 'AM'));
-				added++;
-			}
-			// No rest day to use, so add it in the evening after a run.
-			for (const d of trainEvening) {
-				if (added >= wanted) break;
-				sessions.push(mobilitySession(d, input.baseline, 'PM'));
+				const slot = sessions.some((s) => s.day === d) ? 'PM' : 'AM';
+				sessions.push(mobilitySession(d, input.baseline, slot));
 				added++;
 			}
 		}
@@ -789,7 +789,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			focus: FOCUS[phase] ?? phase,
 			startDate: weekStart,
 			endDate: weekEnd,
-			targetVolumeKm: volume,
+			targetVolumeKm: round1(
+				longKm + qualityKm * qualityDays.length + easyPer * easyDays.length,
+			),
 			sessions: withIntensity.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
 		});
 	}
@@ -805,7 +807,8 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 	const mode = input.baseline.equipment ?? 'machines';
 	const load = sportLoad(input);
 	const heavySport = load.heavy;
-	const fullCircuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment);
+	const loaded = phase !== 'base';
+	const fullCircuit = circuitFor(mode, input.baseline.sessionMinutes, input.equipment, loaded);
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
@@ -818,7 +821,7 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 		],
 	}));
 	const type: SessionArchetype = mode === 'machines' ? 'machine-circuit' : 'full-body-strength';
-	const noun = mode === 'bodyweight' ? 'moves' : mode === 'both' ? 'exercises' : 'machines';
+	const noun = mode === 'machines' ? 'machines' : mode === 'both' ? 'exercises' : 'moves';
 	const why = heavySport
 		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
 		: undefined;
