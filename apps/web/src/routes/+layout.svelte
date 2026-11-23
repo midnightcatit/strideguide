@@ -15,7 +15,8 @@
 	let settingsOpen = $state(false);
 
 	const tabs = $derived([
-		{ href: '/', key: 'today', label: 'Today', active: page.url.pathname === '/' },
+		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
+		{ href: '/today', key: 'today', label: 'Today', active: page.url.pathname.startsWith('/today') },
 		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 		{ href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') },
 	]);
@@ -106,7 +107,7 @@
 			class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper/95 backdrop-blur sm:hidden"
 			aria-label="Primary"
 		>
-			<div class="mx-auto grid max-w-2xl grid-cols-3" style="padding-bottom: env(safe-area-inset-bottom)">
+			<div class="mx-auto grid max-w-2xl grid-cols-4" style="padding-bottom: env(safe-area-inset-bottom)">
 				{#each tabs as tab (tab.href)}
 					<a
 						href={tab.href}
@@ -117,7 +118,12 @@
 							<span class="absolute top-0 h-0.5 w-8 rounded-full bg-signal-ink" aria-hidden="true"></span>
 						{/if}
 						<svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							{#if tab.key === 'today'}
+							{#if tab.key === 'dashboard'}
+								<rect x="3" y="3" width="6" height="6" rx="1" />
+								<rect x="11" y="3" width="6" height="6" rx="1" />
+								<rect x="3" y="11" width="6" height="6" rx="1" />
+								<rect x="11" y="11" width="6" height="6" rx="1" />
+							{:else if tab.key === 'today'}
 								<path d="M10 2.5a7.5 7.5 0 1 0 7.5 7.5" />
 								<circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
 							{:else if tab.key === 'coach'}

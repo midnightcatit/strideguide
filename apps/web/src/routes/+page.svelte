@@ -4,26 +4,20 @@
 	import { api } from '$lib/api';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
-	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
-	import SessionCard from '$lib/components/SessionCard.svelte';
-	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
-	import LogSheet from '$lib/components/LogSheet.svelte';
-	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
-	import SessionDetail from '$lib/components/SessionDetail.svelte';
+	import { store, ensurePlan } from '$lib/planStore.svelte';
+	import { DAY_NAMES, mondayIndex } from '$lib/plan';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
-	let logTarget = $state<ClientSession | null>(null);
-	let playTarget = $state<ClientSession | null>(null);
-	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
-	let selectedIso = $state(todayIso);
-	const isToday = $derived(selectedIso === todayIso);
+	const greeting = $derived.by(() => {
+		const h = new Date().getHours();
+		return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+	});
 
 	const profileName = $derived(
 		store.plan?.goal
@@ -31,73 +25,25 @@
 			: '',
 	);
 	const weeks = $derived(store.plan?.weeks ?? []);
-	const sel = $derived.by(() => {
-		for (const w of weeks) {
-			if (w.startDate && w.endDate && selectedIso >= w.startDate && selectedIso <= w.endDate) {
-				return { week: w, day: dayIndexInWeek(w.startDate, selectedIso) };
-			}
-		}
-		return undefined;
-	});
-	const selWeek = $derived(sel?.week);
-	const selDay = $derived(sel?.day ?? todayIndex);
-	const daySessions = $derived(selWeek ? selWeek.sessions.filter((s) => s.day === selDay) : []);
+	const todayWeek = $derived(
+		weeks.find((w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate) ??
+			weeks[0],
+	);
+	const daySessions = $derived(todayWeek?.sessions.filter((s) => s.day === todayIndex) ?? []);
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
-	const stalePlan = $derived(
-		weeks.length > 0 && weeks.some((w) => w.sessions.some((s) => !s.prescription?.workout)),
+	const weekLogged = $derived(
+		todayWeek ? todayWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0,
 	);
-
-	const dateLabel = $derived(
-		new Date(`${selectedIso}T00:00:00Z`)
-			.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
-			.toUpperCase(),
-	);
-
-	const weekLogged = $derived(selWeek ? selWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0);
-	const weekPlanned = $derived(selWeek?.sessions.length ?? 0);
+	const weekPlanned = $derived(todayWeek?.sessions.length ?? 0);
 	const weekKm = $derived(
-		selWeek
-			? selWeek.sessions
+		todayWeek
+			? todayWeek.sessions
 					.filter((s) => s.modality === 'running')
 					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0)
 			: 0,
 	);
-	const planCap = $derived(selWeek?.targetVolumeKm ?? weekKm);
-	const dayMinutes = $derived(daySessions.reduce((m, s) => m + (s.durationMin ?? 0), 0));
-
-	function stepDay(n: number) {
-		selectedIso = addDaysIso(selectedIso, n);
-	}
-	function goToday() {
-		selectedIso = todayIso;
-	}
-
-	// Horizontal swipe on the day panel changes day. A deliberate swipe only, so a
-	// vertical scroll never flips the day.
-	let startX = 0;
-	let startY = 0;
-	let tracking = false;
-	function onTouchStart(e: TouchEvent) {
-		const t = e.touches[0];
-		if (!t) return;
-		startX = t.clientX;
-		startY = t.clientY;
-		tracking = true;
-	}
-	function onTouchEnd(e: TouchEvent) {
-		if (!tracking) return;
-		tracking = false;
-		const t = e.changedTouches[0];
-		if (!t) return;
-		const dx = t.clientX - startX;
-		const dy = t.clientY - startY;
-		if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-			stepDay(dx < 0 ? 1 : -1);
-		}
-	}
-
 	onMount(async () => {
 		await ensureAuth();
 		if (auth.user) {
@@ -119,136 +65,59 @@
 		<a href="/onboarding" class="mt-6 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Build my plan</a>
 	</section>
 {:else}
-	{#if stalePlan}
-		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
-			This plan predates guided workouts. Rebuild it to get step-by-step sessions and drills.
-			<a href="/onboarding" class="ml-1 font-medium text-signal-ink hover:underline">Rebuild plan →</a>
-		</div>
-	{/if}
-
-	<header class="mb-4">
-		<div class="flex items-baseline justify-between gap-3">
-			<p class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</p>
-			<p class="tabular text-xs text-steel">{dateLabel}{#if selWeek} · W{selWeek.weekNumber}{/if}</p>
-		</div>
+	<header class="mb-6">
+		<p class="tabular text-xs uppercase tracking-widest text-steel">{greeting}</p>
 		<h1 class="font-display mt-1 text-2xl font-bold">
-			{daySessions.length
-				? daySessions.length > 1
-					? `${daySessions.length} sessions`
-					: sessionLabel(daySessions[0])
-				: 'Rest day'}
+			{daySessions.length ? `${daySessions.length === 1 ? sessionLabel(daySessions[0]) : `${daySessions.length} sessions`} today` : 'Rest day'}
 		</h1>
-		<div class="mt-3 flex items-center gap-2">
-			{#if !isToday}
-				<button type="button" onclick={goToday} class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal">Back to today</button>
-			{/if}
-			<span class="tabular text-xs text-steel sm:hidden">Swipe to change day</span>
-			<a href="/week" class="ml-auto text-xs text-steel hover:text-signal-ink">Week →</a>
-		</div>
+		<p class="mt-1 text-sm text-steel">{profileName}{#if todayWeek} · Week {todayWeek.weekNumber}{/if}</p>
 	</header>
 
-	<!-- Day panel with flanking arrows (laptop) and swipe (phone) -->
-	<div class="flex items-stretch gap-2">
-		<button
-			type="button"
-			onclick={() => stepDay(-1)}
-			aria-label="Previous day"
-			class="hidden w-12 shrink-0 items-center justify-center rounded-xl border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
-		>
-			‹
-		</button>
-
-		<div
-			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:max-h-[calc(100dvh-16rem)] sm:overflow-y-auto"
-			role="group"
-			aria-label="Day panel, swipe left or right to change day"
-			ontouchstart={onTouchStart}
-			ontouchend={onTouchEnd}
-		>
-			<AdjustmentsCard />
-
-			{#if note}<p class="mb-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
-
-			<SectionHeader
-				id="day-sessions"
-				eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
-				meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
-			/>
+	<!-- Start -->
+	<Card>
+		<p class="text-sm text-steel">
 			{#if daySessions.length}
-				<SessionCarousel sessions={daySessions} {card} />
-			{:else if selWeek}
-				<Card tone="sunken">
-					<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
-				</Card>
+				Ready when you are. Your session is set, with a guided warm-up and timers.
 			{:else}
-				<Card tone="sunken">
-					<p class="text-sm text-steel">This day is outside your plan.</p>
-				</Card>
+				Nothing scheduled today. Recovery is part of the plan.
 			{/if}
-
-			{#if selWeek}
-				<hr class="my-6 border-hairline" />
-				<SectionHeader id="week-so-far" eyebrow="Week so far" meta={`W${selWeek.weekNumber}`} />
-				<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
-					{#each selWeek.sessions as s (s.id)}
-						{@const done = loggedBySession.has(s.id)}
-						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-ink/40'}"></span>
-					{/each}
-				</div>
-				<p class="tabular mt-2 text-sm">
-					{weekLogged} of {weekPlanned} done
-					<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
-				</p>
-
-				{#if daySessions[0]}
-					<hr class="my-6 border-hairline" />
-					<SectionHeader id="why" eyebrow="Why this session" />
-					<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
-					<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
-						About, what's to come, and the research →
-					</button>
-				{/if}
-			{/if}
-		</div>
-
-		<button
-			type="button"
-			onclick={() => stepDay(1)}
-			aria-label="Next day"
-			class="hidden w-12 shrink-0 items-center justify-center rounded-xl border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
+		</p>
+		<a
+			href="/today"
+			class="mt-4 flex w-full items-center justify-center rounded-md bg-ink px-5 py-3.5 text-sm font-medium text-paper hover:opacity-90"
 		>
-			›
-		</button>
-	</div>
-{/if}
+			{daySessions.length ? "Start today's session" : 'Look ahead to tomorrow'}
+		</a>
+		{#if daySessions.length}
+			<p class="mt-2 text-xs text-steel">{DAY_NAMES[todayIndex]} · tap a card to see the workout and the why</p>
+		{/if}
+	</Card>
 
-{#if playTarget}
-	<SessionPlayer session={playTarget} eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`} onClose={() => (playTarget = null)} onFinish={() => { logTarget = playTarget; playTarget = null; }} />
-{/if}
+	<AdjustmentsCard />
 
-{#if logTarget}
-	<LogSheet session={logTarget} eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`} onClose={() => (logTarget = null)} onSaved={(log) => { upsertLog(log); logTarget = null; }} />
-{/if}
+	{#if note}
+		<section aria-labelledby="coach-note" class="mt-7">
+			<SectionHeader id="coach-note" eyebrow="Coach note" />
+			<Card tone="sunken">
+				<p class="text-sm">{note}</p>
+			</Card>
+		</section>
+	{/if}
 
-{#if detailTarget}
-	<SessionDetail
-		session={detailTarget}
-		eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`}
-		logged={loggedBySession.get(detailTarget.id) ?? null}
-		onClose={() => (detailTarget = null)}
-		onLog={() => { logTarget = detailTarget; detailTarget = null; }}
-		onStart={() => { playTarget = detailTarget; detailTarget = null; }}
-	/>
+	<section aria-labelledby="week" class="mt-7">
+		<SectionHeader id="week" eyebrow="Week so far" meta="W{todayWeek?.weekNumber ?? ''}" />
+		<Card tone="sunken">
+			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
+				{#each todayWeek?.sessions ?? [] as s (s.id)}
+					{@const done = loggedBySession.has(s.id)}
+					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-ink/40'}"></span>
+				{/each}
+			</div>
+			<p class="tabular mt-2 text-sm">
+				{weekLogged} of {weekPlanned} done
+				<span class="text-steel"> · {fmtDistance(weekKm)} planned</span>
+			</p>
+			<a href="/week" class="mt-3 inline-block text-xs text-steel hover:text-signal-ink">See the full week →</a>
+		</Card>
+	</section>
 {/if}
-
-{#snippet card(s: ClientSession)}
-	<SessionCard
-		session={s}
-		eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`}
-		active={isToday}
-		logged={loggedBySession.get(s.id) ?? null}
-		onLog={() => (logTarget = s)}
-		onStart={() => (playTarget = s)}
-		onOpen={() => (detailTarget = s)}
-	/>
-{/snippet}
