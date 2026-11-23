@@ -64,6 +64,7 @@
 		return STEP_INFO[label];
 	}
 	let openDrill = $state<string | null>(null);
+	let openRow = $state<string | null>(null);
 
 	onMount(async () => {
 		try {
@@ -314,27 +315,51 @@
 					<h2 id="to-come" class="tabular text-xs uppercase tracking-widest text-steel">What's to come</h2>
 					<ol class="mt-2 divide-y divide-hairline">
 						{#each visibleRows as row, i (i)}
+							{@const info = stepInfo(row.label)}
 							<li class="py-2.5">
 								<div class="flex items-baseline justify-between gap-3 text-sm">
-									<span class="flex min-w-0 items-center gap-1">
-										<span class="truncate">{row.label}</span>
-										{#if stepInfo(row.label)}
-											<InfoButton term={row.label} definition={stepInfo(row.label)!} />
-										{/if}
-									</span>
+									{#if info}
+										<button
+											type="button"
+											onclick={() => (openRow = openRow === `r${i}` ? null : `r${i}`)}
+											aria-expanded={openRow === `r${i}`}
+											class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
+										>
+											<span class="truncate">{row.label}</span>
+											<span class="shrink-0 text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
+										</button>
+									{:else}
+										<span class="min-w-0 truncate">{row.label}</span>
+									{/if}
 									<span class="tabular shrink-0 text-steel">{row.target}</span>
 								</div>
+								{#if info && openRow === `r${i}`}
+									<p class="sg-enter-up mt-1 text-xs leading-relaxed text-steel">{info}</p>
+								{/if}
 								{#if row.sub}
 									<ul class="mt-1 space-y-0.5 pl-3 text-xs text-steel">
 										{#each row.sub as s, si (si)}
-											<li class="flex items-baseline justify-between gap-3">
-												<span class="flex min-w-0 items-center gap-1">
-													<span class="truncate">{s.label}</span>
-													{#if stepInfo(s.label)}
-														<InfoButton term={s.label} definition={stepInfo(s.label)!} />
+											{@const sinfo = stepInfo(s.label)}
+											<li>
+												<div class="flex items-baseline justify-between gap-3">
+													{#if sinfo}
+														<button
+															type="button"
+															onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
+															aria-expanded={openRow === `s${i}-${si}`}
+															class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
+														>
+															<span class="truncate">{s.label}</span>
+															<span class="shrink-0" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
+														</button>
+													{:else}
+														<span class="min-w-0 truncate">{s.label}</span>
 													{/if}
-												</span>
-												<span class="tabular shrink-0">{s.target}</span>
+													<span class="tabular shrink-0">{s.target}</span>
+												</div>
+												{#if sinfo && openRow === `s${i}-${si}`}
+													<p class="sg-enter-up mt-1 leading-relaxed">{sinfo}</p>
+												{/if}
 											</li>
 										{/each}
 									</ul>

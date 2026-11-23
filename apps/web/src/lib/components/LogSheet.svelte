@@ -132,17 +132,17 @@
 		class="overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
 		style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))"
 	>
-	<div class="flex items-center justify-between">
-		<div>
+	<div class="sticky top-0 z-10 -mx-4 -mt-4 flex items-center justify-between border-b border-hairline bg-paper px-4 pb-3 pt-4">
+		<div class="min-w-0">
 			<p class="text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
-			<h2 class="font-display text-lg font-medium">{session.title ?? 'Log session'}</h2>
+			<h2 class="font-display truncate text-lg font-medium">{session.title ?? 'Log session'}</h2>
 		</div>
-		<button type="button" onclick={onClose} class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink" aria-label="Close">
+		<button type="button" onclick={onClose} class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink" aria-label="Close">
 			✕
 		</button>
 	</div>
 
-	<hr class="my-3 border-hairline" />
+	<div class="mt-3"></div>
 
 	{#if !isStrength}
 		<div class="grid grid-cols-2 gap-3">

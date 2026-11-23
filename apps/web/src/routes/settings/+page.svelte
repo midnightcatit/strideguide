@@ -1,6 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { prefs } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
+
+	/** Back to wherever we came from, or the dashboard if there is no history. */
+	function back() {
+		if (typeof window !== 'undefined' && window.history.length > 1) window.history.back();
+		else void goto('/');
+	}
 
 	const categories = [
 		{
@@ -35,6 +42,10 @@
 		},
 	];
 </script>
+
+<button type="button" onclick={back} class="-ml-1 mb-2 inline-flex items-center gap-1 px-1 py-1 text-sm text-steel hover:text-ink">
+	‹ Back
+</button>
 
 <header class="mb-5">
 	<p class="tabular text-xs uppercase tracking-widest text-steel">Settings</p>

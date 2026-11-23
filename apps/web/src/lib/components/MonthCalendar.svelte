@@ -8,7 +8,8 @@
 	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
-	import { markStarted } from '$lib/started.svelte';
+	import { clearStarted, markStarted } from '$lib/started.svelte';
+	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import { modal } from '$lib/actions';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
@@ -375,6 +376,10 @@
 		}}
 		onOpen={() => (detailTarget = s)}
 		onUnskip={() => (confirm = { kind: 'unskip', id: s.id })}
+		onCancelProgress={() => {
+			clearStarted(s.id);
+			clearProgress(s.id);
+		}}
 	/>
 {/snippet}
 
