@@ -205,7 +205,7 @@
 				<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
 					{#each selWeek.sessions as s (s.id)}
 						{@const done = loggedBySession.has(s.id)}
-						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-ink/40'}"></span>
+						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : 'bg-ink/40'}"></span>
 					{/each}
 				</div>
 				<p class="tabular mt-2 text-sm">

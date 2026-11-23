@@ -70,7 +70,7 @@
 					{#each store.plan.weeks as w (w.id)}
 						{#each w.sessions as s (s.id)}
 							{@const done = store.logs.some((l) => l.sessionId === s.id)}
-							<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-ink/40'}"></span>
+							<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : 'bg-ink/40'}"></span>
 						{/each}
 					{/each}
 				</div>
@@ -87,7 +87,7 @@
 						{@const ph = Math.round((w.plannedKm / volumeMax) * 84)}
 						<div class="relative flex-1" title="Week {w.week}: {fmtDistance(w.actualKm)} of {fmtDistance(w.plannedKm)}">
 							<div class="absolute left-0 right-0 border-t border-steel" style="bottom: {ph}px"></div>
-							<div class="absolute bottom-0 left-1/4 right-1/4 rounded-[1px] bg-ink" style="height: {h}px"></div>
+							<div class="absolute bottom-0 left-1/4 right-1/4 rounded-[1px] bg-ok" style="height: {h}px"></div>
 						</div>
 					{/each}
 				</div>
