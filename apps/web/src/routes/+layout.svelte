@@ -2,13 +2,14 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { onNavigate } from '$app/navigation';
+	import { goto, onNavigate } from '$app/navigation';
 	import { api } from '$lib/api';
 	import { loadPrefs } from '$lib/prefs.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { installClientErrorReporting } from '$lib/clientErrors';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
+	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 
 	let { children } = $props();
@@ -17,6 +18,11 @@
 	// Set when a newer service worker takes control; we offer a reload instead of
 	// forcing one, so an in-progress form or request is never interrupted.
 	let updateReady = $state(false);
+	let stopConfirm = $state(false);
+
+	// Onboarding hides the nav: the plan is the point, and almost everything else
+	// depends on it. A sticky close with a confirmation takes you back instead.
+	const onboarding = $derived(page.url.pathname.startsWith('/onboarding'));
 
 	const tabs = $derived([
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
@@ -113,6 +119,7 @@
 	<SignIn />
 {:else}
 	<div class="min-h-dvh flex flex-col">
+		{#if !onboarding}
 		<header
 			class="sticky top-0 z-30 border-b border-hairline bg-paper"
 			style="padding-top: env(safe-area-inset-top)"
@@ -153,6 +160,7 @@
 				</div>
 			</div>
 		</header>
+		{/if}
 
 		{#if updateReady}
 			<div class="mx-auto mt-3 flex w-full max-w-5xl items-center justify-between gap-3 px-4">
@@ -173,6 +181,7 @@
 			{@render children()}
 		</main>
 
+		{#if !onboarding}
 		<nav
 			class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper sm:hidden"
 			aria-label="Primary"
@@ -191,5 +200,32 @@
 				{/each}
 			</div>
 		</nav>
+		{/if}
+
+		{#if onboarding}
+			<button
+				type="button"
+				onclick={() => (stopConfirm = true)}
+				aria-label="Stop building your plan"
+				class="fixed right-3 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-hairline bg-paper/95 text-steel hover:text-ink"
+				style="top: calc(env(safe-area-inset-top) + 0.5rem)"
+			>
+				✕
+			</button>
+		{/if}
 	</div>
+{/if}
+
+{#if stopConfirm}
+	<ConfirmSheet
+		title="Stop building your plan?"
+		body="Your answers are not saved. You can start again any time from the dashboard."
+		confirmLabel="Stop and go to the dashboard"
+		tone="danger"
+		onConfirm={() => {
+			stopConfirm = false;
+			void goto('/');
+		}}
+		onClose={() => (stopConfirm = false)}
+	/>
 {/if}

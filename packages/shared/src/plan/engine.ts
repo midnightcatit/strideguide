@@ -236,6 +236,7 @@ function singleRunWorkout(
 	const p = paces ?? DEFAULT_PACES;
 	return {
 		blocks: [
+			drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
 			{
 				repeat: 1,
 				steps: [
@@ -254,6 +255,7 @@ function singleRunWorkout(
 					},
 				],
 			},
+			drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
 		],
 		totalDistanceKm: distanceKm,
 	};
@@ -696,11 +698,16 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		}
 
 		// Mobility / stretching on a rest day, when the user asked for it there.
-		const wantsStretch =
-			input.baseline.stretching === 'rest-days' || input.baseline.stretching === 'both';
-		if (wantsStretch && phase !== 'taper') {
-			const restDay = pickRestDay(days);
-			if (restDay !== undefined) sessions.push(mobilitySession(restDay, input.baseline));
+		// Mobility follows the flexibility gap: a goal above where you are today
+		// earns one or two dedicated sessions a week, on rest days.
+		const flex = input.baseline.flexibility;
+		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
+		if (flexGap > 0 && phase !== 'taper') {
+			const wanted = flexGap >= 2 ? 2 : 1;
+			const ordered = [2, 4, 1, 3, 5, 0, 6].filter((d) => !days.includes(d));
+			for (const d of ordered.slice(0, wanted)) {
+				sessions.push(mobilitySession(d, input.baseline));
+			}
 		}
 
 		const withIntensity = sessions.map((s) => ({
@@ -761,12 +768,6 @@ function strengthSession(day: number, slot: string, phase: string, input: PlanIn
 	};
 }
 
-/** A day with no training, preferring midweek, for a mobility session. */
-function pickRestDay(trainingDays: number[]): number | undefined {
-	const set = new Set(trainingDays);
-	return [2, 4, 0, 1, 3, 5, 6].find((d) => !set.has(d));
-}
-
 function mobilityWorkout(routine: Drill[]): StructuredWorkout {
 	const dynamic = routine.slice(0, 2);
 	const statics = routine.slice(2);
@@ -779,7 +780,9 @@ function mobilityWorkout(routine: Drill[]): StructuredWorkout {
 }
 
 function mobilitySession(day: number, baseline: Baseline): PlannedSession {
-	const building = (baseline.flexibility?.goal ?? 0) > (baseline.flexibility?.current ?? 0);
+	// A bigger stretch (two or more points) gets the fuller routine; a small
+	// stretch keeps the short maintenance one.
+	const building = (baseline.flexibility?.goal ?? 0) - (baseline.flexibility?.current ?? 0) >= 2;
 	const routine = mobilityRoutine(building);
 	const totalSec = routine.reduce((s, d) => s + d.durationSec, 0);
 	return {
