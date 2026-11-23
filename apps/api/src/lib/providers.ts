@@ -2,12 +2,17 @@ import type { Env } from '../env';
 
 /**
  * Connector provider registry. Everything the OAuth flow needs to know about a
- * provider lives here as data, so adding one is a new entry, not new branches.
- * The endpoints and scopes come from each provider's docs:
- *   Google Health: Google OAuth 2.0, https://developers.google.com/health/setup
- *   Strava:        https://developers.strava.com/docs/authentication
+ * provider lives here as data.
+ *
+ * To add a provider, add one entry to PROVIDERS below: its authorize and token
+ * URLs, the scopes, where to read the account id, and the env vars that hold its
+ * client. Nothing else changes; the routes, the settings page and the session
+ * link all read from this map.
+ *
+ * Endpoints and scopes come from each provider's docs. Google Health uses Google
+ * OAuth 2.0 (https://developers.google.com/health/setup).
  */
-export type ProviderId = 'google-health' | 'strava';
+export type ProviderId = 'google-health';
 
 export interface ProviderConfig {
 	id: ProviderId;
@@ -15,7 +20,7 @@ export interface ProviderConfig {
 	label: string;
 	authorizeUrl: string;
 	tokenUrl: string;
-	/** Scopes in the provider's own form: space separated for Google, comma for Strava. */
+	/** Scopes in the provider's own form: space separated for Google. */
 	scopes: string;
 	/** Where to read the linked account's id after the token exchange. */
 	userIdUrl: string;
@@ -24,7 +29,7 @@ export interface ProviderConfig {
 	/** Which env vars hold this provider's OAuth client. */
 	clientIdEnv: keyof Env;
 	clientSecretEnv: keyof Env;
-	/** Used when the primary var is unset (Google Health reuses the sign-in client). */
+	/** Used when the primary var is unset. */
 	clientIdFallback?: keyof Env;
 	clientSecretFallback?: keyof Env;
 	/** Extra params on the authorize URL. */
@@ -57,20 +62,6 @@ export const PROVIDERS: Record<ProviderId, ProviderConfig> = {
 		},
 		revokeUrl: 'https://oauth2.googleapis.com/revoke',
 		revokeStyle: 'query-token',
-	},
-	strava: {
-		id: 'strava',
-		label: 'Strava',
-		authorizeUrl: 'https://www.strava.com/oauth/authorize',
-		tokenUrl: 'https://www.strava.com/oauth/token',
-		scopes: 'read,activity:read_all',
-		userIdUrl: 'https://www.strava.com/api/v3/athlete',
-		userIdField: 'id',
-		clientIdEnv: 'STRAVA_CLIENT_ID',
-		clientSecretEnv: 'STRAVA_CLIENT_SECRET',
-		authorizeParams: { approval_prompt: 'auto' },
-		revokeUrl: 'https://www.strava.com/oauth/deauthorize',
-		revokeStyle: 'body-access-token',
 	},
 };
 

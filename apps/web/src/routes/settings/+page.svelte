@@ -27,7 +27,7 @@
 		{
 			href: '/settings/connections',
 			label: 'Connections',
-			desc: 'Link Strava and Google Health',
+			desc: 'Link Google Health',
 			icon: 'M8 12a3 3 0 0 1 0-4l1.5-1.5a3 3 0 0 1 4.2 4.2L12.5 12M12 8a3 3 0 0 1 0 4l-1.5 1.5a3 3 0 0 1-4.2-4.2L7.5 8',
 		},
 		{

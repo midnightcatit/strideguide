@@ -7,7 +7,6 @@
 
 	/** What each connector reads, in plain words, shown on the card. */
 	const SHARED: Record<string, string> = {
-		strava: 'Runs and rides you record in Strava, with distance, pace, heart rate and route.',
 		'google-health':
 			'Workouts and daily activity from Google Health, including Fitbit and Pixel Watch.',
 	};

@@ -19,12 +19,10 @@ export interface Env {
 	SESSION_SECRET: string;
 	OPENROUTER_API_KEY: string;
 
-	// Health connector secrets. All optional: when a provider's client id and
-	// secret are unset, that provider shows as not configured and stays inert.
+	// Health connector secrets. All optional: when the client id and secret are
+	// unset the provider shows as not configured and stays inert.
 	GOOGLE_HEALTH_CLIENT_ID?: string;
 	GOOGLE_HEALTH_CLIENT_SECRET?: string;
-	STRAVA_CLIENT_ID?: string;
-	STRAVA_CLIENT_SECRET?: string;
 	/** Base64-encoded 32-byte key for AES-GCM token encryption. */
 	CONNECTIONS_KEY?: string;
 }

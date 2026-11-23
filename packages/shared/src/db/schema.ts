@@ -409,7 +409,7 @@ export const connections = sqliteTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
-		provider: text('provider', { enum: ['google-health', 'strava'] }).notNull(),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
 		/** The account's id at the provider, so a reconnect maps to the same person. */
 		providerUserId: text('provider_user_id'),
 		accessTokenEnc: text('access_token_enc'),
@@ -442,7 +442,7 @@ export const activities = sqliteTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
-		provider: text('provider', { enum: ['google-health', 'strava'] }).notNull(),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
 		/** The activity's id at the provider, unique per provider. */
 		externalId: text('external_id').notNull(),
 		modality: text('modality', {

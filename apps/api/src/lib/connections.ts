@@ -126,7 +126,7 @@ export interface TokenResponse {
 	access_token?: string;
 	refresh_token?: string;
 	expires_in?: number;
-	/** Strava sends an absolute unix-seconds expiry. */
+	/** An absolute unix-seconds expiry, when the provider sends one. */
 	expires_at?: number;
 	scope?: string;
 	token_type?: string;

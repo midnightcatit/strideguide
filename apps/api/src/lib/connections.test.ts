@@ -37,19 +37,19 @@ describe('token encryption', () => {
 
 describe('oauth state', () => {
 	it('round trips the signed state', async () => {
-		const token = await signState(env(KEY), { uid: 'user-1', provider: 'strava', nonce: 'n-1' });
+		const token = await signState(env(KEY), { uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
 		const state = await verifyState(env(KEY), token);
-		expect(state).toEqual({ uid: 'user-1', provider: 'strava', nonce: 'n-1' });
+		expect(state).toEqual({ uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
 	});
 
 	it('rejects a tampered state', async () => {
-		const token = await signState(env(KEY), { uid: 'user-1', provider: 'strava', nonce: 'n-1' });
+		const token = await signState(env(KEY), { uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
 		const tampered = `${token.slice(0, -2)}xy`;
 		expect(await verifyState(env(KEY), tampered)).toBeNull();
 	});
 
 	it('rejects a state signed with another key', async () => {
-		const token = await signState(env(KEY), { uid: 'user-1', provider: 'strava', nonce: 'n-1' });
+		const token = await signState(env(KEY), { uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
 		expect(await verifyState(env(OTHER_KEY), token)).toBeNull();
 	});
 });

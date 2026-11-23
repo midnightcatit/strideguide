@@ -72,7 +72,7 @@ export interface ApiUser {
 
 /** One connector row on the Settings > Connections page. */
 export interface ConnectionStatus {
-	id: 'google-health' | 'strava';
+	id: 'google-health';
 	label: string;
 	/** True when the server has this provider's OAuth client configured. */
 	configured: boolean;
