@@ -38,6 +38,14 @@
 	--tap-min: 44px;
 
 	/*
+	 * Badge accent. Amber pills mark a card's facts and read as badges against
+	 * any card wash (cool, ok, signal). Kept apart from the state colours above
+	 * so a badge never looks like a status.
+	 */
+	--badge: #b45309;
+	--badge-wash: #faeccf;
+
+	/*
 	 * Motion. Every transition pulls from these tokens, so timing stays
 	 * consistent instead of drifting per component.
 	 */
@@ -84,6 +92,8 @@
 		--tint-strength: #202434;
 		--tint-mobility: #16302b;
 		--tint-crosstrain: #182734;
+		--badge: #f2b451;
+		--badge-wash: rgba(242, 180, 81, 0.18);
 	}
 }
 
@@ -110,6 +120,8 @@
 	--tint-strength: #e0e3f0;
 	--tint-mobility: #d8eae6;
 	--tint-crosstrain: #dae8f3;
+	--badge: #b45309;
+	--badge-wash: #faeccf;
 }
 
 :root[data-theme='dark'] {
@@ -136,6 +148,8 @@
 	--tint-strength: #202434;
 	--tint-mobility: #16302b;
 	--tint-crosstrain: #182734;
+	--badge: #f2b451;
+	--badge-wash: rgba(242, 180, 81, 0.18);
 }
 
 @theme inline {
@@ -161,6 +175,8 @@
 	--color-tint-strength: var(--tint-strength);
 	--color-tint-mobility: var(--tint-mobility);
 	--color-tint-crosstrain: var(--tint-crosstrain);
+	--color-badge: var(--badge);
+	--color-badge-wash: var(--badge-wash);
 	--font-display: 'Space Grotesk', system-ui, sans-serif;
 	--font-body: 'IBM Plex Sans', system-ui, sans-serif;
 	--font-data: 'IBM Plex Mono', ui-monospace, monospace;

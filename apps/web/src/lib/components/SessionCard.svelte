@@ -88,7 +88,7 @@
 	const reps = $derived(machines[0]?.sets?.[0]?.reps ?? 0);
 	// Facts that fit, as pills, so the card reads at a glance.
 	const pills = $derived.by(() => {
-		const out: { text: string; band?: boolean }[] = [];
+		const out: { text: string }[] = [];
 		out.push({ text: session.slot === 'PM' ? 'Evening' : 'Morning' });
 		if (isStrength) {
 			if (machines.length) out.push({ text: `${machines.length} moves` });
@@ -171,7 +171,7 @@
 
 		<div class="scroll-modern flex gap-1.5 overflow-x-auto" role="list" aria-label="Session facts">
 			{#each pills as pill (pill.text)}
-				<span class="shrink-0 whitespace-nowrap rounded-full border border-hairline px-2.5 py-1 text-xs {pill.band ? 'text-signal-ink' : 'text-ink'}" role="listitem">{pill.text}</span>
+				<span class="shrink-0 whitespace-nowrap rounded-full border border-badge bg-badge-wash px-2.5 py-1 text-xs font-medium text-badge" role="listitem">{pill.text}</span>
 			{/each}
 		</div>
 
