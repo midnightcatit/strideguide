@@ -39,14 +39,16 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 export async function runAi(
 	env: Env,
 	messages: AiMessage[],
-	opts: { maxTokens?: number } = {},
+	opts: { maxTokens?: number; timeoutMs?: number } = {},
 ): Promise<AiResult> {
 	const maxTokens = opts.maxTokens ?? 1024;
+	const cfTimeout = opts.timeoutMs ?? CF_TIMEOUT_MS;
+	const orTimeout = opts.timeoutMs ?? OPENROUTER_TIMEOUT_MS;
 
 	try {
 		const res = (await withTimeout(
 			env.AI.run(CF_MODEL as never, { messages, max_tokens: maxTokens }) as Promise<unknown>,
-			CF_TIMEOUT_MS,
+			cfTimeout,
 		)) as CfAiResponse | string;
 		const text = typeof res === 'string' ? res : (res.response ?? '');
 		if (text.trim()) {
@@ -61,7 +63,7 @@ export async function runAi(
 	}
 
 	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), OPENROUTER_TIMEOUT_MS);
+	const timer = setTimeout(() => controller.abort(), orTimeout);
 	try {
 		const res = await fetch(OPENROUTER_URL, {
 			method: 'POST',
