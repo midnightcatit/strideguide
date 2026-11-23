@@ -91,6 +91,8 @@ export interface Baseline {
 	crossTraining?: string[];
 	/** Any other activity, in the user's words. */
 	customActivity?: string;
+	/** Days the user does their cross-training or sport, 0 = Monday. */
+	crossTrainingDays?: number[];
 	/** Terrain the user mostly runs on. */
 	terrain?: TerrainPreference;
 	/** Free-text niggles the coach should know about. */

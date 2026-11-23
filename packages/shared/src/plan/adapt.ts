@@ -74,7 +74,11 @@ export function suggestAdjustments(
 
 	// --- missed sessions (past, unlogged) ---
 	const missed = dated.filter(
-		(d) => d.date < todayIso && d.session.modality !== 'mobility' && !loggedIds.has(d.session.id),
+		(d) =>
+			d.date < todayIso &&
+			d.session.modality !== 'mobility' &&
+			d.session.type !== 'cross-train' &&
+			!loggedIds.has(d.session.id),
 	);
 	if (missed.length >= 3) {
 		out.push({
