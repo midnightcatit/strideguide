@@ -93,6 +93,44 @@ export interface ClientLog {
 	createdAt?: string | number | null;
 	/** True when the log was queued offline and has not synced yet. */
 	pending?: boolean;
+	/** How the log was recorded: manual, device or import. */
+	source?: 'manual' | 'device' | 'import' | null;
+}
+
+/** The session an imported activity points at, as the API serialises it. */
+export interface ActivitySessionRef {
+	id: string;
+	title: string | null;
+	type: string | null;
+	modality: string;
+	date: string;
+}
+
+export interface ActivityMatchCandidate {
+	sessionId: string;
+	confidence: number;
+	decision: 'auto' | 'ask' | 'none';
+	dateDeltaDays: number;
+	breakdown: { date: number; modality: number; size?: number };
+	session: ActivitySessionRef | null;
+}
+
+/** An imported activity with its proposed or confirmed match to the plan. */
+export interface ClientActivity {
+	id: string;
+	provider: string;
+	modality: string;
+	type: string | null;
+	startedAt: string;
+	durationSec: number | null;
+	distanceM: number | null;
+	avgHr: number | null;
+	matchState: 'proposed' | 'confirmed' | 'rejected';
+	matchConfidence: number | null;
+	sessionId: string | null;
+	session: ActivitySessionRef | null;
+	proposal: ActivityMatchCandidate | null;
+	candidates: ActivityMatchCandidate[];
 }
 
 export interface CurrentPlan {

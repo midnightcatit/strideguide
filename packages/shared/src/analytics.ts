@@ -17,6 +17,8 @@ export interface LogLike {
 	} | null;
 	rpe?: number | null;
 	createdAt?: string | number | null;
+	/** How the log was recorded: manual, device or import. */
+	source?: string | null;
 }
 
 export interface SessionLike {
@@ -53,6 +55,8 @@ export interface WeekVolume {
 	week: number;
 	plannedKm: number;
 	actualKm: number;
+	/** Of the actual kilometres, the part that came from an imported activity. */
+	importedKm: number;
 }
 
 export interface PacePoint {
@@ -71,6 +75,8 @@ export interface ProgressMetrics {
 	planMeta: PlanMeta;
 	/** ISO dates on which something was logged, for the consistency calendar. */
 	calendar: { trainedDays: string[] };
+	/** What of the completed work arrived through an import rather than by hand. */
+	imported: { sessions: number; km: number };
 }
 
 function dayOf(value: string | number | null | undefined): string | undefined {
@@ -99,10 +105,13 @@ export function computeProgress(
 	let planned = 0;
 	let rpeSum = 0;
 	let rpeCount = 0;
+	let importedSessions = 0;
+	let importedKm = 0;
 
 	for (const w of weeks) {
 		let plannedKm = 0;
 		let actualKm = 0;
+		let weekImportedKm = 0;
 		for (const s of w.sessions) {
 			planned += 1;
 			if (s.modality === 'running') plannedKm += s.prescription?.targetDistanceKm ?? 0;
@@ -110,6 +119,10 @@ export function computeProgress(
 			if (log) {
 				completed += 1;
 				if (s.modality === 'running') actualKm += log.runStats?.distanceKm ?? 0;
+				if (log.source === 'import') {
+					importedSessions += 1;
+					weekImportedKm += log.runStats?.distanceKm ?? 0;
+				}
 				const band = s.prescription?.intensity;
 				if (band) intensity[band] += 1;
 				if (typeof log.rpe === 'number') {
@@ -120,7 +133,9 @@ export function computeProgress(
 		}
 		plannedKm = Math.round(plannedKm * 10) / 10;
 		actualKm = Math.round(actualKm * 10) / 10;
-		byWeek.push({ week: w.weekNumber, plannedKm, actualKm });
+		weekImportedKm = Math.round(weekImportedKm * 10) / 10;
+		importedKm += weekImportedKm;
+		byWeek.push({ week: w.weekNumber, plannedKm, actualKm, importedKm: weekImportedKm });
 		totalPlannedKm += plannedKm;
 		totalActualKm += actualKm;
 	}
@@ -221,5 +236,6 @@ export function computeProgress(
 			daysToRace,
 		},
 		calendar: { trainedDays },
+		imported: { sessions: importedSessions, km: Math.round(importedKm * 10) / 10 },
 	};
 }

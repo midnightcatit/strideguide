@@ -6,7 +6,7 @@
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
+	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex, sessionTypeLabel } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { daySwipe } from '$lib/actions';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
@@ -25,6 +25,7 @@
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
+	import ActivityMatchSheet from '$lib/components/ActivityMatchSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let logTarget = $state<ClientSession | null>(null);
@@ -32,6 +33,9 @@
 	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
 	let pickerDate = $state<string | null>(null);
+	let activities = $state<ClientActivity[]>([]);
+	let reviewing = $state<ClientActivity | null>(null);
+	let matchBusy = $state(false);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -42,9 +46,10 @@
 
 	// Back (browser or hardware) closes an open overlay instead of leaving the page.
 	overlayHistory(
-		() => !!(detailTarget || playTarget || logTarget),
+		() => !!(detailTarget || playTarget || logTarget || reviewing),
 		() => {
-			if (logTarget) logTarget = null;
+			if (reviewing) reviewing = null;
+			else if (logTarget) logTarget = null;
 			else if (playTarget) playTarget = null;
 			else detailTarget = null;
 		},
@@ -112,6 +117,59 @@
 			todayIso >= selWeek.startDate &&
 			todayIso <= selWeek.endDate,
 	);
+	// Imported activities the matcher could not resolve on its own, waiting on a yes or no.
+	const pendingMatches = $derived(
+		activities.filter((a) => a.matchState === 'proposed' && a.proposal?.session),
+	);
+
+	function dayLabel(iso: string): string {
+		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
+			weekday: 'short',
+			day: 'numeric',
+			month: 'short',
+		});
+	}
+	function activitySummary(a: ClientActivity): string {
+		const bits: string[] = [];
+		if (a.distanceM) bits.push(fmtDistance(a.distanceM / 1000));
+		if (a.durationSec) bits.push(`${Math.round(a.durationSec / 60)} min`);
+		bits.push(a.modality);
+		return bits.join(' · ');
+	}
+	function proposedLabel(a: ClientActivity): string {
+		const ref = a.proposal?.session;
+		if (!ref) return 'session';
+		return ref.title ?? sessionTypeLabel(ref.type ?? '');
+	}
+	async function confirmMatch(a: ClientActivity) {
+		matchBusy = true;
+		try {
+			const res = await api.confirmActivity(a.id, a.proposal?.sessionId);
+			activities = activities.map((x) =>
+				x.id === a.id ? { ...x, matchState: 'confirmed', sessionId: res.sessionId } : x,
+			);
+			reloadPlan();
+		} catch {
+			// the next list will show the truth
+		} finally {
+			matchBusy = false;
+			reviewing = null;
+		}
+	}
+	async function rejectMatch(a: ClientActivity) {
+		matchBusy = true;
+		try {
+			await api.rejectActivity(a.id);
+			activities = activities.map((x) =>
+				x.id === a.id ? { ...x, matchState: 'rejected', proposal: null } : x,
+			);
+		} catch {
+			// ignore
+		} finally {
+			matchBusy = false;
+			reviewing = null;
+		}
+	}
 
 	function stepDay(n: number) {
 		dayDir = n >= 0 ? 1 : -1;
@@ -177,6 +235,22 @@
 		await ensureAuth();
 		if (auth.user) {
 			await ensurePlan();
+			try {
+				const res = await api.activities();
+				activities = res.activities;
+				// A strong match is applied server side. If it created a completion
+				// we have not loaded yet, refresh the plan so the card shows it.
+				const loggedIds = new Set(store.logs.map((l) => l.sessionId).filter(Boolean));
+				if (
+					activities.some(
+						(a) => a.matchState === 'confirmed' && a.sessionId && !loggedIds.has(a.sessionId),
+					)
+				) {
+					reloadPlan();
+				}
+			} catch {
+				// no imports to show, or the call failed; Today still works
+			}
 			note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 		}
 	});
@@ -201,6 +275,24 @@
 		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
 			This plan predates guided workouts. Rebuild it to get step-by-step sessions and drills.
 			<a href="/onboarding" class="ml-1 font-medium text-signal-ink hover:underline">Rebuild plan →</a>
+		</div>
+	{/if}
+
+	{#if pendingMatches.length}
+		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
+			<p class="font-medium">
+				{pendingMatches.length === 1
+					? 'An imported workout might be one of your sessions.'
+					: `${pendingMatches.length} imported workouts might be plan sessions.`}
+			</p>
+			<p class="mt-1 text-steel">Confirm each one so it counts, or set it aside.</p>
+			<button
+				type="button"
+				onclick={() => (reviewing = pendingMatches[0] ?? null)}
+				class="mt-3 rounded-md border border-signal-ink px-4 py-2.5 text-sm font-medium text-signal-ink hover:border-signal"
+			>
+				Review the match
+			</button>
 		</div>
 	{/if}
 
@@ -379,6 +471,21 @@
 		tone={confirm.tone ?? 'default'}
 		onConfirm={confirm.action}
 		onClose={() => (confirm = null)}
+	/>
+{/if}
+
+{#if reviewing}
+	{@const act = reviewing}
+	{@const ref = act.proposal?.session ?? null}
+	<ActivityMatchSheet
+		title="Did this match your {ref ? proposedLabel(act) : 'session'}?"
+		body="{activitySummary(act)} on {dayLabel(new Date(act.startedAt).toISOString().slice(0, 10))} looks like your {ref
+			? proposedLabel(act)
+			: 'session'}{ref ? ` on ${dayLabel(ref.date)}` : ''}. If it was, we count it as done."
+		busy={matchBusy}
+		onConfirm={() => confirmMatch(act)}
+		onReject={() => rejectMatch(act)}
+		onClose={() => (reviewing = null)}
 	/>
 {/if}
 

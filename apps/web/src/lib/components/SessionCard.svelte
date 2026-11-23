@@ -66,7 +66,9 @@
 	);
 	const statusLabel = $derived(
 		status === 'done'
-			? 'Done'
+			? logged?.source === 'import'
+				? 'Imported'
+				: 'Done'
 			: status === 'skipped'
 				? 'Skipped'
 				: status === 'in-progress'
@@ -111,12 +113,13 @@
 	const metaLine = $derived.by(() => {
 		if (logged) {
 			const sync = logged.pending ? ' · syncing' : '';
-			if (isStrength && logged.strengthSets?.length) return `Logged · ${logged.strengthSets.length} moves${sync}`;
+			const lead = logged.source === 'import' ? 'Imported' : 'Logged';
+			if (isStrength && logged.strengthSets?.length) return `${lead} · ${logged.strengthSets.length} moves${sync}`;
 			if (logged.runStats?.distanceKm) {
 				const pace = logged.runStats.avgPaceSecPerKm ? ` · ${fmtPace(logged.runStats.avgPaceSecPerKm)}` : '';
-				return `Logged · ${fmtDistance(logged.runStats.distanceKm)}${pace}${sync}`;
+				return `${lead} · ${fmtDistance(logged.runStats.distanceKm)}${pace}${sync}`;
 			}
-			return `Logged${sync}`;
+			return `${lead}${sync}`;
 		}
 		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
 		return '';

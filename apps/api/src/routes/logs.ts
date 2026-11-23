@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { desc, and, eq } from 'drizzle-orm';
+import { desc, and, eq, inArray } from 'drizzle-orm';
+import { importLogsSupersededByManual } from '@strideguide/shared/plan';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -75,6 +76,20 @@ logs.post(
 				.where(and(eq(schema.sessionsPlan.id, body.sessionId), eq(schema.userGoals.userId, user.id)))
 				.limit(1);
 			if (!owned[0]) return c.json({ error: 'unknown_session' }, 400);
+
+			// One log per session: a manual entry replaces any import that had
+			// already closed the session, so the same work is never counted twice.
+			if (body.source !== 'import') {
+				const existing = await c
+					.get('db')
+					.select({ id: schema.logs.id, source: schema.logs.source })
+					.from(schema.logs)
+					.where(and(eq(schema.logs.userId, user.id), eq(schema.logs.sessionId, body.sessionId)));
+				const superseded = importLogsSupersededByManual(existing);
+				if (superseded.length) {
+					await c.get('db').delete(schema.logs).where(inArray(schema.logs.id, superseded));
+				}
+			}
 		}
 
 		const inserted = await c

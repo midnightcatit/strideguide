@@ -466,6 +466,14 @@ export const activities = sqliteTable(
 		raw: text('raw', { mode: 'json' }),
 		sessionId: text('session_id').references(() => sessionsPlan.id, { onDelete: 'set null' }),
 		matchConfidence: real('match_confidence'),
+		/**
+		 * Match lifecycle. Proposed until the runner confirms or rejects it, then
+		 * confirmed (with session_id and match_confidence set) or rejected (kept so
+		 * the same activity is not proposed again).
+		 */
+		matchState: text('match_state', { enum: ['proposed', 'confirmed', 'rejected'] })
+			.notNull()
+			.default('proposed'),
 		createdAt,
 	},
 	(t) => ({
