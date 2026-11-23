@@ -30,7 +30,10 @@ export interface Prefs {
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };
 
 /** Age in whole years from a birth year, or undefined if it is not set. */
-export function ageFromBirthYear(birthYear: number | undefined, now = new Date()): number | undefined {
+export function ageFromBirthYear(
+	birthYear: number | undefined,
+	now = new Date(),
+): number | undefined {
 	if (!birthYear) return undefined;
 	return now.getUTCFullYear() - birthYear;
 }
@@ -90,4 +93,50 @@ export function formatPace(secPerKm: number, units: Units): string {
 export function formatPaceBand(band: [number, number], units: Units): string {
 	const [a, b] = band;
 	return `${formatClock(convertPace(a, units))}–${formatClock(convertPace(b, units))} ${paceUnit(units)}`;
+}
+
+/** A kilometre value from prose, as the user's distance text, e.g. "3.1 mi". */
+function proseDistance(km: string): string {
+	const mi = Number(kmToMiles(Number(km)).toFixed(1));
+	return Number.isInteger(mi) ? String(mi) : mi.toFixed(1);
+}
+
+/**
+ * Rewrite metric figures in knowledge-base prose into the reader's units. The
+ * stored research is metric, so this is a no-op for metric and, for imperial,
+ * converts plain distance and pace tokens (km and /km) to miles and /mi. Only
+ * whole distance and pace tokens are touched, so citation text keeps its meaning.
+ */
+export function localizeUnits(text: string, units: Units): string {
+	if (units === 'metric' || !text) return text;
+	let out = text;
+
+	// Paces: "5:05 /km", "5:12/km", "5:05 per km".
+	out = out.replace(
+		/(\d{1,2}):(\d{2})\s*(\/|per\s+)\s*km\b/gi,
+		(_m, m: string, s: string, sep: string) => {
+			const perMile = formatClock(pacePerKmToPerMile(Number(m) * 60 + Number(s)));
+			return sep.startsWith('/') ? `${perMile} /mi` : `${perMile} per mile`;
+		},
+	);
+
+	// Distance ranges: "3-5 km", "160 to 220 km", "16–24 km".
+	out = out.replace(
+		/(\d+(?:\.\d+)?)\s*(-|–|~|to)\s*(\d+(?:\.\d+)?)\s*(?:km|kilometres?|kilometers?)\b/gi,
+		(_m, a: string, joiner: string, b: string) => {
+			const sep = joiner === 'to' ? ' to ' : joiner;
+			return `${proseDistance(a)}${sep}${proseDistance(b)} mi`;
+		},
+	);
+
+	// Hyphenated distance adjectives: "5-km".
+	out = out.replace(/(\d+(?:\.\d+)?)-km\b/gi, (_m, n: string) => `${proseDistance(n)}-mile`);
+
+	// Single distances: "5 km", "6 kilometres".
+	out = out.replace(
+		/(\d+(?:\.\d+)?)\s*(?:km|kilometres?|kilometers?)\b/gi,
+		(_m, n: string) => `${proseDistance(n)} mi`,
+	);
+
+	return out;
 }

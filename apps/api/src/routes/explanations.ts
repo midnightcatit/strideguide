@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { eq, inArray } from 'drizzle-orm';
 import { explanationRefFor } from '@strideguide/shared/plan';
+import { DEFAULT_PREFS, localizeUnits, type Prefs, type Units } from '@strideguide/shared/units';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -18,7 +19,10 @@ interface Claim {
 function parseClaims(full: string): Claim[] {
 	const out: Claim[] = [];
 	for (const block of full.split('\n\n')) {
-		const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
+		const lines = block
+			.split('\n')
+			.map((l) => l.trim())
+			.filter(Boolean);
 		if (!lines.length || !lines[0]!.startsWith('###')) continue;
 		const claim: Claim = { topic: lines[0]!.replace(/^###\s*/, ''), claim: lines[1] ?? '' };
 		for (const line of lines.slice(2)) {
@@ -36,6 +40,7 @@ explanations.get('/', async (c) => {
 	const ref = c.req.query('ref') ?? explanationRefFor(type);
 	if (!ref) return c.json({ error: 'unknown_topic' }, 404);
 
+	const user = c.get('user')!;
 	const db = c.get('db');
 	const rows = await db
 		.select()
@@ -45,6 +50,16 @@ explanations.get('/', async (c) => {
 	const row = rows[0];
 	if (!row) return c.json({ error: 'not_found' }, 404);
 
+	// The stored research is metric, so convert its distances and paces to the
+	// reader's units before sending.
+	const settingRows = await db
+		.select()
+		.from(schema.settings)
+		.where(eq(schema.settings.userId, user.id))
+		.limit(1);
+	const units: Units = { ...DEFAULT_PREFS, ...((settingRows[0]?.prefs as Partial<Prefs>) ?? {}) }
+		.units;
+
 	const ids = ((row.citationIds as string[] | null) ?? []).slice(0, 24);
 	const sourceRows = ids.length
 		? await db.select().from(schema.researchSources).where(inArray(schema.researchSources.id, ids))
@@ -52,8 +67,13 @@ explanations.get('/', async (c) => {
 
 	return c.json({
 		ref,
-		summary: row.summary ?? '',
-		claims: parseClaims(row.full ?? ''),
+		summary: localizeUnits(row.summary ?? '', units),
+		claims: parseClaims(row.full ?? '').map((claim) => ({
+			...claim,
+			topic: localizeUnits(claim.topic, units),
+			claim: localizeUnits(claim.claim, units),
+			evidence: claim.evidence ? localizeUnits(claim.evidence, units) : claim.evidence,
+		})),
 		sources: sourceRows.map((s) => ({
 			title: s.title,
 			authors: s.authors,
