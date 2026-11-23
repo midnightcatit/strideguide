@@ -81,6 +81,12 @@ export interface Baseline {
 	/** Self-described experience level. */
 	experience?: 'beginner' | 'intermediate' | 'advanced';
 	/**
+	 * An effective VDOT derived from the runner's own recent logged efforts, when
+	 * they have not given a race time. Used for paces so they reflect what the
+	 * runner has actually been running.
+	 */
+	effectiveVdot?: number;
+	/**
 	 * How the runner wants the plan to build: a gentle ease-in, a standard steady
 	 * climb, or a bolder push. Sets how fast weekly volume grows and how the plan
 	 * eases in. Defaults to steady.

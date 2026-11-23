@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { asc, and, desc, eq, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
-import { WORKOUT_LIBRARY } from '@strideguide/shared/plan';
+import { WORKOUT_LIBRARY, fitnessState } from '@strideguide/shared/plan';
 import type { Baseline, QualityKind, SessionArchetype } from '@strideguide/shared';
 import { schema } from '../db';
 import { narrateAndStore, templateWeekSummary } from '../lib/narration';
@@ -364,9 +364,54 @@ plans.post(
 			highEffort: crossLogs.filter((l) => (l.rpe ?? 0) >= 7).length,
 		};
 
+		// A read of what the runner has actually been doing, from their own logs,
+		// joined to the plan so each one knows its session type. Seeds paces from a
+		// recent hard effort and volume from real recent weeks, when the runner has
+		// not given a race time or a weekly distance.
+		const fitSince = Date.now() - 28 * 86400000;
+		const fitLogs = userLogs.filter((l) => {
+			const t = l.startedAt instanceof Date ? l.startedAt.getTime() : null;
+			return t != null && t >= fitSince;
+		});
+		const fitSessionIds = [...new Set(fitLogs.map((l) => l.sessionId).filter((x): x is string => !!x))];
+		const fitSessions = fitSessionIds.length
+			? (
+					await Promise.all(
+						chunk(fitSessionIds, 90).map((part) =>
+							c.get('db').select().from(schema.sessionsPlan).where(inArray(schema.sessionsPlan.id, part)),
+						),
+					)
+				).flat()
+			: [];
+		const typeById = new Map(fitSessions.map((s) => [s.id, s.type]));
+		const fitness = fitnessState(
+			fitLogs.map((l) => {
+				const stats = (l.runStats ?? {}) as { distanceKm?: number; durationSec?: number };
+				return {
+					sessionId: l.sessionId,
+					type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
+					date: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
+					distanceKm: stats.distanceKm ?? null,
+					durationSec: stats.durationSec ?? null,
+					rpe: l.rpe ?? null,
+					feedback: (l.feedback as 'up' | 'down' | null) ?? null,
+				};
+			}),
+			{ raceTimes: baseline.recentTimes },
+		);
+		const seededBaseline: Baseline = {
+			...baseline,
+			...(baseline.effectiveVdot == null && fitness.effectiveVdot != null
+				? { effectiveVdot: fitness.effectiveVdot }
+				: {}),
+			...(baseline.weeklyKm == null && fitness.recentWeeklyKm > 0
+				? { weeklyKm: fitness.recentWeeklyKm }
+				: {}),
+		};
+
 		const planInput = {
 			profile,
-			baseline,
+			baseline: seededBaseline,
 			availableDays,
 			startDate,
 			targetDate: body.targetDate,

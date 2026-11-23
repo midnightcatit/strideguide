@@ -12,7 +12,7 @@ import type { MachineExercise } from './machines';
 import { COOLDOWN_STRETCHES, WARMUP_DRILLS, mobilityRoutine, type Drill } from './mobility';
 import { suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
-import { pacesFromVdot, vdotFromBaseline } from './vdot';
+import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
 
 /* ----------------------------- small helpers ----------------------------- */
 
@@ -537,7 +537,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const phases = phaseSequence(input.profile.progressionRules, totalWeeks);
 	const volumes = volumeCurve(input, phases);
 
-	const vdot = vdotFromBaseline(input.baseline.recentTimes);
+	// A given race time is the most trustworthy anchor. Failing that, an effective
+	// VDOT read from the runner's own logged hard efforts, so paces follow what
+	// they have actually been running.
+	const measured = vdotFromBaseline(input.baseline.recentTimes);
+	const derived = input.baseline.effectiveVdot;
+	const vdot =
+		measured ??
+		(typeof derived === 'number' && derived >= VDOT_MIN && derived <= VDOT_MAX ? derived : undefined);
 	const paces: TrainingPaces | undefined = vdot ? pacesFromVdot(vdot) : undefined;
 	const easyPace = paces ? (paces.easy[0] + paces.easy[1]) / 2 : 360; // ~6:00/km fallback
 
