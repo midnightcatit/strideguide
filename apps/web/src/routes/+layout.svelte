@@ -9,22 +9,14 @@
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { installClientErrorReporting } from '$lib/clientErrors';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 
 	let { children } = $props();
 
 	let pending = $state(0);
-	let settingsOpen = $state(false);
 	// Set when a newer service worker takes control; we offer a reload instead of
 	// forcing one, so an in-progress form or request is never interrupted.
 	let updateReady = $state(false);
-
-	// Back (browser or hardware) closes the settings sheet instead of leaving the page.
-	overlayHistory(
-		() => settingsOpen,
-		() => (settingsOpen = false),
-	);
 
 	const tabs = $derived([
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
@@ -148,9 +140,8 @@
 					{#if pending > 0}
 						<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync">⟳ {pending}</span>
 					{/if}
-					<button
-						type="button"
-						onclick={() => (settingsOpen = true)}
+					<a
+						href="/settings"
 						aria-label="Settings"
 						class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
 					>
@@ -158,7 +149,7 @@
 							<circle cx="12" cy="12" r="3" />
 							<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
 						</svg>
-					</button>
+					</a>
 				</div>
 			</div>
 		</header>
@@ -201,8 +192,4 @@
 			</div>
 		</nav>
 	</div>
-{/if}
-
-{#if settingsOpen && auth.user}
-	<SettingsModal user={auth.user} onClose={() => (settingsOpen = false)} />
 {/if}
