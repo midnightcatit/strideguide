@@ -144,15 +144,41 @@
 					: sessionLabel(daySessions[0])
 				: 'Rest day'}
 		</h1>
-		{#if !isToday}
-			<div class="mt-3">
-				<button type="button" onclick={goToday} class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal">Back to today</button>
-			</div>
-		{/if}
+		<!-- Space is always reserved, so the button appearing never shifts the page. -->
+		<div class="mt-3 h-9">
+			<button
+				type="button"
+				onclick={goToday}
+				class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal {isToday
+					? 'invisible'
+					: ''}"
+			>
+				Back to today
+			</button>
+		</div>
 	</header>
 
-	<!-- Sticky day nav: the week strip and the phone arrows stay put as you scroll. -->
+	<!-- Sticky day nav: the phone day arrows sit above the week strip, both stay put. -->
 	<div class="sticky top-16 z-20 -mx-4 mb-3 border-b border-hairline bg-paper/95 px-4 pt-1 pb-2 backdrop-blur">
+		<div class="mb-1 flex items-center justify-between gap-2 sm:hidden">
+			<button
+				type="button"
+				onclick={() => stepDay(-1)}
+				aria-label="Previous day"
+				class="flex h-9 w-9 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
+			>
+				‹
+			</button>
+			<span class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</span>
+			<button
+				type="button"
+				onclick={() => stepDay(1)}
+				aria-label="Next day"
+				class="flex h-9 w-9 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
+			>
+				›
+			</button>
+		</div>
 		{#if selWeek}
 			<WeekStrip
 				week={selWeek}
@@ -163,24 +189,6 @@
 				onSelect={selectDay}
 			/>
 		{/if}
-		<div class="mt-2 flex items-center gap-2 sm:hidden">
-			<button
-				type="button"
-				onclick={() => stepDay(-1)}
-				aria-label="Previous day"
-				class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
-			>
-				‹
-			</button>
-			<button
-				type="button"
-				onclick={() => stepDay(1)}
-				aria-label="Next day"
-				class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
-			>
-				›
-			</button>
-		</div>
 	</div>
 
 	<!-- Day panel with flanking arrows (laptop) -->

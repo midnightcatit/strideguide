@@ -297,8 +297,17 @@
 		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
 		active={false}
 		logged={loggedBySession.get(s.id) ?? null}
-		onLog={() => (logTarget = s)}
-		onStart={() => (playTarget = s)}
-		onOpen={() => (detailTarget = s)}
+		onLog={() => {
+			sheetIso = null;
+			logTarget = s;
+		}}
+		onStart={() => {
+			sheetIso = null;
+			playTarget = s;
+		}}
+		onOpen={() => {
+			sheetIso = null;
+			detailTarget = s;
+		}}
 	/>
 {/snippet}
