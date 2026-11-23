@@ -77,6 +77,13 @@ Add to that set deliberately, not broadly.
 
 ## Workflow
 
+- **Work in an isolated worktree, not the shared checkout.** Any task that changes files runs in its
+  own working tree: an Agent Manager worktree, or `git worktree add` for a plain branch. Several
+  sessions may share one repo directory, so editing there risks colliding with another session's
+  uncommitted work. `git worktree list` shows what is checked out where.
+- **Stage only the files you changed.** Use `git add <path>` (or review `git status` first), never a
+  blanket `git add -A` or `git commit -a`, so a stray change from a parallel session is never swept
+  into your commit.
 - Branch → PR → **CI gate** (install → typecheck → test → build) → merge to `main` → auto-deploy
   (path-filtered, and each deploy is chained to the gate via `needs`). See README.
 - **Migrations are additive by default** and auto-apply before the API deploy. Destructive changes
