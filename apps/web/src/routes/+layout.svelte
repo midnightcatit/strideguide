@@ -8,6 +8,7 @@
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { installClientErrorReporting } from '$lib/clientErrors';
+	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 
@@ -18,6 +19,12 @@
 	// Set when a newer service worker takes control; we offer a reload instead of
 	// forcing one, so an in-progress form or request is never interrupted.
 	let updateReady = $state(false);
+
+	// Back (browser or hardware) closes the settings sheet instead of leaving the page.
+	overlayHistory(
+		() => settingsOpen,
+		() => (settingsOpen = false),
+	);
 
 	const tabs = $derived([
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
