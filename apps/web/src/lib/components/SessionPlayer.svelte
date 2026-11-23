@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatClock } from '@strideguide/shared/units';
+	import { goto } from '$app/navigation';
 	import { findMachine } from '@strideguide/shared/plan';
 	import type { ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
@@ -173,9 +174,7 @@
 
 	function goHome() {
 		onClose();
-		if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-			window.location.href = '/';
-		}
+		void goto('/');
 	}
 	const progress = $derived(`${Math.min(idx + 1, instances.length)} / ${instances.length}`);
 </script>
@@ -273,7 +272,7 @@
 				<span class="tabular text-xs uppercase tracking-widest text-steel">Workout stages</span>
 				<span class="tabular text-xs text-steel">{progress}</span>
 			</summary>
-			<ul class="scroll-modern mt-2 max-h-64 divide-y divide-hairline overflow-y-auto border-y border-hairline">
+			<ul class="mt-2 divide-y divide-hairline border-y border-hairline">
 				{#each stepRows as row (row.key)}
 					<li>
 						<button type="button" onclick={() => jump(row.index)} class="flex w-full items-center justify-between gap-3 py-2.5 text-left {row.index === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink">

@@ -6,6 +6,7 @@
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
+	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
@@ -19,6 +20,16 @@
 	let playTarget = $state<ClientSession | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
+
+	// Back (browser or hardware) closes an open overlay instead of leaving the page.
+	overlayHistory(
+		() => !!(detailTarget || playTarget || logTarget),
+		() => {
+			if (logTarget) logTarget = null;
+			else if (playTarget) playTarget = null;
+			else detailTarget = null;
+		},
+	);
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
@@ -211,10 +222,10 @@
 
 				{#if daySessions[0]}
 					<hr class="my-6 border-hairline" />
-					<SectionHeader id="why" eyebrow="Why this session" />
+					<SectionHeader id="why" eyebrow="Why this workout" />
 					<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
 					<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
-						About, what's to come, and the research →
+						Why this workout, and what's to come →
 					</button>
 				{/if}
 			{/if}

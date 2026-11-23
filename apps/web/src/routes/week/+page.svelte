@@ -4,6 +4,7 @@
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_INITIALS, DAY_NAMES, mondayIndex } from '$lib/plan';
+	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
@@ -20,6 +21,16 @@
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
+
+	// Back (browser or hardware) closes an open overlay instead of leaving the page.
+	overlayHistory(
+		() => !!(detailTarget || playTarget || logTarget),
+		() => {
+			if (logTarget) logTarget = null;
+			else if (playTarget) playTarget = null;
+			else detailTarget = null;
+		},
+	);
 
 	const profileName = $derived(
 		store.plan?.goal
@@ -163,14 +174,14 @@
 
 	<section aria-labelledby="day-sessions" class="mt-7">
 		<div class="mb-2 flex items-center justify-between gap-3">
-			<h2 id="day-sessions" class="tabular text-xs uppercase tracking-widest text-steel">{DAY_NAMES[selectedDay]}</h2>
-			<div class="flex items-center gap-1">
+			<h2 id="day-sessions" class="tabular min-w-0 truncate text-xs uppercase tracking-widest text-steel">{DAY_NAMES[selectedDay]}</h2>
+			<div class="flex shrink-0 items-center gap-1">
 				{#if selectedDay !== todayIndex || !currentWeekIsToday}
 					<button type="button" onclick={goToday} class="mr-1 flex h-11 items-center rounded-md border border-hairline-strong px-3 text-xs text-signal-ink hover:border-signal">Today</button>
 				{/if}
-				<button type="button" onclick={() => stepDay(-1)} aria-label="Previous day" class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink">‹</button>
+				<button type="button" onclick={() => stepDay(-1)} aria-label="Previous day" class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink">‹</button>
 				<span class="tabular text-xs text-steel">{selectedDay + 1} / 7</span>
-				<button type="button" onclick={() => stepDay(1)} aria-label="Next day" class="flex h-11 w-11 items-center justify-center text-steel hover:text-ink">›</button>
+				<button type="button" onclick={() => stepDay(1)} aria-label="Next day" class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink">›</button>
 			</div>
 		</div>
 		{#if daySessions.length}

@@ -50,7 +50,7 @@
 
 	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
 	const claims = $derived(why?.claims ?? []);
-	const visibleClaims = $derived(showAllClaims ? claims.slice(0, 16) : claims.slice(0, 2));
+	const reasons = $derived(showAllClaims ? claims.slice(0, 16) : []);
 
 	/** One row per stage, so a repeated set reads once. */
 	interface Row {
@@ -147,7 +147,6 @@
 				‹ Back
 			</button>
 			<div class="flex items-center gap-1">
-				<a href="/" class="px-2 py-2 text-sm text-steel hover:text-ink">Stride Guide</a>
 				<button
 					type="button"
 					onclick={onClose}
@@ -172,34 +171,38 @@
 			</div>
 			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
 
-			<!-- Why this workout -->
+			<!-- Why this workout: one narrative, short then the reasons why -->
 			<section class="mt-6" aria-labelledby="why">
 				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
 				{#if lead}<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>{/if}
 				{#if loading}
-					<p class="mt-2 text-sm text-steel">Loading the evidence…</p>
+					<p class="mt-3 text-sm text-steel">Loading the reasoning…</p>
 				{:else if failed}
-					<p class="mt-2 text-sm text-steel">The sourced explanation is unavailable right now.</p>
-				{:else if claims.length}
-					<p class="mt-4 tabular text-xs uppercase tracking-widest text-steel">The evidence</p>
-					<ul class="mt-2 space-y-2.5">
-						{#each visibleClaims as cl, i (i)}
-							<li class="text-sm leading-relaxed text-steel">
-								{cl.claim}
-								{#if markersFor(cl.source).length}
-									<span class="tabular ml-1 text-[10px] text-signal-ink">{markersFor(cl.source).map((n) => `[${n}]`).join('')}</span>
-								{/if}
-							</li>
-						{/each}
-					</ul>
-					{#if claims.length > 2}
+					<p class="mt-3 text-sm text-steel">The sourced explanation is unavailable right now.</p>
+				{:else}
+					{#if why?.summary}
+						<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
+					{/if}
+					{#if claims.length}
+						{#if showAllClaims}
+							<ul class="mt-3 space-y-2.5">
+								{#each reasons as cl, i (i)}
+									<li class="text-sm leading-relaxed text-steel">
+										{cl.claim}
+										{#if markersFor(cl.source).length}
+											<span class="tabular ml-1 text-[10px] text-signal-ink">{markersFor(cl.source).map((n) => `[${n}]`).join('')}</span>
+										{/if}
+									</li>
+								{/each}
+							</ul>
+						{/if}
 						<button
 							type="button"
 							onclick={() => (showAllClaims = !showAllClaims)}
 							aria-expanded={showAllClaims}
 							class="mt-2 text-sm text-signal-ink hover:underline"
 						>
-							{showAllClaims ? 'Show less' : `Read more (${claims.length - 2} more)`}
+							{showAllClaims ? 'Show less' : `Read more (${Math.min(claims.length, 16)} reasons)`}
 						</button>
 					{/if}
 				{/if}
