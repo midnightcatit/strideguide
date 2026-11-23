@@ -3,14 +3,25 @@ import type { GoalProfileData } from '@strideguide/shared';
 import type { Prefs } from '@strideguide/shared/units';
 import type { CurrentPlan } from './plan';
 import { cachePlan, cachedPlan, isOnline, outbox, queueLog, removeFromOutbox } from './offline';
+import { reportClientError } from './clientErrors';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-	const res = await fetch(`/api${path}`, {
-		credentials: 'include',
-		headers: { 'content-type': 'application/json' },
-		...init,
-	});
+	let res: Response;
+	try {
+		res = await fetch(`/api${path}`, {
+			credentials: 'include',
+			headers: { 'content-type': 'application/json' },
+			...init,
+		});
+	} catch (e) {
+		// Offline is expected and already handled; only report a failure while online.
+		if (isOnline()) reportClientError('api-network', `${init?.method ?? 'GET'} ${path}`, e);
+		throw e;
+	}
 	if (!res.ok) {
+		if (res.status >= 500) {
+			reportClientError('api-5xx', `${res.status} ${init?.method ?? 'GET'} ${path}`);
+		}
 		throw new Error(`API ${res.status} ${path}`);
 	}
 	return (await res.json()) as T;

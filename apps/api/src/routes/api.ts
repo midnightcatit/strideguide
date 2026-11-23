@@ -4,6 +4,7 @@ import { requireAuth } from '../middleware/auth';
 import type { AppBindings } from '../types';
 import ai from './ai';
 import account from './account';
+import clientErrors from './client-errors';
 import exercises from './exercises';
 import explanations from './explanations';
 import goals from './goals';
@@ -19,6 +20,9 @@ api.route('/health', health);
 
 // Public reference data (no user data) so onboarding can render before sign-in.
 api.get('/goals/profiles', (c) => c.json({ profiles: GOAL_PROFILES }));
+
+// Public diagnostics sink, so a stuck browser can report itself without a session.
+api.route('/client-errors', clientErrors);
 
 const secured = new Hono<AppBindings>();
 secured.use('*', requireAuth);

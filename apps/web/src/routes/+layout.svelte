@@ -7,6 +7,7 @@
 	import { loadPrefs } from '$lib/prefs.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
+	import { installClientErrorReporting } from '$lib/clientErrors';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 
@@ -14,6 +15,9 @@
 
 	let pending = $state(0);
 	let settingsOpen = $state(false);
+	// Set when a newer service worker takes control; we offer a reload instead of
+	// forcing one, so an in-progress form or request is never interrupted.
+	let updateReady = $state(false);
 
 	const tabs = $derived([
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
@@ -42,19 +46,19 @@
 	});
 
 	onMount(() => {
+		installClientErrorReporting();
 		void loadPrefs();
 		void ensureAuth();
 
 		if ('serviceWorker' in navigator) {
+			const hadController = !!navigator.serviceWorker.controller;
 			navigator.serviceWorker
 				.register('/service-worker.js', { updateViaCache: 'none' })
 				.then((reg) => {
 					void reg.update().catch(() => {});
-					let reloaded = false;
 					navigator.serviceWorker.addEventListener('controllerchange', () => {
-						if (reloaded) return;
-						reloaded = true;
-						window.location.reload();
+						// Only prompt on an update, not on the first registration.
+						if (hadController) updateReady = true;
 					});
 				})
 				.catch(() => {});
@@ -119,6 +123,21 @@
 				</div>
 			</div>
 		</header>
+
+		{#if updateReady}
+			<div class="mx-auto mt-3 flex w-full max-w-5xl items-center justify-between gap-3 px-4">
+				<div class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline bg-sunken px-4 py-2 text-sm">
+					<span>A new version of Stride Guide is ready.</span>
+					<button
+						type="button"
+						onclick={() => window.location.reload()}
+						class="shrink-0 rounded-md border border-hairline-strong px-3 py-1.5 text-xs hover:border-signal hover:text-signal-ink"
+					>
+						Reload
+					</button>
+				</div>
+			</div>
+		{/if}
 
 		<main class="flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6">
 			{@render children()}
