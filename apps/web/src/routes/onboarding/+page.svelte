@@ -5,7 +5,7 @@
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
-	import { DAY_INITIALS } from '$lib/plan';
+	import { DAY_INITIALS, DAY_NAMES, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
 		slug: string;
@@ -32,6 +32,10 @@
 	let crossTraining = $state<string[]>([]);
 	let terrain = $state<'flat' | 'hilly' | 'mixed'>('mixed');
 	let niggles = $state('');
+
+	// Preview: after generation, a local, unsaved look at week one.
+	let draft = $state<CurrentPlan | null>(null);
+	let stretchDays = $state<Set<number>>(new Set());
 
 	let stepIndex = $state(0);
 	let dir = $state<1 | -1>(1);
@@ -287,6 +291,25 @@
 			: [...crossTraining, v];
 	}
 
+	// Preview helpers: local, unsaved edits to the first week.
+	function sessionsForDay(d: number): ClientSession[] {
+		return (draft?.weeks[0]?.sessions ?? []).filter((s) => s.day === d);
+	}
+	function shiftDay(s: ClientSession, delta: number) {
+		s.day = Math.min(6, Math.max(0, s.day + delta));
+	}
+	function removeSession(s: ClientSession) {
+		const week = draft?.weeks[0];
+		if (!week) return;
+		week.sessions = week.sessions.filter((x) => x.id !== s.id);
+	}
+	function toggleStretch(d: number) {
+		const next = new Set(stretchDays);
+		if (next.has(d)) next.delete(d);
+		else next.add(d);
+		stretchDays = next;
+	}
+
 	function validate(): boolean {
 		if (step.id === 'date' && !targetDate) {
 			error = 'Pick a race date.';
@@ -358,7 +381,10 @@
 				api.generatePlan(body),
 				new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 25000)),
 			]);
-			window.location.href = '/';
+			// Show a preview of the first week instead of jumping straight in.
+			draft = await api.currentPlan();
+			generating = false;
+			submitting = false;
 		} catch (e) {
 			const timedOut = e instanceof Error && e.message === 'timeout';
 			error = timedOut
@@ -377,8 +403,44 @@
 	}
 </script>
 
-<section class="mx-auto max-w-xl">
-	<header>
+{#if draft}
+	<section class="mx-auto max-w-xl">
+		<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
+		<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
+		<p class="mt-2 text-sm text-steel">Have a play with it. This is a preview, so nothing you change here is saved. Your plan is already built and waiting.</p>
+
+		<div class="mt-5">
+			{#each DAY_NAMES as name, d (d)}
+				{@const daySess = sessionsForDay(d)}
+				<div class="flex items-start gap-3 border-b border-hairline py-3">
+					<span class="tabular w-9 shrink-0 pt-1 text-xs uppercase tracking-widest text-steel">{name.slice(0, 3)}</span>
+					<div class="flex min-w-0 flex-1 flex-wrap gap-2">
+						{#each daySess as s (s.id)}
+							<div class="flex items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm">
+								<span class="max-w-[10rem] truncate">{s.title ?? s.type}</span>
+								<button type="button" aria-label="Move earlier" onclick={() => shiftDay(s, -1)} class="px-1 text-steel hover:text-signal-ink">‹</button>
+								<button type="button" aria-label="Move later" onclick={() => shiftDay(s, 1)} class="px-1 text-steel hover:text-signal-ink">›</button>
+								<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-signal-ink">✕</button>
+							</div>
+						{/each}
+						{#if stretchDays.has(d)}
+							<span class="rounded-lg border border-dashed border-hairline px-2 py-1 text-sm text-steel">Mobility</span>
+						{/if}
+						<button type="button" onclick={() => toggleStretch(d)} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-steel hover:border-signal hover:text-signal-ink">
+							{stretchDays.has(d) ? 'Remove stretch' : '+ stretch'}
+						</button>
+					</div>
+				</div>
+			{/each}
+		</div>
+
+		<p class="mt-4 text-xs text-steel">Editing here only shows how it feels. Rebuild any time to change the plan for real.</p>
+
+		<button type="button" onclick={() => (window.location.href = '/')} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Looks good, take me in</button>
+	</section>
+{:else}
+	<section class="mx-auto max-w-xl">
+		<header>
 		<div class="flex items-center justify-between gap-3">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">
 				Step {Math.min(stepIndex, steps.length - 1) + 1} of {steps.length}
@@ -631,7 +693,8 @@
 			</button>
 		{/if}
 	</div>
-</section>
+	</section>
+{/if}
 
 {#if generating}
 	<div class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-paper/95 px-6 text-center backdrop-blur">
