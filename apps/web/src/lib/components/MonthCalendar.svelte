@@ -19,6 +19,7 @@
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
+	import InfoButton from '$lib/components/InfoButton.svelte';
 
 	const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -82,9 +83,7 @@
 		return 4;
 	}
 	function levelClass(level: number): string {
-		return (
-			['bg-transparent', 'bg-ink/5', 'bg-ink/15', 'bg-ink/30', 'bg-ink/50'][level] ?? 'bg-transparent'
-		);
+		return ['', 'pressure-1', 'pressure-2', 'pressure-3', 'pressure-4'][level] ?? '';
 	}
 
 	const monthCells = $derived.by(() => {
@@ -241,6 +240,10 @@
 			<span class="h-3 w-3 rounded-[2px] border border-hairline {levelClass(l)}" aria-hidden="true"></span>
 		{/each}
 		<span>More pressure</span>
+		<InfoButton
+			term="Pressure"
+			definition="How much a day asks of you, from the length and intensity of its sessions. A darker day is a harder day. A green dot means it is done."
+		/>
 	</div>
 	</div>
 {:else}

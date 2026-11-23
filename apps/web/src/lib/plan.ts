@@ -93,7 +93,7 @@ export interface CurrentPlan {
 	weeks: ClientWeek[];
 	logs: ClientLog[];
 	/** Per-session started or skipped state, kept on the server. */
-	sessionStates?: { sessionId: string; state: 'started' | 'skipped' }[];
+	sessionStates?: { sessionId: string; state: 'started' | 'skipped'; progress?: string | null }[];
 }
 
 export const DAY_INITIALS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];

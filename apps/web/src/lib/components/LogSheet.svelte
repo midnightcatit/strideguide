@@ -47,7 +47,9 @@
 	// Prefill from the prescription.
 	$effect(() => {
 		if (isStrength) return;
-		const km = session.prescription?.targetDistanceKm;
+		// The whole run: warm-up, reps and cool-down, not just the main effort.
+		const km =
+			session.prescription?.workout?.totalDistanceKm ?? session.prescription?.targetDistanceKm;
 		if (km != null && !runDistance) {
 			const v = prefs.units === 'imperial' ? km / 1.609344 : km;
 			runDistance = String(Math.round(v * 100) / 100);

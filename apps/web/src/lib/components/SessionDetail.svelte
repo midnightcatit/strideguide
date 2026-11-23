@@ -468,7 +468,7 @@
 		<div class="mx-auto flex max-w-2xl gap-2">
 			{#if onStart && workout}
 				<button type="button" onclick={onStart} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">
-					Start
+					{isStarted(session.id) && !logged ? 'Resume workout' : 'Start'}
 				</button>
 			{/if}
 			{#if onLog}

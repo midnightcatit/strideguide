@@ -566,7 +566,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE['race-pace'],
 					prescription: {
 						summary: 'Goal-pace reps at your target pace.',
-						targetDistanceKm: rpKm,
+						targetDistanceKm: workout.totalDistanceKm ?? rpKm,
 						targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
 						targetRpe: [7, 8],
 						notes: 'Even splits at goal pace. Rehearsal for race day.',
@@ -576,6 +576,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				});
 			} else if (kind === 'interval') {
 				const reps = clamp(Math.round(qualityKm / 0.8 / 2) * 2, 4, 10);
+				const workout = intervalWorkout(reps, paces);
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -585,16 +586,17 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE.interval,
 					prescription: {
 						summary: 'Interval reps at interval pace, with equal-time recovery.',
-						targetDistanceKm: round1((reps * 800) / 1000),
+						targetDistanceKm: workout.totalDistanceKm ?? round1((reps * 800) / 1000),
 						targetPaceSecPerKm: paces ? [paces.interval * 0.98, paces.interval * 1.02] : undefined,
 						targetRpe: [8, 9],
 						notes: 'Even reps; stop the set if form breaks down.',
-						workout: intervalWorkout(reps, paces),
+						workout,
 					},
 					durationMin: estDuration((reps * 800) / 1000, paces ? paces.interval : easyPace - 60) + 15,
 				});
 			} else if (kind === 'hills') {
 				const reps = clamp(Math.round(qualityKm / 0.4 / 2) * 2, 4, 10);
+				const workout = hillsWorkout(reps, paces);
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -604,14 +606,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE.hills,
 					prescription: {
 						summary: 'Hill reps at hard effort, jog or walk down to recover.',
-						targetDistanceKm: round1((reps * 400) / 1000),
+						targetDistanceKm: workout.totalDistanceKm ?? round1((reps * 400) / 1000),
 						targetRpe: [8, 9],
 						notes: 'Power up with short, quick steps. Relax on the way down.',
-						workout: hillsWorkout(reps, paces),
+						workout,
 					},
 					durationMin: estDuration((reps * 400) / 1000, paces ? paces.interval : easyPace - 60) + 20,
 				});
 			} else {
+				const workout = tempoWorkout(qualityKm, paces);
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -621,13 +624,13 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					purpose: PURPOSE.tempo,
 					prescription: {
 						summary: 'Continuous work at threshold pace.',
-						targetDistanceKm: qualityKm,
+						targetDistanceKm: workout.totalDistanceKm ?? qualityKm,
 						targetPaceSecPerKm: paces
 							? [paces.threshold * 0.99, paces.threshold * 1.03]
 							: undefined,
 						targetZone: 'Z3–Z4',
 						targetRpe: [6, 7],
-						workout: tempoWorkout(qualityKm, paces),
+						workout,
 					},
 					durationMin: estDuration(qualityKm, paces ? paces.threshold : easyPace - 30),
 				});

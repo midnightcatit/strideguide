@@ -161,6 +161,8 @@ export const sessionStates = sqliteTable(
 			.references(() => users.id, { onDelete: 'cascade' }),
 		sessionId: text('session_id').notNull(),
 		state: text('state', { enum: ['started', 'skipped'] }).notNull(),
+		/** Where the user got to in the guided player, as JSON: { idx, elapsed }. */
+		progress: text('progress'),
 		updatedAt: integer('updated_at', { mode: 'timestamp' })
 			.notNull()
 			.default(sql`(unixepoch())`),
