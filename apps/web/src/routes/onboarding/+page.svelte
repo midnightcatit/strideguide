@@ -4,7 +4,7 @@
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
-	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, type LibraryWorkout } from '@strideguide/shared/plan';
+	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, type LibraryWorkout } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
@@ -23,6 +23,7 @@
 	let targetDate = $state('');
 	let experience = $state<'beginner' | 'intermediate' | 'advanced'>('beginner');
 	let weeklyKm = $state('');
+	let buildPreference = $state<'ease-in' | 'steady' | 'ambitious'>('steady');
 	let days = $state<number[]>([0, 2, 4, 6]);
 	let notes = $state('');
 
@@ -32,6 +33,7 @@
 	let sessionMinutes = $state(45);
 	let tunedStrength = $state(false);
 	let tunedMinutes = $state(false);
+	let tunedBuild = $state(false);
 	let flexCurrent = $state(3);
 	let flexGoal = $state(4);
 	let customActivity = $state('');
@@ -174,6 +176,17 @@
 				],
 			},
 			{
+				id: 'build',
+				title: 'How would you like the plan to build?',
+				lede: 'Your weekly distance grows from where you are now. This sets how boldly it climbs. It only changes the pace of the build, never the hard sessions or the number of days.',
+				guide: [
+					'Ease me in ramps up slowly and takes more step-back weeks, good when you are new or coming back.',
+					'Steady grows about 10 percent a week, the usual balance of progress and recovery.',
+					'Push me climbs a little faster, best when you have raced recently and are handling the load.',
+					'You can rebuild with a different choice any time.',
+				],
+			},
+			{
 				id: 'days',
 				title: 'Which days can you train?',
 				lede: 'The plan puts its long run on your last chosen day and spreads the harder sessions and strength work around it.',
@@ -262,11 +275,13 @@
 	const recWeekly = $derived(recommendWeeklyKm(experience, slug));
 	const recStrength = $derived(recommendStrengthDays(slug));
 	const recMinutes = $derived(recommendSessionMinutes());
+	const recBuild = $derived(recommendBuildPreference(experience));
 
 	// Default the strength answers to the recommendation until the user changes them.
 	$effect(() => {
 		if (!tunedStrength) strengthDays = recStrength.value;
 		if (!tunedMinutes) sessionMinutes = recMinutes.value;
+		if (!tunedBuild) buildPreference = recBuild.value;
 	});
 
 	const flexGap = $derived(Math.max(0, flexGoal - flexCurrent));
@@ -288,6 +303,12 @@
 			{ v: 'advanced' as const, name: 'Advanced', range: `${toUnit(50)} ${u} a week or more`, note: 'Years of steady, structured training.' },
 		];
 	});
+
+	const BUILD_PREFS: { v: 'ease-in' | 'steady' | 'ambitious'; name: string; note: string }[] = [
+		{ v: 'ease-in', name: 'Ease me in', note: 'Slower ramp, and more step-back weeks.' },
+		{ v: 'steady', name: 'Steady', note: 'About 10 percent a week, the usual balance.' },
+		{ v: 'ambitious', name: 'Push me', note: 'A bolder climb if you are handling the load.' },
+	];
 
 	const EQUIPMENT: {
 		v: 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
@@ -457,6 +478,7 @@
 				availableDays: days,
 				baseline: {
 					experience,
+					buildPreference,
 					equipment,
 					strengthDays,
 					sessionMinutes,
@@ -695,6 +717,23 @@
 						{recWeekly.reason}
 						{#if !weeklyKm.trim()} Leave it blank to use this.{/if}
 					</p>
+				{:else if step.id === 'build'}
+					<div class="grid gap-2">
+						{#each BUILD_PREFS as opt (opt.v)}
+							<button
+								type="button"
+								aria-pressed={buildPreference === opt.v}
+								onclick={() => { buildPreference = opt.v; tunedBuild = true; }}
+								class="flex flex-col rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {buildPreference === opt.v
+									? 'border-signal-ink bg-signal-wash'
+									: 'border-hairline hover:border-steel'}"
+							>
+								<span class="font-display font-medium">{opt.name}</span>
+								<span class="mt-0.5 text-sm text-steel">{opt.note}</span>
+							</button>
+						{/each}
+					</div>
+					<p class="mt-3 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">{recBuild.reason}</p>
 				{:else if step.id === 'days'}
 					<div class="flex justify-between gap-1">
 						{#each DAY_INITIALS as initial, d (d)}

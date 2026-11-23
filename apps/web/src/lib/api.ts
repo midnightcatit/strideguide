@@ -51,6 +51,7 @@ export interface GeneratePlanInput {
 		recentTimes?: Record<string, string>;
 		weeklyKm?: number;
 		experience?: 'beginner' | 'intermediate' | 'advanced';
+		buildPreference?: 'ease-in' | 'steady' | 'ambitious';
 		equipment?: 'machines' | 'bodyweight' | 'bodyweight-dumbbells' | 'both';
 		strengthDays?: number;
 		sessionMinutes?: number;

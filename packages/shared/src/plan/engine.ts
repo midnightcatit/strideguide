@@ -119,11 +119,18 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 	const rules = input.profile.progressionRules;
 	const byPhase = new Map(rules.map((r) => [r.phase, r]));
 	// Level sets how fast the plan builds. Beginners build more gently, advanced
-	// runners a little faster. No positive step may exceed the ~10 percent weekly
-	// ceiling that keeps injury risk down, and deload weeks still step back.
-	const levelStep = { beginner: 0.85, intermediate: 1, advanced: 1.15 }[
-		input.baseline.experience ?? 'beginner'
-	];
+	// runners a little faster. The self-assessed build preference leans the whole
+	// curve one way or the other. No positive step may exceed the ~10 percent
+	// weekly ceiling that keeps injury risk down, and deload weeks still step back.
+	const LEVEL_STEP: Record<string, number> = { beginner: 0.85, intermediate: 1, advanced: 1.15 };
+	const BUILD: Record<string, { step: number; start: number }> = {
+		'ease-in': { step: 0.8, start: 0.85 },
+		steady: { step: 1, start: 0.9 },
+		ambitious: { step: 1.2, start: 0.95 },
+	};
+	const build = BUILD[input.baseline.buildPreference ?? 'steady'] ?? BUILD.steady!;
+	const levelStep = (LEVEL_STEP[input.baseline.experience ?? 'beginner'] ?? 1) * build.step;
+	const startFactor = build.start;
 	const out: number[] = [];
 	let prev = base;
 	let peak = base;
@@ -135,9 +142,10 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 		withinPhase.set(phase, idx + 1);
 		let vol: number;
 		if (w === 0) {
-			// Ease in: the first week sits just under the runner's current volume and
-			// builds from there, so the plan never opens at a peak.
-			vol = base * 0.9;
+			// Ease in: the first week starts below the runner's current volume and
+			// builds from there, so the plan never opens at a peak. A bolder build
+			// opens closer to the current volume.
+			vol = base * startFactor;
 		} else if (phase === 'taper') {
 			vol = peak * Math.pow(1 + Math.min(0, rule.volumeStep), idx + 1);
 		} else if (rule.deload && (idx + 1) % 4 === 0) {
