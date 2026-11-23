@@ -23,14 +23,19 @@
 		prefs.equipment === 'machines' || prefs.equipment === 'both' || prefs.equipment === 'full-gym',
 	);
 
-	async function rebuildGym(gymPreset: string | undefined, machineItems: string[] | undefined) {
+	async function rebuildGym(
+		gymPreset: string | undefined,
+		machineItems: string[] | undefined,
+		mode: typeof prefs.equipment = prefs.equipment,
+	) {
 		saving = true;
 		message = '';
 		try {
+			await setEquipment(mode);
 			await setGymPreset(gymPreset);
 			await setMachineItems(machineItems);
 			const res = await api.adaptPlan({
-				equipment: prefs.equipment,
+				equipment: mode,
 				equipmentItems: prefs.equipmentItems,
 				gymPreset,
 				machineItems,
@@ -45,7 +50,13 @@
 		}
 	}
 	function pickGym(id: string) {
-		void rebuildGym(prefs.gymPreset === id ? undefined : id, prefs.machineItems);
+		const preset = GYM_PRESETS.find((p) => p.id === id);
+		if (prefs.gymPreset === id || !preset) {
+			void rebuildGym(undefined, prefs.machineItems);
+			return;
+		}
+		// Choosing a gym also suggests its free-weight mode.
+		void rebuildGym(id, undefined, preset.mode);
 	}
 	function toggleMachine(name: string) {
 		const cur = prefs.machineItems ?? [];
