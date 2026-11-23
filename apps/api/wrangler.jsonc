@@ -38,6 +38,10 @@
     {
       "pattern": "run.midnightcatit.com/connections/*",
       "zone_name": "midnightcatit.com"
+    },
+    {
+      "pattern": "run.midnightcatit.com/webhooks/*",
+      "zone_name": "midnightcatit.com"
     }
   ]
 }

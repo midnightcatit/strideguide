@@ -47,7 +47,7 @@ export const PROVIDERS: Record<ProviderId, ProviderConfig> = {
 		authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
 		tokenUrl: 'https://oauth2.googleapis.com/token',
 		scopes:
-			'https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly https://www.googleapis.com/auth/googlehealth.profile.readonly',
+			'https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly https://www.googleapis.com/auth/googlehealth.sleep.readonly https://www.googleapis.com/auth/googlehealth.profile.readonly',
 		userIdUrl: 'https://health.googleapis.com/v4/users/me/identity',
 		userIdField: 'healthUserId',
 		clientIdEnv: 'GOOGLE_HEALTH_CLIENT_ID',
