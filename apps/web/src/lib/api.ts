@@ -42,6 +42,8 @@ export interface GeneratePlanInput {
 		recentTimes?: Record<string, string>;
 		weeklyKm?: number;
 		experience?: 'beginner' | 'intermediate' | 'advanced';
+		/** Free-text notes from onboarding, passed through to the generation prompt. */
+		notes?: string;
 	};
 	availableDays?: number[];
 }

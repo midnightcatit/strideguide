@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { getDb, schema } from './db';
 import type { Env } from './env';
 import { runAi } from './lib/ai';
+import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
 
 /**
  * Cron handlers (PLAN.md §6.3).
@@ -53,8 +54,9 @@ async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 					[
 						{
 							role: 'system',
-							content:
-								'You are Stride Guide, a concise running coach. Write one or two plain sentences. No em dashes, no markdown, no distances or units. Avoid hype and hedging; be specific.',
+							content: `${WRITING_RULES}
+
+You are Stride Guide. Write one or two plain sentences as a short training note. Do not mention distances or units.`,
 						},
 						{
 							role: 'user',
@@ -63,7 +65,7 @@ async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 					],
 					{ maxTokens: 140 },
 				);
-				if (res.text.trim()) body = res.text.trim();
+				if (res.text.trim()) body = sanitizeText(res.text);
 			} catch {
 				// keep the deterministic fallback
 			}

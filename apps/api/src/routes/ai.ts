@@ -5,6 +5,7 @@ import { desc, eq } from 'drizzle-orm';
 import { explanationRefFor } from '@strideguide/shared/plan';
 import { schema } from '../db';
 import { runAi } from '../lib/ai';
+import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
 
@@ -104,8 +105,9 @@ ai.post(
 		const messages = [
 			{
 				role: 'system' as const,
-				content:
-					'You are Stride Guide, a sports-scientist running and strength coach. Be concise and practical, and write plainly in short sentences. Never use em dashes, and do not use markdown formatting such as bold or headings; plain prose only. Avoid hype, hedging and buzzwords; be specific. Ground answers in the user context below and in the knowledge-base reference. If the evidence is weak or you are unsure, say so plainly. Never give medical advice; for pain, injury or illness, suggest seeing a professional.',
+				content: `${WRITING_RULES}
+
+You are Stride Guide, a running and strength coach. Be concise and practical. Ground every answer in the user context and the knowledge-base reference below; if they do not cover it, say plainly what you would need to know. If the evidence is weak, say so.`,
 			},
 			...(lines.length ? [{ role: 'system' as const, content: `User context:\n${lines.join('\n')}` }] : []),
 			{ role: 'user' as const, content: c.req.valid('json').message },
@@ -120,7 +122,11 @@ ai.post(
 				modelUsed: result.model,
 				latencyMs: 0,
 			});
-			return c.json({ reply: result.text, model: result.model, provider: result.provider });
+			return c.json({
+				reply: sanitizeText(result.text),
+				model: result.model,
+				provider: result.provider,
+			});
 		} catch {
 			await db.insert(schema.aiJobs).values({
 				id: crypto.randomUUID(),

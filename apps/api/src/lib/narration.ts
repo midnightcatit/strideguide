@@ -3,6 +3,7 @@ import { schema } from '../db';
 import type { Db } from '../db';
 import type { Env } from '../env';
 import { runAi, type AiMessage } from './ai';
+import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
 
 const PHASE_FOCUS: Record<string, string> = {
 	base: 'build aerobic volume, keep it easy',
@@ -39,8 +40,9 @@ export async function narrateWeeks(env: Env, weeks: WeekLite[]): Promise<Narrati
 		const messages: AiMessage[] = [
 			{
 				role: 'system',
-				content:
-					'You are a sports-scientist running coach. Reply with ONLY a JSON array of strings, one short (<= 18 words) summary per week, in order. Plain prose, no markdown. No em dashes. No hype or hedging; be specific. Do not mention distances or units, since units vary by user.',
+				content: `${WRITING_RULES}
+
+You are a sports-scientist running coach writing weekly plan summaries. Reply with ONLY a JSON array of strings, one short summary per week (18 words or fewer), in order, one per week. Do not mention distances or units, since units vary by user.`,
 			},
 			{
 				role: 'user',
@@ -53,7 +55,10 @@ export async function narrateWeeks(env: Env, weeks: WeekLite[]): Promise<Narrati
 		const parsed = extractJsonArray(res.text);
 		if (parsed && parsed.length === weeks.length) {
 			return {
-				summaries: parsed.map((s, i) => (typeof s === 'string' && s.trim() ? s.trim() : fallback[i]!)),
+				summaries: parsed.map((s, i) => {
+					const text = typeof s === 'string' ? sanitizeText(s) : '';
+					return text || fallback[i]!;
+				}),
 				usedAi: true,
 				model: res.model,
 			};
