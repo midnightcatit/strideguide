@@ -14,6 +14,7 @@
 		const weeks: AdaptWeek[] = store.plan.weeks.map((w) => ({
 			weekNumber: w.weekNumber,
 			startDate: w.startDate,
+			endDate: w.endDate,
 			targetVolumeKm: w.targetVolumeKm ?? null,
 			sessions: w.sessions,
 		}));
@@ -42,14 +43,14 @@
 </script>
 
 {#if adjustments.length}
-	<section aria-labelledby="adjustments" class="mb-7">
+	<section aria-labelledby="adjustments" class="mt-7">
 		<SectionHeader id="adjustments" eyebrow="Suggested adjustments" meta={String(adjustments.length)} />
 		<Card>
 			<ul class="divide-y divide-hairline">
 				{#each adjustments as a (a.id)}
 					<li class="py-3 first:pt-0 last:pb-0">
 						<div class="flex items-baseline justify-between gap-3">
-							<p class="text-sm {a.severity === 'warn' ? 'text-ink font-medium' : 'text-ink'}">{a.title}</p>
+							<p class="text-sm {a.severity === 'warn' ? 'font-medium text-warn' : 'text-ink'}">{a.title}</p>
 							<button
 								type="button"
 								onclick={() => dismiss(a.id)}

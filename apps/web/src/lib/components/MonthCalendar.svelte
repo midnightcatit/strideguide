@@ -91,6 +91,7 @@
 			load: number;
 			km: number;
 			count: number;
+			done: boolean;
 		}[] = [];
 		for (let i = 0; i < 42; i++) {
 			const d = new Date(start.getTime() + i * 86400000);
@@ -106,6 +107,7 @@
 					.filter((s) => s.modality === 'running')
 					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0),
 				count: sessions.length,
+				done: sessions.some((s) => loggedBySession.has(s.id)),
 			});
 		}
 		return cells;
@@ -169,6 +171,9 @@
 			>
 				<span class="tabular text-xs">{cell.day}</span>
 				{#if cell.km}<span class="tabular text-[9px] text-steel">{fmtDistance(cell.km)}</span>{/if}
+				{#if cell.done}
+					<span class="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true"></span>
+				{/if}
 				{#if cell.isToday}
 					<span class="absolute bottom-1 h-0.5 w-4 rounded-full bg-signal-ink" aria-hidden="true"></span>
 				{/if}

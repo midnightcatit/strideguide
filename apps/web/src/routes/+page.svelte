@@ -6,7 +6,7 @@
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { DAY_NAMES, mondayIndex } from '$lib/plan';
+	import { type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -51,6 +51,53 @@
 					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0)
 			: 0,
 	);
+	const weekDoneKm = $derived(
+		todayWeek
+			? todayWeek.sessions
+					.filter((s) => s.modality === 'running')
+					.reduce((sum, s) => sum + (loggedBySession.get(s.id)?.runStats?.distanceKm ?? 0), 0)
+			: 0,
+	);
+	const todayInWeek = $derived(
+		!!todayWeek?.startDate &&
+			!!todayWeek?.endDate &&
+			todayIso >= todayWeek.startDate &&
+			todayIso <= todayWeek.endDate,
+	);
+
+	function logMs(v: unknown): number {
+		if (typeof v === 'number') return v * 1000;
+		const t = typeof v === 'string' ? Date.parse(v) : Number.NaN;
+		return Number.isNaN(t) ? 0 : t;
+	}
+	const logDays = $derived.by(() => {
+		const days = new Set<string>();
+		for (const l of store.logs) {
+			const ms = logMs(l.createdAt);
+			if (ms) days.add(new Date(ms).toISOString().slice(0, 10));
+		}
+		return days;
+	});
+	const streak = $derived.by(() => {
+		// Count back from today, or from yesterday if today has no log yet.
+		let cursor = logDays.has(todayIso) ? todayIso : addDaysIso(todayIso, -1);
+		let count = 0;
+		while (logDays.has(cursor)) {
+			count++;
+			cursor = addDaysIso(cursor, -1);
+		}
+		return count;
+	});
+	const recentLogs = $derived.by(() => {
+		const byId = new Map<string, ClientSession>();
+		for (const w of weeks) for (const s of w.sessions) byId.set(s.id, s);
+		return store.logs
+			.filter((l) => l.sessionId)
+			.slice()
+			.sort((a, b) => logMs(b.createdAt) - logMs(a.createdAt))
+			.slice(0, 3)
+			.map((l) => ({ log: l, session: l.sessionId ? byId.get(l.sessionId) : undefined }));
+	});
 	onMount(async () => {
 		await ensureAuth();
 		if (!auth.user) return;
@@ -125,6 +172,53 @@
 		{/if}
 	</Card>
 
+	<!-- At a glance -->
+	<div class="mt-7 grid grid-cols-3 gap-2">
+		<Card tone="sunken">
+			<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
+			<p class="tabular mt-1 text-xl font-medium">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
+			<p class="text-[11px] text-steel">sessions done</p>
+		</Card>
+		<Card tone="sunken">
+			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
+			<p class="tabular mt-1 text-xl font-medium">{fmtDistance(weekDoneKm)}<span class="text-sm text-steel"> / {fmtDistance(weekKm)}</span></p>
+			<p class="text-[11px] text-steel">logged / planned</p>
+		</Card>
+		<Card tone="sunken">
+			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
+			<p class="tabular mt-1 text-xl font-medium {streak > 0 ? 'text-ok' : ''}">{streak}<span class="text-sm text-steel"> {streak === 1 ? 'day' : 'days'}</span></p>
+			<p class="text-[11px] text-steel">training</p>
+		</Card>
+	</div>
+
+	<!-- Week at a glance -->
+	<section aria-labelledby="week" class="mt-7">
+		<SectionHeader id="week" eyebrow="Your week" meta="W{todayWeek?.weekNumber ?? ''}" />
+		<Card tone="sunken">
+			<div class="grid grid-cols-7 gap-1">
+				{#each DAY_NAMES as name, d (d)}
+					{@const ds = todayWeek?.sessions.filter((s) => s.day === d) ?? []}
+					{@const done = ds.length > 0 && ds.every((s) => loggedBySession.has(s.id))}
+					{@const isToday = todayInWeek && d === todayIndex}
+					<a
+						href="/calendar"
+						class="flex flex-col items-center gap-1.5 rounded-md py-2 {isToday ? 'bg-ink/5' : ''}"
+						aria-label="{name}{ds.length ? `, ${ds.length} sessions` : ', rest'}{done ? ', done' : ''}"
+					>
+						<span class="tabular text-[10px] uppercase tracking-wide {isToday ? 'text-ink' : 'text-steel'}">{name.slice(0, 2)}</span>
+						<span class="h-7 w-1.5 rounded-full {ds.length === 0 ? 'bg-hairline' : done ? 'bg-ok' : 'bg-ink/40'}" aria-hidden="true"></span>
+						<span class="h-1 w-1 rounded-full {isToday ? 'bg-signal-ink' : 'bg-transparent'}" aria-hidden="true"></span>
+					</a>
+				{/each}
+			</div>
+			<p class="tabular mt-3 text-sm">
+				{weekLogged} of {weekPlanned} done
+				<span class="text-steel"> · {fmtDistance(weekKm)} planned</span>
+			</p>
+			<a href="/calendar" class="mt-2 inline-block text-xs text-steel hover:text-signal-ink">Open the calendar →</a>
+		</Card>
+	</section>
+
 	<AdjustmentsCard />
 
 	{#if note}
@@ -136,20 +230,22 @@
 		</section>
 	{/if}
 
-	<section aria-labelledby="week" class="mt-7">
-		<SectionHeader id="week" eyebrow="Week so far" meta="W{todayWeek?.weekNumber ?? ''}" />
-		<Card tone="sunken">
-			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
-				{#each todayWeek?.sessions ?? [] as s (s.id)}
-					{@const done = loggedBySession.has(s.id)}
-					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ink' : 'bg-ink/40'}"></span>
-				{/each}
-			</div>
-			<p class="tabular mt-2 text-sm">
-				{weekLogged} of {weekPlanned} done
-				<span class="text-steel"> · {fmtDistance(weekKm)} planned</span>
-			</p>
-			<a href="/week" class="mt-3 inline-block text-xs text-steel hover:text-signal-ink">See the full week →</a>
-		</Card>
-	</section>
+	{#if recentLogs.length}
+		<section aria-labelledby="recent" class="mt-7">
+			<SectionHeader id="recent" eyebrow="Recent activity" />
+			<Card tone="sunken">
+				<ul class="divide-y divide-hairline">
+					{#each recentLogs as { log, session } (log.id)}
+						<li class="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+							<span class="min-w-0 truncate text-sm">{session ? sessionLabel(session) : 'Run'}</span>
+							<span class="tabular shrink-0 text-sm text-steel">
+								{#if log.runStats?.distanceKm}{fmtDistance(log.runStats.distanceKm)}{/if}
+								{#if log.rpe} · RPE {log.rpe}{/if}
+							</span>
+						</li>
+					{/each}
+				</ul>
+			</Card>
+		</section>
+	{/if}
 {/if}
