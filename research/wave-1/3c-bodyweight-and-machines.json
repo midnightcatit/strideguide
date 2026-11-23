@@ -1,0 +1,69 @@
+{
+  "workstream": "strength",
+  "subtopic": "Free bodyweight and machine training for runners",
+  "generated_at": "2026-11-23",
+  "claims": [
+    {
+      "topic": "Free weights and bodyweight versus machines",
+      "claim": "Multi-joint free-weight and bodyweight exercises are likely to transfer to running better than machine-only or single-joint work, because they demand more coordination and multi-planar control and sit closer to the running action.",
+      "evidence": "A systematic review of strength training for middle- and long-distance runners argues that multi-joint free-weight exercises provide a superior neuromuscular stimulus and greater specificity to running than machine-based or single-joint work, which may explain the absence of benefit in studies that used only machines.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5889786/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Matched-load adaptations: free weight versus machine",
+      "claim": "When the load and effort are matched, free-weight and machine-based training produce broadly similar gains in strength and muscle size, so the choice is more about specificity, balance and preference than about one being clearly superior.",
+      "evidence": "Using velocity-based methods, a longitudinal study found that adaptations in performance and muscle architecture were not meaningfully different between free-weight and machine-based training.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Adaptations in athletic performance and muscle architecture are not meaningfully conditioned by training free-weight versus machine-based exercises",
+        "authors": "Hernandez-Belmonte A, Buendia-Romero A, Franco-Lopez F, Martinez-Cava A, Pallares JG",
+        "year": 2023,
+        "venue": "Journal of Sports Sciences",
+        "type": "longitudinal study",
+        "doi_or_url": "https://pubmed.ncbi.nlm.nih.gov/37340878/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Running economy and performance",
+      "claim": "Lower-limb resistance training improves running economy and performance, and lowers running-related injury risk, so a small amount of strength work belongs in most running plans.",
+      "evidence": "A narrative review reports robust evidence that lower-limb resistance exercise improves running economy and biomechanics, and recommends a mix of strength and plyometric work.",
+      "confidence": "high",
+      "citation": {
+        "title": "Resistance Exercise for Improving Running Economy and Running Biomechanics and Decreasing Running-Related Injury Risk: A Narrative Review",
+        "authors": "Suc A, Sarko P, Plesa J, Kozinc Z",
+        "year": 2022,
+        "venue": "International Journal of Environmental Research and Public Health",
+        "type": "narrative review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9319953/",
+        "retrieved_at": "2026-11-23"
+      }
+    },
+    {
+      "topic": "Programming strength for runners",
+      "claim": "Two sessions a week is enough to add strength work without crowding running, and combining heavy strength with plyometric work improves running economy and time-trial performance.",
+      "evidence": "A systematic review and meta-analysis found heavy resistance and plyometric training both improve running economy and time-trial performance as an adjunct to running.",
+      "confidence": "moderate",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Terada M, Kanehisa H, Isaka T",
+        "year": 2022,
+        "venue": "Sports Medicine",
+        "type": "systematic review",
+        "doi_or_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9653533/",
+        "retrieved_at": "2026-11-23"
+      }
+    }
+  ],
+  "summary_tier_a": "Strength training helps runners: it improves running economy, supports good biomechanics and lowers injury risk. Multi-joint free-weight and bodyweight exercises tend to transfer to running better than machine-only work because they ask for more coordination and control, yet when load is matched, free weights and machines build strength and muscle similarly. Two sessions a week is enough, ideally mixing heavier strength with a little plyometric work. Bodyweight moves can be progressed with harder variations, slower lowering phases and longer holds when load is not available.",
+  "notes": "Backs the bodyweight catalog and the equipment question in onboarding."
+}
