@@ -315,6 +315,34 @@ describe('generatePlan (model shaping)', () => {
 		const without = generatePlan(base);
 		expect(withShape.weeks.length).toBe(without.weeks.length);
 	});
+
+	it('eases or holds a week when the model asks, without changing the shape', () => {
+		const plain = generatePlan(base);
+		const eased = generatePlan({ ...base, weekShapes: [undefined, { volumeIntent: 'ease' }] });
+		const held = generatePlan({ ...base, weekShapes: [undefined, { volumeIntent: 'hold' }] });
+		expect(eased.weeks[1]!.targetVolumeKm).toBeLessThan(plain.weeks[1]!.targetVolumeKm);
+		expect(held.weeks[1]!.targetVolumeKm).toBeLessThanOrEqual(plain.weeks[1]!.targetVolumeKm);
+		// The long run is still the longest run in an eased week.
+		for (const w of eased.weeks) {
+			const long = w.sessions.find((s) => s.type === 'long');
+			if (!long) continue;
+			for (const r of w.sessions.filter((s) => s.modality === 'running')) {
+				expect(r.prescription.targetDistanceKm ?? 0).toBeLessThanOrEqual(
+					long.prescription.targetDistanceKm! + 0.06,
+				);
+			}
+		}
+	});
+
+	it('ignores a volume intent in the taper', () => {
+		const plain = generatePlan(base);
+		const last = plain.weeks.length - 1;
+		const shapes: ({ volumeIntent: 'ease' } | undefined)[] = plain.weeks.map(() => undefined);
+		shapes[last] = { volumeIntent: 'ease' };
+		const eased = generatePlan({ ...base, weekShapes: shapes });
+		expect(eased.weeks[last]!.targetVolumeKm).toBe(plain.weeks[last]!.targetVolumeKm);
+		expect(eased.weeks[last]!.phase).toBe('taper');
+	});
 });
 
 describe('progression (volume builds, sessions differentiate)', () => {

@@ -44,11 +44,20 @@ export interface PlanDraft {
 /** A quality session kind the model may choose, if the profile allows it. */
 export type QualityKind = 'tempo' | 'hills' | 'interval' | 'race-pace';
 
+/**
+ * A bounded, per-week volume intent the model may choose. It only scales or
+ * holds the engine's own volume curve, so the numbers stay deterministic: the
+ * engine still decides every distance.
+ */
+export type VolumeIntent = 'ease' | 'hold' | 'build';
+
 /** Per-week choices the model can make; the engine validates every one. */
 export interface WeekShape {
 	qualityKind?: QualityKind;
 	/** One short line on what the week is for. */
 	emphasis?: string;
+	/** Hold, ease or build this week's volume relative to the plan curve. */
+	volumeIntent?: VolumeIntent;
 }
 
 export interface PlanInput {

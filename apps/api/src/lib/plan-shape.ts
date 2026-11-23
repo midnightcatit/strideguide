@@ -1,8 +1,9 @@
 import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
-import type { QualityKind, WeekShape } from '@strideguide/shared/plan';
+import type { QualityKind, VolumeIntent, WeekShape } from '@strideguide/shared/plan';
 import { runAi, type AiMessage } from './ai';
 
 const ALL: QualityKind[] = ['tempo', 'hills', 'interval', 'race-pace'];
+const INTENTS: VolumeIntent[] = ['ease', 'hold', 'build'];
 
 export interface ShapeContext {
 	goalName: string;
@@ -42,7 +43,7 @@ export async function shapePlan(
 			role: 'system',
 			content: `${WRITING_RULES}
 
-You are a running coach shaping a plan the engine has already laid out. For each week, choose the kind of quality session and write a short line on what the week is for, using the goal, the phase and the runner's preferences. Reply with ONLY a JSON array, one object per week, in order: {"qualityKind": "...", "emphasis": "..."}. qualityKind must be one of: ${ctx.allowed.join(', ')}. The emphasis is 16 words or fewer.`,
+You are a running coach shaping a plan the engine has already laid out. For each week, choose the kind of quality session, whether to hold, ease or build that week's volume, and write a short line on what the week is for, using the goal, the phase and the runner's preferences. Reply with ONLY a JSON array, one object per week, in order: {"qualityKind": "...", "volumeIntent": "...", "emphasis": "..."}. qualityKind must be one of: ${ctx.allowed.join(', ')}. volumeIntent must be one of: ease, hold, build; most weeks should be build, and hold or ease suits a recovery week or the week before a hard block. The emphasis is 16 words or fewer.`,
 		},
 		{
 			role: 'user',
@@ -64,8 +65,13 @@ You are a running coach shaping a plan the engine has already laid out. For each
 					: undefined;
 			const emphasis =
 				typeof row.emphasis === 'string' ? sanitizeText(row.emphasis).slice(0, 140) : undefined;
-			if (!qualityKind && !emphasis) return undefined;
-			return { qualityKind, emphasis: emphasis || undefined };
+			const rawIntent =
+				typeof row.volumeIntent === 'string' ? row.volumeIntent.trim().toLowerCase() : '';
+			const volumeIntent = INTENTS.includes(rawIntent as VolumeIntent)
+				? (rawIntent as VolumeIntent)
+				: undefined;
+			if (!qualityKind && !emphasis && !volumeIntent) return undefined;
+			return { qualityKind, emphasis: emphasis || undefined, volumeIntent };
 		});
 	} catch {
 		return null;
