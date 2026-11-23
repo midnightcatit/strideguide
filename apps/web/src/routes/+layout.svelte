@@ -29,7 +29,7 @@
 	const tabs = $derived([
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
 		{ href: '/today', key: 'today', label: 'Today', active: page.url.pathname.startsWith('/today') },
-		{ href: '/week', key: 'week', label: 'Calendar', active: page.url.pathname.startsWith('/week') },
+		{ href: '/calendar', key: 'calendar', label: 'Calendar', active: page.url.pathname.startsWith('/calendar') },
 		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 		{ href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') },
 	]);
@@ -171,7 +171,7 @@
 							{:else if tab.key === 'today'}
 								<path d="M10 2.5a7.5 7.5 0 1 0 7.5 7.5" />
 								<circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
-							{:else if tab.key === 'week'}
+							{:else if tab.key === 'calendar'}
 								<rect x="3" y="4.5" width="14" height="12" rx="1.5" />
 								<line x1="3" y1="8.5" x2="17" y2="8.5" />
 								<line x1="7" y1="3" x2="7" y2="6" />
