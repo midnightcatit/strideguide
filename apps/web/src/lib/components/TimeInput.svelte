@@ -14,8 +14,8 @@
 	}
 </script>
 
-<div class="flex items-end gap-2">
-	<label class="flex flex-col items-center">
+<div class="flex w-full items-end gap-2">
+	<label class="flex min-w-0 flex-1 flex-col items-center">
 		<input
 			type="number"
 			min="0"
@@ -23,11 +23,11 @@
 			value={h}
 			onchange={(e) => set('h', Number((e.currentTarget as HTMLInputElement).value))}
 			aria-label="Hours"
-			class="tabular w-16 rounded-xl border border-hairline bg-paper px-2 py-3 text-center text-sm"
+			class="tabular w-full min-w-0 rounded-xl border border-hairline bg-paper px-2 py-3 text-center text-sm"
 		/>
 		<span class="mt-1 text-[10px] uppercase tracking-wide text-steel">hrs</span>
 	</label>
-	<label class="flex flex-col items-center">
+	<label class="flex min-w-0 flex-1 flex-col items-center">
 		<input
 			type="number"
 			min="0"
@@ -35,11 +35,11 @@
 			value={m}
 			onchange={(e) => set('m', Number((e.currentTarget as HTMLInputElement).value))}
 			aria-label="Minutes"
-			class="tabular w-16 rounded-xl border border-hairline bg-paper px-2 py-3 text-center text-sm"
+			class="tabular w-full min-w-0 rounded-xl border border-hairline bg-paper px-2 py-3 text-center text-sm"
 		/>
 		<span class="mt-1 text-[10px] uppercase tracking-wide text-steel">min</span>
 	</label>
-	<label class="flex flex-col items-center">
+	<label class="flex min-w-0 flex-1 flex-col items-center">
 		<input
 			type="number"
 			min="0"
@@ -47,7 +47,7 @@
 			value={s}
 			onchange={(e) => set('s', Number((e.currentTarget as HTMLInputElement).value))}
 			aria-label="Seconds"
-			class="tabular w-16 rounded-xl border border-hairline bg-paper px-2 py-3 text-center text-sm"
+			class="tabular w-full min-w-0 rounded-xl border border-hairline bg-paper px-2 py-3 text-center text-sm"
 		/>
 		<span class="mt-1 text-[10px] uppercase tracking-wide text-steel">sec</span>
 	</label>

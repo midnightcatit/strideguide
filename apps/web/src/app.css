@@ -165,7 +165,10 @@ body {
 
 img,
 svg,
-video {
+video,
+input,
+select,
+textarea {
 	max-width: 100%;
 }
 

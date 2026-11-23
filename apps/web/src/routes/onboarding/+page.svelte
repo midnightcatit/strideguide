@@ -555,9 +555,9 @@
 							bind:value={weeklyKm}
 							placeholder="25"
 							aria-label="Typical weekly distance"
-							class="tabular w-32 rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+							class="tabular w-24 min-w-0 shrink-0 rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
 						/>
-						<span class="text-sm text-steel">{distanceUnit()} per week</span>
+						<span class="min-w-0 text-sm text-steel">{distanceUnit()} per week</span>
 					</div>
 				{:else if step.id === 'days'}
 					<div class="flex justify-between gap-1">
