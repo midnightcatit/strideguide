@@ -472,8 +472,17 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const paces: TrainingPaces | undefined = vdot ? pacesFromVdot(vdot) : undefined;
 	const easyPace = paces ? (paces.easy[0] + paces.easy[1]) / 2 : 360; // ~6:00/km fallback
 
-	const allDays = [...new Set(input.availableDays)].sort((a, b) => a - b);
-	const days = allDays.length ? allDays : [0, 2, 4];
+	const allDays = ([...new Set(input.availableDays)].length
+		? [...new Set(input.availableDays)]
+		: [0, 2, 4]
+	).sort((a, b) => a - b);
+	// Days the user plays a sport or does another activity: the running keeps off
+	// them, and a named cross-training session takes their place.
+	const crossDays = (input.baseline.crossTrainingDays ?? [])
+		.filter((d) => allDays.includes(d))
+		.sort((a, b) => a - b);
+	const runDays = allDays.filter((d) => !crossDays.includes(d));
+	const days = runDays.length >= 2 ? runDays : allDays;
 	const longDay = days[days.length - 1]!;
 	const rest = days.slice(0, -1);
 
@@ -677,7 +686,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		// Cross-training: when the user has it and the profile allows it, swap the
 		// last easy run for a low-impact session, sparing the running legs.
-		if (input.baseline.crossTraining?.length && input.profile.sessionTypes.includes('cross-train')) {
+		if (
+			!crossDays.length &&
+			input.baseline.crossTraining?.length &&
+			input.profile.sessionTypes.includes('cross-train')
+		) {
 			const idx = [...sessions].reverse().findIndex((s) => s.type === 'easy');
 			if (idx >= 0) {
 				const realIdx = sessions.length - 1 - idx;
@@ -700,6 +713,28 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		}
 
 		// Mobility / stretching on a rest day, when the user asked for it there.
+		// The sport itself, on its day, named.
+		for (const d of crossDays) {
+			const sport = input.baseline.crossTraining?.[0];
+			const title = sport ? sport.charAt(0).toUpperCase() + sport.slice(1) : TITLE['cross-train'];
+			sessions.push({
+				day: d,
+				slot: 'AM',
+				modality: 'recovery',
+				type: 'cross-train',
+				title,
+				purpose: PURPOSE['cross-train'],
+				prescription: {
+					summary: 'The sport you play, as part of the week.',
+					intensity: 'steady',
+					targetRpe: [4, 7],
+					notes: 'Play as you normally would. We keep the running off this day so it does not stack.',
+					workout: crossTrainWorkout(),
+				},
+				durationMin: 45,
+			});
+		}
+
 		// Mobility follows the flexibility gap: a goal above where you are today
 		// earns one or two dedicated sessions a week, on rest days.
 		const flex = input.baseline.flexibility;

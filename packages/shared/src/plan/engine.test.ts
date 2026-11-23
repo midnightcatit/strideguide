@@ -182,6 +182,19 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'hills')).toBe(true);
 	});
 
+	it('puts the sport on its day and keeps the running off that day', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 2, 4, 6],
+			baseline: { experience: 'intermediate', crossTraining: ['soccer'], crossTrainingDays: [6] },
+		});
+		const w1 = p.weeks[0]!.sessions;
+		const sport = w1.find((s) => s.type === 'cross-train');
+		expect(sport?.day).toBe(6);
+		expect(sport?.title).toBe('Soccer');
+		expect(w1.some((s) => s.day === 6 && s.modality === 'running')).toBe(false);
+	});
+
 	it('eases in with no hard session in the first week', () => {
 		const p = generatePlan({ ...base, baseline: { experience: 'beginner' } });
 		const hard = p.weeks[0]!.sessions.filter((s) =>
