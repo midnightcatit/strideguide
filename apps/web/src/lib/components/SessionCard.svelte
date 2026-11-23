@@ -90,6 +90,7 @@
 	const pills = $derived.by(() => {
 		const out: { text: string; band?: boolean }[] = [];
 		out.push({ text: session.slot === 'PM' ? 'Evening' : 'Morning' });
+		out.push({ text: sessionTypeLabel(session.type), band: true });
 		if (isStrength) {
 			if (machines.length) out.push({ text: `${machines.length} moves` });
 			if (reps) out.push({ text: `3 × ${reps}` });
@@ -160,15 +161,13 @@
 				<span class="tabular truncate text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
-			<span class="flex shrink-0 items-center gap-1 tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-				><SessionIcon type={session.type} size="h-3.5 w-3.5" />{sessionTypeLabel(session.type)}{#if logged}
-					<span class="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-ok text-paper" aria-label="Completed">
-						<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M4 10.5l4 4 8-9" />
-						</svg>
-					</span>
-				{/if}</span
-			>
+			{#if logged}
+				<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ok text-paper" aria-label="Completed">
+					<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M4 10.5l4 4 8-9" />
+					</svg>
+				</span>
+			{/if}
 		</div>
 
 		<h2 class="font-display mt-1.5 truncate text-xl font-semibold leading-tight">{sessionLabel(session)}</h2>
