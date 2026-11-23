@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { desc, eq } from 'drizzle-orm';
 import { explanationRefFor } from '@strideguide/shared/plan';
+import { DEFAULT_PREFS, formatDistance, type Prefs, type Units } from '@strideguide/shared/units';
 import { schema } from '../db';
 import { runAi } from '../lib/ai';
 import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
@@ -25,6 +26,16 @@ ai.post(
 		const lines: string[] = [];
 		const today = new Date().toISOString().slice(0, 10);
 
+		// The coach speaks in the runner's own units, so the context below is
+		// formatted the same way the app shows it.
+		const settingRows = await db
+			.select()
+			.from(schema.settings)
+			.where(eq(schema.settings.userId, user.id))
+			.limit(1);
+		const units: Units = { ...DEFAULT_PREFS, ...((settingRows[0]?.prefs as Partial<Prefs>) ?? {}) }
+			.units;
+
 		const goals = await db
 			.select()
 			.from(schema.userGoals)
@@ -33,7 +44,9 @@ ai.post(
 			.limit(1);
 		const goal = goals[0];
 		if (goal) {
-			lines.push(`Goal: ${goal.goalProfileSlug}${goal.targetDate ? `, race on ${goal.targetDate}` : ''}.`);
+			lines.push(
+				`Goal: ${goal.goalProfileSlug}${goal.targetDate ? `, race on ${goal.targetDate}` : ''}.`,
+			);
 			const plans = await db
 				.select()
 				.from(schema.plans)
@@ -47,8 +60,9 @@ ai.post(
 					.from(schema.planWeeks)
 					.where(eq(schema.planWeeks.planId, plan.id));
 				const current =
-					weeks.find((w) => w.startDate && w.endDate && today >= w.startDate && today <= w.endDate) ??
-					weeks.sort((a, b) => a.weekNumber - b.weekNumber)[0];
+					weeks.find(
+						(w) => w.startDate && w.endDate && today >= w.startDate && today <= w.endDate,
+					) ?? weeks.sort((a, b) => a.weekNumber - b.weekNumber)[0];
 				if (current) {
 					const sessions = await db
 						.select()
@@ -59,7 +73,7 @@ ai.post(
 							sessions
 								.map((s) => {
 									const p = s.prescription as { targetDistanceKm?: number } | null;
-									return `${DAYS[s.day]} ${s.type}${p?.targetDistanceKm ? ` ${p.targetDistanceKm} km` : ''}`;
+									return `${DAYS[s.day]} ${s.type}${p?.targetDistanceKm ? ` ${formatDistance(p.targetDistanceKm, units)}` : ''}`;
 								})
 								.join('; ') +
 							'.',
@@ -95,7 +109,7 @@ ai.post(
 						.map((l) => {
 							const rs = l.runStats as { distanceKm?: number } | null;
 							const day = l.createdAt instanceof Date ? l.createdAt.toISOString().slice(0, 10) : '';
-							return `${day} ${rs?.distanceKm ? `${rs.distanceKm} km` : 'strength'}${l.rpe ? ` RPE ${l.rpe}` : ''}`;
+							return `${day} ${rs?.distanceKm ? formatDistance(rs.distanceKm, units) : 'strength'}${l.rpe ? ` RPE ${l.rpe}` : ''}`;
 						})
 						.join('; ') +
 					'.',
@@ -107,9 +121,11 @@ ai.post(
 				role: 'system' as const,
 				content: `${WRITING_RULES}
 
-You are Stride Guide, a running and strength coach. Be concise and practical. Ground every answer in the user context and the knowledge-base reference below; if they do not cover it, say plainly what you would need to know. If the evidence is weak, say so.`,
+You are Stride Guide, a running and strength coach. Be concise and practical. Ground every answer in the user context and the knowledge-base reference below; if they do not cover it, say plainly what you would need to know. If the evidence is weak, say so. The runner uses ${units === 'imperial' ? 'miles, with pace per mile' : 'kilometres, with pace per kilometre'}. Give every distance and pace in those units, and restate in those units any figure you quote from the knowledge base or the user context.`,
 			},
-			...(lines.length ? [{ role: 'system' as const, content: `User context:\n${lines.join('\n')}` }] : []),
+			...(lines.length
+				? [{ role: 'system' as const, content: `User context:\n${lines.join('\n')}` }]
+				: []),
 			{ role: 'user' as const, content: c.req.valid('json').message },
 		];
 

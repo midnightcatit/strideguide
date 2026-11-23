@@ -63,7 +63,7 @@ export async function shapePlan(
 			role: 'system',
 			content: `${WRITING_RULES}
 
-You are a running coach shaping a plan the engine has already laid out. For each week, choose the kind of quality session, whether to hold, ease or build that week's volume, and write a short line on what the week is for, using the goal, the phase and the runner's preferences. Reply with ONLY a JSON array, one object per week, in order: {"qualityKind": "...", "volumeIntent": "...", "emphasis": "..."}. qualityKind must be one of: ${ctx.allowed.join(', ')}. volumeIntent must be one of: ease, hold, build; most weeks should be build, and hold or ease suits a recovery week or the week before a hard block. The emphasis is 16 words or fewer.`,
+You are a running coach shaping a plan the engine has already laid out. For each week, choose the kind of quality session, whether to hold, ease or build that week's volume, and write a short line on what the week is for, using the goal, the phase and the runner's preferences. Reply with ONLY a JSON array, one object per week, in order: {"qualityKind": "...", "volumeIntent": "...", "emphasis": "..."}. qualityKind must be one of: ${ctx.allowed.join(', ')}. volumeIntent must be one of: ease, hold, build; most weeks should be build, and hold or ease suits a recovery week or the week before a hard block. The emphasis is 16 words or fewer, and must never state a distance or a unit, since it is stored and shown whatever units the runner later picks.`,
 		},
 		{
 			role: 'user',
