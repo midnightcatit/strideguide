@@ -7,6 +7,7 @@
 	import MoveList from '$lib/components/MoveList.svelte';
 	import DrillList from '$lib/components/DrillList.svelte';
 	import { modal } from '$lib/actions';
+	import { sheetOverlay, sheetPanel } from '$lib/motion';
 
 	/**
 	 * The Preview sheet: a bottom sheet that opens from the drill-down card. A
@@ -16,10 +17,12 @@
 	 * expect, all in the runner's own units.
 	 */
 	let {
+		open,
 		session,
 		machines,
 		onClose,
 	}: {
+		open: boolean;
 		session: ClientSession;
 		machines: MachineExercise[];
 		onClose: () => void;
@@ -36,17 +39,25 @@
 	const drills = $derived(sessionDrills(workout));
 </script>
 
-<div
-	class="fixed inset-0 z-[60] flex items-end justify-center"
-	role="dialog"
-	aria-modal="true"
-	aria-label={`Preview of ${sessionLabel(session)}`}
-	use:modal={onClose}
->
-	<button type="button" aria-label="Close preview" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/40"></button>
+{#if open}
 	<div
-		class="sheet-in relative max-h-[85vh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-t-2xl border-t border-hairline bg-paper px-4 pb-8 pt-3"
+		class="fixed inset-0 z-[60] flex items-end justify-center"
+		role="dialog"
+		aria-modal="true"
+		aria-label={`Preview of ${sessionLabel(session)}`}
+		use:modal={onClose}
 	>
+		<button
+			type="button"
+			aria-label="Close preview"
+			onclick={onClose}
+			class="absolute inset-0 bg-ink/40"
+			transition:sheetOverlay
+		></button>
+		<div
+			class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-t-2xl border-t border-hairline bg-paper px-4 pb-8 pt-3"
+			transition:sheetPanel
+		>
 		<div class="mx-auto mb-2 h-1 w-10 rounded-full bg-hairline" aria-hidden="true"></div>
 		<div class="flex items-start justify-between gap-3">
 			<div>
@@ -113,26 +124,6 @@
 			<p class="mt-1 text-sm text-steel">Tap a stretch to see how it looks and the cues that matter.</p>
 			<div class="mt-2"><DrillList drills={drills.stretches} /></div>
 		{/if}
+		</div>
 	</div>
-</div>
-
-<style>
-	.sheet-in {
-		animation: sheet-up 0.22s ease-out;
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.sheet-in {
-			animation: none;
-		}
-	}
-	@keyframes sheet-up {
-		from {
-			transform: translateY(12%);
-			opacity: 0.6;
-		}
-		to {
-			transform: translateY(0);
-			opacity: 1;
-		}
-	}
-</style>
+{/if}

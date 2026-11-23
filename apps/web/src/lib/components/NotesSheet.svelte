@@ -5,6 +5,7 @@
 	import { sessionLabel } from '$lib/prefs.svelte';
 	import { api } from '$lib/api';
 	import { modal } from '$lib/actions';
+	import { sheetOverlay, sheetPanel } from '$lib/motion';
 
 	/**
 	 * The notes sheet: a modal with a textarea and a sticky Save / Discard bar.
@@ -13,10 +14,12 @@
 	 * rebuild reads, so it is saved on the server, not just held here.
 	 */
 	let {
+		open,
 		session,
 		onSaved,
 		onClose,
 	}: {
+		open: boolean;
 		session: ClientSession;
 		onSaved: (notes: string) => void;
 		onClose: () => void;
@@ -43,17 +46,25 @@
 	}
 </script>
 
-<div
-	class="fixed inset-0 z-[60] flex items-end justify-center"
-	role="dialog"
-	aria-modal="true"
-	aria-label={`Notes for ${sessionLabel(session)}`}
-	use:modal={onClose}
->
-	<button type="button" aria-label="Close notes" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/40"></button>
+{#if open}
 	<div
-		class="sheet-in relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper"
+		class="fixed inset-0 z-[60] flex items-end justify-center"
+		role="dialog"
+		aria-modal="true"
+		aria-label={`Notes for ${sessionLabel(session)}`}
+		use:modal={onClose}
 	>
+		<button
+			type="button"
+			aria-label="Close notes"
+			onclick={onClose}
+			class="absolute inset-0 bg-ink/40"
+			transition:sheetOverlay
+		></button>
+		<div
+			class="relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper"
+			transition:sheetPanel
+		>
 		<div class="flex-1 overflow-y-auto overscroll-contain px-4 pt-3">
 			<div class="mx-auto mb-2 h-1 w-10 rounded-full bg-hairline" aria-hidden="true"></div>
 			<div class="flex items-start justify-between gap-3">
@@ -99,26 +110,6 @@
 				{saving ? 'Saving…' : 'Save'}
 			</button>
 		</div>
+		</div>
 	</div>
-</div>
-
-<style>
-	.sheet-in {
-		animation: sheet-up 0.22s ease-out;
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.sheet-in {
-			animation: none;
-		}
-	}
-	@keyframes sheet-up {
-		from {
-			transform: translateY(12%);
-			opacity: 0.6;
-		}
-		to {
-			transform: translateY(0);
-			opacity: 1;
-		}
-	}
-</style>
+{/if}

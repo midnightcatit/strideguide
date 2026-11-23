@@ -57,23 +57,21 @@
 	</div>
 </section>
 
-{#if confirmSignOut}
-	<ConfirmSheet
-		title="Sign out?"
-		body="You can sign back in any time with Google."
-		confirmLabel="Sign out"
-		tone="danger"
-		onConfirm={signOut}
-		onClose={() => (confirmSignOut = false)}
-	/>
-{/if}
+<ConfirmSheet
+	open={confirmSignOut}
+	title="Sign out?"
+	body="You can sign back in any time with Google."
+	confirmLabel="Sign out"
+	tone="danger"
+	onConfirm={signOut}
+	onClose={() => (confirmSignOut = false)}
+/>
 
-{#if confirmDelete}
-	<HoldConfirmDialog
-		title="Delete everything?"
-		body="This removes your plan, every logged session and your saved workout progress. You start fresh from onboarding. There is no undo."
-		holdLabel="Hold to delete everything"
-		onConfirm={clearData}
-		onClose={() => (confirmDelete = false)}
-	/>
-{/if}
+<HoldConfirmDialog
+	open={confirmDelete}
+	title="Delete everything?"
+	body="This removes your plan, every logged session and your saved workout progress. You start fresh from onboarding. There is no undo."
+	holdLabel="Hold to delete everything"
+	onConfirm={clearData}
+	onClose={() => (confirmDelete = false)}
+/>

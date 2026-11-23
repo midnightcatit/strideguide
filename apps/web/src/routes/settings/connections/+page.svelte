@@ -161,13 +161,12 @@
 	</div>
 {/if}
 
-{#if pendingDisconnect}
-	<ConfirmSheet
-		title={`Disconnect ${pendingDisconnect.label}?`}
-		body="We delete the stored tokens and stop importing from this app. You can connect again any time."
-		confirmLabel="Disconnect"
-		tone="danger"
-		onConfirm={doDisconnect}
-		onClose={() => (pendingDisconnect = null)}
-	/>
-{/if}
+<ConfirmSheet
+	open={pendingDisconnect !== null}
+	title={pendingDisconnect ? `Disconnect ${pendingDisconnect.label}?` : ''}
+	body="We delete the stored tokens and stop importing from this app. You can connect again any time."
+	confirmLabel="Disconnect"
+	tone="danger"
+	onConfirm={doDisconnect}
+	onClose={() => (pendingDisconnect = null)}
+/>

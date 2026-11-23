@@ -45,6 +45,22 @@
 		action: () => void;
 	} | null>(null);
 
+	// The match sheet stays mounted so it can animate out; its copy is derived so
+	// it is empty, not a crash, while the sheet is closed.
+	const reviewTitle = $derived.by(() => {
+		if (!reviewing) return '';
+		const ref = reviewing.proposal?.session ?? null;
+		return `Did this match your ${ref ? proposedLabel(reviewing) : 'session'}?`;
+	});
+	const reviewBody = $derived.by(() => {
+		if (!reviewing) return '';
+		const ref = reviewing.proposal?.session ?? null;
+		const day = dayLabel(new Date(reviewing.startedAt).toISOString().slice(0, 10));
+		const what = ref ? proposedLabel(reviewing) : 'session';
+		const where = ref ? ` on ${dayLabel(ref.date)}` : '';
+		return `${activitySummary(reviewing)} on ${day} looks like your ${what}${where}. If it was, we count it as done.`;
+	});
+
 	// Back (browser or hardware) closes an open overlay instead of leaving the page.
 	overlayHistory(
 		() => !!(detailTarget || playTarget || logTarget || reviewing),
@@ -466,31 +482,29 @@
 	/>
 {/snippet}
 
-{#if confirm}
-	<ConfirmSheet
-		title={confirm.title}
-		body={confirm.body}
-		confirmLabel={confirm.confirmLabel}
-		tone={confirm.tone ?? 'default'}
-		onConfirm={confirm.action}
-		onClose={() => (confirm = null)}
-	/>
-{/if}
+<ConfirmSheet
+	open={confirm !== null}
+	title={confirm?.title ?? ''}
+	body={confirm?.body ?? ''}
+	confirmLabel={confirm?.confirmLabel ?? 'Confirm'}
+	tone={confirm?.tone ?? 'default'}
+	onConfirm={() => confirm?.action()}
+	onClose={() => (confirm = null)}
+/>
 
-{#if reviewing}
-	{@const act = reviewing}
-	{@const ref = act.proposal?.session ?? null}
-	<ActivityMatchSheet
-		title="Did this match your {ref ? proposedLabel(act) : 'session'}?"
-		body="{activitySummary(act)} on {dayLabel(new Date(act.startedAt).toISOString().slice(0, 10))} looks like your {ref
-			? proposedLabel(act)
-			: 'session'}{ref ? ` on ${dayLabel(ref.date)}` : ''}. If it was, we count it as done."
-		busy={matchBusy}
-		onConfirm={() => confirmMatch(act)}
-		onReject={() => rejectMatch(act)}
-		onClose={() => (reviewing = null)}
-	/>
-{/if}
+<ActivityMatchSheet
+	open={reviewing !== null}
+	title={reviewTitle}
+	body={reviewBody}
+	busy={matchBusy}
+	onConfirm={() => {
+		if (reviewing) confirmMatch(reviewing);
+	}}
+	onReject={() => {
+		if (reviewing) rejectMatch(reviewing);
+	}}
+	onClose={() => (reviewing = null)}
+/>
 
 {#if pickerDate}
 	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />

@@ -34,8 +34,10 @@
 	]);
 
 	// Crossfade route changes with the View Transitions API where it exists, so
-	// navigation reads as motion instead of a hard swap. No support, or reduced
-	// motion, means an instant change.
+	// navigation reads as motion instead of a hard swap. The CSS names the content
+	// and header groups, so only those animate. No support, or reduced motion,
+	// means an instant change (the keyed content wrapper then carries a short
+	// enter for browsers without the API).
 	onNavigate((navigation) => {
 		if (typeof document === 'undefined') return;
 		const doc = document as Document & {
@@ -122,7 +124,7 @@
 	<div class="min-h-dvh flex flex-col">
 		{#if !onboarding}
 		<header
-			class="sticky top-0 z-30 border-b border-hairline bg-paper"
+			class="sg-header sticky top-0 z-30 border-b border-hairline bg-paper"
 			style="padding-top: env(safe-area-inset-top)"
 		>
 			<div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
@@ -179,7 +181,11 @@
 		{/if}
 
 		<main class="flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6">
-			{@render children()}
+			{#key page.url.pathname}
+				<div class="route-enter">
+					{@render children()}
+				</div>
+			{/key}
 		</main>
 
 		{#if !onboarding}
@@ -225,31 +231,29 @@
 	</div>
 {/if}
 
-{#if signOutConfirm}
-	<ConfirmSheet
-		title="Sign out?"
-		body="You can sign back in any time with Google."
-		confirmLabel="Sign out"
-		tone="danger"
-		onConfirm={async () => {
-			signOutConfirm = false;
-			await api.logout().catch(() => {});
-			window.location.href = '/';
-		}}
-		onClose={() => (signOutConfirm = false)}
-	/>
-{/if}
+<ConfirmSheet
+	open={signOutConfirm}
+	title="Sign out?"
+	body="You can sign back in any time with Google."
+	confirmLabel="Sign out"
+	tone="danger"
+	onConfirm={async () => {
+		signOutConfirm = false;
+		await api.logout().catch(() => {});
+		window.location.href = '/';
+	}}
+	onClose={() => (signOutConfirm = false)}
+/>
 
-{#if stopConfirm}
-	<ConfirmSheet
-		title="Stop building your plan?"
-		body="Your answers are not saved. You can start again any time from the dashboard."
-		confirmLabel="Stop and go to the dashboard"
-		tone="danger"
-		onConfirm={() => {
-			stopConfirm = false;
-			void goto('/');
-		}}
-		onClose={() => (stopConfirm = false)}
-	/>
-{/if}
+<ConfirmSheet
+	open={stopConfirm}
+	title="Stop building your plan?"
+	body="Your answers are not saved. You can start again any time from the dashboard."
+	confirmLabel="Stop and go to the dashboard"
+	tone="danger"
+	onConfirm={() => {
+		stopConfirm = false;
+		void goto('/');
+	}}
+	onClose={() => (stopConfirm = false)}
+/>

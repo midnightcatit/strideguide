@@ -16,6 +16,7 @@
 			try {
 				const t = localStorage.getItem('sg-theme');
 				if (t && t !== 'system') document.documentElement.dataset.theme = t;
+				if ('startViewTransition' in document) document.documentElement.classList.add('vt');
 			} catch {}
 		</script>
 		%sveltekit.head%

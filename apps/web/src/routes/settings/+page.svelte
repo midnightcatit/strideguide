@@ -87,13 +87,12 @@
 	<p class="mt-2 text-xs text-steel">You can sign back in any time with Google.</p>
 </div>
 
-{#if confirmSignOut}
-	<ConfirmSheet
-		title="Sign out?"
-		body="You can sign back in any time with Google."
-		confirmLabel="Sign out"
-		tone="danger"
-		onConfirm={signOut}
-		onClose={() => (confirmSignOut = false)}
-	/>
-{/if}
+<ConfirmSheet
+	open={confirmSignOut}
+	title="Sign out?"
+	body="You can sign back in any time with Google."
+	confirmLabel="Sign out"
+	tone="danger"
+	onConfirm={signOut}
+	onClose={() => (confirmSignOut = false)}
+/>

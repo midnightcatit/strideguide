@@ -424,13 +424,12 @@
 	/>
 {/snippet}
 
-{#if confirm}
-	<ConfirmSheet
-		title={confirm.title}
-		body={confirm.body}
-		confirmLabel={confirm.confirmLabel}
-		tone={confirm.tone ?? 'default'}
-		onConfirm={confirm.action}
-		onClose={() => (confirm = null)}
-	/>
-{/if}
+<ConfirmSheet
+	open={confirm !== null}
+	title={confirm?.title ?? ''}
+	body={confirm?.body ?? ''}
+	confirmLabel={confirm?.confirmLabel ?? 'Confirm'}
+	tone={confirm?.tone ?? 'default'}
+	onConfirm={() => confirm?.action()}
+	onClose={() => (confirm = null)}
+/>

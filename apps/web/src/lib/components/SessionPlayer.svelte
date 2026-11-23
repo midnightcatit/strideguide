@@ -419,14 +419,13 @@
 					{/if}
 				</div>
 
-				{#if showForm && (machine || drill)}
-					<FormSheet
-						move={machine}
-						{drill}
-						media={mediaForMove(machine?.name ?? drill?.name ?? '')}
-						onClose={() => (showForm = false)}
-					/>
-				{/if}
+				<FormSheet
+					open={showForm && !!(machine || drill)}
+					move={machine}
+					{drill}
+					media={mediaForMove(machine?.name ?? drill?.name ?? '')}
+					onClose={() => (showForm = false)}
+				/>
 			</div>
 		{/if}
 
