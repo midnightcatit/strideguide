@@ -17,6 +17,8 @@ export interface Prefs {
 	eventName?: string;
 	/** In the workout player, move to the next step automatically. */
 	autoAdvance?: boolean;
+	/** Seconds to count down before a step starts, 0 to 15. */
+	countdownSec?: number;
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };

@@ -225,6 +225,18 @@ summary {
 	touch-action: manipulation;
 }
 
+/* A press should never select the label text or pop the iOS callout. */
+button,
+a,
+label,
+summary,
+[role='button'],
+[role='switch'] {
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+}
+
 .tabular {
 	font-family: var(--font-data);
 	font-variant-numeric: tabular-nums slashed-zero;

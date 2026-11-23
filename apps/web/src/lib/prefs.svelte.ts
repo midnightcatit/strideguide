@@ -20,8 +20,18 @@ export async function loadPrefs(): Promise<void> {
 		prefs.birthYear = res.prefs.birthYear;
 		prefs.eventName = res.prefs.eventName;
 		prefs.autoAdvance = res.prefs.autoAdvance;
+		prefs.countdownSec = res.prefs.countdownSec;
 	} catch {
 		// unauthenticated or offline: keep defaults
+	}
+}
+
+export async function setWeekStart(weekStart: 0 | 1): Promise<void> {
+	prefs.weekStart = weekStart;
+	try {
+		await api.putSettings({ weekStart });
+	} catch {
+		// best-effort
 	}
 }
 
@@ -86,6 +96,16 @@ export function sessionLabel(session: LabelSession): string {
 		if (rep?.distanceM) return `${setBlock.repeat} × ${fmtStepDistance(rep.distanceM)}`;
 	}
 	return session.title ?? session.type;
+}
+
+/** Seconds to count down before a step starts. */
+export async function setCountdownSec(v: number): Promise<void> {
+	prefs.countdownSec = Math.max(0, Math.min(15, Math.round(v)));
+	try {
+		await api.putSettings({ countdownSec: prefs.countdownSec });
+	} catch {
+		// best-effort
+	}
 }
 
 /** Turn auto-advance in the workout player on or off. */

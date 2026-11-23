@@ -36,6 +36,7 @@ settings.put(
 				.optional(),
 			eventName: z.string().trim().max(80).optional(),
 			autoAdvance: z.boolean().optional(),
+			countdownSec: z.number().int().min(0).max(15).optional(),
 		}),
 	),
 	async (c) => {

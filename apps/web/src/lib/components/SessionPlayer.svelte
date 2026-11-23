@@ -40,7 +40,7 @@
 		sets?: number;
 	}
 
-	const COUNTDOWN_FROM = 5;
+	const countdownFrom = () => prefs.countdownSec ?? 5;
 
 	const workout = $derived(session.prescription?.workout);
 	const expanded = $derived.by(() => {
@@ -84,7 +84,7 @@
 	let idx = $state(0);
 	let running = $state(false);
 	let elapsed = $state(0);
-	let countdown = $state(COUNTDOWN_FROM);
+	let countdown = $state(countdownFrom());
 	let awaitingNext = $state(false);
 	let finished = $state(false);
 	let restLeft = $state(0);
@@ -114,7 +114,7 @@
 		awaitingNext = false;
 		finished = false;
 		running = false;
-		countdown = COUNTDOWN_FROM;
+		countdown = countdownFrom();
 		save();
 	}
 
