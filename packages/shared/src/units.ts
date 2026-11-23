@@ -9,9 +9,21 @@ export interface Prefs {
 	units: Units;
 	/** 0 = Monday, 1 = Sunday. */
 	weekStart: 0 | 1;
+	/** What the coach calls them. Optional; the greeting falls back to plain wording. */
+	name?: string;
+	/** Birth year, so age stays right as the years pass. Used for training heuristics only. */
+	birthYear?: number;
+	/** The event they are training for, in their words (e.g. "Chicago Marathon"). */
+	eventName?: string;
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };
+
+/** Age in whole years from a birth year, or undefined if it is not set. */
+export function ageFromBirthYear(birthYear: number | undefined, now = new Date()): number | undefined {
+	if (!birthYear) return undefined;
+	return now.getUTCFullYear() - birthYear;
+}
 
 const KM_PER_MILE = 1.609344;
 

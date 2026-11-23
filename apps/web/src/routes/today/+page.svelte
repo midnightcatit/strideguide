@@ -132,7 +132,7 @@
 		</div>
 	{/if}
 
-	<header class="mb-4">
+	<header class="mb-2">
 		<div class="flex items-baseline justify-between gap-3">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</p>
 			<p class="tabular text-xs text-steel">{dateLabel}{#if selWeek} · W{selWeek.weekNumber}{/if}</p>
@@ -145,11 +145,11 @@
 				: 'Rest day'}
 		</h1>
 		<!-- Space is always reserved, so the button appearing never shifts the page. -->
-		<div class="mt-3 h-9">
+		<div class="mt-2 flex h-8 items-center">
 			<button
 				type="button"
 				onclick={goToday}
-				class="rounded-md border border-hairline px-3 py-2 text-xs text-signal-ink hover:border-signal {isToday
+				class="rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal {isToday
 					? 'invisible'
 					: ''}"
 			>
@@ -159,7 +159,7 @@
 	</header>
 
 	<!-- Sticky day nav: the phone day arrows sit above the week strip, both stay put. -->
-	<div class="sticky top-16 z-20 -mx-4 mb-3 border-b border-hairline bg-paper/95 px-4 pt-1 pb-2 backdrop-blur">
+	<div class="sticky top-16 z-20 -mx-4 mb-2 border-b border-hairline bg-paper px-4 pt-1 pb-2">
 		<div class="mb-1 flex items-center justify-between gap-2 sm:hidden">
 			<button
 				type="button"

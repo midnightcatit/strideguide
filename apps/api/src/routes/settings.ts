@@ -27,6 +27,14 @@ settings.put(
 		z.object({
 			units: z.enum(['metric', 'imperial']).optional(),
 			weekStart: z.union([z.literal(0), z.literal(1)]).optional(),
+			name: z.string().trim().max(40).optional(),
+			birthYear: z
+				.number()
+				.int()
+				.min(1900)
+				.max(new Date().getUTCFullYear() - 10)
+				.optional(),
+			eventName: z.string().trim().max(80).optional(),
 		}),
 	),
 	async (c) => {
