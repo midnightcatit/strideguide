@@ -8,6 +8,8 @@
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
 	import { isStarted } from '$lib/started.svelte';
+	import { store } from '$lib/planStore.svelte';
+	import { prefs } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
 
 	let {
@@ -43,6 +45,23 @@
 	let showWhyDetail = $state(false);
 	let showWarmup = $state(false);
 	const statusLabel = $derived(logged ? 'Done' : isStarted(session.id) ? 'In progress' : 'Not started');
+
+	/** A line that ties the session to what the runner told us at setup. */
+	const personal = $derived.by(() => {
+		const b = (store.plan?.goal?.baseline ?? {}) as Record<string, unknown>;
+		const acts = [
+			...(Array.isArray(b.crossTraining) ? (b.crossTraining as string[]) : []),
+			...(typeof b.customActivity === 'string' && b.customActivity ? [b.customActivity] : []),
+		];
+		const event = (typeof b.eventName === 'string' && b.eventName) || prefs.eventName || '';
+		if (event && acts.length)
+			return `You are training for ${event} and you also do ${acts.join(', ')}. We built this around both, and the reasoning below is where it comes from.`;
+		if (event)
+			return `You are training for ${event}. We built this session with that in mind, and the reasoning below is where it comes from.`;
+		if (acts.length)
+			return `Because you also do ${acts.join(', ')}, we keep this session in balance with those.`;
+		return '';
+	});
 
 	/** Plain-English meaning of each step, so "What's to come" is not just labels. */
 	const STEP_INFO: Record<string, string> = {
@@ -289,6 +308,7 @@
 			<!-- Why this workout: one summed-up narrative -->
 			<section class="mt-6" aria-labelledby="why">
 				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
+				{#if personal}<p class="mt-2 text-[15px] leading-relaxed text-signal-ink">{personal}</p>{/if}
 				{#if lead}<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>{/if}
 				{#if loading}
 					<p class="mt-3 text-sm text-steel">Loading the reasoning…</p>

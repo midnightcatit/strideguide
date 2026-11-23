@@ -2,11 +2,14 @@
 	import { onMount } from 'svelte';
 	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import TimeInput from '$lib/components/TimeInput.svelte';
+	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
+	import SessionDetail from '$lib/components/SessionDetail.svelte';
+	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
-	import { DAY_INITIALS, DAY_NAMES, type ClientSession, type CurrentPlan } from '$lib/plan';
+	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
 		slug: string;
@@ -29,14 +32,18 @@
 	let sessionMinutes = $state(45);
 	let flexCurrent = $state(3);
 	let flexGoal = $state(4);
-	let stretching = $state<'after-runs' | 'rest-days' | 'both' | 'none'>('after-runs');
+	let customActivity = $state('');
+	let showMoreCross = $state(false);
 	let crossTraining = $state<string[]>([]);
 	let terrain = $state<'flat' | 'hilly' | 'mixed'>('mixed');
 	let niggles = $state('');
 
 	// Preview: after generation, a local, unsaved look at week one.
+	const todayIso = new Date().toISOString().slice(0, 10);
 	let draft = $state<CurrentPlan | null>(null);
-	let stretchDays = $state<Set<number>>(new Set());
+	let pickerDate = $state<string | null>(null);
+	let previewDetail = $state<ClientSession | null>(null);
+	let dragId = $state<string | null>(null);
 
 	let stepIndex = $state(0);
 	let dir = $state<1 | -1>(1);
@@ -195,21 +202,12 @@
 			{
 				id: 'flexibility',
 				title: 'How flexible are you, and where do you want to be?',
-				lede: 'Rate your flexibility today and where you would like it. We build the stretching toward your goal, and only as far as helps.',
+				lede: 'Rate your flexibility today and where you would like it. Every workout starts with a dynamic warm-up and ends with gentle stretches, and the gap between now and your goal decides how much mobility work we add.',
 				guide: [
+					'Every workout starts with a dynamic warm-up and ends with a short stretch.',
 					'For running, more range is not always better. Train toward the range you need, then hold it.',
 					'Tighter runners often gain most from gentle, regular static stretching.',
 					'Long static holds before hard running can cost a little power, so we place them after.',
-				],
-			},
-			{
-				id: 'stretching',
-				title: 'When do you want to stretch?',
-				lede: 'Dynamic work before running and static stretching after is the usual split. We can add it where it suits you.',
-				guide: [
-					'After easy runs: it fits neatly into the cool-down.',
-					'On rest days: a short mobility session of its own.',
-					'Both, or none: your call. None keeps the plan lean.',
 				],
 			},
 			{
@@ -257,6 +255,15 @@
 	const isLast = $derived(stepIndex >= steps.length - 1);
 	const progress = $derived((Math.min(stepIndex, steps.length - 1) + 1) / steps.length);
 
+	const flexGap = $derived(Math.max(0, flexGoal - flexCurrent));
+	const flexCadence = $derived.by(() => {
+		if (flexGap <= 0)
+			return 'You are happy with your range, so we keep a short maintenance stretch after runs.';
+		if (flexGap === 1)
+			return 'We add one gentle mobility session a week on a rest day, plus stretches after your runs.';
+		return 'We add two mobility sessions a week on rest days, plus stretches after your runs, built toward your goal.';
+	});
+
 	const EXPERIENCE: { v: 'beginner' | 'intermediate' | 'advanced'; name: string; range: string; note: string }[] = [
 		{ v: 'beginner', name: 'Beginner', range: '15 to 25 km a week', note: 'New to running, or back after a long break.' },
 		{ v: 'intermediate', name: 'Intermediate', range: '25 to 50 km a week', note: 'Running consistently for a year or more.' },
@@ -281,9 +288,20 @@
 	];
 	const CROSS: { v: string; name: string }[] = [
 		{ v: 'bike', name: 'Bike' },
-		{ v: 'pool', name: 'Pool' },
+		{ v: 'swim', name: 'Swim' },
 		{ v: 'rower', name: 'Rower' },
+		{ v: 'elliptical', name: 'Elliptical' },
+		{ v: 'soccer', name: 'Soccer' },
+		{ v: 'tennis', name: 'Tennis' },
+		{ v: 'pickleball', name: 'Pickleball' },
+		{ v: 'basketball', name: 'Basketball' },
+		{ v: 'dance', name: 'Dance' },
+		{ v: 'yoga', name: 'Yoga' },
+		{ v: 'hiking', name: 'Hiking' },
+		{ v: 'skiing', name: 'Skiing' },
 	];
+	const CROSS_PRIMARY = CROSS.slice(0, 6);
+	const CROSS_MORE = CROSS.slice(6);
 
 	onMount(async () => {
 		try {
@@ -320,11 +338,41 @@
 		if (!week) return;
 		week.sessions = week.sessions.filter((x) => x.id !== s.id);
 	}
-	function toggleStretch(d: number) {
-		const next = new Set(stretchDays);
-		if (next.has(d)) next.delete(d);
-		else next.add(d);
-		stretchDays = next;
+	function dayOf(date: string): number {
+		return (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7;
+	}
+	function addFromLibrary(w: LibraryWorkout) {
+		const week = draft?.weeks[0];
+		const date = pickerDate;
+		pickerDate = null;
+		if (!week || !date) return;
+		week.sessions = [
+			...week.sessions,
+			{
+				id: `preview-${w.id}-${Date.now()}`,
+				day: dayOf(date),
+				slot: 'AM',
+				modality: w.modality,
+				type: w.type,
+				title: w.title,
+				purpose: w.purpose,
+				prescription: {
+					summary: w.summary,
+					intensity: w.intensity,
+					targetRpe: w.targetRpe,
+					workout: w.workout,
+					added: true,
+					libraryId: w.id,
+				},
+				durationMin: w.durationMin,
+			},
+		];
+	}
+	function onDrop(d: number) {
+		const week = draft?.weeks[0];
+		const s = week?.sessions.find((x) => x.id === dragId);
+		if (s) s.day = d;
+		dragId = null;
 	}
 
 	function validate(): boolean {
@@ -375,7 +423,7 @@
 					strengthDays,
 					sessionMinutes,
 					flexibility: { current: flexCurrent, goal: flexGoal },
-					stretching,
+					...(customActivity.trim() ? { customActivity: customActivity.trim() } : {}),
 					terrain,
 					...(crossTraining.length ? { crossTraining } : {}),
 					...(str(niggles) ? { niggles: str(niggles) } : {}),
@@ -420,6 +468,7 @@
 </script>
 
 {#if draft}
+	{@const week0 = draft.weeks[0]}
 	<section class="mx-auto max-w-xl">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
 		<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
@@ -428,31 +477,53 @@
 		<div class="mt-5">
 			{#each DAY_NAMES as name, d (d)}
 				{@const daySess = sessionsForDay(d)}
-				<div class="flex items-start gap-3 border-b border-hairline py-3">
+				<div
+					class="flex items-start gap-3 border-b border-hairline py-3 transition-colors {dragId ? 'bg-sunken/40' : ''}"
+					role="listitem"
+					ondragover={(e) => e.preventDefault()}
+					ondrop={() => onDrop(d)}
+				>
 					<span class="tabular w-9 shrink-0 pt-1 text-xs uppercase tracking-widest text-steel">{name.slice(0, 3)}</span>
 					<div class="flex min-w-0 flex-1 flex-wrap gap-2">
 						{#each daySess as s (s.id)}
-							<div class="flex items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm">
-								<span class="max-w-[10rem] truncate">{s.title ?? s.type}</span>
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div
+								class="flex items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm {dragId === s.id ? 'opacity-50' : ''}"
+								draggable="true"
+								ondragstart={() => (dragId = s.id)}
+								ondragend={() => (dragId = null)}
+							>
+								<button type="button" onclick={() => (previewDetail = s)} class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink" title="Tap for details, drag to move">
+									{s.title ?? s.type}
+								</button>
 								<button type="button" aria-label="Move earlier" onclick={() => shiftDay(s, -1)} class="px-1 text-steel hover:text-signal-ink">‹</button>
 								<button type="button" aria-label="Move later" onclick={() => shiftDay(s, 1)} class="px-1 text-steel hover:text-signal-ink">›</button>
-								<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-signal-ink">✕</button>
+								<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-danger">✕</button>
 							</div>
 						{/each}
-						{#if stretchDays.has(d)}
-							<span class="rounded-lg border border-dashed border-hairline px-2 py-1 text-sm text-steel">Mobility</span>
-						{/if}
-						<button type="button" onclick={() => toggleStretch(d)} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-steel hover:border-signal hover:text-signal-ink">
-							{stretchDays.has(d) ? 'Remove stretch' : '+ stretch'}
+						<button type="button" onclick={() => (pickerDate = addDaysIso(week0?.startDate ?? todayIso, d))} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-signal-ink hover:border-signal">
+							＋ Add workout
 						</button>
 					</div>
 				</div>
 			{/each}
 		</div>
 
-		<p class="mt-4 text-xs text-steel">Editing here only shows how it feels. Rebuild any time to change the plan for real.</p>
+		<p class="mt-4 text-xs text-steel">Drag a workout to another day, tap one for details, or add and remove them. This is a preview, so nothing here is saved. Rebuild any time to change the plan for real.</p>
 
 		<button type="button" onclick={() => (window.location.href = '/')} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Looks good, take me in</button>
+
+		{#if pickerDate}
+			<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
+		{/if}
+		{#if previewDetail}
+			<SessionDetail
+				session={previewDetail}
+				eyebrow="Preview"
+				logged={null}
+				onClose={() => (previewDetail = null)}
+			/>
+		{/if}
 	</section>
 {:else}
 	<section class="mx-auto max-w-xl">
@@ -618,22 +689,31 @@
 							<button type="button" aria-pressed={flexGoal === n} onclick={() => (flexGoal = n)} class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {flexGoal === n ? 'bg-ink font-bold text-paper' : 'border border-hairline text-steel hover:border-steel'}">{n}</button>
 						{/each}
 					</div>
-				{:else if step.id === 'stretching'}
-					<div class="grid gap-2">
-						{#each STRETCHING as opt (opt.v)}
-							<button type="button" aria-pressed={stretching === opt.v} onclick={() => (stretching = opt.v)} class="flex flex-col rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {stretching === opt.v ? 'border-signal-ink bg-signal-wash' : 'border-hairline hover:border-steel'}">
-								<span class="font-display font-medium">{opt.name}</span>
-								<span class="mt-0.5 text-sm text-steel">{opt.note}</span>
-							</button>
-						{/each}
-					</div>
+					<p class="mt-4 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">{flexCadence}</p>
 				{:else if step.id === 'crossTraining'}
 					<div class="flex flex-wrap gap-2">
-						{#each CROSS as opt (opt.v)}
+						{#each CROSS_PRIMARY as opt (opt.v)}
 							<button type="button" aria-pressed={crossTraining.includes(opt.v)} onclick={() => toggleCross(opt.v)} class="rounded-xl border px-4 py-3 text-sm transition-colors {crossTraining.includes(opt.v) ? 'border-signal-ink bg-signal-wash font-medium' : 'border-hairline text-steel hover:border-steel'}">{opt.name}</button>
 						{/each}
+						{#if showMoreCross}
+							{#each CROSS_MORE as opt (opt.v)}
+								<button type="button" aria-pressed={crossTraining.includes(opt.v)} onclick={() => toggleCross(opt.v)} class="rounded-xl border px-4 py-3 text-sm transition-colors {crossTraining.includes(opt.v) ? 'border-signal-ink bg-signal-wash font-medium' : 'border-hairline text-steel hover:border-steel'}">{opt.name}</button>
+							{/each}
+						{:else}
+							<button type="button" onclick={() => (showMoreCross = true)} class="rounded-xl border border-dashed border-hairline-strong px-4 py-3 text-sm text-signal-ink hover:border-signal">Show more</button>
+						{/if}
 					</div>
-					<p class="mt-3 text-sm text-steel">{crossTraining.length ? `You can cross-train: ${crossTraining.join(', ')}.` : 'None selected. That is fine.'}</p>
+					<label class="mt-4 block">
+						<span class="text-sm">Anything else you do?</span>
+						<input
+							type="text"
+							bind:value={customActivity}
+							maxlength="120"
+							placeholder="e.g. rock climbing, paddle boarding"
+							class="mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+						/>
+						<span class="mt-1 block text-xs text-steel">Your coach uses this to shape the plan. Anything you pick or write stays gentle, so it never crowds the running.</span>
+					</label>
 				{:else if step.id === 'terrain'}
 					<div class="grid gap-2">
 						{#each TERRAIN as opt (opt.v)}

@@ -88,7 +88,12 @@ export interface ClientLog {
 }
 
 export interface CurrentPlan {
-	goal: { id: string; goalProfileSlug: string; targetDate: string | null } | null;
+	goal: {
+		id: string;
+		goalProfileSlug: string;
+		targetDate: string | null;
+		baseline?: Record<string, unknown> | null;
+	} | null;
 	plan: { id: string; params: Record<string, unknown> | null } | null;
 	weeks: ClientWeek[];
 	logs: ClientLog[];

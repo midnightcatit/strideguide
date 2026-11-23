@@ -196,7 +196,7 @@ describe('generatePlan (preferences)', () => {
 		const p = generatePlan({
 			...base,
 			availableDays: [0, 2, 4],
-			baseline: { experience: 'intermediate', stretching: 'rest-days', flexibility: { current: 3, goal: 4 } },
+			baseline: { experience: 'intermediate', flexibility: { current: 3, goal: 4 } },
 		});
 		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
 		expect(mobility.length).toBe(1);
@@ -207,7 +207,7 @@ describe('generatePlan (preferences)', () => {
 		const p = generatePlan({
 			...base,
 			availableDays: [0, 2, 4],
-			baseline: { experience: 'intermediate', stretching: 'none' },
+			baseline: { experience: 'intermediate', flexibility: { current: 3, goal: 3 } },
 		});
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'mobility')).toBe(false);
 	});
@@ -216,12 +216,12 @@ describe('generatePlan (preferences)', () => {
 		const growing = generatePlan({
 			...base,
 			availableDays: [0, 2, 4],
-			baseline: { experience: 'intermediate', stretching: 'rest-days', flexibility: { current: 2, goal: 5 } },
+			baseline: { experience: 'intermediate', flexibility: { current: 2, goal: 5 } },
 		});
 		const holding = generatePlan({
 			...base,
 			availableDays: [0, 2, 4],
-			baseline: { experience: 'intermediate', stretching: 'rest-days', flexibility: { current: 4, goal: 4 } },
+			baseline: { experience: 'intermediate', flexibility: { current: 3, goal: 4 } },
 		});
 		const count = (p: typeof growing) =>
 			p.weeks[0]!.sessions

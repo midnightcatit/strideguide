@@ -87,8 +87,10 @@ export interface Baseline {
 	flexibility?: { current: number; goal: number };
 	/** When the user wants stretching. */
 	stretching?: StretchingPreference;
-	/** Cross-training the user can do, e.g. bike, swim, rower. */
+	/** Cross-training the user can do, e.g. bike, swim, soccer. */
 	crossTraining?: string[];
+	/** Any other activity, in the user's words. */
+	customActivity?: string;
 	/** Terrain the user mostly runs on. */
 	terrain?: TerrainPreference;
 	/** Free-text niggles the coach should know about. */
