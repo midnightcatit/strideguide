@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, WARMUP_DRILLS, findDrill, findMove, mediaForMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, findDrill, findMove, type Drill, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
-	import MoveDemo from '$lib/components/MoveDemo.svelte';
+	import MoveList from '$lib/components/MoveList.svelte';
+	import PreviewSheet from '$lib/components/PreviewSheet.svelte';
+	import NotesSheet from '$lib/components/NotesSheet.svelte';
 	import { isStarted } from '$lib/started.svelte';
 	import { store } from '$lib/planStore.svelte';
 	import { prefs } from '$lib/prefs.svelte';
@@ -42,10 +44,17 @@
 	let failed = $state(false);
 	let showAllSources = $state(false);
 	let showAllRows = $state(false);
-	let openMachine = $state<string | null>(null);
 	let showWhyDetail = $state(false);
-	let showWarmup = $state(false);
+	let showPreview = $state(false);
+	let showNotes = $state(false);
+	/** The note shown on the card, seeded from the plan and updated after a save. */
+	let savedNote = $state(untrack(() => session.notes ?? ''));
 	const statusLabel = $derived(logged ? 'Done' : isStarted(session.id) ? 'In progress' : 'Not started');
+
+	/** Close the whole card, but leave it open while a sheet is on top of it. */
+	function closeFromBackdrop() {
+		if (!showPreview && !showNotes) onClose();
+	}
 
 	/** A line that ties the session to what the runner told us at setup. */
 	const personal = $derived.by(() => {
@@ -192,12 +201,6 @@
 		}
 		return '';
 	}
-
-	/** Plain-language line for a machine, built from the researched catalog. */
-	function machineLine(m: MachineExercise): string {
-		const muscles = m.muscles.join(' and ');
-		return `Works your ${muscles}. ${m.feel}`;
-	}
 </script>
 
 <div
@@ -205,7 +208,7 @@
 	role="dialog"
 	aria-modal="true"
 	aria-label={sessionLabel(session)}
-	use:modal={onClose}
+	use:modal={closeFromBackdrop}
 >
 	<!-- Coloured header band, tinted by the session's demand -->
 	<div class="relative overflow-hidden bg-ink text-paper">
@@ -245,26 +248,21 @@
 					</svg>
 					<span class="text-[10px] uppercase tracking-wide">Link</span>
 				</button>
-				<button type="button" aria-pressed={showWarmup} onclick={() => (showWarmup = !showWarmup)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border px-1 py-2 text-paper/85 hover:border-paper hover:text-paper {showWarmup ? 'border-paper bg-paper/15' : 'border-paper/15'}">
+				<button type="button" aria-pressed={showPreview} onclick={() => (showPreview = true)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<path d="M10 3v14" />
-						<path d="M7.5 5.5 10 3l2.5 2.5" />
-						<path d="M7.5 14.5 10 17l2.5-2.5" />
-						<path d="M3.5 10h2.5" />
-						<path d="M14 10h2.5" />
+						<path d="M2.5 10S5 5.5 10 5.5 17.5 10 17.5 10 15 14.5 10 14.5 2.5 10 2.5 10z" />
+						<circle cx="10" cy="10" r="2.2" />
 					</svg>
-					<span class="text-[10px] uppercase tracking-wide">Warm-up</span>
+					<span class="text-[10px] uppercase tracking-wide">Preview</span>
 				</button>
-				{#if onLog}
-					<button type="button" onclick={onLog} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
-						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M5 3.5h7l3 3v10H5z" />
-							<path d="M8 9h4" />
-							<path d="M8 12h4" />
-						</svg>
-						<span class="text-[10px] uppercase tracking-wide">Notes</span>
-					</button>
-				{/if}
+				<button type="button" aria-pressed={showNotes} onclick={() => (showNotes = true)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
+					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M5 3.5h7l3 3v10H5z" />
+						<path d="M8 9h4" />
+						<path d="M8 12h4" />
+					</svg>
+					<span class="text-[10px] uppercase tracking-wide">Notes</span>
+				</button>
 				{#if onSkip}
 					<button type="button" onclick={onSkip} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -306,24 +304,6 @@
 				<p class="mt-3 rounded-lg bg-signal-wash p-3 text-sm leading-relaxed text-signal-ink">{p.why}</p>
 			{/if}
 
-			{#if showWarmup}
-				<section class="mt-6" aria-labelledby="warmup">
-					<h2 id="warmup" class="tabular text-xs uppercase tracking-widest text-steel">Warm-up</h2>
-					<p class="mt-1 text-sm text-steel">Do this before the session. Keep it moving, with no long holds.</p>
-					<ul class="mt-2 divide-y divide-hairline">
-						{#each WARMUP_DRILLS as d (d.name)}
-							<li class="flex items-baseline justify-between gap-3 py-2 text-sm">
-								<span class="min-w-0">
-									{d.name}
-									<span class="block text-xs text-steel">{d.why}</span>
-								</span>
-								<span class="tabular shrink-0 text-steel">{formatClock(d.durationSec)}</span>
-							</li>
-						{/each}
-					</ul>
-				</section>
-			{/if}
-
 			<!-- Why this workout: one summed-up narrative -->
 			<section class="mt-6" aria-labelledby="why">
 				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
@@ -346,6 +326,18 @@
 					{/if}
 				{/if}
 			</section>
+
+			<!-- The runner's own note for this session, if they saved one -->
+			{#if savedNote}
+				<hr class="my-6 border-hairline" />
+				<section aria-labelledby="your-notes">
+					<h2 id="your-notes" class="tabular text-xs uppercase tracking-widest text-steel">Your notes</h2>
+					<p class="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed">{savedNote}</p>
+					<button type="button" onclick={() => (showNotes = true)} class="mt-2 text-sm text-signal-ink hover:underline">
+						Edit note
+					</button>
+				</section>
+			{/if}
 
 			<!-- What's to come -->
 			{#if rows.length}
@@ -453,37 +445,7 @@
 				<hr class="my-6 border-hairline" />
 				<section aria-labelledby="machines">
 					<h2 id="machines" class="tabular text-xs uppercase tracking-widest text-steel">The {session.type === 'machine-circuit' ? 'machines' : 'moves'}</h2>
-					<ul class="mt-2 space-y-1">
-						{#each machines as m (m.name)}
-							<li>
-								<button
-									type="button"
-									onclick={() => (openMachine = openMachine === m.name ? null : m.name)}
-									aria-expanded={openMachine === m.name}
-									class="flex w-full items-baseline justify-between gap-3 border-b border-hairline py-2.5 text-left text-sm hover:text-signal-ink"
-								>
-									<span class="font-medium">{m.name}</span>
-									<span class="tabular shrink-0 text-xs text-steel">{openMachine === m.name ? '−' : '+'}</span>
-								</button>
-								{#if openMachine === m.name}
-									<div class="pb-3 pt-1">
-										{#if mediaForMove(m.name)}
-											<div class="mb-3"><MoveDemo media={mediaForMove(m.name)!} name={m.name} /></div>
-										{/if}
-										<p class="text-sm leading-relaxed">{m.why}</p>
-										<p class="mt-2 text-sm leading-relaxed text-steel">{machineLine(m)}</p>
-										<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Form</p>
-										<ul class="mt-1 space-y-1 text-sm">
-											{#each m.form as cue, ci (ci)}
-												<li class="flex gap-2"><span class="text-steel">·</span><span>{cue}</span></li>
-											{/each}
-										</ul>
-										<p class="mt-2 text-xs text-steel">Avoid: {m.mistakes.join('; ').toLowerCase()}.</p>
-									</div>
-								{/if}
-							</li>
-						{/each}
-					</ul>
+					<div class="mt-2"><MoveList {machines} /></div>
 				</section>
 			{/if}
 
@@ -537,4 +499,16 @@
 			{/if}
 		</div>
 	</footer>
+
+	{#if showPreview}
+		<PreviewSheet session={session} {machines} onClose={() => (showPreview = false)} />
+	{/if}
+
+	{#if showNotes}
+		<NotesSheet
+			session={session}
+			onSaved={(notes) => (savedNote = notes)}
+			onClose={() => (showNotes = false)}
+		/>
+	{/if}
 </div>

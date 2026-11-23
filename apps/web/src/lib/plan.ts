@@ -57,6 +57,8 @@ export interface ClientSession {
 	purpose: string | null;
 	prescription: ClientPrescription | null;
 	durationMin: number | null;
+	/** The runner's own note for this session, saved against the plan. */
+	notes?: string | null;
 }
 
 export interface ClientWeek {

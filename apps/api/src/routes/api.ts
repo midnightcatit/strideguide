@@ -11,6 +11,7 @@ import goals from './goals';
 import health from './health';
 import logs from './logs';
 import plans from './plans';
+import sessionNotes from './session-notes';
 import settings from './settings';
 import summaries from './summaries';
 
@@ -28,6 +29,7 @@ const secured = new Hono<AppBindings>();
 secured.use('*', requireAuth);
 secured.route('/goals', goals);
 secured.route('/plans', plans);
+secured.route('/plans', sessionNotes);
 secured.route('/logs', logs);
 secured.route('/exercises', exercises);
 secured.route('/ai', ai);
