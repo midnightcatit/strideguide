@@ -380,5 +380,27 @@ export const appErrors = sqliteTable('app_errors', {
 	requestId: text('request_id'),
 });
 
+/**
+ * Browser-side failures reported by the client beacon (window errors, unhandled
+ * rejections, failed requests). Written from a public route, so a stuck client
+ * can report itself even when its session or network is failing.
+ */
+export const clientErrors = sqliteTable(
+	'client_errors',
+	{
+		id: text('id').primaryKey(),
+		createdAt,
+		kind: text('kind').notNull(),
+		message: text('message'),
+		detail: text('detail'),
+		url: text('url'),
+		userAgent: text('user_agent'),
+		userId: text('user_id'),
+	},
+	(t) => ({
+		createdIdx: index('client_errors_created_idx').on(t.createdAt),
+	}),
+);
+
 /** Alias helpers for composite keys if needed later. */
 export const authSessionsPk = primaryKey({ columns: [authSessions.id] });

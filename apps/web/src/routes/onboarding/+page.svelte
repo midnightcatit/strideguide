@@ -3,6 +3,7 @@
 	import { parseTime, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
+	import { reportClientError } from '$lib/clientErrors';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
 	import { DAY_INITIALS } from '$lib/plan';
 
@@ -91,46 +92,53 @@
 		error = null;
 		generating = true;
 		stage = 0;
-		stageTimer = setInterval(() => {
-			stage = Math.min(STAGES.length - 1, stage + 1);
-		}, 2200);
-
-		const recentTimes =
-			vdot && raceTime.trim() && RACE_DISTANCES.some((d) => d.key === raceKey)
-				? { [raceKey]: raceTime.trim() }
-				: undefined;
-
-		const body: GeneratePlanInput = {
-			goalProfileSlug: slug,
-			availableDays: days,
-			baseline: {
-				experience,
-				...(recentTimes ? { recentTimes } : {}),
-				...(weeklyKm.trim()
-					? {
-							weeklyKm:
-								prefs.units === 'imperial'
-									? Math.round(milesToKm(Number(weeklyKm)) * 10) / 10
-									: Number(weeklyKm),
-						}
-					: {}),
-			},
-			...(needsRaceDate && targetDate ? { targetDate } : {}),
-		};
 		try {
+			stageTimer = setInterval(() => {
+				stage = Math.min(STAGES.length - 1, stage + 1);
+			}, 2200);
+
+			const recentTimes =
+				vdot && raceTime.trim() && RACE_DISTANCES.some((d) => d.key === raceKey)
+					? { [raceKey]: raceTime.trim() }
+					: undefined;
+
+			const body: GeneratePlanInput = {
+				goalProfileSlug: slug,
+				availableDays: days,
+				baseline: {
+					experience,
+					...(recentTimes ? { recentTimes } : {}),
+					...(weeklyKm.trim()
+						? {
+								weeklyKm:
+									prefs.units === 'imperial'
+										? Math.round(milesToKm(Number(weeklyKm)) * 10) / 10
+										: Number(weeklyKm),
+							}
+						: {}),
+				},
+				...(needsRaceDate && targetDate ? { targetDate } : {}),
+			};
+
 			await Promise.race([
 				api.generatePlan(body),
 				new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 25000)),
 			]);
 			window.location.href = '/';
 		} catch (e) {
-			error =
-				e instanceof Error && e.message === 'timeout'
-					? 'That took longer than expected. Your answers are still here, so give it another go.'
-					: 'We could not build the plan just now. Try again.';
+			const timedOut = e instanceof Error && e.message === 'timeout';
+			error = timedOut
+				? 'That took longer than expected. Your answers are still here, so give it another go.'
+				: 'We could not build the plan just now. Try again.';
+			reportClientError('generate-failed', timedOut ? 'timeout' : String(e), e);
+			// Always re-enable the button, so a failed attempt is never a dead end.
 			generating = false;
+			submitting = false;
 		} finally {
-			if (stageTimer) clearInterval(stageTimer);
+			if (stageTimer) {
+				clearInterval(stageTimer);
+				stageTimer = undefined;
+			}
 		}
 	}
 </script>
