@@ -10,6 +10,8 @@
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import EmptyState from '$lib/components/EmptyState.svelte';
+	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let note = $state<string | null>(null);
 
@@ -126,21 +128,17 @@
 {#if store.error}
 	<p class="mt-6 text-sm text-steel">{store.error}</p>
 {:else if !weeks.length}
-	<section class="mt-10 text-center">
-		<p class="tabular text-xs uppercase tracking-widest text-steel">No plan yet</p>
-		<h1 class="font-display mt-2 text-2xl font-bold">Build your plan.</h1>
-		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
-			Pick a goal and a race date. We write the sessions and explain each one.
-		</p>
-		<a href="/onboarding" class="mt-6 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Build my plan</a>
-		<button
-			type="button"
-			onclick={notNow}
-			class="mx-auto mt-3 block text-xs text-steel hover:text-signal-ink"
-		>
-			Not now
-		</button>
-	</section>
+	<EmptyState
+		eyebrow="No plan yet"
+		title="Build your plan."
+		body="Pick a goal and a race date. We write the sessions and explain each one."
+		primaryLabel="Build my plan"
+		primaryHref="/onboarding"
+		secondaryLabel="Not now"
+		onSecondary={notNow}
+	>
+		{#snippet icon()}<SessionIcon type="easy" size="h-5 w-5" />{/snippet}
+	</EmptyState>
 {:else}
 	<header class="mb-6">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">{greeting}</p>
@@ -174,18 +172,21 @@
 	<div class="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-3">
 		<Card tone="sunken">
 			<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
-			<p class="tabular mt-1 text-xl font-medium">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
-			<p class="text-[11px] text-steel">sessions done</p>
+			<p class="tabular mt-1 text-xl font-semibold">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
+			<div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-hairline">
+				<div class="h-full rounded-full bg-ok" style="width: {weekPlanned ? (weekLogged / weekPlanned) * 100 : 0}%"></div>
+			</div>
+			<p class="mt-1 text-[11px] text-steel">sessions done</p>
 		</Card>
 		<Card tone="sunken">
 			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
-			<p class="tabular mt-1 text-xl font-medium">{fmtDistance(weekDoneKm)}<span class="text-sm text-steel"> / {fmtDistance(weekKm)}</span></p>
-			<p class="text-[11px] text-steel">logged / planned</p>
+			<p class="tabular mt-1 text-lg text-steel">{fmtDistance(weekDoneKm)}<span class="text-sm"> / {fmtDistance(weekKm)}</span></p>
+			<p class="mt-1 text-[11px] text-steel">logged / planned</p>
 		</Card>
 		<Card tone="sunken">
 			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
-			<p class="tabular mt-1 text-xl font-medium {streak > 0 ? 'text-ok' : ''}">{streak}<span class="text-sm text-steel">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
-			<p class="text-[11px] text-steel">training</p>
+			<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
+			<p class="mt-1 text-[11px] text-steel">training</p>
 		</Card>
 	</div>
 
@@ -204,10 +205,10 @@
 		</section>
 	{/if}
 
-	{#if recentLogs.length}
-		<section aria-labelledby="recent" class="mt-7">
-			<SectionHeader id="recent" eyebrow="Recent activity" />
-			<Card tone="sunken">
+	<section aria-labelledby="recent" class="mt-7">
+		<SectionHeader id="recent" eyebrow="Recent activity" />
+		<Card tone="sunken">
+			{#if recentLogs.length}
 				<ul class="divide-y divide-hairline">
 					{#each recentLogs as { log, session } (log.id)}
 						<li class="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
@@ -219,7 +220,10 @@
 						</li>
 					{/each}
 				</ul>
-			</Card>
-		</section>
-	{/if}
+			{:else}
+				<p class="text-sm text-steel">Nothing logged yet. When you finish a session, it shows up here.</p>
+				<a href="/today" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Log today's session →</a>
+			{/if}
+		</Card>
+	</section>
 {/if}

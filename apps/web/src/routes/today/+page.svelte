@@ -16,6 +16,8 @@
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
+	import EmptyState from '$lib/components/EmptyState.svelte';
+	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
@@ -116,14 +118,15 @@
 {:else if !store.loaded}
 	<p class="tabular mt-6 text-sm text-steel">Loading…</p>
 {:else if !weeks.length}
-	<section class="mt-10 text-center">
-		<p class="tabular text-xs uppercase tracking-widest text-steel">No plan yet</p>
-		<h1 class="font-display mt-2 text-2xl font-bold">Build your plan.</h1>
-		<p class="mx-auto mt-3 max-w-sm text-sm text-steel">
-			Pick a goal and a race date. We write the sessions and explain each one.
-		</p>
-		<a href="/onboarding" class="mt-6 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Build my plan</a>
-	</section>
+	<EmptyState
+		eyebrow="No plan yet"
+		title="Build your plan."
+		body="Pick a goal and a race date. We write the sessions and explain each one."
+		primaryLabel="Build my plan"
+		primaryHref="/onboarding"
+	>
+		{#snippet icon()}<SessionIcon type="easy" size="h-5 w-5" />{/snippet}
+	</EmptyState>
 {:else}
 	{#if stalePlan}
 		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
@@ -218,7 +221,7 @@
 						<SessionCarousel sessions={daySessions} {card} />
 					{:else if selWeek}
 						<Card tone="sunken" frame>
-							<p class="text-sm text-steel">Nothing scheduled. Recovery is part of the plan, not a gap in it.</p>
+							<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
 						</Card>
 					{:else}
 						<Card tone="sunken" frame>

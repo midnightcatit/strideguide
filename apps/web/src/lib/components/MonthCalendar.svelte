@@ -197,7 +197,7 @@
 </script>
 
 <div class="flex items-center justify-between gap-3">
-	<p class="tabular text-xs uppercase tracking-widest text-steel">{mode === 'month' ? monthLabel : 'Upcoming'}</p>
+	<h2 class="font-display text-lg font-semibold text-ink">{mode === 'month' ? monthLabel : 'Upcoming'}</h2>
 	{#if mode === 'month'}
 		<div class="flex items-center gap-2">
 			<button type="button" onclick={() => stepMonth(-1)} aria-label="Previous month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
@@ -208,8 +208,8 @@
 </div>
 
 <div class="mt-3 inline-flex rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
-	<button type="button" aria-pressed={mode === 'month'} onclick={() => (mode = 'month')} class="rounded-md px-3 py-1.5 text-xs {mode === 'month' ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}">Month</button>
-	<button type="button" aria-pressed={mode === 'list'} onclick={() => (mode = 'list')} class="rounded-md px-3 py-1.5 text-xs {mode === 'list' ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}">List</button>
+	<button type="button" aria-pressed={mode === 'month'} onclick={() => (mode = 'month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'bg-ink font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
+	<button type="button" aria-pressed={mode === 'list'} onclick={() => (mode = 'list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'bg-ink font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
 </div>
 
 {#if mode === 'month'}
@@ -286,7 +286,7 @@
 					<SessionCarousel sessions={sheetSessions} {card} />
 				{:else}
 					<Card tone="sunken" frame>
-						<p class="text-sm text-steel">Rest day. Nothing scheduled.</p>
+						<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
 					</Card>
 				{/if}
 				<button

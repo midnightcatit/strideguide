@@ -3,6 +3,7 @@
 	import { formatDuration, sessionTypeLabel } from '$lib/plan';
 	import { fmtDistance, fmtPace, fmtPaceBand, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
+	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let {
 		session,
@@ -92,8 +93,8 @@
 				<span class="tabular truncate text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
-			<span class="tabular shrink-0 text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-				>{sessionTypeLabel(session.type)}{#if logged} <span class="text-ok">✓</span>{/if}</span
+			<span class="flex shrink-0 items-center gap-1 tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
+				><SessionIcon type={session.type} size="h-3.5 w-3.5" />{sessionTypeLabel(session.type)}{#if logged} <span class="text-ok">✓</span>{/if}</span
 			>
 		</div>
 
