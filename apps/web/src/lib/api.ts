@@ -22,7 +22,16 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 		if (res.status >= 500) {
 			reportClientError('api-5xx', `${res.status} ${init?.method ?? 'GET'} ${path}`);
 		}
-		throw new Error(`API ${res.status} ${path}`);
+		// Surface the server's message when it sends one, so a form can show it.
+		let message = `Something went wrong (${res.status}). Try again.`;
+		try {
+			const body = (await res.clone().json()) as { message?: string; error?: string };
+			if (body?.message) message = body.message;
+			else if (body?.error) message = body.error;
+		} catch {
+			// keep the generic message
+		}
+		throw new Error(message);
 	}
 	return (await res.json()) as T;
 }

@@ -78,9 +78,24 @@
 		'Goal pace': 'Reps at the pace you want on race day, to rehearse how it should feel.',
 		'Hill rep': 'A hard climb of about a minute, then walk or jog down to recover. Builds power and strength-endurance.',
 		Stride: 'A short, relaxed burst of speed, about 20 seconds, building to near your top speed. It is not a sprint.',
+		'Easy run': 'A relaxed run at a conversational pace. You can speak in full sentences the whole way.',
+		'Long run': 'The longest run of the week, kept easy and even. It builds the endurance everything else rests on.',
+		'Steady run': 'A run a little quicker than easy, but still controlled, to teach you to hold a pace.',
+		'Recovery run': 'A very slow jog to help you bounce back between harder days.',
+		Recovery: 'An easy jog between hard efforts, to bring your breathing back down before the next one.',
+		'Loosen up': 'A few moving drills to wake up the joints before the stretches.',
+		'Mobility stretches': 'Gentle holds of about 30 to 45 seconds each, to keep or build your range.',
+		'Cross-train': 'Low-impact aerobic work, easy and continuous, that builds fitness without the running impact.',
 	};
-	function stepInfo(label: string): string | undefined {
-		return STEP_INFO[label];
+
+	/** A plain description for any step row, so every row can explain itself. */
+	function rowInfo(label: string): string {
+		if (STEP_INFO[label]) return STEP_INFO[label]!;
+		const move = findMove(label);
+		if (move) return `${move.why} Feel it in the ${move.muscles.join(', ')}.`;
+		const drill = findDrill(label);
+		if (drill) return drill.why;
+		return 'Part of this session. Follow the cue and keep the movement controlled.';
 	}
 	let openDrill = $state<string | null>(null);
 	let openRow = $state<string | null>(null);
@@ -338,49 +353,41 @@
 					<h2 id="to-come" class="tabular text-xs uppercase tracking-widest text-steel">What's to come</h2>
 					<ol class="mt-2 divide-y divide-hairline">
 						{#each visibleRows as row, i (i)}
-							{@const info = stepInfo(row.label)}
+							{@const info = rowInfo(row.label)}
 							<li class="py-2.5">
 								<div class="flex items-baseline justify-between gap-3 text-sm">
-									{#if info}
-										<button
-											type="button"
-											onclick={() => (openRow = openRow === `r${i}` ? null : `r${i}`)}
-											aria-expanded={openRow === `r${i}`}
-											class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
-										>
-											<span class="truncate">{row.label}</span>
-											<span class="shrink-0 text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
-										</button>
-									{:else}
-										<span class="min-w-0 truncate">{row.label}</span>
-									{/if}
+									<button
+										type="button"
+										onclick={() => (openRow = openRow === `r${i}` ? null : `r${i}`)}
+										aria-expanded={openRow === `r${i}`}
+										class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
+									>
+										<span class="truncate">{row.label}</span>
+										<span class="shrink-0 text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
+									</button>
 									<span class="tabular shrink-0 text-steel">{row.target}</span>
 								</div>
-								{#if info && openRow === `r${i}`}
+								{#if openRow === `r${i}`}
 									<p class="sg-enter-up mt-1 text-xs leading-relaxed text-steel">{info}</p>
 								{/if}
 								{#if row.sub}
 									<ul class="mt-1 space-y-0.5 pl-3 text-xs text-steel">
 										{#each row.sub as s, si (si)}
-											{@const sinfo = stepInfo(s.label)}
+											{@const sinfo = rowInfo(s.label)}
 											<li>
 												<div class="flex items-baseline justify-between gap-3">
-													{#if sinfo}
-														<button
-															type="button"
-															onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
-															aria-expanded={openRow === `s${i}-${si}`}
-															class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
-														>
-															<span class="truncate">{s.label}</span>
-															<span class="shrink-0" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
-														</button>
-													{:else}
-														<span class="min-w-0 truncate">{s.label}</span>
-													{/if}
+													<button
+														type="button"
+														onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
+														aria-expanded={openRow === `s${i}-${si}`}
+														class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
+													>
+														<span class="truncate">{s.label}</span>
+														<span class="shrink-0" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
+													</button>
 													<span class="tabular shrink-0">{s.target}</span>
 												</div>
-												{#if sinfo && openRow === `s${i}-${si}`}
+												{#if openRow === `s${i}-${si}`}
 													<p class="sg-enter-up mt-1 leading-relaxed">{sinfo}</p>
 												{/if}
 											</li>

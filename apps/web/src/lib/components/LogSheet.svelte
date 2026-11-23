@@ -18,6 +18,7 @@
 	} = $props();
 
 	const isStrength = $derived(session.modality === 'strength');
+	const isCross = $derived(session.type === 'cross-train');
 	const machines = $derived(session.prescription?.blocks ?? []);
 
 	// --- run state ---
@@ -106,7 +107,14 @@
 			}));
 			const body = isStrength
 				? { sessionId: session.id, strengthSets, rpe, notes: notes || undefined }
-				: {
+				: isCross
+					? {
+							sessionId: session.id,
+							runStats: { ...(durationSec ? { durationSec } : {}) },
+							rpe,
+							notes: notes || undefined,
+						}
+					: {
 						sessionId: session.id,
 						runStats: {
 							...(distanceKm ? { distanceKm } : {}),
@@ -144,7 +152,18 @@
 
 	<div class="mt-3"></div>
 
-	{#if !isStrength}
+	{#if isCross}
+		<label class="block text-xs text-steel">
+			How long did you play? (mm:ss)
+			<input
+				bind:value={runDuration}
+				inputmode="numeric"
+				placeholder="60:00"
+				class="tabular mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+			/>
+		</label>
+		<p class="mt-2 text-xs text-steel">Duration and effort tell your coach how much the sport took out of you, so the plan can lighten the running when it needs to.</p>
+	{:else if !isStrength}
 		<div class="grid grid-cols-2 gap-3">
 			<label class="text-xs text-steel">
 				Distance ({unit})
@@ -216,7 +235,7 @@
 
 	<fieldset class="mt-4">
 		<legend class="flex items-center gap-1 text-xs uppercase tracking-widest text-steel">
-			Effort (RPE)
+			Effort, optional (RPE)
 			<InfoButton
 				term="RPE"
 				definition="How hard the session felt, on a scale of 1 to 10. One is a walk, ten is everything you have."
