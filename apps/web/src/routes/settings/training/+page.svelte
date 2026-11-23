@@ -8,13 +8,51 @@
 		setCountdownSec,
 		setEquipment,
 		setEquipmentItems,
+		setGymPreset,
+		setMachineItems,
 		setUnits,
 		setWeekStart,
 	} from '$lib/prefs.svelte';
+	import { GYM_PRESETS, PF_MACHINES, EXTRA_MACHINES } from '@strideguide/shared/plan';
 	import type { Units } from '@strideguide/shared/units';
 
 	const countdown = $derived(prefs.countdownSec ?? 5);
 	const autoNext = $derived(prefs.autoAdvance ?? true);
+	const MACHINES = [...PF_MACHINES, ...EXTRA_MACHINES].map((m) => m.name);
+	const machineMode = $derived(
+		prefs.equipment === 'machines' || prefs.equipment === 'both' || prefs.equipment === 'full-gym',
+	);
+
+	async function rebuildGym(gymPreset: string | undefined, machineItems: string[] | undefined) {
+		saving = true;
+		message = '';
+		try {
+			await setGymPreset(gymPreset);
+			await setMachineItems(machineItems);
+			const res = await api.adaptPlan({
+				equipment: prefs.equipment,
+				equipmentItems: prefs.equipmentItems,
+				gymPreset,
+				machineItems,
+			});
+			message = res.changed
+				? 'Updated. The weeks ahead now match your gym.'
+				: 'Saved. Your current weeks already match.';
+		} catch {
+			message = 'Saved, but the weeks ahead could not be rebuilt just now.';
+		} finally {
+			saving = false;
+		}
+	}
+	function pickGym(id: string) {
+		void rebuildGym(prefs.gymPreset === id ? undefined : id, prefs.machineItems);
+	}
+	function toggleMachine(name: string) {
+		const cur = prefs.machineItems ?? [];
+		const next = cur.includes(name) ? cur.filter((x) => x !== name) : [...cur, name];
+		void rebuildGym(prefs.gymPreset, next);
+	}
+
 
 	function bump(d: number) {
 		void setCountdownSec(countdown + d);
@@ -165,6 +203,46 @@
 			</div>
 		{/if}
 		<p class="mt-2 text-xs text-steel">Changing this rebuilds the weeks ahead with the right moves.</p>
+		{#if machineMode}
+			<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Your gym</p>
+			<div class="mt-2 grid gap-2 sm:grid-cols-2">
+				{#each GYM_PRESETS as gym (gym.id)}
+					<button
+						type="button"
+						aria-pressed={prefs.gymPreset === gym.id}
+						disabled={saving}
+						onclick={() => pickGym(gym.id)}
+						class="rounded-xl border px-4 py-2.5 text-left text-sm transition-colors disabled:opacity-60 {prefs.gymPreset ===
+						gym.id
+							? 'border-signal-ink bg-signal-wash'
+							: 'border-hairline hover:border-steel'}"
+					>
+						{gym.name}
+					</button>
+				{/each}
+			</div>
+			<details class="mt-3">
+				<summary class="cursor-pointer text-xs text-steel">Fine-tune the machines</summary>
+				<div class="mt-2 flex flex-wrap gap-1.5">
+					{#each MACHINES as name (name)}
+						<button
+							type="button"
+							aria-pressed={(prefs.machineItems ?? []).includes(name)}
+							disabled={saving}
+							onclick={() => toggleMachine(name)}
+							class="rounded-full border px-2.5 py-1 text-xs transition-colors disabled:opacity-60 {(prefs.machineItems ?? []).includes(
+								name,
+							)
+								? 'border-signal-ink bg-signal-wash text-signal-ink'
+								: 'border-hairline text-steel hover:border-steel'}"
+						>
+							{name}
+						</button>
+					{/each}
+				</div>
+				<p class="mt-2 text-xs text-steel">Tap the machines you have. This overrides the gym choice.</p>
+			</details>
+		{/if}
 		{#if message}<p class="mt-2 text-xs text-signal-ink">{message}</p>{/if}
 	</div>
 

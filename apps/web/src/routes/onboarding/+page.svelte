@@ -4,11 +4,11 @@
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
-	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, type LibraryWorkout } from '@strideguide/shared/plan';
+	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, type LibraryWorkout } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setUnits, setVitals } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
@@ -40,6 +40,7 @@
 		| 'full-gym'
 	>('both');
 	let equipmentItems = $state<('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[]>([]);
+	let gymPreset = $state<string | undefined>(undefined);
 	let strengthDays = $state(2);
 	let sessionMinutes = $state(45);
 	let tunedStrength = $state(false);
@@ -545,6 +546,7 @@
 			// Store the equipment choice first, so plan generation reads it.
 			await setEquipment(equipment);
 			await setEquipmentItems(equipmentItems);
+			await setGymPreset(gymPreset);
 
 			await Promise.race([
 				api.generatePlan(body),
@@ -824,6 +826,24 @@
 							{/each}
 						</div>
 						<p class="mt-2 text-xs text-steel">Pick what you have; leave blank to use everything in the option.</p>
+					{/if}
+					{#if equipment === 'machines' || equipment === 'both' || equipment === 'full-gym'}
+						<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Your gym</p>
+						<div class="mt-2 flex flex-wrap gap-2">
+							{#each GYM_PRESETS as gym (gym.id)}
+								<button
+									type="button"
+									aria-pressed={gymPreset === gym.id}
+									onclick={() => (gymPreset = gymPreset === gym.id ? undefined : gym.id)}
+									class="rounded-full border px-3 py-1.5 text-sm transition-colors {gymPreset === gym.id
+										? 'border-signal-ink bg-signal-wash text-signal-ink'
+										: 'border-hairline text-steel hover:border-steel'}"
+								>
+									{gym.name}
+								</button>
+							{/each}
+						</div>
+						<p class="mt-2 text-xs text-steel">Optional. We then build your circuits from that gym's machines. Fine-tune later in Settings.</p>
 					{/if}
 				{:else if step.id === 'strength'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Sessions a week</p>

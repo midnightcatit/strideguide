@@ -40,6 +40,7 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 		startDate: input.startDate,
 		targetDate: input.targetDate,
 		equipment: input.equipment,
+		machines: input.machines,
 		crossLoad: input.crossLoad,
 		baseline: {
 			...input.baseline,

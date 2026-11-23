@@ -31,6 +31,10 @@ export interface Prefs {
 	equipment?: EquipmentPreference;
 	/** The equipment categories the runner has, to narrow the circuit to their kit. */
 	equipmentItems?: EquipmentItem[];
+	/** A named gym whose typical machine set the runner trains at. */
+	gymPreset?: string;
+	/** Specific machines the runner has, overriding the gym preset. */
+	machineItems?: string[];
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };

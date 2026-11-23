@@ -1,9 +1,4 @@
-import type {
-	Baseline,
-	Modality,
-	SessionArchetype,
-	SessionPrescription,
-} from '../types';
+import type { Baseline, Modality, SessionArchetype, SessionPrescription } from '../types';
 
 /** A single prescribed session within a week. */
 export interface PlannedSession {
@@ -62,7 +57,14 @@ export interface WeekShape {
 
 export interface PlanInput {
 	/** The goal profile driving the plan (from @strideguide/shared/profiles). */
-	profile: { slug: string; name: string; modalityMix: { running: number; strength: number; mobility: number; recovery: number }; progressionRules: { phase: string; weeks: number; volumeStep: number; deload: boolean }[]; sessionTypes: SessionArchetype[]; defaultWeeks: number };
+	profile: {
+		slug: string;
+		name: string;
+		modalityMix: { running: number; strength: number; mobility: number; recovery: number };
+		progressionRules: { phase: string; weeks: number; volumeStep: number; deload: boolean }[];
+		sessionTypes: SessionArchetype[];
+		defaultWeeks: number;
+	};
 	baseline: Baseline;
 	/** Available training days, 0 = Monday … 6 = Sunday. */
 	availableDays: number[];
@@ -70,8 +72,10 @@ export interface PlanInput {
 	startDate: string;
 	/** ISO date, yyyy-mm-dd. Optional (profiles like whole-fitness may not race). */
 	targetDate?: string;
-	/** Machine names available at the gym (defaults to the PF set). */
+	/** Equipment categories the runner has (defaults to everything). */
 	equipment?: string[];
+	/** Specific machine names the runner has, from a gym preset or an override. */
+	machines?: string[];
 	/** Cross-training load in the last seven days, from logged sports sessions. */
 	crossLoad?: { sessions: number; minutes: number; highEffort: number };
 	/**

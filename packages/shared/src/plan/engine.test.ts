@@ -180,6 +180,16 @@ describe('generatePlan (preferences)', () => {
 		expect(names.some((n) => findMove(n)?.equipment === 'kettlebell')).toBe(true);
 	});
 
+	it('sets strength volume by level', () => {
+		const setCount = (experience: 'beginner' | 'advanced') => {
+			const p = generatePlan({ ...base, baseline: { experience, equipment: 'machines' } });
+			const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
+			return strength.prescription.blocks![0]!.sets.length;
+		};
+		expect(setCount('beginner')).toBe(2);
+		expect(setCount('advanced')).toBe(4);
+	});
+
 	it('sizes the circuit by session length', () => {
 		const short = generatePlan({
 			...base,
