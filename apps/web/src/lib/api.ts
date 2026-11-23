@@ -246,7 +246,7 @@ export const api = {
 	},
 
 	/** Health connectors: which are set up on the server, and which are linked. */
-	connections: () => reqRoot<{ providers: ConnectionStatus[] }>('/connections'),
+	connections: () => reqRoot<{ providers: ConnectionStatus[] }>('/connections/list'),
 
 	/** Where to send the browser to begin linking a provider. Pass a local return
 	 * path to come back to it after connecting; the server validates it. */
