@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { suggestAdjustments, type AdaptWeek } from '@strideguide/shared/plan';
-	import { store } from '$lib/planStore.svelte';
+	import { store, reloadPlan } from '$lib/planStore.svelte';
+	import { api } from '$lib/api';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	const DISMISS_KEY = 'sg:adjust-dismissed';
 	let dismissed = $state<string[]>([]);
+	let adapting = $state(false);
+	let adaptNote = $state<string | null>(null);
 
 	const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -20,8 +23,6 @@
 		}));
 		return suggestAdjustments(store.logs, weeks, todayIso).filter((a) => !dismissed.includes(a.id));
 	});
-
-	const hasWarn = $derived(adjustments.some((a) => a.severity === 'warn'));
 
 	$effect(() => {
 		if (typeof localStorage === 'undefined') return;
@@ -38,6 +39,36 @@
 			localStorage.setItem(DISMISS_KEY, JSON.stringify(dismissed));
 		} catch {
 			// ignore
+		}
+	}
+
+	async function adapt() {
+		adapting = true;
+		adaptNote = null;
+		try {
+			const res = await api.adaptPlan();
+			if (!res.changed) {
+				adaptNote = 'Nothing to change just yet. Keep logging and check back.';
+			} else {
+				const swaps = res.swapped.length;
+				adaptNote = `Your plan now builds from week ${res.changedFromWeek}${
+					swaps
+						? `, with ${swaps} session${swaps === 1 ? '' : 's'} swapped for ones you rated well`
+						: ', from your recent training'
+				}.`;
+				// The rebuilt weeks are new, so let the suggestions re-evaluate.
+				dismissed = [];
+				try {
+					localStorage.removeItem(DISMISS_KEY);
+				} catch {
+					// ignore
+				}
+				reloadPlan();
+			}
+		} catch {
+			adaptNote = 'Could not adapt the plan just now. Try again.';
+		} finally {
+			adapting = false;
 		}
 	}
 </script>
@@ -63,15 +94,18 @@
 					</li>
 				{/each}
 			</ul>
-			{#if hasWarn}
-				<a
-					href="/onboarding"
-					class="mt-3 block rounded-md border border-hairline px-4 py-3 text-center text-sm hover:border-signal hover:text-signal-ink"
-				>
-					Rebuild plan with these changes
-				</a>
+			<button
+				type="button"
+				onclick={adapt}
+				disabled={adapting}
+				class="mt-3 block w-full rounded-md bg-ink px-4 py-3 text-center text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+			>
+				{adapting ? 'Adapting…' : 'Adapt my plan'}
+			</button>
+			{#if adaptNote}
+				<p class="mt-2 text-sm text-steel">{adaptNote}</p>
 			{/if}
-			<p class="mt-3 text-xs text-steel">Your plan is never changed without you.</p>
+			<p class="mt-3 text-xs text-steel">Only the weeks ahead change, and only when you tap. Past weeks and your logs stay put.</p>
 		</Card>
 	</section>
 {/if}
