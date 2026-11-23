@@ -174,9 +174,9 @@
 
 		<hr class="my-3 border-hairline" />
 
-		<div class="flex flex-wrap gap-1.5">
+		<div class="scroll-modern flex gap-1.5 overflow-x-auto" role="list" aria-label="Session facts">
 			{#each pills as pill (pill.text)}
-				<span class="rounded-full border border-hairline px-2.5 py-1 text-xs {pill.band ? 'text-signal-ink' : 'text-ink'}">{pill.text}</span>
+				<span class="shrink-0 whitespace-nowrap rounded-full border border-hairline px-2.5 py-1 text-xs {pill.band ? 'text-signal-ink' : 'text-ink'}" role="listitem">{pill.text}</span>
 			{/each}
 		</div>
 
