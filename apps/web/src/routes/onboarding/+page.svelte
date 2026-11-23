@@ -8,7 +8,7 @@
 	import { milesToKm } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setUnits } from '$lib/prefs.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
@@ -61,9 +61,11 @@
 
 	// Race anchor (M4d): a recent race time drives training paces.
 	const RACE_DISTANCES: { key: string; label: string; meters: number }[] = [
+		{ key: 'mile', label: 'Mile', meters: 1609.34 },
 		{ key: '5k', label: '5K', meters: 5000 },
 		{ key: '10k', label: '10K', meters: 10000 },
 		{ key: 'half', label: 'Half marathon', meters: 21097.5 },
+		{ key: 'marathon', label: 'Marathon', meters: 42195 },
 	];
 	let raceKey = $state('10k');
 	// Race time is held in seconds and edited with pickers, so nothing is misread.
@@ -154,9 +156,8 @@
 				lede: 'This sets your starting weekly volume when you do not give one, and how quickly the plan builds.',
 				guide: [
 					'Match your last two months, not your best ever.',
-					'Beginner: new to running, or back after a long break, often 15 to 25 km a week.',
-					'Intermediate: running consistently for a year or more, 25 to 50 km a week.',
-					'Advanced: years of steady training, 50 km a week or more.',
+					'Each card shows a typical weekly range for that level.',
+					'When in doubt, pick the lower level. The plan builds from where you are.',
 				],
 			},
 			{
@@ -264,11 +265,16 @@
 		return 'We add two mobility sessions a week on rest days, plus stretches after your runs, built toward your goal.';
 	});
 
-	const EXPERIENCE: { v: 'beginner' | 'intermediate' | 'advanced'; name: string; range: string; note: string }[] = [
-		{ v: 'beginner', name: 'Beginner', range: '15 to 25 km a week', note: 'New to running, or back after a long break.' },
-		{ v: 'intermediate', name: 'Intermediate', range: '25 to 50 km a week', note: 'Running consistently for a year or more.' },
-		{ v: 'advanced', name: 'Advanced', range: '50 km a week or more', note: 'Years of steady, structured training.' },
-	];
+	const EXPERIENCE = $derived.by(() => {
+		const toUnit = (km: number) =>
+			prefs.units === 'imperial' ? Math.round(km / 1.609344) : km;
+		const u = distanceUnit();
+		return [
+			{ v: 'beginner' as const, name: 'Beginner', range: `${toUnit(15)} to ${toUnit(25)} ${u} a week`, note: 'New to running, or back after a long break.' },
+			{ v: 'intermediate' as const, name: 'Intermediate', range: `${toUnit(25)} to ${toUnit(50)} ${u} a week`, note: 'Running consistently for a year or more.' },
+			{ v: 'advanced' as const, name: 'Advanced', range: `${toUnit(50)} ${u} a week or more`, note: 'Years of steady, structured training.' },
+		];
+	});
 
 	const EQUIPMENT: { v: 'machines' | 'bodyweight' | 'both'; name: string; note: string }[] = [
 		{ v: 'machines', name: 'Machines', note: 'Fixed path, easy to load and repeat.' },
@@ -532,7 +538,21 @@
 			<p class="tabular text-xs uppercase tracking-widest text-steel">
 				Step {Math.min(stepIndex, steps.length - 1) + 1} of {steps.length}
 			</p>
-			<p class="tabular text-xs text-steel">{Math.round(progress * 100)}%</p>
+			<div class="flex items-center gap-2">
+				<div class="flex overflow-hidden rounded-md border border-hairline" role="group" aria-label="Units">
+					{#each [{ v: 'imperial', l: 'mi' }, { v: 'metric', l: 'km' }] as opt (opt.v)}
+						<button
+							type="button"
+							aria-pressed={prefs.units === opt.v}
+							onclick={() => setUnits(opt.v as 'metric' | 'imperial')}
+							class="px-2 py-0.5 text-xs {prefs.units === opt.v ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}"
+						>
+							{opt.l}
+						</button>
+					{/each}
+				</div>
+				<p class="tabular text-xs text-steel">{Math.round(progress * 100)}%</p>
+			</div>
 		</div>
 		<div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-hairline">
 			<div class="h-full rounded-full bg-signal-ink transition-[width] duration-500 ease-out" style="width: {progress * 100}%"></div>
