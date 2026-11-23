@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { Env } from '../env';
-import { decryptToken, encryptToken, signState, tokenExpiry, verifyState } from './connections';
+import {
+	DEFAULT_RETURN_PATH,
+	decryptToken,
+	encryptToken,
+	safeReturnPath,
+	signState,
+	tokenExpiry,
+	verifyState,
+} from './connections';
 
 /** A 32-byte key, base64 encoded, the shape CONNECTIONS_KEY expects. */
 const KEY = btoa('a'.repeat(32));
@@ -39,7 +47,23 @@ describe('oauth state', () => {
 	it('round trips the signed state', async () => {
 		const token = await signState(env(KEY), { uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
 		const state = await verifyState(env(KEY), token);
-		expect(state).toEqual({ uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
+		expect(state).toEqual({
+			uid: 'user-1',
+			provider: 'google-health',
+			nonce: 'n-1',
+			returnPath: null,
+		});
+	});
+
+	it('carries a return path through the state', async () => {
+		const token = await signState(env(KEY), {
+			uid: 'user-1',
+			provider: 'google-health',
+			nonce: 'n-1',
+			returnPath: '/today',
+		});
+		const state = await verifyState(env(KEY), token);
+		expect(state?.returnPath).toBe('/today');
 	});
 
 	it('rejects a tampered state', async () => {
@@ -51,6 +75,30 @@ describe('oauth state', () => {
 	it('rejects a state signed with another key', async () => {
 		const token = await signState(env(KEY), { uid: 'user-1', provider: 'google-health', nonce: 'n-1' });
 		expect(await verifyState(env(OTHER_KEY), token)).toBeNull();
+	});
+});
+
+describe('return path', () => {
+	it('keeps a local absolute path', () => {
+		expect(safeReturnPath('/today')).toBe('/today');
+		expect(safeReturnPath('/settings/connections')).toBe('/settings/connections');
+		expect(safeReturnPath('/today?date=2026-01-01')).toBe('/today?date=2026-01-01');
+	});
+
+	it('falls back to the default for anything that is not a local path', () => {
+		expect(safeReturnPath('https://evil.example.com')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath('//evil.example.com')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath('/\\evil.example.com')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath('today')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath('javascript:alert(1)')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath('')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath(null)).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath(undefined)).toBe(DEFAULT_RETURN_PATH);
+	});
+
+	it('rejects control characters that a browser could reinterpret', () => {
+		expect(safeReturnPath('/today\nHost: evil')).toBe(DEFAULT_RETURN_PATH);
+		expect(safeReturnPath('/today\u0000')).toBe(DEFAULT_RETURN_PATH);
 	});
 });
 

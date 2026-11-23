@@ -35,6 +35,8 @@ export interface Prefs {
 	gymPreset?: string;
 	/** Specific machines the runner has, overriding the gym preset. */
 	machineItems?: string[];
+	/** True once the runner dismisses the Connect Google Health nudge, so it stays gone. */
+	connectNudgeDismissed?: boolean;
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };

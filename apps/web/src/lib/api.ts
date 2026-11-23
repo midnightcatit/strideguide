@@ -248,8 +248,12 @@ export const api = {
 	/** Health connectors: which are set up on the server, and which are linked. */
 	connections: () => reqRoot<{ providers: ConnectionStatus[] }>('/connections'),
 
-	/** Where to send the browser to begin linking a provider. */
-	connectionConnectUrl: (provider: string) => `/connections/${provider}/start`,
+	/** Where to send the browser to begin linking a provider. Pass a local return
+	 * path to come back to it after connecting; the server validates it. */
+	connectionConnectUrl: (provider: string, returnPath?: string) => {
+		const base = `/connections/${provider}/start`;
+		return returnPath ? `${base}?return=${encodeURIComponent(returnPath)}` : base;
+	},
 
 	disconnectConnection: (provider: string) =>
 		reqRoot<{ ok: boolean }>(`/connections/${provider}/disconnect`, { method: 'POST' }),

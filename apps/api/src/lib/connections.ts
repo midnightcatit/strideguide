@@ -19,6 +19,25 @@ const STATE_TTL_SECONDS = 600;
 /** Refresh a little before expiry so an in-flight call does not race the clock. */
 const EXPIRY_SKEW_MS = 60_000;
 
+/** Where the callback lands when no usable return path is given. */
+export const DEFAULT_RETURN_PATH = '/settings/connections';
+
+/**
+ * Keep only a local, absolute path. A connector may be started from anywhere in
+ * the app, so the callback can send the runner back where they were, but the
+ * path must stay on this origin: a single leading slash, no scheme, and no
+ * second slash or backslash that a browser would read as an authority.
+ */
+export function safeReturnPath(value: string | null | undefined): string {
+	if (typeof value !== 'string' || value.length === 0) return DEFAULT_RETURN_PATH;
+	if (value[0] !== '/') return DEFAULT_RETURN_PATH;
+	if (value.startsWith('//')) return DEFAULT_RETURN_PATH;
+	if (value.includes('\\')) return DEFAULT_RETURN_PATH;
+	// Control characters can be stripped or reinterpreted by browsers and proxies.
+	if (/[\u0000-\u001f\u007f]/.test(value)) return DEFAULT_RETURN_PATH;
+	return value;
+}
+
 export const DEV_CONNECT_STATE_COOKIE = 'sg_connect_state';
 export const PROD_CONNECT_STATE_COOKIE = '__Host-sg_connect_state';
 
@@ -77,12 +96,19 @@ export async function decryptToken(env: Env, stored: string): Promise<string> {
 	return new TextDecoder().decode(plaintext);
 }
 
-/** Sign a short-lived OAuth state: the user, the provider, and a random nonce. */
+/** Sign a short-lived OAuth state: the user, the provider, a random nonce, and
+ * where to send the runner back to when the dance finishes. */
 export async function signState(
 	env: Env,
-	payload: { uid: string; provider: string; nonce: string },
+	payload: { uid: string; provider: string; nonce: string; returnPath?: string },
 ): Promise<string> {
-	return new SignJWT({ uid: payload.uid, p: payload.provider, n: payload.nonce })
+	const claims: Record<string, unknown> = {
+		uid: payload.uid,
+		p: payload.provider,
+		n: payload.nonce,
+	};
+	if (payload.returnPath) claims.r = payload.returnPath;
+	return new SignJWT(claims)
 		.setProtectedHeader({ alg: 'HS256' })
 		.setIssuedAt()
 		.setExpirationTime(`${STATE_TTL_SECONDS}s`)
@@ -92,7 +118,7 @@ export async function signState(
 export async function verifyState(
 	env: Env,
 	token: string,
-): Promise<{ uid: string; provider: string; nonce: string } | null> {
+): Promise<{ uid: string; provider: string; nonce: string; returnPath: string | null } | null> {
 	try {
 		const { payload } = await jwtVerify(token, decodeKey(env), { algorithms: ['HS256'] });
 		if (
@@ -100,7 +126,12 @@ export async function verifyState(
 			typeof payload.p === 'string' &&
 			typeof payload.n === 'string'
 		) {
-			return { uid: payload.uid, provider: payload.p, nonce: payload.n };
+			return {
+				uid: payload.uid,
+				provider: payload.p,
+				nonce: payload.n,
+				returnPath: typeof payload.r === 'string' ? payload.r : null,
+			};
 		}
 		return null;
 	} catch {
