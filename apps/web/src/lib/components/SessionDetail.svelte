@@ -144,35 +144,37 @@
 	aria-label={sessionLabel(session)}
 	use:modal={onClose}
 >
-	<header class="border-b border-hairline px-4 py-3">
-		<div class="mx-auto flex max-w-2xl items-center justify-between gap-2">
-			<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-steel hover:text-ink">
+	<!-- Coloured header band, tinted by the session's demand -->
+	<div class="relative overflow-hidden bg-ink text-paper">
+		<div
+			class="pointer-events-none absolute inset-0 opacity-25 {session.modality === 'running' && p.intensity === 'hard'
+				? 'bg-signal'
+				: 'bg-steel'}"
+			aria-hidden="true"
+		></div>
+		<header class="relative mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 pt-3">
+			<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-paper/90 hover:text-paper">
 				‹ Back
 			</button>
-			<div class="flex items-center gap-1">
-				<button
-					type="button"
-					onclick={onClose}
-					aria-label="Close"
-					class="px-2 py-2 text-steel hover:text-ink"
-				>
-					✕
-				</button>
-			</div>
-		</div>
-	</header>
-
-	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-		<div class="mx-auto max-w-2xl px-4 py-5 pb-8 reveal">
-			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>{/if}
+			<button type="button" onclick={onClose} aria-label="Close" class="px-2 py-2 text-paper/90 hover:text-paper">
+				✕
+			</button>
+		</header>
+		<div class="relative mx-auto max-w-2xl px-4 pb-5 pt-1">
+			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-paper/70">{eyebrow}</p>{/if}
 			<h1 class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
-			<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-steel">
+			<div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-paper/85">
 				{#if dist}<span class="tabular">{fmtDistance(dist)}</span>{/if}
 				{#if band}<span class="tabular">{band}</span>{/if}
 				{#if minutes}<span class="tabular">{minutes} min</span>{/if}
-				<IntensityLadder intensity={p.intensity} />
 			</div>
-			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
+		</div>
+	</div>
+
+	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+		<div class="mx-auto max-w-2xl px-4 py-5 pb-8 reveal">
+			<IntensityLadder intensity={p.intensity} />
+			{#if p.summary}<p class="mt-2 text-sm text-steel">{p.summary}</p>{/if}
 
 			<!-- Why this workout: one summed-up narrative -->
 			<section class="mt-6" aria-labelledby="why">

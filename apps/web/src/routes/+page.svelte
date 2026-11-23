@@ -58,13 +58,6 @@
 					.reduce((sum, s) => sum + (loggedBySession.get(s.id)?.runStats?.distanceKm ?? 0), 0)
 			: 0,
 	);
-	const todayInWeek = $derived(
-		!!todayWeek?.startDate &&
-			!!todayWeek?.endDate &&
-			todayIso >= todayWeek.startDate &&
-			todayIso <= todayWeek.endDate,
-	);
-
 	function logMs(v: unknown): number {
 		if (typeof v === 'number') return v * 1000;
 		const t = typeof v === 'string' ? Date.parse(v) : Number.NaN;
@@ -186,38 +179,14 @@
 		</Card>
 		<Card tone="sunken">
 			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
-			<p class="tabular mt-1 text-xl font-medium {streak > 0 ? 'text-ok' : ''}">{streak}<span class="text-sm text-steel"> {streak === 1 ? 'day' : 'days'}</span></p>
+			<p class="tabular mt-1 text-xl font-medium {streak > 0 ? 'text-ok' : ''}">{streak}<span class="text-sm text-steel">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
 			<p class="text-[11px] text-steel">training</p>
 		</Card>
 	</div>
 
-	<!-- Week at a glance -->
-	<section aria-labelledby="week" class="mt-7">
-		<SectionHeader id="week" eyebrow="Your week" meta="W{todayWeek?.weekNumber ?? ''}" />
-		<Card tone="sunken">
-			<div class="grid grid-cols-7 gap-1">
-				{#each DAY_NAMES as name, d (d)}
-					{@const ds = todayWeek?.sessions.filter((s) => s.day === d) ?? []}
-					{@const done = ds.length > 0 && ds.every((s) => loggedBySession.has(s.id))}
-					{@const isToday = todayInWeek && d === todayIndex}
-					<a
-						href="/calendar"
-						class="flex flex-col items-center gap-1.5 rounded-md py-2 {isToday ? 'bg-ink/5' : ''}"
-						aria-label="{name}{ds.length ? `, ${ds.length} sessions` : ', rest'}{done ? ', done' : ''}"
-					>
-						<span class="tabular text-[10px] uppercase tracking-wide {isToday ? 'text-ink' : 'text-steel'}">{name.slice(0, 2)}</span>
-						<span class="h-7 w-1.5 rounded-full {ds.length === 0 ? 'bg-hairline' : done ? 'bg-ok' : 'bg-ink/40'}" aria-hidden="true"></span>
-						<span class="h-1 w-1 rounded-full {isToday ? 'bg-signal-ink' : 'bg-transparent'}" aria-hidden="true"></span>
-					</a>
-				{/each}
-			</div>
-			<p class="tabular mt-3 text-sm">
-				{weekLogged} of {weekPlanned} done
-				<span class="text-steel"> · {fmtDistance(weekKm)} planned</span>
-			</p>
-			<a href="/calendar" class="mt-2 inline-block text-xs text-steel hover:text-signal-ink">Open the calendar →</a>
-		</Card>
-	</section>
+	<div class="mt-2">
+		<a href="/calendar" class="text-xs text-steel hover:text-signal-ink">Open the calendar →</a>
+	</div>
 
 	<AdjustmentsCard />
 

@@ -15,6 +15,7 @@
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import WeekStrip from '$lib/components/WeekStrip.svelte';
 
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
@@ -79,10 +80,22 @@
 	);
 	const planCap = $derived(selWeek?.targetVolumeKm ?? weekKm);
 	const dayMinutes = $derived(daySessions.reduce((m, s) => m + (s.durationMin ?? 0), 0));
+	const todayInWeek = $derived(
+		!!selWeek?.startDate &&
+			!!selWeek?.endDate &&
+			todayIso >= selWeek.startDate &&
+			todayIso <= selWeek.endDate,
+	);
 
 	function stepDay(n: number) {
 		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n);
+	}
+	function selectDay(day: number) {
+		if (!selWeek?.startDate) return;
+		const iso = addDaysIso(selWeek.startDate, day);
+		dayDir = iso >= selectedIso ? 1 : -1;
+		selectedIso = iso;
 	}
 	function goToday() {
 		dayDir = selectedIso < todayIso ? 1 : -1;
@@ -138,24 +151,36 @@
 		{/if}
 	</header>
 
-	<!-- Day controls on phones; laptops get the flanking arrows. -->
-	<div class="mb-3 flex items-center gap-2 sm:hidden">
-		<button
-			type="button"
-			onclick={() => stepDay(-1)}
-			aria-label="Previous day"
-			class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
-		>
-			‹
-		</button>
-		<button
-			type="button"
-			onclick={() => stepDay(1)}
-			aria-label="Next day"
-			class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
-		>
-			›
-		</button>
+	<!-- Sticky day nav: the week strip and the phone arrows stay put as you scroll. -->
+	<div class="sticky top-16 z-20 -mx-4 mb-3 border-b border-hairline bg-paper/95 px-4 pt-1 pb-2 backdrop-blur">
+		{#if selWeek}
+			<WeekStrip
+				week={selWeek}
+				selectedDay={selDay}
+				{todayIndex}
+				{todayInWeek}
+				{loggedBySession}
+				onSelect={selectDay}
+			/>
+		{/if}
+		<div class="mt-2 flex items-center gap-2 sm:hidden">
+			<button
+				type="button"
+				onclick={() => stepDay(-1)}
+				aria-label="Previous day"
+				class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
+			>
+				‹
+			</button>
+			<button
+				type="button"
+				onclick={() => stepDay(1)}
+				aria-label="Next day"
+				class="flex h-11 flex-1 items-center justify-center rounded-xl border border-hairline text-lg text-steel hover:border-signal hover:text-signal-ink"
+			>
+				›
+			</button>
+		</div>
 	</div>
 
 	<!-- Day panel with flanking arrows (laptop) -->
@@ -164,7 +189,7 @@
 			type="button"
 			onclick={() => stepDay(-1)}
 			aria-label="Previous day"
-			class="hidden w-12 shrink-0 items-center justify-center rounded-xl border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
+			class="hidden h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
 		>
 			‹
 		</button>
@@ -228,7 +253,7 @@
 			type="button"
 			onclick={() => stepDay(1)}
 			aria-label="Next day"
-			class="hidden w-12 shrink-0 items-center justify-center rounded-xl border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
+			class="hidden h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
 		>
 			›
 		</button>

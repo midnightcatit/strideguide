@@ -16,6 +16,7 @@
 	const todayIso = new Date().toISOString().slice(0, 10);
 
 	let monthOffset = $state(0);
+	let mode = $state<'month' | 'list'>('month');
 	let sheetIso = $state<string | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
@@ -142,18 +143,40 @@
 	function stepMonth(delta: number) {
 		monthOffset += delta;
 	}
+
+	/** Upcoming sessions from today, for the list view. */
+	const listDays = $derived.by(() => {
+		const dates = [...byDate.keys()].filter((d) => d >= todayIso).sort();
+		return dates.slice(0, 45).map((d) => ({ date: d, sessions: byDate.get(d) ?? [] }));
+	});
+	function dateHeading(iso: string): string {
+		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
+			weekday: 'short',
+			day: 'numeric',
+			month: 'short',
+			timeZone: 'UTC',
+		});
+	}
 </script>
 
 <div class="flex items-center justify-between gap-3">
-	<p class="tabular text-xs uppercase tracking-widest text-steel">{monthLabel}</p>
-	<div class="flex items-center gap-2">
-		<button type="button" onclick={() => stepMonth(-1)} aria-label="Previous month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
-		<button type="button" onclick={() => (monthOffset = 0)} class="tabular text-xs text-steel hover:text-ink">Today</button>
-		<button type="button" onclick={() => stepMonth(1)} aria-label="Next month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">›</button>
-	</div>
+	<p class="tabular text-xs uppercase tracking-widest text-steel">{mode === 'month' ? monthLabel : 'Upcoming'}</p>
+	{#if mode === 'month'}
+		<div class="flex items-center gap-2">
+			<button type="button" onclick={() => stepMonth(-1)} aria-label="Previous month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
+			<button type="button" onclick={() => (monthOffset = 0)} class="tabular text-xs text-steel hover:text-ink">Today</button>
+			<button type="button" onclick={() => stepMonth(1)} aria-label="Next month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">›</button>
+		</div>
+	{/if}
 </div>
 
-<div class="mx-auto mt-4 max-w-md">
+<div class="mt-3 inline-flex rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
+	<button type="button" aria-pressed={mode === 'month'} onclick={() => (mode = 'month')} class="rounded-md px-3 py-1.5 text-xs {mode === 'month' ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}">Month</button>
+	<button type="button" aria-pressed={mode === 'list'} onclick={() => (mode = 'list')} class="rounded-md px-3 py-1.5 text-xs {mode === 'list' ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}">List</button>
+</div>
+
+{#if mode === 'month'}
+	<div class="mx-auto mt-4 max-w-md">
 	<div class="grid grid-cols-7 gap-1">
 		{#each DAY_INITIALS as initial, i (i)}
 			<span class="tabular py-1 text-center text-[10px] uppercase tracking-wide text-steel">{initial}</span>
@@ -187,7 +210,21 @@
 		{/each}
 		<span>More pressure</span>
 	</div>
-</div>
+	</div>
+{:else}
+	<div class="mt-4 space-y-6">
+		{#each listDays as day (day.date)}
+			<div>
+				<p class="tabular text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
+				<div class="mt-2 grid gap-3 sm:grid-cols-2">
+					{#each day.sessions as s (s.id)}
+						{@render card(s)}
+					{/each}
+				</div>
+			</div>
+		{/each}
+	</div>
+{/if}
 
 {#if sheetIso}
 	<div class="fixed inset-0 z-40" role="dialog" aria-modal="true" aria-label={sheetLabel} use:modal={() => (sheetIso = null)}>
