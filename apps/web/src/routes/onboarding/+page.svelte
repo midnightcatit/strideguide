@@ -19,6 +19,7 @@
 	}
 
 	let profiles = $state<ProfileLite[]>([]);
+	let showConnectStep = $state(false);
 	let slug = $state('half-marathon');
 	let targetDate = $state('');
 	let experience = $state<'beginner' | 'intermediate' | 'advanced'>('beginner');
@@ -300,6 +301,19 @@
 				],
 			},
 		);
+		// A last, optional step, shown only when the server can offer the connector.
+		// Connecting happens in a new tab, so nothing typed here is at risk.
+		if (showConnectStep) {
+			out.push({
+				id: 'connect',
+				title: 'Connect Google Health',
+				lede: 'Link Google Health to pull in the runs and rides you do outside the plan. Then the work you actually do counts, and the plan stays honest.',
+				guide: [
+					'It opens Google in a new tab, so your answers here stay put.',
+					'Not now? Skip it and connect any time from Settings.',
+				],
+			});
+		}
 		return out;
 	});
 
@@ -415,7 +429,21 @@
 		} catch {
 			error = 'Could not load goal profiles.';
 		}
+		// Offer the connect step only when the server has the connector set up and
+		// it is not already linked. Same check the Settings connections page uses.
+		try {
+			const res = await api.connections();
+			const provider = res.providers.find((p) => p.id === 'google-health');
+			showConnectStep = Boolean(provider?.configured && !provider.connected);
+		} catch {
+			// No connections to offer; leave the step out.
+		}
 	});
+
+	/** Open the connector in a new tab, so the answers on this page are never lost. */
+	function connectHealth() {
+		window.open(api.connectionConnectUrl('google-health'), '_blank', 'noopener');
+	}
 
 	/** A number input binds as a number, a text input as a string; normalise both. */
 	function str(v: unknown): string {
@@ -1087,6 +1115,31 @@
 						aria-label="Notes for your coach"
 						class="w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm leading-relaxed"
 					></textarea>
+				{:else if step.id === 'connect'}
+					<div class="rounded-xl border border-hairline bg-paper p-4">
+						<p class="text-sm leading-relaxed text-steel">
+							Connect the apps that already record your training, so a run logged elsewhere still
+							counts here and the plan can react to it.
+						</p>
+						<button
+							type="button"
+							onclick={connectHealth}
+							class="mt-3 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90"
+						>
+							Connect Google Health
+						</button>
+						<p class="mt-2 text-xs text-steel">
+							Opens Google in a new tab, so your answers here stay put. You can keep going either way.
+						</p>
+					</div>
+					<button
+						type="button"
+						onclick={submit}
+						disabled={submitting}
+						class="mt-3 w-full rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink disabled:opacity-60"
+					>
+						Skip and build my plan
+					</button>
 				{/if}
 			</div>
 
@@ -1115,7 +1168,9 @@
 				Back
 			</button>
 		{/if}
-		{#if isLast}
+		{#if step.id === 'connect'}
+			<!-- The connect step carries its own actions: connect in a new tab, or skip. -->
+		{:else if isLast}
 			<button
 				type="button"
 				onclick={submit}

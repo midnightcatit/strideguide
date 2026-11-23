@@ -13,6 +13,7 @@ import {
 	exchangeCode,
 	fetchProviderUserId,
 	revokeToken,
+	safeReturnPath,
 	signState,
 	tokenExpiry,
 	verifyState,
@@ -37,9 +38,15 @@ function redirectUri(env: AppBindings['Bindings'], provider: string): string {
 	return `${env.APP_ORIGIN}/connections/${provider}/callback`;
 }
 
-function settingsUrl(env: AppBindings['Bindings'], params: Record<string, string>): string {
-	const qs = new URLSearchParams(params).toString();
-	return `${env.WEB_ORIGIN}/settings/connections?${qs}`;
+/** Build an absolute web URL for a local path, adding the callback outcome params. */
+function returnUrl(
+	env: AppBindings['Bindings'],
+	path: string,
+	params: Record<string, string>,
+): string {
+	const url = new URL(path, env.WEB_ORIGIN);
+	for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
+	return url.toString();
 }
 
 /** List the caller's connections and which providers the server can offer. */
@@ -84,9 +91,12 @@ connections.get('/:provider/start', requireAuth, async (c) => {
 
 	const user = c.get('user')!;
 	const nonce = crypto.randomUUID();
+	// Where to send the runner back to when the dance finishes. Validated here,
+	// then carried inside the signed state so the callback cannot be pointed elsewhere.
+	const returnPath = safeReturnPath(c.req.query('return'));
 	// The signed token lives in an httpOnly cookie; the plain nonce rides as the
 	// provider's state param, so the callback can tie the two together.
-	const stateToken = await signState(c.env, { uid: user.id, provider, nonce });
+	const stateToken = await signState(c.env, { uid: user.id, provider, nonce, returnPath });
 	setCookie(
 		c,
 		connectStateCookieName(c.env),
@@ -109,7 +119,7 @@ connections.get('/:provider/start', requireAuth, async (c) => {
 connections.get('/:provider/callback', async (c) => {
 	const provider = c.req.param('provider');
 	if (!isProviderId(provider)) {
-		return c.redirect(settingsUrl(c.env, { error: 'unknown_provider' }));
+		return c.redirect(returnUrl(c.env, safeReturnPath(undefined), { error: 'unknown_provider' }));
 	}
 
 	const cfg = PROVIDERS[provider];
@@ -123,16 +133,19 @@ connections.get('/:provider/callback', async (c) => {
 	});
 
 	const state = cookieState ? await verifyState(c.env, cookieState) : null;
+	// Validate again even though the start handler checked, so a bad path can never
+	// ride through and strand the runner on another site.
+	const returnPath = safeReturnPath(state?.returnPath);
 	const denied = url.searchParams.get('error');
-	if (denied) return c.redirect(settingsUrl(c.env, { error: 'denied', provider }));
+	if (denied) return c.redirect(returnUrl(c.env, returnPath, { error: 'denied', provider }));
 	if (!code || !stateParam || !state || state.nonce !== stateParam || state.provider !== provider) {
-		return c.redirect(settingsUrl(c.env, { error: 'invalid_state', provider }));
+		return c.redirect(returnUrl(c.env, returnPath, { error: 'invalid_state', provider }));
 	}
 
 	const clientId = providerClientId(c.env, cfg);
 	const clientSecret = providerClientSecret(c.env, cfg);
 	if (!clientId || !clientSecret) {
-		return c.redirect(settingsUrl(c.env, { error: 'not_configured', provider }));
+		return c.redirect(returnUrl(c.env, returnPath, { error: 'not_configured', provider }));
 	}
 
 	const tokens = await exchangeCode(
@@ -143,7 +156,7 @@ connections.get('/:provider/callback', async (c) => {
 		redirectUri(c.env, provider),
 	);
 	if (!tokens.access_token) {
-		return c.redirect(settingsUrl(c.env, { error: 'exchange_failed', provider }));
+		return c.redirect(returnUrl(c.env, returnPath, { error: 'exchange_failed', provider }));
 	}
 
 	const providerUserId = await fetchProviderUserId(cfg, tokens.access_token).catch(() => null);
@@ -179,7 +192,7 @@ connections.get('/:provider/callback', async (c) => {
 			},
 		});
 
-	return c.redirect(settingsUrl(c.env, { connected: provider }));
+	return c.redirect(returnUrl(c.env, returnPath, { connected: provider }));
 });
 
 /** Revoke at the provider where supported, then drop the local row. */

@@ -29,6 +29,7 @@ export async function loadPrefs(): Promise<void> {
 		prefs.equipmentItems = res.prefs.equipmentItems;
 		prefs.gymPreset = res.prefs.gymPreset;
 		prefs.machineItems = res.prefs.machineItems;
+		prefs.connectNudgeDismissed = res.prefs.connectNudgeDismissed;
 	} catch {
 		// unauthenticated or offline: keep defaults
 	}
@@ -47,6 +48,15 @@ export async function setMachineItems(machineItems: Prefs['machineItems']): Prom
 	prefs.machineItems = machineItems;
 	try {
 		await api.putSettings({ machineItems });
+	} catch {
+		// best-effort; ui already updated
+	}
+}
+
+export async function setConnectNudgeDismissed(v: boolean): Promise<void> {
+	prefs.connectNudgeDismissed = v;
+	try {
+		await api.putSettings({ connectNudgeDismissed: v });
 	} catch {
 		// best-effort; ui already updated
 	}

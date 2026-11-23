@@ -27,6 +27,7 @@
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import ActivityMatchSheet from '$lib/components/ActivityMatchSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
+	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
 
 	let logTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
@@ -295,6 +296,8 @@
 			</button>
 		</div>
 	{/if}
+
+	<ConnectNudge />
 
 	<header class="mb-2">
 		<div class="flex items-baseline justify-between gap-3">
