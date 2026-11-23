@@ -89,6 +89,11 @@
 						</p>
 					</div>
 					<p class="mt-3 text-center text-xs text-steel">Free to use. Built to run on Cloudflare's free tier.</p>
+					<p class="mt-4 text-center text-xs text-steel">
+						<a href="/privacy" class="hover:text-ink">Privacy</a>
+						<span class="px-1">·</span>
+						<a href="/terms" class="hover:text-ink">Terms</a>
+					</p>
 				</div>
 			</div>
 		</div>
