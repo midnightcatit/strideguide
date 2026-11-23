@@ -192,7 +192,7 @@ function warmupStep(paces?: TrainingPaces): WorkoutStep {
 	const p = paces ?? DEFAULT_PACES;
 	return {
 		kind: 'warmup',
-		label: 'Warm-up',
+		label: 'Warm-up jog',
 		distanceM: Math.round(WARMUP_KM * 1000),
 		durationSec: secsForM(WARMUP_KM * 1000, p.easy[1]),
 		targetPaceSecPerKm: paces?.easy,
@@ -206,7 +206,7 @@ function cooldownStep(paces?: TrainingPaces): WorkoutStep {
 	const p = paces ?? DEFAULT_PACES;
 	return {
 		kind: 'cooldown',
-		label: 'Cool-down',
+		label: 'Cool-down jog',
 		distanceM: Math.round(COOLDOWN_KM * 1000),
 		durationSec: secsForM(COOLDOWN_KM * 1000, p.easy[1]),
 		targetPaceSecPerKm: paces?.easy,
@@ -261,7 +261,7 @@ function singleRunWorkout(
 
 function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorkout {
 	const blocks: StepBlock[] = [
-		drillBlock('Warm-up drills', WARMUP_DRILLS.slice(1), 'warmup'),
+		drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
 		{ repeat: 1, steps: [warmupStep(paces)] },
 		{
 			repeat: 1,
@@ -280,7 +280,7 @@ function tempoWorkout(qualityKm: number, paces?: TrainingPaces): StructuredWorko
 			],
 		},
 		{ repeat: 1, steps: [cooldownStep(paces)] },
-		drillBlock('Stretches', COOLDOWN_STRETCHES, 'cooldown'),
+		drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
@@ -349,7 +349,7 @@ function repWorkout(opts: {
 		? (opts.recoveryPace[0] + opts.recoveryPace[1]) / 2
 		: (opts.paces ?? DEFAULT_PACES).easy[1];
 	const blocks: StepBlock[] = [
-		drillBlock('Warm-up drills', WARMUP_DRILLS.slice(1), 'warmup'),
+		drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
 		{ repeat: 1, steps: [warmupStep(opts.paces)] },
 		{
 			repeat: opts.reps,
@@ -366,7 +366,7 @@ function repWorkout(opts: {
 				},
 				{
 					kind: 'recovery',
-					label: 'Recovery',
+					label: 'Recovery jog',
 					distanceM: recoveryM,
 					durationSec: secsForM(recoveryM, recoveryPace),
 					targetPaceSecPerKm: opts.recoveryPace,
@@ -376,7 +376,7 @@ function repWorkout(opts: {
 			],
 		},
 		{ repeat: 1, steps: [cooldownStep(opts.paces)] },
-		drillBlock('Stretches', COOLDOWN_STRETCHES, 'cooldown'),
+		drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
 	];
 	return {
 		blocks,
@@ -435,7 +435,7 @@ function hillsWorkout(reps: number, paces?: TrainingPaces): StructuredWorkout {
 
 function strengthWorkout(circuit: MachineExercise[], reps: number): StructuredWorkout {
 	const blocks: StepBlock[] = [
-		drillBlock('Warm-up drills', WARMUP_DRILLS, 'warmup'),
+		drillBlock('Dynamic warm-up', WARMUP_DRILLS, 'warmup'),
 		{
 			repeat: 1,
 			label: 'Circuit',
@@ -770,7 +770,7 @@ function mobilityWorkout(routine: Drill[]): StructuredWorkout {
 	return {
 		blocks: [
 			drillBlock('Loosen up', dynamic, 'warmup'),
-			drillBlock('Stretches', statics, 'cooldown'),
+			drillBlock('Mobility stretches', statics, 'cooldown'),
 		],
 	};
 }
