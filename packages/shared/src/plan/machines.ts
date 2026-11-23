@@ -9,6 +9,8 @@ export interface MachineExercise {
 	muscles: string[];
 	/** Movement pattern, used to balance push/pull and posterior chain. */
 	pattern: 'pull' | 'push' | 'squat' | 'hinge' | 'knee-extension' | 'posterior-chain';
+	/** One plain sentence on why this matters for running. */
+	why: string;
 	/** Short "where you should feel it" cue. */
 	feel: string;
 	/** Key technique cues (3–4), in plain language. */
@@ -22,6 +24,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Leg press',
 		muscles: ['quadriceps', 'glutes'],
 		pattern: 'squat',
+		why: 'Leg drive for the climbs and the last mile, when your legs start to fade.',
 		feel: 'Front of the thighs and glutes; not your lower back.',
 		form: [
 			'Feet shoulder-width on the platform, whole foot in contact.',
@@ -34,6 +37,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Leg curl',
 		muscles: ['hamstrings'],
 		pattern: 'posterior-chain',
+		why: 'Hamstrings brake every stride and carry the load on downhills.',
 		feel: 'Back of the thighs.',
 		form: [
 			'Line the knee up with the machine pivot.',
@@ -46,6 +50,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Leg extension',
 		muscles: ['quadriceps'],
 		pattern: 'knee-extension',
+		why: 'Quads absorb each landing and push you up the climbs.',
 		feel: 'Front of the thighs, above the knee.',
 		form: [
 			'Knee in line with the pivot; pad on the shin, not the foot.',
@@ -58,6 +63,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Back extension',
 		muscles: ['erector spinae', 'glutes'],
 		pattern: 'hinge',
+		why: 'Holds your posture tall when you tire late in a long run.',
 		feel: 'Lower back and glutes, controlled and never sharp.',
 		form: [
 			'Hinge from the hips with a neutral spine.',
@@ -70,6 +76,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Seated row',
 		muscles: ['mid-back', 'lats', 'biceps'],
 		pattern: 'pull',
+		why: 'A strong upper back keeps your arms relaxed and your posture steady.',
 		feel: 'Between the shoulder blades.',
 		form: [
 			'Sit tall; chest up, small bend in the knees.',
@@ -82,6 +89,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Shoulder press',
 		muscles: ['shoulders', 'triceps'],
 		pattern: 'push',
+		why: 'Steady shoulders keep your arm swing loose over long distances.',
 		feel: 'Top of the shoulders.',
 		form: [
 			'Handles at shoulder height, wrists stacked.',
@@ -94,6 +102,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Bicep curl',
 		muscles: ['biceps'],
 		pattern: 'pull',
+		why: 'Arm strength keeps your form relaxed when you are tired.',
 		feel: 'Front of the upper arms.',
 		form: [
 			'Elbows pinned to your sides.',
@@ -106,6 +115,7 @@ export const PF_MACHINES: MachineExercise[] = [
 		name: 'Tricep extension',
 		muscles: ['triceps'],
 		pattern: 'push',
+		why: 'Triceps drive the arm swing and help you hold good posture.',
 		feel: 'Back of the upper arms.',
 		form: [
 			'Elbows fixed in place, upper arms still.',
