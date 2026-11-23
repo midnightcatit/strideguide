@@ -14,7 +14,6 @@
 		onStart,
 		onOpen,
 		onRemove,
-		tint,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -24,8 +23,6 @@
 		onStart?: () => void;
 		onOpen?: () => void;
 		onRemove?: () => void;
-		/** Optional background class (a tonal tint), for lists that separate by type. */
-		tint?: string;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
@@ -66,8 +63,13 @@
 </script>
 
 <article
-	class="stage-card lift relative overflow-hidden rounded-xl border {tint ??
-		'bg-paper'} p-4 sm:p-5 {active ? 'border-signal-ink' : 'border-hairline'}"
+	class="stage-card lift relative overflow-hidden rounded-xl border p-4 sm:p-5 {logged
+		? 'bg-ok-wash'
+		: active
+			? 'bg-signal-wash'
+			: 'bg-paper'} {active ? 'border-signal-ink' : 'border-hairline'} {onOpen
+		? 'shadow-[0_1px_3px_rgba(25,28,34,0.06)]'
+		: ''}"
 >
 	<div
 		class="absolute left-0 top-0 h-full w-0.5 {logged
@@ -94,7 +96,13 @@
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
 			<span class="flex shrink-0 items-center gap-1 tabular text-xs uppercase tracking-widest {isStrength ? 'text-steel' : 'text-signal-ink'}"
-				><SessionIcon type={session.type} size="h-3.5 w-3.5" />{sessionTypeLabel(session.type)}{#if logged} <span class="text-ok">✓</span>{/if}</span
+				><SessionIcon type={session.type} size="h-3.5 w-3.5" />{sessionTypeLabel(session.type)}{#if logged}
+					<span class="ml-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-ok text-paper" aria-label="Completed">
+						<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M4 10.5l4 4 8-9" />
+						</svg>
+					</span>
+				{/if}</span
 			>
 		</div>
 
@@ -118,24 +126,39 @@
 		<p class="tabular mt-auto truncate pt-3 text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>
 	</div>
 
-	<div class="relative z-20 mt-4 flex shrink-0 gap-2">
-		{#if onStart && session.prescription?.workout}
-			<button
-				type="button"
-				onclick={onStart}
-				class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
-			>
-				Start
-			</button>
-		{/if}
-		{#if onLog}
-			<button
-				type="button"
-				onclick={onLog}
-				class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
-			>
-				{logged ? 'Log again' : 'Log it'}
-			</button>
+	<div class="relative z-20 mt-4 flex shrink-0 items-center gap-2">
+		{#if logged}
+			<span class="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-ok-wash px-4 py-3 text-sm font-semibold text-ok">
+				Done
+			</span>
+			{#if onLog}
+				<button
+					type="button"
+					onclick={onLog}
+					class="shrink-0 rounded-md px-3 py-3 text-xs text-steel hover:text-signal-ink"
+				>
+					Log again
+				</button>
+			{/if}
+		{:else}
+			{#if onStart && session.prescription?.workout}
+				<button
+					type="button"
+					onclick={onStart}
+					class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
+				>
+					Start
+				</button>
+			{/if}
+			{#if onLog}
+				<button
+					type="button"
+					onclick={onLog}
+					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+				>
+					Log it
+				</button>
+			{/if}
 		{/if}
 		{#if onRemove}
 			<button

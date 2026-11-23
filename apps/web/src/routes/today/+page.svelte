@@ -7,6 +7,7 @@
 	import { store, ensurePlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
+	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import LogSheet from '$lib/components/LogSheet.svelte';
@@ -58,6 +59,8 @@
 	const selWeek = $derived(sel?.week);
 	const selDay = $derived(sel?.day ?? todayIndex);
 	const daySessions = $derived(selWeek ? selWeek.sessions.filter((s) => s.day === selDay) : []);
+	const visibleSessions = $derived(daySessions.filter((s) => !isSkipped(s.id)));
+	const skippedCount = $derived(daySessions.length - visibleSessions.length);
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
@@ -217,8 +220,8 @@
 						eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
 						meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
 					/>
-					{#if daySessions.length}
-						<SessionCarousel sessions={daySessions} {card} />
+					{#if visibleSessions.length}
+						<SessionCarousel sessions={visibleSessions} {card} />
 					{:else if selWeek}
 						<Card tone="sunken" frame>
 							<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
@@ -227,6 +230,18 @@
 						<Card tone="sunken" frame>
 							<p class="text-sm text-steel">This day is outside your plan.</p>
 						</Card>
+					{/if}
+					{#if skippedCount > 0}
+						<p class="mt-2 text-xs text-steel">
+							{skippedCount} skipped for now.
+							<button
+								type="button"
+								onclick={() => daySessions.forEach((s) => unskipSession(s.id))}
+								class="text-signal-ink hover:underline"
+							>
+								Undo
+							</button>
+						</p>
 					{/if}
 				</div>
 			{/key}
