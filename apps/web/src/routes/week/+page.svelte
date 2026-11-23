@@ -174,7 +174,7 @@
 							></span>
 						{/each}
 					</span>
-					<span class="h-3 text-[10px] {logged ? 'text-signal-ink' : 'text-transparent'}" aria-hidden="true">✓</span>
+					<span class="h-3 text-[10px] {logged ? 'text-ok' : 'text-transparent'}" aria-hidden="true">✓</span>
 					{#if currentWeekIsToday && day === todayIndex}
 						<span class="h-0.5 w-4 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-signal-ink'}" aria-hidden="true"></span>
 					{/if}

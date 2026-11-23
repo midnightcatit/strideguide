@@ -14,6 +14,7 @@ export interface AdaptSession {
 export interface AdaptWeek {
 	weekNumber: number;
 	startDate?: string | null;
+	endDate?: string | null;
 	targetVolumeKm?: number | null;
 	sessions: AdaptSession[];
 }
@@ -93,7 +94,10 @@ export function suggestAdjustments(
 		});
 	}
 
-	// --- most recent completed week: volume vs plan ---
+	// --- most recent COMPLETED week: volume vs plan ---
+	// Only weeks that have fully finished are judged. The current, in-progress
+	// week is never compared against its full plan, so a plan that started today
+	// (or this week) never looks like a shortfall.
 	const byWeek = weeks.map((w) => {
 		const planned = w.sessions
 			.filter((s) => s.modality === 'running')
@@ -103,7 +107,12 @@ export function suggestAdjustments(
 			.reduce((sum, s) => sum + (logs.find((l) => l.sessionId === s.id)?.runStats?.distanceKm ?? 0), 0);
 		return { week: w, planned, actual };
 	});
-	const completed = byWeek.filter((b) => b.week.startDate && b.planned > 0);
+	const completed = byWeek.filter((b) => {
+		const start = b.week.startDate;
+		if (!start || b.planned <= 0) return false;
+		const end = b.week.endDate ?? addDays(start, 6);
+		return end < todayIso;
+	});
 	const recent = [...completed].reverse().find((b) => b.actual > 0);
 	if (recent) {
 		const ratio = recent.actual / recent.planned;

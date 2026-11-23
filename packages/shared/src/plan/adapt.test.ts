@@ -57,8 +57,26 @@ describe('suggestAdjustments', () => {
 			{ sessionId: 'a', runStats: { distanceKm: 9 }, rpe: 6, createdAt: '2026-11-02' },
 			{ sessionId: 'b', runStats: { distanceKm: 10 }, rpe: 6, createdAt: '2026-11-04' },
 		];
-		const out = suggestAdjustments(logs, weeks, '2026-11-06');
+		const out = suggestAdjustments(logs, weeks, '2026-11-10');
 		expect(out.some((a) => a.kind === 'volume-over')).toBe(true);
+	});
+
+	it('does not judge the current, in-progress week', () => {
+		const started: AdaptWeek[] = [
+			{
+				weekNumber: 1,
+				startDate: '2026-11-16',
+				sessions: [
+					{ id: 'a', day: 0, modality: 'running', type: 'easy', prescription: { targetDistanceKm: 40 } },
+				],
+			},
+		];
+		const logs: AdaptLog[] = [
+			{ sessionId: 'a', runStats: { distanceKm: 5 }, rpe: 4, createdAt: '2026-11-16' },
+		];
+		// Today is the plan's first day, so the week has not finished. One logged
+		// run should never look like a shortfall against the whole week.
+		expect(suggestAdjustments(logs, started, '2026-11-16')).toHaveLength(0);
 	});
 
 	it('returns nothing when everything is on track', () => {
