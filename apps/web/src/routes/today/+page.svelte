@@ -23,6 +23,7 @@
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
+	import type { CustomWorkoutInput } from '$lib/api';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import ActivityMatchSheet from '$lib/components/ActivityMatchSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
@@ -33,6 +34,7 @@
 	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
 	let pickerDate = $state<string | null>(null);
+	let addError = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
 	let reviewing = $state<ClientActivity | null>(null);
 	let matchBusy = $state(false);
@@ -136,6 +138,16 @@
 			todayIso >= selWeek.startDate &&
 			todayIso <= selWeek.endDate,
 	);
+	// The API only accepts days inside the plan, so the add button says why when
+	// the selected day is not one of them, instead of failing on tap.
+	const planStart = $derived(weeks[0]?.startDate ?? null);
+	const planEnd = $derived(weeks.length ? weeks[weeks.length - 1]?.endDate ?? null : null);
+	const dayInPlan = $derived(!!selWeek);
+	const outsidePlanNote = $derived(
+		planStart && planEnd
+			? `Your plan runs ${dayLabel(planStart)} to ${dayLabel(planEnd)}. Pick a day inside it to add a workout.`
+			: 'Your plan has no days yet. Pick a day inside it to add a workout.',
+	);
 	// Imported activities the matcher could not resolve on its own, waiting on a yes or no.
 	const pendingMatches = $derived(
 		activities.filter((a) => a.matchState === 'proposed' && a.proposal?.session),
@@ -207,9 +219,22 @@
 		if (!date) return;
 		try {
 			await api.addWorkout(date, w.id);
+			addError = null;
 			reloadPlan();
-		} catch {
-			// the plan refresh will show the truth
+		} catch (e) {
+			addError = e instanceof Error ? e.message : 'Could not add that workout.';
+		}
+	}
+	async function addCustom(c: CustomWorkoutInput) {
+		const date = pickerDate;
+		pickerDate = null;
+		if (!date) return;
+		try {
+			await api.addCustomWorkout(date, c);
+			addError = null;
+			reloadPlan();
+		} catch (e) {
+			addError = e instanceof Error ? e.message : 'Could not add that workout.';
 		}
 	}
 
@@ -412,11 +437,23 @@
 
 			<button
 				type="button"
-				onclick={() => (pickerDate = selectedIso)}
-				class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-hairline-strong py-3 text-sm text-signal-ink hover:border-signal"
+				disabled={!dayInPlan}
+				onclick={() => {
+					if (!dayInPlan) return;
+					addError = null;
+					pickerDate = selectedIso;
+				}}
+				class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan
+					? 'border-hairline-strong text-signal-ink hover:border-signal'
+					: 'border-hairline text-steel'}"
 			>
 				＋ Add a workout
 			</button>
+			{#if !dayInPlan}
+				<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
+			{:else if addError}
+				<p class="mt-2 text-sm text-signal-ink">{addError}</p>
+			{/if}
 
 			<AdjustmentsCard />
 
@@ -525,5 +562,5 @@
 />
 
 {#if pickerDate}
-	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
+	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onCustom={addCustom} onClose={() => (pickerDate = null)} />
 {/if}

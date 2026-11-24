@@ -60,7 +60,7 @@ function hash(input: string, len = 12): string {
 /** No em dashes anywhere in published research text (house rule). */
 function sanitize(text: string): string {
 	return text
-		.replace(/\s*—\s*/g, ', ')
+		.replace(/\s*\u2014\s*/g, ', ')
 		.replace(/\s+([,.;:])/g, '$1')
 		.replace(/\s{2,}/g, ' ')
 		.trim();
