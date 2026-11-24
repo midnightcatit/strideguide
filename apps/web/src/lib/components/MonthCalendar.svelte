@@ -32,6 +32,7 @@
 	let logTarget = $state<ClientSession | null>(null);
 	let pickerDate = $state<string | null>(null);
 	let addError = $state<string | null>(null);
+	let revealId = $state<string | null>(null);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -202,9 +203,10 @@
 		pickerDate = null;
 		if (!date) return;
 		try {
-			await api.addWorkout(date, w.id);
+			const { session } = await api.addWorkout(date, w.id);
 			addError = null;
 			sheetIso = date;
+			revealId = session.id;
 			reloadPlan();
 		} catch (e) {
 			addError = e instanceof Error ? e.message : 'Could not add that workout.';
@@ -215,9 +217,10 @@
 		pickerDate = null;
 		if (!date) return;
 		try {
-			await api.addCustomWorkout(date, c);
+			const { session } = await api.addCustomWorkout(date, c);
 			addError = null;
 			sheetIso = date;
+			revealId = session.id;
 			reloadPlan();
 		} catch (e) {
 			addError = e instanceof Error ? e.message : 'Could not add that workout.';
@@ -356,7 +359,7 @@
 			</div>
 			<div class="scroll-modern min-h-0 flex-1 overflow-y-auto p-4">
 				{#if sheetSessions.length}
-					<SessionCarousel sessions={sheetSessions} {card} />
+					<SessionCarousel sessions={sheetSessions} {card} bind:revealId />
 				{:else}
 					<Card tone="sunken" frame>
 						<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
