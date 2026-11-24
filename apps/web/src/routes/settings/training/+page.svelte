@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { beforeNavigate, goto } from '$app/navigation';
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
+	import SettingsSaveBar from '$lib/components/SettingsSaveBar.svelte';
+	import SettingsDraftGuard from '$lib/components/SettingsDraftGuard.svelte';
 	import Switch from '$lib/components/Switch.svelte';
-	import LeaveConfirmSheet from '$lib/components/LeaveConfirmSheet.svelte';
 	import { api } from '$lib/api';
 	import {
 		prefs,
@@ -85,41 +85,6 @@
 
 	let saving = $state(false);
 	let message = $state('');
-	let confirmLeave = $state(false);
-	let pendingHref = $state<string | null>(null);
-	// Set just before we replay a navigation the person chose to leave with, so
-	// the guard below lets it through instead of asking a second time.
-	let leaving = false;
-
-	// Any exit with unsaved edits asks first. The tab bar, the settings back link
-	// and the browser Back button are all in-app navigations, so this one guard
-	// covers every way off the page.
-	beforeNavigate((nav) => {
-		if (leaving || !dirty) return;
-		const href = nav.to?.url.href;
-		if (!href) return;
-		nav.cancel();
-		pendingHref = href;
-		confirmLeave = true;
-	});
-
-	function keepEditing() {
-		confirmLeave = false;
-		pendingHref = null;
-	}
-
-	function discardAndLeave() {
-		const href = pendingHref;
-		confirmLeave = false;
-		pendingHref = null;
-		if (!href) return;
-		// Drop the draft too, so the page is clean if the navigation does not finish.
-		discard();
-		leaving = true;
-		void goto(href).finally(() => {
-			leaving = false;
-		});
-	}
 
 	function pickEquipment(v: Draft['equipment']) {
 		draft.equipment = v;
@@ -209,7 +174,10 @@
 
 <section class="grid gap-6">
 	<div>
-		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Units</h2>
+		<div class="flex items-baseline justify-between gap-3">
+			<h2 class="tabular text-xs uppercase tracking-widest text-steel">Units</h2>
+			<span class="text-xs text-steel">{saved.units === 'imperial' ? 'Miles' : 'Kilometers'}</span>
+		</div>
 		<div class="mt-2 flex overflow-hidden rounded-md border border-hairline" role="group" aria-label="Units">
 			{#each [{ v: 'metric', l: 'Metric (km)' }, { v: 'imperial', l: 'Imperial (mi)' }] as opt (opt.v)}
 				<button
@@ -228,7 +196,10 @@
 	</div>
 
 	<div>
-		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Week starts on</h2>
+		<div class="flex items-baseline justify-between gap-3">
+			<h2 class="tabular text-xs uppercase tracking-widest text-steel">Week starts on</h2>
+			<span class="text-xs text-steel">{saved.weekStart === 1 ? 'Sunday' : 'Monday'}</span>
+		</div>
 		<div class="mt-2 flex overflow-hidden rounded-md border border-hairline" role="group" aria-label="Week start">
 			{#each [{ v: 0, l: 'Monday' }, { v: 1, l: 'Sunday' }] as opt (opt.v)}
 				<button
@@ -246,7 +217,10 @@
 	</div>
 
 	<div>
-		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Countdown before a step</h2>
+		<div class="flex items-baseline justify-between gap-3">
+			<h2 class="tabular text-xs uppercase tracking-widest text-steel">Countdown before a step</h2>
+			<span class="text-xs text-steel">{saved.countdownSec === 0 ? 'Off' : `${saved.countdownSec}s`}</span>
+		</div>
 		<div class="mt-2 flex items-center gap-3">
 			<button type="button" onclick={() => bump(-1)} disabled={draft.countdownSec <= 0} aria-label="Less" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">−</button>
 			<span class="tabular w-20 text-center text-lg font-medium">{draft.countdownSec === 0 ? 'Off' : `${draft.countdownSec}s`}</span>
@@ -257,14 +231,20 @@
 
 	<div class="flex items-center justify-between gap-4">
 		<div class="min-w-0">
-			<h2 class="text-sm font-medium">Auto next</h2>
+			<div class="flex items-baseline gap-2">
+				<h2 class="text-sm font-medium">Auto next</h2>
+				<span class="text-xs text-steel">{saved.autoAdvance ? 'On' : 'Off'}</span>
+			</div>
 			<p class="mt-0.5 text-xs text-steel">Move to the next step by itself. Off means you tap Go to next.</p>
 		</div>
 		<Switch checked={draft.autoAdvance} label="Auto next" onChange={(v) => (draft.autoAdvance = v)} />
 	</div>
 
 	<div class="border-t border-hairline pt-6">
-		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Strength equipment</h2>
+		<div class="flex items-baseline justify-between gap-3">
+			<h2 class="tabular text-xs uppercase tracking-widest text-steel">Strength equipment</h2>
+			<span class="text-xs text-steel">{EQUIPMENT.find((e) => e.v === saved.equipment)?.name ?? 'Not set'}</span>
+		</div>
 		<div class="mt-2 grid gap-2 sm:grid-cols-2">
 			{#each EQUIPMENT as opt (opt.v)}
 				<button
@@ -299,7 +279,10 @@
 		{/if}
 		<p class="mt-2 text-xs text-steel">Changing this rebuilds the weeks ahead with the right moves. Save to apply.</p>
 		{#if machineMode}
-			<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Your gym</p>
+			<div class="mt-5 flex items-baseline justify-between gap-3">
+				<p class="tabular text-xs uppercase tracking-widest text-steel">Your gym</p>
+				<span class="text-xs text-steel">{GYM_PRESETS.find((g) => g.id === saved.gymPreset)?.name ?? 'None'}</span>
+			</div>
 			<div class="mt-2 grid gap-2 sm:grid-cols-2">
 				{#each GYM_PRESETS as gym (gym.id)}
 					<button
@@ -348,27 +331,6 @@
 	</div>
 </section>
 
-<div
-	class="sticky z-30 -mx-4 border-t border-hairline bg-paper/95 px-4 py-3 backdrop-blur bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] sm:bottom-0"
->
-	<div class="flex items-center gap-2">
-		<button
-			type="button"
-			onclick={discard}
-			disabled={!dirty || saving}
-			class="flex-1 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-steel disabled:opacity-40"
-		>
-			Discard
-		</button>
-		<button
-			type="button"
-			onclick={save}
-			disabled={!dirty || saving}
-			class="flex-1 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-paper disabled:opacity-40"
-		>
-			{saving ? 'Saving…' : 'Save'}
-		</button>
-	</div>
-</div>
+<SettingsSaveBar {dirty} {saving} onSave={save} onDiscard={discard} />
 
-<LeaveConfirmSheet open={confirmLeave} onKeep={keepEditing} onDiscard={discardAndLeave} />
+<SettingsDraftGuard {dirty} onDiscard={discard} />
