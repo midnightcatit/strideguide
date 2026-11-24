@@ -642,6 +642,47 @@ function favoriteWorkout(
 	return undefined;
 }
 
+/** A favorite library workout of a modality and a type, so a run or cross-train
+ * session only borrows a favorite that matches what the slot is for. */
+function favoriteWorkoutFor(
+	input: PlanInput,
+	modality: LibraryWorkout['modality'],
+	type: string,
+): LibraryWorkout | undefined {
+	if (!input.favoriteWorkouts?.length) return undefined;
+	for (const id of input.favoriteWorkouts) {
+		const workout = WORKOUT_LIBRARY.find((w) => w.id === id);
+		if (workout && workout.modality === modality && workout.type === type) return workout;
+	}
+	return undefined;
+}
+
+/**
+ * Use the runner's favorite library workout for a run or cross-train session
+ * when one matches the session's type, so favorites reach those sessions too and
+ * not only strength and mobility. The session's own distance and pace targets
+ * stay with the plan; only the shape, title and summary come from the favorite.
+ */
+function withFavoriteWorkout(session: PlannedSession, input: PlanInput): PlannedSession {
+	const isRun = session.modality === 'running';
+	const isCross = session.modality === 'recovery' && session.type === 'cross-train';
+	if (!isRun && !isCross) return session;
+	const favorite = favoriteWorkoutFor(input, session.modality, session.type);
+	if (!favorite) return session;
+	return {
+		...session,
+		title: favorite.title,
+		purpose: favorite.purpose,
+		durationMin: favorite.durationMin,
+		prescription: {
+			...session.prescription,
+			summary: favorite.summary,
+			targetRpe: favorite.targetRpe ?? session.prescription.targetRpe,
+			workout: favorite.workout,
+		},
+	};
+}
+
 /**
  * The moves of a favorite strength workout, when the runner has one and every
  * move fits their kit. Undefined means the favorite is missing or not suitable,
@@ -1092,13 +1133,16 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// session before it begins. Later weeks are whole and unaffected.
 		const inWeek = w === 0 ? sessions.filter((s) => s.day >= startWeekday) : sessions;
 
-		const withIntensity = inWeek.map((s) => ({
-			...s,
-			prescription: {
-				...s.prescription,
-				intensity: s.prescription.intensity ?? intensityFor(s.type),
-			},
-		}));
+		const withIntensity = inWeek.map((s) => {
+			const withFavorite = withFavoriteWorkout(s, input);
+			return {
+				...withFavorite,
+				prescription: {
+					...withFavorite.prescription,
+					intensity: withFavorite.prescription.intensity ?? intensityFor(withFavorite.type),
+				},
+			};
+		});
 
 		weeks.push({
 			weekNumber: w + 1,

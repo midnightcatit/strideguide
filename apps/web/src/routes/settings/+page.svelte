@@ -51,6 +51,11 @@
 		`${prefs.units === 'imperial' ? 'Miles' : 'Kilometers'} · week starts ${prefs.weekStart === 1 ? 'Sunday' : 'Monday'}`,
 	);
 
+	const favoritesValue = $derived.by(() => {
+		const n = (prefs.favoriteMachines?.length ?? 0) + (prefs.favoriteWorkouts?.length ?? 0);
+		return n ? `${n} picked` : 'None picked yet';
+	});
+
 	const landingLabel = $derived(
 		LANDING_TABS.find((tab) => tab.key === landingTab)?.label ?? 'Dashboard',
 	);
@@ -76,6 +81,13 @@
 			value: trainingValue,
 			edit: true,
 			icon: 'M4 14V6M7.5 14V4M11 14v-8M14.5 14V4M3 16h12',
+		},
+		{
+			href: '/settings/favorites',
+			label: 'Favorites',
+			value: favoritesValue,
+			edit: true,
+			icon: 'M10 3.5l1.9 3.9 4.3.6-3.1 3 .7 4.3-3.8-2-3.8 2 .7-4.3-3.1-3 4.3-.6z',
 		},
 		{
 			href: '/settings/connections',

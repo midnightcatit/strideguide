@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { GOAL_PROFILES } from '../goal-profiles';
 import { generatePlan } from './engine';
 import { findMove } from './catalog';
+import { WORKOUT_LIBRARY } from './library';
 
 const marathon = GOAL_PROFILES.find((p) => p.slug === 'marathon')!;
 const wholeFitness = GOAL_PROFILES.find((p) => p.slug === 'whole-fitness')!;
@@ -744,6 +745,36 @@ describe('favorites', () => {
 		});
 		expect(moves).toContain('Split squat');
 		expect(moves).not.toContain('Leg press');
+	});
+
+	it('uses a favorite run workout for a session of the same type', () => {
+		const longTitle = (input: Parameters<typeof generatePlan>[0]) =>
+			generatePlan(input)
+				.weeks.flatMap((w) => w.sessions)
+				.find((s) => s.type === 'long')!.title;
+		const fav = WORKOUT_LIBRARY.find((w) => w.id === 'long-run-90')!;
+		expect(
+			longTitle({
+				...base,
+				baseline: { experience: 'intermediate' },
+				favoriteWorkouts: ['long-run-90'],
+			}),
+		).toBe(fav.title);
+	});
+
+	it('keeps its own run shape when the favorite does not match the type', () => {
+		const longTitle = (input: Parameters<typeof generatePlan>[0]) =>
+			generatePlan(input)
+				.weeks.flatMap((w) => w.sessions)
+				.find((s) => s.type === 'long')!.title;
+		// An easy favorite does not match a long run, so the plan keeps its own.
+		expect(
+			longTitle({
+				...base,
+				baseline: { experience: 'intermediate' },
+				favoriteWorkouts: ['easy-run-30'],
+			}),
+		).not.toBe(WORKOUT_LIBRARY.find((w) => w.id === 'easy-run-30')!.title);
 	});
 });
 
