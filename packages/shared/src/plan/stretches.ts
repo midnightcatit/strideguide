@@ -5,7 +5,13 @@
  * matching research file. No em dashes.
  */
 
-import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS, type Drill } from './mobility';
+import {
+	COOLDOWN_STRETCHES,
+	EXTRA_STRETCHES,
+	STRIDES,
+	WARMUP_DRILLS,
+	type Drill,
+} from './mobility';
 
 /** Static and PNF stretches for runners (14a). */
 export const STRETCHES: Drill[] = [
@@ -1236,6 +1242,7 @@ export function findDrill(name?: string): Drill | undefined {
 	if (!name) return undefined;
 	return [
 		...WARMUP_DRILLS,
+		...STRIDES,
 		...COOLDOWN_STRETCHES,
 		...EXTRA_STRETCHES,
 		...STRETCHES,

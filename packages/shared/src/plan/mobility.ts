@@ -8,6 +8,8 @@
 export interface Drill {
 	name: string;
 	durationSec: number;
+	/** How many rounds to run the hold. Total time under stretch is durationSec * rounds. */
+	rounds?: number;
 	/** What it works, shown in the detail view. */
 	targets: string[];
 	/** One plain sentence on why it helps running. */
@@ -25,15 +27,19 @@ export interface Drill {
 const WARMUP_REF = 'wave-3/8a-warmup-cooldown-mobility';
 const STRETCH_REF = 'wave-3/8c-stretching-flexibility';
 
-/** Dynamic warm-up (~3 min): wake up the joints and activate the muscles you will use. */
+/**
+ * Warm-up drills in running order (research/wave-5/14b): the raise first, then
+ * the dynamic activation and mobilisation work. The first entry is a longer raise
+ * for sessions that start with drills before any running, such as strength.
+ */
 export const WARMUP_DRILLS: Drill[] = [
 	{
-		name: 'Easy jog, building',
-		durationSec: 60,
+		name: 'Brisk walk or easy jog',
+		durationSec: 150,
 		targets: ['whole body', 'aerobic'],
-		why: 'Raises heart rate and muscle temperature so the first hard effort is less of a shock.',
+		why: 'The raise. Lifts heart rate and muscle temperature, so the drills and the first effort feel smoother.',
 		feel: 'Warm and loose, breathing a little harder by the end.',
-		form: ['Start easy and build over the minute.'],
+		form: ['Start easy and build over a couple of minutes.'],
 		mistakes: ['Starting too hard and arriving already tired'],
 		ref: WARMUP_REF,
 	},
@@ -89,11 +95,50 @@ export const WARMUP_DRILLS: Drill[] = [
 	},
 ];
 
+/**
+ * Quality sessions get a longer dynamic dose than easy and long runs, toward the
+ * 4 to 6 minute window the research supports before hard running. The drills are
+ * the same movements; only the dose changes, and the duration lives here as data
+ * so it is easy to tune without touching the engine.
+ */
+const QUALITY_DRILL_SEC = 50;
+export const QUALITY_WARMUP_DRILLS: Drill[] = WARMUP_DRILLS.slice(1).map((d) => ({
+	...d,
+	durationSec: QUALITY_DRILL_SEC,
+}));
+
+/**
+ * Potentiation for quality sessions: short strides with an easy jog back. They
+ * wake up the legs so the first hard effort of the session feels smooth.
+ */
+export const STRIDES: Drill[] = [
+	{
+		name: 'Stride',
+		durationSec: 20,
+		targets: ['legs', 'neuromuscular'],
+		why: 'A short acceleration wakes up the legs so the first hard effort feels smooth.',
+		feel: 'Fast and relaxed, building to about 90 percent effort.',
+		form: ['Build smoothly to fast over a few seconds, then ease down.', 'Stay tall and relaxed.'],
+		mistakes: ['Sprinting all out', 'Tensing the shoulders'],
+		ref: WARMUP_REF,
+	},
+	{
+		name: 'Easy jog back',
+		durationSec: 40,
+		targets: ['aerobic'],
+		why: 'Lets you recover fully so each stride stays sharp.',
+		feel: 'Easy and unhurried.',
+		form: ['Jog back the way you came.'],
+		mistakes: ['Rushing the recovery'],
+		ref: WARMUP_REF,
+	},
+];
+
 /** Cool-down stretches (~3 min): hold gently, no bouncing. */
 export const COOLDOWN_STRETCHES: Drill[] = [
 	{
 		name: 'Calf stretch',
-		durationSec: 45,
+		durationSec: 40,
 		targets: ['calves', 'Achilles'],
 		why: 'Calves and Achilles take the load of every step, so they tighten after running.',
 		feel: 'A stretch at the back of the lower leg.',
@@ -106,7 +151,7 @@ export const COOLDOWN_STRETCHES: Drill[] = [
 	},
 	{
 		name: 'Hamstring stretch',
-		durationSec: 45,
+		durationSec: 40,
 		targets: ['hamstrings'],
 		why: 'Hamstrings work hard on every stride and shorten with hard running.',
 		feel: 'A stretch along the back of the thigh.',
@@ -116,7 +161,7 @@ export const COOLDOWN_STRETCHES: Drill[] = [
 	},
 	{
 		name: 'Quad stretch',
-		durationSec: 45,
+		durationSec: 40,
 		targets: ['quadriceps', 'hip flexors'],
 		why: 'Quads and hip flexors tighten with the repetitive lift of running.',
 		feel: 'A stretch at the front of the thigh.',
@@ -126,7 +171,7 @@ export const COOLDOWN_STRETCHES: Drill[] = [
 	},
 	{
 		name: 'Hip flexor stretch',
-		durationSec: 45,
+		durationSec: 40,
 		targets: ['hip flexors', 'hips'],
 		why: 'Opens the front of the hip, which helps you run tall when tired.',
 		feel: 'A stretch at the front of the hip on the back leg.',
@@ -141,6 +186,7 @@ export const EXTRA_STRETCHES: Drill[] = [
 	{
 		name: 'Glute stretch',
 		durationSec: 45,
+		rounds: 2,
 		targets: ['glutes', 'hips'],
 		why: 'Glutes tighten with hill work and faster running; releasing them helps the hip move freely.',
 		feel: 'A stretch deep in the glute and outer hip.',
@@ -151,6 +197,7 @@ export const EXTRA_STRETCHES: Drill[] = [
 	{
 		name: 'Adductor stretch',
 		durationSec: 45,
+		rounds: 2,
 		targets: ['adductors', 'inner thigh'],
 		why: 'Keeps the inner thigh supple, which supports a steady, straight stride.',
 		feel: 'A stretch along the inner thigh.',
@@ -164,6 +211,7 @@ export const EXTRA_STRETCHES: Drill[] = [
 	{
 		name: 'Thoracic rotation',
 		durationSec: 45,
+		rounds: 2,
 		targets: ['mid-back', 'shoulders'],
 		why: 'Restores rotation in the upper back, which keeps the arm swing free.',
 		feel: 'A gentle twist through the upper back.',
@@ -177,6 +225,7 @@ export const EXTRA_STRETCHES: Drill[] = [
 	{
 		name: 'Chest and shoulder stretch',
 		durationSec: 45,
+		rounds: 2,
 		targets: ['chest', 'shoulders'],
 		why: 'Counters the rounded posture that builds up over long runs.',
 		feel: 'A stretch across the chest and the front of the shoulder.',
@@ -188,9 +237,10 @@ export const EXTRA_STRETCHES: Drill[] = [
 
 /**
  * A short mobility session. A flexibility goal beyond the current range adds the
- * extra stretches; otherwise it stays a maintenance routine. Hold times sit in
- * the 30 to 45 second range, which the research supports for range of motion
- * without the power cost of long holds (research/wave-3/8c).
+ * extra stretches; otherwise it stays a maintenance routine. Cool-down holds sit
+ * around 40 seconds, and the dedicated flexibility stretches run two rounds so
+ * the total time under stretch is met without a single hold long enough to cost
+ * power (research/wave-5/14a).
  */
 export function mobilityRoutine(building: boolean): Drill[] {
 	const dynamic = [WARMUP_DRILLS[1]!, WARMUP_DRILLS[2]!];

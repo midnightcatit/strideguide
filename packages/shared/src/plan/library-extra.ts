@@ -888,9 +888,9 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 25,
 		intensity: 'easy',
-		summary: 'A longer set of gentle holds across the whole body, each 40 seconds or so.',
+		summary: 'A longer set of gentle holds across the whole body, two short rounds each.',
 		purpose:
-			'Builds range of motion over time. 30 to 45 second holds work as well as long holds, and they avoid the power cost of holding for a minute or more.',
+			'Builds range of motion over time. Short holds work as well as long ones, and two rounds meet the total time without the power cost of a single long hold.',
 		targetRpe: [1, 3],
 		workout: wk([
 			block(
@@ -932,7 +932,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 						'Forearms on the frame, step through gently.',
 					),
 				],
-				1,
+				2,
 				'Holds',
 			),
 		]),
