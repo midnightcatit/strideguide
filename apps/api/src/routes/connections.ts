@@ -200,12 +200,36 @@ connections.get('/:provider/callback', async (c) => {
 			},
 		});
 
+	// Pull the first batch right away so the numbers are there when the runner
+	// lands back in the app. Best effort, and off the redirect path: a slow or
+	// failed first sync must never hold up the connect.
+	const db = c.get('db');
+	const row = (
+		await db
+			.select()
+			.from(schema.connections)
+			.where(
+				and(
+					eq(schema.connections.userId, state.uid),
+					eq(schema.connections.provider, provider),
+				),
+			)
+			.limit(1)
+	)[0];
+	if (row) {
+		try {
+			c.executionCtx.waitUntil(manualSyncConnection(c.env, db, row).catch(() => {}));
+		} catch {
+			// No execution context (for example in a test); the on-view sync will pull it.
+		}
+	}
+
 	return c.redirect(returnUrl(c.env, returnPath, { connected: provider }));
 });
 
 /**
  * Run a manual sync for one connection. Reuses the last result when a sync
- * succeeded within the last ten minutes, so a double tap does not call the
+ * succeeded within the last twenty minutes, so a double tap does not call the
  * provider again. Returns { synced, cached, lastSyncedAt }.
  */
 connections.post('/:provider/sync', requireAuth, async (c) => {

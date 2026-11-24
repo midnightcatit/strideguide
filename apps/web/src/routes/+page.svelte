@@ -19,16 +19,33 @@
 	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
 	import CalendarPreviewCard from '$lib/components/CalendarPreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
-	import SyncButton from '$lib/components/SyncButton.svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let note = $state<string | null>(null);
 	let health = $state<HealthMetricsPayload | null>(null);
-	// The sync button only does something when Google Health is linked. Until the
-	// connection check comes back, and if it fails, stay enabled rather than
-	// blocking a runner who is in fact connected.
-	let syncDisabled = $state(false);
+	// null while unknown, then true or false once the connection read comes back.
+	let healthConnected = $state<boolean | null>(null);
+	let healthBusy = $state(false);
+
+	/**
+	 * Read the connection, pull a throttled sync (the server reuses its cache
+	 * inside a twenty minute window, so this is not a live provider call every
+	 * time), then read the numbers. Runs on every visit to this view.
+	 */
+	async function loadHealth() {
+		healthBusy = true;
+		try {
+			const res = await api.connections();
+			healthConnected = !!res.providers.find((p) => p.id === 'google-health')?.connected;
+			if (healthConnected) await api.syncConnection('google-health').catch(() => {});
+			health = await api.healthMetrics(30).catch(() => null);
+		} catch {
+			healthConnected = null;
+		} finally {
+			healthBusy = false;
+		}
+	}
 
 	// Send a signed-in user with no plan to onboarding, once per session, unless
 	// they have said "not now". The session guard means the Dashboard tab still
@@ -156,23 +173,7 @@
 		await ensureAuth();
 		if (!auth.user) return;
 		await ensurePlan();
-		void api
-			.healthMetrics(30)
-			.then((h) => (health = h))
-			.catch(() => {
-				// no health data, or the call failed; the section shows its empty state
-			});
-		// Same connection read Settings and onboarding use, so the Sync button is
-		// greyed out until Google Health is linked.
-		void api
-			.connections()
-			.then((res) => {
-				const provider = res.providers.find((p) => p.id === 'google-health');
-				syncDisabled = !provider?.connected;
-			})
-			.catch(() => {
-				// cannot tell the state; leave the button enabled rather than wrong
-			});
+		void loadHealth();
 		note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 
 		let dismissed = false;
@@ -280,34 +281,27 @@
 		<CalendarPreviewCard />
 	</div>
 
-	<!-- Connected health: pull the latest, and a small read of the watch numbers -->
+	<!-- Connected health: a read-only view of the watch numbers. Syncing lives in
+	     Settings, and this pulls a throttled sync whenever the view opens. -->
 	<section aria-labelledby="health" class="mt-5">
 		<Card>
-			<div class="flex flex-wrap items-center justify-between gap-3">
-				<div class="min-w-0">
-					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
-					<p class="mt-0.5 text-sm text-steel">Your watch and health numbers, from the last 30 days.</p>
-				</div>
-				<SyncButton
-					disabled={syncDisabled}
-					onSynced={() =>
-						api
-							.healthMetrics(30)
-							.then((h) => (health = h))
-							.catch(() => {})}
-				/>
-			</div>
+			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
+			<p class="mt-0.5 text-sm text-steel">Your watch and health numbers, from the last 30 days.</p>
 			{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
 				<div class="mt-4">
 					<HealthSummary payload={health} max={4} />
 				</div>
 				<a href="/progress/health?from=/" class="mt-3 inline-block text-xs text-signal-ink hover:underline">See all health →</a>
+			{:else if healthConnected === false}
+				<p class="mt-3 text-sm text-steel">Connect a watch or health app in Settings to see your numbers here.</p>
+				<a href="/settings/connections" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Open Settings →</a>
+			{:else if healthConnected && healthBusy}
+				<p class="mt-3 text-sm text-steel">Connected. Pulling your data now.</p>
+			{:else if healthConnected}
+				<p class="mt-3 text-sm text-steel">Connected, but no data yet. Sync it in Settings.</p>
+				<a href="/settings/connections" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Sync in Settings →</a>
 			{:else}
-				<p class="mt-3 text-sm text-steel">
-					{syncDisabled
-						? 'Connect a health app or watch to see your numbers here.'
-						: 'Sync your watch to see your numbers here.'}
-				</p>
+				<p class="mt-3 text-sm text-steel">Your health numbers will appear here once a watch is connected.</p>
 			{/if}
 		</Card>
 	</section>

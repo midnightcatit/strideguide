@@ -10,7 +10,6 @@
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import HealthChart from '$lib/components/HealthChart.svelte';
 	import HealthBars from '$lib/components/HealthBars.svelte';
-	import SyncButton from '$lib/components/SyncButton.svelte';
 
 	/**
 	 * The health drill-down: every metric the API reports over a 7, 30 or 90 day
@@ -191,7 +190,6 @@
 			</button>
 		{/each}
 	</div>
-	<SyncButton onSynced={() => void load(windowDays)} />
 </div>
 
 {#if loading}
@@ -203,12 +201,12 @@
 {:else if !payload?.available}
 	<Card>
 		<p class="font-display text-lg font-medium">No health data yet</p>
-		<p class="mt-1 text-sm text-steel">Connect a health app or watch, then sync to fill this in. Health metrics show up here for the days your device reports them.</p>
+		<p class="mt-1 text-sm text-steel">Connect a health app or watch in Settings, then sync there. Health metrics show up here for the days your device reports them.</p>
 	</Card>
 {:else if !hasMetrics}
 	<Card>
 		<p class="font-display text-lg font-medium">Nothing in the last {windowDays} days</p>
-		<p class="mt-1 text-sm text-steel">Try a longer window, or sync to pull the latest from your device.</p>
+		<p class="mt-1 text-sm text-steel">Try a longer window, or sync in Settings to pull the latest from your device.</p>
 	</Card>
 {:else}
 	{#if hasKey('resting_hr') || hasKey('hrv_ms')}
