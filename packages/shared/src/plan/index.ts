@@ -2,6 +2,7 @@
 export * from './types';
 export * from './vdot';
 export * from './machines';
+export * from './muscle-groups';
 export * from './bodyweight';
 export * from './exercises';
 export * from './catalog';
