@@ -411,6 +411,24 @@ summary,
 	animation: sg-enter-up var(--dur-3) var(--ease-out) both;
 }
 
+/* A bar that grows up from its base. Transform only, so nothing reflows, and the
+   reduced-motion rule above zeroes it to an instant state. */
+@keyframes sg-grow-y {
+	from {
+		transform: scaleY(0.15);
+		opacity: 0.5;
+	}
+	to {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+}
+
+.grow-y {
+	transform-origin: bottom;
+	animation: sg-grow-y var(--dur-3) var(--ease-out) both;
+}
+
 /* Overlay motion: a backdrop fades, a sheet or card rises and settles. */
 @keyframes sg-fade-in {
 	from {

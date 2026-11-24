@@ -9,6 +9,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import WatchVitals from '$lib/components/WatchVitals.svelte';
 
 	let recovery = $state<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] } | null>(
 		null,
@@ -39,12 +40,6 @@
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
-
-	function fmtSleep(min: number): string {
-		const h = Math.floor(min / 60);
-		const m = Math.round(min % 60);
-		return m ? `${h}h ${m}m` : `${h}h`;
-	}
 
 	// What the runner's own logs add up to: paces, weekly distance, effort trend,
 	// and which session types they rated well. The same read seeds a rebuild.
@@ -144,6 +139,34 @@
 		<h1 class="font-display mt-1 text-2xl font-bold">{profileName}</h1>
 	</header>
 
+	<!-- The metric pages, each one reachable from here and from the dashboard -->
+	<section aria-labelledby="p-pages" class="mb-7">
+		<SectionHeader id="p-pages" eyebrow="Metric pages" />
+		<div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+			<a href="/progress/week?from=/progress" class="lift block rounded-xl" aria-label="Open the week breakdown">
+				<Card tone="sunken">
+					<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
+					<p class="mt-1 text-sm text-steel">The sessions done this week, one by one.</p>
+					<p class="mt-2 text-[11px] text-signal-ink">Open →</p>
+				</Card>
+			</a>
+			<a href="/progress/streak?from=/progress" class="lift block rounded-xl" aria-label="Open the activity heatmap">
+				<Card tone="sunken">
+					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
+					<p class="mt-1 text-sm text-steel">Your training days as a heatmap, over months.</p>
+					<p class="mt-2 text-[11px] text-signal-ink">Open →</p>
+				</Card>
+			</a>
+			<a href="/progress/volume?from=/progress" class="lift block rounded-xl" aria-label="Open the volume breakdown">
+				<Card tone="sunken">
+					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
+					<p class="mt-1 text-sm text-steel">Distance by day, week, month, year and all time.</p>
+					<p class="mt-2 text-[11px] text-signal-ink">Open →</p>
+				</Card>
+			</a>
+		</div>
+	</section>
+
 	{#if !hasLogs}
 		<Card>
 			<p class="font-display text-lg font-medium">Nothing logged yet</p>
@@ -187,26 +210,7 @@
 			<section aria-labelledby="p-recovery" class="mb-7">
 				<SectionHeader id="p-recovery" eyebrow="Recovery" meta="{recovery.signal.days} days" />
 				<Card tone="sunken">
-					<ul class="space-y-1 text-sm">
-						{#if recovery.signal.avgRestingHr}
-							<li class="flex justify-between">
-								<span>Resting heart rate</span>
-								<span class="tabular">{recovery.signal.avgRestingHr} bpm</span>
-							</li>
-						{/if}
-						{#if recovery.signal.avgHrvMs}
-							<li class="flex justify-between">
-								<span>HRV</span>
-								<span class="tabular">{recovery.signal.avgHrvMs} ms</span>
-							</li>
-						{/if}
-						{#if recovery.signal.avgSleepMin}
-							<li class="flex justify-between">
-								<span>Sleep</span>
-								<span class="tabular">{fmtSleep(recovery.signal.avgSleepMin)}</span>
-							</li>
-						{/if}
-					</ul>
+					<WatchVitals signal={recovery.signal} days={recovery.days} />
 					{#if recovery.signal.strained}
 						<p class="mt-3 text-sm leading-relaxed text-steel">
 							Your recent numbers look strained. The plan favours easing the volume until they settle.
@@ -216,7 +220,6 @@
 							Your recent numbers look steady against your own baseline.
 						</p>
 					{/if}
-					<p class="mt-2 text-xs text-steel">From the health data you have connected.</p>
 				</Card>
 			</section>
 		{/if}

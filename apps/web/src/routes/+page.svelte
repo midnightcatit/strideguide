@@ -7,15 +7,24 @@
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
+	import { logMs, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
+	import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
+	import SegmentedBar from '$lib/components/SegmentedBar.svelte';
+	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import WatchVitals from '$lib/components/WatchVitals.svelte';
+	import SyncButton from '$lib/components/SyncButton.svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let note = $state<string | null>(null);
+	let recovery = $state<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] } | null>(
+		null,
+	);
 
 	// Send a signed-in user with no plan to onboarding, once per session, unless
 	// they have said "not now". The session guard means the Dashboard tab still
@@ -67,29 +76,12 @@
 					.reduce((sum, s) => sum + (loggedBySession.get(s.id)?.runStats?.distanceKm ?? 0), 0)
 			: 0,
 	);
-	function logMs(v: unknown): number {
-		if (typeof v === 'number') return v * 1000;
-		const t = typeof v === 'string' ? Date.parse(v) : Number.NaN;
-		return Number.isNaN(t) ? 0 : t;
-	}
-	const logDays = $derived.by(() => {
-		const days = new Set<string>();
-		for (const l of store.logs) {
-			const ms = logMs(l.createdAt);
-			if (ms) days.add(new Date(ms).toISOString().slice(0, 10));
-		}
-		return days;
-	});
-	const streak = $derived.by(() => {
-		// Count back from today, or from yesterday if today has no log yet.
-		let cursor = logDays.has(todayIso) ? todayIso : addDaysIso(todayIso, -1);
-		let count = 0;
-		while (logDays.has(cursor)) {
-			count++;
-			cursor = addDaysIso(cursor, -1);
-		}
-		return count;
-	});
+	const logDays = $derived(trainedDays(store.logs));
+	const streak = $derived(currentStreak(logDays, todayIso));
+	const weekSegments = $derived((todayWeek?.sessions ?? []).map((s) => ({ filled: loggedBySession.has(s.id) })));
+	const weekPercent = $derived(weekPlanned ? (weekLogged / weekPlanned) * 100 : 0);
+	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
+	const weeklyMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
 	const weeksLike = $derived<WeekLike[]>(
 		(store.plan?.weeks ?? []).map((w) => ({
 			weekNumber: w.weekNumber,
@@ -148,6 +140,12 @@
 		await ensureAuth();
 		if (!auth.user) return;
 		await ensurePlan();
+		void api
+			.recovery()
+			.then((r) => (recovery = r))
+			.catch(() => {
+				// no health data, or the call failed; the section simply does not show
+			});
 		note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 
 		let dismissed = false;
@@ -234,27 +232,70 @@
 		</section>
 	{/if}
 
-	<!-- At a glance -->
+	<!-- At a glance: each card opens its full metric page -->
 	<div class="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-3">
-		<Card tone="sunken">
-			<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
-			<p class="tabular mt-1 text-xl font-semibold">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
-			<div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-hairline">
-				<div class="h-full rounded-full bg-ok" style="width: {weekPlanned ? (weekLogged / weekPlanned) * 100 : 0}%"></div>
-			</div>
-			<p class="mt-1 text-[11px] text-steel">sessions done</p>
-		</Card>
-		<Card tone="sunken">
-			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
-			<p class="tabular mt-1 text-lg text-steel">{fmtDistance(weekDoneKm)}<span class="text-sm"> / {fmtDistance(weekKm)}</span></p>
-			<p class="mt-1 text-[11px] text-steel">logged / planned</p>
-		</Card>
-		<Card tone="sunken">
-			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
-			<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
-			<p class="mt-1 text-[11px] text-steel">training</p>
-		</Card>
+		<a href="/progress/week?from=/" class="lift block rounded-xl" aria-label="This week, open the week breakdown">
+			<Card tone="sunken">
+				<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
+				<p class="tabular mt-1 text-xl font-semibold">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
+				<div class="mt-2.5">
+					<SegmentedBar
+						segments={weekSegments}
+						percent={weekPercent}
+						size="sm"
+						ariaLabel="{weekLogged} of {weekPlanned} sessions done this week"
+					/>
+				</div>
+				<p class="mt-2 text-[11px] text-signal-ink">See the week →</p>
+			</Card>
+		</a>
+		<a href="/progress/streak?from=/" class="lift block rounded-xl" aria-label="Streak, open the full activity heatmap">
+			<Card tone="sunken">
+				<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
+				<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
+				<div class="mt-2.5">
+					<ActivityHeatmap trainedDays={logDays} weeks={12} {todayIso} cell={6} gap={2} showMonthLabels={false} />
+				</div>
+				<p class="mt-2 text-[11px] text-signal-ink">See the heatmap →</p>
+			</Card>
+		</a>
+		<a href="/progress/volume?from=/" class="lift block rounded-xl" aria-label="Volume, open the full distance view">
+			<Card tone="sunken">
+				<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
+				<p class="tabular mt-1 text-lg text-steel">{fmtDistance(weekDoneKm)}<span class="text-sm"> / {fmtDistance(weekKm)}</span></p>
+				<div class="mt-2.5 flex items-end gap-0.5" style="height: 20px" aria-hidden="true">
+					{#each weekly as w (w.startIso)}
+						<div class="grow-y flex-1 rounded-[1px] bg-ok" style="height: {Math.max(2, Math.round((w.km / weeklyMax) * 18))}px"></div>
+					{/each}
+				</div>
+				<p class="mt-2 text-[11px] text-signal-ink">See all volume →</p>
+			</Card>
+		</a>
 	</div>
+
+	<!-- Connected health: pull the latest, and a small read of the watch numbers -->
+	<section aria-labelledby="health" class="mt-5">
+		<Card>
+			<div class="flex flex-wrap items-center justify-between gap-3">
+				<div class="min-w-0">
+					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
+					<p class="mt-0.5 text-sm text-steel">Pull the latest from your watch and health apps.</p>
+				</div>
+				<SyncButton
+					onSynced={() =>
+						api
+							.recovery()
+							.then((r) => (recovery = r))
+							.catch(() => {})}
+				/>
+			</div>
+			{#if recovery?.available && recovery.signal && (recovery.signal.avgRestingHr || recovery.signal.avgHrvMs || recovery.signal.avgSleepMin)}
+				<div class="mt-4">
+					<WatchVitals signal={recovery.signal} days={recovery.days} />
+				</div>
+			{/if}
+		</Card>
+	</section>
 
 	<div class="mt-2">
 		<a href="/calendar" class="text-xs text-steel hover:text-signal-ink">Open the calendar →</a>
