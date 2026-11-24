@@ -175,9 +175,11 @@ export const api = {
 	me: async (): Promise<ApiUser | null> => {
 		const res = await fetch('/auth/me', { credentials: 'include' });
 		if (!res.ok) return null;
-		const data = (await res.json()) as { user: { uid: string; email: string } | null };
+		const data = (await res.json()) as {
+			user: { uid: string; email: string; name?: string | null } | null;
+		};
 		if (!data.user) return null;
-		return { id: data.user.uid, email: data.user.email };
+		return { id: data.user.uid, email: data.user.email, name: data.user.name ?? null };
 	},
 
 	login: () => {

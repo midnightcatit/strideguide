@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
@@ -484,6 +485,21 @@
 	const CROSS_MORE = CROSS.slice(6);
 
 	onMount(async () => {
+		// Returning from the health connector: the callback sends the runner back to
+		// this page with connected set. Show the completion state, so the connect
+		// path ends on the same screen as the skip path.
+		if (page.url.searchParams.has('connected')) {
+			try {
+				const plan = await api.currentPlan();
+				if (plan?.weeks?.length) {
+					draft = plan;
+					done = true;
+					return;
+				}
+			} catch {
+				// No plan to show; fall through to the normal onboarding flow.
+			}
+		}
 		// Prefill the name from the Google sign-in, using the first word. Blank when
 		// Google gave us no name.
 		const googleName = auth.user?.name?.trim();
@@ -505,9 +521,10 @@
 	});
 
 	/** Open the connector in a new tab, so the answers on this page are never lost.
-	 * Returning to the app home keeps the connected tab off the settings page. */
+	 * The connector returns to this page, which shows the completion state, so the
+	 * runner lands on the finish screen whether they connect or skip. */
 	function connectHealth() {
-		window.open(api.connectionConnectUrl('google-health', '/'), '_blank', 'noopener');
+		window.open(api.connectionConnectUrl('google-health', '/onboarding'), '_blank', 'noopener');
 	}
 
 	/** A number input binds as a number, a text input as a string; normalise both. */
