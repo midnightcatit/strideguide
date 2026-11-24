@@ -128,3 +128,30 @@ over doing it serially.
   `prompt` is the usual rejection, so never send `model`, `variant` or `agent`. Send every other field
   as null. A task missing a `prompt`, `name` or `branchName` is rejected, and three rejected attempts
   abort the turn, so keep the shape exact.
+
+The exact start payload, with every field present. Note the brief is inside `tasks[].prompt`, and the
+top-level `prompt` is null:
+
+```json
+{
+  "action": null,
+  "mode": "worktree",
+  "versions": false,
+  "tasks": [
+    {
+      "name": "health UI",
+      "branchName": "feat/health-ui",
+      "baseBranch": "main",
+      "prompt": "The full brief goes here, inside tasks[].prompt, never the top-level prompt field."
+    }
+  ],
+  "worktreeID": null,
+  "filter": null,
+  "sessionID": null,
+  "prompt": null,
+  "replyTo": null,
+  "sectionID": null,
+  "questionID": null,
+  "answers": null
+}
+```
