@@ -35,6 +35,7 @@
 	let note = $state<string | null>(null);
 	let pickerDate = $state<string | null>(null);
 	let addError = $state<string | null>(null);
+	let revealId = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
 	let reviewing = $state<ClientActivity | null>(null);
 	let matchBusy = $state(false);
@@ -221,8 +222,9 @@
 		pickerDate = null;
 		if (!date) return;
 		try {
-			await api.addWorkout(date, w.id);
+			const { session } = await api.addWorkout(date, w.id);
 			addError = null;
+			revealId = session.id;
 			reloadPlan();
 		} catch (e) {
 			addError = e instanceof Error ? e.message : 'Could not add that workout.';
@@ -233,8 +235,9 @@
 		pickerDate = null;
 		if (!date) return;
 		try {
-			await api.addCustomWorkout(date, c);
+			const { session } = await api.addCustomWorkout(date, c);
 			addError = null;
+			revealId = session.id;
 			reloadPlan();
 		} catch (e) {
 			addError = e instanceof Error ? e.message : 'Could not add that workout.';
@@ -309,7 +312,7 @@
 
 {#if store.error}
 	<p class="mt-6 text-sm text-steel">{store.error}</p>
-{:else if !store.loaded}
+{:else if !store.loaded && !weeks.length}
 	<p class="tabular mt-6 text-sm text-steel">Loading…</p>
 {:else if !weeks.length}
 	<EmptyState
@@ -413,7 +416,7 @@
 					meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
 				/>
 				{#if daySessions.length}
-					<SessionCarousel sessions={daySessions} {card} />
+					<SessionCarousel sessions={daySessions} {card} bind:revealId />
 				{:else if selWeek}
 					<Card tone="sunken" frame>
 						<p class="text-sm text-steel">

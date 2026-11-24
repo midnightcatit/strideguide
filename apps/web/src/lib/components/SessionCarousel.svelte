@@ -5,9 +5,11 @@
 	let {
 		sessions,
 		card,
+		revealId = $bindable<string | null>(null),
 	}: {
 		sessions: ClientSession[];
 		card: Snippet<[ClientSession]>;
+		revealId?: string | null;
 	} = $props();
 
 	let active = $state(0);
@@ -30,6 +32,21 @@
 			el.scrollBy({ left: -step, behavior: 'smooth' });
 		}
 	}
+
+	// Bring a named session into view once it is on screen. The caller sets
+	// revealId to a session it just added; the effect waits until that session is
+	// in the list and its card is rendered, then scrolls the nearest edge into
+	// view (a no-op when it is already visible). It clears revealId afterwards so
+	// a later list change does not move the page again.
+	$effect(() => {
+		const id = revealId;
+		void sessions.length;
+		if (!id || !el) return;
+		const node = el.querySelector(`[data-session-id="${CSS.escape(id)}"]`);
+		if (!node) return;
+		node.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+		revealId = null;
+	});
 </script>
 
 {#if sessions.length === 0}
@@ -51,6 +68,7 @@
 	>
 		{#each sessions as s, i (s.id)}
 			<div
+				data-session-id={s.id}
 				class="reveal w-[calc(100vw-68px)] max-w-[360px] shrink-0 snap-center sm:w-[24rem] sm:max-w-none"
 				style="animation-delay: {i * 45}ms"
 			>

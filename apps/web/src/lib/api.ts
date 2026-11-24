@@ -247,13 +247,13 @@ export const api = {
 
 	/** Add a library workout to a day, or remove one the user added. */
 	addWorkout: (date: string, workoutId: string) =>
-		req<{ session: unknown }>('/plans/sessions', {
+		req<{ session: { id: string } }>('/plans/sessions', {
 			method: 'POST',
 			body: JSON.stringify({ date, workoutId }),
 		}),
 	/** Add a workout the runner typed in themselves, on a day inside the plan. */
 	addCustomWorkout: (date: string, custom: CustomWorkoutInput) =>
-		req<{ session: unknown }>('/plans/sessions', {
+		req<{ session: { id: string } }>('/plans/sessions', {
 			method: 'POST',
 			body: JSON.stringify({ date, custom }),
 		}),
