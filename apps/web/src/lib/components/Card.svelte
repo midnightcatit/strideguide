@@ -2,10 +2,12 @@
 	let {
 		tone = 'paper',
 		frame = false,
+		class: className = '',
 		children,
 	}: {
 		tone?: 'paper' | 'sunken';
 		frame?: boolean;
+		class?: string;
 		children?: import('svelte').Snippet;
 	} = $props();
 </script>
@@ -13,7 +15,7 @@
 <div
 	class="rounded-xl border border-hairline {tone === 'sunken'
 		? 'bg-sunken'
-		: 'bg-paper'} p-4 sm:p-5 {frame ? 'stage-card justify-center' : ''}"
+		: 'bg-paper'} p-4 sm:p-5 {frame ? 'stage-card justify-center' : ''} {className}"
 >
 	{@render children?.()}
 </div>

@@ -10,10 +10,13 @@
 	let {
 		provider = 'google-health',
 		label = 'Sync now',
+		disabled = false,
 		onSynced,
 	}: {
 		provider?: string;
 		label?: string;
+		/** True when there is no connection to sync; the button greys out and does nothing. */
+		disabled?: boolean;
 		onSynced?: (result: { synced: number; cached: boolean; lastSyncedAt: string }) => void;
 	} = $props();
 
@@ -21,7 +24,7 @@
 	let message = $state('');
 
 	async function run() {
-		if (status === 'syncing') return;
+		if (disabled || status === 'syncing') return;
 		status = 'syncing';
 		message = '';
 		try {
@@ -44,8 +47,8 @@
 	<button
 		type="button"
 		onclick={run}
-		disabled={status === 'syncing'}
-		class="rounded-md border border-hairline px-3.5 py-2 text-sm font-medium text-signal-ink hover:border-signal disabled:opacity-60"
+		disabled={disabled || status === 'syncing'}
+		class="rounded-md border border-hairline px-3.5 py-2 text-sm font-medium text-signal-ink hover:border-signal disabled:cursor-not-allowed disabled:text-steel disabled:opacity-50 disabled:hover:border-hairline"
 	>
 		{status === 'syncing' ? 'Syncing…' : label}
 	</button>

@@ -17,6 +17,7 @@
 		gap = 3,
 		showMonthLabels = true,
 		showWeekdays = false,
+		fluid = false,
 	}: {
 		trainedDays: string[] | Set<string>;
 		skippedDays?: string[] | Set<string>;
@@ -26,6 +27,8 @@
 		gap?: number;
 		showMonthLabels?: boolean;
 		showWeekdays?: boolean;
+		/** Fill the container width; cells grow square instead of a fixed pixel size. */
+		fluid?: boolean;
 	} = $props();
 
 	const trained = $derived(
@@ -92,17 +95,17 @@
 	);
 </script>
 
-<div class="inline-flex flex-col gap-1" role="img" aria-label={label}>
+<div class="{fluid ? 'flex w-full' : 'inline-flex'} flex-col gap-1" role="img" aria-label={label}>
 	{#if showMonthLabels}
-		<div class="flex" style="gap: {gap}px; padding-left: {showWeekdays ? cell + 8 : 0}px">
+		<div class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px{fluid ? '' : `; padding-left: ${showWeekdays ? cell + 8 : 0}px`}">
 			{#each columns as col, i (col.key)}
-				<span class="overflow-visible text-[9px] text-steel" style="width: {cell}px">
+				<span class="overflow-visible text-[9px] text-steel {fluid ? 'min-w-0 flex-1' : ''}" style={fluid ? '' : `width: ${cell}px`}>
 					{#if i === 0 || col.month !== columns[i - 1]?.month}{col.month}{/if}
 				</span>
 			{/each}
 		</div>
 	{/if}
-	<div class="flex" style="gap: {gap}px">
+	<div class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px">
 		{#if showWeekdays}
 			<div class="flex flex-col pr-1 text-[9px] text-steel" style="gap: {gap}px">
 				{#each ['M', '', 'W', '', 'F', '', 'S'] as d, i (i)}
@@ -111,11 +114,11 @@
 			</div>
 		{/if}
 		{#each columns as col (col.key)}
-			<div class="flex flex-col" style="gap: {gap}px">
+			<div class="flex flex-col {fluid ? 'min-w-0 flex-1' : ''}" style="gap: {gap}px">
 				{#each col.days as day (day.key)}
 					<span
-						class="rounded-[2px] transition-transform hover:scale-125 {cellClass(day.state)}"
-						style="width: {cell}px; height: {cell}px"
+						class="rounded-[2px] transition-transform hover:scale-125 {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
+						style={fluid ? '' : `width: ${cell}px; height: ${cell}px`}
 						title="{day.key}{day.state === 'done' ? ' · trained' : day.state === 'skipped' ? ' · skipped' : ''}"
 					></span>
 				{/each}

@@ -24,8 +24,8 @@
 	const href = $derived(`/progress/volume?from=${from}`);
 </script>
 
-<a {href} class="lift block rounded-xl" aria-label="Volume, open the full distance view">
-	<Card tone="sunken">
+<a {href} class="lift block h-full rounded-xl" aria-label="Volume, open the full distance view">
+	<Card tone="sunken" class="flex h-full flex-col">
 		<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
 		<p class="tabular mt-1 text-lg text-steel">{fmtDistance(doneKm)}<span class="text-sm"> / {fmtDistance(plannedKm)}</span></p>
 		<div class="mt-2.5 flex items-end gap-0.5" style="height: 20px" aria-hidden="true">
@@ -33,6 +33,6 @@
 				<div class="grow-y flex-1 rounded-[1px] bg-ok" style="height: {Math.max(2, Math.round((w.km / weeklyMax) * 18))}px"></div>
 			{/each}
 		</div>
-		<p class="mt-2 text-[11px] text-signal-ink">See all volume →</p>
+		<p class="mt-auto pt-2 text-[11px] text-signal-ink">See all volume →</p>
 	</Card>
 </a>
