@@ -118,7 +118,9 @@ over doing it serially.
 - Everything here still applies to delegated work: an isolated worktree, scoped `git add <path>`,
   additive migrations, no em dashes, tests in `packages/shared`.
 - **Calling Agent Manager correctly.** Start it with `action` null, `mode: "worktree"`,
-  `versions: false`, and a `tasks` array where each task has at least a `name` and a `prompt` (add
-  `branchName` for a worktree). Never pass `model` or `variant` without a prompt. Send every other field
-  as null. A task missing a prompt, name or branchName is rejected, and three rejected attempts abort
-  the turn, so keep the shape exact.
+  `versions: false`, and a `tasks` array where each task has `name`, `branchName` and `prompt`. Put the
+  brief in `tasks[].prompt`. The top-level `prompt` field is only for `action: prompt` to an existing
+  session, so send it as null on a start request. A task that carries `model` or `variant` but no
+  `prompt` is the usual rejection, so never send `model`, `variant` or `agent`. Send every other field
+  as null. A task missing a `prompt`, `name` or `branchName` is rejected, and three rejected attempts
+  abort the turn, so keep the shape exact.
