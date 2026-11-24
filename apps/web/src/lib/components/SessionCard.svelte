@@ -11,6 +11,7 @@
 		session,
 		eyebrow = '',
 		active = false,
+		editable = true,
 		logged = null,
 		onLog,
 		onStart,
@@ -22,6 +23,8 @@
 		session: ClientSession;
 		eyebrow?: string;
 		active?: boolean;
+		/** False for a day past the edit window: the card is history, so no actions. */
+		editable?: boolean;
 		logged?: ClientLog | null;
 		onLog?: () => void;
 		onStart?: () => void;
@@ -220,69 +223,71 @@
 		</div>
 	</div>
 
-	<div class="relative z-20 mt-4 flex shrink-0 items-center gap-2">
-		{#if status === 'done'}
-			{#if onLog}
+	{#if editable}
+		<div class="relative z-20 mt-4 flex shrink-0 items-center gap-2">
+			{#if status === 'done'}
+				{#if onLog}
+					<button
+						type="button"
+						onclick={onLog}
+						class="flex-1 rounded-md px-4 py-2 text-sm text-steel hover:text-signal-ink"
+					>
+						Edit details
+					</button>
+				{/if}
+			{:else if status === 'skipped'}
+				{#if onUnskip}
+					<button
+						type="button"
+						onclick={onUnskip}
+						class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
+					>
+						Un-skip
+					</button>
+				{/if}
+				{#if onLog}
+					<button
+						type="button"
+						onclick={onLog}
+						class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+					>
+						Log it
+					</button>
+				{/if}
+			{:else}
+				{#if onStart && session.prescription?.workout}
+					<button
+						type="button"
+						onclick={onStart}
+						class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
+					>
+						{status === 'in-progress' ? 'Resume' : 'Start'}
+					</button>
+				{/if}
+				{#if onLog}
+					<button
+						type="button"
+						onclick={onLog}
+						class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+					>
+						Log it
+					</button>
+				{/if}
+			{/if}
+			{#if onRemove}
 				<button
 					type="button"
-					onclick={onLog}
-					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
+					onclick={onRemove}
+					aria-label="Remove this workout"
+					class="shrink-0 rounded-md border border-hairline-strong px-3 py-3 text-sm text-steel hover:border-danger hover:text-danger"
 				>
-					Log again
+					✕
 				</button>
 			{/if}
-		{:else if status === 'skipped'}
-			{#if onUnskip}
-				<button
-					type="button"
-					onclick={onUnskip}
-					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
-				>
-					Un-skip
-				</button>
-			{/if}
-			{#if onLog}
-				<button
-					type="button"
-					onclick={onLog}
-					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
-				>
-					Log it
-				</button>
-			{/if}
-		{:else}
-			{#if onStart && session.prescription?.workout}
-				<button
-					type="button"
-					onclick={onStart}
-					class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90"
-				>
-					{status === 'in-progress' ? 'Resume' : 'Start'}
-				</button>
-			{/if}
-			{#if onLog}
-				<button
-					type="button"
-					onclick={onLog}
-					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
-				>
-					Log it
-				</button>
-			{/if}
-		{/if}
-		{#if onRemove}
-			<button
-				type="button"
-				onclick={onRemove}
-				aria-label="Remove this workout"
-				class="shrink-0 rounded-md border border-hairline-strong px-3 py-3 text-sm text-steel hover:border-danger hover:text-danger"
-			>
-				✕
-			</button>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
-	{#if status === 'in-progress' && onCancelProgress}
+	{#if editable && status === 'in-progress' && onCancelProgress}
 		<button
 			type="button"
 			onpointerdown={startCancel}
