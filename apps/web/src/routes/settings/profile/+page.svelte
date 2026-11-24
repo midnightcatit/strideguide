@@ -1,6 +1,37 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import { prefs, setPersonal, setVitals } from '$lib/prefs.svelte';
+	import { api, type ConnectionStatus } from '$lib/api';
+
+	// The linked-device state comes from the server, not from a value captured at
+	// build time, so the row is right the moment the runner returns from linking.
+	let device = $state<ConnectionStatus | null>(null);
+
+	async function loadDevice() {
+		try {
+			const res = await api.connections();
+			device = res.providers.find((p) => p.id === 'google-health') ?? null;
+		} catch {
+			// Leave the state unknown; the button still offers to link.
+		}
+	}
+
+	onMount(loadDevice);
+	// Refresh whenever the runner navigates back to this page, for example after
+	// finishing the Google Health link in another view.
+	afterNavigate((nav) => {
+		if (nav && nav.type === 'enter') return;
+		void loadDevice();
+	});
+
+	const deviceConnected = $derived(Boolean(device?.connected));
+	const deviceConfigured = $derived(device ? device.configured : true);
+
+	function linkDevice() {
+		window.location.href = api.connectionConnectUrl('google-health', '/settings/profile');
+	}
 </script>
 
 <SettingsHeader title="You" />
@@ -106,18 +137,38 @@
 			</label>
 		</div>
 
-		<button
-			type="button"
-			disabled
-			title="Coming soon"
-			class="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-hairline px-4 py-2.5 text-sm text-steel opacity-70"
-		>
-			<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-				<circle cx="10" cy="10" r="7" />
-				<path d="M10 6.5v3.5l2.5 1.5" />
-			</svg>
-			Link a device
-			<span class="text-xs">Coming soon</span>
-		</button>
+		{#if deviceConnected}
+			<div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-hairline px-4 py-2.5">
+				<span class="flex items-center gap-2 text-sm">
+					<svg class="h-4 w-4 text-signal-ink" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M5 10.5l3 3 7-7" />
+					</svg>
+					{device?.label ?? 'Google Health'} linked
+				</span>
+				<a href="/settings/connections" class="text-sm text-signal-ink hover:underline">Manage</a>
+			</div>
+		{:else if deviceConfigured}
+			<button
+				type="button"
+				onclick={linkDevice}
+				class="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+					<circle cx="10" cy="10" r="7" />
+					<path d="M10 6.5v3.5l2.5 1.5" />
+				</svg>
+				Link a device
+			</button>
+		{:else}
+			<button
+				type="button"
+				disabled
+				title="Not available"
+				class="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-hairline px-4 py-2.5 text-sm text-steel opacity-70"
+			>
+				Link a device
+				<span class="text-xs">Not available</span>
+			</button>
+		{/if}
 	</div>
 </section>
