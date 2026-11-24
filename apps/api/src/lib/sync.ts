@@ -6,6 +6,7 @@ import {
 	getAccessToken,
 	type ConnectionRow,
 } from './connections';
+import { getCached, putCache } from './cache';
 import {
 	GoogleHealthDataType,
 	listDataPointsBounded,
@@ -301,6 +302,88 @@ export async function syncConnection(
 			.catch(() => undefined);
 		return { activities: 0, daily: 0 };
 	}
+}
+
+/** A manual sync reuses the last result when a sync succeeded this recently. */
+export const MANUAL_SYNC_WINDOW_MS = 10 * 60 * 1000;
+
+/** Label stored with the cached manual-sync result. */
+const MANUAL_SYNC_CACHE_MODEL = 'connection-sync';
+
+function manualSyncCacheKey(connectionId: string): string {
+	return `connection-sync:${connectionId}`;
+}
+
+/**
+ * Whether a manual sync should call the provider now. A fresh success reuses the
+ * stored result; a failure or no history runs again.
+ */
+export function manualSyncNeeded(
+	lastSyncedAt: Date | null,
+	status: 'connected' | 'error',
+	now: Date,
+	windowMs: number = MANUAL_SYNC_WINDOW_MS,
+): boolean {
+	if (status === 'error') return true;
+	if (!lastSyncedAt) return true;
+	return now.getTime() - lastSyncedAt.getTime() >= windowMs;
+}
+
+/** What a manual sync hands back to the caller. */
+export interface ManualSyncOutcome {
+	synced: number;
+	cached: boolean;
+	lastSyncedAt: string;
+}
+
+/**
+ * Run one manual sync for a connection, or return the cached result when the last
+ * sync is still fresh. The caller has already confirmed the connection exists.
+ * Records the result count so a cached reply can report what the last run pulled.
+ */
+export async function manualSyncConnection(
+	env: Env,
+	db: Db,
+	connection: ConnectionRow,
+	now: Date = new Date(),
+): Promise<ManualSyncOutcome> {
+	if (!manualSyncNeeded(connection.lastSyncedAt, connection.status, now)) {
+		const stored = (await getCached(db, manualSyncCacheKey(connection.id))) as {
+			synced?: number;
+		} | null;
+		return {
+			synced: stored?.synced ?? 0,
+			cached: true,
+			lastSyncedAt: connection.lastSyncedAt!.toISOString(),
+		};
+	}
+
+	const result = await syncConnection(env, db, connection);
+	const synced = result.activities + result.daily;
+
+	const rows = await db
+		.select()
+		.from(schema.connections)
+		.where(eq(schema.connections.id, connection.id))
+		.limit(1);
+	const updated = rows[0];
+	const succeeded = updated?.status === 'connected' && updated.lastSyncedAt != null;
+
+	if (succeeded) {
+		await putCache(
+			db,
+			manualSyncCacheKey(connection.id),
+			{ synced },
+			MANUAL_SYNC_CACHE_MODEL,
+			Math.round(MANUAL_SYNC_WINDOW_MS / 1000),
+		).catch(() => undefined);
+	}
+
+	return {
+		synced: succeeded ? synced : 0,
+		cached: false,
+		lastSyncedAt: (updated?.lastSyncedAt ?? connection.lastSyncedAt)?.toISOString() ?? '',
+	};
 }
 
 /** How many connections one cron pass will sync. */

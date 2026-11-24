@@ -26,6 +26,7 @@ import {
 	providerClientId,
 	providerClientSecret,
 } from '../lib/providers';
+import { manualSyncConnection } from '../lib/sync';
 
 /**
  * Health connector OAuth. Mounted at /connections so the callback URI is
@@ -200,6 +201,32 @@ connections.get('/:provider/callback', async (c) => {
 		});
 
 	return c.redirect(returnUrl(c.env, returnPath, { connected: provider }));
+});
+
+/**
+ * Run a manual sync for one connection. Reuses the last result when a sync
+ * succeeded within the last ten minutes, so a double tap does not call the
+ * provider again. Returns { synced, cached, lastSyncedAt }.
+ */
+connections.post('/:provider/sync', requireAuth, async (c) => {
+	const provider = c.req.param('provider');
+	if (!isProviderId(provider)) return c.json({ error: 'unknown_provider' }, 400);
+
+	const user = c.get('user')!;
+	const db = c.get('db');
+	const rows = await db
+		.select()
+		.from(schema.connections)
+		.where(and(eq(schema.connections.userId, user.id), eq(schema.connections.provider, provider)))
+		.limit(1);
+
+	const row = rows[0];
+	if (!row) {
+		return c.json({ error: 'not_connected', message: 'Connect this app before syncing.' }, 404);
+	}
+
+	const result = await manualSyncConnection(c.env, db, row);
+	return c.json(result);
 });
 
 /** Revoke at the provider where supported, then drop the local row. */

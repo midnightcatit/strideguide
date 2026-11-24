@@ -277,6 +277,15 @@ export const api = {
 	disconnectConnection: (provider: string) =>
 		reqRoot<{ ok: boolean }>(`/connections/${provider}/disconnect`, { method: 'POST' }),
 
+	/** Run a manual sync for a connection. When a sync succeeded in the last ten
+	 * minutes the server returns the stored result with cached: true instead of
+	 * calling the provider again. synced is the number of records pulled. */
+	syncConnection: (provider: string) =>
+		reqRoot<{ synced: number; cached: boolean; lastSyncedAt: string }>(
+			`/connections/${provider}/sync`,
+			{ method: 'POST' },
+		),
+
 	/** Imported activities, each with its proposed or confirmed match to the plan. */
 	activities: () => req<{ activities: ClientActivity[] }>('/activities'),
 

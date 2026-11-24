@@ -24,6 +24,9 @@
 	let loadError = $state('');
 	let pendingDisconnect = $state<ConnectionStatus | null>(null);
 	let busy = $state(false);
+	let syncingId = $state<string | null>(null);
+	let syncNote = $state('');
+	let syncError = $state('');
 
 	const connectedParam = $derived(page.url.searchParams.get('connected'));
 	const errorParam = $derived(page.url.searchParams.get('error'));
@@ -40,16 +43,16 @@
 		return `Synced ${Math.round(hours / 24)} d ago`;
 	}
 
-	async function load() {
-		loading = true;
+	async function load(silent = false) {
+		if (!silent) loading = true;
 		loadError = '';
 		try {
 			const res = await api.connections();
 			providers = res.providers;
 		} catch (e) {
-			loadError = e instanceof Error ? e.message : 'Could not load connections.';
+			if (!silent) loadError = e instanceof Error ? e.message : 'Could not load connections.';
 		} finally {
-			loading = false;
+			if (!silent) loading = false;
 		}
 	}
 
@@ -57,6 +60,25 @@
 
 	function connect(provider: ConnectionStatus) {
 		window.location.href = api.connectionConnectUrl(provider.id);
+	}
+
+	async function syncNow(provider: ConnectionStatus) {
+		syncingId = provider.id;
+		syncNote = '';
+		syncError = '';
+		try {
+			const res = await api.syncConnection(provider.id);
+			syncNote = res.cached
+				? 'Already up to date. Nothing new to pull right now.'
+				: res.synced === 0
+					? 'No new workouts to pull yet.'
+					: `Pulled ${res.synced} ${res.synced === 1 ? 'workout' : 'workouts'}.`;
+			await load(true);
+		} catch (e) {
+			syncError = e instanceof Error ? e.message : 'Could not sync. Try again.';
+		} finally {
+			syncingId = null;
+		}
 	}
 
 	async function doDisconnect() {
@@ -78,7 +100,8 @@
 
 <p class="mb-5 text-sm leading-relaxed text-steel">
 	Link the apps that already record your training, so the work you do outside the plan counts here.
-	Disconnecting removes the stored tokens from our side.
+	Syncing pulls your recent workouts from the linked app. Disconnecting removes the stored tokens from
+	our side.
 </p>
 
 {#if connectedParam}
@@ -98,7 +121,7 @@
 		<p class="text-sm text-steel">{loadError}</p>
 		<button
 			type="button"
-			onclick={load}
+			onclick={() => load()}
 			class="mt-3 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink"
 		>
 			Try again
@@ -138,14 +161,37 @@
 					{#if !provider.configured}
 						<p class="text-xs text-steel">This connector is not available on this server.</p>
 					{:else if provider.connected}
-						<button
-							type="button"
-							disabled={busy}
-							onclick={() => (pendingDisconnect = provider)}
-							class="rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-danger hover:text-danger disabled:opacity-60"
-						>
-							Disconnect
-						</button>
+						<div class="flex flex-wrap items-center gap-2">
+							<button
+								type="button"
+								disabled={syncingId !== null}
+								onclick={() => syncNow(provider)}
+								class="flex items-center gap-2 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink disabled:opacity-60"
+							>
+								{#if syncingId === provider.id}
+									<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
+										<path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+									</svg>
+									Syncing
+								{:else}
+									Sync now
+								{/if}
+							</button>
+							<button
+								type="button"
+								disabled={busy || syncingId !== null}
+								onclick={() => (pendingDisconnect = provider)}
+								class="rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-danger hover:text-danger disabled:opacity-60"
+							>
+								Disconnect
+							</button>
+						</div>
+						{#if syncNote}
+							<p class="mt-2 text-xs text-steel">{syncNote}</p>
+						{:else if syncError}
+							<p class="mt-2 text-xs text-danger">{syncError}</p>
+						{/if}
 					{:else}
 						<button
 							type="button"
