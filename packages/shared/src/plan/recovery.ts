@@ -1,10 +1,13 @@
 /**
- * Recovery signal from daily health data (resting HR, HRV, sleep), when a
- * connector has supplied it. Pure and I/O-free, and entirely optional: callers
- * that have no health data simply do not call it, and the plan is unaffected.
+ * Recovery signal from daily health data (resting HR, HRV, sleep and the newer
+ * vitals), when a connector has supplied it. Pure and I/O-free, and entirely
+ * optional: callers that have no health data simply do not call it, and the plan
+ * is unaffected.
  *
  * The read compares the most recent few days against the rest of the window, so
- * a personal baseline is used rather than an absolute population number.
+ * a personal baseline is used rather than an absolute population number. Every
+ * signal is optional and only flags when the data is there, so a device that
+ * reports nothing does not look healthy or strained; it simply stays quiet.
  */
 
 export interface HealthDay {
@@ -13,6 +16,11 @@ export interface HealthDay {
 	restingHr?: number | null;
 	hrvMs?: number | null;
 	sleepMin?: number | null;
+	spo2Avg?: number | null;
+	respiratoryRate?: number | null;
+	sleepTempC?: number | null;
+	vo2Max?: number | null;
+	steps?: number | null;
 }
 
 export interface RecoverySignal {
@@ -21,10 +29,15 @@ export interface RecoverySignal {
 	avgRestingHr?: number;
 	avgHrvMs?: number;
 	avgSleepMin?: number;
+	avgSpo2Pct?: number;
+	avgRespiratoryRate?: number;
 	restingHrElevated: boolean;
 	hrvSuppressed: boolean;
 	shortSleep: boolean;
-	/** Any flag raised, meaning the runner may be carrying fatigue. */
+	lowSpo2: boolean;
+	respiratoryRateElevated: boolean;
+	sleepTempElevated: boolean;
+	/** Any flag raised, meaning the runner may be carrying fatigue or illness. */
 	strained: boolean;
 }
 
@@ -39,6 +52,12 @@ export interface RecoveryConfig {
 	shortSleepMin: number;
 	/** Below this many days the read is too thin to flag anything. */
 	minDays: number;
+	/** Oxygen saturation under this percent is worth flagging. */
+	lowSpo2Pct: number;
+	/** Breathing-rate rise over baseline, as a fraction, that counts as up. */
+	respiratoryRateElevatedPct: number;
+	/** Night temperature rise over baseline, in Celsius, that counts as up. */
+	sleepTempElevatedC: number;
 }
 
 export const RECOVERY_CONFIG: RecoveryConfig = {
@@ -47,7 +66,47 @@ export const RECOVERY_CONFIG: RecoveryConfig = {
 	hrvSuppressedPct: 0.15,
 	shortSleepMin: 6 * 60,
 	minDays: 3,
+	lowSpo2Pct: 94,
+	respiratoryRateElevatedPct: 0.1,
+	sleepTempElevatedC: 0.5,
 };
+
+/**
+ * How a stored metric key becomes a health day field, kept as data so a new
+ * metric can feed the read without a new branch. Keys match the sync's own
+ * metric vocabulary.
+ */
+export const HEALTH_METRIC_FIELDS: { metric: string; field: keyof HealthDay }[] = [
+	{ metric: 'resting_hr', field: 'restingHr' },
+	{ metric: 'hrv_ms', field: 'hrvMs' },
+	{ metric: 'sleep_min', field: 'sleepMin' },
+	{ metric: 'spo2_avg', field: 'spo2Avg' },
+	{ metric: 'respiratory_rate', field: 'respiratoryRate' },
+	{ metric: 'sleep_temp_c', field: 'sleepTempC' },
+	{ metric: 'vo2_max', field: 'vo2Max' },
+	{ metric: 'steps', field: 'steps' },
+];
+
+/** The numeric fields on a day, so a metric key can be assigned by name. */
+type NumericHealthField = Exclude<keyof HealthDay, 'date'>;
+
+/**
+ * Build one health day from a stored metrics map (metric key to value). A key the
+ * day does not carry is left absent, never zero.
+ */
+export function dayFromMetrics(
+	date: string,
+	metrics: Record<string, number | null | undefined>,
+): HealthDay {
+	const day: HealthDay = { date };
+	for (const { metric, field } of HEALTH_METRIC_FIELDS) {
+		const value = metrics[metric];
+		if (typeof value === 'number' && Number.isFinite(value)) {
+			day[field as NumericHealthField] = value;
+		}
+	}
+	return day;
+}
 
 function mean(values: number[]): number | undefined {
 	if (!values.length) return undefined;
@@ -84,8 +143,9 @@ export function normalizeHealthRow(raw: Record<string, unknown>): HealthDay | nu
 /**
  * Read a recovery signal from the most recent days of health data. Expects the
  * days sorted newest first or oldest first; it sorts by date itself. Flags a
- * strain when recent resting HR runs high, HRV runs low, or sleep runs short
- * against the runner's own baseline.
+ * strain when recent resting HR runs high, HRV runs low, sleep runs short,
+ * oxygen saturation dips, breathing rate climbs or night temperature rises,
+ * each against the runner's own baseline where a baseline is possible.
  */
 export function recoverySignal(days: HealthDay[], cfg: RecoveryConfig = RECOVERY_CONFIG): RecoverySignal {
 	const sorted = [...days]
@@ -96,6 +156,9 @@ export function recoverySignal(days: HealthDay[], cfg: RecoveryConfig = RECOVERY
 		restingHrElevated: false,
 		hrvSuppressed: false,
 		shortSleep: false,
+		lowSpo2: false,
+		respiratoryRateElevated: false,
+		sleepTempElevated: false,
 		strained: false,
 	};
 	if (sorted.length < cfg.minDays) return out;
@@ -112,12 +175,19 @@ export function recoverySignal(days: HealthDay[], cfg: RecoveryConfig = RECOVERY
 	const recentRhr = avg((d) => d.restingHr);
 	const recentHrv = avg((d) => d.hrvMs);
 	const recentSleep = avg((d) => d.sleepMin);
+	const recentSpo2 = avg((d) => d.spo2Avg);
+	const recentRr = avg((d) => d.respiratoryRate);
+	const recentTemp = avg((d) => d.sleepTempC);
 	const baseRhr = base((d) => d.restingHr);
 	const baseHrv = base((d) => d.hrvMs);
+	const baseRr = base((d) => d.respiratoryRate);
+	const baseTemp = base((d) => d.sleepTempC);
 
 	out.avgRestingHr = recentRhr != null ? Math.round(recentRhr) : undefined;
 	out.avgHrvMs = recentHrv != null ? Math.round(recentHrv) : undefined;
 	out.avgSleepMin = recentSleep != null ? Math.round(recentSleep) : undefined;
+	out.avgSpo2Pct = recentSpo2 != null ? Math.round(recentSpo2 * 10) / 10 : undefined;
+	out.avgRespiratoryRate = recentRr != null ? Math.round(recentRr * 10) / 10 : undefined;
 
 	if (recentRhr != null && baseRhr != null) {
 		out.restingHrElevated = recentRhr > baseRhr + cfg.restingHrElevatedBpm;
@@ -128,7 +198,22 @@ export function recoverySignal(days: HealthDay[], cfg: RecoveryConfig = RECOVERY
 	if (recentSleep != null) {
 		out.shortSleep = recentSleep < cfg.shortSleepMin;
 	}
+	if (recentSpo2 != null) {
+		out.lowSpo2 = recentSpo2 < cfg.lowSpo2Pct;
+	}
+	if (recentRr != null && baseRr != null && baseRr > 0) {
+		out.respiratoryRateElevated = recentRr > baseRr * (1 + cfg.respiratoryRateElevatedPct);
+	}
+	if (recentTemp != null && baseTemp != null) {
+		out.sleepTempElevated = recentTemp > baseTemp + cfg.sleepTempElevatedC;
+	}
 
-	out.strained = out.restingHrElevated || out.hrvSuppressed || out.shortSleep;
+	out.strained =
+		out.restingHrElevated ||
+		out.hrvSuppressed ||
+		out.shortSleep ||
+		out.lowSpo2 ||
+		out.respiratoryRateElevated ||
+		out.sleepTempElevated;
 	return out;
 }

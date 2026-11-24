@@ -10,38 +10,139 @@ import { getCached, putCache } from './cache';
 import {
 	GoogleHealthDataType,
 	listDataPointsBounded,
+	rollUpDataPoints,
 	type GoogleDataPoint,
+	type GoogleHealthDataTypeValue,
+	type GoogleRollupDataPoint,
+	type ListMethod,
 } from './google-health';
 import {
+	activeEnergyByDate,
+	activeMinutesByDate,
+	activeZoneMinutesByDate,
+	altitudeGainByDate,
 	combineDailyPatches,
+	distanceByDate,
+	floorsByDate,
+	healthRowValues,
+	heartRateRollupByDate,
+	mapBloodGlucose,
+	mapBodyFat,
+	mapCoreBodyTemperature,
 	mapDailyHeartRateVariability,
+	mapDailyOxygenSaturation,
+	mapDailyRespiratoryRate,
 	mapDailyRestingHeartRate,
+	mapDailySleepTemperature,
+	mapDailyVo2Max,
 	mapExercise,
+	mapHeight,
 	mapSleep,
-	mergeDailyRow,
+	mapWeight,
+	mergeDailyPatch,
+	sedentaryMinutesByDate,
 	stepsByDate,
 	syncSince,
+	totalCaloriesRollupByDate,
 	type DailyPatch,
-	type DailyRow,
+	type MappedSample,
 } from './google-health-map';
 
 /**
  * Provider sync. Pulls new records since the last sync for one connection and
  * upserts them, so a re-run never duplicates a row.
  *
- * Each run is bounded: a small page count per data type. The window starts at the
- * connection's `lastSyncedAt`, so the next run resumes where this one stopped.
- * Failures land on the connection's status; nothing here logs a token.
+ * The types to pull live in the two registries below, not in branches: a new
+ * data type is one entry with its page size, filter shape and mapper. Each run is
+ * bounded (a small page count per type) and resumes from `lastSyncedAt`, so the
+ * next run picks up where this one stopped. Failures land on the connection's
+ * status; nothing here logs a token.
  */
 
-/** Data types pulled per run, with the page size each accepts. */
-const PULLS = [
-	{ dataType: GoogleHealthDataType.exercise, pageSize: 25, method: 'list' as const },
-	// Sleep overlaps across sources, so reconcile dedupes it into one stream.
-	{ dataType: GoogleHealthDataType.sleep, pageSize: 25, method: 'reconcile' as const },
-	{ dataType: GoogleHealthDataType.steps, pageSize: 1000, method: 'list' as const },
-	{ dataType: GoogleHealthDataType.dailyRestingHeartRate, pageSize: 90, method: 'list' as const },
-	{ dataType: GoogleHealthDataType.dailyHeartRateVariability, pageSize: 90, method: 'list' as const },
+/** How a filter start is written for a type: interval, sample, daily or session. */
+type FilterKind = 'interval' | 'sample' | 'daily' | 'exercise' | 'sleep';
+
+interface PullBase {
+	dataType: GoogleHealthDataTypeValue;
+	pageSize: number;
+	method: ListMethod;
+	filterKind: FilterKind;
+}
+
+interface DailyPull extends PullBase {
+	map: (points: GoogleDataPoint[]) => DailyPatch[];
+}
+
+interface SamplePull extends PullBase {
+	map: (point: GoogleDataPoint) => MappedSample | null;
+}
+
+/** Map a point list one by one, dropping the ones a mapper cannot read. */
+function mapEach<T>(points: GoogleDataPoint[], map: (point: GoogleDataPoint) => T | null): T[] {
+	const out: T[] = [];
+	for (const point of points) {
+		const row = map(point);
+		if (row !== null) out.push(row);
+	}
+	return out;
+}
+
+/**
+ * Daily metrics, one row per civil day. Interval types (steps, distance, energy)
+ * sum their readings; the daily and session types carry one value already. Every
+ * type the granted scopes serve through list or reconcile is here.
+ */
+const DAILY_PULLS: DailyPull[] = [
+	{ dataType: GoogleHealthDataType.steps, pageSize: 1000, method: 'list', filterKind: 'interval', map: stepsByDate },
+	{ dataType: GoogleHealthDataType.distance, pageSize: 1000, method: 'list', filterKind: 'interval', map: distanceByDate },
+	{ dataType: GoogleHealthDataType.activeEnergyBurned, pageSize: 1000, method: 'list', filterKind: 'interval', map: activeEnergyByDate },
+	// Floors is reconcile only; a plain list is not served for it.
+	{ dataType: GoogleHealthDataType.floors, pageSize: 1000, method: 'reconcile', filterKind: 'interval', map: floorsByDate },
+	{ dataType: GoogleHealthDataType.activeZoneMinutes, pageSize: 1000, method: 'list', filterKind: 'interval', map: activeZoneMinutesByDate },
+	{ dataType: GoogleHealthDataType.activeMinutes, pageSize: 1000, method: 'list', filterKind: 'interval', map: activeMinutesByDate },
+	{ dataType: GoogleHealthDataType.altitude, pageSize: 1000, method: 'list', filterKind: 'interval', map: altitudeGainByDate },
+	{ dataType: GoogleHealthDataType.sedentaryPeriod, pageSize: 1000, method: 'list', filterKind: 'interval', map: sedentaryMinutesByDate },
+	{ dataType: GoogleHealthDataType.sleep, pageSize: 25, method: 'reconcile', filterKind: 'sleep', map: (points) => mapEach(points, mapSleep) },
+	{ dataType: GoogleHealthDataType.dailyRestingHeartRate, pageSize: 90, method: 'list', filterKind: 'daily', map: (points) => mapEach(points, mapDailyRestingHeartRate) },
+	{ dataType: GoogleHealthDataType.dailyHeartRateVariability, pageSize: 90, method: 'list', filterKind: 'daily', map: (points) => mapEach(points, mapDailyHeartRateVariability) },
+	{ dataType: GoogleHealthDataType.dailyOxygenSaturation, pageSize: 90, method: 'list', filterKind: 'daily', map: (points) => mapEach(points, mapDailyOxygenSaturation) },
+	{ dataType: GoogleHealthDataType.dailyRespiratoryRate, pageSize: 90, method: 'list', filterKind: 'daily', map: (points) => mapEach(points, mapDailyRespiratoryRate) },
+	{ dataType: GoogleHealthDataType.dailyVo2Max, pageSize: 90, method: 'list', filterKind: 'daily', map: (points) => mapEach(points, mapDailyVo2Max) },
+	{ dataType: GoogleHealthDataType.dailySleepTemperatureDerivations, pageSize: 90, method: 'list', filterKind: 'daily', map: (points) => mapEach(points, mapDailySleepTemperature) },
+];
+
+/**
+ * High-volume and rollup-only types, read through the rollup endpoint as daily
+ * windows. heart-rate arrives once a second, so a daily min, average and max
+ * comes from the aggregate rather than from reading the samples; total-calories
+ * has no list method at all, so a rollup is the only way to read it.
+ */
+interface RollupPull {
+	dataType: GoogleHealthDataTypeValue;
+	/** Max page size the rollup endpoint allows for this type. */
+	pageSize: number;
+	map: (points: GoogleRollupDataPoint[]) => DailyPatch[];
+}
+
+const ROLLUP_PULLS: RollupPull[] = [
+	{ dataType: GoogleHealthDataType.heartRate, pageSize: 14, map: heartRateRollupByDate },
+	{ dataType: GoogleHealthDataType.totalCalories, pageSize: 14, map: totalCaloriesRollupByDate },
+];
+
+/** One rollup window is a civil day; the range is aligned to the day boundary. */
+const ROLLUP_WINDOW_SECONDS = 24 * 60 * 60;
+
+/**
+ * Sparse point samples: genuine measurements at an instant with no daily or
+ * interval alternative. Types that also have a daily or rollup form (heart rate,
+ * SpO2, VO2 max) are read through those instead, so no sample is stored twice.
+ */
+const SAMPLE_PULLS: SamplePull[] = [
+	{ dataType: GoogleHealthDataType.weight, pageSize: 1000, method: 'list', filterKind: 'sample', map: mapWeight },
+	{ dataType: GoogleHealthDataType.bodyFat, pageSize: 1000, method: 'list', filterKind: 'sample', map: mapBodyFat },
+	{ dataType: GoogleHealthDataType.height, pageSize: 1000, method: 'list', filterKind: 'sample', map: mapHeight },
+	{ dataType: GoogleHealthDataType.coreBodyTemperature, pageSize: 1000, method: 'list', filterKind: 'sample', map: mapCoreBodyTemperature },
+	{ dataType: GoogleHealthDataType.bloodGlucose, pageSize: 1000, method: 'list', filterKind: 'sample', map: mapBloodGlucose },
 ];
 
 export interface SyncOptions {
@@ -54,6 +155,8 @@ export interface SyncOptions {
 export interface SyncResult {
 	activities: number;
 	daily: number;
+	metrics: number;
+	samples: number;
 }
 
 /** RFC 3339 instant, as the physical-time filters expect. */
@@ -71,64 +174,120 @@ function isoDay(date: Date): string {
 	return date.toISOString().slice(0, 10);
 }
 
-/**
- * Build the filter for one data type. Over-fetching is safe: activities upsert on
- * (provider, external_id) and daily rows merge by date, so an overlap costs a
- * read, never a duplicate.
- */
-function filterFor(dataType: string, since: Date): string {
-	const day = isoDay(since);
-	switch (dataType) {
-		case GoogleHealthDataType.exercise:
-			// Exercise only supports filtering by civil_start_time.
-			return `exercise.interval.civil_start_time >= "${civilTimestamp(since)}"`;
-		case GoogleHealthDataType.sleep:
-			// Sleep only supports filtering by its end time.
-			return `sleep.interval.end_time >= "${rfc3339(since)}"`;
-		case GoogleHealthDataType.steps:
-			return `steps.interval.start_time >= "${rfc3339(since)}"`;
-		case GoogleHealthDataType.dailyRestingHeartRate:
-			return `daily_resting_heart_rate.date >= "${day}"`;
-		case GoogleHealthDataType.dailyHeartRateVariability:
-			return `daily_heart_rate_variability.date >= "${day}"`;
-		default:
-			return '';
-	}
+/** The data type's field name in a filter: kebab-case becomes snake_case. */
+function snakeCase(dataType: string): string {
+	return dataType.replace(/-/g, '_');
 }
 
 /**
- * Fetch every type for the window, bounded by maxPages.
+ * Build the filter for one pull. Over-fetching is safe: activities upsert on
+ * (provider, external_id), and daily, metric and sample rows upsert on their own
+ * keys, so an overlap costs a read, never a duplicate.
+ */
+function filterFor(dataType: GoogleHealthDataTypeValue, kind: FilterKind, since: Date): string {
+	switch (kind) {
+		case 'exercise':
+			// Exercise only supports filtering by civil_start_time.
+			return `exercise.interval.civil_start_time >= "${civilTimestamp(since)}"`;
+		case 'sleep':
+			// Sleep only supports filtering by its end time.
+			return `sleep.interval.end_time >= "${rfc3339(since)}"`;
+		case 'interval':
+			return `${snakeCase(dataType)}.interval.start_time >= "${rfc3339(since)}"`;
+		case 'sample':
+			return `${snakeCase(dataType)}.sample_time.physical_time >= "${rfc3339(since)}"`;
+		case 'daily':
+			return `${snakeCase(dataType)}.date >= "${isoDay(since)}"`;
+	}
+}
+
+async function fetchPoints(
+	accessToken: string,
+	pull: PullBase,
+	since: Date,
+	maxPages: number,
+	baseUrl: string | undefined,
+): Promise<GoogleDataPoint[]> {
+	return listDataPointsBounded<GoogleDataPoint>(accessToken, pull.dataType, {
+		filter: filterFor(pull.dataType, pull.filterKind, since),
+		pageSize: pull.pageSize,
+		method: pull.method,
+		maxPages,
+		baseUrl,
+	});
+}
+
+/** The start of a UTC civil day, used to align a rollup range to its windows. */
+function startOfUtcDay(date: Date): Date {
+	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+/**
+ * Fetch every registered type for the window, bounded by maxPages.
  *
  * Each type is fetched on its own. If one fails (say the token lacks the scope
  * for that data type), the rest still sync; only a run where every type fails is
- * treated as an error, so a partial grant does not stall exercise sync.
+ * treated as an error, so a partial grant does not stall the rest.
  */
-async function pullPoints(
+async function pullHealthData(
 	accessToken: string,
 	since: Date,
+	now: Date,
 	options: SyncOptions,
-): Promise<GoogleDataPoint[]> {
+): Promise<{ daily: DailyPatch[]; samples: MappedSample[] }> {
 	const maxPages = options.maxPages ?? 2;
-	const all: GoogleDataPoint[] = [];
+	const daily: DailyPatch[] = [];
+	const samples: MappedSample[] = [];
 	let failures = 0;
-	for (const pull of PULLS) {
+	let attempts = 0;
+
+	for (const pull of DAILY_PULLS) {
+		attempts += 1;
 		try {
-			const points = await listDataPointsBounded<GoogleDataPoint>(accessToken, pull.dataType, {
-				filter: filterFor(pull.dataType, since),
-				pageSize: pull.pageSize,
-				method: pull.method,
-				maxPages,
-				baseUrl: options.baseUrl,
-			});
-			all.push(...points);
+			const points = await fetchPoints(accessToken, pull, since, maxPages, options.baseUrl);
+			daily.push(...pull.map(points));
 		} catch {
 			failures += 1;
 		}
 	}
-	if (failures === PULLS.length) {
+
+	// Rollup windows are aligned to the day, so the range starts at the start of
+	// the UTC day and ends at the start of tomorrow, closed-open.
+	const rangeStart = startOfUtcDay(since).toISOString();
+	const rangeEnd = new Date(startOfUtcDay(now).getTime() + 24 * 60 * 60 * 1000).toISOString();
+	for (const pull of ROLLUP_PULLS) {
+		attempts += 1;
+		try {
+			const res = await rollUpDataPoints(accessToken, pull.dataType, {
+				rangeStart,
+				rangeEnd,
+				windowSize: `${ROLLUP_WINDOW_SECONDS}s`,
+				pageSize: pull.pageSize,
+				baseUrl: options.baseUrl,
+			});
+			daily.push(...pull.map(res.rollupDataPoints ?? []));
+		} catch {
+			failures += 1;
+		}
+	}
+
+	for (const pull of SAMPLE_PULLS) {
+		attempts += 1;
+		try {
+			const points = await fetchPoints(accessToken, pull, since, maxPages, options.baseUrl);
+			for (const point of points) {
+				const row = pull.map(point);
+				if (row) samples.push(row);
+			}
+		} catch {
+			failures += 1;
+		}
+	}
+
+	if (attempts > 0 && failures === attempts) {
 		throw new Error('every data type fetch failed');
 	}
-	return all;
+	return { daily, samples };
 }
 
 /** Upsert mapped exercises, keyed so a repeated sync does not duplicate rows. */
@@ -178,12 +337,8 @@ async function upsertActivities(
 	return unique.length;
 }
 
-/** Upsert merged daily rows, keeping any field the incoming batch does not carry. */
-async function upsertDaily(
-	db: Db,
-	userId: string,
-	patches: DailyPatch[],
-): Promise<number> {
+/** Upsert merged daily rows into `health_daily`, keeping any field the batch omits. */
+async function upsertDaily(db: Db, userId: string, patches: DailyPatch[]): Promise<number> {
 	const combined = combineDailyPatches(patches);
 	if (combined.length === 0) return 0;
 
@@ -198,30 +353,41 @@ async function upsertDaily(
 				inArray(schema.healthDaily.date, dates),
 			),
 		);
-	const byDate = new Map<string, DailyRow>(
+	const existingByDate = new Map<string, DailyPatch>(
 		existingRows.map((row) => [
 			row.date,
 			{
 				date: row.date,
-				restingHr: row.restingHr,
-				hrvMs: row.hrvMs,
-				sleepMin: row.sleepMin,
-				steps: row.steps,
-				raw: (row.raw as Record<string, unknown> | null) ?? null,
+				metrics: {
+					resting_hr: row.restingHr ?? undefined,
+					hrv_ms: row.hrvMs ?? undefined,
+					sleep_min: row.sleepMin ?? undefined,
+					steps: row.steps ?? undefined,
+					// undefined values in a spread overwrite, so cleanMetrics drops the empties.
+				} as Record<string, number>,
+				raw: (row.raw as Record<string, unknown> | null) ?? undefined,
 			},
 		]),
 	);
 
-	const merged = combined.map((patch) => mergeDailyRow(byDate.get(patch.date), patch));
+	const merged = combined.map((patch) => {
+		const base = existingByDate.get(patch.date);
+		const existing: DailyPatch | undefined = base
+			? { date: base.date, metrics: cleanMetrics(base.metrics), raw: base.raw }
+			: undefined;
+		return mergeDailyPatch(existing, patch);
+	});
 
 	await db
 		.insert(schema.healthDaily)
 		.values(
-			merged.map((row) => ({
+			merged.map((patch) => ({
 				id: crypto.randomUUID(),
 				userId,
 				provider: 'google-health' as const,
-				...row,
+				date: patch.date,
+				...healthRowValues(patch),
+				raw: { ...(patch.raw ?? {}) },
 			})),
 		)
 		.onConflictDoUpdate({
@@ -242,6 +408,121 @@ async function upsertDaily(
 	return merged.length;
 }
 
+/** Drop keys whose value is not a number, so a null column never becomes a metric. */
+function cleanMetrics(metrics: Record<string, number>): Record<string, number> {
+	const out: Record<string, number> = {};
+	for (const [key, value] of Object.entries(metrics)) {
+		if (typeof value === 'number' && Number.isFinite(value)) out[key] = value;
+	}
+	return out;
+}
+
+/** Upsert the generic daily metrics, one row per day and metric. */
+async function upsertMetrics(db: Db, userId: string, patches: DailyPatch[]): Promise<number> {
+	const combined = combineDailyPatches(patches);
+	const rows: {
+		id: string;
+		userId: string;
+		provider: 'google-health';
+		date: string;
+		metric: string;
+		value: number;
+		unit: null;
+		raw: unknown;
+	}[] = [];
+	for (const patch of combined) {
+		for (const [metric, value] of Object.entries(patch.metrics)) {
+			if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+			rows.push({
+				id: crypto.randomUUID(),
+				userId,
+				provider: 'google-health' as const,
+				date: patch.date,
+				metric,
+				value,
+				unit: null,
+				raw: { [metric]: (patch.raw ?? {})[metric] ?? null },
+			});
+		}
+	}
+	if (rows.length === 0) return 0;
+
+	await db
+		.insert(schema.healthMetrics)
+		.values(rows)
+		.onConflictDoUpdate({
+			target: [
+				schema.healthMetrics.userId,
+				schema.healthMetrics.provider,
+				schema.healthMetrics.date,
+				schema.healthMetrics.metric,
+			],
+			set: {
+				value: sql`excluded.value`,
+				raw: sql`excluded.raw`,
+			},
+		});
+
+	return rows.length;
+}
+
+/** Upsert sparse point samples, one row per metric and sample time. */
+async function upsertSamples(db: Db, userId: string, samples: MappedSample[]): Promise<number> {
+	if (samples.length === 0) return 0;
+
+	// One row per metric and instant, so a repeat within a page is not sent twice.
+	const byKey = new Map<string, MappedSample>();
+	for (const row of samples) {
+		byKey.set(`${row.metric}:${row.sampleTime.getTime()}`, row);
+	}
+	const unique = [...byKey.values()];
+
+	await db
+		.insert(schema.healthSamples)
+		.values(
+			unique.map((row) => ({
+				id: crypto.randomUUID(),
+				userId,
+				provider: 'google-health' as const,
+				metric: row.metric,
+				sampleTime: row.sampleTime,
+				value: row.value,
+				unit: row.unit,
+				raw: row.raw,
+			})),
+		)
+		.onConflictDoUpdate({
+			target: [
+				schema.healthSamples.userId,
+				schema.healthSamples.provider,
+				schema.healthSamples.metric,
+				schema.healthSamples.sampleTime,
+			],
+			set: {
+				value: sql`excluded.value`,
+				unit: sql`excluded.unit`,
+				raw: sql`excluded.raw`,
+			},
+		});
+
+	return unique.length;
+}
+
+/** Fetch and upsert the exercises for the window. */
+async function syncActivities(
+	accessToken: string,
+	since: Date,
+	options: SyncOptions,
+): Promise<GoogleDataPoint[]> {
+	return fetchPoints(
+		accessToken,
+		{ dataType: GoogleHealthDataType.exercise, pageSize: 25, method: 'list', filterKind: 'exercise' },
+		since,
+		options.maxPages ?? 2,
+		options.baseUrl,
+	);
+}
+
 /**
  * Sync one connection. Never throws for a provider or network failure: it marks
  * the connection errored and records a message with no token in it.
@@ -258,21 +539,14 @@ export async function syncConnection(
 
 		const now = new Date();
 		const since = syncSince(connection.lastSyncedAt, now);
-		const points = await pullPoints(accessToken, since, options);
+		const { daily, samples } = await pullHealthData(accessToken, since, now, options);
 
-		const dailyPatches: DailyPatch[] = [];
-		for (const point of points) {
-			const sleep = mapSleep(point);
-			if (sleep) dailyPatches.push(sleep);
-			const resting = mapDailyRestingHeartRate(point);
-			if (resting) dailyPatches.push(resting);
-			const hrv = mapDailyHeartRateVariability(point);
-			if (hrv) dailyPatches.push(hrv);
-		}
-		dailyPatches.push(...stepsByDate(points));
+		const exercisePoints = await syncActivities(accessToken, since, options).catch(() => []);
 
-		const activityCount = await upsertActivities(db, connection.userId, points);
-		const dailyCount = await upsertDaily(db, connection.userId, dailyPatches);
+		const activityCount = await upsertActivities(db, connection.userId, exercisePoints);
+		const dailyCount = await upsertDaily(db, connection.userId, daily);
+		const metricCount = await upsertMetrics(db, connection.userId, daily);
+		const sampleCount = await upsertSamples(db, connection.userId, samples);
 
 		await db
 			.update(schema.connections)
@@ -284,7 +558,12 @@ export async function syncConnection(
 			})
 			.where(eq(schema.connections.id, connection.id));
 
-		return { activities: activityCount, daily: dailyCount };
+		return {
+			activities: activityCount,
+			daily: dailyCount,
+			metrics: metricCount,
+			samples: sampleCount,
+		};
 	} catch {
 		await db
 			.update(schema.connections)
@@ -300,7 +579,7 @@ export async function syncConnection(
 				method: 'SYNC',
 			})
 			.catch(() => undefined);
-		return { activities: 0, daily: 0 };
+		return { activities: 0, daily: 0, metrics: 0, samples: 0 };
 	}
 }
 
@@ -313,6 +592,9 @@ const MANUAL_SYNC_CACHE_MODEL = 'connection-sync';
 function manualSyncCacheKey(connectionId: string): string {
 	return `connection-sync:${connectionId}`;
 }
+
+/** How many connections one cron pass will sync. */
+export const MAX_CONNECTIONS_PER_RUN = 25;
 
 /**
  * Whether a manual sync should call the provider now. A fresh success reuses the
@@ -359,7 +641,7 @@ export async function manualSyncConnection(
 	}
 
 	const result = await syncConnection(env, db, connection);
-	const synced = result.activities + result.daily;
+	const synced = result.activities + result.daily + result.metrics + result.samples;
 
 	const rows = await db
 		.select()
@@ -385,9 +667,6 @@ export async function manualSyncConnection(
 		lastSyncedAt: (updated?.lastSyncedAt ?? connection.lastSyncedAt)?.toISOString() ?? '',
 	};
 }
-
-/** How many connections one cron pass will sync. */
-export const MAX_CONNECTIONS_PER_RUN = 25;
 
 /**
  * Cron fan-out. Picks the connections that most need a sync first: those a

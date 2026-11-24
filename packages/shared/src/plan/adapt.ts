@@ -232,12 +232,15 @@ export function suggestAdjustments(
 		}
 	}
 
-	// --- recovery: resting HR up, HRV down or short sleep, when health data exists ---
+	// --- recovery: resting HR up, HRV down, short sleep or a vital off baseline ---
 	if (recovery?.strained) {
 		const bits: string[] = [];
 		if (recovery.restingHrElevated) bits.push('resting heart rate is up');
 		if (recovery.hrvSuppressed) bits.push('HRV is down');
 		if (recovery.shortSleep) bits.push('sleep has been short');
+		if (recovery.lowSpo2) bits.push('oxygen saturation has dipped');
+		if (recovery.respiratoryRateElevated) bits.push('breathing rate is up');
+		if (recovery.sleepTempElevated) bits.push('night temperature is up');
 		out.push({
 			id: 'recovery',
 			kind: 'recovery',

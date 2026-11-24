@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeHealthRow, recoverySignal, type HealthDay } from './recovery';
+import { dayFromMetrics, normalizeHealthRow, recoverySignal, type HealthDay } from './recovery';
 
 function days(count: number, make: (i: number) => Partial<HealthDay>): HealthDay[] {
 	return Array.from({ length: count }, (_, i) => ({ date: `2026-06-${String(i + 1).padStart(2, '0')}`, ...make(i) }));
@@ -34,6 +34,44 @@ describe('recoverySignal', () => {
 		);
 		expect(s.shortSleep).toBe(true);
 		expect(s.strained).toBe(true);
+	});
+
+	it('flags a low oxygen saturation and a breathing rate above baseline', () => {
+		const s = recoverySignal(
+			days(7, (i) => (i >= 4 ? { spo2Avg: 92, respiratoryRate: 18 } : { spo2Avg: 97, respiratoryRate: 14 })),
+		);
+		expect(s.lowSpo2).toBe(true);
+		expect(s.respiratoryRateElevated).toBe(true);
+		expect(s.strained).toBe(true);
+	});
+
+	it('flags a night temperature above baseline', () => {
+		const s = recoverySignal(days(7, (i) => (i >= 4 ? { sleepTempC: 34.2 } : { sleepTempC: 33.4 })));
+		expect(s.sleepTempElevated).toBe(true);
+		expect(s.strained).toBe(true);
+	});
+
+	it('stays quiet when a device reports none of the new vitals', () => {
+		const s = recoverySignal(days(7, () => ({})));
+		expect(s.days).toBe(7);
+		expect(s.avgSpo2Pct).toBeUndefined();
+		expect(s.lowSpo2).toBe(false);
+		expect(s.strained).toBe(false);
+	});
+});
+
+describe('dayFromMetrics', () => {
+	it('maps stored metric keys onto the day and leaves the absent ones off', () => {
+		expect(dayFromMetrics('2026-06-01', { resting_hr: 52, spo2_avg: 96.5, steps: 9000 })).toEqual({
+			date: '2026-06-01',
+			restingHr: 52,
+			spo2Avg: 96.5,
+			steps: 9000,
+		});
+	});
+
+	it('ignores a null or non-finite metric rather than storing a zero', () => {
+		expect(dayFromMetrics('2026-06-01', { resting_hr: null, hrv_ms: Number.NaN })).toEqual({ date: '2026-06-01' });
 	});
 });
 

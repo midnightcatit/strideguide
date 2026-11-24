@@ -518,6 +518,72 @@ export const healthDaily = sqliteTable(
 	}),
 );
 
+/**
+ * Long-form daily health metrics from a connector: one row per user, provider,
+ * civil day and metric. The key is data, not a column, so adding a metric is a
+ * new row and never a migration. Units are metric; display happens at the edge.
+ */
+export const healthMetrics = sqliteTable(
+	'health_metrics',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
+		/** Civil day in the user's timezone, formatted YYYY-MM-DD. */
+		date: text('date').notNull(),
+		/** Stable metric key, for example `resting_hr` or `distance_m`. */
+		metric: text('metric').notNull(),
+		value: real('value').notNull(),
+		/** The metric unit, kept for reference; presentation is the client's job. */
+		unit: text('unit'),
+		/** The provider payload that fed this row, kept for a later reparse. */
+		raw: text('raw', { mode: 'json' }),
+		createdAt,
+	},
+	(t) => ({
+		userProviderDateMetricIdx: uniqueIndex('health_metrics_user_provider_date_metric_idx').on(
+			t.userId,
+			t.provider,
+			t.date,
+			t.metric,
+		),
+		userMetricDateIdx: index('health_metrics_user_metric_date_idx').on(t.userId, t.metric, t.date),
+	}),
+);
+
+/**
+ * Sparse point samples a connector reports at an instant rather than a day
+ * (weight, body fat, core temperature and the like). One row per user, provider,
+ * metric and sample time; heart rate is aggregated into `health_metrics` instead,
+ * since it arrives once a second.
+ */
+export const healthSamples = sqliteTable(
+	'health_samples',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		provider: text('provider', { enum: ['google-health'] }).notNull(),
+		metric: text('metric').notNull(),
+		sampleTime: integer('sample_time', { mode: 'timestamp' }).notNull(),
+		value: real('value').notNull(),
+		unit: text('unit'),
+		raw: text('raw', { mode: 'json' }),
+		createdAt,
+	},
+	(t) => ({
+		userProviderMetricTimeIdx: uniqueIndex('health_samples_user_provider_metric_time_idx').on(
+			t.userId,
+			t.provider,
+			t.metric,
+			t.sampleTime,
+		),
+	}),
+);
+
 /** Recent API errors, so production failures are inspectable without tailing. */
 export const appErrors = sqliteTable('app_errors', {
 	id: text('id').primaryKey(),

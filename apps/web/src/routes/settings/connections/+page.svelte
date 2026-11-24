@@ -8,7 +8,7 @@
 	/** What each connector reads, in plain words, shown on the card. */
 	const SHARED: Record<string, string> = {
 		'google-health':
-			'Workouts and daily activity from Google Health, including Fitbit and Pixel Watch. Its resting heart rate, HRV, sleep and steps fill your vitals and your progress charts.',
+			'Workouts and daily activity from Google Health, including Fitbit and Pixel Watch. It fills your vitals, progress charts and recovery read with resting heart rate, HRV, sleep, steps, distance, energy, active minutes, heart rate range, oxygen saturation, breathing rate, night temperature and body measurements like weight, body fat and height.',
 	};
 
 	const ERROR_TEXT: Record<string, string> = {

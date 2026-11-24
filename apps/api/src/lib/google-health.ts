@@ -17,13 +17,45 @@
 /** One constant for the whole surface, so correcting the version is trivial. */
 export const GOOGLE_HEALTH_API_BASE = 'https://health.googleapis.com/v4';
 
-/** Data types we read, as they appear in the URL path. */
+/**
+ * Data types we read, as they appear in the URL path. Every entry here is a type
+ * the four granted scopes expose and that the API serves through `list` or
+ * `reconcile`. The rule for adding one is a single entry: the sync reads this
+ * map, so a new type needs no new branch. Types that are rollup only, such as
+ * `total-calories`, are not listed: they have no list method and would need the
+ * separate rollup endpoint.
+ */
 export const GoogleHealthDataType = {
 	exercise: 'exercise',
 	sleep: 'sleep',
 	steps: 'steps',
+	// Activity and fitness (interval and sample types).
+	distance: 'distance',
+	activeEnergyBurned: 'active-energy-burned',
+	activeZoneMinutes: 'active-zone-minutes',
+	activeMinutes: 'active-minutes',
+	floors: 'floors',
+	altitude: 'altitude',
+	sedentaryPeriod: 'sedentary-period',
+	totalCalories: 'total-calories',
+	heartRate: 'heart-rate',
+	vo2Max: 'vo2-max',
+	runVo2Max: 'run-vo2-max',
+	dailyVo2Max: 'daily-vo2-max',
+	// Health metrics and measurements (daily, interval and sample types).
 	dailyRestingHeartRate: 'daily-resting-heart-rate',
 	dailyHeartRateVariability: 'daily-heart-rate-variability',
+	heartRateVariability: 'heart-rate-variability',
+	oxygenSaturation: 'oxygen-saturation',
+	dailyOxygenSaturation: 'daily-oxygen-saturation',
+	dailyRespiratoryRate: 'daily-respiratory-rate',
+	respiratoryRateSleepSummary: 'respiratory-rate-sleep-summary',
+	dailySleepTemperatureDerivations: 'daily-sleep-temperature-derivations',
+	coreBodyTemperature: 'core-body-temperature',
+	weight: 'weight',
+	bodyFat: 'body-fat',
+	height: 'height',
+	bloodGlucose: 'blood-glucose',
 } as const;
 
 export type GoogleHealthDataTypeValue =
@@ -118,6 +150,149 @@ export interface GoogleDailyHeartRateVariability {
 	deepSleepRootMeanSquareOfSuccessiveDifferencesMilliseconds?: number;
 }
 
+/**
+ * The time of a sample measurement. `physicalTime` is the instant and
+ * `utcOffset` is the user's offset at that instant, which is what turns the
+ * instant into the right civil day. Sample metrics (weight, heart rate) carry it.
+ */
+export interface GoogleSampleTime {
+	physicalTime?: string;
+	utcOffset?: string;
+	civilTime?: { year?: number; month?: number; day?: number; hours?: number; minutes?: number; seconds?: number };
+}
+
+/** A value measured over an interval: millimetres, kilocalories, a count or a duration. */
+export interface GoogleDistance {
+	interval: GoogleInterval;
+	millimeters?: string;
+}
+
+export interface GoogleActiveEnergyBurned {
+	interval: GoogleInterval;
+	kcal?: number;
+}
+
+export interface GoogleActiveZoneMinutes {
+	interval: GoogleInterval;
+	activeZoneMinutes?: string;
+	heartRateZone?: string;
+}
+
+export interface GoogleActiveMinutes {
+	interval: GoogleInterval;
+	activeMinutesByActivityLevel?: { activityLevel?: string; activeMinutes?: string }[];
+}
+
+export interface GoogleFloors {
+	interval: GoogleInterval;
+	count?: string;
+}
+
+export interface GoogleAltitude {
+	interval: GoogleInterval;
+	gainMillimeters?: string;
+}
+
+export interface GoogleSedentaryPeriod {
+	interval: GoogleInterval;
+}
+
+export interface GoogleHeartRate {
+	sampleTime?: GoogleSampleTime;
+	beatsPerMinute?: string;
+}
+
+export interface GoogleOxygenSaturation {
+	sampleTime?: GoogleSampleTime;
+	percentage?: number;
+}
+
+export interface GoogleHeartRateVariability {
+	sampleTime?: GoogleSampleTime;
+	rootMeanSquareOfSuccessiveDifferencesMilliseconds?: number;
+	standardDeviationMilliseconds?: number;
+}
+
+export interface GoogleWeight {
+	sampleTime?: GoogleSampleTime;
+	weightGrams?: number;
+	notes?: string;
+}
+
+export interface GoogleBodyFat {
+	sampleTime?: GoogleSampleTime;
+	percentage?: number;
+}
+
+export interface GoogleHeight {
+	sampleTime?: GoogleSampleTime;
+	heightMillimeters?: string;
+}
+
+export interface GoogleCoreBodyTemperature {
+	id?: string;
+	sampleTime?: GoogleSampleTime;
+	temperatureCelsius?: number;
+	measurementLocation?: string;
+}
+
+export interface GoogleBloodGlucose {
+	sampleTime?: GoogleSampleTime;
+	bloodGlucoseMilligramsPerDeciliter?: number;
+}
+
+export interface GoogleVo2Max {
+	sampleTime?: GoogleSampleTime;
+	vo2Max?: number;
+	measurementMethod?: string;
+}
+
+export interface GoogleRunVo2Max {
+	sampleTime?: GoogleSampleTime;
+	runVo2Max?: number;
+}
+
+export interface GoogleRespiratoryRateStatistics {
+	breathsPerMinute?: number;
+	standardDeviation?: number;
+	signalToNoise?: number;
+}
+
+export interface GoogleRespiratoryRateSleepSummary {
+	sampleTime?: GoogleSampleTime;
+	fullSleepStats?: GoogleRespiratoryRateStatistics;
+	deepSleepStats?: GoogleRespiratoryRateStatistics;
+	lightSleepStats?: GoogleRespiratoryRateStatistics;
+	remSleepStats?: GoogleRespiratoryRateStatistics;
+}
+
+export interface GoogleDailyOxygenSaturation {
+	date?: GoogleDate;
+	averagePercentage?: number;
+	lowerBoundPercentage?: number;
+	upperBoundPercentage?: number;
+	standardDeviationPercentage?: number;
+}
+
+export interface GoogleDailyRespiratoryRate {
+	date?: GoogleDate;
+	breathsPerMinute?: number;
+}
+
+export interface GoogleDailyVo2Max {
+	date?: GoogleDate;
+	vo2Max?: number;
+	cardioFitnessLevel?: string;
+	estimated?: boolean;
+}
+
+export interface GoogleDailySleepTemperatureDerivations {
+	date?: GoogleDate;
+	nightlyTemperatureCelsius?: number;
+	baselineTemperatureCelsius?: number;
+	relativeNightlyStddev30dCelsius?: number;
+}
+
 /** Every data point carries a `name` only when the type is identifiable. */
 export interface GoogleDataPoint {
 	name?: string;
@@ -125,13 +300,71 @@ export interface GoogleDataPoint {
 	exercise?: GoogleExercise;
 	sleep?: GoogleSleep;
 	steps?: GoogleSteps;
+	distance?: GoogleDistance;
+	activeEnergyBurned?: GoogleActiveEnergyBurned;
+	activeZoneMinutes?: GoogleActiveZoneMinutes;
+	activeMinutes?: GoogleActiveMinutes;
+	floors?: GoogleFloors;
+	altitude?: GoogleAltitude;
+	sedentaryPeriod?: GoogleSedentaryPeriod;
+	heartRate?: GoogleHeartRate;
+	vo2Max?: GoogleVo2Max;
+	runVo2Max?: GoogleRunVo2Max;
+	dailyVo2Max?: GoogleDailyVo2Max;
 	dailyRestingHeartRate?: GoogleDailyRestingHeartRate;
 	dailyHeartRateVariability?: GoogleDailyHeartRateVariability;
+	heartRateVariability?: GoogleHeartRateVariability;
+	oxygenSaturation?: GoogleOxygenSaturation;
+	dailyOxygenSaturation?: GoogleDailyOxygenSaturation;
+	dailyRespiratoryRate?: GoogleDailyRespiratoryRate;
+	respiratoryRateSleepSummary?: GoogleRespiratoryRateSleepSummary;
+	dailySleepTemperatureDerivations?: GoogleDailySleepTemperatureDerivations;
+	coreBodyTemperature?: GoogleCoreBodyTemperature;
+	weight?: GoogleWeight;
+	bodyFat?: GoogleBodyFat;
+	height?: GoogleHeight;
+	bloodGlucose?: GoogleBloodGlucose;
 }
 
 export interface GoogleListResponse<T> {
 	dataPoints?: T[];
 	nextPageToken?: string;
+}
+
+/**
+ * One aggregated window from the rollup endpoint. The type-specific value is a
+ * single field (heart rate, total calories, and so on) holding min, average,
+ * max or a sum over the window. `startTime` marks the window, aligned to the
+ * requested `windowSize`, so a one-day window gives a daily series without ever
+ * reading the raw samples.
+ */
+export interface GoogleRollupDataPoint {
+	startTime?: string;
+	endTime?: string;
+	heartRate?: {
+		beatsPerMinuteMin?: number;
+		beatsPerMinuteAvg?: number;
+		beatsPerMinuteMax?: number;
+	};
+	totalCalories?: { kcalSum?: number };
+}
+
+export interface GoogleRollupResponse {
+	rollupDataPoints?: GoogleRollupDataPoint[];
+	nextPageToken?: string;
+}
+
+export interface RollupOptions {
+	/** Inclusive start of the rolled-up range, RFC 3339 and window aligned. */
+	rangeStart: string;
+	/** Exclusive end of the rolled-up range, RFC 3339. */
+	rangeEnd: string;
+	/** Window size as a Google duration, for example `"86400s"` for a day. */
+	windowSize: string;
+	pageSize?: number;
+	pageToken?: string;
+	/** Overridable so tests can point at a fake server. */
+	baseUrl?: string;
 }
 
 export type ListMethod = 'list' | 'reconcile';
@@ -215,4 +448,43 @@ export async function listDataPointsBounded<T extends GoogleDataPoint>(
 	}
 
 	return out;
+}
+
+/**
+ * Roll one data type up into fixed windows (a day, say) and read the aggregate
+ * values. This is how the high-volume types are read: heart rate arrives once a
+ * second, so a daily min, average and max comes from the rollup endpoint rather
+ * than from reading the samples. Only the `rollUp`-capable types work here.
+ */
+export async function rollUpDataPoints(
+	accessToken: string,
+	dataType: GoogleHealthDataTypeValue,
+	options: RollupOptions,
+): Promise<GoogleRollupResponse> {
+	const base = options.baseUrl ?? GOOGLE_HEALTH_API_BASE;
+	const path = `${base}/users/me/dataTypes/${dataType}/dataPoints:rollUp`;
+
+	const body: Record<string, unknown> = {
+		range: { startTime: options.rangeStart, endTime: options.rangeEnd },
+		windowSize: options.windowSize,
+	};
+	if (options.pageSize !== undefined) body.pageSize = options.pageSize;
+	if (options.pageToken) body.pageToken = options.pageToken;
+
+	const res = await fetch(path, {
+		method: 'POST',
+		headers: {
+			authorization: `Bearer ${accessToken}`,
+			accept: 'application/json',
+			'content-type': 'application/json',
+		},
+		body: JSON.stringify(body),
+	});
+
+	if (!res.ok) {
+		throw new GoogleHealthError(res.status, `Google Health ${dataType} rollup failed (${res.status})`);
+	}
+
+	const parsed = (await res.json()) as GoogleRollupResponse;
+	return { rollupDataPoints: parsed.rollupDataPoints ?? [], nextPageToken: parsed.nextPageToken ?? '' };
 }
