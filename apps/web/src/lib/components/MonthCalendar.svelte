@@ -25,7 +25,27 @@
 	const todayIso = localIso();
 
 	let monthOffset = $state(0);
-	let mode = $state<'month' | 'list'>('month');
+	const MODE_KEY = 'sg:calendarMode';
+	// The month or list choice is remembered with the other sg: prefs, so a
+	// runner who left on list opens on list next time.
+	function readMode(): 'month' | 'list' {
+		if (typeof localStorage === 'undefined') return 'month';
+		try {
+			return localStorage.getItem(MODE_KEY) === 'list' ? 'list' : 'month';
+		} catch {
+			return 'month';
+		}
+	}
+	let mode = $state<'month' | 'list'>(readMode());
+	function setMode(next: 'month' | 'list') {
+		mode = next;
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.setItem(MODE_KEY, next);
+		} catch {
+			// A private window can block storage; the choice still holds this visit.
+		}
+	}
 	let sheetIso = $state<string | null>(null);
 	let detailTarget = $state<ClientSession | null>(null);
 	let playTarget = $state<ClientSession | null>(null);
@@ -33,6 +53,7 @@
 	let pickerDate = $state<string | null>(null);
 	let addError = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
+	let listEl = $state<HTMLDivElement | undefined>(undefined);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -205,7 +226,9 @@
 		try {
 			const { session } = await api.addWorkout(date, w.id);
 			addError = null;
-			sheetIso = date;
+			// The day sheet belongs to the month view. In the list, stay put and
+			// let the reveal effect scroll the new card into view.
+			if (mode === 'month') sheetIso = date;
 			revealId = session.id;
 			reloadPlan();
 		} catch (e) {
@@ -219,7 +242,7 @@
 		try {
 			const { session } = await api.addCustomWorkout(date, c);
 			addError = null;
-			sheetIso = date;
+			if (mode === 'month') sheetIso = date;
 			revealId = session.id;
 			reloadPlan();
 		} catch (e) {
@@ -230,6 +253,21 @@
 	const listDays = $derived.by(() => {
 		const dates = [...byDate.keys()].filter((d) => d >= todayIso).sort();
 		return dates.slice(0, 45).map((d) => ({ date: d, sessions: byDate.get(d) ?? [] }));
+	});
+	/** Total sessions in the list, so the reveal effect re-runs when one is added. */
+	const listCount = $derived(listDays.reduce((n, day) => n + day.sessions.length, 0));
+	// Bring a freshly added session into view in the list view, where the runner
+	// already is. Mirrors the carousel reveal: it waits for the card to render,
+	// scrolls the nearest edge into view, then clears revealId.
+	$effect(() => {
+		const id = revealId;
+		void listCount;
+		if (!id || mode !== 'list' || !listEl) return;
+		const node = listEl.querySelector(`[data-session-id="${CSS.escape(id)}"]`);
+		if (!node) return;
+		const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+		node.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
+		revealId = null;
 	});
 	function dateHeading(iso: string): string {
 		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
@@ -257,8 +295,8 @@
 		<span class="calendar-thumb rounded-md bg-ink" style="transform: translateX({mode === 'list' ? '100%' : '0%'})"></span>
 	</span>
 	<div class="relative grid grid-cols-2">
-		<button type="button" aria-pressed={mode === 'month'} onclick={() => (mode = 'month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
-		<button type="button" aria-pressed={mode === 'list'} onclick={() => (mode = 'list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
+		<button type="button" aria-pressed={mode === 'month'} onclick={() => setMode('month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
+		<button type="button" aria-pressed={mode === 'list'} onclick={() => setMode('list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
 	</div>
 </div>
 
@@ -310,7 +348,7 @@
 	</div>
 	</div>
 {:else}
-	<div class="mx-auto mt-4 max-w-2xl space-y-4">
+	<div bind:this={listEl} class="mx-auto mt-4 max-w-2xl space-y-4">
 		{#each listDays as day (day.date)}
 			<section class="rounded-2xl border border-hairline bg-sunken/50 p-3 shadow-[0_1px_4px_rgba(25,28,34,0.07)]">
 				<div class="flex items-center justify-between gap-2">
@@ -326,11 +364,13 @@
 				<div class="relative mt-2">
 					<div class="scroll-modern flex snap-x gap-2 overflow-x-auto pb-1">
 						{#each day.sessions as s (s.id)}
-							<MiniSessionCard
-								session={s}
-								logged={loggedBySession.get(s.id) ?? null}
-								onOpen={() => (detailTarget = s)}
-							/>
+							<div data-session-id={s.id} class="shrink-0 snap-start">
+								<MiniSessionCard
+									session={s}
+									logged={loggedBySession.get(s.id) ?? null}
+									onOpen={() => (detailTarget = s)}
+								/>
+							</div>
 						{/each}
 					</div>
 					<div
