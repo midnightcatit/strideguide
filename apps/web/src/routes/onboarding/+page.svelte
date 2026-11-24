@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import TimeInput from '$lib/components/TimeInput.svelte';
+	import FavoritePicker from '$lib/components/FavoritePicker.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, type LibraryWorkout } from '@strideguide/shared/plan';
@@ -10,7 +11,7 @@
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
 	import { dragToDay } from '$lib/actions';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
@@ -66,6 +67,10 @@
 	>('both');
 	let equipmentItems = $state<('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[]>([]);
 	let gymPreset = $state<string | undefined>(undefined);
+	// Machines and workouts the runner would rather train. A soft preference the
+	// plan reaches for when it fits; it is stored in prefs and read at generation.
+	let favoriteMachines = $state<string[]>([]);
+	let favoriteWorkouts = $state<string[]>([]);
 	let strengthDays = $state(2);
 	let sessionMinutes = $state(45);
 	let tunedStrength = $state(false);
@@ -325,6 +330,15 @@
 					'Two sessions a week is the sweet spot for most runners.',
 					'A 30 minute session is about 5 moves, 45 minutes about 6, and an hour about 8.',
 					'Make the lowering phase the slow part, then add load or harder variations over time.',
+				],
+			},
+			{
+				id: 'favorites',
+				title: 'Anything you would rather train?',
+				lede: 'Pick machines and workouts you enjoy. When they fit the day, the plan reaches for them first: strength sessions lean on your machines, and a mobility day names one of your workouts. Leave it blank if you have no preference.',
+				guide: [
+					'A favorite only applies where it fits the day, so the plan is never forced into a session that does not suit it.',
+					'Pick as many or as few as you like. The plan fills the rest itself.',
 				],
 			},
 			{
@@ -777,6 +791,10 @@
 			await setEquipment(equipment);
 			await setEquipmentItems(equipmentItems);
 			await setGymPreset(gymPreset);
+
+			// Store the favorites next, so the generated plan can lean on them.
+			await setFavoriteMachines(favoriteMachines);
+			await setFavoriteWorkouts(favoriteWorkouts);
 
 			await Promise.race([
 				api.generatePlan(body),
@@ -1274,6 +1292,8 @@
 						{/each}
 					</div>
 					<p class="mt-3 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">{recMinutes.reason}</p>
+				{:else if step.id === 'favorites'}
+					<FavoritePicker bind:favoriteMachines bind:favoriteWorkouts />
 				{:else if step.id === 'flexibility'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Flexibility today</p>
 					<div class="mt-2 flex gap-2">

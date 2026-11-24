@@ -54,6 +54,8 @@ settings.put(
 				.optional(),
 			gymPreset: z.string().max(40).optional(),
 			machineItems: z.array(z.string().max(60)).max(60).optional(),
+			favoriteMachines: z.array(z.string().max(60)).max(60).optional(),
+			favoriteWorkouts: z.array(z.string().max(60)).max(60).optional(),
 			connectNudgeDismissed: z.boolean().optional(),
 		}),
 	),

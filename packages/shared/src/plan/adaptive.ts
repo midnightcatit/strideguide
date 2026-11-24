@@ -41,6 +41,8 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 		targetDate: input.targetDate,
 		equipment: input.equipment,
 		machines: input.machines,
+		favoriteMachines: input.favoriteMachines,
+		favoriteWorkouts: input.favoriteWorkouts,
 		crossLoad: input.crossLoad,
 		baseline: {
 			...input.baseline,

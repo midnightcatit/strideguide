@@ -29,6 +29,8 @@ export async function loadPrefs(): Promise<void> {
 		prefs.equipmentItems = res.prefs.equipmentItems;
 		prefs.gymPreset = res.prefs.gymPreset;
 		prefs.machineItems = res.prefs.machineItems;
+		prefs.favoriteMachines = res.prefs.favoriteMachines;
+		prefs.favoriteWorkouts = res.prefs.favoriteWorkouts;
 		prefs.connectNudgeDismissed = res.prefs.connectNudgeDismissed;
 	} catch {
 		// unauthenticated or offline: keep defaults
@@ -48,6 +50,30 @@ export async function setMachineItems(machineItems: Prefs['machineItems']): Prom
 	prefs.machineItems = machineItems;
 	try {
 		await api.putSettings({ machineItems });
+	} catch {
+		// best-effort; ui already updated
+	}
+}
+
+/** The machines the runner likes; a soft preference the strength builder leans on. */
+export async function setFavoriteMachines(
+	favoriteMachines: Prefs['favoriteMachines'],
+): Promise<void> {
+	prefs.favoriteMachines = favoriteMachines;
+	try {
+		await api.putSettings({ favoriteMachines });
+	} catch {
+		// best-effort; ui already updated
+	}
+}
+
+/** The library workouts the runner likes; the plan names one when it fits the day. */
+export async function setFavoriteWorkouts(
+	favoriteWorkouts: Prefs['favoriteWorkouts'],
+): Promise<void> {
+	prefs.favoriteWorkouts = favoriteWorkouts;
+	try {
+		await api.putSettings({ favoriteWorkouts });
 	} catch {
 		// best-effort; ui already updated
 	}
