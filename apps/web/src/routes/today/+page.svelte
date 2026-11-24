@@ -8,7 +8,6 @@
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex, sessionTypeLabel } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { daySwipe } from '$lib/actions';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
@@ -318,7 +317,7 @@
 	<header class="mb-2">
 		<div class="flex items-baseline justify-between gap-3">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</p>
-			<p class="tabular text-xs text-steel">{dateLabel}{#if selWeek} · W{selWeek.weekNumber}{/if}</p>
+			<p class="tabular text-xs text-steel">{dateLabel}{#if selWeek} · Week {selWeek.weekNumber}{/if}</p>
 		</div>
 		<h1 class="font-display mt-1 text-2xl font-bold">
 			{daySessions.length
@@ -351,10 +350,11 @@
 			{loggedBySession}
 			onSelect={selectDay}
 			onWeekStep={stepWeek}
+			onDayStep={stepDay}
 		/>
 	</div>
 
-	<!-- Day panel: swipe it to step a day, or use the flanking arrows (laptop). -->
+	<!-- Day panel: the week listing above steps the day; the flanking arrows do the same on a laptop. -->
 	<div class="flex items-stretch gap-2">
 		<button
 			type="button"
@@ -369,13 +369,12 @@
 			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:h-[var(--panel-h)] sm:overflow-y-auto"
 			role="group"
 			aria-label="Day panel"
-			use:daySwipe={stepDay}
 		>
 			{#key selectedIso}
 				<div class={dayDir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
 					<SectionHeader
 						id="day-sessions"
-						eyebrow={selWeek ? `W${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
+						eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
 						meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
 					/>
 					{#if daySessions.length}
@@ -406,7 +405,7 @@
 
 			{#if selWeek}
 				<hr class="my-6 border-hairline" />
-				<SectionHeader id="week-so-far" eyebrow="Week so far" meta={`W${selWeek.weekNumber}`} />
+				<SectionHeader id="week-so-far" eyebrow="Week so far" />
 				<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
 					{#each selWeek.sessions as s (s.id)}
 						{@const done = loggedBySession.has(s.id)}
@@ -441,17 +440,17 @@
 {/if}
 
 {#if playTarget}
-	<SessionPlayer session={playTarget} eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`} onClose={() => (playTarget = null)} onFinish={() => { logTarget = playTarget; playTarget = null; }} />
+	<SessionPlayer session={playTarget} eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`} onClose={() => (playTarget = null)} onFinish={() => { logTarget = playTarget; playTarget = null; }} />
 {/if}
 
 {#if logTarget}
-	<LogSheet session={logTarget} eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`} onClose={() => (logTarget = null)} onSaved={(log) => { upsertLog(log); logTarget = null; }} />
+	<LogSheet session={logTarget} eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`} onClose={() => (logTarget = null)} onSaved={(log) => { upsertLog(log); logTarget = null; }} />
 {/if}
 
 {#if detailTarget}
 	<SessionDetail
 		session={detailTarget}
-		eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`}
+		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
 		logged={loggedBySession.get(detailTarget.id) ?? null}
 		onClose={() => (detailTarget = null)}
 		onLog={() => { logTarget = detailTarget; detailTarget = null; }}
@@ -462,7 +461,7 @@
 {#snippet card(s: ClientSession)}
 	<SessionCard
 		session={s}
-		eyebrow={`${profileName} · W${selWeek?.weekNumber ?? ''}`}
+		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
 		active={isToday}
 		logged={loggedBySession.get(s.id) ?? null}
 		onLog={() => logSession(s)}
