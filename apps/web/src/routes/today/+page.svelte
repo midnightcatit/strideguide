@@ -74,8 +74,11 @@
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = new Date().toISOString().slice(0, 10);
 	let selectedIso = $state(todayIso);
-	// Which way the day moved, so the panel slides in the direction you stepped.
+	// Which way it moved, so the panel slides in the direction you stepped.
 	let dayDir = $state<1 | -1>(1);
+	// A week step gets a stronger slide than a single day step, so switching
+	// weeks (even between two empty ones) reads clearly.
+	let changeKind = $state<'day' | 'week'>('day');
 	const isToday = $derived(selectedIso === todayIso);
 
 	const profileName = $derived(
@@ -188,11 +191,13 @@
 	}
 
 	function stepDay(n: number) {
+		changeKind = 'day';
 		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n);
 	}
 	// The week control moves the whole window; the day control moves a single day.
 	function stepWeek(n: number) {
+		changeKind = 'week';
 		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n * 7);
 	}
@@ -237,10 +242,12 @@
 	function selectDay(day: number) {
 		if (!selWeek?.startDate) return;
 		const iso = addDaysIso(selWeek.startDate, day);
+		changeKind = 'day';
 		dayDir = iso >= selectedIso ? 1 : -1;
 		selectedIso = iso;
 	}
 	function goToday() {
+		changeKind = 'day';
 		dayDir = selectedIso < todayIso ? 1 : -1;
 		selectedIso = todayIso;
 	}
@@ -351,6 +358,7 @@
 			onSelect={selectDay}
 			onWeekStep={stepWeek}
 			onDayStep={stepDay}
+			weekDir={dayDir}
 		/>
 	</div>
 
@@ -371,7 +379,15 @@
 			aria-label="Day panel"
 		>
 			{#key selectedIso}
-				<div class={dayDir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
+				<div
+					class={changeKind === 'week'
+						? dayDir === 1
+							? 'sg-enter-week-right'
+							: 'sg-enter-week-left'
+						: dayDir === 1
+							? 'sg-enter-right'
+							: 'sg-enter-left'}
+				>
 					<SectionHeader
 						id="day-sessions"
 						eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
@@ -381,7 +397,10 @@
 						<SessionCarousel sessions={daySessions} {card} />
 					{:else if selWeek}
 						<Card tone="sunken" frame>
-							<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
+							<p class="text-sm text-steel">
+								Rest day, {dateLabel} (week {selWeek.weekNumber}). Nothing scheduled here, and that is part
+								of the plan.
+							</p>
 						</Card>
 					{:else}
 						<Card tone="sunken" frame>

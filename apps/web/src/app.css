@@ -429,6 +429,44 @@ summary,
 	animation: sg-grow-y var(--dur-3) var(--ease-out) both;
 }
 
+/* A week step gets a stronger, slightly slower slide than a single day step, so
+   switching weeks, even between two empty ones, reads as a real change. */
+@keyframes sg-enter-week-right {
+	from {
+		opacity: 0;
+		transform: translateX(28px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+@keyframes sg-enter-week-left {
+	from {
+		opacity: 0;
+		transform: translateX(-28px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+.sg-enter-week-right {
+	animation: sg-enter-week-right var(--dur-3) var(--ease-out) both;
+}
+.sg-enter-week-left {
+	animation: sg-enter-week-left var(--dur-3) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sg-enter-right,
+	.sg-enter-left,
+	.sg-enter-up,
+	.sg-enter-week-right,
+	.sg-enter-week-left {
+		animation: none;
+	}
+}
 /* Overlay motion: a backdrop fades, a sheet or card rises and settles. */
 @keyframes sg-fade-in {
 	from {
