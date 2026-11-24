@@ -386,7 +386,8 @@ export const api = {
 			'/summaries',
 		),
 
-	clearData: () => req<{ ok: boolean }>('/me/data', { method: 'DELETE' }),
+	/** Delete the account and everything in it, then sign out on the server. */
+	deleteAccount: () => req<{ ok: boolean }>('/me', { method: 'DELETE' }),
 
 	chat: (message: string) =>
 		req<{ reply: string; model?: string }>('/ai/chat', {
