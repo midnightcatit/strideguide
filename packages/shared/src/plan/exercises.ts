@@ -1031,3 +1031,50 @@ export const BODYWEIGHT_PROGRESSIONS: MachineExercise[] = [
 		],
 	},
 ];
+
+/**
+ * Runner-protocol moves for the wave-6 library additions. These back specific
+ * library sessions (the groin and glute work) rather than the engine's core
+ * circuits, so they are added to the name catalog for the drilldown and the kit
+ * filter but are not drawn into a plan circuit. Every entry cites a research file.
+ */
+export const RUNNER_PROTOCOL_MOVES: MachineExercise[] = [
+	{
+		name: 'Copenhagen adductor plank',
+		muscles: ['adductor magnus', 'adductor longus', 'adductor brevis', 'hip adductors'],
+		pattern: 'core',
+		equipment: 'bodyweight',
+		level: 'advanced',
+		why: 'Loads the adductors in a long position, the way the Copenhagen exercise does, which is the strength work linked to fewer groin problems.',
+		feel: 'Hard work on the inside of the thigh of the bottom leg, with a braced trunk.',
+		form: [
+			'Lie on your side with the top leg resting on a bench or box.',
+			'Lift the hips so the body forms a straight line, supported by the top leg and the forearm.',
+			'Lower the bottom leg slowly toward the floor, then bring it back up under control.',
+		],
+		mistakes: [
+			'Letting the hips sag so the bottom leg takes no load.',
+			'Dropping the leg fast instead of lowering under control.',
+			'Starting with full range before the adductors are ready, which leaves them very sore.',
+		],
+	},
+	{
+		name: 'Single-leg glute bridge',
+		muscles: ['gluteus maximus', 'hamstrings', 'deep hip rotators', 'trunk'],
+		pattern: 'hinge',
+		equipment: 'bodyweight',
+		level: 'intermediate',
+		why: 'Loads one glute at a time, matching the single-leg push of running while the pelvis works to stay level.',
+		feel: 'The glute of the planted leg doing the lift, with the lower back staying quiet.',
+		form: [
+			'Lie on your back with one foot planted and the other knee hugged toward the chest.',
+			'Press through the planted heel to lift the hips until the body forms a line from knee to shoulder.',
+			'Squeeze the glute at the top, then lower slowly and repeat.',
+		],
+		mistakes: [
+			'Arching the lower back to gain height instead of squeezing the glute.',
+			'Letting the pelvis twist or drop on the free-leg side.',
+			'Pushing through the toes so the hamstring cramps.',
+		],
+	},
+];

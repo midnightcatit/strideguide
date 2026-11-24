@@ -12,10 +12,11 @@ import {
 	BODYWEIGHT_PROGRESSIONS,
 	EXTRA_MACHINES,
 	FREEWEIGHT_MOVES,
+	RUNNER_PROTOCOL_MOVES,
 } from './exercises';
 import type { EquipmentItem, EquipmentPreference } from '../types';
 
-/** Every move we can name: machines and bodyweight, then the wave-5 expansions. */
+/** Every move we can name: machines and bodyweight, then the wave-5 and wave-6 expansions. */
 export const ALL_MOVES: MachineExercise[] = [
 	...PF_MACHINES,
 	...BODYWEIGHT_MOVES,
@@ -24,6 +25,7 @@ export const ALL_MOVES: MachineExercise[] = [
 	...FREEWEIGHT_MOVES,
 	...BAND_HOME_MOVES,
 	...BODYWEIGHT_PROGRESSIONS,
+	...RUNNER_PROTOCOL_MOVES,
 ];
 
 /** Look a move up by name, across both catalogs. */
