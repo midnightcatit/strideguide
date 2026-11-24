@@ -220,3 +220,42 @@ export async function setPersonal(fields: {
 		// best-effort; the form shows what was typed
 	}
 }
+
+/**
+ * The tabs a runner can choose to open on. The Coach tab stays out of this list:
+ * it is a place to ask questions, not a starting point. The keys line up with the
+ * primary nav, so the chosen tab and the nav share one source of truth.
+ */
+export const LANDING_TABS = [
+	{ key: 'dashboard', label: 'Dashboard', href: '/', description: 'Your week at a glance' },
+	{ key: 'today', label: 'Today', href: '/today', description: "Today's session and quick actions" },
+	{ key: 'calendar', label: 'Calendar', href: '/calendar', description: 'The month ahead' },
+	{ key: 'progress', label: 'Progress', href: '/progress', description: 'How the training is going' },
+] as const;
+
+export type LandingTab = (typeof LANDING_TABS)[number]['key'];
+
+const LANDING_KEY = 'sg:landingTab';
+
+/** The tab the runner chose to open on. Dashboard when nothing is stored. */
+export function getLandingTab(): LandingTab {
+	try {
+		const stored = localStorage.getItem(LANDING_KEY);
+		return LANDING_TABS.some((tab) => tab.key === stored) ? (stored as LandingTab) : 'dashboard';
+	} catch {
+		return 'dashboard';
+	}
+}
+
+export function setLandingTab(tab: LandingTab): void {
+	try {
+		localStorage.setItem(LANDING_KEY, tab);
+	} catch {
+		// Storage can be unavailable in private windows; the choice still holds this session.
+	}
+}
+
+/** The route for a landing tab. */
+export function landingHref(tab: LandingTab): string {
+	return LANDING_TABS.find((item) => item.key === tab)?.href ?? '/';
+}
