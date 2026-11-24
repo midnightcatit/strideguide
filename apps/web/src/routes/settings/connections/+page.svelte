@@ -8,11 +8,11 @@
 	/** What each connector reads, in plain words, shown on the card. */
 	const SHARED: Record<string, string> = {
 		'google-health':
-			'Workouts and daily activity from Google Health, including Fitbit and Pixel Watch. It fills your vitals, progress charts and recovery read with resting heart rate, HRV, sleep, steps, distance, energy, active minutes, heart rate range, oxygen saturation, breathing rate, night temperature and body measurements like weight, body fat and height.',
+			'Workouts and daily activity from Google Health, including Fitbit and Pixel Watch. It fills your vitals, progress charts and recovery view with resting heart rate, HRV, sleep, steps, distance, energy, active minutes, heart rate range, oxygen saturation, breathing rate, night temperature and body measurements like weight, body fat and height.',
 	};
 
 	const ERROR_TEXT: Record<string, string> = {
-		not_configured: 'This connector is not set up on the server yet.',
+		not_configured: 'This connection is not set up yet.',
 		invalid_state: 'That link expired. Try connecting again.',
 		exchange_failed: 'The provider did not return a token. Try again.',
 		denied: 'You cancelled before finishing.',
@@ -159,7 +159,7 @@
 
 				<div class="mt-3">
 					{#if !provider.configured}
-						<p class="text-xs text-steel">This connector is not available on this server.</p>
+						<p class="text-xs text-steel">This connection is not available here.</p>
 					{:else if provider.connected}
 						<div class="flex flex-wrap items-center gap-2">
 							<button

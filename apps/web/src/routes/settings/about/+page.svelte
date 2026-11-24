@@ -11,7 +11,7 @@
 		behind the work.
 	</p>
 	<p class="text-steel">
-		The plan engine is deterministic, so the same inputs give the same plan. Explanations come
+		The plan is built from fixed rules, so the same inputs give the same plan. Explanations come
 		from published research, and the coach is grounded in that research rather than inventing it.
 	</p>
 	<p class="rounded-lg border border-hairline bg-sunken p-3 text-xs text-steel">

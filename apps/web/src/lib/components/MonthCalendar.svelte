@@ -305,7 +305,7 @@
 		<span>Skipped</span>
 		<InfoButton
 			term="Pressure"
-			definition="How much a day asks of you, from the length and intensity of its sessions. A darker day is a harder day. A green dot means it is done. A grey dot means it holds a skipped session."
+			definition="How much a day asks of you, from the length and intensity of its sessions. A darker day is a harder day. A green dot means it is done. A grey dot means it has a skipped session."
 		/>
 	</div>
 	</div>

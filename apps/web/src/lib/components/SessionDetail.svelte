@@ -73,9 +73,9 @@
 		];
 		const event = (typeof b.eventName === 'string' && b.eventName) || prefs.eventName || '';
 		if (event && acts.length)
-			return `You are training for ${event} and you also do ${acts.join(', ')}. We built this around both, and the reasoning below is where it comes from.`;
+			return `You are training for ${event} and you also do ${acts.join(', ')}. We built this around both, and the reasoning below comes from that.`;
 		if (event)
-			return `You are training for ${event}. We built this session with that in mind, and the reasoning below is where it comes from.`;
+			return `You are training for ${event}. We built this session with that in mind, and the reasoning below comes from that.`;
 		if (acts.length)
 			return `Because you also do ${acts.join(', ')}, we keep this session in balance with those.`;
 		return '';
@@ -319,7 +319,7 @@
 				{#if loading}
 					<p class="mt-3 text-sm text-steel">Loading the reasoning…</p>
 				{:else if failed}
-					<p class="mt-3 text-sm text-steel">The sourced explanation is unavailable right now.</p>
+					<p class="mt-3 text-sm text-steel">The explanation is unavailable right now.</p>
 				{:else if why?.summary}
 					{#if showWhyDetail}
 						<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>

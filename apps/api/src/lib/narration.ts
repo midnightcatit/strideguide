@@ -6,10 +6,10 @@ import { runAi, type AiMessage } from './ai';
 import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
 
 const PHASE_FOCUS: Record<string, string> = {
-	base: 'build aerobic volume, keep it easy',
-	build: 'add quality work on top of the base',
-	peak: 'sharpen and rehearse goal pace',
-	taper: 'freshen up while keeping intensity',
+	base: 'building aerobic volume and keeping it easy',
+	build: 'adding quality work on top of the base',
+	peak: 'sharpening and practicing goal pace',
+	taper: 'freshening up while keeping the intensity',
 };
 
 /** Deterministic fallback summary, used whenever AI is unavailable or fails. */
@@ -102,7 +102,7 @@ const BAKED_UNIT = /\d\s*(km|mi|kilometres?|kilometers?|miles?|metres?|meters?|y
 
 /** Deterministic fallback review, used whenever AI is unavailable or fails. */
 export function templatePlanReview(ctx: PlanReviewContext): string {
-	const startFocus = PHASE_FOCUS[ctx.phases[0] ?? 'base'] ?? 'build the aerobic base';
+	const startFocus = PHASE_FOCUS[ctx.phases[0] ?? 'base'] ?? 'building the aerobic base';
 	const strength =
 		ctx.strengthPerWeek > 0
 			? ` Strength work runs alongside it, ${ctx.strengthPerWeek} session${ctx.strengthPerWeek === 1 ? '' : 's'} a week, to protect the joints that carry the running.`
