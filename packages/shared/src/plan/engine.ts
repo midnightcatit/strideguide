@@ -4,7 +4,6 @@ import type {
 	Intensity,
 	SessionArchetype,
 	StepBlock,
-	StepKind,
 	StructuredWorkout,
 	WorkoutStep,
 } from '../types';
@@ -15,9 +14,9 @@ import {
 	QUALITY_WARMUP_DRILLS,
 	STRIDES,
 	WARMUP_DRILLS,
-	mobilityRoutine,
-	type Drill,
+	drillBlock,
 } from './mobility';
+import { WORKOUT_LIBRARY } from './library';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
@@ -291,27 +290,6 @@ function qualityWarmupCooldown(totalKm: number): { wu: number; cd: number } {
 	const wu = clamp(round1(totalKm * 0.3), 0.6, 1.5);
 	const cd = clamp(round1(totalKm * 0.2), 0.4, 1.0);
 	return { wu, cd };
-}
-
-/**
- * Map drills to a block of timed steps. A drill that carries rounds becomes one
- * step per round, so a long hold is shown as the shorter rounds it is built from.
- */
-function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
-	const steps: WorkoutStep[] = [];
-	for (const d of drills) {
-		const rounds = d.rounds ?? 1;
-		for (let i = 0; i < rounds; i++) {
-			steps.push({
-				kind,
-				label: d.name,
-				durationSec: d.durationSec,
-				targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
-				note: d.why,
-			});
-		}
-	}
-	return { repeat: 1, label, steps };
 }
 
 /** The raise: easy running that lifts heart rate before the drills. */
@@ -1143,17 +1121,6 @@ function strengthSession(
 	};
 }
 
-function mobilityWorkout(routine: Drill[]): StructuredWorkout {
-	const dynamic = routine.slice(0, 2);
-	const statics = routine.slice(2);
-	return {
-		blocks: [
-			drillBlock('Loosen up', dynamic, 'warmup'),
-			drillBlock('Mobility stretches', statics, 'cooldown'),
-		],
-	};
-}
-
 /** Cross-training load tiers, from the last seven days of logged sports. */
 function sportLoad(input: PlanInput): {
 	sessions: number;
@@ -1182,26 +1149,30 @@ function sportLoad(input: PlanInput): {
 
 function mobilitySession(day: number, baseline: Baseline, slot = 'AM'): PlannedSession {
 	// A bigger stretch (two or more points) gets the fuller routine; a small
-	// stretch keeps the short maintenance one.
+	// stretch keeps the short maintenance one. Both routines live in the workout
+	// library, so a generated session names a workout the runner can also add.
 	const building = (baseline.flexibility?.goal ?? 0) - (baseline.flexibility?.current ?? 0) >= 2;
-	const routine = mobilityRoutine(building);
-	const totalSec = routine.reduce((s, d) => s + d.durationSec * (d.rounds ?? 1), 0);
+	const workout = WORKOUT_LIBRARY.find(
+		(w) => w.id === (building ? 'mobility-stretch-12' : 'mobility-stretch-8'),
+	);
+	if (!workout) throw new Error('mobility workout missing from library');
 	return {
 		day,
 		slot,
 		modality: 'mobility',
 		type: 'mobility',
-		// A real routine name in the plan, not the bare type label.
-		title: 'Mobility and stretching',
-		purpose: PURPOSE.mobility,
+		title: workout.title,
+		purpose: workout.purpose,
 		prescription: {
-			summary: building
-				? 'A short mobility session, with a little more work toward your flexibility goal.'
-				: 'A short mobility session to keep the range you already have.',
-			intensity: 'easy',
-			targetRpe: [1, 3],
-			workout: mobilityWorkout(routine),
+			summary: workout.summary,
+			intensity: workout.intensity,
+			targetRpe: workout.targetRpe,
+			workout: workout.workout,
+			libraryId: workout.id,
+			// The engine's own session, not one the runner added, so the rebuild
+			// does not treat it as an added workout to repeat.
+			added: false,
 		},
-		durationMin: Math.max(8, Math.round(totalSec / 60)),
+		durationMin: workout.durationMin,
 	};
 }

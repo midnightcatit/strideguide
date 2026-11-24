@@ -171,6 +171,14 @@ export interface SessionPrescription {
 	why?: string;
 	/** Structured, guided step sequence (warm-up → set → rest → cool-down). */
 	workout?: StructuredWorkout;
+	/**
+	 * The library workout this session is based on. Set on the engine's own
+	 * sessions and on workouts the runner adds from the library, so the session
+	 * names a workout that exists in the library.
+	 */
+	libraryId?: string;
+	/** True when the runner added this session from the library (removable). */
+	added?: boolean;
 }
 
 export type StepKind = 'warmup' | 'work' | 'recovery' | 'rest' | 'cooldown';
