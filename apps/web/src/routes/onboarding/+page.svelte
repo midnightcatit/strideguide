@@ -1041,7 +1041,7 @@
 								min={todayIso}
 								max={maxStartIso}
 								aria-label="Plan start date"
-								class="tabular mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+								class="tabular mt-1 block w-full min-w-0 max-w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-base sm:text-sm"
 							/>
 							<p class="text-xs text-steel">Up to {fmtShortDate(maxStartIso)}. Past dates are not allowed.</p>
 						{/if}
@@ -1051,7 +1051,7 @@
 						type="date"
 						bind:value={targetDate}
 						aria-label="Race date"
-						class="tabular w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+						class="tabular block w-full min-w-0 max-w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-base sm:text-sm"
 					/>
 				{:else if step.id === 'race'}
 					<select

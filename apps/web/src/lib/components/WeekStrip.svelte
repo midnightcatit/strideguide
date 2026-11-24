@@ -12,6 +12,7 @@
 		onSelect,
 		onWeekStep,
 		onDayStep,
+		weekDir = 1,
 	}: {
 		week: ClientWeek | undefined;
 		selectedDay: number;
@@ -21,6 +22,7 @@
 		onSelect: (day: number) => void;
 		onWeekStep?: (delta: 1 | -1) => void;
 		onDayStep?: (delta: 1 | -1) => void;
+		weekDir?: number;
 	} = $props();
 
 	function level(day: number): number {
@@ -66,7 +68,13 @@
 	</div>
 {/if}
 
-<div class="grid grid-cols-7 gap-1" role="group" aria-label="Days of the week" use:dayWheel={onDayStep}>
+{#key week?.weekNumber}
+	<div
+		class="grid grid-cols-7 gap-1 {weekDir >= 0 ? 'sg-enter-week-right' : 'sg-enter-week-left'}"
+		role="group"
+		aria-label="Days of the week"
+		use:dayWheel={onDayStep}
+	>
 	{#each DAY_INITIALS as initial, day (day)}
 		{@const lv = level(day)}
 		{@const lg = logged(day)}
@@ -101,4 +109,5 @@
 			{/if}
 		</button>
 	{/each}
-</div>
+	</div>
+{/key}
