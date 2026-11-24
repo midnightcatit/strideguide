@@ -362,6 +362,11 @@ summary,
 	summary:active {
 		transform: scale(0.98);
 	}
+	/* List rows and chips in a picker should not bounce on tap; on a touch screen
+	   the press animation reads as a glitch. */
+	.no-press:active {
+		transform: none;
+	}
 	.reveal {
 		animation: sg-reveal var(--dur-2) var(--ease-out) both;
 	}
