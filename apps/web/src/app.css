@@ -532,6 +532,28 @@ main {
 	}
 }
 
+/*
+ * Pointer drag (the dragToDay action). A held card lifts, and the day under the
+ * pointer highlights as a drop target. The card moves with transform and opacity
+ * only, so nothing reflows; the lift is dropped under prefers-reduced-motion,
+ * which still leaves the drop-target highlight to show where it will land.
+ */
+.is-dragging {
+	position: relative;
+	z-index: 30;
+	opacity: 0.9;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.is-dragging {
+		transform: translateY(-2px) scale(1.04);
+		transition: transform var(--dur-1) var(--ease-out);
+	}
+}
+.is-drop-target {
+	background-color: var(--signal-wash);
+	box-shadow: inset 0 0 0 2px var(--signal-ink);
+}
+
 /* Danger (destructive) colour, distinct from the amber signal mark. */
 :root {
 	--danger: #c0392b;

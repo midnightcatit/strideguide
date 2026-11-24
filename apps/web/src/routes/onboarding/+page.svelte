@@ -6,8 +6,9 @@
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, type LibraryWorkout } from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
-	import { api, type GeneratePlanInput } from '$lib/api';
+	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
+	import { dragToDay } from '$lib/actions';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
@@ -64,12 +65,16 @@
 	let terrain = $state<'flat' | 'hilly' | 'mixed'>('mixed');
 	let niggles = $state('');
 
-	// Preview: after generation, a local, unsaved look at week one.
+	// Preview: after generation, the first week shown for editing. Edits are saved
+	// for real when the runner confirms and we rebuild the weeks ahead.
 	const todayIso = new Date().toISOString().slice(0, 10);
 	let draft = $state<CurrentPlan | null>(null);
 	let pickerDate = $state<string | null>(null);
 	let previewDetail = $state<ClientSession | null>(null);
-	let dragId = $state<string | null>(null);
+	// True once the weeks ahead have been rebuilt from the edited week one, which
+	// hands off to the final connect screen.
+	let rebuilt = $state(false);
+	let rebuilding = $state(false);
 
 	let stepIndex = $state(0);
 	let dir = $state<1 | -1>(1);
@@ -301,19 +306,6 @@
 				],
 			},
 		);
-		// A last, optional step, shown only when the server can offer the connector.
-		// Connecting happens in a new tab, so nothing typed here is at risk.
-		if (showConnectStep) {
-			out.push({
-				id: 'connect',
-				title: 'Connect Google Health',
-				lede: 'Link Google Health to pull in the runs and rides you do outside the plan. Then the work you actually do counts, and the plan stays honest.',
-				guide: [
-					'It opens Google in a new tab, so your answers here stay put.',
-					'Not now? Skip it and connect any time from Settings.',
-				],
-			});
-		}
 		return out;
 	});
 
@@ -490,12 +482,13 @@
 			: [...crossTraining, v];
 	}
 
-	// Preview helpers: local, unsaved edits to the first week.
+	// Preview helpers: edits to the first week, saved on confirm.
 	function sessionsForDay(d: number): ClientSession[] {
 		return (draft?.weeks[0]?.sessions ?? []).filter((s) => s.day === d);
 	}
-	function shiftDay(s: ClientSession, delta: number) {
-		s.day = Math.min(6, Math.max(0, s.day + delta));
+	function moveSession(s: ClientSession, day: number) {
+		const d = Math.min(6, Math.max(0, day));
+		if (s.day !== d) s.day = d;
 	}
 	function removeSession(s: ClientSession) {
 		const week = draft?.weeks[0];
@@ -532,11 +525,55 @@
 			},
 		];
 	}
-	function onDrop(d: number) {
+
+	/** The edited week one in the exact shape the rebuild endpoint expects. */
+	function previewSessions(): PreviewSessionInput[] {
 		const week = draft?.weeks[0];
-		const s = week?.sessions.find((x) => x.id === dragId);
-		if (s) s.day = d;
-		dragId = null;
+		if (!week) return [];
+		return [...week.sessions]
+			.sort((a, b) => a.day - b.day)
+			.map((s): PreviewSessionInput => {
+				const libraryId = s.prescription?.libraryId;
+				return {
+					day: s.day,
+					slot: s.slot === 'PM' ? 'PM' : 'AM',
+					modality: s.modality,
+					type: s.type,
+					...(s.title ? { title: s.title } : {}),
+					...(s.purpose ? { purpose: s.purpose } : {}),
+					...(s.prescription ? { prescription: s.prescription } : {}),
+					...(s.durationMin != null ? { durationMin: s.durationMin } : {}),
+					...(libraryId ? { libraryId } : {}),
+				};
+			});
+	}
+
+	/** Save the edited week one and rebuild the weeks ahead around it. */
+	async function confirmPreview() {
+		if (!draft || rebuilding) return;
+		rebuilding = true;
+		error = null;
+		try {
+			draft = await api.rebuildFromPreview(previewSessions());
+			// With a connector to offer, the rebuild hands off to the final
+			// connect screen. Without one, the plan is done, so go in.
+			if (showConnectStep) rebuilt = true;
+			else enterApp();
+		} catch (e) {
+			error = 'We could not rebuild the plan just now. Your changes are still here, so give it another go.';
+			reportClientError('preview-rebuild-failed', String(e), e);
+		} finally {
+			rebuilding = false;
+		}
+	}
+
+	function enterApp() {
+		window.location.href = '/';
+	}
+	/** Connect in a new tab, then continue into the app. */
+	function connectAndEnter() {
+		connectHealth();
+		enterApp();
 	}
 
 	function validate(): boolean {
@@ -657,70 +694,101 @@
 </script>
 
 {#if draft}
-	{@const week0 = draft.weeks[0]}
-	<section class="mx-auto max-w-xl">
-		<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
-		<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
-		<p class="mt-2 text-sm text-steel">Have a play with it. This is a preview, so nothing you change here is saved. Your plan is already built and waiting.</p>
+	{#if rebuilt}
+		<section class="mx-auto max-w-xl">
+			<p class="tabular text-xs uppercase tracking-widest text-steel">One last thing</p>
+			<h1 class="font-display mt-1 text-2xl font-bold">Your plan is ready</h1>
+			<p class="mt-2 text-sm leading-relaxed text-steel">
+				Link Google Health to pull in the runs and rides you do outside the plan, so the work you actually do counts and the plan stays honest. It opens Google in a new tab, so nothing here is lost.
+			</p>
+			<button type="button" onclick={connectAndEnter} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
+				Connect Google Health
+			</button>
+			<button type="button" onclick={enterApp} class="mt-3 w-full rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink">
+				Skip for now
+			</button>
+			<p class="mt-2 text-xs text-steel">You can connect any time from Settings.</p>
+		</section>
+	{:else}
+		{@const week0 = draft.weeks[0]}
+		<section class="mx-auto max-w-xl">
+			<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
+			<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
+			<p class="mt-2 text-sm text-steel">Take a look at week one. Move a workout to another day, tap one for details, or add and remove sessions. When it looks right, we save this week and rebuild the weeks ahead around it.</p>
 
-		{#if planReview}
-			<div class="mt-4 rounded-xl border border-hairline bg-sunken p-4">
-				<p class="tabular text-xs uppercase tracking-widest text-steel">Your coach's read</p>
-				<p class="mt-2 text-sm leading-relaxed text-ink">{planReview}</p>
-			</div>
-		{/if}
-
-		<div class="mt-5">
-			{#each DAY_NAMES as name, d (d)}
-				{@const daySess = sessionsForDay(d)}
-				<div
-					class="flex items-start gap-3 border-b border-hairline py-3 transition-colors {dragId ? 'bg-sunken/40' : ''}"
-					role="listitem"
-					ondragover={(e) => e.preventDefault()}
-					ondrop={() => onDrop(d)}
-				>
-					<span class="tabular w-9 shrink-0 pt-1 text-xs uppercase tracking-widest text-steel">{name.slice(0, 3)}</span>
-					<div class="flex min-w-0 flex-1 flex-wrap gap-2">
-						{#each daySess as s (s.id)}
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<div
-								class="flex items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm {dragId === s.id ? 'opacity-50' : ''}"
-								draggable="true"
-								ondragstart={() => (dragId = s.id)}
-								ondragend={() => (dragId = null)}
-							>
-								<button type="button" onclick={() => (previewDetail = s)} class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink" title="Tap for details, drag to move">
-									{s.title ?? s.type}
-								</button>
-								<button type="button" aria-label="Move earlier" onclick={() => shiftDay(s, -1)} class="px-1 text-steel hover:text-signal-ink">‹</button>
-								<button type="button" aria-label="Move later" onclick={() => shiftDay(s, 1)} class="px-1 text-steel hover:text-signal-ink">›</button>
-								<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-danger">✕</button>
-							</div>
-						{/each}
-						<button type="button" onclick={() => (pickerDate = addDaysIso(week0?.startDate ?? todayIso, d))} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-signal-ink hover:border-signal">
-							＋ Add workout
-						</button>
-					</div>
+			{#if planReview}
+				<div class="mt-4 rounded-xl border border-hairline bg-sunken p-4">
+					<p class="tabular text-xs uppercase tracking-widest text-steel">Your coach's read</p>
+					<p class="mt-2 text-sm leading-relaxed text-ink">{planReview}</p>
 				</div>
-			{/each}
-		</div>
+			{/if}
 
-		<p class="mt-4 text-xs text-steel">Drag a workout to another day, tap one for details, or add and remove them. This is a preview, so nothing here is saved. Rebuild any time to change the plan for real.</p>
+			<div class="mt-5">
+				{#each DAY_NAMES as name, d (d)}
+					{@const daySess = sessionsForDay(d)}
+					<div
+						class="flex items-start gap-3 rounded-lg border-b border-hairline py-3"
+						role="listitem"
+						data-drop-day={d}
+					>
+						<span class="tabular w-9 shrink-0 pt-1 text-xs uppercase tracking-widest text-steel">{name.slice(0, 3)}</span>
+						<div class="flex min-w-0 flex-1 flex-wrap gap-2">
+							{#each daySess as s (s.id)}
+								<div
+									class="flex touch-manipulation select-none items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm"
+									use:dragToDay={{ onDropDay: (day) => moveSession(s, day) }}
+								>
+									<button type="button" onclick={() => (previewDetail = s)} class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink" title="Tap for details, drag to move">
+										{s.title ?? s.type}
+									</button>
+									<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-danger">✕</button>
+								</div>
+							{/each}
+							<button type="button" onclick={() => (pickerDate = addDaysIso(week0?.startDate ?? todayIso, d))} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-signal-ink hover:border-signal">
+								＋ Add workout
+							</button>
+						</div>
+					</div>
+				{/each}
+			</div>
 
-		<button type="button" onclick={() => (window.location.href = '/')} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Looks good, take me in</button>
+			<p class="mt-4 text-xs text-steel">On a computer, click and drag a workout to another day. On a phone, press and hold it, then drag. Tap a workout for details, or add and remove them.</p>
 
-		{#if pickerDate}
-			<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
-		{/if}
-		{#if previewDetail}
-			<SessionDetail
-				session={previewDetail}
-				eyebrow="Preview"
-				logged={null}
-				onClose={() => (previewDetail = null)}
-			/>
-		{/if}
-	</section>
+			<button
+				type="button"
+				onclick={confirmPreview}
+				disabled={rebuilding}
+				class="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+			>
+				{#if rebuilding}
+					<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+						<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
+						<path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+					</svg>
+					Building the rest
+				{:else}
+					Looks good, build the rest
+				{/if}
+			</button>
+			<p class="mt-2 text-center text-xs text-steel">This saves your week one and rebuilds the weeks ahead.</p>
+
+			{#if error}
+				<p class="mt-3 text-sm text-signal-ink">{error}</p>
+			{/if}
+
+			{#if pickerDate}
+				<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
+			{/if}
+			{#if previewDetail}
+				<SessionDetail
+					session={previewDetail}
+					eyebrow="Preview"
+					logged={null}
+					onClose={() => (previewDetail = null)}
+				/>
+			{/if}
+		</section>
+	{/if}
 {:else}
 	<section class="mx-auto max-w-xl">
 		<header>
@@ -1115,31 +1183,6 @@
 						aria-label="Notes for your coach"
 						class="w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm leading-relaxed"
 					></textarea>
-				{:else if step.id === 'connect'}
-					<div class="rounded-xl border border-hairline bg-paper p-4">
-						<p class="text-sm leading-relaxed text-steel">
-							Connect the apps that already record your training, so a run logged elsewhere still
-							counts here and the plan can react to it.
-						</p>
-						<button
-							type="button"
-							onclick={connectHealth}
-							class="mt-3 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90"
-						>
-							Connect Google Health
-						</button>
-						<p class="mt-2 text-xs text-steel">
-							Opens Google in a new tab, so your answers here stay put. You can keep going either way.
-						</p>
-					</div>
-					<button
-						type="button"
-						onclick={submit}
-						disabled={submitting}
-						class="mt-3 w-full rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink disabled:opacity-60"
-					>
-						Skip and build my plan
-					</button>
 				{/if}
 			</div>
 
@@ -1168,9 +1211,7 @@
 				Back
 			</button>
 		{/if}
-		{#if step.id === 'connect'}
-			<!-- The connect step carries its own actions: connect in a new tab, or skip. -->
-		{:else if isLast}
+		{#if isLast}
 			<button
 				type="button"
 				onclick={submit}
