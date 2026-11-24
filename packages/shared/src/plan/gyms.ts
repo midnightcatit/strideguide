@@ -58,6 +58,17 @@ const BIG_BOX_EXTRAS = [
 	'Farmer / trap-bar carry',
 ];
 
+// The rest of the Planet Fitness floor the research found, on top of the shared
+// selectorized set: a fuller PF-specific preset.
+const PF_FLOOR = [
+	'Lying leg curl',
+	'Glute kickback machine',
+	'Ab crunch machine',
+	'Rotary torso machine',
+	"Captain's chair leg raise",
+	'Rowing machine',
+];
+
 export const GYM_PRESETS: GymPreset[] = [
 	{
 		id: 'planet-fitness',
@@ -68,6 +79,7 @@ export const GYM_PRESETS: GymPreset[] = [
 			'Smith machine squat',
 			'Hip thrust / glute drive machine',
 			'Hack squat',
+			...PF_FLOOR,
 		],
 		confidence: 'documented',
 		note: 'Machine-first, usually no barbells or racks, but dumbbells and a Smith machine. Some clubs differ.',
@@ -158,6 +170,7 @@ export const GYM_PRESETS: GymPreset[] = [
 			'Leg extension',
 			'Tricep extension',
 			'Back extension',
+			'Ab crunch machine',
 		],
 		confidence: 'documented',
 		note: 'Named pin-loaded machines on the chain site; free weights, racks unclear.',
