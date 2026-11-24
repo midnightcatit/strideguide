@@ -8,7 +8,7 @@
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex, sessionTypeLabel } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { skipSession, unskipSession } from '$lib/skipped.svelte';
+	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -508,9 +508,27 @@
 		session={detailTarget}
 		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
 		logged={loggedBySession.get(detailTarget.id) ?? null}
+		skipped={isSkipped(detailTarget.id)}
 		onClose={() => (detailTarget = null)}
 		onLog={() => { logTarget = detailTarget; detailTarget = null; }}
 		onStart={() => { playTarget = detailTarget; detailTarget = null; }}
+		onSkip={() =>
+			(confirm = {
+				title: 'Skip this workout?',
+				body: 'It stays on your calendar, marked as skipped. You can un-skip it any time.',
+				confirmLabel: 'Skip it',
+				action: () => {
+					skipSession(detailTarget!.id);
+					detailTarget = null;
+				},
+			})}
+		onUnskip={() =>
+			(confirm = {
+				title: 'Un-skip this workout?',
+				body: 'It goes back to your normal plan for the day.',
+				confirmLabel: 'Un-skip',
+				action: () => unskipSession(detailTarget!.id),
+			})}
 	/>
 {/if}
 

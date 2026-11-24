@@ -2,6 +2,7 @@
 	import { type ClientWeek, DAY_INITIALS, DAY_NAMES } from '$lib/plan';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { dayWheel } from '$lib/actions';
+	import { isSkipped } from '$lib/skipped.svelte';
 
 	let {
 		week,
@@ -36,6 +37,9 @@
 	}
 	function logged(day: number): boolean {
 		return (week?.sessions ?? []).some((s) => s.day === day && loggedBySession.has(s.id));
+	}
+	function skipped(day: number): boolean {
+		return (week?.sessions ?? []).some((s) => s.day === day && isSkipped(s.id));
 	}
 	function distance(day: number): number {
 		return (week?.sessions ?? [])
@@ -78,11 +82,12 @@
 	{#each DAY_INITIALS as initial, day (day)}
 		{@const lv = level(day)}
 		{@const lg = logged(day)}
+		{@const sk = skipped(day)}
 		{@const km = distance(day)}
 		<button
 			type="button"
 			aria-pressed={day === selectedDay}
-			aria-label="{DAY_NAMES[day]}{lg ? ', logged' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
+			aria-label="{DAY_NAMES[day]}{lg ? ', logged' : ''}{sk ? ', has a skipped session' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
 			onclick={() => onSelect(day)}
 			class="flex flex-col items-center gap-1.5 rounded-md py-2 transition-colors {day === selectedDay
 				? 'bg-ink text-paper'
@@ -103,7 +108,13 @@
 					></span>
 				{/each}
 			</span>
-			<span class="h-3 text-[10px] {lg ? 'text-ok' : 'text-transparent'}" aria-hidden="true">✓</span>
+			<span class="flex h-3 items-center justify-center" aria-hidden="true">
+				{#if lg}
+					<span class="text-[10px] text-ok">✓</span>
+				{:else if sk}
+					<span class="h-1.5 w-1.5 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-steel'}"></span>
+				{/if}
+			</span>
 			{#if todayInWeek && day === todayIndex}
 				<span class="h-0.5 w-4 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-signal-ink'}" aria-hidden="true"></span>
 			{/if}

@@ -21,18 +21,22 @@
 		session,
 		eyebrow = '',
 		logged,
+		skipped = false,
 		onClose,
 		onLog,
 		onStart,
 		onSkip,
+		onUnskip,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
 		logged?: ClientLog | null;
+		skipped?: boolean;
 		onClose: () => void;
 		onLog?: () => void;
 		onStart?: () => void;
 		onSkip?: () => void;
+		onUnskip?: () => void;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
@@ -51,7 +55,9 @@
 	let showNotes = $state(false);
 	/** The note shown on the card, seeded from the plan and updated after a save. */
 	let savedNote = $state(untrack(() => session.notes ?? ''));
-	const statusLabel = $derived(logged ? 'Done' : isStarted(session.id) ? 'In progress' : 'Not started');
+	const statusLabel = $derived(
+		skipped ? 'Skipped' : logged ? 'Done' : isStarted(session.id) ? 'In progress' : 'Not started',
+	);
 
 	/** Close the whole card, but leave it open while a sheet is on top of it. */
 	function closeFromBackdrop() {
@@ -224,9 +230,11 @@
 			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-paper/70">{eyebrow}</p>{/if}
 			<h1 class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
 			<div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-paper/85">
-				<span class="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {logged
-					? 'bg-paper/25 text-paper'
-					: 'bg-paper/15 text-paper/80'}">{statusLabel}</span>
+				<span class="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {skipped
+					? 'bg-paper/10 text-paper/70'
+					: logged
+						? 'bg-paper/25 text-paper'
+						: 'bg-paper/15 text-paper/80'}">{statusLabel}</span>
 				{#if dist}<span class="tabular">{fmtDistance(dist)}</span>{/if}
 				{#if band}<span class="tabular">{band}</span>{/if}
 				{#if minutes}<span class="tabular">{minutes} min</span>{/if}
@@ -234,13 +242,6 @@
 
 			<!-- Controls -->
 			<div class="mt-4 flex gap-2">
-				<button type="button" disabled title="Coming soon" class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/40">
-					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<path d="M8.5 11.5a3 3 0 0 1 0-4.2l2-2a3 3 0 0 1 4.2 4.2l-1 1" />
-						<path d="M11.5 8.5a3 3 0 0 1 0 4.2l-2 2a3 3 0 0 1-4.2-4.2l1-1" />
-					</svg>
-					<span class="text-[10px] uppercase tracking-wide">Link</span>
-				</button>
 				<button type="button" aria-pressed={showPreview} onclick={() => (showPreview = true)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M2.5 10S5 5.5 10 5.5 17.5 10 17.5 10 15 14.5 10 14.5 2.5 10 2.5 10z" />
@@ -256,7 +257,15 @@
 					</svg>
 					<span class="text-[10px] uppercase tracking-wide">Notes</span>
 				</button>
-				{#if onSkip}
+				{#if skipped && onUnskip}
+					<button type="button" onclick={onUnskip} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
+						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M4 10a6 6 0 1 0 2-4.5" />
+							<path d="M4 4v3h3" />
+						</svg>
+						<span class="text-[10px] uppercase tracking-wide">Un-skip</span>
+					</button>
+				{:else if onSkip}
 					<button type="button" onclick={onSkip} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M5 5l6 5-6 5z" />
@@ -271,6 +280,11 @@
 
 	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
 		<div class="mx-auto max-w-2xl px-4 py-5 pb-8 reveal">
+			{#if skipped}
+				<p class="mb-3 rounded-lg bg-sunken p-3 text-sm text-steel">
+					You skipped this one. It stays on your plan, marked as skipped. Un-skip it any time to bring it back.
+				</p>
+			{/if}
 			<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-steel">
 				<IntensityLadder intensity={p.intensity} />
 				{#if p.targetZone}
