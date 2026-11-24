@@ -76,6 +76,17 @@ export interface PlanInput {
 	equipment?: string[];
 	/** Specific machine names the runner has, from a gym preset or an override. */
 	machines?: string[];
+	/**
+	 * Machine names the runner likes to train on, from the move catalog. A soft
+	 * preference: the strength builder reaches for these first when they fit.
+	 */
+	favoriteMachines?: string[];
+	/**
+	 * Library workout ids the runner likes, from WORKOUT_LIBRARY. A soft
+	 * preference: the engine names a favorite over its own pick when one fits the
+	 * session's modality.
+	 */
+	favoriteWorkouts?: string[];
 	/** Cross-training load in the last seven days, from logged sports sessions. */
 	crossLoad?: { sessions: number; minutes: number; highEffort: number };
 	/**

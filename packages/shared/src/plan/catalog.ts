@@ -163,21 +163,34 @@ function poolFor(mode: EquipmentPreference, level?: string, loaded = false): Mac
 }
 
 /** True when a move fits the runner's kit: their categories and their machines. */
-function available(m: MachineExercise, items?: string[], machines?: string[]): boolean {
+export function moveAvailable(m: MachineExercise, items?: string[], machines?: string[]): boolean {
 	const cat = moveCategory(m);
 	const kitOk = cat === 'bodyweight' || !items?.length || items.includes(cat);
 	const machineOk = cat !== 'machines' || !machines?.length || machines.includes(m.name);
 	return kitOk && machineOk;
 }
 
-/** Pick a balanced circuit: a move per pattern in turn, then anything left. */
-function selectBalanced(pool: MachineExercise[], size: number): MachineExercise[] {
+/**
+ * Pick a balanced circuit: a move per pattern in turn, then anything left. A
+ * favorite move is taken first for its pattern, then any favorite left over, so
+ * the run of patterns is kept and favorites only bend the choice within it.
+ */
+function selectBalanced(
+	pool: MachineExercise[],
+	size: number,
+	favorites?: string[],
+): MachineExercise[] {
 	const out: MachineExercise[] = [];
 	const used = new Set<string>();
+	const fav = new Set(favorites ?? []);
+	const isFav = (m: MachineExercise) => fav.has(m.name);
 	for (let i = 0; i < size; i++) {
 		const pattern = PATTERN_SEQUENCE[i % PATTERN_SEQUENCE.length]!;
-		let pick = pool.find((m) => !used.has(m.name) && m.pattern === pattern);
-		if (!pick) pick = pool.find((m) => !used.has(m.name));
+		const pick =
+			pool.find((m) => !used.has(m.name) && m.pattern === pattern && isFav(m)) ??
+			pool.find((m) => !used.has(m.name) && m.pattern === pattern) ??
+			pool.find((m) => !used.has(m.name) && isFav(m)) ??
+			pool.find((m) => !used.has(m.name));
 		if (!pick) break;
 		used.add(pick.name);
 		out.push(pick);
@@ -189,7 +202,9 @@ function selectBalanced(pool: MachineExercise[], size: number): MachineExercise[
  * A running-relevant strength circuit for the chosen equipment. `items` narrows
  * to the runner's categories and `machines` to the machines they have; the filter
  * never shows equipment the runner lacks, topping up with bodyweight instead.
- * `level` picks the bodyweight progression rung.
+ * `level` picks the bodyweight progression rung. `favorites` is a soft
+ * preference: a favorite move is chosen for its pattern when it is in the pool,
+ * and the circuit falls back to the normal pick when it is absent or unsuitable.
  */
 export function circuitFor(
 	mode: EquipmentPreference = 'machines',
@@ -198,13 +213,14 @@ export function circuitFor(
 	loaded = false,
 	level?: string,
 	machines?: string[],
+	favorites?: string[],
 ): MachineExercise[] {
 	const size = circuitSize(minutes);
 	const base = poolFor(mode, level, loaded);
-	const filtered = base.filter((m) => available(m, items, machines));
+	const filtered = base.filter((m) => moveAvailable(m, items, machines));
 	// Bodyweight is always available, so a thin kit still fills a full circuit.
 	const pool = filtered.length
 		? dedupeByName([...filtered, ...bodyweightPool(level)])
 		: bodyweightPool(level);
-	return selectBalanced(pool, size);
+	return selectBalanced(pool, size, favorites);
 }
