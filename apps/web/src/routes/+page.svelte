@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
-	import { api, type HealthMetricsPayload } from '$lib/api';
+	import { api } from '$lib/api';
+	import { connectionFor, ensureHealth, healthFor } from '$lib/healthCache.svelte';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
@@ -23,25 +24,24 @@
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let note = $state<string | null>(null);
-	let health = $state<HealthMetricsPayload | null>(null);
+	// Read from the shared cache: the last payload and connection for this user,
+	// so a repeat visit renders instantly instead of refetching.
+	const health = $derived(healthFor(auth.user?.id ?? null, 30));
 	// null while unknown, then true or false once the connection read comes back.
-	let healthConnected = $state<boolean | null>(null);
+	const healthConnected = $derived(connectionFor(auth.user?.id ?? null)?.connected ?? null);
 	let healthBusy = $state(false);
 
 	/**
-	 * Read the connection, pull a throttled sync (the server reuses its cache
-	 * inside a twenty minute window, so this is not a live provider call every
-	 * time), then read the numbers. Runs on every visit to this view.
+	 * Read the shared health cache, refreshing in the background when it is
+	 * stale. The first visit pulls the numbers; later visits render from the
+	 * cache and only revalidate once the reuse window has passed.
 	 */
 	async function loadHealth() {
+		const userId = auth.user?.id;
+		if (!userId) return;
 		healthBusy = true;
 		try {
-			const res = await api.connections();
-			healthConnected = !!res.providers.find((p) => p.id === 'google-health')?.connected;
-			if (healthConnected) await api.syncConnection('google-health').catch(() => {});
-			health = await api.healthMetrics(30).catch(() => null);
-		} catch {
-			healthConnected = null;
+			await ensureHealth(userId, 30);
 		} finally {
 			healthBusy = false;
 		}
@@ -281,8 +281,8 @@
 		<CalendarPreviewCard />
 	</div>
 
-	<!-- Connected health: a read-only view of the watch numbers. Syncing lives in
-	     Settings, and this pulls a throttled sync whenever the view opens. -->
+	<!-- Connected health: a read-only view of the watch numbers. The shared cache
+	     renders the last payload instantly and revalidates when it is stale. -->
 	<section aria-labelledby="health" class="mt-5">
 		<Card>
 			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
@@ -295,7 +295,7 @@
 			{:else if healthConnected === false}
 				<p class="mt-3 text-sm text-steel">Connect a watch or health app in Settings to see your numbers here.</p>
 				<a href="/settings/connections" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Open Settings →</a>
-			{:else if healthConnected && healthBusy}
+			{:else if healthConnected && !health && healthBusy}
 				<p class="mt-3 text-sm text-steel">Connected. Pulling your data now.</p>
 			{:else if healthConnected}
 				<p class="mt-3 text-sm text-steel">Connected, but no data yet. Sync it in Settings.</p>

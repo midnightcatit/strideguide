@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { api, type HealthMetricWindow, type HealthMetricsPayload } from '$lib/api';
+	import { type HealthMetricWindow } from '$lib/api';
+	import { auth } from '$lib/auth.svelte';
+	import { ensureHealth, healthFor } from '$lib/healthCache.svelte';
 	import { metricOrigin } from '$lib/metrics';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import type { ChartPoint } from '$lib/healthChart';
@@ -22,22 +24,32 @@
 
 	const windows: HealthMetricWindow[] = [7, 30, 90];
 	let windowDays = $state<HealthMetricWindow>(30);
-	let payload = $state<HealthMetricsPayload | null>(null);
-	let loading = $state(true);
+	// Read from the shared cache, so a window that was already pulled renders
+	// instantly and only revalidates once the reuse window has passed.
+	const payload = $derived(healthFor(auth.user?.id ?? null, windowDays));
+	let loading = $state(healthFor(auth.user?.id ?? null, 30) === null);
 	let failed = $state(false);
 
+	/**
+	 * Render the cached window straight away, then revalidate in the background.
+	 * A fresh cache means toggling a window that was already read does not refetch.
+	 */
 	async function load(w: HealthMetricWindow = windowDays) {
 		windowDays = w;
-		loading = true;
 		failed = false;
-		try {
-			payload = await api.healthMetrics(w);
-		} catch {
-			failed = true;
-			payload = null;
-		} finally {
+		const userId = auth.user?.id ?? null;
+		loading = healthFor(userId, w) === null;
+		if (!userId) {
 			loading = false;
+			return;
 		}
+		try {
+			await ensureHealth(userId, w);
+		} catch {
+			// The store keeps any cached data; only a cold miss reads as failed.
+		}
+		loading = false;
+		failed = healthFor(userId, w) === null;
 	}
 
 	onMount(() => void load(30));
