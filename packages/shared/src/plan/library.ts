@@ -10,6 +10,7 @@
 import type { StructuredWorkout } from '../types';
 import { block, MIN, step, wk } from './library-helpers';
 import { EXTRA_WORKOUTS } from './library-extra';
+import { PLUS_WORKOUTS } from './library-plus';
 import { mobilityRoutine, mobilityWorkout } from './mobility';
 import { focusRoutine, type StretchFocus } from './mobility-plan';
 
@@ -1124,9 +1125,10 @@ const BUILD_MOBILITY: LibraryWorkout[] = (
 	tags: ['mobility', 'flexibility', 'build', `focus:${entry.focus}`, 'no-equipment'],
 }));
 
-/** The core workouts plus the wave-5 additions, in one list for the picker. */
+/** The core workouts plus the wave-5 and wave-6 additions, in one list for the picker. */
 export const WORKOUT_LIBRARY: LibraryWorkout[] = [
 	...CORE_WORKOUTS,
 	...BUILD_MOBILITY,
 	...EXTRA_WORKOUTS,
+	...PLUS_WORKOUTS,
 ];
