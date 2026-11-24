@@ -1,5 +1,4 @@
 import type {
-	Baseline,
 	EquipmentPreference,
 	Intensity,
 	SessionArchetype,
@@ -17,6 +16,7 @@ import {
 	drillBlock,
 } from './mobility';
 import { WORKOUT_LIBRARY } from './library';
+import { mobilityPrescription } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
@@ -1002,12 +1002,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			});
 		}
 
-		// Mobility follows the flexibility gap: a goal above where you are today
-		// earns one or two dedicated sessions a week, on rest days.
+		// Mobility follows the flexibility gap. The gap sets how often and how much
+		// (one short session for a small gap, a session every day for the biggest),
+		// and a big gap also aims the routine at the runner's terrain, niggles and
+		// sports. The rules and the routine data live in mobility-plan.ts.
 		const flex = input.baseline.flexibility;
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
-		if (flexGap > 0 && phase !== 'taper') {
-			const wanted = flexGap >= 2 ? 2 : 1;
+		const mobility = mobilityPrescription(flexGap, input.baseline);
+		if (mobility && phase !== 'taper') {
 			// Mobility is short, so it pairs with a day that already has a session,
 			// easing onto an easy or strength day first. A rest day is the fallback.
 			const rank = (d: number) => {
@@ -1020,9 +1022,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			const candidates = [2, 4, 1, 3, 0, 5, 6].sort((a, b) => rank(a) - rank(b));
 			let added = 0;
 			for (const d of candidates) {
-				if (added >= wanted) break;
+				if (added >= mobility.perWeek) break;
 				const slot = sessions.some((s) => s.day === d) ? 'PM' : 'AM';
-				sessions.push(mobilitySession(d, input.baseline, slot));
+				sessions.push(mobilitySession(d, mobility.libraryId, slot));
 				added++;
 			}
 		}
@@ -1147,15 +1149,12 @@ function sportLoad(input: PlanInput): {
 	};
 }
 
-function mobilitySession(day: number, baseline: Baseline, slot = 'AM'): PlannedSession {
-	// A bigger stretch (two or more points) gets the fuller routine; a small
-	// stretch keeps the short maintenance one. Both routines live in the workout
-	// library, so a generated session names a workout the runner can also add.
-	const building = (baseline.flexibility?.goal ?? 0) - (baseline.flexibility?.current ?? 0) >= 2;
-	const workout = WORKOUT_LIBRARY.find(
-		(w) => w.id === (building ? 'mobility-stretch-12' : 'mobility-stretch-8'),
-	);
-	if (!workout) throw new Error('mobility workout missing from library');
+function mobilitySession(day: number, libraryId: string, slot = 'AM'): PlannedSession {
+	// The routine the runner gets is a library workout, chosen in mobility-plan
+	// from their flexibility gap and answers, so a generated session names a
+	// workout that also exists in the picker.
+	const workout = WORKOUT_LIBRARY.find((w) => w.id === libraryId);
+	if (!workout) throw new Error(`mobility workout missing from library: ${libraryId}`);
 	return {
 		day,
 		slot,

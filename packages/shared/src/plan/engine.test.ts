@@ -384,6 +384,54 @@ describe('generatePlan (preferences)', () => {
 			).length;
 		expect(count(growing)).toBeGreaterThan(count(holding));
 	});
+
+	it('schedules mobility every day for the biggest flexibility gap', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 2, 4],
+			baseline: { experience: 'intermediate', flexibility: { current: 1, goal: 5 } },
+		});
+		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
+		expect(mobility).toHaveLength(7);
+		expect(new Set(mobility.map((s) => s.day)).size).toBe(7);
+		for (const s of mobility) expect(s.title).toBe('Mobility and stretching, 20 minutes');
+	});
+
+	it('keeps a small flexibility gap light', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 2, 4],
+			baseline: { experience: 'intermediate', flexibility: { current: 4, goal: 5 } },
+		});
+		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
+		expect(mobility).toHaveLength(1);
+		expect(mobility[0]!.title).toBe('Mobility and stretching, 8 minutes');
+		expect(
+			mobility[0]!.prescription.workout!.blocks.flatMap((b) => b.steps),
+		).toHaveLength(6);
+	});
+
+	it('aims the stretches at what the runner told us', () => {
+		const mobilityFor = (baseline: Parameters<typeof generatePlan>[0]['baseline']) => {
+			const p = generatePlan({ ...base, availableDays: [0, 2, 4], baseline });
+			return p.weeks[0]!.sessions.find((s) => s.type === 'mobility')!;
+		};
+		const labels = (s: ReturnType<typeof mobilityFor>) =>
+			s.prescription.workout!.blocks.flatMap((b) => b.steps).map((st) => st.label);
+		const flex = { current: 1, goal: 5 };
+		const plain = mobilityFor({ experience: 'intermediate', flexibility: flex });
+		const knee = mobilityFor({ experience: 'intermediate', flexibility: flex, niggles: 'sore knee' });
+		const hilly = mobilityFor({ experience: 'intermediate', flexibility: flex, terrain: 'hilly' });
+		expect(plain.title).toBe('Mobility and stretching, 20 minutes');
+		expect(knee.title).toBe('Hips and glutes, 20 minutes');
+		expect(hilly.title).toBe('Hamstrings and calves, 20 minutes');
+		// Two dynamic drills plus eight holds run twice: a real step up from the
+		// short routine, and the aimed routines differ from each other.
+		expect(labels(plain)).toHaveLength(18);
+		expect(labels(knee)).not.toEqual(labels(plain));
+		expect(labels(hilly)).not.toEqual(labels(plain));
+		expect(labels(hilly)).not.toEqual(labels(knee));
+	});
 });
 
 describe('generatePlan (model shaping)', () => {
