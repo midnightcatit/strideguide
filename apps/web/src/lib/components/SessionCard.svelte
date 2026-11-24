@@ -173,7 +173,7 @@
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
 			<span class="flex shrink-0 items-center gap-2">
-				<span class="rounded-full border border-badge bg-badge-wash px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-badge">{category}</span>
+				<span class="rounded-full border border-badge bg-badge-wash px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-badge">{category}</span>
 				{#if logged}
 					<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ok text-paper" aria-label="Completed">
 						<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
