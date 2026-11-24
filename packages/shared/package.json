@@ -13,6 +13,7 @@
 		"./plan": "./src/plan/index.ts",
 		"./units": "./src/units.ts",
 		"./analytics": "./src/analytics.ts",
+		"./comparisons": "./src/comparisons.ts",
 		"./writing": "./src/writing.ts"
 	},
 	"scripts": {
