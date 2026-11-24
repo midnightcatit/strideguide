@@ -29,6 +29,11 @@ export function isSkipped(id: string): boolean {
 	return ids.has(id);
 }
 
+/** The session ids currently marked skipped, so completion reads can tell them apart. */
+export function skippedIds(): string[] {
+	return [...ids];
+}
+
 export function hydrateSkipped(list: string[]): void {
 	ids = new Set(list);
 	persist();

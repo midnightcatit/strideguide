@@ -66,7 +66,14 @@ export interface PacePoint {
 }
 
 export interface ProgressMetrics {
-	adherence: { planned: number; completed: number; recentPlanned: number; recentCompleted: number };
+	adherence: {
+		planned: number;
+		completed: number;
+		skipped: number;
+		recentPlanned: number;
+		recentCompleted: number;
+		recentSkipped: number;
+	};
 	volume: { byWeek: WeekVolume[]; totalPlannedKm: number; totalActualKm: number; changePct?: number };
 	intensity: { easy: number; steady: number; hard: number; completed: number };
 	pace: { points: PacePoint[]; fastest?: number; changeSecPerKm?: number };
@@ -89,13 +96,16 @@ function dayOf(value: string | number | null | undefined): string | undefined {
 export function computeProgress(
 	logs: LogLike[],
 	weeks: WeekLike[],
-	opts: { targetDate?: string | null; todayIso?: string } = {},
+	opts: { targetDate?: string | null; todayIso?: string; skippedIds?: Iterable<string> } = {},
 ): ProgressMetrics {
 	const today = opts.todayIso ?? new Date().toISOString().slice(0, 10);
 	const logBySession = new Map<string, LogLike>();
 	for (const l of logs) {
 		if (l.sessionId) logBySession.set(l.sessionId, l);
 	}
+	// A session the runner deliberately skipped. It is its own state: never
+	// completed, and never counted as simply not done.
+	const skippedSet = new Set(opts.skippedIds ?? []);
 
 	const byWeek: WeekVolume[] = [];
 	let totalPlannedKm = 0;
@@ -103,6 +113,7 @@ export function computeProgress(
 	const intensity = { easy: 0, steady: 0, hard: 0 };
 	let completed = 0;
 	let planned = 0;
+	let skipped = 0;
 	let rpeSum = 0;
 	let rpeCount = 0;
 	let importedSessions = 0;
@@ -129,6 +140,8 @@ export function computeProgress(
 					rpeSum += log.rpe;
 					rpeCount += 1;
 				}
+			} else if (skippedSet.has(s.id)) {
+				skipped += 1;
 			}
 		}
 		plannedKm = Math.round(plannedKm * 10) / 10;
@@ -184,6 +197,8 @@ export function computeProgress(
 	const recentPlanned = recentWeek?.sessions.length ?? 0;
 	const recentCompleted =
 		recentWeek?.sessions.filter((s) => logBySession.has(s.id)).length ?? 0;
+	const recentSkipped =
+		recentWeek?.sessions.filter((s) => skippedSet.has(s.id) && !logBySession.has(s.id)).length ?? 0;
 
 	// Plan position: how far in, and what phase the current week is.
 	let weeksElapsed = 0;
@@ -214,8 +229,10 @@ export function computeProgress(
 		adherence: {
 			planned,
 			completed,
+			skipped,
 			recentPlanned,
 			recentCompleted,
+			recentSkipped,
 		},
 		volume: { byWeek, totalPlannedKm: Math.round(totalPlannedKm * 10) / 10, totalActualKm: Math.round(totalActualKm * 10) / 10, changePct },
 		intensity: { ...intensity, completed },

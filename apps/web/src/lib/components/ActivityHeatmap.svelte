@@ -8,6 +8,7 @@
 	 */
 	let {
 		trainedDays,
+		skippedDays,
 		weeks = 12,
 		todayIso,
 		cell = 12,
@@ -16,6 +17,7 @@
 		showWeekdays = false,
 	}: {
 		trainedDays: string[] | Set<string>;
+		skippedDays?: string[] | Set<string>;
 		weeks?: number;
 		todayIso?: string;
 		cell?: number;
@@ -26,6 +28,9 @@
 
 	const trained = $derived(
 		trainedDays instanceof Set ? trainedDays : new Set<string>(trainedDays),
+	);
+	const skipped = $derived(
+		skippedDays instanceof Set ? skippedDays : new Set<string>(skippedDays ?? []),
 	);
 	const today = $derived(todayIso ?? new Date().toISOString().slice(0, 10));
 
@@ -40,18 +45,26 @@
 		const start = new Date(endMonday);
 		start.setUTCDate(endMonday.getUTCDate() - (weeks - 1) * 7);
 
-		const out: { key: string; month: string; days: { key: string; state: 'done' | 'miss' | 'future' | 'today' }[] }[] = [];
+		const out: { key: string; month: string; days: { key: string; state: 'done' | 'skipped' | 'miss' | 'future' | 'today' }[] }[] = [];
 		for (let w = 0; w < weeks; w++) {
 			const colStart = new Date(start);
 			colStart.setUTCDate(start.getUTCDate() + w * 7);
 			const month = colStart.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' });
-			const days: { key: string; state: 'done' | 'miss' | 'future' | 'today' }[] = [];
+			const days: { key: string; state: 'done' | 'skipped' | 'miss' | 'future' | 'today' }[] = [];
 			for (let d = 0; d < 7; d++) {
 				const day = new Date(colStart);
 				day.setUTCDate(colStart.getUTCDate() + d);
 				const key = isoOf(day);
-				const state: 'done' | 'miss' | 'future' | 'today' =
-					key > today ? 'future' : key === today ? 'today' : trained.has(key) ? 'done' : 'miss';
+				const state: 'done' | 'skipped' | 'miss' | 'future' | 'today' =
+					key > today
+						? 'future'
+						: key === today
+							? 'today'
+							: trained.has(key)
+								? 'done'
+								: skipped.has(key)
+									? 'skipped'
+									: 'miss';
 				days.push({ key, state });
 			}
 			out.push({ key: isoOf(colStart), month, days });
@@ -59,17 +72,22 @@
 		return out;
 	});
 
-	const cellClass = (state: 'done' | 'miss' | 'future' | 'today'): string =>
+	const cellClass = (state: 'done' | 'skipped' | 'miss' | 'future' | 'today'): string =>
 		state === 'done'
 			? 'bg-ok'
-			: state === 'today'
-				? 'bg-signal-wash ring-1 ring-signal-ink'
-				: state === 'future'
-					? 'bg-transparent'
-					: 'bg-hairline';
+			: state === 'skipped'
+				? 'bg-steel'
+				: state === 'today'
+					? 'bg-signal-wash ring-1 ring-signal-ink'
+					: state === 'future'
+						? 'bg-transparent'
+						: 'bg-hairline';
 
 	const trainedCount = $derived(columns.reduce((n, c) => n + c.days.filter((d) => d.state === 'done').length, 0));
-	const label = $derived(`${trainedCount} training days in the last ${weeks} weeks`);
+	const skippedCount = $derived(columns.reduce((n, c) => n + c.days.filter((d) => d.state === 'skipped').length, 0));
+	const label = $derived(
+		`${trainedCount} training days in the last ${weeks} weeks${skippedCount ? `, ${skippedCount} skipped` : ''}`,
+	);
 </script>
 
 <div class="inline-flex flex-col gap-1" role="img" aria-label={label}>
@@ -96,7 +114,7 @@
 					<span
 						class="rounded-[2px] transition-transform hover:scale-125 {cellClass(day.state)}"
 						style="width: {cell}px; height: {cell}px"
-						title="{day.key}{day.state === 'done' ? ' · trained' : ''}"
+						title="{day.key}{day.state === 'done' ? ' · trained' : day.state === 'skipped' ? ' · skipped' : ''}"
 					></span>
 				{/each}
 			</div>

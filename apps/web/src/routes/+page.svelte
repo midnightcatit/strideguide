@@ -6,6 +6,7 @@
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
+	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
 	import { type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
 	import { logMs, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
 	import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
@@ -62,6 +63,9 @@
 		todayWeek ? todayWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0,
 	);
 	const weekPlanned = $derived(todayWeek?.sessions.length ?? 0);
+	const weekSkipped = $derived(
+		todayWeek ? todayWeek.sessions.filter((s) => !loggedBySession.has(s.id) && isSkipped(s.id)).length : 0,
+	);
 	const weekKm = $derived(
 		todayWeek
 			? todayWeek.sessions
@@ -77,8 +81,21 @@
 			: 0,
 	);
 	const logDays = $derived(trainedDays(store.logs));
+	const skippedDays = $derived.by(() => {
+		const out = new Set<string>();
+		for (const w of weeks) {
+			if (!w.startDate) continue;
+			for (const s of w.sessions) if (isSkipped(s.id)) out.add(addDaysIso(w.startDate, s.day));
+		}
+		return out;
+	});
 	const streak = $derived(currentStreak(logDays, todayIso));
-	const weekSegments = $derived((todayWeek?.sessions ?? []).map((s) => ({ filled: loggedBySession.has(s.id) })));
+	const weekSegments = $derived(
+		(todayWeek?.sessions ?? []).map((s) => ({
+			filled: loggedBySession.has(s.id),
+			skipped: !loggedBySession.has(s.id) && isSkipped(s.id),
+		})),
+	);
 	const weekPercent = $derived(weekPlanned ? (weekLogged / weekPlanned) * 100 : 0);
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
 	const weeklyMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
@@ -93,8 +110,10 @@
 	);
 	const planMeta = $derived(
 		store.plan
-			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null })
-					.planMeta
+			? computeProgress(store.logs, weeksLike, {
+					targetDate: store.plan.goal?.targetDate ?? null,
+					skippedIds: skippedIds(),
+				}).planMeta
 			: null,
 	);
 	const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
@@ -237,13 +256,13 @@
 		<a href="/progress/week?from=/" class="lift block rounded-xl" aria-label="This week, open the week breakdown">
 			<Card tone="sunken">
 				<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
-				<p class="tabular mt-1 text-xl font-semibold">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span></p>
+				<p class="tabular mt-1 text-xl font-semibold">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span>{#if weekSkipped}<span class="text-sm text-steel"> · {weekSkipped} skipped</span>{/if}</p>
 				<div class="mt-2.5">
 					<SegmentedBar
 						segments={weekSegments}
 						percent={weekPercent}
 						size="sm"
-						ariaLabel="{weekLogged} of {weekPlanned} sessions done this week"
+						ariaLabel="{weekLogged} of {weekPlanned} sessions done this week{weekSkipped ? `, ${weekSkipped} skipped` : ''}"
 					/>
 				</div>
 				<p class="mt-2 text-[11px] text-signal-ink">See the week →</p>
@@ -254,7 +273,7 @@
 				<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
 				<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
 				<div class="mt-2.5">
-					<ActivityHeatmap trainedDays={logDays} weeks={12} {todayIso} cell={6} gap={2} showMonthLabels={false} />
+					<ActivityHeatmap trainedDays={logDays} {skippedDays} weeks={12} {todayIso} cell={6} gap={2} showMonthLabels={false} />
 				</div>
 				<p class="mt-2 text-[11px] text-signal-ink">See the heatmap →</p>
 			</Card>

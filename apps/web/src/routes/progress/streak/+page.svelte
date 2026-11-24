@@ -3,6 +3,8 @@
 	import { page } from '$app/state';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { trainedDays, currentStreak, metricOrigin } from '$lib/metrics';
+	import { addDaysIso } from '$lib/plan';
+	import { isSkipped } from '$lib/skipped.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
@@ -13,6 +15,18 @@
 	const todayIso = new Date().toISOString().slice(0, 10);
 	const days = $derived(trainedDays(store.logs));
 	const streak = $derived(currentStreak(days, todayIso));
+	// Days the plan marked skipped, so the streak read shows them as their own
+	// state rather than as a plain miss.
+	const skippedDays = $derived.by(() => {
+		const out = new Set<string>();
+		for (const w of store.plan?.weeks ?? []) {
+			if (!w.startDate) continue;
+			for (const s of w.sessions) {
+				if (isSkipped(s.id)) out.add(addDaysIso(w.startDate, s.day));
+			}
+		}
+		return out;
+	});
 
 	const best = $derived.by(() => {
 		const sorted = [...days].sort();
@@ -77,7 +91,7 @@
 	</div>
 
 	<div class="mt-5 overflow-x-auto pb-1">
-		<ActivityHeatmap trainedDays={days} weeks={span} {todayIso} cell={13} gap={3} showWeekdays showMonthLabels />
+		<ActivityHeatmap trainedDays={days} {skippedDays} weeks={span} {todayIso} cell={13} gap={3} showWeekdays showMonthLabels />
 	</div>
 
 	<div class="mt-4 flex items-center gap-3 text-xs text-steel">
@@ -88,10 +102,13 @@
 			<span class="h-3 w-3 rounded-[2px] bg-ok"></span> Trained
 		</span>
 		<span class="flex items-center gap-1.5">
+			<span class="h-3 w-3 rounded-[2px] bg-steel"></span> Skipped
+		</span>
+		<span class="flex items-center gap-1.5">
 			<span class="h-3 w-3 rounded-[2px] bg-signal-wash ring-1 ring-signal-ink"></span> Today
 		</span>
 	</div>
 	<p class="mt-3 text-xs text-steel">
-		Showing {activeSpan.label}. A filled square is a day you logged a session. Rest days stay open on purpose.
+		Showing {activeSpan.label}. A filled square is a day you logged a session. A grey square is a day you skipped, which does not count as training. Rest days stay open on purpose.
 	</p>
 </Card>
