@@ -40,7 +40,7 @@
 		</a>
 	{/if}
 	{#if secondaryLabel && onSecondary}
-		<button type="button" onclick={onSecondary} class="mx-auto mt-3 block text-xs text-steel hover:text-signal-ink">
+		<button type="button" onclick={onSecondary} class="btn-ghost mx-auto mt-3 block text-xs text-steel hover:text-signal-ink">
 			{secondaryLabel}
 		</button>
 	{/if}

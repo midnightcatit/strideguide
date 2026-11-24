@@ -344,7 +344,7 @@
 					<p class="tabular mt-2 text-4xl font-medium leading-none">{countdown}</p>
 					<div class="mt-1 flex items-center gap-3">
 						<span class="text-xs uppercase tracking-widest text-signal-ink">Starting in</span>
-						<button type="button" onclick={() => { countdown = 0; startStep(); }} class="rounded-md border border-hairline px-3 py-1 text-xs text-steel hover:border-signal hover:text-signal-ink">
+						<button type="button" onclick={() => { countdown = 0; startStep(); }} class="btn-outline rounded-md border border-hairline px-3 py-1 text-xs text-steel hover:border-signal hover:text-signal-ink">
 							Skip countdown
 						</button>
 					</div>

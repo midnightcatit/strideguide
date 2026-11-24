@@ -226,7 +226,7 @@
 				<button
 					type="button"
 					onclick={onLog}
-					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
+					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
 				>
 					Log again
 				</button>
@@ -236,7 +236,7 @@
 				<button
 					type="button"
 					onclick={onUnskip}
-					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
+					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
 				>
 					Un-skip
 				</button>
@@ -245,7 +245,7 @@
 				<button
 					type="button"
 					onclick={onLog}
-					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 				>
 					Log it
 				</button>
@@ -264,7 +264,7 @@
 				<button
 					type="button"
 					onclick={onLog}
-					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+					class="btn-outline flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 				>
 					Log it
 				</button>
@@ -289,7 +289,7 @@
 			onpointerup={stopCancel}
 			onpointerleave={stopCancel}
 			onpointercancel={stopCancel}
-			class="relative z-20 mt-2 w-full overflow-hidden rounded-md border border-hairline px-4 py-2 text-xs text-steel hover:border-danger hover:text-danger"
+			class="touch-none select-none relative z-20 mt-2 w-full overflow-hidden rounded-md border border-hairline px-4 py-2 text-xs text-steel hover:border-danger hover:text-danger"
 		>
 			<span class="absolute inset-y-0 left-0 bg-danger/15 transition-[width] duration-100 ease-linear" style="width: {cancelHold}%" aria-hidden="true"></span>
 			<span class="relative">{cancelHold > 0 ? 'Keep holding to reset…' : 'Hold to reset this workout'}</span>
