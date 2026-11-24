@@ -10,7 +10,7 @@
 	import { reportClientError } from '$lib/clientErrors';
 	import { dragToDay } from '$lib/actions';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
-	import { DAY_INITIALS, DAY_NAMES, addDaysIso, type ClientSession, type CurrentPlan } from '$lib/plan';
+	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
 		slug: string;
@@ -71,9 +71,13 @@
 	let draft = $state<CurrentPlan | null>(null);
 	let pickerDate = $state<string | null>(null);
 	let previewDetail = $state<ClientSession | null>(null);
-	// True once the weeks ahead have been rebuilt from the edited week one, which
-	// hands off to the final connect screen.
+	// True once the weeks ahead have been rebuilt from the edited week one. When
+	// there is a connector to offer, this shows the connect screen; otherwise the
+	// flow goes straight to the completion state.
 	let rebuilt = $state(false);
+	// True once the plan is done and the runner is on the completion state. The
+	// tab stays here, whether they connect, skip or return from Google.
+	let done = $state(false);
 	let rebuilding = $state(false);
 
 	let stepIndex = $state(0);
@@ -432,9 +436,10 @@
 		}
 	});
 
-	/** Open the connector in a new tab, so the answers on this page are never lost. */
+	/** Open the connector in a new tab, so the answers on this page are never lost.
+	 * Returning to the app home keeps the connected tab off the settings page. */
 	function connectHealth() {
-		window.open(api.connectionConnectUrl('google-health'), '_blank', 'noopener');
+		window.open(api.connectionConnectUrl('google-health', '/'), '_blank', 'noopener');
 	}
 
 	/** A number input binds as a number, a text input as a string; normalise both. */
@@ -495,8 +500,14 @@
 		if (!week) return;
 		week.sessions = week.sessions.filter((x) => x.id !== s.id);
 	}
+	// The plan stores a session's day as an offset from the week's first day, not
+	// a weekday. Derive it from week one's own start date, so an added workout
+	// lands on the day you picked whatever weekday that week begins on. Reading
+	// the date's weekday instead put it a day late whenever week one did not start
+	// on a Monday.
 	function dayOf(date: string): number {
-		return (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7;
+		const start = draft?.weeks[0]?.startDate ?? todayIso;
+		return Math.min(6, Math.max(0, dayIndexInWeek(start, date)));
 	}
 	function addFromLibrary(w: LibraryWorkout) {
 		const week = draft?.weeks[0];
@@ -555,10 +566,10 @@
 		error = null;
 		try {
 			draft = await api.rebuildFromPreview(previewSessions());
-			// With a connector to offer, the rebuild hands off to the final
-			// connect screen. Without one, the plan is done, so go in.
+			// With a connector to offer, the last screen is the connect prompt.
+			// Without one, the plan is done, so go straight to the completion state.
 			if (showConnectStep) rebuilt = true;
-			else enterApp();
+			else done = true;
 		} catch (e) {
 			error = 'We could not rebuild the plan just now. Your changes are still here, so give it another go.';
 			reportClientError('preview-rebuild-failed', String(e), e);
@@ -570,10 +581,10 @@
 	function enterApp() {
 		window.location.href = '/';
 	}
-	/** Connect in a new tab, then continue into the app. */
-	function connectAndEnter() {
+	/** Connect in a new tab, then show the completion state in this tab. */
+	function connectFromFinish() {
 		connectHealth();
-		enterApp();
+		done = true;
 	}
 
 	function validate(): boolean {
@@ -694,17 +705,33 @@
 </script>
 
 {#if draft}
-	{#if rebuilt}
+	{#if done}
+		<section class="mx-auto max-w-xl text-center">
+			<div class="sg-done mx-auto" aria-hidden="true">
+				<svg viewBox="0 0 48 48" fill="none" class="h-16 w-16">
+					<circle class="sg-done-ring" cx="24" cy="24" r="21" stroke="var(--signal-ink)" stroke-width="2"></circle>
+					<path class="sg-done-check" d="M15 24.5l6.5 6.5L33 18" stroke="var(--signal-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+				</svg>
+			</div>
+			<h1 class="font-display mt-4 text-2xl font-bold">Your plan is built</h1>
+			<p class="mt-2 text-sm leading-relaxed text-steel">
+				That is {draft.weeks.length} weeks, saved and ready. It will keep adapting as you train.
+			</p>
+			<button type="button" onclick={enterApp} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
+				Enter Stride Guide
+			</button>
+		</section>
+	{:else if rebuilt}
 		<section class="mx-auto max-w-xl">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">One last thing</p>
 			<h1 class="font-display mt-1 text-2xl font-bold">Your plan is ready</h1>
 			<p class="mt-2 text-sm leading-relaxed text-steel">
-				Link Google Health to pull in the runs and rides you do outside the plan, so the work you actually do counts and the plan stays honest. It opens Google in a new tab, so nothing here is lost.
+				Link Google Health to pull in the runs and rides you do outside the plan, so the work you actually do counts and the plan stays honest. It opens Google in a new tab, so this page stays put.
 			</p>
-			<button type="button" onclick={connectAndEnter} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
+			<button type="button" onclick={connectFromFinish} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
 				Connect Google Health
 			</button>
-			<button type="button" onclick={enterApp} class="mt-3 w-full rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink">
+			<button type="button" onclick={() => (done = true)} class="mt-3 w-full rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink">
 				Skip for now
 			</button>
 			<p class="mt-2 text-xs text-steel">You can connect any time from Settings.</p>
@@ -1242,3 +1269,53 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	/* A short, quiet completion moment. The resting state is the finished
+	   drawing, so with reduced motion (durations zeroed globally, and turned off
+	   here) the mark appears complete rather than drawing in. */
+	.sg-done {
+		animation: sg-done-pop 0.5s ease-out both;
+	}
+	.sg-done-ring {
+		stroke-dasharray: 132;
+		animation: sg-ring-draw 0.7s ease-out both;
+	}
+	.sg-done-check {
+		stroke-dasharray: 30;
+		animation: sg-check-draw 0.45s ease-out 0.35s both;
+	}
+	@keyframes sg-done-pop {
+		from {
+			opacity: 0;
+			transform: translateY(6px) scale(0.96);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes sg-ring-draw {
+		from {
+			stroke-dashoffset: 132;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes sg-check-draw {
+		from {
+			stroke-dashoffset: 30;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.sg-done,
+		.sg-done-ring,
+		.sg-done-check {
+			animation: none;
+		}
+	}
+</style>

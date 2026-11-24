@@ -589,6 +589,11 @@ function strengthWorkout(
 
 /* ------------------------------- engine ---------------------------------- */
 
+/** The runner's own name for a sport or activity, e.g. "bike" becomes "Bike". */
+function activityLabel(slug: string): string {
+	return slug.charAt(0).toUpperCase() + slug.slice(1);
+}
+
 export function generatePlan(input: PlanInput): PlanDraft {
 	const totalWeeks = clamp(
 		input.targetDate ? weeksBetween(input.startDate, input.targetDate) : input.profile.defaultWeeks,
@@ -930,11 +935,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			if (idx >= 0) {
 				const realIdx = sessions.length - 1 - idx;
 				const easy = sessions[realIdx]!;
+				// Name the sport the runner actually picked, so the added session
+				// reads as their workout rather than the bare type label.
+				const title = activityLabel(input.baseline.crossTraining[0]!);
 				sessions[realIdx] = {
 					...easy,
 					modality: 'recovery',
 					type: 'cross-train',
-					title: TITLE['cross-train'],
+					title,
 					purpose: PURPOSE['cross-train'],
 					prescription: {
 						summary: 'Low-impact aerobic work: bike, pool or rower, easy and continuous.',
@@ -949,7 +957,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// Mobility / stretching on a rest day, when the user asked for it there.
 		// The sport itself, on its day, named.
 		for (const { day: d, activity } of crossPairs) {
-			const title = activity.charAt(0).toUpperCase() + activity.slice(1);
+			const title = activityLabel(activity);
 			sessions.push({
 				day: d,
 				slot: 'AM',
@@ -1134,7 +1142,8 @@ function mobilitySession(day: number, baseline: Baseline, slot = 'AM'): PlannedS
 		slot,
 		modality: 'mobility',
 		type: 'mobility',
-		title: TITLE.mobility,
+		// A real routine name in the plan, not the bare type label.
+		title: 'Mobility and stretching',
 		purpose: PURPOSE.mobility,
 		prescription: {
 			summary: building
