@@ -23,6 +23,8 @@
 	let showConnectStep = $state(false);
 	let slug = $state('half-marathon');
 	let targetDate = $state('');
+	let startChoice = $state<'today' | 'next' | 'custom'>('today');
+	let customStartDate = $state('');
 	let experience = $state<'beginner' | 'intermediate' | 'advanced'>('beginner');
 	let weeklyKm = $state('');
 	let buildPreference = $state<'ease-in' | 'steady' | 'ambitious'>('steady');
@@ -68,6 +70,34 @@
 	// Preview: after generation, the first week shown for editing. Edits are saved
 	// for real when the runner confirms and we rebuild the weeks ahead.
 	const todayIso = new Date().toISOString().slice(0, 10);
+
+	function weekdayIndex(iso: string): number {
+		const d = new Date(`${iso}T00:00:00Z`);
+		return (d.getUTCDay() + 6) % 7;
+	}
+
+	function addOneMonthIso(iso: string): string {
+		const d = new Date(`${iso}T00:00:00Z`);
+		const day = d.getUTCDate();
+		d.setUTCDate(1);
+		d.setUTCMonth(d.getUTCMonth() + 1);
+		const lastDay = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+		d.setUTCDate(Math.min(day, lastDay));
+		return d.toISOString().slice(0, 10);
+	}
+
+	function fmtShortDate(iso: string): string {
+		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
+			day: 'numeric',
+			month: 'short',
+			timeZone: 'UTC',
+		});
+	}
+
+	function weekdayNameFor(iso: string): string {
+		return DAY_NAMES[weekdayIndex(iso)];
+	}
+
 	let draft = $state<CurrentPlan | null>(null);
 	let pickerDate = $state<string | null>(null);
 	let previewDetail = $state<ClientSession | null>(null);
@@ -147,6 +177,18 @@
 		}
 	});
 
+	const weekStartWeekday = $derived(prefs.weekStart === 1 ? 6 : 0);
+	const nextStartName = $derived(DAY_NAMES[weekStartWeekday]);
+	const nextWeekStartDate = $derived.by(() => {
+		const todayWeekday = weekdayIndex(todayIso);
+		const delta = (weekStartWeekday - todayWeekday + 7) % 7 || 7;
+		return addDaysIso(todayIso, delta);
+	});
+	const maxStartIso = $derived(addOneMonthIso(todayIso));
+	const resolvedStartDate = $derived(
+		startChoice === 'today' ? todayIso : startChoice === 'next' ? nextWeekStartDate : customStartDate || todayIso,
+	);
+
 	interface Step {
 		id: string;
 		title: string;
@@ -176,6 +218,16 @@
 					'Race goals (5K to marathon) lean on easy running, with one or two harder sessions a week.',
 					'General fitness spreads effort across running, strength and mobility instead of chasing a time.',
 					'Pick the one you are actually training for, not the one that sounds best.',
+				],
+			},
+			{
+				id: 'start',
+				title: 'When should the plan start?',
+				lede: 'Pick the day week one begins. Starting today keeps the plan moving right away. Starting next week gives you a few days to clear your diary, and a custom date lets you line the plan up with a holiday or a return from a break.',
+				guide: [
+					'Today is the default. The plan starts on the day you finish onboarding.',
+					'Next week starts on the day your week begins, so the first week runs cleanly from there.',
+					'A custom date can be up to a month from today. Past dates are not allowed.',
 				],
 			},
 		];
@@ -592,6 +644,20 @@
 			error = 'Add your age so we can tune the plan.';
 			return false;
 		}
+		if (step.id === 'start' && startChoice === 'custom') {
+			if (!customStartDate) {
+				error = 'Pick a start date.';
+				return false;
+			}
+			if (customStartDate < todayIso) {
+				error = 'The start date cannot be in the past.';
+				return false;
+			}
+			if (customStartDate > maxStartIso) {
+				error = 'Pick a start date within the next month.';
+				return false;
+			}
+		}
 		if (step.id === 'date' && !targetDate) {
 			error = 'Pick a race date.';
 			return false;
@@ -632,6 +698,7 @@
 
 			const body: GeneratePlanInput = {
 				goalProfileSlug: slug,
+				startDate: resolvedStartDate,
 				availableDays: days,
 				baseline: {
 					experience,
@@ -742,6 +809,7 @@
 			<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
 			<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
 			<p class="mt-2 text-sm text-steel">Take a look at week one. Move a workout to another day, tap one for details, or add and remove sessions. When it looks right, we save this week and rebuild the weeks ahead around it.</p>
+			<p class="mt-2 text-sm text-steel">Week one starts {weekdayNameFor(week0?.startDate ?? todayIso)}, {fmtShortDate(week0?.startDate ?? todayIso)}.</p>
 
 			{#if planReview}
 				<div class="mt-4 rounded-xl border border-hairline bg-sunken p-4">
@@ -751,7 +819,8 @@
 			{/if}
 
 			<div class="mt-5">
-				{#each DAY_NAMES as name, d (d)}
+				{#each [0, 1, 2, 3, 4, 5, 6] as d (d)}
+					{@const name = weekdayNameFor(addDaysIso(week0?.startDate ?? todayIso, d))}
 					{@const daySess = sessionsForDay(d)}
 					<div
 						class="flex items-start gap-3 rounded-lg border-b border-hairline py-3"
@@ -929,6 +998,53 @@
 								<span class="mt-0.5 text-sm text-steel">{p.description}</span>
 							</button>
 						{/each}
+					</div>
+				{:else if step.id === 'start'}
+					<div class="grid gap-2">
+						<button
+							type="button"
+							aria-pressed={startChoice === 'today'}
+							onclick={() => (startChoice = 'today')}
+							class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {startChoice === 'today'
+								? 'border-signal-ink bg-signal-wash'
+								: 'border-hairline hover:border-steel'}"
+						>
+							<span class="font-display font-medium">Today</span>
+							<span class="tabular text-sm text-steel">{fmtShortDate(todayIso)}</span>
+						</button>
+						<button
+							type="button"
+							aria-pressed={startChoice === 'next'}
+							onclick={() => (startChoice = 'next')}
+							class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {startChoice === 'next'
+								? 'border-signal-ink bg-signal-wash'
+								: 'border-hairline hover:border-steel'}"
+						>
+							<span class="font-display font-medium">Next {nextStartName}</span>
+							<span class="tabular text-sm text-steel">{fmtShortDate(nextWeekStartDate)}</span>
+						</button>
+						<button
+							type="button"
+							aria-pressed={startChoice === 'custom'}
+							onclick={() => (startChoice = 'custom')}
+							class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ink {startChoice === 'custom'
+								? 'border-signal-ink bg-signal-wash'
+								: 'border-hairline hover:border-steel'}"
+						>
+							<span class="font-display font-medium">Pick a date</span>
+							<span class="tabular text-sm text-steel">{customStartDate ? fmtShortDate(customStartDate) : 'Choose a date'}</span>
+						</button>
+						{#if startChoice === 'custom'}
+							<input
+								type="date"
+								bind:value={customStartDate}
+								min={todayIso}
+								max={maxStartIso}
+								aria-label="Plan start date"
+								class="tabular mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
+							/>
+							<p class="text-xs text-steel">Up to {fmtShortDate(maxStartIso)}. Past dates are not allowed.</p>
+						{/if}
 					</div>
 				{:else if step.id === 'date'}
 					<input
