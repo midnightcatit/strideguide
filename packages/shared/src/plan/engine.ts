@@ -44,6 +44,10 @@ function weeksBetween(a: string, b: string): number {
 		Math.round((isoToDate(b).getTime() - isoToDate(a).getTime()) / (7 * 86400000)),
 	);
 }
+/** 0 = Monday … 6 = Sunday for an ISO date. */
+function weekdayIndex(iso: string): number {
+	return (isoToDate(iso).getUTCDay() + 6) % 7;
+}
 
 /** One-line, research-informed purpose per session archetype. */
 const PURPOSE: Record<SessionArchetype, string> = {
@@ -670,6 +674,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	);
 	const phases = phaseSequence(input.profile.progressionRules, totalWeeks);
 	const volumes = volumeCurve(input, phases);
+	// The weekday the plan starts on. Week one is anchored to the Monday on or
+	// before it, and its earlier days are dropped, so a mid-week start keeps the
+	// same weekday mapping as a Monday start.
+	const startWeekday = weekdayIndex(input.startDate);
 
 	// A given race time is the most trustworthy anchor. Failing that, an effective
 	// VDOT read from the runner's own logged hard efforts, so paces follow what
@@ -722,7 +730,13 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			volume = Math.min(volumes[w - 1] ?? volume, volume);
 		}
 		volume = clamp(round1(volume), 5, 160);
-		const weekStart = addDays(input.startDate, w * 7);
+		// Every week is anchored to its Monday, and a session's day is a weekday
+		// index (0 = Monday). So the same weekday index lands on the same real
+		// weekday in every week, whatever day the plan starts on. Week one is the
+		// calendar week that holds the chosen start date, and any of its days that
+		// fall before that date are dropped below, so the plan never schedules a
+		// session before it begins.
+		const weekStart = addDays(input.startDate, w * 7 - startWeekday);
 		const weekEnd = addDays(weekStart, 6);
 		let strengthLeft = strengthCount;
 
@@ -1073,7 +1087,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		}
 
-		const withIntensity = sessions.map((s) => ({
+		// Week one is anchored to its Monday, which may sit before the chosen start
+		// date. Keep only the days on or after the start, so the plan never places a
+		// session before it begins. Later weeks are whole and unaffected.
+		const inWeek = w === 0 ? sessions.filter((s) => s.day >= startWeekday) : sessions;
+
+		const withIntensity = inWeek.map((s) => ({
 			...s,
 			prescription: {
 				...s.prescription,

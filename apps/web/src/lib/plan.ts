@@ -201,6 +201,11 @@ export function dayIndexInWeek(weekStart: string, iso: string): number {
 	return ((days % 7) + 7) % 7;
 }
 
+/** 0 = Monday … 6 = Sunday for an ISO date (yyyy-mm-dd), UTC-safe. */
+export function weekdayIndexFromIso(iso: string): number {
+	return (new Date(`${iso}T00:00:00Z`).getUTCDay() + 6) % 7;
+}
+
 export function formatDuration(min?: number | null): string | null {
 	if (min == null) return null;
 	const m = Math.floor(min);

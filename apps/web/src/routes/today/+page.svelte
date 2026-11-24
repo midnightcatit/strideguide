@@ -6,7 +6,7 @@
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, sessionTypeLabel } from '$lib/plan';
+	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, sessionTypeLabel, weekdayIndexFromIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
@@ -100,6 +100,10 @@
 	});
 	const selWeek = $derived(sel?.week);
 	const selDay = $derived(sel?.day ?? todayIndex);
+	// The weekday of the date actually shown, taken from the date itself, so the
+	// label is right even on a day outside the plan's weeks, where there is no
+	// session day to read it from.
+	const selectedWeekdayName = $derived(DAY_NAMES[weekdayIndexFromIso(selectedIso)]);
 	// The strip's slide key: stable while you stay in one week, and a fresh value
 	// on every week step, including steps into weeks that are outside the plan.
 	const weekKey = $derived(selWeek?.startDate ?? selectedIso);
@@ -354,7 +358,7 @@
 
 	<header class="mb-2">
 		<div class="flex items-baseline justify-between gap-3">
-			<p class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : DAY_NAMES[selDay]}</p>
+			<p class="tabular text-xs uppercase tracking-widest text-steel">{isToday ? 'Today' : selectedWeekdayName}</p>
 			<p class="tabular text-xs text-steel">{dateLabel}{#if selWeek} · Week {selWeek.weekNumber}{/if}</p>
 		</div>
 		<h1 class="font-display mt-1 text-2xl font-bold">
@@ -412,7 +416,7 @@
 			>
 				<SectionHeader
 					id="day-sessions"
-					eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
+					eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${selectedWeekdayName}` : 'Day'}
 					meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
 				/>
 				{#if daySessions.length}
