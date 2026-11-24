@@ -5,6 +5,7 @@
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { localIso } from '$lib/plan';
+	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
 	import { api } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
 	import Card from '$lib/components/Card.svelte';
@@ -46,7 +47,11 @@
 	);
 	const metrics = $derived(
 		store.plan
-			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null, todayIso })
+			? computeProgress(store.logs, weeksLike, {
+					targetDate: store.plan.goal?.targetDate ?? null,
+					todayIso,
+					skippedIds: skippedIds(),
+				})
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
@@ -302,17 +307,18 @@
 		</section>
 
 		<section aria-labelledby="p-adherence" class="mb-7">
-			<SectionHeader id="p-adherence" eyebrow="Adherence" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged" />
+			<SectionHeader id="p-adherence" eyebrow="Adherence" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}" />
 			<Card tone="sunken">
-				<div class="flex flex-wrap gap-1" role="img" aria-label="{metrics.adherence.completed} of {metrics.adherence.planned} sessions logged">
+				<div class="flex flex-wrap gap-1" role="img" aria-label="{metrics.adherence.completed} of {metrics.adherence.planned} sessions logged{metrics.adherence.skipped ? `, ${metrics.adherence.skipped} skipped` : ''}">
 					{#each store.plan.weeks as w (w.id)}
 						{#each w.sessions as s (s.id)}
 							{@const done = store.logs.some((l) => l.sessionId === s.id)}
-							<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : 'bg-ink/40'}"></span>
+							{@const sk = !done && isSkipped(s.id)}
+							<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : sk ? 'bg-steel' : 'bg-ink/40'}"></span>
 						{/each}
 					{/each}
 				</div>
-				<p class="mt-3 text-xs text-steel">One tick per planned session. Grey means not logged yet, not missed.</p>
+				<p class="mt-3 text-xs text-steel">One tick per planned session. Green is done, grey is skipped, and the lightest mark is not logged yet, not missed.</p>
 			</Card>
 		</section>
 

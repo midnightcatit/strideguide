@@ -70,6 +70,17 @@ describe('computeProgress', () => {
 		expect(m.pace.points).toHaveLength(2);
 		expect(m.pace.changeSecPerKm).toBeUndefined();
 	});
+
+	it('counts a skipped session as skipped, not completed, and a logged one as done', () => {
+		const ms = computeProgress(logs, weeks, { skippedIds: ['s3', 's1'] });
+		// s3 is skipped and unlogged: its own state, not a completion.
+		expect(ms.adherence.skipped).toBe(1);
+		expect(ms.adherence.completed).toBe(2);
+		expect(ms.adherence.planned).toBe(3);
+		// s1 was logged, so it stays done even though it was also marked skipped.
+		expect(ms.adherence.recentSkipped).toBe(1);
+		expect(ms.adherence.recentCompleted).toBe(0);
+	});
 });
 
 describe('computeProgress: pace trend + volume change', () => {

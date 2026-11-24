@@ -7,7 +7,7 @@
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { skipSession, unskipSession } from '$lib/skipped.svelte';
+	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import { modal } from '$lib/actions';
@@ -110,6 +110,7 @@
 			km: number;
 			count: number;
 			done: boolean;
+			skipped: boolean;
 		}[] = [];
 		for (let i = 0; i < 42; i++) {
 			const d = new Date(start.getTime() + i * 86400000);
@@ -126,6 +127,7 @@
 					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0),
 				count: sessions.length,
 				done: sessions.some((s) => loggedBySession.has(s.id)),
+				skipped: sessions.some((s) => isSkipped(s.id)),
 			});
 		}
 		return cells;
@@ -272,16 +274,19 @@
 			<button
 				type="button"
 				onclick={() => (sheetIso = cell.iso)}
-				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}"
+				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}{cell.skipped ? ', a skipped session' : ''}"
 				style="animation-delay: {Math.min(i * 8, 260)}ms"
 				class="reveal relative flex aspect-square flex-col items-center justify-center rounded-md border transition-colors {cell.inMonth
 					? 'border-hairline'
 					: 'border-transparent opacity-40'} {levelClass(level)}"
 			>
-				<span class="tabular text-xs">{cell.day}</span>
+				<span class="tabular text-xs {cell.skipped ? 'text-steel' : ''}">{cell.day}</span>
 				{#if cell.km}<span class="tabular text-[9px] text-steel">{fmtDistance(cell.km)}</span>{/if}
 				{#if cell.done}
 					<span class="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true"></span>
+				{/if}
+				{#if cell.skipped}
+					<span class="absolute left-1 top-1 h-1.5 w-1.5 rounded-full bg-steel" aria-hidden="true"></span>
 				{/if}
 				{#if cell.isToday}
 					<span class="absolute bottom-1 h-0.5 w-4 rounded-full bg-signal-ink" aria-hidden="true"></span>
@@ -295,9 +300,11 @@
 			<span class="h-3 w-3 rounded-[2px] border border-hairline {levelClass(l)}" aria-hidden="true"></span>
 		{/each}
 		<span>More pressure</span>
+		<span class="ml-2 h-1.5 w-1.5 rounded-full bg-steel" aria-hidden="true"></span>
+		<span>Skipped</span>
 		<InfoButton
 			term="Pressure"
-			definition="How much a day asks of you, from the length and intensity of its sessions. A darker day is a harder day. A green dot means it is done."
+			definition="How much a day asks of you, from the length and intensity of its sessions. A darker day is a harder day. A green dot means it is done. A grey dot means it holds a skipped session."
 		/>
 	</div>
 	</div>
@@ -412,6 +419,7 @@
 		session={detailTarget}
 		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
 		logged={loggedBySession.get(detailTarget.id) ?? null}
+		skipped={isSkipped(detailTarget.id)}
 		onClose={() => (detailTarget = null)}
 		onLog={() => {
 			logTarget = detailTarget;
@@ -432,6 +440,15 @@
 						skipSession(detailTarget!.id);
 						detailTarget = null;
 					},
+				};
+		}}
+		onUnskip={() => {
+			if (detailTarget)
+				confirm = {
+					title: 'Un-skip this workout?',
+					body: 'It goes back to your normal plan for the day.',
+					confirmLabel: 'Un-skip',
+					action: () => unskipSession(detailTarget!.id),
 				};
 		}}
 	/>

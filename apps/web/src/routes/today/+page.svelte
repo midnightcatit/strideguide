@@ -8,7 +8,7 @@
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, sessionTypeLabel } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { skipSession, unskipSession } from '$lib/skipped.svelte';
+	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -126,6 +126,9 @@
 
 	const weekLogged = $derived(selWeek ? selWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0);
 	const weekPlanned = $derived(selWeek?.sessions.length ?? 0);
+	const weekSkipped = $derived(
+		selWeek ? selWeek.sessions.filter((s) => !loggedBySession.has(s.id) && isSkipped(s.id)).length : 0,
+	);
 	const weekKm = $derived(
 		selWeek
 			? selWeek.sessions
@@ -453,14 +456,15 @@
 		{#if selWeek}
 			<hr class="my-6 border-hairline" />
 			<SectionHeader id="week-so-far" eyebrow="Week so far" />
-			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
+			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week{weekSkipped ? `, ${weekSkipped} skipped` : ''}">
 				{#each selWeek.sessions as s (s.id)}
 					{@const done = loggedBySession.has(s.id)}
-					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : 'bg-ink/40'}"></span>
+					{@const sk = !done && isSkipped(s.id)}
+					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : sk ? 'bg-steel' : 'bg-ink/40'}"></span>
 				{/each}
 			</div>
 			<p class="tabular mt-2 text-sm">
-				{weekLogged} of {weekPlanned} done
+				{weekLogged} of {weekPlanned} done{#if weekSkipped}<span class="text-steel"> · {weekSkipped} skipped</span>{/if}
 				<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
 			</p>
 
@@ -489,9 +493,27 @@
 		session={detailTarget}
 		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
 		logged={loggedBySession.get(detailTarget.id) ?? null}
+		skipped={isSkipped(detailTarget.id)}
 		onClose={() => (detailTarget = null)}
 		onLog={() => { logTarget = detailTarget; detailTarget = null; }}
 		onStart={() => { playTarget = detailTarget; detailTarget = null; }}
+		onSkip={() =>
+			(confirm = {
+				title: 'Skip this workout?',
+				body: 'It stays on your calendar, marked as skipped. You can un-skip it any time.',
+				confirmLabel: 'Skip it',
+				action: () => {
+					skipSession(detailTarget!.id);
+					detailTarget = null;
+				},
+			})}
+		onUnskip={() =>
+			(confirm = {
+				title: 'Un-skip this workout?',
+				body: 'It goes back to your normal plan for the day.',
+				confirmLabel: 'Un-skip',
+				action: () => unskipSession(detailTarget!.id),
+			})}
 	/>
 {/if}
 

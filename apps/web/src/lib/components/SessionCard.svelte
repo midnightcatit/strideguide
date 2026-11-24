@@ -75,11 +75,12 @@
 					? 'In progress'
 					: 'Not started',
 	);
+	const skipped = $derived(status === 'skipped');
 	const statusClass = $derived(
 		status === 'done'
 			? 'bg-ok-wash text-ok'
 			: status === 'skipped'
-				? 'bg-ink/10 text-ink'
+				? 'border border-hairline-strong bg-sunken text-steel'
 				: status === 'in-progress'
 					? 'bg-signal-wash text-signal-ink'
 					: 'bg-sunken text-steel',
@@ -142,18 +143,22 @@
 <article
 	class="stage-card lift relative overflow-hidden rounded-xl border p-4 sm:p-5 {logged
 		? 'bg-ok-wash'
-		: active
-			? 'bg-signal-wash'
-			: 'bg-cool-wash'} {active ? 'border-signal-ink' : 'border-hairline'} {onOpen
+		: skipped
+			? 'bg-sunken'
+			: active
+				? 'bg-signal-wash'
+				: 'bg-cool-wash'} {active && !skipped ? 'border-signal-ink' : 'border-hairline'} {onOpen
 		? 'shadow-[0_1px_3px_rgba(25,28,34,0.06)]'
 		: ''}"
 >
 	<div
 		class="absolute left-0 top-0 h-full w-0.5 {logged
 			? 'bg-ok'
-			: isStrength
-				? 'bg-steel'
-				: 'bg-signal-ink'} {active && !logged ? 'breathe' : ''}"
+			: skipped
+				? 'bg-hairline-strong'
+				: isStrength
+					? 'bg-steel'
+					: 'bg-signal-ink'} {active && !logged && !skipped ? 'breathe' : ''}"
 		aria-hidden="true"
 	></div>
 
@@ -180,11 +185,20 @@
 							<path d="M4 10.5l4 4 8-9" />
 						</svg>
 					</span>
+				{:else if skipped}
+					<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-steel text-paper" aria-label="Skipped">
+						<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M6 5l6 5-6 5z" />
+							<path d="M14 5v10" />
+						</svg>
+					</span>
 				{/if}
 			</span>
 		</div>
 
-		<h2 class="font-display mt-1.5 truncate text-xl font-semibold leading-tight">{sessionLabel(session)}</h2>
+		<h2 class="font-display mt-1.5 truncate text-xl font-semibold leading-tight {skipped
+			? 'text-steel line-through decoration-2 decoration-steel/50'
+			: ''}">{sessionLabel(session)}</h2>
 
 		<hr class="my-3 border-hairline" />
 

@@ -1,9 +1,11 @@
 <script lang="ts">
 	/**
 	 * A horizontal segmented indicator: one segment per item, filled when done,
-	 * with the percentage beside it. Horizontal on purpose, so a card can carry a
-	 * progress read without the roundness of a ring. Fills animate with transform
-	 * only (scaleX from the left), so nothing reflows and reduced motion zeroes it.
+	 * with the percentage beside it. A segment can instead read as skipped, its
+	 * own muted state, so a skipped session never looks like an empty one.
+	 * Horizontal on purpose, so a card can carry a progress read without the
+	 * roundness of a ring. Fills animate with transform only (scaleX from the
+	 * left), so nothing reflows and reduced motion zeroes it.
 	 */
 	let {
 		segments,
@@ -12,7 +14,7 @@
 		showPercent = true,
 		ariaLabel,
 	}: {
-		segments: { filled: boolean; label?: string }[];
+		segments: { filled: boolean; skipped?: boolean; label?: string }[];
 		percent: number;
 		size?: 'sm' | 'md' | 'lg';
 		showPercent?: boolean;
@@ -32,8 +34,8 @@
 		{#each segments as seg, i (i)}
 			<span class="relative flex-1 overflow-hidden rounded-full bg-hairline {height}">
 				<span
-					class="absolute inset-0 origin-left rounded-full bg-ok"
-					style="transform: scaleX({seg.filled ? 1 : 0}); transition: transform var(--dur-2) var(--ease-out)"
+					class="absolute inset-0 origin-left rounded-full {seg.filled ? 'bg-ok' : seg.skipped ? 'bg-steel' : 'bg-ok'}"
+					style="transform: scaleX({seg.filled || seg.skipped ? 1 : 0}); transition: transform var(--dur-2) var(--ease-out)"
 				></span>
 			</span>
 		{/each}
