@@ -327,6 +327,24 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'cross-train')).toBe(true);
 	});
 
+	it('names the added mobility and cross-training sessions, not just their type', () => {
+		const p = generatePlan({
+			profile: wholeFitness,
+			availableDays: [1, 3, 5],
+			startDate: '2026-12-01',
+			baseline: {
+				experience: 'beginner',
+				crossTraining: ['bike'],
+				flexibility: { current: 2, goal: 4 },
+			},
+		});
+		const mobility = p.weeks.flatMap((w) => w.sessions).filter((s) => s.type === 'mobility');
+		expect(mobility.length).toBeGreaterThan(0);
+		for (const s of mobility) expect(s.title).toBe('Mobility and stretching');
+		const cross = p.weeks[0]!.sessions.find((s) => s.type === 'cross-train');
+		expect(cross?.title).toBe('Bike');
+	});
+
 	it('pairs the mobility session with a day that already has a session', () => {
 		const p = generatePlan({
 			...base,
