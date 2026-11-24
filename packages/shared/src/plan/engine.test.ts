@@ -143,7 +143,9 @@ describe('generatePlan (preferences)', () => {
 	const base = {
 		profile: marathon,
 		availableDays: [0, 2, 4, 6],
-		startDate: '2026-12-01',
+		// A Monday start, so week one is whole; the mobility tests below count its
+		// sessions. A mid-week start leaves week one partial by design.
+		startDate: '2026-11-30',
 		targetDate: '2027-05-01',
 	};
 
@@ -531,7 +533,9 @@ describe('progression (volume builds, sessions differentiate)', () => {
 			profile: GOAL_PROFILES.find((g) => g.slug === slug)!,
 			baseline: { experience },
 			availableDays: [0, 2, 4, 6],
-			startDate: '2026-12-01',
+			// A Monday start, so week one is whole and its shape can be compared with
+			// the weeks after it. A mid-week start leaves week one partial by design.
+			startDate: '2026-11-30',
 		});
 
 	// The regression this protects: an easy run used to be capped at the long
@@ -740,5 +744,87 @@ describe('favorites', () => {
 		});
 		expect(moves).toContain('Split squat');
 		expect(moves).not.toContain('Leg press');
+	});
+});
+
+describe('week alignment when the plan starts on a non-Monday', () => {
+	const isoToDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
+	const addDays = (iso: string, n: number) => {
+		const d = isoToDate(iso);
+		d.setUTCDate(d.getUTCDate() + n);
+		return d.toISOString().slice(0, 10);
+	};
+	/** 0 = Monday … 6 = Sunday for an ISO date. */
+	const weekdayOf = (iso: string) => (isoToDate(iso).getUTCDay() + 6) % 7;
+
+	// 2026-12-01 is a Tuesday. The runner trains Tuesday, Thursday and Saturday,
+	// and asks the plan to start today.
+	const tuesdayStart = '2026-12-01';
+	const plan = generatePlan({
+		profile: marathon,
+		baseline: { experience: 'intermediate' },
+		availableDays: [1, 3, 5],
+		startDate: tuesdayStart,
+		targetDate: '2027-05-01',
+	});
+
+	it('anchors every week to its Monday', () => {
+		for (const w of plan.weeks) {
+			expect(weekdayOf(w.startDate)).toBe(0);
+			expect(w.endDate).toBe(addDays(w.startDate, 6));
+		}
+		// Week one is the calendar week that holds the chosen Tuesday.
+		expect(plan.weeks[0]!.startDate).toBe('2026-11-30');
+	});
+
+	it('lands every session on the weekday its day index names', () => {
+		for (const w of plan.weeks) {
+			for (const s of w.sessions) {
+				expect(weekdayOf(addDays(w.startDate, s.day))).toBe(s.day);
+			}
+		}
+	});
+
+	it('keeps week one free of sessions before the chosen start date', () => {
+		const w1 = plan.weeks[0]!;
+		for (const s of w1.sessions) {
+			expect(addDays(w1.startDate, s.day) >= tuesdayStart).toBe(true);
+		}
+	});
+
+	it('puts the runner Tuesday training day on the actual Tuesday', () => {
+		const w1 = plan.weeks[0]!;
+		const tuesday = w1.sessions.find((s) => s.day === 1)!;
+		expect(tuesday).toBeTruthy();
+		expect(addDays(w1.startDate, tuesday.day)).toBe(tuesdayStart);
+	});
+
+	it('puts a session on the same date in the day view and the calendar', () => {
+		const w1 = plan.weeks[0]!;
+		// The calendar maps a session to weekStart + day. The day view selects a
+		// date by its offset from the week start, which is the same number only when
+		// the week is a Monday. This pins that agreement.
+		const offsetFromWeekStart = (iso: string) =>
+			((Math.round((isoToDate(iso).getTime() - isoToDate(w1.startDate).getTime()) / 86400000) % 7) +
+				7) %
+			7;
+		for (const s of w1.sessions) {
+			const calendarDate = addDays(w1.startDate, s.day);
+			expect(offsetFromWeekStart(calendarDate)).toBe(s.day);
+			expect(weekdayOf(calendarDate)).toBe(s.day);
+		}
+	});
+
+	it('leaves a Monday start unchanged', () => {
+		const monday = generatePlan({
+			profile: marathon,
+			baseline: { experience: 'intermediate' },
+			availableDays: [1, 3, 5],
+			startDate: '2026-11-30',
+			targetDate: '2027-05-01',
+		});
+		expect(monday.weeks[0]!.startDate).toBe('2026-11-30');
+		// Week one is whole, so its Tuesday session is still there.
+		expect(monday.weeks[0]!.sessions.some((s) => s.day === 1)).toBe(true);
 	});
 });
