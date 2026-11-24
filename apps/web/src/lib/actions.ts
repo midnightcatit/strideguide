@@ -232,3 +232,178 @@ export function daySwipe(node: HTMLElement, onStep: (delta: 1 | -1) => void) {
 		},
 	};
 }
+
+export interface DragToDayOptions {
+	/** Called with the day the card was dropped on. */
+	onDropDay: (day: number) => void;
+	/** How long a touch must be held (ms) before the drag starts. */
+	holdMs?: number;
+}
+
+/**
+ * Svelte action for moving a card to another day with one pointer interaction.
+ * On a mouse or pen a drag starts as soon as the pointer clearly moves; on a
+ * touch screen the runner presses and holds for a moment, then drags, so a
+ * plain swipe still scrolls the page and a short tap still opens the card.
+ * The card lifts while it is held and the day under the pointer highlights.
+ * The drop day is read from the `data-drop-day` attribute on the day rows.
+ *
+ * Only transform and opacity move the lifted card, so nothing reflows, and the
+ * lift is left out under prefers-reduced-motion.
+ */
+export function dragToDay(node: HTMLElement, options: DragToDayOptions) {
+	const holdMs = options.holdMs ?? 250;
+	const moveTol = 8; // px of travel that counts as a scroll, not a hold
+	let onDropDay = options.onDropDay;
+
+	let pointerId: number | null = null;
+	let startX = 0;
+	let startY = 0;
+	let active = false;
+	let holdTimer: ReturnType<typeof setTimeout> | undefined;
+	let target: HTMLElement | null = null;
+
+	/** The day row under a viewport point, or null when the pointer is elsewhere. */
+	function dropRowAt(x: number, y: number): HTMLElement | null {
+		let el = document.elementFromPoint(x, y);
+		// The lifted card can overlap a neighbour; look through it to the row.
+		if (el && node.contains(el)) {
+			const previous = node.style.pointerEvents;
+			node.style.pointerEvents = 'none';
+			el = document.elementFromPoint(x, y);
+			node.style.pointerEvents = previous;
+		}
+		return el instanceof HTMLElement ? el.closest<HTMLElement>('[data-drop-day]') : null;
+	}
+
+	function highlight(row: HTMLElement | null) {
+		if (row === target) return;
+		target?.classList.remove('is-drop-target');
+		target = row;
+		target?.classList.add('is-drop-target');
+	}
+
+	function activate(pointer: number, x: number, y: number) {
+		active = true;
+		node.classList.add('is-dragging');
+		node.style.userSelect = 'none';
+		try {
+			node.setPointerCapture(pointer);
+		} catch {
+			// capture is a nicety; the drag still works without it
+		}
+		highlight(dropRowAt(x, y));
+	}
+
+	function clearHold() {
+		if (holdTimer) {
+			clearTimeout(holdTimer);
+			holdTimer = undefined;
+		}
+	}
+
+	function endDrag() {
+		clearHold();
+		if (active) {
+			node.classList.remove('is-dragging');
+			node.style.userSelect = '';
+		}
+		active = false;
+		highlight(null);
+	}
+
+	/** Swallow the click the browser fires after a drag, so a tap does not open. */
+	function suppressNextClick() {
+		const swallow = (e: MouseEvent) => {
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			document.removeEventListener('click', swallow, true);
+		};
+		document.addEventListener('click', swallow, true);
+		setTimeout(() => document.removeEventListener('click', swallow, true), 400);
+	}
+
+	function down(e: PointerEvent) {
+		if (pointerId !== null) return;
+		if (e.pointerType === 'mouse' && e.button !== 0) return;
+		pointerId = e.pointerId;
+		startX = e.clientX;
+		startY = e.clientY;
+		// A touch waits for a hold, so a swipe scrolls and a tap opens the card.
+		if (e.pointerType === 'touch') {
+			clearHold();
+			holdTimer = setTimeout(() => {
+				holdTimer = undefined;
+				activate(e.pointerId, startX, startY);
+			}, holdMs);
+		}
+	}
+
+	function move(e: PointerEvent) {
+		if (pointerId === null || e.pointerId !== pointerId) return;
+		if (!active) {
+			const moved = Math.abs(e.clientX - startX) > moveTol || Math.abs(e.clientY - startY) > moveTol;
+			if (!moved) return;
+			if (holdTimer) {
+				// Moved before the hold completed: this is a scroll, not a drag.
+				clearHold();
+				pointerId = null;
+			} else if (e.pointerType !== 'touch') {
+				// A mouse or pen drag starts as soon as the pointer moves.
+				activate(e.pointerId, e.clientX, e.clientY);
+			}
+			return;
+		}
+		highlight(dropRowAt(e.clientX, e.clientY));
+	}
+
+	function up(e: PointerEvent) {
+		if (pointerId === null || e.pointerId !== pointerId) return;
+		const wasActive = active;
+		const day = target ? Number(target.dataset.dropDay) : null;
+		endDrag();
+		try {
+			node.releasePointerCapture(e.pointerId);
+		} catch {
+			// already released
+		}
+		pointerId = null;
+		if (wasActive) {
+			suppressNextClick();
+			if (day != null && Number.isInteger(day)) onDropDay(day);
+		}
+	}
+
+	function cancel(e: PointerEvent) {
+		if (pointerId === null || e.pointerId !== pointerId) return;
+		endDrag();
+		pointerId = null;
+	}
+
+	// While a touch drag is active, stop the page from scrolling under it.
+	function onTouchMove(e: TouchEvent) {
+		if (active) e.preventDefault();
+	}
+
+	node.addEventListener('pointerdown', down);
+	node.addEventListener('pointermove', move);
+	node.addEventListener('pointerup', up);
+	node.addEventListener('pointercancel', cancel);
+	node.addEventListener('touchmove', onTouchMove, { passive: false });
+
+	return {
+		update(next: DragToDayOptions) {
+			onDropDay = next.onDropDay;
+		},
+		destroy() {
+			endDrag();
+			pointerId = null;
+			node.removeEventListener('pointerdown', down);
+			node.removeEventListener('pointermove', move);
+			node.removeEventListener('pointerup', up);
+			node.removeEventListener('pointercancel', cancel);
+			node.removeEventListener('touchmove', onTouchMove);
+			node.style.userSelect = '';
+		},
+	};
+}

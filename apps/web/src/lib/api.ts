@@ -116,6 +116,19 @@ export interface GeneratePlanInput {
 	availableDays?: number[];
 }
 
+/** One session of the edited week one, as the preview rebuild expects it. */
+export interface PreviewSessionInput {
+	day: number;
+	slot: 'AM' | 'PM';
+	modality: string;
+	type: string;
+	title?: string;
+	purpose?: string;
+	prescription?: unknown;
+	durationMin?: number;
+	libraryId?: string;
+}
+
 export const api = {
 	me: async (): Promise<ApiUser | null> => {
 		const res = await fetch('/auth/me', { credentials: 'include' });
@@ -158,6 +171,12 @@ export const api = {
 			method: 'POST',
 			body: JSON.stringify(body),
 		}),
+
+	/** Save the edited week one and rebuild the weeks ahead around it. The
+	 * sessions are the week exactly as it should be saved; removals are absent.
+	 * Returns the rebuilt plan, the same shape as currentPlan. */
+	rebuildFromPreview: (sessions: PreviewSessionInput[]) =>
+		req<CurrentPlan>('/plans/preview', { method: 'POST', body: JSON.stringify({ sessions }) }),
 
 	/** Rebuild the weeks ahead from the runner's own logs and feedback. Optionally
 	 * change the equipment first, for a strength-equipment change. */
