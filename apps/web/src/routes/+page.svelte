@@ -2,30 +2,28 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
-	import { api } from '$lib/api';
+	import { api, type HealthMetricsPayload } from '$lib/api';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
 	import { type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, localIso, mondayIndex } from '$lib/plan';
-	import { logMs, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
-	import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
+	import { logMs, trainedDays, currentStreak, weeklyKmSeries, weekPreview } from '$lib/metrics';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
-	import SegmentedBar from '$lib/components/SegmentedBar.svelte';
-	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
-	import WatchVitals from '$lib/components/WatchVitals.svelte';
+	import WeekPreviewCard from '$lib/components/WeekPreviewCard.svelte';
+	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
+	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
+	import HealthSummary from '$lib/components/HealthSummary.svelte';
 	import SyncButton from '$lib/components/SyncButton.svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 
 	let note = $state<string | null>(null);
-	let recovery = $state<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] } | null>(
-		null,
-	);
+	let health = $state<HealthMetricsPayload | null>(null);
 
 	// Send a signed-in user with no plan to onboarding, once per session, unless
 	// they have said "not now". The session guard means the Dashboard tab still
@@ -59,12 +57,12 @@
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
-	const weekLogged = $derived(
-		todayWeek ? todayWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0,
+	const loggedIds = $derived(
+		new Set(store.logs.filter((l) => l.sessionId).map((l) => l.sessionId as string)),
 	);
-	const weekPlanned = $derived(todayWeek?.sessions.length ?? 0);
-	const weekSkipped = $derived(
-		todayWeek ? todayWeek.sessions.filter((s) => !loggedBySession.has(s.id) && isSkipped(s.id)).length : 0,
+	const skippedSet = $derived(new Set<string>(skippedIds()));
+	const week = $derived(
+		weekPreview(todayWeek?.sessions.map((s) => s.id) ?? [], loggedIds, skippedSet),
 	);
 	const weekKm = $derived(
 		todayWeek
@@ -90,13 +88,6 @@
 		return out;
 	});
 	const streak = $derived(currentStreak(logDays, todayIso));
-	const weekSegments = $derived(
-		(todayWeek?.sessions ?? []).map((s) => ({
-			filled: loggedBySession.has(s.id),
-			skipped: !loggedBySession.has(s.id) && isSkipped(s.id),
-		})),
-	);
-	const weekPercent = $derived(weekPlanned ? (weekLogged / weekPlanned) * 100 : 0);
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
 	const weeklyMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
 	const weeksLike = $derived<WeekLike[]>(
@@ -161,10 +152,10 @@
 		if (!auth.user) return;
 		await ensurePlan();
 		void api
-			.recovery()
-			.then((r) => (recovery = r))
+			.healthMetrics(30)
+			.then((h) => (health = h))
 			.catch(() => {
-				// no health data, or the call failed; the section simply does not show
+				// no health data, or the call failed; the section shows its empty state
 			});
 		note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 
@@ -252,45 +243,19 @@
 		</section>
 	{/if}
 
-	<!-- At a glance: each card opens its full metric page -->
+	<!-- At a glance: each card opens its full metric page. The same cards, from
+	     the same components, appear on the progress tab. -->
 	<div class="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-3">
-		<a href="/progress/week?from=/" class="lift block rounded-xl" aria-label="This week, open the week breakdown">
-			<Card tone="sunken">
-				<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
-				<p class="tabular mt-1 text-xl font-semibold">{weekLogged}<span class="text-sm text-steel">/{weekPlanned}</span>{#if weekSkipped}<span class="text-sm text-steel"> · {weekSkipped} skipped</span>{/if}</p>
-				<div class="mt-2.5">
-					<SegmentedBar
-						segments={weekSegments}
-						percent={weekPercent}
-						size="sm"
-						ariaLabel="{weekLogged} of {weekPlanned} sessions done this week{weekSkipped ? `, ${weekSkipped} skipped` : ''}"
-					/>
-				</div>
-				<p class="mt-2 text-[11px] text-signal-ink">See the week →</p>
-			</Card>
-		</a>
-		<a href="/progress/streak?from=/" class="lift block rounded-xl" aria-label="Streak, open the full activity heatmap">
-			<Card tone="sunken">
-				<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
-				<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
-				<div class="mt-2.5">
-					<ActivityHeatmap trainedDays={logDays} {skippedDays} weeks={12} {todayIso} cell={6} gap={2} showMonthLabels={false} />
-				</div>
-				<p class="mt-2 text-[11px] text-signal-ink">See the heatmap →</p>
-			</Card>
-		</a>
-		<a href="/progress/volume?from=/" class="lift block rounded-xl" aria-label="Volume, open the full distance view">
-			<Card tone="sunken">
-				<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
-				<p class="tabular mt-1 text-lg text-steel">{fmtDistance(weekDoneKm)}<span class="text-sm"> / {fmtDistance(weekKm)}</span></p>
-				<div class="mt-2.5 flex items-end gap-0.5" style="height: 20px" aria-hidden="true">
-					{#each weekly as w (w.startIso)}
-						<div class="grow-y flex-1 rounded-[1px] bg-ok" style="height: {Math.max(2, Math.round((w.km / weeklyMax) * 18))}px"></div>
-					{/each}
-				</div>
-				<p class="mt-2 text-[11px] text-signal-ink">See all volume →</p>
-			</Card>
-		</a>
+		<WeekPreviewCard
+			done={week.done}
+			planned={week.planned}
+			skipped={week.skipped}
+			percent={week.percent}
+			segments={week.segments}
+			from="/"
+		/>
+		<StreakPreviewCard {streak} trainedDays={logDays} {skippedDays} {todayIso} from="/" />
+		<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} {weeklyMax} from="/" />
 	</div>
 
 	<!-- Connected health: pull the latest, and a small read of the watch numbers -->
@@ -299,20 +264,23 @@
 			<div class="flex flex-wrap items-center justify-between gap-3">
 				<div class="min-w-0">
 					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
-					<p class="mt-0.5 text-sm text-steel">Pull the latest from your watch and health apps.</p>
+					<p class="mt-0.5 text-sm text-steel">Your watch and health numbers, from the last 30 days.</p>
 				</div>
 				<SyncButton
 					onSynced={() =>
 						api
-							.recovery()
-							.then((r) => (recovery = r))
+							.healthMetrics(30)
+							.then((h) => (health = h))
 							.catch(() => {})}
 				/>
 			</div>
-			{#if recovery?.available && recovery.signal && (recovery.signal.avgRestingHr || recovery.signal.avgHrvMs || recovery.signal.avgSleepMin)}
+			{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
 				<div class="mt-4">
-					<WatchVitals signal={recovery.signal} days={recovery.days} />
+					<HealthSummary payload={health} max={4} />
 				</div>
+				<a href="/progress/health?from=/" class="mt-3 inline-block text-xs text-signal-ink hover:underline">See all health →</a>
+			{:else}
+				<p class="mt-3 text-sm text-steel">Connect a health app or watch and sync to see your numbers here.</p>
 			{/if}
 		</Card>
 	</section>

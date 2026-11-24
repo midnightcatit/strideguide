@@ -77,6 +77,43 @@ export function weeklyKmSeries(logs: ClientLog[], todayIso: string, weeks: numbe
 	return out;
 }
 
+export interface WeekPreview {
+	done: number;
+	planned: number;
+	skipped: number;
+	percent: number;
+	segments: { filled: boolean; skipped: boolean }[];
+}
+
+/**
+ * The current week as one read: how many sessions are done, how many are
+ * skipped, and a segment per session. Shared by the dashboard and the progress
+ * tab so the preview card shows the same numbers in both places.
+ */
+export function weekPreview(
+	sessionIds: string[],
+	loggedIds: Set<string>,
+	skippedIds: Set<string>,
+): WeekPreview {
+	let done = 0;
+	let skipped = 0;
+	const segments = sessionIds.map((id) => {
+		const filled = loggedIds.has(id);
+		const skip = !filled && skippedIds.has(id);
+		if (filled) done++;
+		else if (skip) skipped++;
+		return { filled, skipped: skip };
+	});
+	const planned = sessionIds.length;
+	return {
+		done,
+		planned,
+		skipped,
+		percent: planned ? (done / planned) * 100 : 0,
+		segments,
+	};
+}
+
 export interface VolumeBuckets {
 	todayKm: number;
 	weekKm: number;

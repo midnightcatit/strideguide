@@ -4,14 +4,20 @@
 	import { fitnessState, type HealthDay, type RecoverySignal } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { localIso } from '$lib/plan';
+	import { addDaysIso, localIso } from '$lib/plan';
 	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
-	import { api } from '$lib/api';
+	import { api, type HealthMetricsPayload } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
+	import { weekPreview, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
 	import Card from '$lib/components/Card.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WatchVitals from '$lib/components/WatchVitals.svelte';
+	import WeekPreviewCard from '$lib/components/WeekPreviewCard.svelte';
+	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
+	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
+	import HealthPreviewCard from '$lib/components/HealthPreviewCard.svelte';
+	import HealthSummary from '$lib/components/HealthSummary.svelte';
 
 	// The recovery payload carries a steps series alongside the days. The shared
 	// client type predates it, so it is widened here rather than in lib/api.
@@ -23,6 +29,7 @@
 	};
 
 	let recovery = $state<RecoveryState | null>(null);
+	let health = $state<HealthMetricsPayload | null>(null);
 
 	const todayIso = localIso();
 
@@ -33,6 +40,12 @@
 			.then((r) => (recovery = r))
 			.catch(() => {
 				// no health data, or the call failed; the section simply does not show
+			});
+		void api
+			.healthMetrics(30)
+			.then((h) => (health = h))
+			.catch(() => {
+				// no health data, or the call failed; the section shows its empty state
 			});
 	});
 
@@ -55,6 +68,50 @@
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
+
+	// The current-week preview, the same read the dashboard card shows. Both use
+	// the same helper and the same components, so the cards cannot drift apart.
+	const todayWeek = $derived(
+		(store.plan?.weeks ?? []).find(
+			(w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate,
+		) ?? store.plan?.weeks?.[0],
+	);
+	const loggedIds = $derived(
+		new Set(store.logs.filter((l) => l.sessionId).map((l) => l.sessionId as string)),
+	);
+	const skippedSet = $derived(new Set<string>(skippedIds()));
+	const week = $derived(
+		weekPreview(todayWeek?.sessions.map((s) => s.id) ?? [], loggedIds, skippedSet),
+	);
+	const weekKm = $derived(
+		todayWeek
+			? todayWeek.sessions
+					.filter((s) => s.modality === 'running')
+					.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0)
+			: 0,
+	);
+	const weekDoneKm = $derived(
+		todayWeek
+			? todayWeek.sessions
+					.filter((s) => s.modality === 'running')
+					.reduce((sum, s) => {
+						const log = store.logs.find((l) => l.sessionId === s.id);
+						return sum + (log?.runStats?.distanceKm ?? 0);
+					}, 0)
+			: 0,
+	);
+	const logDays = $derived(trainedDays(store.logs));
+	const streak = $derived(currentStreak(logDays, todayIso));
+	const skippedDaySet = $derived.by(() => {
+		const out = new Set<string>();
+		for (const w of store.plan?.weeks ?? []) {
+			if (!w.startDate) continue;
+			for (const s of w.sessions) if (isSkipped(s.id)) out.add(addDaysIso(w.startDate, s.day));
+		}
+		return out;
+	});
+	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
+	const weeklyMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
 
 	// Steps come from the same health payload as the recovery numbers: the last
 	// two weeks, oldest first, ready to draw.
@@ -168,33 +225,33 @@
 		<h1 class="font-display mt-1 text-2xl font-bold">{profileName}</h1>
 	</header>
 
-	<!-- The metric pages, each one reachable from here and from the dashboard -->
+	<!-- The metric pages, the same cards the dashboard shows. Each opens its full page. -->
 	<section aria-labelledby="p-pages" class="mb-7">
 		<SectionHeader id="p-pages" eyebrow="Metric pages" />
-		<div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-			<a href="/progress/week?from=/progress" class="lift block rounded-xl" aria-label="Open the week breakdown">
-				<Card tone="sunken">
-					<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
-					<p class="mt-1 text-sm text-steel">The sessions done this week, one by one.</p>
-					<p class="mt-2 text-[11px] text-signal-ink">Open →</p>
-				</Card>
-			</a>
-			<a href="/progress/streak?from=/progress" class="lift block rounded-xl" aria-label="Open the activity heatmap">
-				<Card tone="sunken">
-					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
-					<p class="mt-1 text-sm text-steel">Your training days as a heatmap, over months.</p>
-					<p class="mt-2 text-[11px] text-signal-ink">Open →</p>
-				</Card>
-			</a>
-			<a href="/progress/volume?from=/progress" class="lift block rounded-xl" aria-label="Open the volume breakdown">
-				<Card tone="sunken">
-					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
-					<p class="mt-1 text-sm text-steel">Distance by day, week, month, year and all time.</p>
-					<p class="mt-2 text-[11px] text-signal-ink">Open →</p>
-				</Card>
-			</a>
+		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+			<WeekPreviewCard
+				done={week.done}
+				planned={week.planned}
+				skipped={week.skipped}
+				percent={week.percent}
+				segments={week.segments}
+				from="/progress"
+			/>
+			<StreakPreviewCard {streak} trainedDays={logDays} skippedDays={skippedDaySet} {todayIso} from="/progress" />
+			<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} {weeklyMax} from="/progress" />
+			<HealthPreviewCard payload={health} from="/progress" />
 		</div>
 	</section>
+
+	{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
+		<section aria-labelledby="p-health" class="mb-7">
+			<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" />
+			<Card>
+				<HealthSummary payload={health} max={6} />
+				<a href="/progress/health?from=/progress" class="mt-3 inline-block text-xs text-signal-ink hover:underline">See all health data →</a>
+			</Card>
+		</section>
+	{/if}
 
 	{#if !hasLogs}
 		<Card>
