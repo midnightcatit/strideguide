@@ -1,5 +1,10 @@
 import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
-import type { QualityKind, VolumeIntent, WeekShape } from '@strideguide/shared/plan';
+import type {
+	QualityKind,
+	VolumeIntent,
+	WeekShape,
+	WeekOnePattern,
+} from '@strideguide/shared/plan';
 import { runAi, type AiMessage } from './ai';
 
 const ALL: QualityKind[] = ['tempo', 'hills', 'interval', 'race-pace'];
@@ -20,6 +25,23 @@ export interface ShapeContext {
 		dislikedTypes?: string[];
 		samples?: number;
 	};
+	/**
+	 * The runner's approved week one, when the plan is being rebuilt from it. The
+	 * model shapes the later weeks around these days, types and added workouts.
+	 */
+	weekOne?: WeekOnePattern;
+}
+
+/** A one-line read of the approved week one, or empty when there is none. */
+function weekOneLine(weekOne?: WeekOnePattern): string {
+	if (!weekOne || !weekOne.days.length) return '';
+	const days = weekOne.days.map((d) => `day ${d.day} ${d.slot} ${d.type}`);
+	const added = weekOne.recurring.map((r) => `day ${r.day} ${r.slot} the ${r.type} they added`);
+	const bits = [`the days the runner trains: ${days.join('; ')}`];
+	if (added.length) bits.push(`workouts to keep on their days: ${added.join('; ')}`);
+	if (weekOne.qualityKinds.length)
+		bits.push(`quality in week one: ${weekOne.qualityKinds.join(', ')}`);
+	return ` The runner approved their first week: ${bits.join('. ')}. Shape the later weeks around that pattern, keeping the same training days and mirroring the session types and any added workouts.`;
 }
 
 /** A one-line read of the runner's recent training, or empty when there is none. */
@@ -67,7 +89,7 @@ You are a running coach shaping a plan the engine has already laid out. For each
 		},
 		{
 			role: 'user',
-			content: `Goal: ${ctx.goalName}. Runner preferences: ${JSON.stringify(ctx.prefs)}.${fitnessLine(ctx.fitness)} Weeks: ${JSON.stringify(ctx.weeks)}`,
+			content: `Goal: ${ctx.goalName}. Runner preferences: ${JSON.stringify(ctx.prefs)}.${fitnessLine(ctx.fitness)}${weekOneLine(ctx.weekOne)} Weeks: ${JSON.stringify(ctx.weeks)}`,
 		},
 	];
 

@@ -1,20 +1,26 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { asc, and, desc, eq, gte, inArray } from 'drizzle-orm';
+import { asc, and, desc, eq, gt, gte, inArray } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
 	adaptPlan,
 	fitnessState,
 	machinesForPreset,
+	rebuildFromWeekOne,
+	weekOnePattern,
 } from '@strideguide/shared/plan';
 import type {
 	Baseline,
 	EquipmentItem,
 	EquipmentPreference,
+	Modality,
+	PlannedWeek,
+	PlanInput,
 	QualityKind,
 	SessionArchetype,
+	SessionPrescription,
 } from '@strideguide/shared';
 import { DEFAULT_PREFS, ageFromBirthYear, type Prefs } from '@strideguide/shared/units';
 import { schema } from '../db';
@@ -66,19 +72,20 @@ function resolveMachines(prefs: Prefs): string[] | undefined {
 	return machinesForPreset(prefs.gymPreset);
 }
 
-/** GET current active plan for the user's most recent goal (weeks + sessions). */
-plans.get('/current', async (c) => {
-	const user = c.get('user')!;
-	const db = c.get('db');
-
+/**
+ * The user's active plan as the client reads it: goal, plan, sessions, states
+ * and logs. Shared by GET /current and the preview rebuild, so both return the
+ * same shape. `plan` is null when the runner has no goal or no plan yet.
+ */
+async function currentPlanJson(db: Db, userId: string) {
 	const goalRows = await db
 		.select()
 		.from(schema.userGoals)
-		.where(eq(schema.userGoals.userId, user.id))
+		.where(eq(schema.userGoals.userId, userId))
 		.orderBy(desc(schema.userGoals.createdAt))
 		.limit(1);
-	const goal = goalRows[0];
-	if (!goal) return c.json({ plan: null });
+	const goal = goalRows[0] ?? null;
+	if (!goal) return { goal: null, plan: null };
 
 	const planRows = await db
 		.select()
@@ -86,8 +93,8 @@ plans.get('/current', async (c) => {
 		.where(eq(schema.plans.userGoalId, goal.id))
 		.orderBy(desc(schema.plans.version))
 		.limit(1);
-	const plan = planRows[0];
-	if (!plan) return c.json({ goal, plan: null });
+	const plan = planRows[0] ?? null;
+	if (!plan) return { goal, plan: null };
 
 	const weeks = await db
 		.select()
@@ -112,7 +119,7 @@ plans.get('/current', async (c) => {
 				db
 					.select()
 					.from(schema.logs)
-					.where(and(eq(schema.logs.userId, user.id), inArray(schema.logs.sessionId, part))),
+					.where(and(eq(schema.logs.userId, userId), inArray(schema.logs.sessionId, part))),
 			),
 		)
 	).flat();
@@ -120,9 +127,9 @@ plans.get('/current', async (c) => {
 	const states = await db
 		.select()
 		.from(schema.sessionStates)
-		.where(eq(schema.sessionStates.userId, user.id));
+		.where(eq(schema.sessionStates.userId, userId));
 
-	return c.json({
+	return {
 		goal,
 		plan,
 		sessionStates: states.map((s) => ({
@@ -137,7 +144,16 @@ plans.get('/current', async (c) => {
 				.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? '')),
 		})),
 		logs,
-	});
+	};
+}
+
+/** GET current active plan for the user's most recent goal (weeks + sessions). */
+plans.get('/current', async (c) => {
+	const user = c.get('user')!;
+	const json = await currentPlanJson(c.get('db'), user.id);
+	// Preserve the original response: `{ plan: null }` when there is no goal.
+	if (!json.plan) return c.json(json.goal ? { goal: json.goal, plan: null } : { plan: null });
+	return c.json(json);
 });
 
 /** Day index (0 = Monday) for an ISO date inside a week starting on weekStart. */
@@ -804,5 +820,291 @@ plans.post('/adapt', async (c) => {
 		weeks: changed.length,
 	});
 });
+
+/** One session of the approved week one, as the client sends it. */
+interface PreviewSession {
+	day: number;
+	slot: 'AM' | 'PM';
+	modality: 'running' | 'walking' | 'strength' | 'mobility' | 'recovery';
+	type: string;
+	title?: string;
+	purpose?: string;
+	prescription?: unknown;
+	durationMin?: number;
+	libraryId?: string;
+}
+
+/**
+ * Save the approved week one exactly as sent. A session that matches an existing
+ * one on day, slot and type is updated in place, so its logged state and any
+ * notes survive the edit; the rest are inserted, and any leftover row is removed,
+ * so a removal in week one is a real removal.
+ */
+async function replaceWeekOneSessions(db: Db, weekId: string, sessions: PreviewSession[]) {
+	const existing = await db
+		.select()
+		.from(schema.sessionsPlan)
+		.where(eq(schema.sessionsPlan.planWeekId, weekId));
+	const pool = [...existing];
+
+	for (const s of sessions) {
+		const given =
+			s.prescription && typeof s.prescription === 'object'
+				? (s.prescription as Record<string, unknown>)
+				: {};
+		const prescription: Record<string, unknown> = { ...given };
+		// A library workout is stored on the prescription, so fold the id in when the
+		// client sent it at the top level and the prescription does not carry it.
+		if (s.libraryId && prescription.libraryId == null) prescription.libraryId = s.libraryId;
+		const row = {
+			day: s.day,
+			slot: s.slot,
+			modality: s.modality,
+			type: s.type,
+			title: s.title ?? null,
+			purpose: s.purpose ?? null,
+			prescription,
+			durationMin: s.durationMin ?? null,
+		};
+		const matchIdx = pool.findIndex(
+			(e) => e.day === s.day && (e.slot ?? 'AM') === s.slot && e.type === s.type,
+		);
+		if (matchIdx >= 0) {
+			const match = pool.splice(matchIdx, 1)[0]!;
+			await db.update(schema.sessionsPlan).set(row).where(eq(schema.sessionsPlan.id, match.id));
+		} else {
+			await db
+				.insert(schema.sessionsPlan)
+				.values({ id: crypto.randomUUID(), planWeekId: weekId, ...row });
+		}
+	}
+	for (const stale of pool) {
+		await db.delete(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, stale.id));
+	}
+}
+
+/**
+ * POST /preview: the runner edits week one to match the week they will run, then
+ * asks for the rest of the plan to be rebuilt around it. Week one is saved
+ * exactly as sent. Weeks two onward are rebuilt from the week one pattern: the
+ * engine lays them out with the week one days and the runner's added workouts,
+ * then the model shapes them within the profile's rules. Best-effort AI: when it
+ * is unavailable the deterministic rebuild still stands. Week one is never
+ * rewritten by the rebuild. Returns the current plan, the same shape as GET
+ * /current, so the client can carry on.
+ */
+plans.post(
+	'/preview',
+	zValidator(
+		'json',
+		z.object({
+			sessions: z
+				.array(
+					z.object({
+						day: z.number().int().min(0).max(6),
+						slot: z.enum(['AM', 'PM']),
+						modality: z.enum(['running', 'walking', 'strength', 'mobility', 'recovery']),
+						type: z.string().min(1).max(40),
+						title: z.string().max(200).optional(),
+						purpose: z.string().max(600).optional(),
+						prescription: z.unknown().optional(),
+						durationMin: z.number().int().min(0).max(600).optional(),
+						libraryId: z.string().min(1).max(60).optional(),
+					}),
+				)
+				.max(50),
+		}),
+	),
+	async (c) => {
+		const user = c.get('user')!;
+		const db = c.get('db');
+		const { sessions } = c.req.valid('json');
+
+		// The rebuild costs AI; keep it bounded.
+		const rl = await checkRateLimit(c.env.DB, `preview:${user.id}`, 30, 3600);
+		if (!rl.ok) return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '600' });
+
+		const found = await currentPlanWithWeeks(db, user.id);
+		if (!found) return c.json({ error: 'no_plan' }, 404);
+		const { goal, plan, weeks } = found;
+		const firstWeek = weeks[0];
+		if (!firstWeek) return c.json({ error: 'no_plan' }, 404);
+
+		const profile = GOAL_PROFILES.find((p) => p.slug === goal.goalProfileSlug);
+		if (!profile) return c.json({ error: 'unknown_profile' }, 400);
+
+		const prefs = await loadPrefs(db, user.id);
+		const storedBaseline = (goal.baseline ?? {}) as Baseline;
+		const age = storedBaseline.age ?? ageFromBirthYear(prefs.birthYear);
+		const baseline: Baseline = {
+			...storedBaseline,
+			...(age != null ? { age } : {}),
+			...(prefs.equipment ? { equipment: prefs.equipment } : {}),
+			...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
+		};
+
+		// The stored plan, so the rebuild can keep week one and every date in place.
+		const weekIds = weeks.map((w) => w.id);
+		const storedSessions = weekIds.length
+			? (
+					await Promise.all(
+						chunk(weekIds, 90).map((part) =>
+							db
+								.select()
+								.from(schema.sessionsPlan)
+								.where(inArray(schema.sessionsPlan.planWeekId, part)),
+						),
+					)
+				).flat()
+			: [];
+		const existingWeeks: PlannedWeek[] = weeks.map((w) => ({
+			weekNumber: w.weekNumber,
+			phase: w.phase ?? 'base',
+			focus: w.focus ?? '',
+			startDate: w.startDate ?? '',
+			endDate: w.endDate ?? '',
+			targetVolumeKm: 0,
+			sessions: storedSessions
+				.filter((s) => s.planWeekId === w.id)
+				.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? ''))
+				.map((s) => ({
+					day: s.day,
+					slot: s.slot ?? 'AM',
+					modality: s.modality as Modality,
+					type: s.type as SessionArchetype,
+					title: s.title ?? '',
+					purpose: s.purpose ?? '',
+					prescription: (s.prescription ?? {}) as SessionPrescription,
+					durationMin: s.durationMin ?? 0,
+				})),
+		}));
+
+		// The approved week one drives the rebuild: its days are the days the engine
+		// may use, and its added workouts recur.
+		const pattern = weekOnePattern(sessions);
+		const availableDays = pattern.availableDays.length
+			? pattern.availableDays
+			: (goal.availableDays as number[] | null)?.length
+				? (goal.availableDays as number[])
+				: [0, 2, 4];
+
+		const planInput: PlanInput = {
+			profile,
+			baseline,
+			availableDays,
+			startDate: firstWeek.startDate ?? new Date().toISOString().slice(0, 10),
+			targetDate: goal.targetDate ?? undefined,
+			equipment: baseline.equipmentItems,
+			machines: resolveMachines(prefs),
+		};
+
+		// The engine lays out the later weeks instantly. Then the model shapes them
+		// (quality kind, emphasis) within the profile's rules, with the week one
+		// pattern in context. Bounded and best-effort: a slow or invalid answer
+		// leaves the deterministic rebuild standing.
+		const allowed = (['tempo', 'hills', 'interval', 'race-pace'] as QualityKind[]).filter((k) =>
+			profile.sessionTypes.includes(k as SessionArchetype),
+		);
+		const baseDraft = generatePlan(planInput);
+		const shapes = await shapePlan(c.env, {
+			goalName: profile.name,
+			allowed,
+			prefs: baseline as Record<string, unknown>,
+			weeks: baseDraft.weeks.map((w) => ({
+				weekNumber: w.weekNumber,
+				phase: w.phase,
+				volumeKm: w.targetVolumeKm,
+			})),
+			weekOne: pattern,
+		});
+		const { weeks: rebuilt } = rebuildFromWeekOne({
+			existingWeeks,
+			weekOne: sessions,
+			plan: planInput,
+			weekShapes: shapes ?? undefined,
+		});
+		const usedAi = !!shapes;
+
+		// Week one is saved exactly as sent, and never rebuilt.
+		await replaceWeekOneSessions(db, firstWeek.id, sessions);
+
+		// Replace weeks two onward, leaving week one and its history alone.
+		await db
+			.delete(schema.planWeeks)
+			.where(
+				and(
+					eq(schema.planWeeks.planId, plan.id),
+					gt(schema.planWeeks.weekNumber, firstWeek.weekNumber),
+				),
+			);
+
+		const laterWeeks = rebuilt.filter((w) => w.weekNumber > firstWeek.weekNumber);
+		const weekRows = laterWeeks.map((w) => {
+			const weekId = crypto.randomUUID();
+			return {
+				id: weekId,
+				planId: plan.id,
+				weekNumber: w.weekNumber,
+				focus: w.focus,
+				summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
+				startDate: w.startDate,
+				endDate: w.endDate,
+				phase: w.phase,
+				targetVolumeKm: w.targetVolumeKm,
+				sessionRows: w.sessions.map((s) => ({
+					id: crypto.randomUUID(),
+					planWeekId: weekId,
+					day: s.day,
+					slot: s.slot,
+					modality: s.modality,
+					type: s.type,
+					title: s.title,
+					purpose: s.purpose,
+					prescription: s.prescription,
+					durationMin: s.durationMin,
+				})),
+			};
+		});
+		// Match the generate path: only the stored week columns are inserted.
+		const weekValues = weekRows.map(
+			({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest,
+		);
+		for (const part of chunk(weekValues, 10)) {
+			await db.insert(schema.planWeeks).values(part);
+		}
+		const sessionRows = weekRows.flatMap((w) => w.sessionRows);
+		for (const part of chunk(sessionRows, 8)) {
+			await db.insert(schema.sessionsPlan).values(part);
+		}
+
+		await db
+			.update(schema.plans)
+			.set({
+				generatedAt: new Date(),
+				model: usedAi ? 'engine+ai' : 'engine',
+				params: {
+					...(plan.params as Record<string, unknown>),
+					previewedAt: new Date().toISOString(),
+				},
+			})
+			.where(eq(schema.plans.id, plan.id));
+
+		// Narrate the rebuilt weeks after responding, so the user never waits.
+		c.executionCtx.waitUntil(
+			narrateAndStore(
+				c.env,
+				db,
+				weekRows.map((w) => ({
+					id: w.id,
+					weekNumber: w.weekNumber,
+					phase: w.phase,
+					targetVolumeKm: w.targetVolumeKm,
+				})),
+			),
+		);
+
+		return c.json(await currentPlanJson(db, user.id));
+	},
+);
 
 export default plans;
