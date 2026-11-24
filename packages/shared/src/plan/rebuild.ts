@@ -63,10 +63,14 @@ function byDaySlot(a: { day: number; slot: string }, b: { day: number; slot: str
 
 /** True when the session is something the runner added, not the engine's own. */
 function isAdded(session: WeekOneSession): boolean {
-	if (session.libraryId) return true;
-	if (session.type === 'cross-train') return true;
+	// An explicit flag wins: the engine sets added: false on its own sessions that
+	// point at a library workout, so they are not repeated as added ones.
 	const p = session.prescription;
-	return !!p && typeof p === 'object' && (p as { added?: boolean }).added === true;
+	if (p && typeof p === 'object' && 'added' in p) {
+		return (p as { added?: boolean }).added === true;
+	}
+	if (session.libraryId) return true;
+	return session.type === 'cross-train';
 }
 
 /** Read the approved week one into a compact pattern the rebuild can lean on. */

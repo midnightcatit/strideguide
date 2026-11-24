@@ -5,6 +5,8 @@
  * Durations in seconds; rendered as timed steps in the guided player.
  */
 
+import type { StepBlock, StepKind, StructuredWorkout, WorkoutStep } from '../types';
+
 export interface Drill {
 	name: string;
 	durationSec: number;
@@ -246,4 +248,37 @@ export function mobilityRoutine(building: boolean): Drill[] {
 	const dynamic = [WARMUP_DRILLS[1]!, WARMUP_DRILLS[2]!];
 	const statics = building ? [...COOLDOWN_STRETCHES, ...EXTRA_STRETCHES] : COOLDOWN_STRETCHES;
 	return [...dynamic, ...statics];
+}
+
+/**
+ * Map drills to a block of timed steps. A drill that carries rounds becomes one
+ * step per round, so a long hold is shown as the shorter rounds it is built from.
+ */
+export function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
+	const steps: WorkoutStep[] = [];
+	for (const d of drills) {
+		const rounds = d.rounds ?? 1;
+		for (let i = 0; i < rounds; i++) {
+			steps.push({
+				kind,
+				label: d.name,
+				durationSec: d.durationSec,
+				targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
+				note: d.why,
+			});
+		}
+	}
+	return { repeat: 1, label, steps };
+}
+
+/** A guided mobility session: the dynamic loosen-up, then the static holds. */
+export function mobilityWorkout(routine: Drill[]): StructuredWorkout {
+	const dynamic = routine.slice(0, 2);
+	const statics = routine.slice(2);
+	return {
+		blocks: [
+			drillBlock('Loosen up', dynamic, 'warmup'),
+			drillBlock('Mobility stretches', statics, 'cooldown'),
+		],
+	};
 }

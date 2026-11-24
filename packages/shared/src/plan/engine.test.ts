@@ -340,7 +340,7 @@ describe('generatePlan (preferences)', () => {
 		});
 		const mobility = p.weeks.flatMap((w) => w.sessions).filter((s) => s.type === 'mobility');
 		expect(mobility.length).toBeGreaterThan(0);
-		for (const s of mobility) expect(s.title).toBe('Mobility and stretching');
+		for (const s of mobility) expect(s.title).toBe('Mobility and stretching, 12 minutes');
 		const cross = p.weeks[0]!.sessions.find((s) => s.type === 'cross-train');
 		expect(cross?.title).toBe('Bike');
 	});

@@ -10,6 +10,7 @@
 import type { StructuredWorkout } from '../types';
 import { block, MIN, step, wk } from './library-helpers';
 import { EXTRA_WORKOUTS } from './library-extra';
+import { mobilityRoutine, mobilityWorkout } from './mobility';
 
 export interface LibraryWorkout {
 	id: string;
@@ -968,6 +969,36 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		]),
 		refs: ['wave-3/8c-stretching-flexibility'],
 		tags: ['mobility', 'desk', 'no-equipment'],
+	},
+	{
+		id: 'mobility-stretch-8',
+		title: 'Mobility and stretching, 8 minutes',
+		modality: 'mobility',
+		type: 'mobility',
+		durationMin: 8,
+		intensity: 'easy',
+		summary: 'A short mobility session to keep the range you already have.',
+		purpose:
+			'Range of motion and activation to keep the stride healthy. The engine plans this one when your flexibility goal is already close.',
+		targetRpe: [1, 3],
+		workout: mobilityWorkout(mobilityRoutine(false)),
+		refs: ['wave-3/8a-warmup-cooldown-mobility', 'wave-3/8c-stretching-flexibility'],
+		tags: ['mobility', 'rest-day', 'no-equipment'],
+	},
+	{
+		id: 'mobility-stretch-12',
+		title: 'Mobility and stretching, 12 minutes',
+		modality: 'mobility',
+		type: 'mobility',
+		durationMin: 12,
+		intensity: 'easy',
+		summary: 'A mobility session with a little more work toward your flexibility goal.',
+		purpose:
+			'Range of motion and activation to keep the stride healthy, with extra holds when your flexibility goal is further out.',
+		targetRpe: [1, 3],
+		workout: mobilityWorkout(mobilityRoutine(true)),
+		refs: ['wave-3/8a-warmup-cooldown-mobility', 'wave-3/8c-stretching-flexibility'],
+		tags: ['mobility', 'rest-day', 'no-equipment'],
 	},
 
 	// ---- Recovery ---------------------------------------------------------
