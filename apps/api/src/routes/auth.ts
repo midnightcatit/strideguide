@@ -70,7 +70,7 @@ auth.get('/google/callback', async (c) => {
 
 	const db = c.get('db');
 	const user = await upsertUser(db, identity);
-	const token = await signSession(c.env, { uid: user.id, email: user.email });
+	const token = await signSession(c.env, { uid: user.id, email: user.email, name: user.name });
 
 	await db.insert(schema.authSessions).values({
 		id: crypto.randomUUID(),

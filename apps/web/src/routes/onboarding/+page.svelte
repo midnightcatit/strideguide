@@ -10,6 +10,7 @@
 	import { reportClientError } from '$lib/clientErrors';
 	import { dragToDay } from '$lib/actions';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
+	import { auth } from '$lib/auth.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
@@ -31,13 +32,24 @@
 	let days = $state<number[]>([0, 2, 4, 6]);
 	let notes = $state('');
 
-	// Personal details, asked first. Age drives the plan (see the engine's age
-	// bands); the name is only used in the app. Vitals are optional.
+	// Personal details, asked first. The birth year drives the plan (see the
+	// engine's age bands), so we ask for the year itself and it stays right as
+	// the years pass. The name is only used in the app. Vitals are optional.
 	let firstName = $state('');
-	let ageInput = $state('');
+	const currentYear = new Date().getUTCFullYear();
+	// Recent birth years, newest first, down to 1900. Age 10 is the youngest we
+	// allow, matching the settings range.
+	const birthYears = Array.from(
+		{ length: currentYear - 10 - 1900 + 1 },
+		(_, i) => currentYear - 10 - i,
+	);
+	// A sensible default (about age 40) so the picker is never blank.
+	let birthYear = $state(currentYear - 40);
 	let heightInput = $state('');
 	let weightInput = $state('');
 	let restingHrInput = $state('');
+
+	const age = $derived(currentYear - birthYear);
 
 	// Strength and body preferences.
 	let equipment = $state<
@@ -203,10 +215,10 @@
 			{
 				id: 'about',
 				title: 'First, a little about you',
-				lede: 'Your age shapes the plan: how much weekly volume it builds and how gently it climbs, since recovery changes with age. Height, weight and resting heart rate are optional and stay private.',
+				lede: 'Your birth year shapes the plan: how much weekly volume it builds and how gently it climbs, since recovery changes with age. Height, weight and resting heart rate are optional and stay private.',
 				guide: [
-					'Your age tunes the training, not your name. The name is only how we greet you.',
-					'Everything here is optional except your age.',
+					'Your birth year tunes the training, not your name. The name is only how we greet you.',
+					'Set the year you were born and the plan tunes itself around it. Everything else here is optional.',
 					'We never show these details to anyone else.',
 				],
 			},
@@ -369,7 +381,7 @@
 	const isLast = $derived(stepIndex >= steps.length - 1);
 	const progress = $derived((Math.min(stepIndex, steps.length - 1) + 1) / steps.length);
 
-	const recWeekly = $derived(recommendWeeklyKm(experience, slug, prefs.units, parsedAge() ?? undefined));
+	const recWeekly = $derived(recommendWeeklyKm(experience, slug, prefs.units, age));
 	const recStrength = $derived(recommendStrengthDays(slug));
 	const recMinutes = $derived(recommendSessionMinutes());
 	const recBuild = $derived(recommendBuildPreference(experience));
@@ -472,6 +484,10 @@
 	const CROSS_MORE = CROSS.slice(6);
 
 	onMount(async () => {
+		// Prefill the name from the Google sign-in, using the first word. Blank when
+		// Google gave us no name.
+		const googleName = auth.user?.name?.trim();
+		if (googleName) firstName = googleName.split(/\s+/)[0] ?? '';
 		try {
 			profiles = (await api.profiles()).profiles;
 		} catch {
@@ -497,12 +513,6 @@
 	/** A number input binds as a number, a text input as a string; normalise both. */
 	function str(v: unknown): string {
 		return typeof v === 'string' ? v.trim() : v == null ? '' : String(v).trim();
-	}
-
-	/** Whole years from the age field, or null when it is not a plausible age. */
-	function parsedAge(): number | null {
-		const n = Number(str(ageInput));
-		return Number.isInteger(n) && n > 0 && n < 120 ? n : null;
 	}
 
 	/** Vitals in stored metric, converted from the runner's units. Null when blank or implausible. */
@@ -640,10 +650,6 @@
 	}
 
 	function validate(): boolean {
-		if (step.id === 'about' && parsedAge() == null) {
-			error = 'Add your age so we can tune the plan.';
-			return false;
-		}
 		if (step.id === 'start' && startChoice === 'custom') {
 			if (!customStartDate) {
 				error = 'Pick a start date.';
@@ -734,9 +740,7 @@
 			};
 
 			// Store the personal details first, so plan generation reads the age.
-			// Age is kept as a birth year so it stays right over time.
-			const age = parsedAge();
-			const birthYear = age != null ? new Date().getUTCFullYear() - age : null;
+			// The birth year is stored as a year so it stays right over time.
 			await setPersonal({ name: str(firstName), birthYear });
 			await setVitals(vitalsToStore());
 
@@ -932,15 +936,15 @@
 							/>
 						</label>
 						<label class="block">
-							<span class="text-sm font-medium">Age</span>
-							<input
-								type="number"
-								bind:value={ageInput}
-								min="10"
-								max="110"
-								placeholder="40"
+							<span class="text-sm font-medium">Birth year</span>
+							<select
+								bind:value={birthYear}
 								class="tabular mt-1 w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
-							/>
+							>
+								{#each birthYears as year (year)}
+									<option value={year}>{year}</option>
+								{/each}
+							</select>
 							<span class="mt-1 block text-xs text-steel">Used only to tune the plan by age band.</span>
 						</label>
 						<div class="grid grid-cols-3 gap-2">
