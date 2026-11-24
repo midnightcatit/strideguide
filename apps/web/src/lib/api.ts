@@ -117,6 +117,24 @@ export interface GeneratePlanInput {
 }
 
 /** One session of the edited week one, as the preview rebuild expects it. */
+/** One move of a custom strength workout: sets of reps at a weight (kg). */
+export interface CustomMoveBlock {
+	machine: string;
+	sets: { reps: number; weightKg: number }[];
+}
+
+/** A workout the runner composed themselves, sent to POST /plans/sessions. */
+export interface CustomWorkoutInput {
+	modality: 'running' | 'strength' | 'recovery';
+	type: string;
+	title: string;
+	durationMin: number;
+	summary: string;
+	blocks?: CustomMoveBlock[];
+	distanceKm?: number;
+	notes?: string;
+}
+
 export interface PreviewSessionInput {
 	day: number;
 	slot: 'AM' | 'PM';
@@ -206,6 +224,12 @@ export const api = {
 		req<{ session: unknown }>('/plans/sessions', {
 			method: 'POST',
 			body: JSON.stringify({ date, workoutId }),
+		}),
+	/** Add a workout the runner typed in themselves, on a day inside the plan. */
+	addCustomWorkout: (date: string, custom: CustomWorkoutInput) =>
+		req<{ session: unknown }>('/plans/sessions', {
+			method: 'POST',
+			body: JSON.stringify({ date, custom }),
 		}),
 	removeWorkout: (id: string) =>
 		req<{ ok: boolean }>(`/plans/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),

@@ -3,7 +3,7 @@
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
-	import { api } from '$lib/api';
+	import { api, type CustomWorkoutInput } from '$lib/api';
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
@@ -31,6 +31,7 @@
 	let playTarget = $state<ClientSession | null>(null);
 	let logTarget = $state<ClientSession | null>(null);
 	let pickerDate = $state<string | null>(null);
+	let addError = $state<string | null>(null);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -151,6 +152,16 @@
 				})
 			: '',
 	);
+	// The API only accepts days inside the plan, so the sheet says why when the
+	// open day is not one of them, instead of failing on tap.
+	const planStart = $derived(weeks[0]?.startDate ?? null);
+	const planEnd = $derived(weeks.length ? weeks[weeks.length - 1]?.endDate ?? null : null);
+	const dayInPlan = $derived(!!sheetWeek);
+	const outsidePlanNote = $derived(
+		planStart && planEnd
+			? `Your plan runs ${dateHeading(planStart)} to ${dateHeading(planEnd)}. Pick a day inside it to add a workout.`
+			: 'Your plan has no days yet. Pick a day inside it to add a workout.',
+	);
 
 	onMount(() => {
 		void ensurePlan();
@@ -190,10 +201,24 @@
 		if (!date) return;
 		try {
 			await api.addWorkout(date, w.id);
+			addError = null;
 			sheetIso = date;
 			reloadPlan();
-		} catch {
-			// the picker is closed either way; the plan refresh will show the truth
+		} catch (e) {
+			addError = e instanceof Error ? e.message : 'Could not add that workout.';
+		}
+	}
+	async function addCustom(c: CustomWorkoutInput) {
+		const date = pickerDate;
+		pickerDate = null;
+		if (!date) return;
+		try {
+			await api.addCustomWorkout(date, c);
+			addError = null;
+			sheetIso = date;
+			reloadPlan();
+		} catch (e) {
+			addError = e instanceof Error ? e.message : 'Could not add that workout.';
 		}
 	}
 	async function removeAdded(id: string) {
@@ -332,18 +357,30 @@
 				{/if}
 				<button
 					type="button"
-					onclick={() => (pickerDate = sheetIso)}
-					class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-hairline-strong py-3 text-sm text-signal-ink hover:border-signal"
+					disabled={!dayInPlan}
+					onclick={() => {
+						if (!dayInPlan || !sheetIso) return;
+						addError = null;
+						pickerDate = sheetIso;
+					}}
+					class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan
+						? 'border-hairline-strong text-signal-ink hover:border-signal'
+						: 'border-hairline text-steel'}"
 				>
 					＋ Add a workout
 				</button>
+				{#if !dayInPlan}
+					<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
+				{:else if addError}
+					<p class="mt-2 text-sm text-signal-ink">{addError}</p>
+				{/if}
 			</div>
 		</div>
 	</div>
 {/if}
 
 {#if pickerDate}
-	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
+	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onCustom={addCustom} onClose={() => (pickerDate = null)} />
 {/if}
 
 {#if playTarget}

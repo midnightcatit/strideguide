@@ -192,23 +192,124 @@ async function currentPlanWithWeeks(db: AppBindings['Variables']['db'], userId: 
 	return { goal, plan, weeks };
 }
 
-/** POST /sessions: add a library workout to a day in the user's current plan. */
+/** A workout the runner typed in themselves, instead of one from the library. */
+const customWorkoutSchema = z.object({
+	modality: z.enum(['running', 'strength', 'recovery']),
+	type: z.string().min(1).max(40),
+	title: z.string().min(1).max(120),
+	durationMin: z.number().int().min(1).max(600),
+	summary: z.string().min(1).max(300),
+	blocks: z
+		.array(
+			z.object({
+				machine: z.string().min(1).max(80),
+				sets: z
+					.array(
+						z.object({
+							reps: z.number().int().min(1).max(500),
+							weightKg: z.number().min(0).max(1500),
+						}),
+					)
+					.min(1)
+					.max(20),
+			}),
+		)
+		.min(1)
+		.max(20)
+		.optional(),
+	distanceKm: z.number().min(0.1).max(500).optional(),
+	notes: z.string().max(500).optional(),
+});
+
+type CustomWorkout = z.infer<typeof customWorkoutSchema>;
+
+/** A guided workout shape for a custom session, so the player and detail views render it. */
+function customStructuredWorkout(custom: CustomWorkout) {
+	if (custom.modality === 'strength') {
+		const steps = (custom.blocks ?? []).map((b) => ({
+			kind: 'work' as const,
+			label: b.machine,
+			machine: b.machine,
+			sets: b.sets.length,
+			reps: b.sets[0]?.reps ?? 10,
+			restSec: 75,
+			targetRpe: [7, 8] as [number, number],
+			note: 'Rest 60 to 90 seconds between sets.',
+		}));
+		return {
+			blocks: [{ repeat: 1, label: 'Your circuit', steps }],
+			estimatedDurationMin: custom.durationMin,
+		};
+	}
+	if (custom.modality === 'running') {
+		const distanceKm = custom.distanceKm ?? 0;
+		return {
+			blocks: [
+				{
+					repeat: 1,
+					steps: [
+						{
+							kind: 'work' as const,
+							label: custom.title,
+							distanceM: Math.round(distanceKm * 1000),
+							durationSec: custom.durationMin * 60,
+							targetRpe: [4, 6] as [number, number],
+						},
+					],
+				},
+			],
+			totalDistanceKm: distanceKm,
+			estimatedDurationMin: custom.durationMin,
+		};
+	}
+	return {
+		blocks: [
+			{
+				repeat: 1,
+				steps: [
+					{
+						kind: 'work' as const,
+						label: custom.title,
+						durationSec: custom.durationMin * 60,
+					},
+				],
+			},
+		],
+		estimatedDurationMin: custom.durationMin,
+	};
+}
+
+/** POST /sessions: add a library workout, or a custom one, to a day in the user's plan. */
 plans.post(
 	'/sessions',
 	zValidator(
 		'json',
-		z.object({
-			date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-			workoutId: z.string().min(1).max(60),
-		}),
+		z
+			.object({
+				date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+				workoutId: z.string().min(1).max(60).optional(),
+				custom: customWorkoutSchema.optional(),
+			})
+			.refine((b) => (!!b.workoutId ? 1 : 0) + (!!b.custom ? 1 : 0) === 1, {
+				message: 'Send a workoutId or a custom workout.',
+			}),
 	),
 	async (c) => {
 		const user = c.get('user')!;
 		const db = c.get('db');
-		const { date, workoutId } = c.req.valid('json');
+		const { date, workoutId, custom } = c.req.valid('json');
 
-		const workout = WORKOUT_LIBRARY.find((w) => w.id === workoutId);
-		if (!workout) return c.json({ error: 'Unknown workout.' }, 400);
+		if (custom) {
+			if (custom.modality === 'strength' && !custom.blocks?.length) {
+				return c.json({ error: 'A strength workout needs at least one move.' }, 400);
+			}
+			if (custom.modality === 'running' && custom.distanceKm == null) {
+				return c.json({ error: 'A run needs a distance.' }, 400);
+			}
+		} else {
+			const workout = WORKOUT_LIBRARY.find((w) => w.id === workoutId);
+			if (!workout) return c.json({ error: 'Unknown workout.' }, 400);
+		}
 
 		const current = await currentPlanWithWeeks(db, user.id);
 		if (!current) return c.json({ error: 'You need a plan first.' }, 400);
@@ -220,25 +321,51 @@ plans.post(
 			return c.json({ error: 'That day is outside your plan.' }, 400);
 		}
 
-		const session = {
-			id: crypto.randomUUID(),
-			planWeekId: week.id,
-			day: dayIndex(week.startDate, date),
-			slot: 'AM',
-			modality: workout.modality,
-			type: workout.type,
-			title: workout.title,
-			purpose: workout.purpose,
-			prescription: {
-				summary: workout.summary,
-				intensity: workout.intensity,
-				targetRpe: workout.targetRpe,
-				workout: workout.workout,
-				added: true,
-				libraryId: workout.id,
-			},
-			durationMin: workout.durationMin,
-		};
+		let session: typeof schema.sessionsPlan.$inferInsert;
+		if (custom) {
+			session = {
+				id: crypto.randomUUID(),
+				planWeekId: week.id,
+				day: dayIndex(week.startDate, date),
+				slot: 'AM',
+				modality: custom.modality,
+				type: custom.type,
+				title: custom.title,
+				purpose: 'You added this one yourself.',
+				prescription: {
+					summary: custom.summary,
+					intensity: custom.modality === 'strength' ? 'steady' : 'easy',
+					...(custom.blocks ? { blocks: custom.blocks } : {}),
+					...(custom.distanceKm != null ? { targetDistanceKm: custom.distanceKm } : {}),
+					...(custom.notes ? { notes: custom.notes } : {}),
+					workout: customStructuredWorkout(custom),
+					added: true,
+					custom: true,
+				},
+				durationMin: custom.durationMin,
+			};
+		} else {
+			const workout = WORKOUT_LIBRARY.find((w) => w.id === workoutId)!;
+			session = {
+				id: crypto.randomUUID(),
+				planWeekId: week.id,
+				day: dayIndex(week.startDate, date),
+				slot: 'AM',
+				modality: workout.modality,
+				type: workout.type,
+				title: workout.title,
+				purpose: workout.purpose,
+				prescription: {
+					summary: workout.summary,
+					intensity: workout.intensity,
+					targetRpe: workout.targetRpe,
+					workout: workout.workout,
+					added: true,
+					libraryId: workout.id,
+				},
+				durationMin: workout.durationMin,
+			};
+		}
 		await db.insert(schema.sessionsPlan).values(session);
 		return c.json({ session }, 201);
 	},

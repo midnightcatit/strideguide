@@ -47,6 +47,8 @@ export interface ClientPrescription {
 	added?: boolean;
 	/** Library id, when the session was added from the library. */
 	libraryId?: string;
+	/** True when the user composed the workout themselves, not from the library. */
+	custom?: boolean;
 }
 
 export interface ClientSession {
