@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { formatPace, pacesFromVdot, parseTime, vdotFromBaseline, vdotFromRace } from './vdot';
+import {
+	VDOT_MAX,
+	VDOT_MIN,
+	formatPace,
+	pacesFromVdot,
+	parseTime,
+	vdotFromBaseline,
+	vdotFromRace,
+} from './vdot';
 
 describe('vdot', () => {
 	it('computes a sane VDOT for a 20:00 5K (~49-50)', () => {
@@ -29,6 +37,17 @@ describe('vdot', () => {
 	it('reads a bare number as minutes', () => {
 		expect(parseTime('36')).toBe(2160);
 		expect(parseTime('0:36')).toBe(36);
+	});
+
+	it('accepts a slow but human time, and still drops an impossible one', () => {
+		// A 13:00 mile is a beginner's time, not a typo, so it must read as a
+		// usable VDOT. This once warned because the floor sat just above it.
+		const mile = vdotFromRace(1609.34, 13 * 60);
+		expect(mile).toBeGreaterThanOrEqual(VDOT_MIN);
+		expect(mile).toBeLessThanOrEqual(VDOT_MAX);
+		expect(vdotFromBaseline({ mile: '13:00' })).toBeDefined();
+		// Faster than any human: still dropped.
+		expect(vdotFromBaseline({ '5k': '0:36' })).toBeUndefined();
 	});
 
 	it('ignores an implausible race time instead of setting impossible paces', () => {
