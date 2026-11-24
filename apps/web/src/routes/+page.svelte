@@ -17,6 +17,7 @@
 	import WeekPreviewCard from '$lib/components/WeekPreviewCard.svelte';
 	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
 	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
+	import CalendarPreviewCard from '$lib/components/CalendarPreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
 	import SyncButton from '$lib/components/SyncButton.svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
@@ -24,6 +25,10 @@
 
 	let note = $state<string | null>(null);
 	let health = $state<HealthMetricsPayload | null>(null);
+	// The sync button only does something when Google Health is linked. Until the
+	// connection check comes back, and if it fails, stay enabled rather than
+	// blocking a runner who is in fact connected.
+	let syncDisabled = $state(false);
 
 	// Send a signed-in user with no plan to onboarding, once per session, unless
 	// they have said "not now". The session guard means the Dashboard tab still
@@ -157,6 +162,17 @@
 			.catch(() => {
 				// no health data, or the call failed; the section shows its empty state
 			});
+		// Same connection read Settings and onboarding use, so the Sync button is
+		// greyed out until Google Health is linked.
+		void api
+			.connections()
+			.then((res) => {
+				const provider = res.providers.find((p) => p.id === 'google-health');
+				syncDisabled = !provider?.connected;
+			})
+			.catch(() => {
+				// cannot tell the state; leave the button enabled rather than wrong
+			});
 		note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 
 		let dismissed = false;
@@ -245,7 +261,7 @@
 
 	<!-- At a glance: each card opens its full metric page. The same cards, from
 	     the same components, appear on the progress tab. -->
-	<div class="mt-7 grid grid-cols-1 gap-2 sm:grid-cols-3">
+	<div class="mt-7 grid grid-cols-1 items-stretch gap-2 sm:grid-cols-3">
 		<WeekPreviewCard
 			done={week.done}
 			planned={week.planned}
@@ -258,6 +274,12 @@
 		<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} {weeklyMax} from="/" />
 	</div>
 
+	<!-- Calendar preview: the current month with sessions marked, opening the
+	     full calendar. Replaces the old text link so it reads as a real card. -->
+	<div class="mt-5">
+		<CalendarPreviewCard />
+	</div>
+
 	<!-- Connected health: pull the latest, and a small read of the watch numbers -->
 	<section aria-labelledby="health" class="mt-5">
 		<Card>
@@ -267,6 +289,7 @@
 					<p class="mt-0.5 text-sm text-steel">Your watch and health numbers, from the last 30 days.</p>
 				</div>
 				<SyncButton
+					disabled={syncDisabled}
 					onSynced={() =>
 						api
 							.healthMetrics(30)
@@ -280,14 +303,14 @@
 				</div>
 				<a href="/progress/health?from=/" class="mt-3 inline-block text-xs text-signal-ink hover:underline">See all health →</a>
 			{:else}
-				<p class="mt-3 text-sm text-steel">Connect a health app or watch and sync to see your numbers here.</p>
+				<p class="mt-3 text-sm text-steel">
+					{syncDisabled
+						? 'Connect a health app or watch to see your numbers here.'
+						: 'Sync your watch to see your numbers here.'}
+				</p>
 			{/if}
 		</Card>
 	</section>
-
-	<div class="mt-2">
-		<a href="/calendar" class="text-xs text-steel hover:text-signal-ink">Open the calendar →</a>
-	</div>
 
 	<AdjustmentsCard />
 
@@ -302,19 +325,21 @@
 
 	<section aria-labelledby="recent" class="mt-7">
 		<SectionHeader id="recent" eyebrow="Recent activity" />
-		<Card tone="sunken">
+		<Card tone="sunken" class="max-w-2xl">
 			{#if recentLogs.length}
-				<ul class="divide-y divide-hairline">
-					{#each recentLogs as { log, session } (log.id)}
-						<li class="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-							<span class="min-w-0 truncate text-sm">{session ? sessionLabel(session) : 'Run'}</span>
-							<span class="tabular shrink-0 text-sm text-steel">
-								{#if log.runStats?.distanceKm}{fmtDistance(log.runStats.distanceKm)}{/if}
-								{#if log.rpe} · RPE {log.rpe}{/if}
-							</span>
-						</li>
-					{/each}
-				</ul>
+				<div class="max-h-64 overflow-y-auto pr-1">
+					<ul class="divide-y divide-hairline">
+						{#each recentLogs as { log, session } (log.id)}
+							<li class="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+								<span class="min-w-0 break-words text-sm">{session ? sessionLabel(session) : 'Run'}</span>
+								<span class="tabular shrink-0 text-sm text-steel">
+									{#if log.runStats?.distanceKm}{fmtDistance(log.runStats.distanceKm)}{/if}
+									{#if log.rpe} · RPE {log.rpe}{/if}
+								</span>
+							</li>
+						{/each}
+					</ul>
+				</div>
 			{:else}
 				<p class="text-sm text-steel">Nothing logged yet. When you finish a session, it shows up here.</p>
 				<a href="/today" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Log today's session →</a>

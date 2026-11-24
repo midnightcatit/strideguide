@@ -24,8 +24,8 @@
 	const points = $derived(sparkline((resting?.series ?? []).map((p) => p.value), 100, 20, 3));
 </script>
 
-<a {href} class="lift block rounded-xl" aria-label="Health, open the full health data view">
-	<Card tone="sunken">
+<a {href} class="lift block h-full rounded-xl" aria-label="Health, open the full health data view">
+	<Card tone="sunken" class="flex h-full flex-col">
 		<p class="tabular text-[10px] uppercase tracking-widest text-steel">Health</p>
 		{#if !hasData}
 			<p class="mt-1 text-lg font-semibold text-steel">No data yet</p>
@@ -42,6 +42,6 @@
 				<p class="mt-2.5 text-[11px] text-steel">Resting HR trend</p>
 			{/if}
 		{/if}
-		<p class="mt-2 text-[11px] text-signal-ink">See all health →</p>
+		<p class="mt-auto pt-2 text-[11px] text-signal-ink">See all health →</p>
 	</Card>
 </a>
