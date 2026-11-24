@@ -629,6 +629,8 @@ plans.post(
 			crossLoad,
 			equipment: seededBaseline.equipmentItems,
 			machines: resolveMachines(prefs),
+			favoriteMachines: prefs.favoriteMachines,
+			favoriteWorkouts: prefs.favoriteWorkouts,
 		};
 		const baseDraft = generatePlan(planInput);
 
@@ -878,6 +880,8 @@ plans.post('/adapt', async (c) => {
 		allowedQuality: allowed,
 		equipment: baseline.equipmentItems,
 		machines: resolveMachines(prefs),
+		favoriteMachines: prefs.favoriteMachines,
+		favoriteWorkouts: prefs.favoriteWorkouts,
 	} as unknown as Parameters<typeof adaptPlan>[0]);
 
 	if (result.changedFromWeek == null) {
@@ -1124,6 +1128,8 @@ plans.post(
 			targetDate: goal.targetDate ?? undefined,
 			equipment: baseline.equipmentItems,
 			machines: resolveMachines(prefs),
+			favoriteMachines: prefs.favoriteMachines,
+			favoriteWorkouts: prefs.favoriteWorkouts,
 		};
 
 		// The engine lays out the later weeks instantly. Then the model shapes them

@@ -35,6 +35,10 @@ export interface Prefs {
 	gymPreset?: string;
 	/** Specific machines the runner has, overriding the gym preset. */
 	machineItems?: string[];
+	/** Machines the runner likes to train on, from the move catalog. A soft preference. */
+	favoriteMachines?: string[];
+	/** Library workout ids the runner likes. The plan names one when it fits the day. */
+	favoriteWorkouts?: string[];
 	/** True once the runner dismisses the Connect Google Health nudge, so it stays gone. */
 	connectNudgeDismissed?: boolean;
 }

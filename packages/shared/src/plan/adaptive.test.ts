@@ -69,4 +69,25 @@ describe('adaptPlan', () => {
 		expect(result.weeks).toBe(existing.weeks);
 		expect(result.changedFromWeek).toBeUndefined();
 	});
+
+	it('carries the runner favorites into the rebuilt weeks', () => {
+		// Existing plan has no favorites; the rebuild is given one and must keep it,
+		// so a favorite does not drop the moment the plan adapts.
+		const existing = generatePlan(baseInput);
+		const result = adaptPlan({
+			...baseInput,
+			favoriteMachines: ['Bicep curl'],
+			existingWeeks: existing.weeks,
+			today: WEEK3,
+			fitness: { ...neutral },
+			allowedQuality: [...ALLOWED],
+		});
+		const moves = result.weeks
+			.slice(3)
+			.flatMap((w) => w.sessions)
+			.filter((s) => s.modality === 'strength')
+			.flatMap((s) => s.prescription.blocks ?? [])
+			.map((b) => b.machine);
+		expect(moves).toContain('Bicep curl');
+	});
 });
