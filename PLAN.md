@@ -119,6 +119,9 @@ Priority: **P0** = required for v1 to be usable · **P1** = expected · **P2** =
 
 ### 5.5 AI surfaces — P1
 - Per-workout explanation (stored). Narrative weekly summaries (cron). Adaptive plan changes. Coach chat.
+- **Configurable adaptation**: the runner chooses manual (adapt on tap, the default) or automatic (adapt
+  nightly). The choice lives in `settings.prefs` and is what decides who the nightly adaptation queue
+  contains. See §6.6.
 
 ### 5.6 Shared view (opt-in) — P1
 - Independent accounts by default. Opt-in grants to see each other's calendar/progress.
@@ -156,6 +159,51 @@ In-app Q&A uses the same router per message. Grounded in the user's own plan/log
 ### 6.5 Guardrails
 Per-job token budgets, a daily spend cap, aggressive caching, and full logging. Content is generated
 against the stored KB so answers cite real sources rather than free-associating.
+
+### 6.6 Adaptation mode and the nightly queue
+
+Adaptation is the one place the plan changes after it is built, so it is a preference the runner sets,
+not a surprise. This section is designed here and not yet built (see the execution log).
+
+**Two modes, one engine.** The runner picks a mode in **Settings > Plan**, stored as data in
+`settings.prefs.adaptMode` (`manual` is the default, or `auto`). Both modes run the same deterministic,
+instant `adaptPlan` used today: it rebuilds only the weeks that have not started, seeded with real recent
+volume and a recent hard effort, and swaps a quality kind the runner rated down for one they rated up
+where the phase allows. No AI is in the path, so neither mode can hang or bill.
+
+- **Manual (default):** the plan changes only when the runner taps **Adapt my plan** on the
+  suggested-adjustments card. Nothing runs in the background.
+- **Automatic:** the runner opts in to let the plan adapt on its own. Only `auto` users are placed in the
+  nightly queue.
+
+**The nightly queue.** A Cloudflare Cron Trigger (free, alongside the nightly and weekly jobs in §6.3)
+selects users whose `settings.prefs.adaptMode` is `auto`, then applies the same eligibility rules the
+one-tap path uses, so automatic never means unguarded:
+
+- **New signal required.** Skip unless there is enough new logged work since the last adaptation (a
+  minimum count of new logs in the window). A quiet week changes nothing.
+- **Bounded change.** Only weeks that have not started are touched, volume stays within the ~10 percent
+  weekly ceiling, and the number of sessions and training days never changes. Past weeks, logs and
+  session state are untouched.
+- **Cooldown.** At most one automatic adaptation per rolling window (for example seven days), so a plan
+  cannot thrash.
+- **Visible and reversible.** Each automatic run records what changed (`plan_adaptations`: when, from
+  which week, what swapped) and shows a note on Today (for example, "your plan adapted last night: two
+  sessions swapped"). The runner can **revert** to the prior upcoming weeks, kept with the previous
+  `plans.version`.
+- **Never on a taper.** The closing weeks before a target date are left alone.
+
+**Membership is the switch.** Whether a runner is in the queue is exactly whether their mode is `auto`
+and they have new signal, so there is no separate list to maintain. Setting the mode back to `manual`
+removes them from the next run.
+
+**Data over code.** Mode, a notification preference (quiet or notify) and the cooldown live in
+`settings.prefs`, not new columns. The adaptation record (`plan_adaptations`) is the only new table, and
+it exists to audit what the queue did.
+
+**Why later, not now.** v1 ships manual only, with a clear notice that the plan is never changed without
+a tap. Automatic waits until the mode switch, the record and revert all exist, so an automatic change is
+always something the runner asked for and can undo.
 
 ---
 
@@ -554,6 +602,7 @@ milestone (see §7.6) for parallel research, exploration, and review — up to 3
 | Marketing | None in v1 |
 | Research subagents | Up to 30 internal `task` subagents, parallel waves |
 | Subagent policy | Encouraged everywhere appropriate — research, exploration, review, design, content; may not decide architecture or merge code |
+| Adaptation mode | Runner-set, manual (default) or automatic; only automatic users join the nightly adaptation queue, with new-signal, cooldown, record and revert guards (§6.6) |
 
 ---
 
@@ -807,4 +856,25 @@ because Hono rejects deletion of a `__Host-`-prefixed cookie without a `Secure` 
 was called with only `{ path }`). Both deletes now pass `secure` (from `ENVIRONMENT`). Also, the
 `/auth/*` route is now declared in `wrangler.jsonc` so deploys keep it (it had been added out-of-band).
 Verified: synthetic callback → 400 `token_exchange_failed`, logout → 200 (with Origin) / 403 (without).
+
+### Closed-loop intelligence (done, live)
+
+Four phases, each through the CI gate:
+
+- **Feedback capture**: a quick thumbs up or down on a finished workout, stored on `logs` (migration
+  0009) and read back with the existing RPE.
+- **Fitness state** (`packages/shared/src/plan/fitness`, 5 tests): a pure read of an effective VDOT from
+  a recent hard effort, real recent weekly volume, effort trend, and the session types rated well or
+  poorly. Plan generation seeds paces and volume from it.
+- **Applied adaptation** (`packages/shared/src/plan/adaptive`, 4 tests): `adaptPlan` rebuilds only the
+  weeks that have not started, from real training and feedback, and `POST /plans/adapt` applies it on one
+  tap with no AI. The suggested-adjustments card gained **Adapt my plan**.
+- **Grounded shaping**: the model shaping call receives the fitness read, and the engine applies a
+  deterministic feedback bias (a kind rated down is replaced by one rated up where the phase allows).
+
+### Planned — configurable adaptation (§6.6)
+
+Manual adaptation is live (the one-tap **Adapt my plan**). Not yet built: the manual/automatic mode
+switch in Settings, the nightly queue it gates, the `plan_adaptations` record, and revert. Designed in
+§6.6, deferred until the mode switch exists so an automatic change is always opt-in and reversible.
 
