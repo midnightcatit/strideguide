@@ -13,6 +13,8 @@ export const PROD_STATE_COOKIE = '__Host-sg_oauth_state';
 export interface SessionPayload {
 	uid: string;
 	email: string;
+	/** The Google display name, if we have one. Used to prefill the app. */
+	name?: string | null;
 }
 
 export function secureCookies(env: Env): boolean {
@@ -40,7 +42,7 @@ function sessionKey(env: Env): Uint8Array {
 }
 
 export async function signSession(env: Env, payload: SessionPayload): Promise<string> {
-	return new SignJWT({ uid: payload.uid, email: payload.email })
+	return new SignJWT({ uid: payload.uid, email: payload.email, name: payload.name ?? null })
 		.setProtectedHeader({ alg: 'HS256' })
 		.setIssuedAt()
 		.setExpirationTime(`${SESSION_TTL_SECONDS}s`)
@@ -51,7 +53,11 @@ export async function verifySession(env: Env, token: string): Promise<SessionPay
 	try {
 		const { payload } = await jwtVerify(token, sessionKey(env), { algorithms: ['HS256'] });
 		if (typeof payload.uid === 'string' && typeof payload.email === 'string') {
-			return { uid: payload.uid, email: payload.email };
+			return {
+				uid: payload.uid,
+				email: payload.email,
+				name: typeof payload.name === 'string' ? payload.name : null,
+			};
 		}
 		return null;
 	} catch {

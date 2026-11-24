@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { DEFAULT_PREFS, type Prefs } from '@strideguide/shared/units';
+import { birthYearSchema } from '../lib/birth-year';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -28,12 +29,7 @@ settings.put(
 			units: z.enum(['metric', 'imperial']).optional(),
 			weekStart: z.union([z.literal(0), z.literal(1)]).optional(),
 			name: z.string().trim().max(40).optional(),
-			birthYear: z
-				.number()
-				.int()
-				.min(1900)
-				.max(new Date().getUTCFullYear() - 10)
-				.optional(),
+			birthYear: birthYearSchema.optional(),
 			eventName: z.string().trim().max(80).optional(),
 			heightCm: z.number().min(90).max(250).nullable().optional(),
 			weightKg: z.number().min(25).max(250).nullable().optional(),
