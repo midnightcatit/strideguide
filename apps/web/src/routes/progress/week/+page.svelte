@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
-	import { DAY_NAMES, addDaysIso } from '$lib/plan';
+	import { DAY_NAMES, addDaysIso, localIso } from '$lib/plan';
 	import { metricOrigin } from '$lib/metrics';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
@@ -13,7 +13,7 @@
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 	const weeks = $derived(store.plan?.weeks ?? []);
 	const todayWeek = $derived(
 		weeks.find((w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate) ??

@@ -6,7 +6,7 @@
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, mondayIndex } from '$lib/plan';
+	import { type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, localIso, mondayIndex } from '$lib/plan';
 	import { logMs, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
 	import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
@@ -33,7 +33,7 @@
 	const REDIRECT_KEY = 'sg:onboardingRedirected';
 
 	const todayIndex = mondayIndex(new Date());
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 	const timeOfDay = $derived.by(() => {
 		const h = new Date().getHours();
 		return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
@@ -93,7 +93,7 @@
 	);
 	const planMeta = $derived(
 		store.plan
-			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null })
+			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null, todayIso })
 					.planMeta
 			: null,
 	);

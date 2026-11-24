@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { trainedDays, currentStreak, metricOrigin } from '$lib/metrics';
+	import { localIso } from '$lib/plan';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
@@ -10,7 +11,7 @@
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 	const days = $derived(trainedDays(store.logs));
 	const streak = $derived(currentStreak(days, todayIso));
 

@@ -9,6 +9,7 @@
 		".": "./src/index.ts",
 		"./db": "./src/db/schema.ts",
 		"./tokens": "./src/tokens.ts",
+		"./dates": "./src/dates.ts",
 		"./profiles": "./src/goal-profiles.ts",
 		"./plan": "./src/plan/index.ts",
 		"./units": "./src/units.ts",

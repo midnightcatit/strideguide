@@ -6,7 +6,7 @@
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, mondayIndex, sessionTypeLabel } from '$lib/plan';
+	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, sessionTypeLabel } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
@@ -74,7 +74,7 @@
 	);
 
 	const todayIndex = mondayIndex(new Date());
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 	let selectedIso = $state(todayIso);
 	// Which way it moved, so the panel slides in the direction you stepped.
 	let dayDir = $state<1 | -1>(1);

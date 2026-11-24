@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { localIso } from '$lib/plan';
+
 	/**
 	 * A GitHub-style weekly activity heatmap. Columns are weeks (oldest on the
 	 * left), rows are the days of the week. The span is the only knob, so the same
@@ -27,7 +29,7 @@
 	const trained = $derived(
 		trainedDays instanceof Set ? trainedDays : new Set<string>(trainedDays),
 	);
-	const today = $derived(todayIso ?? new Date().toISOString().slice(0, 10));
+	const today = $derived(todayIso ?? localIso());
 
 	function isoOf(d: Date): string {
 		return d.toISOString().slice(0, 10);

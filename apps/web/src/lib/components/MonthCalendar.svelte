@@ -5,7 +5,7 @@
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { api, type CustomWorkoutInput } from '$lib/api';
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
-	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
+	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
@@ -22,7 +22,7 @@
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
 
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 
 	let monthOffset = $state(0);
 	let mode = $state<'month' | 'list'>('month');

@@ -10,7 +10,7 @@
 	import { reportClientError } from '$lib/clientErrors';
 	import { dragToDay } from '$lib/actions';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
-	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, type ClientSession, type CurrentPlan } from '$lib/plan';
+	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
 		slug: string;
@@ -69,7 +69,7 @@
 
 	// Preview: after generation, the first week shown for editing. Edits are saved
 	// for real when the runner confirms and we rebuild the weeks ahead.
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 
 	function weekdayIndex(iso: string): number {
 		const d = new Date(`${iso}T00:00:00Z`);
