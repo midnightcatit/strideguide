@@ -10,7 +10,14 @@ import type {
 } from '../types';
 import { circuitFor, strengthShape } from './catalog';
 import type { MachineExercise } from './machines';
-import { COOLDOWN_STRETCHES, WARMUP_DRILLS, mobilityRoutine, type Drill } from './mobility';
+import {
+	COOLDOWN_STRETCHES,
+	QUALITY_WARMUP_DRILLS,
+	STRIDES,
+	WARMUP_DRILLS,
+	mobilityRoutine,
+	type Drill,
+} from './mobility';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
@@ -286,17 +293,57 @@ function qualityWarmupCooldown(totalKm: number): { wu: number; cd: number } {
 	return { wu, cd };
 }
 
+/**
+ * Map drills to a block of timed steps. A drill that carries rounds becomes one
+ * step per round, so a long hold is shown as the shorter rounds it is built from.
+ */
 function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
+	const steps: WorkoutStep[] = [];
+	for (const d of drills) {
+		const rounds = d.rounds ?? 1;
+		for (let i = 0; i < rounds; i++) {
+			steps.push({
+				kind,
+				label: d.name,
+				durationSec: d.durationSec,
+				targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
+				note: d.why,
+			});
+		}
+	}
+	return { repeat: 1, label, steps };
+}
+
+/** The raise: easy running that lifts heart rate before the drills. */
+function raiseBlock(paces: TrainingPaces | undefined, km = WARMUP_KM): StepBlock {
+	return { repeat: 1, label: 'Warm-up', steps: [warmupStep(paces, km)] };
+}
+
+/** Warm-up strides for a quality session: short accelerations with an easy jog back. */
+const QUALITY_STRIDES = 3;
+
+function stridesBlock(): StepBlock {
+	const stride = STRIDES[0]!;
+	const jogBack = STRIDES[1]!;
 	return {
-		repeat: 1,
-		label,
-		steps: drills.map<WorkoutStep>((d) => ({
-			kind,
-			label: d.name,
-			durationSec: d.durationSec,
-			targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
-			note: d.why,
-		})),
+		repeat: QUALITY_STRIDES,
+		label: 'Strides',
+		steps: [
+			{
+				kind: 'warmup',
+				label: stride.name,
+				durationSec: stride.durationSec,
+				targetRpe: [4, 5],
+				note: stride.why,
+			},
+			{
+				kind: 'recovery',
+				label: jogBack.name,
+				durationSec: jogBack.durationSec,
+				targetRpe: [2, 3],
+				note: jogBack.why,
+			},
+		],
 	};
 }
 
@@ -340,8 +387,9 @@ function tempoWorkout(
 	paces?: TrainingPaces,
 ): StructuredWorkout {
 	const blocks: StepBlock[] = [
-		drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
-		{ repeat: 1, steps: [warmupStep(paces, wuKm)] },
+		raiseBlock(paces, wuKm),
+		drillBlock('Dynamic warm-up', QUALITY_WARMUP_DRILLS, 'warmup'),
+		stridesBlock(),
 		{
 			repeat: 1,
 			label: 'Set',
@@ -430,8 +478,9 @@ function repWorkout(opts: {
 		? (opts.recoveryPace[0] + opts.recoveryPace[1]) / 2
 		: (opts.paces ?? DEFAULT_PACES).easy[1];
 	const blocks: StepBlock[] = [
-		drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
-		{ repeat: 1, steps: [warmupStep(opts.paces, opts.wuKm)] },
+		raiseBlock(opts.paces, opts.wuKm),
+		drillBlock('Dynamic warm-up', QUALITY_WARMUP_DRILLS, 'warmup'),
+		stridesBlock(),
 		{
 			repeat: opts.reps,
 			label: 'Set',
@@ -564,7 +613,7 @@ function strengthWorkout(
 	sets: number,
 ): StructuredWorkout {
 	const blocks: StepBlock[] = [
-		drillBlock('Dynamic warm-up', WARMUP_DRILLS, 'warmup'),
+		drillBlock('Warm-up', WARMUP_DRILLS, 'warmup'),
 		{
 			repeat: 1,
 			label: 'Circuit',
@@ -1136,7 +1185,7 @@ function mobilitySession(day: number, baseline: Baseline, slot = 'AM'): PlannedS
 	// stretch keeps the short maintenance one.
 	const building = (baseline.flexibility?.goal ?? 0) - (baseline.flexibility?.current ?? 0) >= 2;
 	const routine = mobilityRoutine(building);
-	const totalSec = routine.reduce((s, d) => s + d.durationSec, 0);
+	const totalSec = routine.reduce((s, d) => s + d.durationSec * (d.rounds ?? 1), 0);
 	return {
 		day,
 		slot,
