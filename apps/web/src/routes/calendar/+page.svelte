@@ -10,7 +10,7 @@
 	});
 </script>
 
-{#if !store.loaded}
+{#if !store.loaded && !store.plan}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !(store.plan?.weeks?.length)}
 	<EmptyState

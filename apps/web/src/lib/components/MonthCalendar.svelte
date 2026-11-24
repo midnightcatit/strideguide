@@ -223,15 +223,6 @@
 			addError = e instanceof Error ? e.message : 'Could not add that workout.';
 		}
 	}
-	async function removeAdded(id: string) {
-		try {
-			await api.removeWorkout(id);
-			reloadPlan();
-		} catch {
-			// ignore
-		}
-	}
-
 	/** Upcoming sessions from today, for the list view. */
 	const listDays = $derived.by(() => {
 		const dates = [...byDate.keys()].filter((d) => d >= todayIso).sort();
@@ -247,7 +238,7 @@
 	}
 </script>
 
-<div class="flex items-center justify-between gap-3">
+<div class="flex min-h-11 items-center justify-between gap-3">
 	<h2 class="font-display text-lg font-semibold text-ink">{mode === 'month' ? monthLabel : 'Upcoming'}</h2>
 	{#if mode === 'month'}
 		<div class="flex items-center gap-2">
@@ -258,11 +249,18 @@
 	{/if}
 </div>
 
-<div class="mt-3 inline-flex rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
-	<button type="button" aria-pressed={mode === 'month'} onclick={() => (mode = 'month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'bg-ink font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
-	<button type="button" aria-pressed={mode === 'list'} onclick={() => (mode = 'list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'bg-ink font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
+<div class="relative mt-3 w-44 rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
+	<span class="pointer-events-none absolute inset-0.5 grid grid-cols-2" aria-hidden="true">
+		<span class="calendar-thumb rounded-md bg-ink" style="transform: translateX({mode === 'list' ? '100%' : '0%'})"></span>
+	</span>
+	<div class="relative grid grid-cols-2">
+		<button type="button" aria-pressed={mode === 'month'} onclick={() => (mode = 'month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
+		<button type="button" aria-pressed={mode === 'list'} onclick={() => (mode = 'list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
+	</div>
 </div>
 
+{#key mode}
+<div class="calendar-view">
 {#if mode === 'month'}
 	<div class="mx-auto mt-4 max-w-md">
 	<div class="grid grid-cols-7 gap-1">
@@ -342,6 +340,8 @@
 		{/each}
 	</div>
 {/if}
+</div>
+{/key}
 
 {#if sheetIso}
 	<div class="fixed inset-0 z-40" role="dialog" aria-modal="true" aria-label={sheetLabel} use:modal={() => (sheetIso = null)}>
@@ -460,7 +460,6 @@
 		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
 		active={false}
 		logged={loggedBySession.get(s.id) ?? null}
-		onRemove={s.prescription?.added ? () => removeAdded(s.id) : undefined}
 		onLog={() => (logTarget = s)}
 		onStart={() => startSession(s)}
 		onOpen={() => (detailTarget = s)}
@@ -487,3 +486,36 @@
 	onConfirm={() => confirm?.action()}
 	onClose={() => (confirm = null)}
 />
+
+<style>
+	/*
+	 * The month or list view fades and rises a few pixels when the toggle
+	 * switches, so the change reads as motion rather than a hard swap. The
+	 * sliding thumb under the active label uses the same motion tokens. Both are
+	 * dropped under prefers-reduced-motion, leaving an instant state change.
+	 */
+	.calendar-view {
+		animation: calendar-view-in var(--dur-2) var(--ease-out) both;
+	}
+	@keyframes calendar-view-in {
+		from {
+			opacity: 0;
+			transform: translateY(6px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	.calendar-thumb {
+		transition: transform var(--dur-2) var(--ease-out);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.calendar-view {
+			animation: none;
+		}
+		.calendar-thumb {
+			transition: none;
+		}
+	}
+</style>
