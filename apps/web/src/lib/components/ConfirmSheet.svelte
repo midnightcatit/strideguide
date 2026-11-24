@@ -7,6 +7,7 @@
 		title,
 		body,
 		confirmLabel = 'Confirm',
+		cancelLabel = 'Cancel',
 		tone = 'default',
 		onConfirm,
 		onClose,
@@ -15,6 +16,7 @@
 		title: string;
 		body: string;
 		confirmLabel?: string;
+		cancelLabel?: string;
 		tone?: 'default' | 'danger';
 		onConfirm: () => void;
 		onClose: () => void;
@@ -49,7 +51,7 @@
 					onclick={onClose}
 					class="flex-1 rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 				>
-					Cancel
+					{cancelLabel}
 				</button>
 				<button
 					type="button"
