@@ -482,7 +482,7 @@
 				</button>
 			{/if}
 			{#if onLog}
-				<button type="button" onclick={onLog} class="flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">
+				<button type="button" onclick={onLog} class="btn-outline flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">
 					{logged ? 'Log again' : 'Log it'}
 				</button>
 			{/if}

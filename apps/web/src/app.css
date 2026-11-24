@@ -280,16 +280,32 @@ summary {
 	touch-action: manipulation;
 }
 
-/* A press should never select the label text or pop the iOS callout. */
+/* A press should never select the label text or pop the iOS callout. A drag
+   surface opts in with .select-none, so a swipe never selects the card text. */
 button,
 a,
 label,
 summary,
 [role='button'],
-[role='switch'] {
+[role='switch'],
+.select-none {
 	-webkit-user-select: none;
 	user-select: none;
 	-webkit-touch-callout: none;
+}
+
+/*
+ * Pointer on interactive controls. Tailwind v4 preflight no longer sets
+ * `cursor: pointer` on buttons, so on a laptop the pointer stayed the OS arrow
+ * over every button in the app. Links, summaries and clickable cards get the
+ * same hand. A disabled control keeps the default, so it does not look live.
+ */
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']),
+a[href],
+summary,
+.lift {
+	cursor: pointer;
 }
 
 .tabular {
@@ -337,7 +353,8 @@ summary,
 			transform var(--dur-1) var(--ease-out),
 			color var(--dur-1) var(--ease-out),
 			border-color var(--dur-1) var(--ease-out),
-			background-color var(--dur-1) var(--ease-out);
+			background-color var(--dur-1) var(--ease-out),
+			opacity var(--dur-1) var(--ease-out);
 	}
 	button:active,
 	a[href]:active,
@@ -347,6 +364,45 @@ summary,
 	}
 	.reveal {
 		animation: sg-reveal var(--dur-2) var(--ease-out) both;
+	}
+}
+
+/*
+ * Hover fill for unfilled buttons. Buttons are styled inline across the app, so
+ * the fill lives in the base layer instead of a rule per button. The :where()
+ * keeps it at zero specificity, so a button that sets its own background (bg-ink,
+ * bg-danger, bg-signal-wash) keeps it and only the unfilled ones pick the wash
+ * up. The wash is translucent, so it reads on a light card and on a dark one
+ * alike. Full-bleed overlay buttons (absolute inset-0) are left out: they are
+ * invisible click targets over a card, and a wash over one would recolour the
+ * whole card. Guarded to a hover-capable pointer so a touch screen never shows a
+ * stuck hover.
+ */
+@media (hover: hover) {
+	:where(
+		button:not(:disabled):not([class*='inset-0']):hover,
+		[role='button']:not([aria-disabled='true']):not([class*='inset-0']):hover,
+		summary:hover
+	) {
+		background-color: color-mix(in oklab, var(--ink) 10%, transparent);
+	}
+}
+
+/*
+ * Shared button styles. A bordered button opts in with .btn-outline, a text-only
+ * one with .btn-ghost. Each gets a quiet lift on hover, and .btn-outline fills
+ * with the signal wash so a bordered button that turns signal reads as one piece.
+ * The lift is dropped under reduced motion, like the rest of the motion here.
+ */
+@media (hover: hover) {
+	.btn-outline:hover:not(:disabled) {
+		background-color: var(--signal-wash);
+	}
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+	.btn-outline:hover:not(:disabled),
+	.btn-ghost:hover:not(:disabled) {
+		transform: translateY(-1px);
 	}
 }
 

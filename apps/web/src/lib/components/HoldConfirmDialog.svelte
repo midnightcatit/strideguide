@@ -112,7 +112,7 @@
 				<button
 					type="button"
 					onclick={onClose}
-					class="rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+					class="btn-outline rounded-md border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 				>
 					Cancel
 				</button>

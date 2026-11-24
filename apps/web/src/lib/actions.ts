@@ -117,6 +117,8 @@ export function weekSwipe(node: HTMLElement, onStep: ((delta: 1 | -1) => void) |
 	let clickTimer: ReturnType<typeof setTimeout> | undefined;
 
 	node.style.touchAction = 'pan-y';
+	// Suppress the iOS callout across the whole strip, so a swipe never pops it.
+	node.style.setProperty('-webkit-touch-callout', 'none');
 
 	function roll(px: number) {
 		if (reduced) return;
@@ -255,6 +257,7 @@ export function weekSwipe(node: HTMLElement, onStep: ((delta: 1 | -1) => void) |
 			node.style.transition = '';
 			node.style.touchAction = '';
 			node.style.userSelect = '';
+			node.style.removeProperty('-webkit-touch-callout');
 		},
 	};
 }
@@ -281,6 +284,9 @@ export function dragToDay(node: HTMLElement, options: DragToDayOptions) {
 	const holdMs = options.holdMs ?? 250;
 	const moveTol = 8; // px of travel that counts as a scroll, not a hold
 	let onDropDay = options.onDropDay;
+	// Suppress the iOS callout across the whole surface, so a press-and-hold to
+	// start a drag never pops the copy menu.
+	node.style.setProperty('-webkit-touch-callout', 'none');
 
 	let pointerId: number | null = null;
 	let startX = 0;
@@ -313,6 +319,9 @@ export function dragToDay(node: HTMLElement, options: DragToDayOptions) {
 		active = true;
 		node.classList.add('is-dragging');
 		node.style.userSelect = 'none';
+		// Once the drag is live, keep the browser from claiming the gesture as a
+		// scroll, so the card keeps moving with the pointer.
+		node.style.touchAction = 'none';
 		try {
 			node.setPointerCapture(pointer);
 		} catch {
@@ -333,6 +342,7 @@ export function dragToDay(node: HTMLElement, options: DragToDayOptions) {
 		if (active) {
 			node.classList.remove('is-dragging');
 			node.style.userSelect = '';
+			node.style.touchAction = '';
 		}
 		active = false;
 		highlight(null);
@@ -431,6 +441,8 @@ export function dragToDay(node: HTMLElement, options: DragToDayOptions) {
 			node.removeEventListener('pointercancel', cancel);
 			node.removeEventListener('touchmove', onTouchMove);
 			node.style.userSelect = '';
+			node.style.touchAction = '';
+			node.style.removeProperty('-webkit-touch-callout');
 		},
 	};
 }

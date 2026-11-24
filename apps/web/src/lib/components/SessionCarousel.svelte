@@ -42,7 +42,7 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		bind:this={el}
-		class="scroll-modern flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto -mx-4 px-4 pb-2 sm:mx-0 sm:px-0"
+		class="scroll-modern flex select-none snap-x snap-mandatory items-stretch gap-3 overflow-x-auto -mx-4 px-4 pb-2 sm:mx-0 sm:px-0"
 		role="region"
 		tabindex="0"
 		aria-label="{sessions.length} sessions today, use the arrow keys to scroll"
