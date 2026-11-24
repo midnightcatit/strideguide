@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MOVES, circuitFor, findMove, moveCategory, strengthShape } from './catalog';
+import { PF_MACHINES } from './machines';
 import { GYM_PRESETS } from './gyms';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
 import { DYNAMIC_DRILLS, RECOVERY_DRILLS, STRETCHES, findDrill } from './stretches';
@@ -136,6 +137,17 @@ describe('gym presets', () => {
 		for (const p of GYM_PRESETS) {
 			for (const name of p.machines) {
 				expect(findMove(name), `${p.id} references an unknown machine: ${name}`).toBeTruthy();
+			}
+		}
+	});
+
+	it('reference the machine catalog directly, so a preset name is always a machine', () => {
+		// Every name a preset lists has to be an entry in the machine catalog, not
+		// a bodyweight or free-weight move that happens to share the name.
+		const catalog = new Set(PF_MACHINES.map((m) => m.name));
+		for (const p of GYM_PRESETS) {
+			for (const name of p.machines) {
+				expect(catalog.has(name), `${p.id} lists a non-machine: ${name}`).toBe(true);
 			}
 		}
 	});
