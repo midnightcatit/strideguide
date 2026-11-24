@@ -261,11 +261,12 @@ This applies to all web retrieval (research, refreshes, and any in-app live fetc
 consolidation. Research is a **one-time token cost**, then stored — it never re-bills at runtime.
 
 ### 7.6 Subagents everywhere — not just research
-Subagents are encouraged across the **whole build**, not only the research phase. Any task that is
-parallelizable, independent, and read-heavy is dispatched as subagents rather than done serially. I spawn
-them with the internal `task` tool (not Kilo Agent Manager). **Hard rule:** subagents do research,
-exploration, review, design exploration, and content generation — they do **not** make architectural
-decisions or merge code. I consolidate and integrate every result.
+Subagents are encouraged across the **whole build**. Any task that is parallelizable, independent and
+read-heavy is delegated rather than done serially. Prefer the Kilo Code **Agent Manager** (one session
+per task, its own worktree); fall back to the dispatched `task` subagents when Agent Manager is not in
+use. **Hard rule:** a delegated prompt carries a pre-plan (research and verify, rework the plan if there
+is a better way, then implement, then open a PR), and the main session reviews every PR and is the only
+one that merges and deploys.
 
 | Phase | Where subagents are used |
 |---|---|

@@ -102,3 +102,23 @@ Add to that set deliberately, not broadly.
 - **Never commit secrets.** `.dev.vars` and `session-*.md` are gitignored; production secrets live in
   Cloudflare (`wrangler secret put`). The only GitHub secret is `CLOUDFLARE_API_TOKEN`.
 - Keep PRs small and single-purpose; write commit messages that say what changed and why.
+
+## Delegation (main session)
+
+In the main session, prefer delegating independent, read-heavy or parallelizable work to a subagent
+over doing it serially.
+
+- **Preferred: Agent Manager worktrees** in the VS Code Kilo Code extension, one session per task, each
+  in its own worktree. **Fallback: the dispatched `task` subagents** when Agent Manager is not in use.
+- **Each delegated prompt starts with a pre-plan.** Tell the subagent to research and verify first,
+  rework the plan when a better or more nuanced approach exists and say so, then implement, then open a
+  PR. Give it the goal, the constraints, the relevant files, and the verification steps.
+- **The main session reviews and releases.** The main agent reviews every subagent PR, requests changes
+  when warranted, merges to `main`, and verifies the auto-deploy. Subagents do not merge or deploy.
+- Everything here still applies to delegated work: an isolated worktree, scoped `git add <path>`,
+  additive migrations, no em dashes, tests in `packages/shared`.
+- **Calling Agent Manager correctly.** Start it with `action` null, `mode: "worktree"`,
+  `versions: false`, and a `tasks` array where each task has at least a `name` and a `prompt` (add
+  `branchName` for a worktree). Never pass `model` or `variant` without a prompt. Send every other field
+  as null. A task missing a prompt, name or branchName is rejected, and three rejected attempts abort
+  the turn, so keep the shape exact.
