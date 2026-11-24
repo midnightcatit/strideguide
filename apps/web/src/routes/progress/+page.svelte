@@ -11,9 +11,16 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WatchVitals from '$lib/components/WatchVitals.svelte';
 
-	let recovery = $state<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] } | null>(
-		null,
-	);
+	// The recovery payload carries a steps series alongside the days. The shared
+	// client type predates it, so it is widened here rather than in lib/api.
+	type RecoveryState = {
+		available: boolean;
+		signal: RecoverySignal | null;
+		days: HealthDay[];
+		steps?: { date: string; steps: number }[];
+	};
+
+	let recovery = $state<RecoveryState | null>(null);
 
 	onMount(() => {
 		void ensurePlan();
@@ -40,6 +47,21 @@
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
+
+	// Steps come from the same health payload as the recovery numbers: the last
+	// two weeks, oldest first, ready to draw.
+	const stepDays = $derived(
+		(recovery?.steps ?? [])
+			.slice()
+			.sort((a, b) => a.date.localeCompare(b.date))
+			.slice(-14),
+	);
+	const stepMax = $derived(Math.max(1, ...stepDays.map((d) => d.steps)));
+	const stepAvg = $derived(
+		stepDays.length
+			? Math.round(stepDays.reduce((sum, d) => sum + d.steps, 0) / stepDays.length)
+			: 0,
+	);
 
 	// What the runner's own logs add up to: paces, weekly distance, effort trend,
 	// and which session types they rated well. The same read seeds a rebuild.
@@ -220,6 +242,32 @@
 							Your recent numbers look steady against your own baseline.
 						</p>
 					{/if}
+				</Card>
+			</section>
+		{/if}
+		{#if stepDays.length}
+			<section aria-labelledby="p-steps" class="mb-7">
+				<SectionHeader id="p-steps" eyebrow="Daily steps" meta="{stepAvg.toLocaleString()} a day" />
+				<Card tone="sunken">
+					<div
+						class="flex items-end gap-1"
+						style="height: 96px"
+						role="img"
+						aria-label="Steps per day over the last {stepDays.length} days"
+					>
+						{#each stepDays as d (d.date)}
+							<div class="relative flex-1" title="{d.date}: {d.steps.toLocaleString()} steps">
+								<div class="absolute left-0 right-0 border-t border-steel" style="bottom: {Math.round((stepAvg / stepMax) * 84)}px"></div>
+								<div
+									class="absolute bottom-0 left-1/4 right-1/4 rounded-[1px] bg-ink/55"
+									style="height: {Math.max(2, Math.round((d.steps / stepMax) * 84))}px"
+								></div>
+							</div>
+						{/each}
+					</div>
+					<p class="mt-3 text-xs text-steel">
+						Last {stepDays.length} days from Google Health. Bar is steps that day, hairline tick is your average.
+					</p>
 				</Card>
 			</section>
 		{/if}

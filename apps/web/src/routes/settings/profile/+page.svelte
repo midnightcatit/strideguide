@@ -4,10 +4,14 @@
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import { prefs, setPersonal, setVitals } from '$lib/prefs.svelte';
 	import { api, type ConnectionStatus } from '$lib/api';
+	import type { HealthDay } from '@strideguide/shared/plan';
 
 	// The linked-device state comes from the server, not from a value captured at
 	// build time, so the row is right the moment the runner returns from linking.
 	let device = $state<ConnectionStatus | null>(null);
+	// The daily readings the connector has already supplied. They decide which
+	// vitals Google Health owns and which ones stay hand typed.
+	let days = $state<HealthDay[]>([]);
 
 	async function loadDevice() {
 		try {
@@ -15,6 +19,12 @@
 			device = res.providers.find((p) => p.id === 'google-health') ?? null;
 		} catch {
 			// Leave the state unknown; the button still offers to link.
+		}
+		try {
+			const res = await api.recovery();
+			days = res.available ? res.days : [];
+		} catch {
+			// No health data yet; the manual fields stay in charge.
 		}
 	}
 
@@ -28,6 +38,22 @@
 
 	const deviceConnected = $derived(Boolean(device?.connected));
 	const deviceConfigured = $derived(device ? device.configured : true);
+
+	// The recovery route answers newest first, so the first day that carries a
+	// resting heart rate is the latest reading Google Health has given us.
+	const synced = $derived.by(() => {
+		if (!deviceConnected) return null;
+		const day = days.find((d) => d.restingHr);
+		return day?.restingHr ? { bpm: day.restingHr, date: day.date } : null;
+	});
+	const syncedDate = $derived(
+		synced
+			? new Date(`${synced.date}T00:00:00`).toLocaleDateString(undefined, {
+					month: 'short',
+					day: 'numeric',
+				})
+			: '',
+	);
 
 	function linkDevice() {
 		window.location.href = api.connectionConnectUrl('google-health', '/settings/profile');
@@ -119,23 +145,42 @@
 					{prefs.units === 'imperial' ? 'lb' : 'kg'}
 				</span>
 			</label>
-			<label class="block">
-				<span class="text-sm font-medium">Resting HR</span>
-				<input
-					type="number"
-					value={prefs.restingHr ?? ''}
-					min="30"
-					max="120"
-					placeholder="60"
-					onblur={(e) => {
-						const v = Number((e.currentTarget as HTMLInputElement).value);
-						setVitals({ restingHr: v > 30 && v < 120 ? v : null });
-					}}
-					class="tabular mt-1 w-full min-w-0 rounded-md border border-hairline bg-paper px-2 py-2.5 text-sm"
-				/>
-				<span class="mt-1 block text-[10px] uppercase tracking-wide text-steel">bpm</span>
-			</label>
+			{#if synced}
+				<div class="block">
+					<span class="text-sm font-medium">Resting HR</span>
+					<div class="tabular mt-1 w-full min-w-0 rounded-md border border-hairline bg-sunken px-2 py-2.5 text-sm">
+						{synced.bpm} bpm
+					</div>
+					<span class="mt-1 block text-[10px] uppercase tracking-wide text-signal-ink">from Google Health</span>
+				</div>
+			{:else}
+				<label class="block">
+					<span class="text-sm font-medium">Resting HR</span>
+					<input
+						type="number"
+						value={prefs.restingHr ?? ''}
+						min="30"
+						max="120"
+						placeholder="60"
+						onblur={(e) => {
+							const v = Number((e.currentTarget as HTMLInputElement).value);
+							setVitals({ restingHr: v > 30 && v < 120 ? v : null });
+						}}
+						class="tabular mt-1 w-full min-w-0 rounded-md border border-hairline bg-paper px-2 py-2.5 text-sm"
+					/>
+					<span class="mt-1 block text-[10px] uppercase tracking-wide text-steel">bpm</span>
+				</label>
+			{/if}
 		</div>
+		<p class="mt-3 text-xs text-steel">
+			{#if synced}
+				Resting heart rate comes from Google Health, last read {syncedDate}. Weight and height stay yours to enter.
+			{:else if deviceConnected}
+				Google Health is linked, so its next sync fills in resting heart rate. Until then, and for weight and height, type the numbers yourself.
+			{:else}
+				Link Google Health and its resting heart rate reading takes over from anything typed here. Weight and height are always yours to enter.
+			{/if}
+		</p>
 
 		{#if deviceConnected}
 			<div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-hairline px-4 py-2.5">
