@@ -30,8 +30,14 @@ function velocityForVo2(vo2: number): number {
 }
 
 /** VDOT from a race performance. */
-/** Plausible VDOT range. Outside it, the input is treated as a mistake. */
-export const VDOT_MIN = 20;
+/**
+ * Plausible VDOT band. The floor is deliberately low so any humanly possible
+ * race time is accepted: a slow mile or a walked race still reads as a real
+ * effort, and the onboarding anchors paces to it. Only a time that maps past
+ * the ceiling, faster than the world's best, is treated as a mistake. A wrong
+ * unit or a fat-fingered entry lands far outside the band, so it is still caught.
+ */
+export const VDOT_MIN = 8;
 export const VDOT_MAX = 90;
 
 export function vdotFromRace(distanceM: number, timeSec: number): number {

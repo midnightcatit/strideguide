@@ -145,7 +145,7 @@
 		{ key: 'half', label: 'Half marathon', meters: 21097.5 },
 		{ key: 'marathon', label: 'Marathon', meters: 42195 },
 	];
-	let raceKey = $state('10k');
+	let raceKey = $state('mile');
 	// Race time is held in seconds and edited with pickers, so nothing is misread.
 	let raceSecs = $state(0);
 
@@ -209,17 +209,17 @@
 		guide: string[];
 	}
 
-	// One question per screen. Guides are plain-English, and where we can we give
-	// ranges so the choice is easy: what is typical, what is better, what is a lot.
+	// One question per screen. Guides are plain and concrete, and where we can we
+	// give ranges so the choice is easy: what is typical, what is better, what is a lot.
 	const steps = $derived.by<Step[]>(() => {
 		const out: Step[] = [
 			{
 				id: 'about',
 				title: 'First, a little about you',
-				lede: 'Your birth year shapes the plan: how much weekly volume it builds and how gently it climbs, since recovery changes with age. Height, weight and resting heart rate are optional and stay private.',
+				lede: 'Your birth year shapes the plan. It sets how much weekly volume the plan builds and how gently it climbs, because recovery changes with age. Height, weight and resting heart rate are optional and stay private.',
 				guide: [
-					'Your birth year tunes the training, not your name. The name is only how we greet you.',
-					'Set the year you were born and the plan tunes itself around it. Everything else here is optional.',
+					'The birth year tunes the training. Your name is only how we greet you.',
+					'Everything except the birth year is optional.',
 					'We never show these details to anyone else.',
 				],
 			},
@@ -228,19 +228,19 @@
 				title: 'What are you training for?',
 				lede: 'Your goal decides the shape of the plan: how much easy running, how much quality, and how much strength work sits alongside it. Everything else is built backwards from here.',
 				guide: [
-					'Race goals (5K to marathon) lean on easy running, with one or two harder sessions a week.',
+					'Race goals, from 5K to marathon, lean on easy running with one or two harder sessions a week.',
 					'General fitness spreads effort across running, strength and mobility instead of chasing a time.',
-					'Pick the one you are actually training for, not the one that sounds best.',
+					'Pick the goal you are actually training for, not the one that sounds best.',
 				],
 			},
 			{
 				id: 'start',
 				title: 'When should the plan start?',
-				lede: 'Pick the day week one begins. Starting today keeps the plan moving right away. Starting next week gives you a few days to clear your calendar, and a custom date lets you line the plan up with a holiday or a return from a break.',
+				lede: 'Pick the day week one begins. Today keeps things moving. Next week buys you a few days to clear your calendar. A custom date lines the plan up with a holiday or a return from a break.',
 				guide: [
-					'Today is the default. The plan starts on the day you finish onboarding.',
-					'Next week starts on the day your week begins, so the first week runs cleanly from there.',
-					'A custom date can be up to a month from today. Past dates are not allowed.',
+					'Today is the default. Week one starts the day you finish here.',
+					'Next week starts on the day your week begins, so week one runs cleanly from there.',
+					'A custom date can be up to a month out. Past dates are not allowed.',
 				],
 			},
 		];
@@ -251,7 +251,7 @@
 				lede: 'We count backwards from race day to set the length of each block: a long base, a build, a short peak, then a taper. A far-off date just means a longer base.',
 				guide: [
 					'Most plans want 10 to 20 weeks. Under 8 weeks is a compressed build.',
-					'If you are unsure, pick the date you are aiming for. You can rebuild later.',
+					'Unsure? Pick the date you are aiming for. You can rebuild later.',
 				],
 			});
 		}
@@ -259,10 +259,11 @@
 			{
 				id: 'race',
 				title: 'How fit are you right now?',
-				lede: 'A recent race or time trial is the most accurate way to set your training paces, so easy days stay easy and hard days stay honest. It is a starting point, not a target you have to beat.',
+				lede: 'A recent race or time trial is the best way to set your training paces, so easy days stay easy and hard days stay honest. It is a starting point, not a target you have to beat.',
 				guide: [
 					'Any recent hard effort works: a race, a parkrun, or a solo time trial.',
-					'No recent effort? Skip it. We will estimate from your weekly volume and adjust after your first runs.',
+					'No recent effort? Skip it. We estimate from your weekly volume and adjust after your first runs.',
+					'A slow time is fine. We use the time you give us.',
 				],
 			},
 			{
@@ -270,9 +271,9 @@
 				title: 'How long have you been running?',
 				lede: 'This sets your starting weekly volume when you do not give one, and how quickly the plan builds.',
 				guide: [
-					'Match your last two months, not your best ever.',
+					'Match the last two months, not your best ever.',
 					'Each card shows a typical weekly range for that level.',
-					'When in doubt, pick the lower level. The plan builds from where you are.',
+					'When in doubt pick the lower level. The plan builds from where you are.',
 				],
 			},
 			{
@@ -282,17 +283,17 @@
 				guide: [
 					'Use a normal recent week, not your biggest ever.',
 					'The plan builds gradually, around 10 percent a week, with a lighter week every fourth week.',
-					'Starting honest is the single best way to stay injury-free.',
+					'Starting honest is the best way to stay injury-free.',
 				],
 			},
 			{
 				id: 'build',
 				title: 'How would you like the plan to build?',
-				lede: 'Your weekly distance grows from where you are now. This sets how boldly it climbs. It only changes the pace of the build, never the hard sessions or the number of days.',
+				lede: 'Your weekly distance grows from where you are now. This sets how boldly it climbs. It changes the pace of the build, never the hard sessions or the number of days.',
 				guide: [
-					'Ease me in ramps up slowly and takes more step-back weeks, good when you are new or coming back.',
+					'Ease me in ramps up slowly and takes more step-back weeks. Good when you are new or coming back.',
 					'Steady grows about 10 percent a week, the usual balance of progress and recovery.',
-					'Push me climbs a little faster, best when you have raced recently and are handling the load.',
+					'Push me climbs a little faster. Best when you have raced recently and are handling the load.',
 					'You can rebuild with a different choice any time.',
 				],
 			},
@@ -309,31 +310,31 @@
 			{
 				id: 'equipment',
 				title: 'What will you train strength with?',
-				lede: 'Machines fix the path, so it is easy to load and progress. Bodyweight and free weights ask more of your balance and control, and sit closer to the way running works. Both is a good default.',
+				lede: 'First pick the setup, the kind of strength work you want. Then tick what you actually have where you train. The setup decides how the circuit is built, and what you have narrows it to your kit.',
 				guide: [
-					'Machines: simple to load, easy to repeat week to week.',
-					'Bodyweight: no equipment, and it trains balance and single-leg control.',
-					'Both: legs from bodyweight, a machine or two for the upper body.',
+					'Machines fix the path, so it is easy to load and repeat week to week.',
+					'Bodyweight needs no equipment and trains balance and single-leg control.',
+					'Leave what you have blank to use everything the setup allows.',
 				],
 			},
 			{
 				id: 'strength',
 				title: 'How should the strength work fit?',
-				lede: 'Strength protects joints and supports running economy. Two sessions a week is enough; three helps if you have the time. The daily time sets how long a session can be, and we keep one workout a day, so a run and strength never share a day.',
+				lede: 'Strength protects joints and supports running economy. Two sessions a week is enough. Three helps if you have the time. The daily time sets how long a session can be, and we keep one workout a day, so a run and strength never share a day.',
 				guide: [
-					'Two sessions a week is the usual sweet spot for runners.',
-					'30 minutes is about 5 moves, 45 about 6, 60 or more is 8.',
+					'Two sessions a week is the sweet spot for most runners.',
+					'A 30 minute session is about 5 moves, 45 minutes about 6, and an hour about 8.',
 					'Make the lowering phase the slow part, then add load or harder variations over time.',
 				],
 			},
 			{
 				id: 'flexibility',
 				title: 'How flexible are you, and where do you want to be?',
-				lede: 'Rate your flexibility today and where you would like it. Every workout starts with a dynamic warm-up and ends with gentle stretches, and the gap between now and your goal decides how much mobility work we add.',
+				lede: 'Rate your flexibility today and the range you would like. Every workout starts with a dynamic warm-up and ends with gentle stretches. The gap between now and your goal sets how much mobility work we add.',
 				guide: [
 					'Every workout starts with a dynamic warm-up and ends with a short stretch.',
 					'For running, more range is not always better. Train toward the range you need, then hold it.',
-					'Tighter runners often gain most from gentle, regular static stretching.',
+					'Tighter runners often gain the most from gentle, regular static stretching.',
 					'Long static holds before hard running can cost a little power, so we place them after.',
 				],
 			},
@@ -359,7 +360,7 @@
 			{
 				id: 'niggles',
 				title: 'Anything niggling or sore?',
-				lede: 'Tell us what to be careful with, and we will keep it in mind when we build the plan. This is not medical advice.',
+				lede: 'Tell us what to be careful with and we keep it in mind when the plan is built. This is not medical advice.',
 				guide: [
 					'For example: a cranky Achilles, a knee that aches on downhills, a tight hamstring.',
 					'If something is sharp or getting worse, see a professional first.',
@@ -666,6 +667,17 @@
 		done = true;
 	}
 
+	// Whether the current step is answerable, so Continue can be disabled until
+	// it is. Pure, with no side effects on the error message.
+	const stepValid = $derived.by(() => {
+		if (step.id === 'start' && startChoice === 'custom') {
+			return !!customStartDate && customStartDate >= todayIso && customStartDate <= maxStartIso;
+		}
+		if (step.id === 'date') return !!targetDate;
+		if (step.id === 'days') return days.length > 0;
+		return true;
+	});
+
 	function validate(): boolean {
 		if (step.id === 'start' && startChoice === 'custom') {
 			if (!customStartDate) {
@@ -907,32 +919,40 @@
 		</section>
 	{/if}
 {:else}
-	<section class="mx-auto max-w-xl">
-		<header>
-		<div class="flex items-center justify-between gap-3 pr-32 sm:pr-0">
-			<p class="tabular text-xs uppercase tracking-widest text-steel">
-				Step {Math.min(stepIndex, steps.length - 1) + 1} of {steps.length}
-			</p>
-			<div class="flex items-center gap-2">
-				<div class="flex overflow-hidden rounded-md border border-hairline" role="group" aria-label="Units">
-					{#each [{ v: 'imperial', l: 'mi' }, { v: 'metric', l: 'km' }] as opt (opt.v)}
-						<button
-							type="button"
-							aria-pressed={prefs.units === opt.v}
-							onclick={() => setUnits(opt.v as 'metric' | 'imperial')}
-							class="px-2 py-0.5 text-xs {prefs.units === opt.v ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}"
-						>
-							{opt.l}
-						</button>
-					{/each}
+	<!-- Extra bottom room so the guide list clears the fixed action bar: the app
+	     shell already pads the bottom on phones, this adds the rest for desktop. -->
+	<section class="mx-auto max-w-xl pb-8 sm:pb-16">
+		<!-- Sticky top bar. The Sign out and close controls live in the app shell
+		     as a fixed float on the right, so this reserves room for them and the
+		     two read as one bar. z is under the float (40) so they stay tappable. -->
+		<header
+			class="sticky top-0 z-30 -mx-4 border-b border-hairline bg-paper/95 px-4 backdrop-blur"
+			style="padding-top: env(safe-area-inset-top)"
+		>
+			<div class="flex min-h-[3.25rem] items-center justify-between gap-2 pb-1 pt-2 pr-36 sm:pr-0">
+				<p class="tabular text-xs text-steel">
+					Step {Math.min(stepIndex, steps.length - 1) + 1} of {steps.length}
+				</p>
+				<div class="flex items-center gap-2">
+					<div class="flex overflow-hidden rounded-md border border-hairline" role="group" aria-label="Units">
+						{#each [{ v: 'imperial', l: 'mi' }, { v: 'metric', l: 'km' }] as opt (opt.v)}
+							<button
+								type="button"
+								aria-pressed={prefs.units === opt.v}
+								onclick={() => setUnits(opt.v as 'metric' | 'imperial')}
+								class="px-2 py-0.5 text-xs {prefs.units === opt.v ? 'bg-ink text-paper' : 'text-steel hover:text-ink'}"
+							>
+								{opt.l}
+							</button>
+						{/each}
+					</div>
+					<p class="tabular w-9 text-right text-xs text-steel">{Math.round(progress * 100)}%</p>
 				</div>
-				<p class="tabular text-xs text-steel">{Math.round(progress * 100)}%</p>
 			</div>
-		</div>
-		<div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-hairline">
-			<div class="h-full rounded-full bg-signal-ink transition-[width] duration-500 ease-out" style="width: {progress * 100}%"></div>
-		</div>
-	</header>
+			<div class="h-1 w-full overflow-hidden rounded-full bg-hairline">
+				<div class="h-full rounded-full bg-signal-ink transition-[width] duration-500 ease-out" style="width: {progress * 100}%"></div>
+			</div>
+		</header>
 
 	{#key step.id}
 		<div class={dir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
@@ -1062,7 +1082,7 @@
 								min={todayIso}
 								max={maxStartIso}
 								aria-label="Plan start date"
-								class="tabular mt-1 block w-full min-w-0 max-w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-base sm:text-sm"
+								class="date-field tabular mt-1 rounded-xl border border-hairline bg-paper px-4 py-3 text-base sm:text-sm"
 							/>
 							<p class="text-xs text-steel">Up to {fmtShortDate(maxStartIso)}. Past dates are not allowed.</p>
 						{/if}
@@ -1072,7 +1092,7 @@
 						type="date"
 						bind:value={targetDate}
 						aria-label="Race date"
-						class="tabular block w-full min-w-0 max-w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-base sm:text-sm"
+						class="date-field tabular rounded-xl border border-hairline bg-paper px-4 py-3 text-base sm:text-sm"
 					/>
 				{:else if step.id === 'race'}
 					<select
@@ -1089,7 +1109,7 @@
 					</div>
 					{#if raceTimeLooksOff}
 						<p class="mt-2 text-xs text-warn">
-							That time looks off for {RACE_DISTANCES.find((d) => d.key === raceKey)?.label}. Check the pickers, or leave them at zero if you are not sure.
+							That time is not possible for a {RACE_DISTANCES.find((d) => d.key === raceKey)?.label}. Check the pickers, or leave them at zero if you are not sure.
 						</p>
 					{/if}
 					{#if paces && goalPace}
@@ -1176,7 +1196,9 @@
 					</div>
 					<p class="mt-3 text-sm text-steel">{days.length} {days.length === 1 ? 'day' : 'days'} a week.</p>
 				{:else if step.id === 'equipment'}
-					<div class="grid gap-2">
+					<p class="tabular text-xs uppercase tracking-widest text-steel">Your setup</p>
+					<p class="mt-1 text-xs text-steel">Pick the kind of strength work you want. This decides how a session is built.</p>
+					<div class="mt-2 grid gap-2">
 						{#each EQUIPMENT as opt (opt.v)}
 							<button
 								type="button"
@@ -1193,6 +1215,7 @@
 					</div>
 					{#if equipment !== 'bodyweight'}
 						<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">What you have</p>
+						<p class="mt-1 text-xs text-steel">Now tick the kit that is really there when you train. It narrows the moves to what you can do. Leave it blank to use everything the setup allows.</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each EQUIPMENT_ITEMS as item (item.v)}
 								<button
@@ -1210,10 +1233,10 @@
 								</button>
 							{/each}
 						</div>
-						<p class="mt-2 text-xs text-steel">Pick what you have; leave blank to use everything in the option.</p>
 					{/if}
 					{#if equipment === 'machines' || equipment === 'both' || equipment === 'full-gym'}
 						<p class="tabular mt-5 text-xs uppercase tracking-widest text-steel">Your gym</p>
+						<p class="mt-1 text-xs text-steel">Optional. Pick the chain if you train at one, and we set your setup to match. You can change it any time in Settings.</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each GYM_PRESETS as gym (gym.id)}
 								<button
@@ -1235,7 +1258,6 @@
 								</button>
 							{/each}
 						</div>
-						<p class="mt-2 text-xs text-steel">Optional. We then build your circuits from that gym's machines. Fine-tune later in Settings.</p>
 					{/if}
 				{:else if step.id === 'strength'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Sessions a week</p>
@@ -1365,34 +1387,43 @@
 		<p class="mt-4 text-sm text-signal-ink">{error}</p>
 	{/if}
 
-	<div class="mt-8 flex items-center gap-3">
-		{#if stepIndex > 0}
-			<button
-				type="button"
-				onclick={back}
-				class="rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
-			>
-				Back
-			</button>
-		{/if}
-		{#if isLast}
-			<button
-				type="button"
-				onclick={submit}
-				disabled={submitting}
-				class="flex-1 rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
-			>
-				{submitting ? 'Generating…' : `Build my ${selected?.name ?? ''} plan`}
-			</button>
-		{:else}
-			<button
-				type="button"
-				onclick={next}
-				class="flex-1 rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90"
-			>
-				Continue
-			</button>
-		{/if}
+	<!-- Sticky action bar: the questions scroll under it. Fixed, not sticky,
+	     because the app shell owns the scroll container and its bottom padding,
+	     so a sticky bar would drift off the bottom near the end of the page. -->
+	<div class="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-paper/95 backdrop-blur">
+		<div
+			class="mx-auto flex max-w-xl items-center gap-3 px-4 py-3"
+			style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))"
+		>
+			{#if stepIndex > 0}
+				<button
+					type="button"
+					onclick={back}
+					class="rounded-md border border-hairline-strong px-5 py-3 text-sm text-steel hover:border-signal hover:text-signal-ink"
+				>
+					Back
+				</button>
+			{/if}
+			{#if isLast}
+				<button
+					type="button"
+					onclick={submit}
+					disabled={submitting || !stepValid}
+					class="flex-1 rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+				>
+					{submitting ? 'Generating…' : `Build my ${selected?.name ?? ''} plan`}
+				</button>
+			{:else}
+				<button
+					type="button"
+					onclick={next}
+					disabled={!stepValid}
+					class="flex-1 rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+				>
+					Continue
+				</button>
+			{/if}
+		</div>
 	</div>
 	</section>
 {/if}
@@ -1408,6 +1439,24 @@
 {/if}
 
 <style>
+	/*
+	 * A native date input carries its own intrinsic width, sized for the longest
+	 * date plus the picker icon, and Safari renders it internally as inline-flex.
+	 * On iOS 17 and earlier width: 100% is ignored on it, so it spills past the
+	 * padded container however small the max-width is; min-width alone cannot fix
+	 * it because the intrinsic width is the control's own minimum. Clearing the
+	 * appearance makes it size like a normal field. The native picker still opens
+	 * on tap, since only the CSS rendering changes.
+	 */
+	.date-field {
+		display: block;
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		box-sizing: border-box;
+		-webkit-appearance: none;
+		appearance: none;
+	}
 	/* A short, quiet completion moment. The resting state is the finished
 	   drawing, so with reduced motion (durations zeroed globally, and turned off
 	   here) the mark appears complete rather than drawing in. */

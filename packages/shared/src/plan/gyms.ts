@@ -172,8 +172,18 @@ export const GYM_PRESETS: GymPreset[] = [
 	},
 ];
 
+/**
+ * Temporary: treat every gym as fully equipped, so picking a preset does not
+ * narrow the circuit to that chain's known machines. The preset is still used to
+ * suggest an equipment mode. Flip this to false once per-preset machine lists are
+ * trusted again; the data below stays the source for that.
+ */
+export const GYM_ASSUME_FULL_EQUIPMENT = true;
+
 /** The machines for a preset id, or undefined when the id is unknown. */
 export function machinesForPreset(id?: string): string[] | undefined {
+	// Full availability for now: no preset narrows the machine set.
+	if (GYM_ASSUME_FULL_EQUIPMENT) return undefined;
 	if (!id) return undefined;
 	return GYM_PRESETS.find((p) => p.id === id)?.machines;
 }
