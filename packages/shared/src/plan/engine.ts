@@ -6,7 +6,7 @@ import type {
 	StructuredWorkout,
 	WorkoutStep,
 } from '../types';
-import { circuitFor, strengthShape } from './catalog';
+import { circuitFor, findMove, moveAvailable, strengthShape } from './catalog';
 import type { MachineExercise } from './machines';
 import {
 	COOLDOWN_STRETCHES,
@@ -15,7 +15,7 @@ import {
 	WARMUP_DRILLS,
 	drillBlock,
 } from './mobility';
-import { WORKOUT_LIBRARY } from './library';
+import { WORKOUT_LIBRARY, type LibraryWorkout } from './library';
 import { mobilityPrescription } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
@@ -621,6 +621,47 @@ function activityLabel(slug: string): string {
 	return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
 
+/**
+ * The runner's first favorite library workout of a modality, in the order they
+ * listed them, so a favorite only applies where it fits the slot. A favorite of
+ * another modality is not suitable and the engine keeps its own pick.
+ */
+function favoriteWorkout(
+	input: PlanInput,
+	modality: LibraryWorkout['modality'],
+): LibraryWorkout | undefined {
+	if (!input.favoriteWorkouts?.length) return undefined;
+	for (const id of input.favoriteWorkouts) {
+		const workout = WORKOUT_LIBRARY.find((w) => w.id === id);
+		if (workout && workout.modality === modality) return workout;
+	}
+	return undefined;
+}
+
+/**
+ * The moves of a favorite strength workout, when the runner has one and every
+ * move fits their kit. Undefined means the favorite is missing or not suitable,
+ * so the caller falls back to the generated circuit.
+ */
+function favoriteStrengthMoves(input: PlanInput): MachineExercise[] | undefined {
+	const favorite = favoriteWorkout(input, 'strength');
+	if (!favorite) return undefined;
+	const names = favorite.workout.blocks
+		.flatMap((b) => b.steps)
+		.filter((s) => s.kind === 'work')
+		.map((s) => s.label);
+	const seen = new Set<string>();
+	const moves: MachineExercise[] = [];
+	for (const name of names) {
+		if (seen.has(name)) continue;
+		const move = findMove(name);
+		if (!move || !moveAvailable(move, input.equipment, input.machines)) return undefined;
+		seen.add(name);
+		moves.push(move);
+	}
+	return moves.length ? moves : undefined;
+}
+
 export function generatePlan(input: PlanInput): PlanDraft {
 	const totalWeeks = clamp(
 		input.targetDate ? weeksBetween(input.startDate, input.targetDate) : input.profile.defaultWeeks,
@@ -1010,6 +1051,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
 		const mobility = mobilityPrescription(flexGap, input.baseline);
 		if (mobility && phase !== 'taper') {
+			// The gap sets how often the runner stretches; a favorite mobility
+			// workout sets which routine, so the plan names the one they chose.
+			const routineId = favoriteWorkout(input, 'mobility')?.id ?? mobility.libraryId;
 			// Mobility is short, so it pairs with a day that already has a session,
 			// easing onto an easy or strength day first. A rest day is the fallback.
 			const rank = (d: number) => {
@@ -1024,7 +1068,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			for (const d of candidates) {
 				if (added >= mobility.perWeek) break;
 				const slot = sessions.some((s) => s.day === d) ? 'PM' : 'AM';
-				sessions.push(mobilitySession(d, mobility.libraryId, slot));
+				sessions.push(mobilitySession(d, routineId, slot));
 				added++;
 			}
 		}
@@ -1078,14 +1122,20 @@ function strengthSession(
 	const load = sportLoad(input);
 	const heavySport = load.heavy;
 	const loaded = phase !== 'base';
-	const fullCircuit = circuitFor(
-		mode,
-		input.baseline.sessionMinutes,
-		input.equipment,
-		loaded,
-		level,
-		input.machines,
-	);
+	// A favorite strength workout wins when the runner has one and it fits, since
+	// it is their own choice of session. Otherwise the generated circuit prefers
+	// their favorite machines, then falls back to the usual balanced pick.
+	const fullCircuit =
+		favoriteStrengthMoves(input) ??
+		circuitFor(
+			mode,
+			input.baseline.sessionMinutes,
+			input.equipment,
+			loaded,
+			level,
+			input.machines,
+			input.favoriteMachines,
+		);
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;

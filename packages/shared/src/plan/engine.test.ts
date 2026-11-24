@@ -652,3 +652,93 @@ describe('progression (volume builds, sessions differentiate)', () => {
 		expect(peak(steady)).toBeLessThan(peak(bold));
 	});
 });
+
+describe('favorites', () => {
+	const base = {
+		profile: marathon,
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-12-01',
+		targetDate: '2027-05-01',
+	};
+	const strengthMoves = (input: Parameters<typeof generatePlan>[0]) =>
+		generatePlan(input)
+			.weeks.flatMap((w) => w.sessions)
+			.find((s) => s.modality === 'strength')!
+			.prescription.blocks!.map((b) => b.machine);
+
+	it('chooses a favorite machine when it fits the circuit', () => {
+		const plain = strengthMoves({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'machines' },
+		});
+		expect(plain).not.toContain('Bicep curl');
+		const favored = strengthMoves({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'machines' },
+			favoriteMachines: ['Bicep curl'],
+		});
+		expect(favored).toContain('Bicep curl');
+	});
+
+	it('still builds when a favorite machine is not available', () => {
+		const p = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'machines' },
+			machines: ['Leg press'],
+			favoriteMachines: ['Leg press', 'Not a real machine'],
+		});
+		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
+		expect(p.weeks.length).toBeGreaterThan(0);
+		expect(strength.prescription.blocks!.length).toBeGreaterThan(0);
+		// The one favorite the runner has is used; the unknown name is ignored.
+		expect(strength.prescription.blocks!.map((b) => b.machine)).toContain('Leg press');
+	});
+
+	it('ignores a favorite machine the runner does not have', () => {
+		const moves = strengthMoves({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'bodyweight' },
+			favoriteMachines: ['Leg press'],
+		});
+		expect(moves).not.toContain('Leg press');
+		expect(moves.length).toBeGreaterThan(0);
+	});
+
+	it('names a favorite mobility workout over its own pick', () => {
+		const mobilityTitle = (input: Parameters<typeof generatePlan>[0]) =>
+			generatePlan(input)
+				.weeks.flatMap((w) => w.sessions)
+				.find((s) => s.type === 'mobility')!.title;
+		const flexible = {
+			...base,
+			baseline: { experience: 'intermediate' as const, flexibility: { current: 2, goal: 4 } },
+		};
+		// The gap alone earns the 12 minute routine.
+		expect(mobilityTitle(flexible)).toBe('Mobility and stretching, 12 minutes');
+		// A favorite mobility workout is used instead.
+		expect(mobilityTitle({ ...flexible, favoriteWorkouts: ['mobility-build-general'] })).toBe(
+			'Mobility and stretching, 20 minutes',
+		);
+	});
+
+	it('keeps its own routine when the favorite does not fit the slot', () => {
+		const title = generatePlan({
+			...base,
+			baseline: { experience: 'intermediate', flexibility: { current: 2, goal: 4 } },
+			favoriteWorkouts: ['easy-run-30'],
+		})
+			.weeks.flatMap((w) => w.sessions)
+			.find((s) => s.type === 'mobility')!.title;
+		expect(title).toBe('Mobility and stretching, 12 minutes');
+	});
+
+	it('builds a favorite strength workout when the runner has one', () => {
+		const moves = strengthMoves({
+			...base,
+			baseline: { experience: 'intermediate', equipment: 'bodyweight' },
+			favoriteWorkouts: ['runners-strength-40'],
+		});
+		expect(moves).toContain('Split squat');
+		expect(moves).not.toContain('Leg press');
+	});
+});
