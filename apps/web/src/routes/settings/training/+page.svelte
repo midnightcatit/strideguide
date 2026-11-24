@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import Switch from '$lib/components/Switch.svelte';
+	import LeaveConfirmSheet from '$lib/components/LeaveConfirmSheet.svelte';
 	import { api } from '$lib/api';
 	import {
 		prefs,
@@ -17,13 +19,16 @@
 	import { GYM_PRESETS, PF_MACHINES, EXTRA_MACHINES } from '@strideguide/shared/plan';
 	import type { Units, Prefs } from '@strideguide/shared/units';
 
-	const countdown = $derived(prefs.countdownSec ?? 5);
-	const autoNext = $derived(prefs.autoAdvance ?? true);
 	const MACHINES = [...PF_MACHINES, ...EXTRA_MACHINES].map((m) => m.name);
 
-	// Equipment and gym are edited as a draft: taps only change local state, and one
-	// rebuild happens when the runner saves. Discard throws the draft away.
+	// Every control on the page edits a draft. Taps only change local state, and
+	// one save writes them all and triggers a single plan rebuild. Discard throws
+	// the draft away and restores what is stored.
 	type Draft = {
+		units: Units;
+		weekStart: 0 | 1;
+		countdownSec: number;
+		autoAdvance: boolean;
 		equipment: Prefs['equipment'];
 		equipmentItems: NonNullable<Prefs['equipmentItems']>;
 		gymPreset: Prefs['gymPreset'];
@@ -31,18 +36,32 @@
 	};
 	function readPrefs(): Draft {
 		return {
+			units: prefs.units,
+			weekStart: prefs.weekStart,
+			countdownSec: prefs.countdownSec ?? 5,
+			autoAdvance: prefs.autoAdvance ?? true,
 			equipment: prefs.equipment,
 			equipmentItems: prefs.equipmentItems ?? [],
 			gymPreset: prefs.gymPreset,
 			machineItems: prefs.machineItems ?? [],
 		};
 	}
+	function clone(d: Draft): Draft {
+		return { ...d, equipmentItems: [...d.equipmentItems], machineItems: [...d.machineItems] };
+	}
+	function sameItems(a: string[], b: string[]): boolean {
+		return [...a].sort().join() === [...b].sort().join();
+	}
 	function same(a: Draft, b: Draft): boolean {
 		return (
+			a.units === b.units &&
+			a.weekStart === b.weekStart &&
+			a.countdownSec === b.countdownSec &&
+			a.autoAdvance === b.autoAdvance &&
 			a.equipment === b.equipment &&
 			a.gymPreset === b.gymPreset &&
-			[...a.equipmentItems].sort().join() === [...b.equipmentItems].sort().join() &&
-			[...a.machineItems].sort().join() === [...b.machineItems].sort().join()
+			sameItems(a.equipmentItems, b.equipmentItems) &&
+			sameItems(a.machineItems, b.machineItems)
 		);
 	}
 
@@ -59,13 +78,48 @@
 	$effect(() => {
 		const s = saved;
 		if (untrack(() => same(draft, seeded))) {
-			draft = s;
-			seeded = s;
+			draft = clone(s);
+			seeded = clone(s);
 		}
 	});
 
 	let saving = $state(false);
 	let message = $state('');
+	let confirmLeave = $state(false);
+	let pendingHref = $state<string | null>(null);
+	// Set just before we replay a navigation the person chose to leave with, so
+	// the guard below lets it through instead of asking a second time.
+	let leaving = false;
+
+	// Any exit with unsaved edits asks first. The tab bar, the settings back link
+	// and the browser Back button are all in-app navigations, so this one guard
+	// covers every way off the page.
+	beforeNavigate((nav) => {
+		if (leaving || !dirty) return;
+		const href = nav.to?.url.href;
+		if (!href) return;
+		nav.cancel();
+		pendingHref = href;
+		confirmLeave = true;
+	});
+
+	function keepEditing() {
+		confirmLeave = false;
+		pendingHref = null;
+	}
+
+	function discardAndLeave() {
+		const href = pendingHref;
+		confirmLeave = false;
+		pendingHref = null;
+		if (!href) return;
+		// Drop the draft too, so the page is clean if the navigation does not finish.
+		discard();
+		leaving = true;
+		void goto(href).finally(() => {
+			leaving = false;
+		});
+	}
 
 	function pickEquipment(v: Draft['equipment']) {
 		draft.equipment = v;
@@ -91,23 +145,24 @@
 	}
 
 	function bump(d: number) {
-		void setCountdownSec(countdown + d);
+		draft.countdownSec = Math.max(0, Math.min(15, draft.countdownSec + d));
 	}
 	function discard() {
-		draft = readPrefs();
-		seeded = draft;
+		const s = readPrefs();
+		draft = clone(s);
+		seeded = clone(s);
 		message = '';
 	}
 
 	async function save() {
 		saving = true;
 		message = '';
-		const next: Draft = {
-			...draft,
-			equipmentItems: [...draft.equipmentItems],
-			machineItems: [...draft.machineItems],
-		};
+		const next = clone(draft);
 		try {
+			await setUnits(next.units);
+			await setWeekStart(next.weekStart);
+			await setCountdownSec(next.countdownSec);
+			await setAutoAdvance(next.autoAdvance);
 			await setEquipment(next.equipment);
 			await setEquipmentItems(next.equipmentItems);
 			await setGymPreset(next.gymPreset);
@@ -124,7 +179,7 @@
 		} catch {
 			message = 'Saved, but the weeks ahead could not be rebuilt just now.';
 		} finally {
-			seeded = next;
+			seeded = clone(next);
 			saving = false;
 		}
 	}
@@ -159,9 +214,9 @@
 			{#each [{ v: 'metric', l: 'Metric (km)' }, { v: 'imperial', l: 'Imperial (mi)' }] as opt (opt.v)}
 				<button
 					type="button"
-					aria-pressed={prefs.units === opt.v}
-					onclick={() => setUnits(opt.v as Units)}
-					class="flex-1 px-3 py-2.5 text-sm transition-colors {prefs.units === opt.v
+					aria-pressed={draft.units === opt.v}
+					onclick={() => (draft.units = opt.v as Units)}
+					class="flex-1 px-3 py-2.5 text-sm transition-colors {draft.units === opt.v
 						? 'bg-ink text-paper'
 						: 'text-steel hover:text-ink'}"
 				>
@@ -178,9 +233,9 @@
 			{#each [{ v: 0, l: 'Monday' }, { v: 1, l: 'Sunday' }] as opt (opt.v)}
 				<button
 					type="button"
-					aria-pressed={prefs.weekStart === opt.v}
-					onclick={() => setWeekStart(opt.v as 0 | 1)}
-					class="flex-1 px-3 py-2.5 text-sm transition-colors {prefs.weekStart === opt.v
+					aria-pressed={draft.weekStart === opt.v}
+					onclick={() => (draft.weekStart = opt.v as 0 | 1)}
+					class="flex-1 px-3 py-2.5 text-sm transition-colors {draft.weekStart === opt.v
 						? 'bg-ink text-paper'
 						: 'text-steel hover:text-ink'}"
 				>
@@ -193,9 +248,9 @@
 	<div>
 		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Countdown before a step</h2>
 		<div class="mt-2 flex items-center gap-3">
-			<button type="button" onclick={() => bump(-1)} disabled={countdown <= 0} aria-label="Less" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">−</button>
-			<span class="tabular w-20 text-center text-lg font-medium">{countdown === 0 ? 'Off' : `${countdown}s`}</span>
-			<button type="button" onclick={() => bump(1)} disabled={countdown >= 15} aria-label="More" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">+</button>
+			<button type="button" onclick={() => bump(-1)} disabled={draft.countdownSec <= 0} aria-label="Less" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">−</button>
+			<span class="tabular w-20 text-center text-lg font-medium">{draft.countdownSec === 0 ? 'Off' : `${draft.countdownSec}s`}</span>
+			<button type="button" onclick={() => bump(1)} disabled={draft.countdownSec >= 15} aria-label="More" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">+</button>
 		</div>
 		<p class="mt-2 text-xs text-steel">How long the player waits before the workout and each step starts. Off starts straight away.</p>
 	</div>
@@ -205,7 +260,7 @@
 			<h2 class="text-sm font-medium">Auto next</h2>
 			<p class="mt-0.5 text-xs text-steel">Move to the next step by itself. Off means you tap Go to next.</p>
 		</div>
-		<Switch checked={autoNext} label="Auto next" onChange={(v) => setAutoAdvance(v)} />
+		<Switch checked={draft.autoAdvance} label="Auto next" onChange={(v) => (draft.autoAdvance = v)} />
 	</div>
 
 	<div class="border-t border-hairline pt-6">
@@ -315,3 +370,5 @@
 		</button>
 	</div>
 </div>
+
+<LeaveConfirmSheet open={confirmLeave} onKeep={keepEditing} onDiscard={discardAndLeave} />
