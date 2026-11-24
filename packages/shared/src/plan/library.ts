@@ -11,6 +11,7 @@ import type { StructuredWorkout } from '../types';
 import { block, MIN, step, wk } from './library-helpers';
 import { EXTRA_WORKOUTS } from './library-extra';
 import { mobilityRoutine, mobilityWorkout } from './mobility';
+import { focusRoutine, type StretchFocus } from './mobility-plan';
 
 export interface LibraryWorkout {
 	id: string;
@@ -1063,5 +1064,69 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 ];
 
+/**
+ * The thorough mobility routines, one per focus. The engine names these when the
+ * flexibility goal is far enough out to aim the work, and they are in the picker
+ * so a runner can also add the one that fits them. The routine itself is data:
+ * focusRoutine reads the drill lists from mobility-plan, so adding a focus is a
+ * data change, not a code change.
+ */
+const BUILD_MOBILITY: LibraryWorkout[] = (
+	[
+		{
+			focus: 'general',
+			title: 'Mobility and stretching',
+			summary: 'A full mobility pass for the whole body, two short rounds of each gentle hold.',
+			purpose:
+				'Builds range of motion across the areas running tightens. It is the routine the plan picks when your flexibility goal is a large step up.',
+		},
+		{
+			focus: 'hips-glutes',
+			title: 'Hips and glutes',
+			summary: 'Gentle holds for the hips, glutes and groin, two short rounds of each.',
+			purpose:
+				'Tight hips and glutes limit stride length and steer load into the knee. Aims the work at the areas that drive your stride.',
+		},
+		{
+			focus: 'hamstrings-calves',
+			title: 'Hamstrings and calves',
+			summary: 'Gentle holds for the back of the legs and the calves, two short rounds of each.',
+			purpose:
+				'Hamstrings and calves take the load of every hill and every stride. Keeps the back line and the ankle supple.',
+		},
+		{
+			focus: 'ankles',
+			title: 'Ankles and feet',
+			summary: 'Holds and gentle rocking for the ankles, calves and feet, two short rounds of each.',
+			purpose:
+				'Ankle range shapes how you land and push off. Aims the work at the ankle when that is where your running lives.',
+		},
+		{
+			focus: 'upper-back',
+			title: 'Upper back and shoulders',
+			summary: 'Openers for the mid-back, chest and shoulders, two short rounds of each.',
+			purpose:
+				'Keeps the upper back rotating and the chest open, so the arm swing stays free and breathing is not tied to a stiff spine.',
+		},
+	] as { focus: StretchFocus; title: string; summary: string; purpose: string }[]
+).map((entry) => ({
+	id: `mobility-build-${entry.focus}`,
+	title: `${entry.title}, 20 minutes`,
+	modality: 'mobility',
+	type: 'mobility',
+	durationMin: 20,
+	intensity: 'easy',
+	summary: entry.summary,
+	purpose: entry.purpose,
+	targetRpe: [1, 3],
+	workout: mobilityWorkout(focusRoutine(entry.focus)),
+	refs: ['wave-3/8c-stretching-flexibility', 'wave-5/14a-stretch-library'],
+	tags: ['mobility', 'flexibility', 'build', `focus:${entry.focus}`, 'no-equipment'],
+}));
+
 /** The core workouts plus the wave-5 additions, in one list for the picker. */
-export const WORKOUT_LIBRARY: LibraryWorkout[] = [...CORE_WORKOUTS, ...EXTRA_WORKOUTS];
+export const WORKOUT_LIBRARY: LibraryWorkout[] = [
+	...CORE_WORKOUTS,
+	...BUILD_MOBILITY,
+	...EXTRA_WORKOUTS,
+];

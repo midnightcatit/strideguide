@@ -8,6 +8,7 @@ export * from './catalog';
 export * from './gyms';
 export * from './move-media';
 export * from './mobility';
+export * from './mobility-plan';
 export * from './stretches';
 export * from './explanations';
 export * from './match';
