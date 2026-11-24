@@ -4,7 +4,8 @@
 	import { page } from '$app/state';
 	import { goto, onNavigate } from '$app/navigation';
 	import { api } from '$lib/api';
-	import { loadPrefs } from '$lib/prefs.svelte';
+	import { getLandingTab, landingHref, loadPrefs } from '$lib/prefs.svelte';
+	import { ensurePlan, store } from '$lib/planStore.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { installClientErrorReporting } from '$lib/clientErrors';
@@ -34,8 +35,8 @@
 		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
 		{ href: '/today', key: 'today', label: 'Today', active: page.url.pathname.startsWith('/today') },
 		{ href: '/calendar', key: 'calendar', label: 'Calendar', active: page.url.pathname.startsWith('/calendar') },
-		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 		{ href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') },
+		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 	]);
 
 	// Crossfade route changes with the View Transitions API where it exists, so
@@ -88,6 +89,32 @@
 		window.addEventListener('online', sync);
 		return () => window.removeEventListener('online', sync);
 	});
+
+	// A signed-in runner who opens the app at the root lands on the tab they chose.
+	// The check runs once per page load, so tapping Dashboard later still opens the
+	// dashboard. A runner without a plan keeps the dashboard's onboarding redirect.
+	let landingHandled = false;
+	let landingPending = $state(false);
+
+	$effect(() => {
+		if (landingHandled) return;
+		if (!auth.checked || !auth.user) return;
+		landingHandled = true;
+		if (page.url.pathname !== '/') return;
+		const tab = getLandingTab();
+		if (tab === 'dashboard') return;
+		landingPending = true;
+		void (async () => {
+			try {
+				await ensurePlan();
+				if (page.url.pathname === '/' && store.plan?.weeks?.length) {
+					await goto(landingHref(tab), { replaceState: true });
+				}
+			} finally {
+				landingPending = false;
+			}
+		})();
+	});
 </script>
 
 {#snippet tabIcon(key: string, size: string)}
@@ -119,7 +146,7 @@
 	</svg>
 {/snippet}
 
-{#if !auth.checked}
+{#if !auth.checked || landingPending}
 	<div class="min-h-dvh flex items-center justify-center">
 		<p class="tabular text-sm text-steel">Loading…</p>
 	</div>

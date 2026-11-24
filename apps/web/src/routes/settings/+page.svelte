@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
-	import { prefs } from '$lib/prefs.svelte';
+	import { getLandingTab, LANDING_TABS, prefs, type LandingTab } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { api, type ConnectionStatus } from '$lib/api';
 	import { getTheme, type Theme } from '$lib/theme';
@@ -11,14 +11,16 @@
 
 	// Each row shows the value the section page itself reads, so a change made on
 	// that page shows up the moment the runner navigates back here. The link
-	// status comes from the server, and the theme from local storage, so both are
-	// refreshed on mount and on the way back into this page.
+	// status comes from the server, and the theme and start tab from local
+	// storage, so all three are refreshed on mount and on the way back here.
 	let theme = $state<Theme>('system');
+	let landingTab = $state<LandingTab>('dashboard');
 	let connection = $state<ConnectionStatus | null>(null);
 	let connectionsLoaded = $state(false);
 
 	async function refresh() {
 		theme = getTheme();
+		landingTab = getLandingTab();
 		try {
 			const res = await api.connections();
 			connection = res.providers.find((p) => p.id === 'google-health') ?? null;
@@ -47,6 +49,10 @@
 
 	const trainingValue = $derived(
 		`${prefs.units === 'imperial' ? 'Miles' : 'Kilometers'} · week starts ${prefs.weekStart === 1 ? 'Sunday' : 'Monday'}`,
+	);
+
+	const landingLabel = $derived(
+		LANDING_TABS.find((tab) => tab.key === landingTab)?.label ?? 'Dashboard',
 	);
 
 	const connectionValue = $derived.by(() => {
@@ -84,6 +90,13 @@
 			value: THEME_LABEL[theme],
 			edit: true,
 			icon: 'M10 3.5a6.5 6.5 0 1 0 0 13c1 0 1.5-.7 1.5-1.5 0-.4-.2-.8-.4-1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5h.8a2.5 2.5 0 0 0 2.5-2.5C15.5 6 13 3.5 10 3.5z',
+		},
+		{
+			href: '/settings/landing',
+			label: 'Start tab',
+			value: landingLabel,
+			edit: true,
+			icon: 'M3.5 9.5 10 3.5l6.5 6M5.5 9v7.5h9V9',
 		},
 		{
 			href: '/settings/account',
