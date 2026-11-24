@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ClientLog, ClientSession } from '$lib/plan';
-	import { formatDuration, sessionTypeLabel } from '$lib/plan';
+	import { formatDuration } from '$lib/plan';
 	import { fmtDistance, fmtPace, repSchemeLabel, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { isStarted } from '$lib/started.svelte';
@@ -86,6 +86,20 @@
 	);
 	const isRun = $derived(session.modality === 'running');
 	const isStrength = $derived(session.modality === 'strength');
+	// The badge stays to five plain words, so a card reads as a type at a glance.
+	const category = $derived.by(() => {
+		if (session.type === 'cross-train') return 'Cross';
+		switch (session.modality) {
+			case 'strength':
+				return 'Strength';
+			case 'mobility':
+				return 'Mobility';
+			case 'recovery':
+				return 'Recovery';
+			default:
+				return 'Run';
+		}
+	});
 	const machines = $derived(p.blocks ?? []);
 	const reps = $derived(machines[0]?.sets?.[0]?.reps ?? 0);
 	// Facts that fit, as pills, so the card reads at a glance.
@@ -95,7 +109,6 @@
 		if (isStrength) {
 			if (machines.length) out.push({ text: `${machines.length} moves` });
 			if (reps) out.push({ text: `3 × ${reps}` });
-			out.push({ text: 'Strength' });
 			return out;
 		}
 		const scheme = repSchemeLabel(session);
@@ -159,13 +172,16 @@
 				<span class="tabular truncate text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
 				<IntensityLadder intensity={p.intensity} label={false} />
 			</span>
-			{#if logged}
-				<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ok text-paper" aria-label="Completed">
-					<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<path d="M4 10.5l4 4 8-9" />
-					</svg>
-				</span>
-			{/if}
+			<span class="flex shrink-0 items-center gap-2">
+				<span class="rounded-full border border-badge bg-badge-wash px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-badge">{category}</span>
+				{#if logged}
+					<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ok text-paper" aria-label="Completed">
+						<svg class="h-3 w-3" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M4 10.5l4 4 8-9" />
+						</svg>
+					</span>
+				{/if}
+			</span>
 		</div>
 
 		<h2 class="font-display mt-1.5 truncate text-xl font-semibold leading-tight">{sessionLabel(session)}</h2>

@@ -39,9 +39,9 @@ function unlockScroll() {
  * focus moved in and returned on close, and a simple focus trap.
  */
 export function modal(node: HTMLElement, onClose: () => void) {
-	const previouslyFocused = (typeof document !== 'undefined'
-		? document.activeElement
-		: null) as HTMLElement | null;
+	const previouslyFocused = (
+		typeof document !== 'undefined' ? document.activeElement : null
+	) as HTMLElement | null;
 
 	const focusable = () =>
 		Array.from(
@@ -92,82 +92,63 @@ export function modal(node: HTMLElement, onClose: () => void) {
 }
 
 /**
- * Svelte action for a swipeable day view: a horizontal drag steps one day. The
- * panel trails the finger at a fraction of its travel and glides back with a slow
- * ease, so a swipe reads as deliberate rather than like a fast scroll. A mostly
- * vertical drag is left to the page. Under prefers-reduced-motion the day changes
- * with no movement at all.
+ * Svelte action for the week listing: a horizontal swipe across the day strip
+ * steps one day and rolls the strip like a wheel. A horizontal wheel or trackpad
+ * gesture over the strip steps a day too. Vertical gestures stay native, so the
+ * page below scrolls as usual. Under prefers-reduced-motion the day changes
+ * without the roll.
  */
-export function daySwipe(node: HTMLElement, onStep: (delta: 1 | -1) => void) {
-	const threshold = 60; // real finger travel before a swipe counts as a step
-	const follow = 0.35; // how far the panel follows, below 1 so it feels heavy
-	const settleMs = 380; // deliberately slow glide back to rest
+export function dayWheel(node: HTMLElement, onStep: ((delta: 1 | -1) => void) | undefined) {
+	const threshold = 40; // finger travel before a swipe counts as a step
+	const follow = 0.5; // the strip trails the finger, so the roll feels weighted
+	const cooldown = 260; // one wheel gesture, one step
 	const reduced =
-		typeof window !== 'undefined' &&
-		window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	let pointerId: number | null = null;
 	let startX = 0;
 	let startY = 0;
 	let axis: 'none' | 'x' | 'y' = 'none';
-	let offset = 0;
-	let raf = 0;
+	let lastStep = 0;
+	let wheelTotal = 0;
+	let wheelTimer: ReturnType<typeof setTimeout> | undefined;
+	let settleTimer: ReturnType<typeof setTimeout> | undefined;
+	let suppressClick = false;
+	let clickTimer: ReturnType<typeof setTimeout> | undefined;
 
-	// Leave a horizontal scroller inside the panel (the session carousel) alone,
-	// so its own swipe keeps working and only the rest of the day view is ours.
-	function inHorizontalScroller(target: EventTarget | null): boolean {
-		let el = target instanceof HTMLElement ? target : null;
-		while (el && el !== node) {
-			const style = getComputedStyle(el);
-			if (
-				(style.overflowX === 'auto' || style.overflowX === 'scroll') &&
-				el.scrollWidth > el.clientWidth + 1
-			) {
-				return true;
-			}
-			el = el.parentElement;
-		}
-		return false;
+	node.style.touchAction = 'pan-y';
+
+	function roll(px: number) {
+		if (reduced) return;
+		const deg = Math.max(-4, Math.min(4, px * 0.06));
+		node.style.transform = `translate3d(${px}px, 0, 0) rotate(${deg}deg)`;
 	}
 
-	function setOffset(px: number) {
-		offset = px;
-		node.style.transform = px ? `translate3d(${px}px, 0, 0)` : '';
-	}
-
-	function easeOutCubic(t: number) {
-		return 1 - (1 - t) ** 3;
-	}
-
-	function stopRaf() {
-		if (raf) cancelAnimationFrame(raf);
-		raf = 0;
-	}
-
-	function settle(to: number) {
-		stopRaf();
-		const from = offset;
-		if (reduced || from === to) {
-			setOffset(to);
+	function settle() {
+		if (settleTimer) clearTimeout(settleTimer);
+		if (reduced) {
+			node.style.transform = '';
 			return;
 		}
-		const start = performance.now();
-		const tick = (now: number) => {
-			const t = Math.min(1, (now - start) / settleMs);
-			setOffset(from + (to - from) * easeOutCubic(t));
-			raf = t < 1 ? requestAnimationFrame(tick) : 0;
-		};
-		raf = requestAnimationFrame(tick);
+		node.style.transition = 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)';
+		node.style.transform = '';
+		settleTimer = setTimeout(() => {
+			node.style.transition = '';
+		}, 300);
+	}
+
+	function step(delta: 1 | -1) {
+		if (!onStep) return;
+		onStep(delta);
 	}
 
 	function down(e: PointerEvent) {
 		if (e.pointerType === 'mouse' && e.button !== 0) return;
-		if (inHorizontalScroller(e.target)) return;
-		stopRaf();
 		pointerId = e.pointerId;
 		startX = e.clientX;
 		startY = e.clientY;
 		axis = 'none';
+		node.style.transition = '';
 	}
 
 	function move(e: PointerEvent) {
@@ -176,18 +157,18 @@ export function daySwipe(node: HTMLElement, onStep: (delta: 1 | -1) => void) {
 		const dy = e.clientY - startY;
 		if (axis === 'none') {
 			if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-			// Only a clearly horizontal drag is ours, so a scroll always wins.
+			// Only a clearly horizontal drag is ours, so a vertical scroll stays native.
 			axis = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y';
 			if (axis === 'x') {
 				node.style.userSelect = 'none';
 				try {
 					node.setPointerCapture(e.pointerId);
 				} catch {
-					// capture is a nicety, the swipe works without it
+					// capture is a nicety, the roll works without it
 				}
 			}
 		}
-		if (axis === 'x' && !reduced) setOffset(dx * follow);
+		if (axis === 'x') roll(dx * follow);
 	}
 
 	function up(e: PointerEvent) {
@@ -195,13 +176,18 @@ export function daySwipe(node: HTMLElement, onStep: (delta: 1 | -1) => void) {
 		pointerId = null;
 		node.style.userSelect = '';
 		const dx = e.clientX - startX;
-		const dy = e.clientY - startY;
-		const horizontal = axis === 'x';
+		const wasHorizontal = axis === 'x';
 		axis = 'none';
-		if (horizontal && Math.abs(dx) >= threshold && Math.abs(dx) > Math.abs(dy) * 1.3) {
-			onStep(dx < 0 ? 1 : -1);
+		if (wasHorizontal && Math.abs(dx) >= threshold) {
+			step(dx < 0 ? 1 : -1);
+			// A drag across the day buttons must not also click one of them.
+			suppressClick = true;
+			if (clickTimer) clearTimeout(clickTimer);
+			clickTimer = setTimeout(() => {
+				suppressClick = false;
+			}, 350);
 		}
-		settle(0);
+		settle();
 	}
 
 	function cancel(e: PointerEvent) {
@@ -209,25 +195,65 @@ export function daySwipe(node: HTMLElement, onStep: (delta: 1 | -1) => void) {
 		pointerId = null;
 		axis = 'none';
 		node.style.userSelect = '';
-		settle(0);
+		settle();
+	}
+
+	function click(e: MouseEvent) {
+		if (!suppressClick) return;
+		suppressClick = false;
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	function wheel(e: WheelEvent) {
+		// A vertical wheel belongs to the page. Only a horizontal gesture over the
+		// strip steps a day.
+		if (!onStep || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+		e.preventDefault();
+		wheelTotal += e.deltaX;
+		if (wheelTimer) clearTimeout(wheelTimer);
+		wheelTimer = setTimeout(() => {
+			wheelTotal = 0;
+		}, 200);
+		if (Math.abs(wheelTotal) < 40) return;
+		const dir: 1 | -1 = wheelTotal > 0 ? 1 : -1;
+		wheelTotal = 0;
+		const now = performance.now();
+		if (now - lastStep < cooldown) return;
+		lastStep = now;
+		step(dir);
+		// A short roll in the direction of travel, then the snap back.
+		if (!reduced) {
+			node.style.transition = '';
+			roll(dir * -8);
+			requestAnimationFrame(settle);
+		}
 	}
 
 	node.addEventListener('pointerdown', down);
 	node.addEventListener('pointermove', move);
 	node.addEventListener('pointerup', up);
 	node.addEventListener('pointercancel', cancel);
+	node.addEventListener('click', click, true);
+	node.addEventListener('wheel', wheel, { passive: false });
 
 	return {
-		update(next: (delta: 1 | -1) => void) {
+		update(next: ((delta: 1 | -1) => void) | undefined) {
 			onStep = next;
 		},
 		destroy() {
-			stopRaf();
+			if (settleTimer) clearTimeout(settleTimer);
+			if (wheelTimer) clearTimeout(wheelTimer);
+			if (clickTimer) clearTimeout(clickTimer);
 			node.removeEventListener('pointerdown', down);
 			node.removeEventListener('pointermove', move);
 			node.removeEventListener('pointerup', up);
 			node.removeEventListener('pointercancel', cancel);
+			node.removeEventListener('click', click, true);
+			node.removeEventListener('wheel', wheel);
 			node.style.transform = '';
+			node.style.transition = '';
+			node.style.touchAction = '';
 			node.style.userSelect = '';
 		},
 	};
@@ -342,7 +368,8 @@ export function dragToDay(node: HTMLElement, options: DragToDayOptions) {
 	function move(e: PointerEvent) {
 		if (pointerId === null || e.pointerId !== pointerId) return;
 		if (!active) {
-			const moved = Math.abs(e.clientX - startX) > moveTol || Math.abs(e.clientY - startY) > moveTol;
+			const moved =
+				Math.abs(e.clientX - startX) > moveTol || Math.abs(e.clientY - startY) > moveTol;
 			if (!moved) return;
 			if (holdTimer) {
 				// Moved before the hold completed: this is a scroll, not a drag.

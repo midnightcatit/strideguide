@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { type ClientWeek, DAY_INITIALS, DAY_NAMES } from '$lib/plan';
 	import { fmtDistance } from '$lib/prefs.svelte';
+	import { dayWheel } from '$lib/actions';
 
 	let {
 		week,
@@ -10,6 +11,7 @@
 		loggedBySession,
 		onSelect,
 		onWeekStep,
+		onDayStep,
 	}: {
 		week: ClientWeek | undefined;
 		selectedDay: number;
@@ -18,6 +20,7 @@
 		loggedBySession: { has(id: string): boolean };
 		onSelect: (day: number) => void;
 		onWeekStep?: (delta: 1 | -1) => void;
+		onDayStep?: (delta: 1 | -1) => void;
 	} = $props();
 
 	function level(day: number): number {
@@ -51,7 +54,7 @@
 		>
 			‹
 		</button>
-		<span class="tabular text-xs uppercase tracking-widest text-steel">{week ? `W${week.weekNumber}` : 'Week'}</span>
+		<span class="tabular text-xs uppercase tracking-widest text-steel">{week ? `Week ${week.weekNumber}` : 'Week'}</span>
 		<button
 			type="button"
 			onclick={() => onWeekStep(1)}
@@ -63,7 +66,7 @@
 	</div>
 {/if}
 
-<div class="grid grid-cols-7 gap-1" role="group" aria-label="Days of the week">
+<div class="grid grid-cols-7 gap-1" role="group" aria-label="Days of the week" use:dayWheel={onDayStep}>
 	{#each DAY_INITIALS as initial, day (day)}
 		{@const lv = level(day)}
 		{@const lg = logged(day)}
