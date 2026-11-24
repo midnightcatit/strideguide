@@ -26,6 +26,16 @@ pnpm deploy:web          # build + deploy (apps/web)
 
 Scope a command to one package with `pnpm --filter @strideguide/api <script>`.
 
+## Web retrieval
+
+- **Use the `webfetch` tool first** for any page fetch. It is free and covers ordinary pages.
+- **Reach for Firecrawl only when `webfetch` cannot do the job**: JavaScript-rendered pages, blocked or
+  challenged pages, site URL discovery, multi-page crawls, or structured extraction across sources.
+- **The owner is on the Firecrawl free plan**, so credits are scarce and run out. Never spend them on a
+  page `webfetch` could have fetched, and expect Firecrawl calls to sometimes fail with an
+  out-of-credits error. When that happens, do not retry with different parameters; fall back to
+  `webfetch` or carry on without it. See PLAN.md §7.5.
+
 ## Writing (every user-facing string)
 
 All text a person can see (app copy, generated coach output, emails, errors, empty states) must read as
