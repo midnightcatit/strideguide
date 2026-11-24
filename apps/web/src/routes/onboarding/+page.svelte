@@ -860,7 +860,7 @@
 			<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
 			<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
 			<p class="mt-2 text-sm text-steel">Take a look at week one. Move a workout to another day, tap one for details, or add and remove sessions. When it looks right, we save this week and rebuild the weeks ahead around it.</p>
-			<p class="mt-2 text-sm text-steel">Week one starts {weekdayNameFor(week0?.startDate ?? todayIso)}, {fmtShortDate(week0?.startDate ?? todayIso)}.</p>
+			<p class="mt-2 text-sm text-steel">Your plan starts {weekdayNameFor(resolvedStartDate)}, {fmtShortDate(resolvedStartDate)}.</p>
 
 			{#if planReview}
 				<div class="mt-4 rounded-xl border border-hairline bg-sunken p-4">
