@@ -299,7 +299,7 @@
 					<WatchVitals signal={recovery.signal} days={recovery.days} />
 					{#if recovery.signal.strained}
 						<p class="mt-3 text-sm leading-relaxed text-steel">
-							Your recent numbers look strained. The plan favours easing the volume until they settle.
+							Your recent numbers look strained. The plan favors easing the volume until they settle.
 						</p>
 					{:else}
 						<p class="mt-3 text-sm leading-relaxed text-steel">
@@ -330,7 +330,7 @@
 						{/each}
 					</div>
 					<p class="mt-3 text-xs text-steel">
-						Last {stepDays.length} days from Google Health. Bar is steps that day, hairline tick is your average.
+						Last {stepDays.length} days from Google Health. The bar is that day's steps, and the thin line is your average.
 					</p>
 				</Card>
 			</section>
@@ -364,7 +364,7 @@
 		</section>
 
 		<section aria-labelledby="p-adherence" class="mb-7">
-			<SectionHeader id="p-adherence" eyebrow="Adherence" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}" />
+			<SectionHeader id="p-adherence" eyebrow="Sessions logged" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}" />
 			<Card tone="sunken">
 				<div class="flex flex-wrap gap-1" role="img" aria-label="{metrics.adherence.completed} of {metrics.adherence.planned} sessions logged{metrics.adherence.skipped ? `, ${metrics.adherence.skipped} skipped` : ''}">
 					{#each store.plan.weeks as w (w.id)}
@@ -417,7 +417,7 @@
 					{/each}
 				</div>
 				<p class="mt-3 text-xs text-steel">
-					Last 8 weeks. Bar is distance logged, hairline tick is planned.{#if metrics.volume.changePct !== undefined} Last change {metrics.volume.changePct > 0 ? '+' : ''}{metrics.volume.changePct}%.{/if}
+					Last 8 weeks. The bar is distance logged, and the thin line is planned.{#if metrics.volume.changePct !== undefined} Last change {metrics.volume.changePct > 0 ? '+' : ''}{metrics.volume.changePct}%.{/if}
 				</p>
 				{#if metrics.imported.sessions}
 					<p class="mt-1 text-xs text-steel">

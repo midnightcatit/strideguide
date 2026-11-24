@@ -226,7 +226,7 @@ export function suggestAdjustments(
 				kind: 'run-spike',
 				severity: 'info',
 				title: 'A run jumped over 10%',
-				detail: `One run was >10% longer than your recent longest. Keep increases under 10%.`,
+				detail: `One run was more than 10% longer than your recent longest. Keep increases under 10%.`,
 			});
 			break;
 		}

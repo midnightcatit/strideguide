@@ -24,7 +24,7 @@
 		},
 		{
 			title: 'Progress you can see',
-			body: 'Adherence, weekly volume and pace trends over the plan.',
+			body: 'Sessions you complete, weekly volume and pace trends over the plan.',
 		},
 	];
 </script>

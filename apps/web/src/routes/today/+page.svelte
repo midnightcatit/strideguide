@@ -331,7 +331,7 @@
 {:else}
 	{#if stalePlan}
 		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
-			This plan predates guided workouts. Rebuild it to get step-by-step sessions and drills.
+			This plan was built before guided workouts. Rebuild it to get step-by-step sessions and drills.
 			<a href="/onboarding" class="ml-1 font-medium text-signal-ink hover:underline">Rebuild plan →</a>
 		</div>
 	{/if}

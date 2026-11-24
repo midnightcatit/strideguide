@@ -214,7 +214,7 @@
 			class="tabular mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2.5 text-sm"
 		/>
 		<span class="mt-1 block text-xs text-steel">
-			Stored as a year so your age stays right over time. We use it only to tune a few training heuristics, and never show it to anyone else.
+			Stored as a year so your age stays right over time. We use it only to tune a few training settings, and never show it to anyone else.
 		</span>
 	</label>
 
