@@ -1,27 +1,29 @@
 <script lang="ts">
 	import { type ClientWeek, DAY_INITIALS, DAY_NAMES } from '$lib/plan';
 	import { fmtDistance } from '$lib/prefs.svelte';
-	import { dayWheel } from '$lib/actions';
+	import { weekSwipe } from '$lib/actions';
 
 	let {
 		week,
+		weekKey,
 		selectedDay,
 		todayIndex,
 		todayInWeek = false,
 		loggedBySession,
 		onSelect,
 		onWeekStep,
-		onDayStep,
 		weekDir = 1,
 	}: {
 		week: ClientWeek | undefined;
+		// Changes on every week step, even between two weeks outside the plan, so
+		// the strip always replays its slide. A plain day tap keeps it stable.
+		weekKey: string;
 		selectedDay: number;
 		todayIndex: number;
 		todayInWeek?: boolean;
 		loggedBySession: { has(id: string): boolean };
 		onSelect: (day: number) => void;
 		onWeekStep?: (delta: 1 | -1) => void;
-		onDayStep?: (delta: 1 | -1) => void;
 		weekDir?: number;
 	} = $props();
 
@@ -44,10 +46,11 @@
 	}
 </script>
 
-<!-- Week control: the arrows move a whole week at a time. The day tabs below
-     step a single day. -->
+<!-- Week control: the arrows move a whole week at a time. They only show on a
+     large, non-touch screen; on a phone the swipe and the horizontal wheel do
+     the same job. Tapping a day still selects that day. -->
 {#if onWeekStep}
-	<div class="mb-1 flex items-center justify-between gap-2">
+	<div class="mb-1 hidden items-center justify-between gap-2 sm:pointer-fine:flex">
 		<button
 			type="button"
 			onclick={() => onWeekStep(-1)}
@@ -68,12 +71,12 @@
 	</div>
 {/if}
 
-{#key week?.weekNumber}
+{#key weekKey}
 	<div
 		class="grid grid-cols-7 gap-1 {weekDir >= 0 ? 'sg-enter-week-right' : 'sg-enter-week-left'}"
 		role="group"
 		aria-label="Days of the week"
-		use:dayWheel={onDayStep}
+		use:weekSwipe={onWeekStep}
 	>
 	{#each DAY_INITIALS as initial, day (day)}
 		{@const lv = level(day)}

@@ -99,6 +99,9 @@
 	});
 	const selWeek = $derived(sel?.week);
 	const selDay = $derived(sel?.day ?? todayIndex);
+	// The strip's slide key: stable while you stay in one week, and a fresh value
+	// on every week step, including steps into weeks that are outside the plan.
+	const weekKey = $derived(selWeek?.startDate ?? selectedIso);
 	const daySessions = $derived(selWeek ? selWeek.sessions.filter((s) => s.day === selDay) : []);
 	// Skipped sessions stay on the card list, marked as skipped.
 	const loggedBySession = $derived(
@@ -202,12 +205,9 @@
 		}
 	}
 
-	function stepDay(n: number) {
-		changeKind = 'day';
-		dayDir = n >= 0 ? 1 : -1;
-		selectedIso = addDaysIso(selectedIso, n);
-	}
-	// The week control moves the whole window; the day control moves a single day.
+	// A week step moves the whole window. The week arrows and the strip's swipe
+	// and horizontal wheel all land here, so the strip and the day panel slide
+	// together. Tapping a day still moves a single day.
 	function stepWeek(n: number) {
 		changeKind = 'week';
 		dayDir = n >= 0 ? 1 : -1;
@@ -376,122 +376,103 @@
 	<div class="sticky top-16 z-20 -mx-4 mb-2 border-b border-hairline bg-paper px-4 pt-1 pb-2">
 		<WeekStrip
 			week={selWeek}
+			{weekKey}
 			selectedDay={selDay}
 			{todayIndex}
 			{todayInWeek}
 			{loggedBySession}
 			onSelect={selectDay}
 			onWeekStep={stepWeek}
-			onDayStep={stepDay}
 			weekDir={dayDir}
 		/>
 	</div>
 
-	<!-- Day panel: the week listing above steps the day; the flanking arrows do the same on a laptop. -->
-	<div class="flex items-stretch gap-2">
-		<button
-			type="button"
-			onclick={() => stepDay(-1)}
-			aria-label="Previous day"
-			class="hidden h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
-		>
-			‹
-		</button>
-
-		<div
-			class="scroll-modern min-w-0 flex-1 rounded-xl border border-hairline bg-paper p-4 sm:h-[var(--panel-h)] sm:overflow-y-auto"
-			role="group"
-			aria-label="Day panel"
-		>
-			{#key selectedIso}
-				<div
-					class={changeKind === 'week'
-						? dayDir === 1
-							? 'sg-enter-week-right'
-							: 'sg-enter-week-left'
-						: dayDir === 1
-							? 'sg-enter-right'
-							: 'sg-enter-left'}
-				>
-					<SectionHeader
-						id="day-sessions"
-						eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
-						meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
-					/>
-					{#if daySessions.length}
-						<SessionCarousel sessions={daySessions} {card} />
-					{:else if selWeek}
-						<Card tone="sunken" frame>
-							<p class="text-sm text-steel">
-								Rest day, {dateLabel} (week {selWeek.weekNumber}). Nothing scheduled here, and that is part
-								of the plan.
-							</p>
-						</Card>
-					{:else}
-						<Card tone="sunken" frame>
-							<p class="text-sm text-steel">This day is outside your plan.</p>
-						</Card>
-					{/if}
-				</div>
-			{/key}
-
-			<button
-				type="button"
-				disabled={!dayInPlan}
-				onclick={() => {
-					if (!dayInPlan) return;
-					addError = null;
-					pickerDate = selectedIso;
-				}}
-				class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan
-					? 'border-hairline-strong text-signal-ink hover:border-signal'
-					: 'border-hairline text-steel'}"
+	<!-- Day panel: the week listing above steps the week by swipe or wheel, and
+	     the week arrows do the same on a laptop. Tapping a day steps the day. -->
+	<div
+		class="scroll-modern overflow-x-hidden rounded-xl border border-hairline bg-paper p-4 sm:h-[var(--panel-h)] sm:overflow-y-auto"
+		role="group"
+		aria-label="Day panel"
+	>
+		{#key selectedIso}
+			<div
+				class={changeKind === 'week'
+					? dayDir === 1
+						? 'sg-enter-week-right'
+						: 'sg-enter-week-left'
+					: dayDir === 1
+						? 'sg-enter-right'
+						: 'sg-enter-left'}
 			>
-				＋ Add a workout
-			</button>
-			{#if !dayInPlan}
-				<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
-			{:else if addError}
-				<p class="mt-2 text-sm text-signal-ink">{addError}</p>
-			{/if}
-
-			<AdjustmentsCard />
-
-			{#if note}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
-
-			{#if selWeek}
-				<hr class="my-6 border-hairline" />
-				<SectionHeader id="week-so-far" eyebrow="Week so far" />
-				<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
-					{#each selWeek.sessions as s (s.id)}
-						{@const done = loggedBySession.has(s.id)}
-						<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : 'bg-ink/40'}"></span>
-					{/each}
-				</div>
-				<p class="tabular mt-2 text-sm">
-					{weekLogged} of {weekPlanned} done
-					<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
-				</p>
-
-				{#if daySessions[0]}
-					<hr class="my-6 border-hairline" />
-					<SectionHeader id="why" eyebrow="Why this workout" />
-					<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
-					<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
-						Why this workout, and what's to come →
-					</button>
+				<SectionHeader
+					id="day-sessions"
+					eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${DAY_NAMES[selDay]}` : 'Day'}
+					meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
+				/>
+				{#if daySessions.length}
+					<SessionCarousel sessions={daySessions} {card} />
+				{:else if selWeek}
+					<Card tone="sunken" frame>
+						<p class="text-sm text-steel">
+							Rest day, {dateLabel} (week {selWeek.weekNumber}). Nothing scheduled here, and that is part
+							of the plan.
+						</p>
+					</Card>
+				{:else}
+					<Card tone="sunken" frame>
+						<p class="text-sm text-steel">This day is outside your plan.</p>
+					</Card>
 				{/if}
-			{/if}
-		</div>
+			</div>
+		{/key}
 
 		<button
 			type="button"
-			onclick={() => stepDay(1)}
-			aria-label="Next day"
-			class="hidden h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border border-hairline text-xl text-steel hover:border-signal hover:text-signal-ink sm:flex"
+			disabled={!dayInPlan}
+			onclick={() => {
+				if (!dayInPlan) return;
+				addError = null;
+				pickerDate = selectedIso;
+			}}
+			class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan
+				? 'border-hairline-strong text-signal-ink hover:border-signal'
+				: 'border-hairline text-steel'}"
 		>
-			›
+			＋ Add a workout
 		</button>
+		{#if !dayInPlan}
+			<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
+		{:else if addError}
+			<p class="mt-2 text-sm text-signal-ink">{addError}</p>
+		{/if}
+
+		<AdjustmentsCard />
+
+		{#if note}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
+
+		{#if selWeek}
+			<hr class="my-6 border-hairline" />
+			<SectionHeader id="week-so-far" eyebrow="Week so far" />
+			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week">
+				{#each selWeek.sessions as s (s.id)}
+					{@const done = loggedBySession.has(s.id)}
+					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : 'bg-ink/40'}"></span>
+				{/each}
+			</div>
+			<p class="tabular mt-2 text-sm">
+				{weekLogged} of {weekPlanned} done
+				<span class="text-steel"> · {fmtDistance(weekKm)} of {fmtDistance(planCap)}</span>
+			</p>
+
+			{#if daySessions[0]}
+				<hr class="my-6 border-hairline" />
+				<SectionHeader id="why" eyebrow="Why this workout" />
+				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
+				<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
+					Why this workout, and what's to come →
+				</button>
+			{/if}
+		{/if}
 	</div>
 {/if}
 

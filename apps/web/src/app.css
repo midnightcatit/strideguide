@@ -434,21 +434,21 @@ summary,
 @keyframes sg-enter-week-right {
 	from {
 		opacity: 0;
-		transform: translateX(28px);
+		transform: translateX(52px) scale(0.99);
 	}
 	to {
 		opacity: 1;
-		transform: translateX(0);
+		transform: none;
 	}
 }
 @keyframes sg-enter-week-left {
 	from {
 		opacity: 0;
-		transform: translateX(-28px);
+		transform: translateX(-52px) scale(0.99);
 	}
 	to {
 		opacity: 1;
-		transform: translateX(0);
+		transform: none;
 	}
 }
 .sg-enter-week-right {

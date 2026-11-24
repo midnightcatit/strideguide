@@ -92,13 +92,13 @@ export function modal(node: HTMLElement, onClose: () => void) {
 }
 
 /**
- * Svelte action for the week listing: a horizontal swipe across the day strip
- * steps one day and rolls the strip like a wheel. A horizontal wheel or trackpad
- * gesture over the strip steps a day too. Vertical gestures stay native, so the
- * page below scrolls as usual. Under prefers-reduced-motion the day changes
+ * Svelte action for the week strip: a horizontal swipe across the strip steps a
+ * whole week and rolls the strip like a wheel. A horizontal wheel or trackpad
+ * gesture over the strip steps a week too. Vertical gestures stay native, so the
+ * page below scrolls as usual. Under prefers-reduced-motion the week changes
  * without the roll.
  */
-export function dayWheel(node: HTMLElement, onStep: ((delta: 1 | -1) => void) | undefined) {
+export function weekSwipe(node: HTMLElement, onStep: ((delta: 1 | -1) => void) | undefined) {
 	const threshold = 40; // finger travel before a swipe counts as a step
 	const follow = 0.5; // the strip trails the finger, so the roll feels weighted
 	const cooldown = 260; // one wheel gesture, one step
@@ -207,7 +207,7 @@ export function dayWheel(node: HTMLElement, onStep: ((delta: 1 | -1) => void) | 
 
 	function wheel(e: WheelEvent) {
 		// A vertical wheel belongs to the page. Only a horizontal gesture over the
-		// strip steps a day.
+		// strip steps a week.
 		if (!onStep || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
 		e.preventDefault();
 		wheelTotal += e.deltaX;
