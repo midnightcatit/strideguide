@@ -6,6 +6,30 @@ import type { ClientActivity, CurrentPlan } from './plan';
 import { cachePlan, cachedPlan, isOnline, outbox, queueLog, removeFromOutbox } from './offline';
 import { reportClientError } from './clientErrors';
 
+/** The windows the health drill-down can ask the API for. */
+export type HealthMetricWindow = 7 | 30 | 90;
+
+/** One day's value for a metric. */
+export interface HealthMetricPoint {
+	date: string;
+	value: number;
+}
+
+/** One sampled value for a metric. */
+export interface HealthSamplePoint {
+	time: string;
+	value: number;
+	unit: string | null;
+}
+
+/** A metric series with its newest point pulled out, for the card and the chart. */
+export interface HealthMetricsPayload {
+	available: boolean;
+	windowDays: number;
+	metrics: Record<string, { latest: HealthMetricPoint | null; series: HealthMetricPoint[] }>;
+	samples: Record<string, { latest: HealthSamplePoint | null; series: HealthSamplePoint[] }>;
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
 	let res: Response;
 	try {
@@ -327,6 +351,10 @@ export const api = {
 	/** Daily recovery context, when a connector has supplied any. */
 	recovery: () =>
 		req<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] }>('/recovery'),
+
+	/** Grouped daily metrics and point samples for the health card and drill-down charts. */
+	healthMetrics: (windowDays: HealthMetricWindow = 30) =>
+		req<HealthMetricsPayload>(`/health-metrics?window=${windowDays}`),
 
 	getSettings: () => req<{ prefs: Prefs }>('/settings'),
 	putSettings: (body: Partial<Prefs>) =>

@@ -1,19 +1,38 @@
 import { describe, expect, it } from 'vitest';
-import type { GoogleDataPoint } from './google-health';
+import type { GoogleDataPoint, GoogleRollupDataPoint } from './google-health';
 import {
+	activeEnergyByDate,
+	activeMinutesByDate,
+	activeZoneMinutesByDate,
+	altitudeGainByDate,
 	civilDateFromInstant,
 	combineDailyPatches,
 	dateFromGoogleDate,
+	distanceByDate,
+	floorsByDate,
+	healthRowValues,
+	heartRateRollupByDate,
+	mapBloodGlucose,
+	mapBodyFat,
+	mapCoreBodyTemperature,
 	mapDailyHeartRateVariability,
+	mapDailyOxygenSaturation,
+	mapDailyRespiratoryRate,
 	mapDailyRestingHeartRate,
+	mapDailySleepTemperature,
+	mapDailyVo2Max,
 	mapExercise,
+	mapHeight,
 	mapSleep,
-	mergeDailyRow,
+	mapWeight,
+	mergeDailyPatch,
 	modalityForExerciseType,
 	parseDurationSeconds,
 	parseUtcOffsetSeconds,
+	sedentaryMinutesByDate,
 	stepsByDate,
 	syncSince,
+	totalCaloriesRollupByDate,
 	DEFAULT_SYNC_WINDOW_DAYS,
 } from './google-health-map';
 
@@ -135,7 +154,7 @@ describe('mapExercise', () => {
 });
 
 describe('mapSleep', () => {
-	it('keys minutes asleep by the civil day the session ended', () => {
+	it('keys minutes asleep and the stage minutes by the civil day the session ended', () => {
 		const patch = mapSleep({
 			name: 'users/1/dataTypes/sleep/dataPoints/s1',
 			sleep: {
@@ -145,12 +164,26 @@ describe('mapSleep', () => {
 					endTime: '2026-04-21T06:30:00Z',
 					endUtcOffset: '-14400s',
 				},
-				summary: { minutesAsleep: '455' },
+				summary: {
+					minutesAsleep: '455',
+					stagesSummary: [
+						{ type: 'DEEP', minutes: '60', count: '4' },
+						{ type: 'REM', minutes: '90', count: '5' },
+						{ type: 'LIGHT', minutes: '280', count: '20' },
+						{ type: 'AWAKE', minutes: '25', count: '7' },
+					],
+				},
 			},
 		});
 		expect(patch).toEqual({
 			date: '2026-04-21',
-			sleepMin: 455,
+			metrics: {
+				sleep_min: 455,
+				sleep_deep_min: 60,
+				sleep_rem_min: 90,
+				sleep_light_min: 280,
+				sleep_awake_min: 25,
+			},
 			raw: { sleep: expect.any(Object) },
 		});
 	});
@@ -161,33 +194,66 @@ describe('mapSleep', () => {
 });
 
 describe('daily vitals', () => {
-	it('maps resting heart rate', () => {
-		const patch = mapDailyRestingHeartRate({
-			dailyRestingHeartRate: { date: { year: 2026, month: 4, day: 20 }, beatsPerMinute: '52' },
+	it('maps resting heart rate and HRV keeping the decimal', () => {
+		expect(
+			mapDailyRestingHeartRate({
+				dailyRestingHeartRate: { date: { year: 2026, month: 4, day: 20 }, beatsPerMinute: '52' },
+			}),
+		).toMatchObject({ date: '2026-04-20', metrics: { resting_hr: 52 } });
+
+		expect(
+			mapDailyHeartRateVariability({
+				dailyHeartRateVariability: {
+					date: { year: 2026, month: 4, day: 20 },
+					averageHeartRateVariabilityMilliseconds: 45.6,
+				},
+			}),
+		).toMatchObject({ date: '2026-04-20', metrics: { hrv_ms: 45.6 } });
+	});
+
+	it('maps the SpO2 average with its confidence band as low and high', () => {
+		const patch = mapDailyOxygenSaturation({
+			dailyOxygenSaturation: {
+				date: { year: 2026, month: 4, day: 20 },
+				averagePercentage: 96.2,
+				lowerBoundPercentage: 94.4,
+				upperBoundPercentage: 97.9,
+			},
 		});
-		expect(patch).toEqual({
+		expect(patch).toMatchObject({
 			date: '2026-04-20',
-			restingHr: 52,
-			raw: { dailyRestingHeartRate: expect.any(Object) },
+			metrics: { spo2_avg: 96.2, spo2_low: 94.4, spo2_high: 97.9 },
 		});
 	});
 
-	it('maps heart rate variability, keeping the decimal', () => {
-		const patch = mapDailyHeartRateVariability({
-			dailyHeartRateVariability: {
-				date: { year: 2026, month: 4, day: 20 },
-				averageHeartRateVariabilityMilliseconds: 45.6,
-			},
-		});
-		expect(patch).toEqual({
-			date: '2026-04-20',
-			hrvMs: 45.6,
-			raw: { dailyHeartRateVariability: expect.any(Object) },
-		});
+	it('maps respiratory rate, VO2 max and nightly temperature', () => {
+		expect(
+			mapDailyRespiratoryRate({
+				dailyRespiratoryRate: { date: { year: 2026, month: 4, day: 20 }, breathsPerMinute: 14.5 },
+			}),
+		).toMatchObject({ metrics: { respiratory_rate: 14.5 } });
+
+		expect(
+			mapDailyVo2Max({ dailyVo2Max: { date: { year: 2026, month: 4, day: 20 }, vo2Max: 52.3 } }),
+		).toMatchObject({ metrics: { vo2_max: 52.3 } });
+
+		expect(
+			mapDailySleepTemperature({
+				dailySleepTemperatureDerivations: {
+					date: { year: 2026, month: 4, day: 20 },
+					nightlyTemperatureCelsius: 33.4,
+				},
+			}),
+		).toMatchObject({ metrics: { sleep_temp_c: 33.4 } });
+	});
+
+	it('drops a daily point with no value instead of storing zero', () => {
+		expect(mapDailyOxygenSaturation({ dailyOxygenSaturation: { date: { year: 2026, month: 4, day: 20 } } })).toBeNull();
+		expect(mapDailyRestingHeartRate({ dailyRestingHeartRate: { date: { year: 2026, month: 4, day: 20 } } })).toBeNull();
 	});
 });
 
-describe('stepsByDate', () => {
+describe('interval sums', () => {
 	it('sums minutely step intervals into daily totals', () => {
 		const points: GoogleDataPoint[] = [
 			{ steps: { interval: { startTime: '2026-04-20T23:00:00Z', startUtcOffset: '0s', endTime: '2026-04-20T23:01:00Z' }, count: '100' } },
@@ -197,55 +263,184 @@ describe('stepsByDate', () => {
 		const patches = stepsByDate(points);
 		expect(patches).toEqual(
 			expect.arrayContaining([
-				expect.objectContaining({ date: '2026-04-20', steps: 350 }),
-				expect.objectContaining({ date: '2026-04-21', steps: 50 }),
+				expect.objectContaining({ date: '2026-04-20', metrics: { steps: 350 } }),
+				expect.objectContaining({ date: '2026-04-21', metrics: { steps: 50 } }),
 			]),
 		);
 		expect(patches).toHaveLength(2);
 	});
+
+	it('converts distance millimetres to metres and energy to kilocalories', () => {
+		expect(
+			distanceByDate([
+				{ distance: { interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' }, millimeters: '1500000' } },
+				{ distance: { interval: { startTime: '2026-04-20T09:00:00Z', endTime: '2026-04-20T09:30:00Z' }, millimeters: '500000' } },
+			]),
+		).toEqual([{ date: '2026-04-20', metrics: { distance_m: 2000 }, raw: { distance_m: expect.any(Array) } }]);
+
+		expect(
+			activeEnergyByDate([
+				{ activeEnergyBurned: { interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' }, kcal: 320.5 } },
+			]),
+		).toEqual([{ date: '2026-04-20', metrics: { active_energy_kcal: 320.5 }, raw: { active_energy_kcal: expect.any(Array) } }]);
+	});
+
+	it('sums floors, active zone minutes and active minutes per day', () => {
+		expect(
+			floorsByDate([{ floors: { interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' }, count: '7' } }]),
+		).toMatchObject([{ metrics: { floors: 7 } }]);
+
+		expect(
+			activeZoneMinutesByDate([
+				{
+					activeZoneMinutes: {
+						interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' },
+						activeZoneMinutes: '30',
+					},
+				},
+			]),
+		).toMatchObject([{ metrics: { active_zone_min: 30 } }]);
+
+		expect(
+			activeMinutesByDate([
+				{
+					activeMinutes: {
+						interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' },
+						activeMinutesByActivityLevel: [
+							{ activityLevel: 'LIGHT', activeMinutes: '20' },
+							{ activityLevel: 'MODERATE', activeMinutes: '15' },
+						],
+					},
+				},
+			]),
+		).toMatchObject([{ metrics: { active_min: 35 } }]);
+	});
+
+	it('keeps altitude gain signed and sums sedentary durations in minutes', () => {
+		expect(
+			altitudeGainByDate([
+				{ altitude: { interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' }, gainMillimeters: '120000' } },
+				{ altitude: { interval: { startTime: '2026-04-20T09:00:00Z', endTime: '2026-04-20T09:30:00Z' }, gainMillimeters: '-20000' } },
+			]),
+		).toMatchObject([{ metrics: { altitude_gain_m: 100 } }]);
+
+		expect(
+			sedentaryMinutesByDate([
+				{
+					sedentaryPeriod: {
+						interval: { startTime: '2026-04-20T08:00:00Z', endTime: '2026-04-20T08:30:00Z' },
+					},
+				},
+			]),
+		).toMatchObject([{ metrics: { sedentary_min: 30 } }]);
+	});
 });
 
-describe('daily merge (the since-last-sync upsert)', () => {
-	it('folds several data types on one day into a single row', () => {
+describe('rollup mappers', () => {
+	it('reads the daily heart rate minimum, average and maximum', () => {
+		const points: GoogleRollupDataPoint[] = [
+			{
+				startTime: '2026-04-20T00:00:00Z',
+				heartRate: { beatsPerMinuteMin: 48.4, beatsPerMinuteAvg: 72.6, beatsPerMinuteMax: 168.2 },
+			},
+		];
+		expect(heartRateRollupByDate(points)).toEqual([
+			{
+				date: '2026-04-20',
+				metrics: { hr_min: 48, hr_avg: 73, hr_max: 168 },
+				raw: { heartRateRollup: expect.any(Object) },
+			},
+		]);
+	});
+
+	it('reads the daily total calories sum', () => {
+		const points: GoogleRollupDataPoint[] = [
+			{ startTime: '2026-04-20T00:00:00Z', totalCalories: { kcalSum: 2410.7 } },
+		];
+		expect(totalCaloriesRollupByDate(points)).toEqual([
+			{ date: '2026-04-20', metrics: { total_calories_kcal: 2410.7 }, raw: { totalCaloriesRollup: expect.any(Object) } },
+		]);
+	});
+
+	it('skips a window with no value', () => {
+		expect(heartRateRollupByDate([{ startTime: '2026-04-20T00:00:00Z' }])).toEqual([]);
+	});
+});
+
+describe('sample mappers', () => {
+	it('converts weight grams to kilograms and keeps the sample instant', () => {
+		const row = mapWeight({
+			weight: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z', utcOffset: '-14400s' }, weightGrams: 72400 },
+		});
+		expect(row).toMatchObject({ metric: 'weight_kg', value: 72.4, unit: 'kg' });
+		expect(row!.sampleTime.toISOString()).toBe('2026-04-20T07:00:00.000Z');
+	});
+
+	it('maps body fat, height, core temperature and blood glucose with units', () => {
+		expect(
+			mapBodyFat({ bodyFat: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z' }, percentage: 18.2 } }),
+		).toMatchObject({ metric: 'body_fat_pct', value: 18.2, unit: '%' });
+
+		expect(
+			mapHeight({ height: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z' }, heightMillimeters: '1800000' } }),
+		).toMatchObject({ metric: 'height_mm', value: 1800000, unit: 'mm' });
+
+		expect(
+			mapCoreBodyTemperature({
+				coreBodyTemperature: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z' }, temperatureCelsius: 37.1 },
+			}),
+		).toMatchObject({ metric: 'core_temp_c', value: 37.1, unit: 'C' });
+
+		expect(
+			mapBloodGlucose({
+				bloodGlucose: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z' }, bloodGlucoseMilligramsPerDeciliter: 95 },
+			}),
+		).toMatchObject({ metric: 'blood_glucose_mgdl', value: 95, unit: 'mg/dL' });
+	});
+
+	it('returns null when the value or its time is missing, so nothing is stored', () => {
+		expect(mapWeight({ weight: { weightGrams: 72400 } })).toBeNull();
+		expect(mapWeight({ weight: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z' } } })).toBeNull();
+		expect(mapBodyFat({ bodyFat: { sampleTime: { physicalTime: '2026-04-20T07:00:00Z' } } })).toBeNull();
+	});
+});
+
+describe('daily merge and projection', () => {
+	it('folds several data types on one day into a single metrics map', () => {
 		const combined = combineDailyPatches([
-			{ date: '2026-04-20', sleepMin: 455, raw: { sleep: 1 } },
-			{ date: '2026-04-20', restingHr: 52, raw: { dailyRestingHeartRate: 2 } },
-			{ date: '2026-04-20', hrvMs: 45.6, steps: 8000, raw: { steps: 3 } },
+			{ date: '2026-04-20', metrics: { sleep_min: 455 } },
+			{ date: '2026-04-20', metrics: { resting_hr: 52, steps: 8000 } },
+			{ date: '2026-04-20', metrics: { hrv_ms: 45.6, spo2_avg: 96 } },
 		]);
 		expect(combined).toHaveLength(1);
-		expect(combined[0]).toMatchObject({
-			date: '2026-04-20',
-			sleepMin: 455,
-			restingHr: 52,
-			hrvMs: 45.6,
+		expect(combined[0]!.metrics).toEqual({
+			sleep_min: 455,
+			resting_hr: 52,
 			steps: 8000,
+			hrv_ms: 45.6,
+			spo2_avg: 96,
 		});
-		expect(combined[0]!.raw).toEqual({ sleep: 1, dailyRestingHeartRate: 2, steps: 3 });
 	});
 
-	it('keeps a stored field when the incoming patch is missing it', () => {
-		const stored = {
-			date: '2026-04-20',
-			restingHr: 52,
-			hrvMs: 45.6,
-			sleepMin: 455,
-			steps: 350,
-			raw: { sleep: 1 } as Record<string, unknown>,
-		};
-		const merged = mergeDailyRow(stored, { date: '2026-04-20', steps: 400, raw: { steps: 2 } });
-		expect(merged).toMatchObject({ restingHr: 52, hrvMs: 45.6, sleepMin: 455, steps: 400 });
-		expect(merged.raw).toEqual({ sleep: 1, steps: 2 });
+	it('keeps a stored metric when the incoming patch omits it', () => {
+		const stored = { date: '2026-04-20', metrics: { resting_hr: 52, sleep_min: 455 } };
+		const merged = mergeDailyPatch(stored, { date: '2026-04-20', metrics: { steps: 400 } });
+		expect(merged.metrics).toEqual({ resting_hr: 52, sleep_min: 455, steps: 400 });
 	});
 
-	it('fills a fresh day from an empty stored row', () => {
-		const merged = mergeDailyRow(undefined, { date: '2026-04-21', steps: 50 });
-		expect(merged).toEqual({
-			date: '2026-04-21',
+	it('projects only the four legacy columns into a health_daily row', () => {
+		expect(
+			healthRowValues({
+				date: '2026-04-21',
+				metrics: { steps: 50, resting_hr: 51, hrv_ms: 60, sleep_min: 430, spo2_avg: 97, distance_m: 5000 },
+			}),
+		).toEqual({ restingHr: 51, hrvMs: 60, sleepMin: 430, steps: 50 });
+
+		expect(healthRowValues({ date: '2026-04-21', metrics: { spo2_avg: 97 } })).toEqual({
 			restingHr: null,
 			hrvMs: null,
 			sleepMin: null,
-			steps: 50,
-			raw: {},
+			steps: null,
 		});
 	});
 });

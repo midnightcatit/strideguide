@@ -1,13 +1,16 @@
 import { Hono } from 'hono';
 import { normalizeHealthRow, recoverySignal, type HealthDay } from '@strideguide/shared/plan';
+import { loadHealthDaysFromMetrics } from '../lib/health-metrics';
 import type { AppBindings } from '../types';
 
 /**
- * Daily recovery context (resting HR, HRV, sleep) when a connector has supplied
- * it, plus a steps series for the days that carry one. The health_daily table is
- * added by the provider sync work; this route does not depend on it existing. It
- * checks for the table first and returns available: false when it is absent, so
- * the app simply shows nothing.
+ * Daily recovery context when a connector has supplied it, plus a steps series
+ * for the days that carry one. The generic metric store carries every signal the
+ * recovery read now uses (resting HR, HRV, sleep, SpO2, breathing rate, night
+ * temperature); the older health_daily table is still read when the store is
+ * absent, so a deployment that has not migrated yet keeps working. The route
+ * checks for the table first and returns available: false when there is no data,
+ * so the app simply shows nothing.
  */
 const recovery = new Hono<AppBindings>();
 
@@ -32,12 +35,28 @@ export function stepDay(row: Record<string, unknown>): { date: string; steps: nu
 	return { date, steps: Math.round(steps) };
 }
 
+/** A recovery payload, empty when no connector has supplied any health data. */
+function empty() {
+	return { available: false, signal: null, days: [] as HealthDay[], steps: [] as { date: string; steps: number }[] };
+}
+
 recovery.get('/', async (c) => {
 	const user = c.get('user')!;
 	const db = c.env.DB;
 
+	// Preferred source: the generic metrics store, which carries every signal.
+	try {
+		const fromMetrics = await loadHealthDaysFromMetrics(db, user.id, 21);
+		if (fromMetrics && fromMetrics.days.length) {
+			const signal = recoverySignal(fromMetrics.days);
+			return c.json({ available: true, signal, days: fromMetrics.days, steps: fromMetrics.steps });
+		}
+	} catch {
+		// Fall through to the legacy table, then to an empty payload.
+	}
+
 	if (!(await hasHealthDaily(db))) {
-		return c.json({ available: false, signal: null, days: [], steps: [] });
+		return c.json(empty());
 	}
 
 	try {
@@ -54,7 +73,7 @@ recovery.get('/', async (c) => {
 		return c.json({ available: true, signal, days, steps });
 	} catch {
 		// A schema difference in a table we do not own is not an error here.
-		return c.json({ available: false, signal: null, days: [], steps: [] });
+		return c.json(empty());
 	}
 });
 
