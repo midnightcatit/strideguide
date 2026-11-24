@@ -13,7 +13,7 @@ describe('manual sync cache decision', () => {
 	});
 
 	it('runs again once the window has passed', () => {
-		expect(manualSyncNeeded(ago(11 * 60 * 1000), 'connected', NOW)).toBe(true);
+		expect(manualSyncNeeded(ago(21 * 60 * 1000), 'connected', NOW)).toBe(true);
 	});
 
 	it('treats the window edge as expired', () => {

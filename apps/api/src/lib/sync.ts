@@ -584,7 +584,7 @@ export async function syncConnection(
 }
 
 /** A manual sync reuses the last result when a sync succeeded this recently. */
-export const MANUAL_SYNC_WINDOW_MS = 10 * 60 * 1000;
+export const MANUAL_SYNC_WINDOW_MS = 20 * 60 * 1000;
 
 /** Label stored with the cached manual-sync result. */
 const MANUAL_SYNC_CACHE_MODEL = 'connection-sync';
