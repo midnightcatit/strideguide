@@ -113,6 +113,10 @@ over doing it serially.
 - **Each delegated prompt starts with a pre-plan.** Tell the subagent to research and verify first,
   rework the plan when a better or more nuanced approach exists and say so, then implement, then open a
   PR. Give it the goal, the constraints, the relevant files, and the verification steps.
+- **Subagents report back when done.** Every brief must end by telling the subagent to send the
+  coordinator a completion message the moment it finishes or blocks, with the PR link and a one-line
+  status, over the Agent Manager peer channel, so the coordinator is woken to review and merge without
+  polling.
 - **The main session reviews and releases.** The main agent reviews every subagent PR, requests changes
   when warranted, merges to `main`, and verifies the auto-deploy. Subagents do not merge or deploy.
 - Everything here still applies to delegated work: an isolated worktree, scoped `git add <path>`,
