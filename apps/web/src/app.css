@@ -38,6 +38,27 @@
 	--tap-min: 44px;
 
 	/*
+	 * Stacking scale. One place decides what sits above what:
+	 *   20  bottom tab bar       --z-nav
+	 *   30  sticky header, drag  --z-header, --z-drag
+	 *   40  floating controls    --z-float
+	 *   50  full-screen overlay  --z-overlay
+	 *   60  bottom sheet         --z-sheet
+	 *   70  confirm dialog       --z-dialog
+	 * Page chrome stays low; every overlay is above it, so an action row is never
+	 * trapped behind the tab bar. --tabbar-h is the phone tab bar height, used to
+	 * clear it when a bottom-anchored overlay lays out its actions.
+	 */
+	--z-nav: 20;
+	--z-header: 30;
+	--z-drag: 30;
+	--z-float: 40;
+	--z-overlay: 50;
+	--z-sheet: 60;
+	--z-dialog: 70;
+	--tabbar-h: 3.5rem;
+
+	/*
 	 * Badge accent. Amber pills mark a card's facts and read as badges against
 	 * any card wash (cool, ok, signal). Kept apart from the state colours above
 	 * so a badge never looks like a status.
@@ -418,6 +439,35 @@ summary,
 	animation: sg-sheet-in var(--dur-3) var(--ease-emphasized) both;
 }
 
+/*
+ * Stacking. The chrome (header, tab bar) sits low; a sheet or dialog sits above
+ * it, from the shared scale in :root. Every overlay uses one of these, so what
+ * covers what is decided here instead of per component.
+ */
+.sg-float {
+	z-index: var(--z-float);
+}
+.sg-sheet {
+	z-index: var(--z-sheet);
+}
+.sg-dialog {
+	z-index: var(--z-dialog);
+}
+
+/*
+ * Bottom padding for a bottom-anchored overlay. Clears the home indicator, and
+ * on phones the tab bar too, so an action row stays reachable. A component sets
+ * --overlay-pad for its own base spacing (default 1rem).
+ */
+.sg-overlay-pad {
+	padding-bottom: calc(var(--overlay-pad, 1rem) + env(safe-area-inset-bottom));
+}
+@media (max-width: 639px) {
+	.sg-overlay-pad {
+		padding-bottom: calc(var(--overlay-pad, 1rem) + var(--tabbar-h) + env(safe-area-inset-bottom));
+	}
+}
+
 /* Card frame. The stage height is a floor: a card grows with its content rather
    than clipping, so pills and labels always show. */
 .stage-card {
@@ -449,18 +499,29 @@ summary,
 }
 
 /*
- * Route change. The View Transitions API animates only the content and the
- * header, each given a view-transition-name, so the rest of the chrome stays put
- * and only what changed moves: the content cross-fades and rises a few pixels,
- * the header holds still. The root group is switched off so nothing else is
- * caught in it. Where the API is missing the navigation is instant, and the
- * keyed content wrapper replays a short enter instead (see .route-enter below).
+ * Route change. The View Transitions API animates only the content group, so the
+ * rest of the chrome stays put and only what changed moves: the content
+ * cross-fades and rises a few pixels, the header and the tab bar hold still. The
+ * root group is switched off so nothing else is caught in it. Where the API is
+ * missing the navigation is instant, and the keyed content wrapper replays a
+ * short enter instead (see .route-enter below).
+ *
+ * The content name sits on the app shell (.sg-app), not on main. main also
+ * contains every sheet and dialog, and a view-transition-name makes its element
+ * a stacking context; naming main would trap those overlays below the fixed tab
+ * bar. The shell holds the tab bar too, so overlays and the bar share one
+ * stacking context and an overlay always wins.
  */
-main {
+.sg-app {
 	view-transition-name: sg-content;
 }
 .sg-header {
+	z-index: var(--z-header);
 	view-transition-name: sg-header;
+}
+.sg-nav {
+	z-index: var(--z-nav);
+	view-transition-name: sg-nav;
 }
 @keyframes sg-vt-in {
 	from {
@@ -491,7 +552,9 @@ main {
 	animation: sg-vt-in var(--dur-2) var(--ease-out) both;
 }
 ::view-transition-old(sg-header),
-::view-transition-new(sg-header) {
+::view-transition-new(sg-header),
+::view-transition-old(sg-nav),
+::view-transition-new(sg-nav) {
 	animation: none;
 }
 
@@ -513,7 +576,9 @@ main {
 	::view-transition-old(sg-content),
 	::view-transition-new(sg-content),
 	::view-transition-old(sg-header),
-	::view-transition-new(sg-header) {
+	::view-transition-new(sg-header),
+	::view-transition-old(sg-nav),
+	::view-transition-new(sg-nav) {
 		animation: none;
 	}
 }
@@ -540,7 +605,7 @@ main {
  */
 .is-dragging {
 	position: relative;
-	z-index: 30;
+	z-index: var(--z-drag);
 	opacity: 0.9;
 }
 @media (prefers-reduced-motion: no-preference) {

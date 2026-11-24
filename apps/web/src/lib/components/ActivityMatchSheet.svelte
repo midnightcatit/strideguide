@@ -23,7 +23,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-4"
+		class="sg-dialog fixed inset-0 flex items-end justify-center sm:items-center sm:p-4"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -37,8 +37,8 @@
 			transition:sheetOverlay
 		></button>
 		<div
-			class="relative w-full max-w-md rounded-t-2xl border border-hairline bg-paper p-5 sm:rounded-2xl"
-			style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))"
+			class="sg-overlay-pad relative w-full max-w-md rounded-t-2xl border border-hairline bg-paper p-5 sm:rounded-2xl"
+			style="--overlay-pad: 1.25rem"
 			transition:sheetPanel
 		>
 			<h2 class="font-display text-lg font-bold">{title}</h2>

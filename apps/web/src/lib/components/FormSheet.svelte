@@ -29,7 +29,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-[60]"
+		class="sg-sheet fixed inset-0"
 		role="dialog"
 		aria-modal="true"
 		aria-label={`${name} form`}

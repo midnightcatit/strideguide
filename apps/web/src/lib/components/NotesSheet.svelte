@@ -48,7 +48,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-[60] flex items-end justify-center"
+		class="sg-sheet fixed inset-0 flex items-end justify-center"
 		role="dialog"
 		aria-modal="true"
 		aria-label={`Notes for ${sessionLabel(session)}`}
@@ -91,8 +91,8 @@
 
 		<!-- Sticky action bar: stays put while the textarea scrolls. -->
 		<div
-			class="sticky bottom-0 flex gap-2 border-t border-hairline bg-paper px-4 py-3"
-			style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))"
+			class="sg-overlay-pad sticky bottom-0 flex gap-2 border-t border-hairline bg-paper px-4 py-3"
+			style="--overlay-pad: 0.75rem"
 		>
 			<button
 				type="button"

@@ -132,10 +132,10 @@
 {:else if !auth.user}
 	<SignIn />
 {:else}
-	<div class="min-h-dvh flex flex-col">
+	<div class="sg-app min-h-dvh flex flex-col">
 		{#if !onboarding}
 		<header
-			class="sg-header sticky top-0 z-30 border-b border-hairline bg-paper"
+			class="sg-header sticky top-0 border-b border-hairline bg-paper"
 			style="padding-top: env(safe-area-inset-top)"
 		>
 			<div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
@@ -201,7 +201,7 @@
 
 		{#if !onboarding}
 		<nav
-			class="fixed inset-x-0 bottom-0 z-20 border-t border-hairline bg-paper sm:hidden"
+			class="sg-nav fixed inset-x-0 bottom-0 border-t border-hairline bg-paper sm:hidden"
 			aria-label="Primary"
 		>
 			<div class="mx-auto grid max-w-2xl grid-cols-5" style="padding-bottom: env(safe-area-inset-bottom)">
@@ -221,7 +221,7 @@
 		{/if}
 
 		{#if onboarding}
-			<div class="fixed right-3 z-40 flex items-center gap-2" style="top: calc(env(safe-area-inset-top) + 0.5rem)">
+			<div class="sg-float fixed right-3 flex items-center gap-2" style="top: calc(env(safe-area-inset-top) + 0.5rem)">
 				<button
 					type="button"
 					onclick={() => (signOutConfirm = true)}
