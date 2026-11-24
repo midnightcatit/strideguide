@@ -11,6 +11,7 @@ import {
 	rebuildFromWeekOne,
 	weekOnePattern,
 } from '@strideguide/shared/plan';
+import { compareDaySessions } from '../lib/session-order';
 import type {
 	Baseline,
 	EquipmentItem,
@@ -141,7 +142,7 @@ async function currentPlanJson(db: Db, userId: string) {
 			...w,
 			sessions: sessions
 				.filter((s) => s.planWeekId === w.id)
-				.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? '')),
+				.sort(compareDaySessions),
 		})),
 		logs,
 	};
@@ -814,7 +815,7 @@ plans.post('/adapt', async (c) => {
 		targetVolumeKm: 0,
 		sessions: sessions
 			.filter((s) => s.planWeekId === w.id)
-			.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? ''))
+			.sort(compareDaySessions)
 			.map((s) => ({
 				day: s.day,
 				slot: s.slot ?? 'AM',
@@ -1093,7 +1094,7 @@ plans.post(
 			targetVolumeKm: 0,
 			sessions: storedSessions
 				.filter((s) => s.planWeekId === w.id)
-				.sort((a, b) => a.day - b.day || (a.slot ?? '').localeCompare(b.slot ?? ''))
+				.sort(compareDaySessions)
 				.map((s) => ({
 					day: s.day,
 					slot: s.slot ?? 'AM',
