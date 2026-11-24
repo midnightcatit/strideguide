@@ -137,11 +137,11 @@
 	}
 </script>
 
-<div class="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Log session" use:modal={onClose}>
+<div class="sg-sheet fixed inset-0 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Log session" use:modal={onClose}>
 	<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
 	<div
-		class="overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
-		style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))"
+		class="sg-overlay-pad overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
+		style="--overlay-pad: 1rem"
 	>
 	<div class="sticky top-0 z-10 -mx-4 -mt-4 flex items-center justify-between border-b border-hairline bg-paper px-4 pb-3 pt-4">
 		<div class="min-w-0">

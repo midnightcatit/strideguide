@@ -41,7 +41,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-[60] flex items-end justify-center"
+		class="sg-sheet fixed inset-0 flex items-end justify-center"
 		role="dialog"
 		aria-modal="true"
 		aria-label={`Preview of ${sessionLabel(session)}`}
