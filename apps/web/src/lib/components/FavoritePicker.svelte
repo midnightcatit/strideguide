@@ -2,7 +2,10 @@
 	import {
 		ALL_MOVES,
 		WORKOUT_LIBRARY,
+		MUSCLE_GROUPS,
+		groupByMuscleGroup,
 		moveCategory,
+		muscleGroupFor,
 		type LibraryWorkout,
 		type MachineExercise,
 	} from '@strideguide/shared/plan';
@@ -26,26 +29,6 @@
 		{ key: 'recovery', label: 'Recovery' },
 	];
 
-	const MACHINE_FILTERS: { key: string; label: string }[] = [
-		{ key: 'all', label: 'All' },
-		{ key: 'legs', label: 'Legs' },
-		{ key: 'push', label: 'Push' },
-		{ key: 'pull', label: 'Pull' },
-		{ key: 'core', label: 'Core' },
-	];
-
-	/** Movement pattern to the group a runner would look under. */
-	const MACHINE_GROUP: Record<string, string> = {
-		squat: 'legs',
-		hinge: 'legs',
-		'knee-extension': 'legs',
-		'posterior-chain': 'legs',
-		plyometric: 'legs',
-		push: 'push',
-		pull: 'pull',
-		core: 'core',
-	};
-
 	let machineQ = $state('');
 	let workoutQ = $state('');
 	let machineFilter = $state('all');
@@ -64,15 +47,32 @@
 		return out;
 	});
 
+	/**
+	 * The muscle groups that actually hold a machine, in the shared catalog
+	 * order. Other only shows when a machine has no mapped muscle, so the chip
+	 * row never carries an empty group.
+	 */
+	const machineGroups = $derived.by(() => {
+		const present = new Set(machineOptions.map((m) => muscleGroupFor(m)));
+		return MUSCLE_GROUPS.filter((g) => present.has(g));
+	});
+
+	const machineFilters = $derived([
+		{ key: 'all', label: 'All' },
+		...machineGroups.map((g) => ({ key: g as string, label: g })),
+	]);
+
 	const machineTokens = $derived(tokens(machineQ));
 	const workoutTokens = $derived(tokens(workoutQ));
 
 	const shownMachines = $derived(
 		machineOptions.filter((m) => {
-			if (machineFilter !== 'all' && MACHINE_GROUP[m.pattern] !== machineFilter) return false;
+			if (machineFilter !== 'all' && muscleGroupFor(m) !== machineFilter) return false;
 			return machineTokens.every((t) => m.name.toLowerCase().includes(t));
 		}),
 	);
+
+	const shownMachineGroups = $derived(groupByMuscleGroup(shownMachines));
 
 	const byWorkoutFilter = $derived(
 		workoutFilter === 'all'
@@ -152,7 +152,7 @@
 		</div>
 
 		<div class="mt-3 flex flex-wrap gap-1.5">
-			{#each MACHINE_FILTERS as g (g.key)}
+			{#each machineFilters as g (g.key)}
 				<button
 					type="button"
 					aria-pressed={machineFilter === g.key}
@@ -189,29 +189,38 @@
 		{#if shownMachines.length === 0}
 			<p class="mt-3 text-xs text-steel">No machines match that search.</p>
 		{:else}
-			<ul class="scroll-modern mt-3 grid max-h-64 gap-1 overflow-y-auto overflow-x-hidden">
-				{#each shownMachines as m (m.name)}
-					{@const picked = favoriteMachines.includes(m.name)}
-					<li>
-						<button
-							type="button"
-							aria-pressed={picked}
-							onclick={() => toggleMachine(m.name)}
-							class="no-press flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm {picked
-								? 'border-signal-ink bg-signal-wash'
-								: 'border-hairline hover:border-signal-ink'}"
-						>
-							<span class="min-w-0">
-								<span class="block truncate">{m.name}</span>
-								<span class="mt-0.5 block truncate text-xs text-steel">{m.muscles.join(', ')}</span>
-							</span>
-							{#if picked}
-								<span class="shrink-0 text-signal-ink" aria-hidden="true">✓</span>
-							{/if}
-						</button>
-					</li>
+			<!-- Grouped by muscle, so a machine always shows under the body part a
+			     runner would look for. Every machine appears under All. -->
+			<div class="scroll-modern mt-3 max-h-64 space-y-3 overflow-y-auto overflow-x-hidden">
+				{#each shownMachineGroups as group (group.group)}
+					<div>
+						<h4 class="px-1 text-xs font-medium text-steel">{group.group}</h4>
+						<ul class="mt-1 grid gap-1">
+							{#each group.moves as m (m.name)}
+								{@const picked = favoriteMachines.includes(m.name)}
+								<li>
+									<button
+										type="button"
+										aria-pressed={picked}
+										onclick={() => toggleMachine(m.name)}
+										class="no-press flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm {picked
+											? 'border-signal-ink bg-signal-wash'
+											: 'border-hairline hover:border-signal-ink'}"
+									>
+										<span class="min-w-0">
+											<span class="block truncate">{m.name}</span>
+											<span class="mt-0.5 block truncate text-xs text-steel">{m.muscles.join(', ')}</span>
+										</span>
+										{#if picked}
+											<span class="shrink-0 text-signal-ink" aria-hidden="true">✓</span>
+										{/if}
+									</button>
+								</li>
+							{/each}
+						</ul>
+					</div>
 				{/each}
-			</ul>
+			</div>
 		{/if}
 	</section>
 
