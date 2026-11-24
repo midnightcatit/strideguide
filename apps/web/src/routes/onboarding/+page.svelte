@@ -223,7 +223,7 @@
 			{
 				id: 'start',
 				title: 'When should the plan start?',
-				lede: 'Pick the day week one begins. Starting today keeps the plan moving right away. Starting next week gives you a few days to clear your diary, and a custom date lets you line the plan up with a holiday or a return from a break.',
+				lede: 'Pick the day week one begins. Starting today keeps the plan moving right away. Starting next week gives you a few days to clear your calendar, and a custom date lets you line the plan up with a holiday or a return from a break.',
 				guide: [
 					'Today is the default. The plan starts on the day you finish onboarding.',
 					'Next week starts on the day your week begins, so the first week runs cleanly from there.',
