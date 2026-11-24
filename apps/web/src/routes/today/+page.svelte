@@ -3,10 +3,10 @@
 	import { page } from '$app/state';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api } from '$lib/api';
-	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
+	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
-	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, sessionTypeLabel, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
@@ -25,7 +25,8 @@
 	import type { LibraryWorkout } from '@strideguide/shared/plan';
 	import type { CustomWorkoutInput } from '$lib/api';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
-	import ActivityMatchSheet from '$lib/components/ActivityMatchSheet.svelte';
+	import ActivityCard from '$lib/components/ActivityCard.svelte';
+	import RaceCard from '$lib/components/RaceCard.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
 
@@ -37,8 +38,6 @@
 	let addError = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
-	let reviewing = $state<ClientActivity | null>(null);
-	let matchBusy = $state(false);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -47,28 +46,11 @@
 		action: () => void;
 	} | null>(null);
 
-	// The match sheet stays mounted so it can animate out; its copy is derived so
-	// it is empty, not a crash, while the sheet is closed.
-	const reviewTitle = $derived.by(() => {
-		if (!reviewing) return '';
-		const ref = reviewing.proposal?.session ?? null;
-		return `Did this match your ${ref ? proposedLabel(reviewing) : 'session'}?`;
-	});
-	const reviewBody = $derived.by(() => {
-		if (!reviewing) return '';
-		const ref = reviewing.proposal?.session ?? null;
-		const day = dayLabel(new Date(reviewing.startedAt).toISOString().slice(0, 10));
-		const what = ref ? proposedLabel(reviewing) : 'session';
-		const where = ref ? ` on ${dayLabel(ref.date)}` : '';
-		return `${activitySummary(reviewing)} on ${day} looks like your ${what}${where}. If it was, we count it as done.`;
-	});
-
 	// Back (browser or hardware) closes an open overlay instead of leaving the page.
 	overlayHistory(
-		() => !!(detailTarget || playTarget || logTarget || reviewing),
+		() => !!(detailTarget || playTarget || logTarget),
 		() => {
-			if (reviewing) reviewing = null;
-			else if (logTarget) logTarget = null;
+			if (logTarget) logTarget = null;
 			else if (playTarget) playTarget = null;
 			else detailTarget = null;
 		},
@@ -159,9 +141,21 @@
 			? `Your plan runs ${dayLabel(planStart)} to ${dayLabel(planEnd)}. Pick a day inside it to add a workout.`
 			: 'Your plan has no days yet. Pick a day inside it to add a workout.',
 	);
-	// Imported activities the matcher could not resolve on its own, waiting on a yes or no.
-	const pendingMatches = $derived(
-		activities.filter((a) => a.matchState === 'proposed' && a.proposal?.session),
+	// Imported activities show on their own date, each a completed workout. They
+	// never stand in for a planned session.
+	const dayActivities = $derived(activities.filter((a) => localIso(new Date(a.startedAt)) === selectedIso));
+	// A day inside the last 30 days can be edited. Older days are read-only
+	// history, so the runner can look back without changing the past.
+	const editCutoff = addDaysIso(todayIso, -30);
+	const editable = $derived(selectedIso >= editCutoff);
+	const raceDate = $derived(store.plan?.goal?.targetDate ?? null);
+	const isRaceDay = $derived(!!raceDate && raceDate === selectedIso);
+	const raceName = $derived(
+		(typeof store.plan?.goal?.baseline?.eventName === 'string' &&
+			store.plan.goal.baseline.eventName) ||
+			prefs.eventName ||
+			profileName ||
+			'Race day',
 	);
 
 	function dayLabel(iso: string): string {
@@ -170,47 +164,6 @@
 			day: 'numeric',
 			month: 'short',
 		});
-	}
-	function activitySummary(a: ClientActivity): string {
-		const bits: string[] = [];
-		if (a.distanceM) bits.push(fmtDistance(a.distanceM / 1000));
-		if (a.durationSec) bits.push(`${Math.round(a.durationSec / 60)} min`);
-		bits.push(a.modality);
-		return bits.join(' · ');
-	}
-	function proposedLabel(a: ClientActivity): string {
-		const ref = a.proposal?.session;
-		if (!ref) return 'session';
-		return ref.title ?? sessionTypeLabel(ref.type ?? '');
-	}
-	async function confirmMatch(a: ClientActivity) {
-		matchBusy = true;
-		try {
-			const res = await api.confirmActivity(a.id, a.proposal?.sessionId);
-			activities = activities.map((x) =>
-				x.id === a.id ? { ...x, matchState: 'confirmed', sessionId: res.sessionId } : x,
-			);
-			reloadPlan();
-		} catch {
-			// the next list will show the truth
-		} finally {
-			matchBusy = false;
-			reviewing = null;
-		}
-	}
-	async function rejectMatch(a: ClientActivity) {
-		matchBusy = true;
-		try {
-			await api.rejectActivity(a.id);
-			activities = activities.map((x) =>
-				x.id === a.id ? { ...x, matchState: 'rejected', proposal: null } : x,
-			);
-		} catch {
-			// ignore
-		} finally {
-			matchBusy = false;
-			reviewing = null;
-		}
 	}
 
 	// A week step moves the whole window. The week arrows and the strip's swipe
@@ -296,16 +249,9 @@
 			try {
 				const res = await api.activities();
 				activities = res.activities;
-				// A strong match is applied server side. If it created a completion
-				// we have not loaded yet, refresh the plan so the card shows it.
-				const loggedIds = new Set(store.logs.map((l) => l.sessionId).filter(Boolean));
-				if (
-					activities.some(
-						(a) => a.matchState === 'confirmed' && a.sessionId && !loggedIds.has(a.sessionId),
-					)
-				) {
-					reloadPlan();
-				}
+				// Listing writes a standalone log for each new imported activity.
+				// Reload the plan so those logs count in Progress and the streak now.
+				if (activities.length && store.plan) reloadPlan();
 			} catch {
 				// no imports to show, or the call failed; Today still works
 			}
@@ -336,24 +282,6 @@
 		</div>
 	{/if}
 
-	{#if pendingMatches.length}
-		<div class="mb-6 rounded-xl border border-signal bg-signal-wash p-4 text-sm">
-			<p class="font-medium">
-				{pendingMatches.length === 1
-					? 'An imported workout might be one of your sessions.'
-					: `${pendingMatches.length} imported workouts might be plan sessions.`}
-			</p>
-			<p class="mt-1 text-steel">Confirm each one so it counts, or set it aside.</p>
-			<button
-				type="button"
-				onclick={() => (reviewing = pendingMatches[0] ?? null)}
-				class="mt-3 rounded-md border border-signal-ink px-4 py-2.5 text-sm font-medium text-signal-ink hover:border-signal"
-			>
-				Review the match
-			</button>
-		</div>
-	{/if}
-
 	<ConnectNudge />
 
 	<header class="mb-2">
@@ -362,11 +290,15 @@
 			<p class="tabular text-xs text-steel">{dateLabel}{#if selWeek} · Week {selWeek.weekNumber}{/if}</p>
 		</div>
 		<h1 class="font-display mt-1 text-2xl font-bold">
-			{daySessions.length
-				? daySessions.length > 1
-					? `${daySessions.length} sessions`
-					: sessionLabel(daySessions[0])
-				: 'Rest day'}
+			{#if isRaceDay}
+				{raceName}
+			{:else if daySessions.length}
+				{daySessions.length > 1 ? `${daySessions.length} sessions` : sessionLabel(daySessions[0])}
+			{:else if dayActivities.length}
+				{dayActivities.length > 1 ? `${dayActivities.length} imported workouts` : 'Imported workout'}
+			{:else}
+				Rest day
+			{/if}
 		</h1>
 		<!-- Space is always reserved, so the button appearing never shifts the page. -->
 		<div class="mt-2 flex h-8 items-center">
@@ -417,9 +349,11 @@
 				<SectionHeader
 					id="day-sessions"
 					eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${selectedWeekdayName}` : 'Day'}
-					meta={daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : 'Rest'}
+					meta={isRaceDay ? 'Race day' : daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : dayActivities.length ? 'Imported' : 'Rest'}
 				/>
-				{#if daySessions.length}
+				{#if isRaceDay}
+					<RaceCard name={raceName} dateLabel={dateLabel} />
+				{:else if daySessions.length}
 					<SessionCarousel sessions={daySessions} {card} bind:revealId />
 				{:else if selWeek}
 					<Card tone="sunken" frame>
@@ -430,27 +364,42 @@
 					</Card>
 				{:else}
 					<Card tone="sunken" frame>
-						<p class="text-sm text-steel">This day is outside your plan.</p>
+						<p class="text-sm text-steel">
+							{editable ? 'This day is outside your plan.' : 'Nothing from the plan on this day.'}
+						</p>
 					</Card>
+				{/if}
+
+				{#if dayActivities.length}
+					<div class="mt-4 space-y-3">
+						<SectionHeader id="day-activities" eyebrow="Imported workouts" meta={`${dayActivities.length}`} />
+						{#each dayActivities as a (a.id)}
+							<ActivityCard activity={a} eyebrow={selectedWeekdayName} />
+						{/each}
+					</div>
 				{/if}
 			</div>
 		{/key}
 
 		<button
 			type="button"
-			disabled={!dayInPlan}
+			disabled={!dayInPlan || !editable}
 			onclick={() => {
-				if (!dayInPlan) return;
+				if (!dayInPlan || !editable) return;
 				addError = null;
 				pickerDate = selectedIso;
 			}}
-			class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan
+			class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan && editable
 				? 'border-hairline-strong text-signal-ink hover:border-signal'
 				: 'border-hairline text-steel'}"
 		>
 			＋ Add a workout
 		</button>
-		{#if !dayInPlan}
+		{#if !editable}
+			<p class="mt-2 text-xs text-steel">
+				This day is more than 30 days old, so it is read-only history. You can look back, but not change it.
+			</p>
+		{:else if !dayInPlan}
 			<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
 		{:else if addError}
 			<p class="mt-2 text-sm text-signal-ink">{addError}</p>
@@ -501,6 +450,7 @@
 		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
 		logged={loggedBySession.get(detailTarget.id) ?? null}
 		skipped={isSkipped(detailTarget.id)}
+		readOnly={!editable}
 		onClose={() => (detailTarget = null)}
 		onLog={() => { logTarget = detailTarget; detailTarget = null; }}
 		onStart={() => { playTarget = detailTarget; detailTarget = null; }}
@@ -529,6 +479,7 @@
 		session={s}
 		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
 		active={isToday}
+		editable={editable}
 		logged={loggedBySession.get(s.id) ?? null}
 		onLog={() => logSession(s)}
 		onStart={() => startSession(s)}
@@ -555,20 +506,6 @@
 	tone={confirm?.tone ?? 'default'}
 	onConfirm={() => confirm?.action()}
 	onClose={() => (confirm = null)}
-/>
-
-<ActivityMatchSheet
-	open={reviewing !== null}
-	title={reviewTitle}
-	body={reviewBody}
-	busy={matchBusy}
-	onConfirm={() => {
-		if (reviewing) confirmMatch(reviewing);
-	}}
-	onReject={() => {
-		if (reviewing) rejectMatch(reviewing);
-	}}
-	onClose={() => (reviewing = null)}
 />
 
 {#if pickerDate}

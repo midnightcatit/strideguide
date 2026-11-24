@@ -22,6 +22,7 @@
 		eyebrow = '',
 		logged,
 		skipped = false,
+		readOnly = false,
 		onClose,
 		onLog,
 		onStart,
@@ -32,6 +33,8 @@
 		eyebrow?: string;
 		logged?: ClientLog | null;
 		skipped?: boolean;
+		/** True for a day past the edit window: view only, no start, log or skip. */
+		readOnly?: boolean;
 		onClose: () => void;
 		onLog?: () => void;
 		onStart?: () => void;
@@ -233,7 +236,7 @@
 				<span class="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {skipped
 					? 'bg-paper/10 text-paper/70'
 					: logged
-						? 'bg-paper/25 text-paper'
+						? 'bg-ok text-paper'
 						: 'bg-paper/15 text-paper/80'}">{statusLabel}</span>
 				{#if dist}<span class="tabular">{fmtDistance(dist)}</span>{/if}
 				{#if band}<span class="tabular">{band}</span>{/if}
@@ -257,7 +260,7 @@
 					</svg>
 					<span class="text-[10px] uppercase tracking-wide">Notes</span>
 				</button>
-				{#if skipped && onUnskip}
+				{#if !readOnly && skipped && onUnskip}
 					<button type="button" onclick={onUnskip} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M4 10a6 6 0 1 0 2-4.5" />
@@ -265,7 +268,7 @@
 						</svg>
 						<span class="text-[10px] uppercase tracking-wide">Un-skip</span>
 					</button>
-				{:else if onSkip}
+				{:else if !readOnly && !logged && onSkip}
 					<button type="button" onclick={onSkip} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 						<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 							<path d="M5 5l6 5-6 5z" />
@@ -474,20 +477,22 @@
 		</div>
 	</div>
 
-	<footer class="border-t border-hairline px-4 py-3" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
-		<div class="mx-auto flex max-w-2xl gap-2">
-			{#if onStart && workout}
-				<button type="button" onclick={onStart} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">
-					{isStarted(session.id) && !logged ? 'Resume workout' : 'Start'}
-				</button>
-			{/if}
-			{#if onLog}
-				<button type="button" onclick={onLog} class="btn-outline flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">
-					{logged ? 'Log again' : 'Log it'}
-				</button>
-			{/if}
-		</div>
-	</footer>
+	{#if !readOnly}
+		<footer class="border-t border-hairline px-4 py-3" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
+			<div class="mx-auto flex max-w-2xl gap-2">
+				{#if onStart && workout}
+					<button type="button" onclick={onStart} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">
+						{logged ? 'Restart' : isStarted(session.id) ? 'Resume workout' : 'Start'}
+					</button>
+				{/if}
+				{#if onLog}
+					<button type="button" onclick={onLog} class="btn-outline flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink">
+						{logged ? 'Edit details' : 'Log it'}
+					</button>
+				{/if}
+			</div>
+		</footer>
+	{/if}
 
 	<PreviewSheet
 		open={showPreview}

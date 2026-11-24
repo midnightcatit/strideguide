@@ -102,25 +102,7 @@ export interface ClientLog {
 	source?: 'manual' | 'device' | 'import' | null;
 }
 
-/** The session an imported activity points at, as the API serialises it. */
-export interface ActivitySessionRef {
-	id: string;
-	title: string | null;
-	type: string | null;
-	modality: string;
-	date: string;
-}
-
-export interface ActivityMatchCandidate {
-	sessionId: string;
-	confidence: number;
-	decision: 'auto' | 'ask' | 'none';
-	dateDeltaDays: number;
-	breakdown: { date: number; modality: number; size?: number };
-	session: ActivitySessionRef | null;
-}
-
-/** An imported activity with its proposed or confirmed match to the plan. */
+/** An imported activity, a completed workout in its own right. */
 export interface ClientActivity {
 	id: string;
 	provider: string;
@@ -129,13 +111,8 @@ export interface ClientActivity {
 	startedAt: string;
 	durationSec: number | null;
 	distanceM: number | null;
+	avgPaceSecPerKm: number | null;
 	avgHr: number | null;
-	matchState: 'proposed' | 'confirmed' | 'rejected';
-	matchConfidence: number | null;
-	sessionId: string | null;
-	session: ActivitySessionRef | null;
-	proposal: ActivityMatchCandidate | null;
-	candidates: ActivityMatchCandidate[];
 }
 
 export interface CurrentPlan {

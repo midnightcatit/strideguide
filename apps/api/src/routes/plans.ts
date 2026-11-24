@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { asc, and, desc, eq, gt, gte, inArray } from 'drizzle-orm';
+import { asc, and, desc, eq, gt, gte, inArray, isNull } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
@@ -125,6 +125,13 @@ async function currentPlanJson(db: Db, userId: string) {
 		)
 	).flat();
 
+	// Logs with no session: imported activities and any run the runner logged on
+	// its own. They count in Progress and the streak without belonging to a plan.
+	const standaloneLogs = await db
+		.select()
+		.from(schema.logs)
+		.where(and(eq(schema.logs.userId, userId), isNull(schema.logs.sessionId)));
+
 	const states = await db
 		.select()
 		.from(schema.sessionStates)
@@ -144,7 +151,7 @@ async function currentPlanJson(db: Db, userId: string) {
 				.filter((s) => s.planWeekId === w.id)
 				.sort(compareDaySessions),
 		})),
-		logs,
+		logs: [...logs, ...standaloneLogs],
 	};
 }
 
