@@ -4,6 +4,7 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { volumeBuckets, weeklyKmSeries, metricOrigin } from '$lib/metrics';
+	import { localIso } from '$lib/plan';
 	import { volumeComparisons } from '@strideguide/shared/comparisons';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
@@ -11,7 +12,7 @@
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 	const buckets = $derived(volumeBuckets(store.logs, todayIso));
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 12));
 	const weekMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));

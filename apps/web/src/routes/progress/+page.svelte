@@ -4,6 +4,7 @@
 	import { fitnessState, type HealthDay, type RecoverySignal } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
+	import { localIso } from '$lib/plan';
 	import { api } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
 	import Card from '$lib/components/Card.svelte';
@@ -21,6 +22,8 @@
 	};
 
 	let recovery = $state<RecoveryState | null>(null);
+
+	const todayIso = localIso();
 
 	onMount(() => {
 		void ensurePlan();
@@ -43,7 +46,7 @@
 	);
 	const metrics = $derived(
 		store.plan
-			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null })
+			? computeProgress(store.logs, weeksLike, { targetDate: store.plan.goal?.targetDate ?? null, todayIso })
 			: null,
 	);
 	const hasLogs = $derived(store.logs.length > 0);
@@ -116,7 +119,6 @@
 		const firstDow = (first.getUTCDay() + 6) % 7;
 		const start = new Date(Date.UTC(y, m, 1 - firstDow));
 		const trained = new Set(metrics?.calendar.trainedDays ?? []);
-		const todayIso = now.toISOString().slice(0, 10);
 		const cells: { key: string; day: number; inMonth: boolean; trained: boolean; today: boolean }[] = [];
 		for (let i = 0; i < 42; i++) {
 			const d = new Date(start.getTime() + i * 86400000);

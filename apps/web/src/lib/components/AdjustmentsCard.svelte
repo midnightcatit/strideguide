@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { suggestAdjustments, type AdaptWeek, type RecoverySignal } from '@strideguide/shared/plan';
 	import { store, reloadPlan } from '$lib/planStore.svelte';
+	import { localIso } from '$lib/plan';
 	import { api } from '$lib/api';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -12,7 +13,7 @@
 	let adaptNote = $state<string | null>(null);
 	let recoverySignal = $state<RecoverySignal | null>(null);
 
-	const todayIso = new Date().toISOString().slice(0, 10);
+	const todayIso = localIso();
 
 	onMount(() => {
 		void api

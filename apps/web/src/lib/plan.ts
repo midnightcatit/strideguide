@@ -2,6 +2,9 @@
 
 import { findDrill, type Drill } from '@strideguide/shared/plan';
 
+/** The runner's local civil date, re-exported so the web call sites share one helper. */
+export { localIso } from '@strideguide/shared/dates';
+
 export type Modality = 'running' | 'walking' | 'strength' | 'mobility' | 'recovery';
 
 export interface ClientStep {
