@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { asc, and, desc, eq, gt, gte, inArray, isNull } from 'drizzle-orm';
+import { asc, and, desc, eq, gte, inArray, isNotNull, isNull } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
@@ -12,6 +12,7 @@ import {
 	weekOnePattern,
 } from '@strideguide/shared/plan';
 import { compareDaySessions } from '../lib/session-order';
+import { reconcileSessions } from '../lib/plan-reconcile';
 import type {
 	Baseline,
 	EquipmentItem,
@@ -39,6 +40,122 @@ function chunk<T>(items: T[], size: number): T[][] {
 	return out;
 }
 
+/** A session a rebuild wants stored, as the route hands it to the reconcile. */
+interface DesiredSessionRow {
+	day: number;
+	slot: string;
+	modality: Modality;
+	type: string;
+	title: string;
+	purpose: string;
+	prescription: SessionPrescription;
+	durationMin: number;
+}
+
+/** A stored week and the session identities the reconcile matches on. */
+interface StoredWeek {
+	id: string;
+	weekNumber: number;
+	sessions: { id: string; day: number; slot: string | null; type: string }[];
+}
+
+/** A rebuilt week to store, with its sessions. */
+interface DesiredWeek {
+	weekNumber: number;
+	focus: string;
+	summaryText: string;
+	startDate: string;
+	endDate: string;
+	sessions: DesiredSessionRow[];
+}
+
+function sessionValues(session: DesiredSessionRow, planWeekId: string) {
+	return {
+		planWeekId,
+		day: session.day,
+		slot: session.slot,
+		modality: session.modality,
+		type: session.type,
+		title: session.title,
+		purpose: session.purpose,
+		prescription: session.prescription,
+		durationMin: session.durationMin,
+	};
+}
+
+/**
+ * Store a plan's rebuilt weeks without churning session ids. A week keyed by
+ * week number is updated in place, so its id (and the sessions' ids) survive; a
+ * session whose day, slot and type are unchanged keeps its id too, so its log,
+ * session state and confirmed activity stay attached. Only a genuinely new
+ * session is inserted, and only a session the rebuild dropped is removed. The
+ * runner's own note on a session is never overwritten, since the rebuild does
+ * not carry notes.
+ */
+async function replaceWeeks(
+	db: Db,
+	planId: string,
+	stored: StoredWeek[],
+	desired: DesiredWeek[],
+): Promise<Map<number, string>> {
+	const byNumber = new Map(stored.map((w) => [w.weekNumber, w]));
+	const weekIdByNumber = new Map<number, string>();
+	for (const week of desired) {
+		const existing = byNumber.get(week.weekNumber);
+		const weekId = existing?.id ?? crypto.randomUUID();
+		weekIdByNumber.set(week.weekNumber, weekId);
+		if (existing) {
+			await db
+				.update(schema.planWeeks)
+				.set({
+					focus: week.focus,
+					summaryText: week.summaryText,
+					startDate: week.startDate,
+					endDate: week.endDate,
+				})
+				.where(eq(schema.planWeeks.id, weekId));
+		} else {
+			await db.insert(schema.planWeeks).values({
+				id: weekId,
+				planId,
+				weekNumber: week.weekNumber,
+				focus: week.focus,
+				summaryText: week.summaryText,
+				startDate: week.startDate,
+				endDate: week.endDate,
+			});
+		}
+
+		const { updates, inserts, deletes } = reconcileSessions(existing?.sessions ?? [], week.sessions);
+		for (const { id, session } of updates) {
+			await db
+				.update(schema.sessionsPlan)
+				.set(sessionValues(session, weekId))
+				.where(eq(schema.sessionsPlan.id, id));
+		}
+		for (const session of inserts) {
+			await db
+				.insert(schema.sessionsPlan)
+				.values({ id: crypto.randomUUID(), ...sessionValues(session, weekId) });
+		}
+		for (const id of deletes) {
+			await db.delete(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, id));
+		}
+	}
+
+	// A rebuilt plan can be shorter than the stored one, so drop any week from the
+	// rebuilt range the engine no longer carries, with its sessions.
+	const fromWeek = desired.reduce((min, w) => Math.min(min, w.weekNumber), Number.POSITIVE_INFINITY);
+	if (!Number.isFinite(fromWeek)) return weekIdByNumber;
+	const keep = new Set(desired.map((w) => w.weekNumber));
+	for (const w of stored) {
+		if (w.weekNumber >= fromWeek && !keep.has(w.weekNumber)) {
+			await db.delete(schema.planWeeks).where(eq(schema.planWeeks.id, w.id));
+		}
+	}
+	return weekIdByNumber;
+}
+
 /** The runner's app preferences, with defaults merged. */
 async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
 	const rows = await db
@@ -46,7 +163,7 @@ async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
 		.from(schema.settings)
 		.where(eq(schema.settings.userId, userId))
 		.limit(1);
-	return { ...DEFAULT_PREFS, ...((rows[0]?.prefs as Partial<Prefs>) ?? {}) };
+	return { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}) };
 }
 
 /** Merge a partial prefs patch into the runner's settings. */
@@ -56,7 +173,7 @@ async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promi
 		.from(schema.settings)
 		.where(eq(schema.settings.userId, userId))
 		.limit(1);
-	const merged = { ...DEFAULT_PREFS, ...((rows[0]?.prefs as Partial<Prefs>) ?? {}), ...patch };
+	const merged = { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}), ...patch };
 	if (rows[0]) {
 		await db
 			.update(schema.settings)
@@ -486,7 +603,7 @@ plans.delete('/sessions/:id', async (c) => {
 		: undefined;
 	if (!owned) return c.json({ error: 'Not found.' }, 404);
 
-	const added = (session.prescription as { added?: boolean } | null)?.added === true;
+	const added = session.prescription?.added === true;
 	if (!added) return c.json({ error: 'Only workouts you added can be removed.' }, 403);
 
 	await db.delete(schema.sessionsPlan).where(eq(schema.sessionsPlan.id, id));
@@ -525,18 +642,20 @@ plans.post(
 
 		// Sports logged in the last seven days, with how long and how hard. A heavy
 		// sport week already carries load, so the plan trims the strength and quality
-		// work to match.
+		// work to match. The window is pushed into SQL against the (user, created)
+		// index, so only the recent logs are read, not the runner's whole history.
 		const since = Date.now() - 7 * 86400000;
-		const userLogs = await c
+		const recentLogs = await c
 			.get('db')
 			.select()
 			.from(schema.logs)
-			.where(eq(schema.logs.userId, user.id));
-		const recentLogs = userLogs.filter((l) => {
-			const raw = l.createdAt as unknown;
-			const t = raw instanceof Date ? raw.getTime() : Number(raw) * 1000;
-			return t >= since && !!l.sessionId;
-		});
+			.where(
+				and(
+					eq(schema.logs.userId, user.id),
+					isNotNull(schema.logs.sessionId),
+					gte(schema.logs.createdAt, new Date(since)),
+				),
+			);
 		const recentIds = recentLogs.map((l) => l.sessionId as string);
 		const recentSessions = recentIds.length
 			? (
@@ -559,7 +678,7 @@ plans.post(
 			sessions: crossLogs.length,
 			minutes: Math.round(
 				crossLogs.reduce((m, l) => {
-					const stats = (l.runStats ?? {}) as { durationSec?: number };
+					const stats = l.runStats ?? {};
 					return m + (stats.durationSec ?? 0);
 				}, 0) / 60,
 			),
@@ -569,12 +688,14 @@ plans.post(
 		// A read of what the runner has actually been doing, from their own logs,
 		// joined to the plan so each one knows its session type. Seeds paces from a
 		// recent hard effort and volume from real recent weeks, when the runner has
-		// not given a race time or a weekly distance.
+		// not given a race time or a weekly distance. Read from the (user, started)
+		// index, so the 28-day window is the query's own filter.
 		const fitSince = Date.now() - 28 * 86400000;
-		const fitLogs = userLogs.filter((l) => {
-			const t = l.startedAt instanceof Date ? l.startedAt.getTime() : null;
-			return t != null && t >= fitSince;
-		});
+		const fitLogs = await c
+			.get('db')
+			.select()
+			.from(schema.logs)
+			.where(and(eq(schema.logs.userId, user.id), gte(schema.logs.startedAt, new Date(fitSince))));
 		const fitSessionIds = [
 			...new Set(fitLogs.map((l) => l.sessionId).filter((x): x is string => !!x)),
 		];
@@ -594,7 +715,7 @@ plans.post(
 		const typeById = new Map(fitSessions.map((s) => [s.id, s.type]));
 		const fitness = fitnessState(
 			fitLogs.map((l) => {
-				const stats = (l.runStats ?? {}) as { distanceKm?: number; durationSec?: number };
+				const stats = l.runStats ?? {};
 				return {
 					sessionId: l.sessionId,
 					type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
@@ -602,7 +723,7 @@ plans.post(
 					distanceKm: stats.distanceKm ?? null,
 					durationSec: stats.durationSec ?? null,
 					rpe: l.rpe ?? null,
-					feedback: (l.feedback as 'up' | 'down' | null) ?? null,
+					feedback: l.feedback ?? null,
 				};
 			}),
 			{ raceTimes: baseline.recentTimes },
@@ -685,7 +806,7 @@ plans.post(
 			userId: user.id,
 			goalProfileSlug: profile.slug,
 			targetDate: body.targetDate ?? null,
-			baseline: seededBaseline as Record<string, unknown>,
+			baseline: seededBaseline,
 			availableDays,
 		});
 
@@ -832,7 +953,7 @@ plans.post('/adapt', async (c) => {
 				type: s.type,
 				title: s.title ?? '',
 				purpose: s.purpose ?? '',
-				prescription: (s.prescription ?? {}) as Record<string, unknown>,
+				prescription: s.prescription ?? {},
 				durationMin: s.durationMin ?? 0,
 			})),
 	}));
@@ -847,23 +968,26 @@ plans.post('/adapt', async (c) => {
 		...(prefs.equipment ? { equipment: prefs.equipment } : {}),
 		...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
 	};
-	const userLogs = await db.select().from(schema.logs).where(eq(schema.logs.userId, user.id));
 	const typeById = new Map(sessions.map((s) => [s.id, s.type]));
+	// Only the 28-day fitness window is read, pushed into SQL against the
+	// (user, started) index rather than pulling every log the runner has.
 	const fitSince = Date.now() - 28 * 86400000;
+	const fitLogs = await db
+		.select()
+		.from(schema.logs)
+		.where(and(eq(schema.logs.userId, user.id), gte(schema.logs.startedAt, new Date(fitSince))));
 	const fitness = fitnessState(
-		userLogs
-			.filter((l) => l.startedAt instanceof Date && l.startedAt.getTime() >= fitSince)
-			.map((l) => {
-				const stats = (l.runStats ?? {}) as { distanceKm?: number; durationSec?: number };
-				return {
-					sessionId: l.sessionId,
-					type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
-					date: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
-					distanceKm: stats.distanceKm ?? null,
-					durationSec: stats.durationSec ?? null,
-					rpe: l.rpe ?? null,
-					feedback: (l.feedback as 'up' | 'down' | null) ?? null,
-				};
+		fitLogs.map((l) => {
+			const stats = l.runStats ?? {};
+			return {
+				sessionId: l.sessionId,
+				type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
+				date: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
+				distanceKm: stats.distanceKm ?? null,
+				durationSec: stats.durationSec ?? null,
+				rpe: l.rpe ?? null,
+				feedback: l.feedback ?? null,
+			};
 			}),
 		{ raceTimes: baseline.recentTimes },
 	);
@@ -895,60 +1019,41 @@ plans.post('/adapt', async (c) => {
 		return c.json({ changed: false, changedFromWeek: null, swapped: [] });
 	}
 
-	// Replace the weeks ahead, leaving past weeks and their logs untouched.
+	// Replace the weeks ahead in place, leaving past weeks and their logs
+	// untouched. Sessions that keep their day, slot and type keep their ids, so
+	// the runner's logs, session states and matched activities stay attached.
 	const changed = result.weeks.filter((w) => w.weekNumber >= result.changedFromWeek!);
-	await db
-		.delete(schema.planWeeks)
-		.where(
-			and(
-				eq(schema.planWeeks.planId, plan.id),
-				gte(schema.planWeeks.weekNumber, result.changedFromWeek!),
-			),
-		);
-
-	const weekRows = changed.map((w) => {
-		const weekId = crypto.randomUUID();
-		return {
-			id: weekId,
-			planId: plan.id,
-			weekNumber: w.weekNumber,
-			focus: w.focus,
-			summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
-			startDate: w.startDate,
-			endDate: w.endDate,
-			phase: w.phase,
-			targetVolumeKm: w.targetVolumeKm,
-			sessionRows: w.sessions.map((s) => ({
-				id: crypto.randomUUID(),
-				planWeekId: weekId,
-				day: s.day,
-				slot: s.slot,
-				modality: s.modality,
-				type: s.type,
-				title: s.title,
-				purpose: s.purpose,
-				prescription: s.prescription,
-				durationMin: s.durationMin,
-			})),
-		};
-	});
-	// Match the generate path: only the stored week columns are inserted.
-	const weekValues = weekRows.map(
-		({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest,
-	);
-	for (const part of chunk(weekValues, 10)) {
-		await db.insert(schema.planWeeks).values(part);
-	}
-	const sessionRows = weekRows.flatMap((w) => w.sessionRows);
-	for (const part of chunk(sessionRows, 8)) {
-		await db.insert(schema.sessionsPlan).values(part);
-	}
+	const stored: StoredWeek[] = weeks.map((w) => ({
+		id: w.id,
+		weekNumber: w.weekNumber,
+		sessions: sessions
+			.filter((s) => s.planWeekId === w.id)
+			.map((s) => ({ id: s.id, day: s.day, slot: s.slot, type: s.type })),
+	}));
+	const desired: DesiredWeek[] = changed.map((w) => ({
+		weekNumber: w.weekNumber,
+		focus: w.focus,
+		summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
+		startDate: w.startDate,
+		endDate: w.endDate,
+		sessions: w.sessions.map((s) => ({
+			day: s.day,
+			slot: s.slot,
+			modality: s.modality,
+			type: s.type,
+			title: s.title,
+			purpose: s.purpose,
+			prescription: s.prescription,
+			durationMin: s.durationMin,
+		})),
+	}));
+	await replaceWeeks(db, plan.id, stored, desired);
 
 	await db
 		.update(schema.plans)
 		.set({
 			generatedAt: new Date(),
-			params: { ...(plan.params as Record<string, unknown>), adaptedAt: new Date().toISOString() },
+			params: { ...(plan.params ?? {}), adaptedAt: new Date().toISOString() },
 		})
 		.where(eq(schema.plans.id, plan.id));
 
@@ -989,9 +1094,9 @@ async function replaceWeekOneSessions(db: Db, weekId: string, sessions: PreviewS
 	for (const s of sessions) {
 		const given =
 			s.prescription && typeof s.prescription === 'object'
-				? (s.prescription as Record<string, unknown>)
+				? (s.prescription as Partial<SessionPrescription>)
 				: {};
-		const prescription: Record<string, unknown> = { ...given };
+		const prescription = { ...given } as SessionPrescription;
 		// A library workout is stored on the prescription, so fold the id in when the
 		// client sent it at the top level and the prescription does not carry it.
 		if (s.libraryId && prescription.libraryId == null) prescription.libraryId = s.libraryId;
@@ -1109,7 +1214,7 @@ plans.post(
 				.map((s) => ({
 					day: s.day,
 					slot: s.slot ?? 'AM',
-					modality: s.modality as Modality,
+					modality: s.modality,
 					type: s.type as SessionArchetype,
 					title: s.title ?? '',
 					purpose: s.purpose ?? '',
@@ -1169,54 +1274,41 @@ plans.post(
 		// Week one is saved exactly as sent, and never rebuilt.
 		await replaceWeekOneSessions(db, firstWeek.id, sessions);
 
-		// Replace weeks two onward, leaving week one and its history alone.
-		await db
-			.delete(schema.planWeeks)
-			.where(
-				and(
-					eq(schema.planWeeks.planId, plan.id),
-					gt(schema.planWeeks.weekNumber, firstWeek.weekNumber),
-				),
-			);
-
+		// Replace weeks two onward in place, leaving week one and its history
+		// alone. A later session that keeps its day, slot and type keeps its id.
 		const laterWeeks = rebuilt.filter((w) => w.weekNumber > firstWeek.weekNumber);
-		const weekRows = laterWeeks.map((w) => {
-			const weekId = crypto.randomUUID();
-			return {
-				id: weekId,
-				planId: plan.id,
-				weekNumber: w.weekNumber,
-				focus: w.focus,
-				summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
-				startDate: w.startDate,
-				endDate: w.endDate,
-				phase: w.phase,
-				targetVolumeKm: w.targetVolumeKm,
-				sessionRows: w.sessions.map((s) => ({
-					id: crypto.randomUUID(),
-					planWeekId: weekId,
-					day: s.day,
-					slot: s.slot,
-					modality: s.modality,
-					type: s.type,
-					title: s.title,
-					purpose: s.purpose,
-					prescription: s.prescription,
-					durationMin: s.durationMin,
-				})),
-			};
-		});
-		// Match the generate path: only the stored week columns are inserted.
-		const weekValues = weekRows.map(
-			({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest,
-		);
-		for (const part of chunk(weekValues, 10)) {
-			await db.insert(schema.planWeeks).values(part);
-		}
-		const sessionRows = weekRows.flatMap((w) => w.sessionRows);
-		for (const part of chunk(sessionRows, 8)) {
-			await db.insert(schema.sessionsPlan).values(part);
-		}
+		const stored: StoredWeek[] = weeks.map((w) => ({
+			id: w.id,
+			weekNumber: w.weekNumber,
+			sessions: storedSessions
+				.filter((s) => s.planWeekId === w.id)
+				.map((s) => ({ id: s.id, day: s.day, slot: s.slot, type: s.type })),
+		}));
+		const laterDesired: DesiredWeek[] = laterWeeks.map((w) => ({
+			weekNumber: w.weekNumber,
+			focus: w.focus,
+			summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
+			startDate: w.startDate,
+			endDate: w.endDate,
+			sessions: w.sessions.map((s) => ({
+				day: s.day,
+				slot: s.slot,
+				modality: s.modality,
+				type: s.type,
+				title: s.title,
+				purpose: s.purpose,
+				prescription: s.prescription,
+				durationMin: s.durationMin,
+			})),
+		}));
+		const weekIdByNumber = await replaceWeeks(db, plan.id, stored, laterDesired);
+
+		const weekRows = laterWeeks.map((w) => ({
+			id: weekIdByNumber.get(w.weekNumber)!,
+			weekNumber: w.weekNumber,
+			phase: w.phase,
+			targetVolumeKm: w.targetVolumeKm,
+		}));
 
 		await db
 			.update(schema.plans)
@@ -1224,25 +1316,14 @@ plans.post(
 				generatedAt: new Date(),
 				model: usedAi ? 'engine+ai' : 'engine',
 				params: {
-					...(plan.params as Record<string, unknown>),
+					...(plan.params ?? {}),
 					previewedAt: new Date().toISOString(),
 				},
 			})
 			.where(eq(schema.plans.id, plan.id));
 
 		// Narrate the rebuilt weeks after responding, so the user never waits.
-		c.executionCtx.waitUntil(
-			narrateAndStore(
-				c.env,
-				db,
-				weekRows.map((w) => ({
-					id: w.id,
-					weekNumber: w.weekNumber,
-					phase: w.phase,
-					targetVolumeKm: w.targetVolumeKm,
-				})),
-			),
-		);
+		c.executionCtx.waitUntil(narrateAndStore(c.env, db, weekRows));
 
 		return c.json(await currentPlanJson(db, user.id));
 	},

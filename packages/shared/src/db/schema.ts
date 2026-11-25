@@ -8,6 +8,9 @@ import {
 	text,
 	uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
+import { MODALITIES } from '../types';
+import type { PlanParams, SessionPrescription, StoredRunStats, StrengthSet } from '../types';
+import type { Prefs } from '../units';
 
 /**
  * Stride Guide data model (D1 / SQLite via Drizzle).
@@ -72,10 +75,17 @@ export const userGoals = sqliteTable(
 		userId: text('user_id')
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
+		/**
+		 * The chosen goal profile. Referential integrity is enforced by triggers in
+		 * migration 0016, not a SQLite FOREIGN KEY: adding one needs a table rebuild,
+		 * and D1 runs each migration statement in an implicit transaction where
+		 * `PRAGMA foreign_keys=OFF` is a no-op, so dropping the parent table would
+		 * cascade into `plans` and delete every user's plan.
+		 */
 		goalProfileSlug: text('goal_profile_slug').notNull(),
 		targetDate: text('target_date'),
 		baseline: text('baseline', { mode: 'json' }),
-		availableDays: text('available_days', { mode: 'json' }),
+		availableDays: text('available_days', { mode: 'json' }).$type<number[]>(),
 		status: text('status', { enum: ['active', 'completed', 'archived'] })
 			.notNull()
 			.default('active'),
@@ -96,7 +106,7 @@ export const plans = sqliteTable(
 		version: integer('version').notNull().default(1),
 		generatedAt: integer('generated_at', { mode: 'timestamp' }),
 		model: text('model'),
-		params: text('params', { mode: 'json' }),
+		params: text('params', { mode: 'json' }).$type<PlanParams>(),
 		status: text('status', { enum: ['draft', 'active', 'superseded'] })
 			.notNull()
 			.default('active'),
@@ -124,6 +134,7 @@ export const planWeeks = sqliteTable(
 	},
 	(t) => ({
 		planIdx: index('plan_weeks_plan_idx').on(t.planId),
+		planWeekIdx: uniqueIndex('plan_weeks_plan_week_idx').on(t.planId, t.weekNumber),
 	}),
 );
 
@@ -136,11 +147,11 @@ export const sessionsPlan = sqliteTable(
 			.references(() => planWeeks.id, { onDelete: 'cascade' }),
 		day: integer('day').notNull(),
 		slot: text('slot'),
-		modality: text('modality', { enum: ['running', 'walking', 'strength', 'mobility', 'recovery'] }).notNull(),
+		modality: text('modality', { enum: MODALITIES }).notNull(),
 		type: text('type').notNull(),
 		title: text('title'),
 		purpose: text('purpose'),
-		prescription: text('prescription', { mode: 'json' }),
+		prescription: text('prescription', { mode: 'json' }).$type<SessionPrescription>(),
 		durationMin: integer('duration_min'),
 		explanationId: text('explanation_id'),
 		/** The runner's own note for this session, kept so a later rebuild can read it. */
@@ -203,8 +214,8 @@ export const logs = sqliteTable(
 		sessionId: text('session_id'),
 		startedAt: integer('started_at', { mode: 'timestamp' }),
 		endedAt: integer('ended_at', { mode: 'timestamp' }),
-		runStats: text('run_stats', { mode: 'json' }),
-		strengthSets: text('strength_sets', { mode: 'json' }),
+		runStats: text('run_stats', { mode: 'json' }).$type<StoredRunStats>(),
+		strengthSets: text('strength_sets', { mode: 'json' }).$type<StrengthSet[]>(),
 		rpe: real('rpe'),
 		/** How the runner felt about the session, from a quick thumbs up or down. */
 		feedback: text('feedback', { enum: ['up', 'down'] }),
@@ -216,6 +227,7 @@ export const logs = sqliteTable(
 	},
 	(t) => ({
 		userIdx: index('logs_user_idx').on(t.userId),
+		userStartedIdx: index('logs_user_started_idx').on(t.userId, t.startedAt),
 		sessionIdx: index('logs_session_idx').on(t.sessionId),
 	}),
 );
@@ -304,6 +316,7 @@ export const shares = sqliteTable(
 	(t) => ({
 		ownerIdx: index('shares_owner_idx').on(t.ownerUserId),
 		viewerIdx: index('shares_viewer_idx').on(t.viewerUserId),
+		ownerViewerIdx: uniqueIndex('shares_owner_viewer_idx').on(t.ownerUserId, t.viewerUserId),
 	}),
 );
 
@@ -370,7 +383,7 @@ export const settings = sqliteTable('settings', {
 	userId: text('user_id')
 		.primaryKey()
 		.references(() => users.id, { onDelete: 'cascade' }),
-	prefs: text('prefs', { mode: 'json' }),
+	prefs: text('prefs', { mode: 'json' }).$type<Prefs>(),
 });
 
 /** Fixed-window rate limiting (per user or IP). */
@@ -450,9 +463,7 @@ export const activities = sqliteTable(
 		provider: text('provider', { enum: ['google-health'] }).notNull(),
 		/** The activity's id at the provider, unique per provider. */
 		externalId: text('external_id').notNull(),
-		modality: text('modality', {
-			enum: ['running', 'walking', 'strength', 'mobility', 'recovery', 'cross-train'],
-		}).notNull(),
+		modality: text('modality', { enum: MODALITIES }).notNull(),
 		type: text('type'),
 		startedAt: integer('started_at', { mode: 'timestamp' }).notNull(),
 		durationSec: integer('duration_sec'),

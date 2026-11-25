@@ -6,24 +6,26 @@
 -- This copies the four legacy columns across, one metric row per day, so the
 -- store becomes the single source for every surface. It is additive and
 -- idempotent: `health_daily` is left in place, and a row the store already has
--- (from a sync) wins, so a re-run changes nothing.
+-- (from a sync) wins, so a re-run changes nothing. The synthetic id carries the
+-- provider, so a second provider for the same user, day and metric cannot
+-- collide on the primary key.
 INSERT INTO `health_metrics` (`id`, `user_id`, `provider`, `date`, `metric`, `value`, `unit`, `raw`)
-SELECT 'hdb:' || `user_id` || ':' || `date` || ':resting_hr', `user_id`, `provider`, `date`, 'resting_hr', `resting_hr`, NULL, NULL
+SELECT 'hdb:' || `user_id` || ':' || `provider` || ':' || `date` || ':resting_hr', `user_id`, `provider`, `date`, 'resting_hr', `resting_hr`, NULL, NULL
 FROM `health_daily`
 WHERE `resting_hr` IS NOT NULL
 ON CONFLICT (`user_id`, `provider`, `date`, `metric`) DO NOTHING;--> statement-breakpoint
 INSERT INTO `health_metrics` (`id`, `user_id`, `provider`, `date`, `metric`, `value`, `unit`, `raw`)
-SELECT 'hdb:' || `user_id` || ':' || `date` || ':hrv_ms', `user_id`, `provider`, `date`, 'hrv_ms', `hrv_ms`, NULL, NULL
+SELECT 'hdb:' || `user_id` || ':' || `provider` || ':' || `date` || ':hrv_ms', `user_id`, `provider`, `date`, 'hrv_ms', `hrv_ms`, NULL, NULL
 FROM `health_daily`
 WHERE `hrv_ms` IS NOT NULL
 ON CONFLICT (`user_id`, `provider`, `date`, `metric`) DO NOTHING;--> statement-breakpoint
 INSERT INTO `health_metrics` (`id`, `user_id`, `provider`, `date`, `metric`, `value`, `unit`, `raw`)
-SELECT 'hdb:' || `user_id` || ':' || `date` || ':sleep_min', `user_id`, `provider`, `date`, 'sleep_min', `sleep_min`, NULL, NULL
+SELECT 'hdb:' || `user_id` || ':' || `provider` || ':' || `date` || ':sleep_min', `user_id`, `provider`, `date`, 'sleep_min', `sleep_min`, NULL, NULL
 FROM `health_daily`
 WHERE `sleep_min` IS NOT NULL
 ON CONFLICT (`user_id`, `provider`, `date`, `metric`) DO NOTHING;--> statement-breakpoint
 INSERT INTO `health_metrics` (`id`, `user_id`, `provider`, `date`, `metric`, `value`, `unit`, `raw`)
-SELECT 'hdb:' || `user_id` || ':' || `date` || ':steps', `user_id`, `provider`, `date`, 'steps', `steps`, NULL, NULL
+SELECT 'hdb:' || `user_id` || ':' || `provider` || ':' || `date` || ':steps', `user_id`, `provider`, `date`, 'steps', `steps`, NULL, NULL
 FROM `health_daily`
 WHERE `steps` IS NOT NULL
 ON CONFLICT (`user_id`, `provider`, `date`, `metric`) DO NOTHING;

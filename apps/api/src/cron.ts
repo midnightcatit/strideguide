@@ -40,7 +40,7 @@ async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 			const done = logs.length;
 			const km =
 				Math.round(
-					logs.reduce((sum, l) => sum + ((l.runStats as { distanceKm?: number } | null)?.distanceKm ?? 0), 0) * 10,
+					logs.reduce((sum, l) => sum + (l.runStats?.distanceKm ?? 0), 0) * 10,
 				) / 10;
 
 			let body =

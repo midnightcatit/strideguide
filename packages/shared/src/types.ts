@@ -1,6 +1,22 @@
 /** Shared domain types for Stride Guide. */
 
-export type Modality = 'running' | 'strength' | 'mobility' | 'recovery';
+/**
+ * Every modality the plan and imported activities can carry, as one shared set.
+ * A planned session and a connector activity both draw from this list, so the
+ * two stores never drift apart. Cross-training is stored as `recovery` modality
+ * with the `cross-train` archetype on the plan side; the activity side carries
+ * `cross-train` directly.
+ */
+export const MODALITIES = [
+	'running',
+	'walking',
+	'strength',
+	'mobility',
+	'recovery',
+	'cross-train',
+] as const;
+
+export type Modality = (typeof MODALITIES)[number];
 
 export type SessionArchetype =
 	| 'easy'
@@ -149,6 +165,25 @@ export interface RunStats {
 	splits?: { label: string; paceSecPerKm?: number; note?: string }[];
 }
 
+/**
+ * Run stats as stored on a log. Any subset of the fields, because a device
+ * import may know only some of them (a walk with a duration but no distance).
+ */
+export type StoredRunStats = Partial<RunStats>;
+
+/** The stored plan params: how the plan was generated and when it was rebuilt. */
+export interface PlanParams {
+	vdot?: number | null;
+	baseWeeklyKm?: number;
+	totalWeeks?: number;
+	/** The plan review shown in the review step, unit-free. */
+	review?: string;
+	/** ISO time of the last adapt rebuild. */
+	adaptedAt?: string;
+	/** ISO time of the last week-one preview rebuild. */
+	previewedAt?: string;
+}
+
 export interface StrengthSet {
 	exerciseId?: string;
 	machine?: string;
@@ -179,6 +214,8 @@ export interface SessionPrescription {
 	libraryId?: string;
 	/** True when the runner added this session from the library (removable). */
 	added?: boolean;
+	/** True when the runner typed the workout in themselves, not from the library. */
+	custom?: boolean;
 }
 
 export type StepKind = 'warmup' | 'work' | 'recovery' | 'rest' | 'cooldown';

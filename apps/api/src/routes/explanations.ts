@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { eq, inArray } from 'drizzle-orm';
 import { explanationRefFor } from '@strideguide/shared/plan';
-import { DEFAULT_PREFS, localizeUnits, type Prefs, type Units } from '@strideguide/shared/units';
+import { DEFAULT_PREFS, localizeUnits, type Units } from '@strideguide/shared/units';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -57,8 +57,7 @@ explanations.get('/', async (c) => {
 		.from(schema.settings)
 		.where(eq(schema.settings.userId, user.id))
 		.limit(1);
-	const units: Units = { ...DEFAULT_PREFS, ...((settingRows[0]?.prefs as Partial<Prefs>) ?? {}) }
-		.units;
+	const units: Units = { ...DEFAULT_PREFS, ...(settingRows[0]?.prefs ?? {}) }.units;
 
 	const ids = ((row.citationIds as string[] | null) ?? []).slice(0, 24);
 	const sourceRows = ids.length

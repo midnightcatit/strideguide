@@ -17,7 +17,7 @@ settings.get('/', async (c) => {
 		.from(schema.settings)
 		.where(eq(schema.settings.userId, user.id))
 		.limit(1);
-	const prefs: Prefs = { ...DEFAULT_PREFS, ...((rows[0]?.prefs as Partial<Prefs>) ?? {}) };
+	const prefs: Prefs = { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}) };
 	return c.json({ prefs });
 });
 
@@ -77,7 +77,7 @@ settings.put(
 		);
 		const prefs: Prefs = {
 			...DEFAULT_PREFS,
-			...((rows[0]?.prefs as Partial<Prefs>) ?? {}),
+			...(rows[0]?.prefs ?? {}),
 			...clean,
 		};
 		await db

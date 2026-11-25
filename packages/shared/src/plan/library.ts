@@ -7,7 +7,7 @@
  * ids are used; an empty list means no single file fits and the summary says why.
  */
 
-import type { StructuredWorkout } from '../types';
+import type { Modality, StructuredWorkout } from '../types';
 import { block, MIN, step, wk } from './library-helpers';
 import { EXTRA_WORKOUTS } from './library-extra';
 import { PLUS_WORKOUTS } from './library-plus';
@@ -17,7 +17,7 @@ import { focusRoutine, type StretchFocus } from './mobility-plan';
 export interface LibraryWorkout {
 	id: string;
 	title: string;
-	modality: 'running' | 'walking' | 'strength' | 'mobility' | 'recovery';
+	modality: Modality;
 	type: string;
 	durationMin: number;
 	intensity: 'easy' | 'steady' | 'hard';
