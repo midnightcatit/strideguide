@@ -80,3 +80,19 @@ export function sheetPanel(_node: Element, _params?: unknown) {
 			`opacity: ${t}; transform: translateY(${u * rise}px) scale(${1 - u * 0.01})`,
 	};
 }
+
+/**
+ * The header account menu: a quick fade with a small drop from the trigger, on
+ * the short duration. Driven here rather than in CSS because a `transition:`
+ * runs on the Web Animations API, which the global reduced-motion rule does not
+ * reach, so the check has to live in the function.
+ */
+export function menuPanel(_node: Element, _params?: unknown) {
+	const drop = -6;
+	return {
+		duration: prefersReducedMotion.current ? 0 : durationMs('--dur-1'),
+		easing: easeOut,
+		css: (t: number, u: number) =>
+			`opacity: ${t}; transform: translateY(${u * drop}px) scale(${1 - u * 0.02})`,
+	};
+}

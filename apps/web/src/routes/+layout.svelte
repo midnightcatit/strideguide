@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { goto, onNavigate } from '$app/navigation';
 	import { api } from '$lib/api';
-	import { loadPrefs } from '$lib/prefs.svelte';
+	import { loadPrefs, prefs } from '$lib/prefs.svelte';
 	import { ensurePlan } from '$lib/planStore.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
@@ -12,6 +12,7 @@
 	import { installClientErrorReporting } from '$lib/clientErrors';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
+	import AvatarMenu from '$lib/components/AvatarMenu.svelte';
 
 	let { children } = $props();
 
@@ -44,6 +45,11 @@
 	// A route under the (bleed) group asks the shell to drop its centred, padded
 	// column, so the page can run edge to edge without breaking out by hand.
 	const bleed = $derived((page.data as { bleed?: boolean }).bleed === true);
+
+	// The name the avatar draws its initial from: the one set in Settings > You,
+	// else the Google display name. Empty means the avatar shows a neutral icon
+	// instead of a letter.
+	const avatarName = $derived(prefs.name ?? auth.user?.name ?? null);
 
 	// Crossfade route changes with the View Transitions API where it exists, so
 	// navigation reads as motion instead of a hard swap. The CSS names the content
@@ -189,16 +195,7 @@
 					{#if pending > 0}
 						<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync">⟳ {pending}</span>
 					{/if}
-					<a
-						href="/settings"
-						aria-label="Settings"
-						class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink"
-					>
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-							<circle cx="12" cy="12" r="3" />
-							<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
-						</svg>
-					</a>
+					<AvatarMenu name={avatarName} email={auth.user?.email} seed={auth.user?.id} />
 				</div>
 			</div>
 		</header>
