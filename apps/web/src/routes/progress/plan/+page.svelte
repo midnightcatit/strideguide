@@ -41,10 +41,16 @@
 		weeks.find((w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate),
 	);
 
-	// The plan's phases as one bar, deepening as the block loads: base is the
-	// faintest, peak the strongest, and a taper falls back. Data over code, so a
-	// new phase name still draws.
-	const PHASE_OPACITY: Record<string, number> = { base: 0.25, build: 0.5, peak: 0.85, taper: 0.4 };
+	// The plan's phases as one bar, deepening as the block loads: base is a faint
+	// step, peak the strongest, a taper falls back, and recovery is lightest after
+	// the race. Data over code, so a new phase name still draws.
+	const PHASE_OPACITY: Record<string, number> = {
+		base: 0.25,
+		build: 0.5,
+		peak: 0.85,
+		taper: 0.4,
+		recovery: 0.2,
+	};
 	const phaseSegments = $derived.by(() => {
 		const segs: { phase: string; count: number }[] = [];
 		for (const w of weeks) {
@@ -129,13 +135,13 @@
 		<section aria-labelledby="pl-phases" class="mb-7">
 			<SectionHeader id="pl-phases" eyebrow="Phases" meta="{totalWeeks} weeks" />
 			<Card>
-				<ProportionBar segments={phaseBars} color={TRAINING_LOAD} height={10} ariaLabel="Plan phases, base to taper" />
+				<ProportionBar segments={phaseBars} color={TRAINING_LOAD} height={10} ariaLabel="Plan phases, base to recovery" />
 				<ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-steel">
 					{#each phaseSegments as s (s.phase)}
 						<li class="tabular capitalize">{s.phase} · {s.count} {s.count === 1 ? 'week' : 'weeks'}</li>
 					{/each}
 				</ul>
-				<p class="mt-2 text-xs text-steel">Base is the faintest step, peak the strongest, so the bar reads as one block loading up.</p>
+				<p class="mt-2 text-xs text-steel">Base and recovery are the faintest steps, peak the strongest, so the bar reads as one block loading up, then easing after the race.</p>
 			</Card>
 		</section>
 	{/if}

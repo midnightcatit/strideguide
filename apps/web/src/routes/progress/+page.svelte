@@ -154,7 +154,8 @@
 	);
 
 	// The plan's phases as one bar for the ring card, deeper as the block loads:
-	// base is the faintest, peak the strongest, and a taper falls back.
+	// base is a faint step, peak the strongest, a taper falls back, and recovery
+	// eases after the race.
 	const phaseSegments = $derived.by(() => {
 		const weeks = store.plan?.weeks ?? [];
 		const segs: { phase: string; count: number }[] = [];
@@ -166,7 +167,13 @@
 		}
 		return segs;
 	});
-	const PHASE_OPACITY: Record<string, number> = { base: 0.25, build: 0.5, peak: 0.85, taper: 0.4 };
+	const PHASE_OPACITY: Record<string, number> = {
+		base: 0.25,
+		build: 0.5,
+		peak: 0.85,
+		taper: 0.4,
+		recovery: 0.2,
+	};
 	const phaseBars = $derived(
 		phaseSegments.map((seg) => ({
 			label: seg.phase,
@@ -253,10 +260,10 @@
 							segments={phaseBars}
 							color={TRAINING_LOAD}
 							height={8}
-							ariaLabel="Plan phases, base to taper"
+							ariaLabel="Plan phases, base to recovery"
 						/>
 					</div>
-					<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
+					<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper, then recovery.</p>
 				{/if}
 				<p class="mt-auto pt-3 text-[11px] text-signal-ink">See the whole plan →</p>
 			</Card>

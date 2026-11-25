@@ -41,6 +41,17 @@ function chunk<T>(items: T[], size: number): T[][] {
 	return out;
 }
 
+/**
+ * The week columns the table stores: drop the row-only fields the insert does
+ * not carry. New columns flow through automatically, so a persisted field like
+ * `phase` is never silently dropped here.
+ */
+export function weekRowValues<T extends { sessionRows: unknown; targetVolumeKm: number }>(
+	rows: T[],
+): Omit<T, 'sessionRows' | 'targetVolumeKm'>[] {
+	return rows.map(({ sessionRows: _s, targetVolumeKm: _t, ...rest }) => rest);
+}
+
 /** A session a rebuild wants stored, as the route hands it to the reconcile. */
 interface DesiredSessionRow {
 	day: number;
@@ -63,6 +74,7 @@ interface StoredWeek {
 /** A rebuilt week to store, with its sessions. */
 interface DesiredWeek {
 	weekNumber: number;
+	phase: string;
 	focus: string;
 	summaryText: string;
 	startDate: string;
@@ -109,6 +121,7 @@ async function replaceWeeks(
 			await db
 				.update(schema.planWeeks)
 				.set({
+					phase: week.phase,
 					focus: week.focus,
 					summaryText: week.summaryText,
 					startDate: week.startDate,
@@ -120,6 +133,7 @@ async function replaceWeeks(
 				id: weekId,
 				planId,
 				weekNumber: week.weekNumber,
+				phase: week.phase,
 				focus: week.focus,
 				summaryText: week.summaryText,
 				startDate: week.startDate,
@@ -870,9 +884,7 @@ plans.post(
 		});
 
 		// D1 caps bound parameters per statement (100). Keep chunks well under it.
-		const weekValues = weekRows.map(
-			({ sessionRows: _s, phase: _p, targetVolumeKm: _t, ...rest }) => rest,
-		);
+		const weekValues = weekRowValues(weekRows);
 		for (const part of chunk(weekValues, 10)) {
 			await db.insert(schema.planWeeks).values(part);
 		}
@@ -1060,6 +1072,7 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 	}));
 	const desired: DesiredWeek[] = changed.map((w) => ({
 		weekNumber: w.weekNumber,
+		phase: w.phase,
 		focus: w.focus,
 		summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
 		startDate: w.startDate,
@@ -1314,6 +1327,7 @@ plans.post(
 		}));
 		const laterDesired: DesiredWeek[] = laterWeeks.map((w) => ({
 			weekNumber: w.weekNumber,
+			phase: w.phase,
 			focus: w.focus,
 			summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
 			startDate: w.startDate,

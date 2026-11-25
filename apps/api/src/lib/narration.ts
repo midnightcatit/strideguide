@@ -15,6 +15,7 @@ const PHASE_FOCUS: Record<string, string> = {
 	build: 'quality returns and volume keeps climbing',
 	peak: 'volume starts to come down as goal pace sharpens',
 	taper: 'volume drops away and short efforts keep the legs sharp',
+	recovery: 'volume eases back and the legs stay fresh',
 };
 
 /** Deterministic fallback summary, used whenever AI is unavailable or fails. */
@@ -92,7 +93,7 @@ export interface PlanReviewContext {
 	totalWeeks: number;
 	/** Age in whole years, when the runner gave one. Drives the age-band wording. */
 	age?: number;
-	/** Phase of each week, in order (base, build, peak, taper). */
+	/** Phase of each week, in order (base, build, peak, taper, recovery). */
 	phases: string[];
 	/** Strength sessions a week, so the review can name the balance. */
 	strengthPerWeek: number;

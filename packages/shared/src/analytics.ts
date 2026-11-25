@@ -34,7 +34,7 @@ export interface WeekLike {
 	targetVolumeKm?: number;
 	startDate?: string | null;
 	endDate?: string | null;
-	/** Plan phase: base, build, peak or taper. */
+	/** Plan phase: base, build, peak, taper or recovery. */
 	phase?: string | null;
 	sessions: SessionLike[];
 }
