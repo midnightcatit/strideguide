@@ -30,6 +30,11 @@
 	// null while unknown, then true or false once the connection read comes back.
 	const healthConnected = $derived(connectionFor(auth.user?.id ?? null)?.connected ?? null);
 	let healthBusy = $state(false);
+	// True once the payload carries at least one metric or sample.
+	const hasHealth = $derived(
+		!!health?.available &&
+			(Object.keys(health.metrics).length > 0 || Object.keys(health.samples).length > 0),
+	);
 
 	/**
 	 * Read the shared health cache, refreshing in the background when it is
@@ -281,17 +286,28 @@
 		<CalendarPreviewCard />
 	</div>
 
-	<!-- Connected health: a read-only view of the watch numbers. The shared cache
-	     renders the last payload instantly and revalidates when it is stale. -->
+	<!-- Connected health: one card of mini widgets that opens the full health
+	     page. The shared cache renders the last payload instantly and
+	     revalidates when it is stale. -->
 	<section aria-labelledby="health" class="mt-5">
 		<Card>
-			<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
-			<p class="mt-0.5 text-sm text-steel">Your watch and health numbers, from the last 30 days.</p>
-			{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
-				<div class="mt-4">
-					<HealthSummary payload={health} max={4} />
+			<div class="flex items-baseline justify-between gap-3">
+				<div class="min-w-0">
+					<p class="tabular text-[10px] uppercase tracking-widest text-steel">Connected health</p>
+					<p class="mt-0.5 text-sm text-steel">Your watch and health numbers, from the last 30 days.</p>
 				</div>
-				<a href="/progress/health?from=/" class="mt-3 inline-block text-xs text-signal-ink hover:underline">See all health →</a>
+				{#if hasHealth}
+					<a href="/progress/health?from=/" class="shrink-0 text-xs font-medium text-signal-ink hover:underline">See all →</a>
+				{/if}
+			</div>
+			{#if hasHealth}
+				<a
+					href="/progress/health?from=/"
+					aria-label="Open all your health data"
+					class="no-press mt-4 block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-ink"
+				>
+					<HealthSummary payload={health} max={6} />
+				</a>
 			{:else if healthConnected === false}
 				<p class="mt-3 text-sm text-steel">Connect a watch or health app in Settings to see your numbers here.</p>
 				<a href="/settings/connections" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Open Settings →</a>
