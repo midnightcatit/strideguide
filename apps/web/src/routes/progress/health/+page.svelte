@@ -6,18 +6,31 @@
 	import { ensureHealth, healthFor } from '$lib/healthCache.svelte';
 	import { metricOrigin } from '$lib/metrics';
 	import { fmtDistance } from '$lib/prefs.svelte';
-	import type { ChartPoint } from '$lib/healthChart';
+	import {
+		METRIC_GOALS,
+		SLEEP_STAGES,
+		metricColor,
+		periodDelta,
+		shortDay,
+		spreadBand,
+	} from '$lib/chartTheme';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
-	import HealthChart from '$lib/components/HealthChart.svelte';
-	import HealthBars from '$lib/components/HealthBars.svelte';
+	import QueryValueCard from '$lib/components/charts/QueryValueCard.svelte';
+	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
+	import BarsCard from '$lib/components/charts/BarsCard.svelte';
+	import StackedBarsCard from '$lib/components/charts/StackedBarsCard.svelte';
+	import HeatmapCard from '$lib/components/charts/HeatmapCard.svelte';
+	import TopListCard from '$lib/components/charts/TopListCard.svelte';
 
 	/**
 	 * The health drill-down: every metric the API reports over a 7, 30 or 90 day
-	 * window, each charted when it is present. A metric the payload does not carry
-	 * is skipped, not drawn as zero. Units for distance follow the user's prefs;
-	 * the rest are display hints from the metric itself.
+	 * window, each drawn with the widget that fits it. A metric keeps one family
+	 * colour everywhere, gets a real axis, grid, tooltip and, where there are
+	 * series, a legend. A metric the payload does not carry is skipped, never
+	 * drawn as zero. Units for distance follow the user's prefs; the rest are
+	 * display hints from the metric itself.
 	 */
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
@@ -61,93 +74,124 @@
 	function hasKey(key: string): boolean {
 		return (metrics[key]?.series?.length ?? 0) > 0;
 	}
-	function dateMap(key: string): Record<string, number> {
-		const out: Record<string, number> = {};
-		for (const p of metrics[key]?.series ?? []) out[p.date] = p.value;
-		return out;
+	function series(key: string) {
+		return metrics[key]?.series ?? [];
 	}
-	function points(key: string): ChartPoint[] {
-		return (metrics[key]?.series ?? []).map((p) => ({ x: p.date, y: p.value }));
+	function values(key: string): number[] {
+		return series(key).map((p) => p.value);
 	}
-	function barPoints(key: string): { x: string; value: number }[] {
-		return (metrics[key]?.series ?? []).map((p) => ({ x: p.date, value: p.value }));
+	function latest(key: string): number | null {
+		const value = metrics[key]?.latest?.value;
+		if (typeof value === 'number') return value;
+		const points = series(key);
+		return points.length ? points[points.length - 1].value : null;
 	}
-	function latestText(key: string, fmt: (n: number) => string): string {
-		const v = metrics[key]?.latest?.value;
-		return typeof v === 'number' ? fmt(v) : 'No data';
+	/** The change against the earlier half of the window. */
+	function delta(key: string): number | null {
+		return periodDelta(values(key));
 	}
+	/** The window's own typical range, for a normal-range band. */
+	function band(key: string): [number, number] | null {
+		return spreadBand(values(key));
+	}
+	function points(key: string): { date: string; value: number }[] {
+		return series(key).map((p) => ({ date: p.date, value: p.value }));
+	}
+	function valueText(key: string, format: (n: number) => string): string {
+		const v = latest(key);
+		return v === null ? 'No data' : format(v);
+	}
+
+	const fmtBpm = (n: number) => `${Math.round(n)} bpm`;
+	const fmtMs = (n: number) => `${Math.round(n)} ms`;
+	const fmtPct = (n: number) => `${n.toFixed(1)} %`;
+	const fmtResp = (n: number) => `${n.toFixed(1)} /min`;
+	const fmtVo2 = (n: number) => n.toFixed(1);
+	const fmtTemp = (n: number) => `${n.toFixed(1)} °C`;
+	const fmtSteps = (n: number) => Math.round(n).toLocaleString();
+	const fmtKcal = (n: number) => `${Math.round(n)} kcal`;
+	const fmtMin = (n: number) => `${Math.round(n)} min`;
+	const fmtFloors = (n: number) => `${Math.round(n)}`;
+	const fmtMeters = (n: number) => `${Math.round(n)} m`;
+	const fmtKm = (m: number) => fmtDistance(m / 1000);
 
 	function fmtSleep(min: number): string {
 		const h = Math.floor(min / 60);
 		const m = Math.round(min % 60);
 		return m ? `${h}h ${m}m` : `${h}h`;
 	}
-	const fmtKm = (m: number) => fmtDistance(m / 1000);
 
-	// A band plus a line: the day's low to high, with the average drawn over it.
-	const hrChart = $derived.by(() => {
-		const min = dateMap('hr_min');
-		const avg = dateMap('hr_avg');
-		const max = dateMap('hr_max');
-		const dates = [...new Set([...Object.keys(min), ...Object.keys(avg), ...Object.keys(max)])].sort();
-		return dates.map((d) => ({ x: d, y: avg[d] ?? null, low: min[d] ?? null, high: max[d] ?? null }));
-	});
+	/** The per-day low, average and high for a band plus line. */
+	function rangePoints(avgKey: string, lowKey: string, highKey: string) {
+		const avg = new Map(series(avgKey).map((p) => [p.date, p.value]));
+		const low = new Map(series(lowKey).map((p) => [p.date, p.value]));
+		const high = new Map(series(highKey).map((p) => [p.date, p.value]));
+		const dates = [...new Set([...avg.keys(), ...low.keys(), ...high.keys()])].sort();
+		return dates.map((date) => ({
+			date,
+			value: avg.get(date) ?? null,
+			low: low.get(date) ?? null,
+			high: high.get(date) ?? null,
+		}));
+	}
 
-	const spo2Chart = $derived.by(() => {
-		const low = dateMap('spo2_low');
-		const avg = dateMap('spo2_avg');
-		const high = dateMap('spo2_high');
-		const dates = [...new Set([...Object.keys(low), ...Object.keys(avg), ...Object.keys(high)])].sort();
-		return dates.map((d) => ({ x: d, y: avg[d] ?? null, low: low[d] ?? null, high: high[d] ?? null }));
-	});
+	const hasRange = $derived(hasKey('hr_min') || hasKey('hr_avg') || hasKey('hr_max'));
+	const hasSpo2 = $derived(hasKey('spo2_avg') || hasKey('spo2_low') || hasKey('spo2_high'));
 
-	const sleepLegend = [
-		{ label: 'Deep', cls: 'bg-ink' },
-		{ label: 'REM', cls: 'bg-ink/60' },
-		{ label: 'Light', cls: 'bg-ink/35' },
-		{ label: 'Awake', cls: 'bg-steel' },
-	];
-	const hasStages = $derived(
-		['sleep_deep_min', 'sleep_rem_min', 'sleep_light_min', 'sleep_awake_min'].some(hasKey),
-	);
+	const hasStages = $derived(SLEEP_STAGES.some((s) => hasKey(s.key)));
 	const hasSleepTotal = $derived(hasKey('sleep_min'));
 
 	const sleepPoints = $derived.by(() => {
-		const deep = dateMap('sleep_deep_min');
-		const rem = dateMap('sleep_rem_min');
-		const light = dateMap('sleep_light_min');
-		const awake = dateMap('sleep_awake_min');
-		const dates = [...new Set([...Object.keys(deep), ...Object.keys(rem), ...Object.keys(light), ...Object.keys(awake)])].sort();
-		return dates.map((d) => ({
-			x: d,
-			segments: [
-				{ value: deep[d] ?? 0, cls: 'bg-ink' },
-				{ value: rem[d] ?? 0, cls: 'bg-ink/60' },
-				{ value: light[d] ?? 0, cls: 'bg-ink/35' },
-				{ value: awake[d] ?? 0, cls: 'bg-steel' },
-			],
+		const byStage = new Map(SLEEP_STAGES.map((s) => [s.key, new Map(series(s.key).map((p) => [p.date, p.value]))]));
+		const dates = [...new Set(SLEEP_STAGES.flatMap((s) => [...(byStage.get(s.key)?.keys() ?? [])]))].sort();
+		return dates.map((date) => ({
+			date,
+			values: Object.fromEntries(SLEEP_STAGES.map((s) => [s.key, byStage.get(s.key)?.get(date) ?? null])),
 		}));
+	});
+
+	/** A night's total: the reported total, or the sum of the stages. */
+	const sleepNightly = $derived.by(() => {
+		if (hasSleepTotal) return points('sleep_min');
+		const dates = [...new Set(SLEEP_STAGES.flatMap((s) => series(s.key).map((p) => p.date)))].sort();
+		return dates.map((date) => ({
+			date,
+			value: SLEEP_STAGES.reduce((sum, s) => sum + (series(s.key).find((p) => p.date === date)?.value ?? 0), 0),
+		}));
+	});
+
+	const sleepTotalText = $derived.by(() => {
+		const last = sleepNightly.at(-1);
+		return last ? fmtSleep(last.value) : 'No data';
 	});
 
 	const activity = $derived(
 		[
-			{ key: 'steps', label: 'Steps', format: (n: number) => Math.round(n).toLocaleString() },
-			{ key: 'active_energy_kcal', label: 'Active energy', format: (n: number) => `${Math.round(n)} kcal` },
-			{ key: 'floors', label: 'Floors', format: (n: number) => `${Math.round(n)}` },
-			{ key: 'active_zone_min', label: 'Active zone minutes', format: (n: number) => `${Math.round(n)} min` },
-			{ key: 'active_min', label: 'Active minutes', format: (n: number) => `${Math.round(n)} min` },
-			{ key: 'total_calories_kcal', label: 'Total calories', format: (n: number) => `${Math.round(n)} kcal` },
-			{ key: 'sedentary_min', label: 'Sedentary minutes', format: (n: number) => `${Math.round(n)} min` },
-			{ key: 'altitude_gain_m', label: 'Altitude gain', format: (n: number) => `${Math.round(n)} m` },
+			{ key: 'steps', label: 'Steps', format: fmtSteps, goal: true },
+			{ key: 'active_energy_kcal', label: 'Active energy', format: fmtKcal, goal: true },
+			{ key: 'active_zone_min', label: 'Active zone minutes', format: fmtMin, goal: true },
+			{ key: 'floors', label: 'Floors', format: fmtFloors, goal: false },
+			{ key: 'active_min', label: 'Active minutes', format: fmtMin, goal: false },
+			{ key: 'total_calories_kcal', label: 'Total calories', format: fmtKcal, goal: false },
+			{ key: 'sedentary_min', label: 'Sedentary minutes', format: fmtMin, goal: false },
+			{ key: 'altitude_gain_m', label: 'Altitude gain', format: fmtMeters, goal: false },
 		].filter((m) => hasKey(m.key)),
 	);
 
-	const SAMPLE_DEFS: Record<string, { label: string; format: (n: number) => string }> = {
-		weight_kg: { label: 'Weight', format: (n) => `${n.toFixed(1)} kg` },
-		body_fat_pct: { label: 'Body fat', format: (n) => `${n.toFixed(1)} %` },
-		height_mm: { label: 'Height', format: (n) => `${Math.round(n)} mm` },
-		core_temp_c: { label: 'Core temperature', format: (n) => `${n.toFixed(1)} °C` },
-		blood_glucose_mgdl: { label: 'Blood glucose', format: (n) => `${Math.round(n)} mg/dL` },
+	const topSteps = $derived(
+		series('steps')
+			.filter((p) => p.value > 0)
+			.sort((a, b) => b.value - a.value)
+			.slice(0, 5)
+			.map((p) => ({ label: shortDay(p.date), value: fmtSteps(p.value) })),
+	);
+
+	const SAMPLE_DEFS: Record<string, { label: string; unit?: string; decimals: number }> = {
+		weight_kg: { label: 'Weight', unit: 'kg', decimals: 1 },
+		body_fat_pct: { label: 'Body fat', unit: '%', decimals: 1 },
+		height_mm: { label: 'Height', unit: 'mm', decimals: 0 },
+		core_temp_c: { label: 'Core temperature', unit: '°C', decimals: 1 },
+		blood_glucose_mgdl: { label: 'Blood glucose', unit: 'mg/dL', decimals: 0 },
 	};
 	function titleCase(key: string): string {
 		return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -157,32 +201,19 @@
 			.filter((k) => (samples[k]?.series?.length ?? 0) > 0)
 			.map((k) => {
 				const def = SAMPLE_DEFS[k];
-				const series = samples[k]?.series ?? [];
-				const latest = samples[k]?.latest ?? null;
-				const unit = latest?.unit ?? '';
-				const format = def?.format ?? ((n: number) => (unit ? `${n} ${unit}` : String(n)));
+				const list = samples[k]?.series ?? [];
+				const latestSample = samples[k]?.latest ?? list[list.length - 1] ?? null;
 				return {
 					key: k,
 					label: def?.label ?? titleCase(k),
-					format,
-					points: series.map((p) => ({ x: p.time.slice(0, 10), y: p.value })),
-					value: latest ? format(latest.value) : 'No data',
+					unit: def?.unit ?? latestSample?.unit ?? undefined,
+					decimals: def?.decimals ?? 1,
+					values: list.map((p) => p.value),
+					value: latestSample ? latestSample.value.toFixed(def?.decimals ?? 1) : 'No data',
 				};
 			}),
 	);
 </script>
-
-{#snippet lineCard(label: string, value: string, pts: ChartPoint[], fmt: (n: number) => string)}
-	<Card tone="sunken">
-		<div class="flex items-baseline justify-between gap-3">
-			<p class="tabular text-xs uppercase tracking-widest text-steel">{label}</p>
-			<p class="tabular text-sm font-semibold">{value}</p>
-		</div>
-		<div class="mt-3">
-			<HealthChart points={pts} format={fmt} height={72} ariaLabel="{label} over the last {windowDays} days" />
-		</div>
-	</Card>
-{/snippet}
 
 <MetricHeader eyebrow="Progress · Health" title="Health data" {from} />
 
@@ -226,44 +257,88 @@
 			<SectionHeader id="h-heart" eyebrow="Heart" meta="Daily" />
 			<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 				{#if hasKey('resting_hr')}
-					{@render lineCard('Resting HR', latestText('resting_hr', (n) => `${Math.round(n)} bpm`), points('resting_hr'), (n) => `${Math.round(n)} bpm`)}
+					<QueryValueCard
+						title="Resting HR"
+						value={valueText('resting_hr', (n) => `${Math.round(n)}`)}
+						unit="bpm"
+						values={values('resting_hr')}
+						color={metricColor('resting_hr')}
+					/>
 				{/if}
 				{#if hasKey('hrv_ms')}
-					{@render lineCard('HRV', latestText('hrv_ms', (n) => `${Math.round(n)} ms`), points('hrv_ms'), (n) => `${Math.round(n)} ms`)}
+					<QueryValueCard
+						title="HRV"
+						value={valueText('hrv_ms', (n) => `${Math.round(n)}`)}
+						unit="ms"
+						values={values('hrv_ms')}
+						color={metricColor('hrv_ms')}
+					/>
+				{/if}
+			</div>
+			<div class="mt-3 space-y-3">
+				{#if hasKey('resting_hr')}
+					<TimeSeriesCard
+						title="Resting HR"
+						value={valueText('resting_hr', (n) => `${Math.round(n)}`)}
+						unit="bpm"
+						color={metricColor('resting_hr')}
+						change={delta('resting_hr')}
+						points={points('resting_hr')}
+						band={band('resting_hr')}
+						format={fmtBpm}
+						note="The shaded band is your typical range, one standard deviation either side of the window mean."
+					/>
+				{/if}
+				{#if hasKey('hrv_ms')}
+					<TimeSeriesCard
+						title="HRV"
+						value={valueText('hrv_ms', (n) => `${Math.round(n)}`)}
+						unit="ms"
+						color={metricColor('hrv_ms')}
+						change={delta('hrv_ms')}
+						points={points('hrv_ms')}
+						band={band('hrv_ms')}
+						format={fmtMs}
+						note="The shaded band is your typical range over this window, not a clinical target."
+					/>
 				{/if}
 			</div>
 		</section>
 	{/if}
 
-	{#if hasKey('hr_min') || hasKey('hr_avg') || hasKey('hr_max')}
+	{#if hasRange}
 		<section aria-labelledby="h-hr" class="mb-7">
 			<SectionHeader id="h-hr" eyebrow="Heart rate" meta="Min, average and max each day" />
-			<Card tone="sunken">
-				<HealthChart
-					points={hrChart}
-					mode="band"
-					format={(n) => `${Math.round(n)} bpm`}
-					height={110}
-					ariaLabel="Heart rate minimum, average and maximum over the last {windowDays} days"
-				/>
-				<p class="mt-3 text-xs text-steel">The band is the day's minimum to maximum, and the line is the daily average.</p>
-			</Card>
+			<TimeSeriesCard
+				title="Daily heart rate"
+				value={valueText('hr_avg', (n) => `${Math.round(n)}`)}
+				unit="bpm"
+				color={metricColor('hr_avg')}
+				change={delta('hr_avg')}
+				points={rangePoints('hr_avg', 'hr_min', 'hr_max')}
+				mode="range"
+				format={fmtBpm}
+				height={170}
+				note="The band is the day's minimum to maximum, and the line is the daily average."
+			/>
 		</section>
 	{/if}
 
-	{#if hasKey('spo2_avg') || hasKey('spo2_low') || hasKey('spo2_high')}
+	{#if hasSpo2}
 		<section aria-labelledby="h-spo2" class="mb-7">
-			<SectionHeader id="h-spo2" eyebrow="Blood oxygen" meta={latestText('spo2_avg', (n) => `${Math.round(n)} %`)} />
-			<Card tone="sunken">
-				<HealthChart
-					points={spo2Chart}
-					mode="band"
-					format={(n) => `${n.toFixed(1)} %`}
-					height={110}
-					ariaLabel="Blood oxygen average with its low and high band over the last {windowDays} days"
-				/>
-				<p class="mt-3 text-xs text-steel">The band is the confidence range the device reports around each day's average.</p>
-			</Card>
+			<SectionHeader id="h-spo2" eyebrow="Blood oxygen" meta={valueText('spo2_avg', fmtPct)} />
+			<TimeSeriesCard
+				title="Blood oxygen"
+				value={valueText('spo2_avg', (n) => n.toFixed(1))}
+				unit="%"
+				color={metricColor('spo2_avg')}
+				change={delta('spo2_avg')}
+				points={rangePoints('spo2_avg', 'spo2_low', 'spo2_high')}
+				mode="range"
+				format={fmtPct}
+				height={170}
+				note="The band is the confidence range the device reports around each day's average."
+			/>
 		</section>
 	{/if}
 
@@ -272,85 +347,135 @@
 			<SectionHeader id="h-fit" eyebrow="Breathing and fitness" />
 			<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 				{#if hasKey('respiratory_rate')}
-					{@render lineCard('Respiratory rate', latestText('respiratory_rate', (n) => `${n.toFixed(1)} /min`), points('respiratory_rate'), (n) => `${n.toFixed(1)} /min`)}
+					<QueryValueCard
+						title="Respiratory rate"
+						value={valueText('respiratory_rate', (n) => n.toFixed(1))}
+						unit="/min"
+						values={values('respiratory_rate')}
+						color={metricColor('respiratory_rate')}
+					/>
 				{/if}
 				{#if hasKey('vo2_max')}
-					{@render lineCard('VO2 max', latestText('vo2_max', (n) => n.toFixed(1)), points('vo2_max'), (n) => n.toFixed(1))}
+					<QueryValueCard
+						title="VO2 max"
+						value={valueText('vo2_max', (n) => n.toFixed(1))}
+						unit="ml/kg/min"
+						values={values('vo2_max')}
+						color={metricColor('vo2_max')}
+					/>
 				{/if}
 			</div>
+			{#if hasKey('vo2_max')}
+				<div class="mt-3">
+					<TimeSeriesCard
+						title="VO2 max"
+						value={valueText('vo2_max', (n) => n.toFixed(1))}
+						unit="ml/kg/min"
+						color={metricColor('vo2_max')}
+						change={delta('vo2_max')}
+						points={points('vo2_max')}
+						format={fmtVo2}
+					/>
+				</div>
+			{/if}
 		</section>
 	{/if}
 
 	{#if hasStages || hasSleepTotal}
 		<section aria-labelledby="h-sleep" class="mb-7">
-			<SectionHeader id="h-sleep" eyebrow="Sleep" meta={hasSleepTotal ? latestText('sleep_min', fmtSleep) : 'By stage'} />
-			<Card tone="sunken">
+			<SectionHeader id="h-sleep" eyebrow="Sleep" meta={hasSleepTotal || sleepNightly.length ? sleepTotalText : 'By stage'} />
+			<div class="space-y-3">
 				{#if hasStages}
-					<HealthBars
+					<StackedBarsCard
+						title="Sleep stages"
+						value={sleepTotalText}
+						color={metricColor('sleep_min')}
+						change={hasSleepTotal ? delta('sleep_min') : null}
 						points={sleepPoints}
+						stages={SLEEP_STAGES}
 						format={fmtSleep}
-						height={96}
-						ariaLabel="Sleep stages each night over the last {windowDays} days"
-						legend={sleepLegend}
 					/>
 				{:else}
-					<HealthBars
-						points={barPoints('sleep_min')}
+					<BarsCard
+						title="Sleep"
+						value={sleepTotalText}
+						color={metricColor('sleep_min')}
+						change={delta('sleep_min')}
+						points={points('sleep_min')}
 						format={fmtSleep}
-						height={96}
-						ariaLabel="Sleep each night over the last {windowDays} days"
 					/>
 				{/if}
-			</Card>
+				{#if sleepNightly.length}
+					<HeatmapCard
+						title="Sleep each night"
+						value={sleepTotalText}
+						color={metricColor('sleep_min')}
+						points={sleepNightly}
+						format={fmtSleep}
+					/>
+				{/if}
+			</div>
 		</section>
 	{/if}
 
 	{#if hasKey('sleep_temp_c')}
 		<section aria-labelledby="h-sleeptemp" class="mb-7">
 			<SectionHeader id="h-sleeptemp" eyebrow="Sleep temperature" />
-			{@render lineCard('Nightly skin temperature', latestText('sleep_temp_c', (n) => `${n.toFixed(1)} °C`), points('sleep_temp_c'), (n) => `${n.toFixed(1)} °C`)}
+			<TimeSeriesCard
+				title="Nightly skin temperature"
+				value={valueText('sleep_temp_c', (n) => n.toFixed(1))}
+				unit="°C"
+				color={metricColor('sleep_temp_c')}
+				change={delta('sleep_temp_c')}
+				points={points('sleep_temp_c')}
+				format={fmtTemp}
+			/>
 		</section>
 	{/if}
 
 	{#if activity.length}
 		<section aria-labelledby="h-activity" class="mb-7">
 			<SectionHeader id="h-activity" eyebrow="Activity" meta="Daily totals" />
-			<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+			<div class="space-y-3">
 				{#each activity as m (m.key)}
-					<Card tone="sunken">
-						<div class="flex items-baseline justify-between gap-3">
-							<p class="tabular text-xs uppercase tracking-widest text-steel">{m.label}</p>
-							<p class="tabular text-sm font-semibold">{latestText(m.key, m.format)}</p>
-						</div>
-						<div class="mt-3">
-							<HealthBars
-								points={barPoints(m.key)}
-								format={m.format}
-								height={64}
-								ariaLabel="{m.label} over the last {windowDays} days"
-								showAverage
-							/>
-						</div>
-					</Card>
+					<BarsCard
+						title={m.label}
+						value={valueText(m.key, m.format)}
+						color={metricColor(m.key)}
+						change={delta(m.key)}
+						points={points(m.key)}
+						format={m.format}
+						goal={m.goal && METRIC_GOALS[m.key] ? { value: METRIC_GOALS[m.key] } : null}
+					/>
 				{/each}
+				{#if hasKey('steps')}
+					<HeatmapCard
+						title="Steps each day"
+						value={valueText('steps', fmtSteps)}
+						color={metricColor('steps')}
+						points={points('steps')}
+						format={fmtSteps}
+					/>
+				{/if}
+				{#if topSteps.length}
+					<TopListCard title="Best days by steps" color={metricColor('steps')} rows={topSteps} />
+				{/if}
 			</div>
 		</section>
 	{/if}
 
 	{#if hasKey('distance_m')}
 		<section aria-labelledby="h-distance" class="mb-7">
-			<SectionHeader id="h-distance" eyebrow="Distance" meta={latestText('distance_m', fmtKm)} />
-			<Card tone="sunken">
-				<HealthBars
-					points={barPoints('distance_m')}
-					format={fmtKm}
-					height={80}
-					ariaLabel="Distance each day over the last {windowDays} days"
-					barClass="bg-ok"
-					showAverage
-				/>
-				<p class="mt-3 text-xs text-steel">Distance the device recorded each day, in your units.</p>
-			</Card>
+			<SectionHeader id="h-distance" eyebrow="Distance" meta={valueText('distance_m', fmtKm)} />
+			<BarsCard
+				title="Distance"
+				value={valueText('distance_m', fmtKm)}
+				color={metricColor('distance_m')}
+				change={delta('distance_m')}
+				points={points('distance_m')}
+				format={fmtKm}
+				note="Distance the device recorded each day, in your units."
+			/>
 		</section>
 	{/if}
 
@@ -359,7 +484,14 @@
 			<SectionHeader id="h-samples" eyebrow="Measurements" meta="{sampleCards.length} tracked" />
 			<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 				{#each sampleCards as s (s.key)}
-					{@render lineCard(s.label, s.value, s.points, s.format)}
+					<QueryValueCard
+						title={s.label}
+						value={s.value}
+						unit={s.unit}
+						values={s.values}
+						color={metricColor(s.key)}
+						decimals={s.decimals}
+					/>
 				{/each}
 			</div>
 		</section>

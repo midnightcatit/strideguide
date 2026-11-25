@@ -1,11 +1,13 @@
 <script lang="ts">
 	import type { HealthMetricsPayload } from '$lib/api';
-	import { sparkline } from '$lib/healthChart';
+	import Sparkline from '$lib/components/charts/Sparkline.svelte';
+	import { metricColor } from '$lib/chartTheme';
 
 	/**
 	 * A short row of headlines for the condensed health cards. Takes the grouped
-	 * payload and shows the metrics that are present, each with a tiny trend line.
-	 * A metric the payload does not carry is left out, never shown as zero.
+	 * payload and shows the metrics that are present, each with a tiny trend line
+	 * in the metric's family colour. A metric the payload does not carry is left
+	 * out, never shown as zero.
 	 */
 	let { payload, max = 6 }: { payload: HealthMetricsPayload | null; max?: number } = $props();
 
@@ -36,7 +38,7 @@
 					key: d.key,
 					label: d.label,
 					value: latest ? d.format(latest.value) : 'No data',
-					points: sparkline(series.map((p) => p.value), 100, 20, 3),
+					values: series.map((p) => p.value),
 				};
 			}),
 	);
@@ -48,21 +50,9 @@
 			<div class="rounded-lg border border-hairline bg-sunken px-3 py-2.5">
 				<p class="tabular text-[10px] uppercase tracking-widest text-steel">{tile.label}</p>
 				<p class="tabular mt-0.5 text-base font-semibold">{tile.value}</p>
-				{#if tile.points}
-					<svg viewBox="0 0 100 20" preserveAspectRatio="none" class="mt-1.5 h-5 w-full" aria-hidden="true">
-						<polyline
-							points={tile.points}
-							fill="none"
-							stroke="var(--cool)"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							vector-effect="non-scaling-stroke"
-						></polyline>
-					</svg>
-				{:else}
-					<div class="mt-1.5 h-5"></div>
-				{/if}
+				<div class="mt-1">
+					<Sparkline values={tile.values} color={metricColor(tile.key)} height={20} />
+				</div>
 			</div>
 		{/each}
 	</div>
