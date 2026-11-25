@@ -135,13 +135,27 @@ const FOCUS: Record<string, string> = {
 
 /* ------------------------------- phases ---------------------------------- */
 
+/**
+ * The phase shape used when a profile ships no progression rules. A profile is
+ * data, and a plan built from one that carries no rules should still have the
+ * base, build, peak and taper arc the race profiles use, rather than a flat run
+ * of base weeks that never tapers into the race. The week counts are
+ * proportional, so the same shape scales to any plan length.
+ */
+const DEFAULT_PROGRESSION: PlanInput['profile']['progressionRules'] = [
+	{ phase: 'base', weeks: 6, volumeStep: 0.08, deload: false },
+	{ phase: 'build', weeks: 6, volumeStep: 0.08, deload: true },
+	{ phase: 'peak', weeks: 3, volumeStep: 0.04, deload: false },
+	{ phase: 'taper', weeks: 2, volumeStep: -0.25, deload: false },
+];
+
 function phaseSequence(
 	rules: PlanInput['profile']['progressionRules'],
 	totalWeeks: number,
 ): string[] {
-	if (rules.length === 0) return Array.from({ length: totalWeeks }, () => 'base');
-	const sum = rules.reduce((s, r) => s + r.weeks, 0) || totalWeeks;
-	const counts = rules.map((r) => Math.max(1, Math.floor((r.weeks / sum) * totalWeeks)));
+	const effective = rules.length ? rules : DEFAULT_PROGRESSION;
+	const sum = effective.reduce((s, r) => s + r.weeks, 0) || totalWeeks;
+	const counts = effective.map((r) => Math.max(1, Math.floor((r.weeks / sum) * totalWeeks)));
 	let assigned = counts.reduce((a, b) => a + b, 0);
 	let i = 0;
 	while (assigned < totalWeeks) {
@@ -156,7 +170,7 @@ function phaseSequence(
 		}
 	}
 	const out: string[] = [];
-	rules.forEach((r, idx) => {
+	effective.forEach((r, idx) => {
 		for (let k = 0; k < counts[idx]!; k++) out.push(r.phase);
 	});
 	return out.slice(0, totalWeeks);
@@ -1115,7 +1129,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const slotDays = pickSpaced(rest, qualitySlots);
 		const qualityDays = slotDays.slice(0, Math.min(hardCount, slotDays.length));
 		const softDays = slotDays.filter((d) => !qualityDays.includes(d));
-		const usedForRun = new Set([longDay, ...slotDays]);
+		// A recovery week carries no long run, so the long-run day is not reserved:
+		// it can take an easy run, so the easy runs cover the whole week rather than
+		// leaving that day empty.
+		const usedForRun = new Set(isRecovery ? slotDays : [longDay, ...slotDays]);
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
 		// Strength gets its own days, never sharing with a run, and takes them before

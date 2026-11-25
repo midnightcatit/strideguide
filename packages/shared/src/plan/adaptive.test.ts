@@ -90,4 +90,32 @@ describe('adaptPlan', () => {
 			.map((b) => b.machine);
 		expect(moves).toContain('Bicep curl');
 	});
+
+	it('carries over the easy recovery weeks a fresh plan appends', () => {
+		const fresh = generatePlan(baseInput);
+		const recoveryCount = fresh.weeks.filter((w) => w.phase === 'recovery').length;
+		expect(recoveryCount).toBeGreaterThan(0);
+		// A stored plan from before the engine appended the easy weeks after the
+		// race: it stops at race day, so an adapt has to add them back.
+		const stored = fresh.weeks.slice(0, fresh.weeks.length - recoveryCount);
+		const result = adaptPlan({
+			...baseInput,
+			existingWeeks: stored,
+			today: stored[2]!.startDate,
+			fitness: { ...neutral },
+			allowedQuality: [...ALLOWED],
+		});
+		// The adapted plan ends with the same weeks a fresh generate gives.
+		expect(result.weeks.length).toBe(fresh.weeks.length);
+		const carried = result.weeks.slice(stored.length);
+		expect(carried.map((w) => w.phase)).toEqual(
+			fresh.weeks.slice(stored.length).map((w) => w.phase),
+		);
+		expect(carried.every((w) => w.phase === 'recovery')).toBe(true);
+		carried.forEach((w, i) => {
+			const source = fresh.weeks[stored.length + i]!;
+			expect(w.weekNumber).toBe(source.weekNumber);
+			expect(w.startDate).toBe(source.startDate);
+		});
+	});
 });

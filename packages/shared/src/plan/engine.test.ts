@@ -1037,6 +1037,43 @@ describe('taper volume', () => {
 	});
 });
 
+describe('a profile with no progression rules', () => {
+	// The regression this protects: an empty rules array used to return every
+	// week as base, so the plan had no taper and the race landed in a base week.
+	const noRules = { ...marathon, progressionRules: [] };
+	const p = generatePlan({
+		profile: noRules,
+		baseline: { experience: 'intermediate' },
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-11-30',
+		targetDate: '2027-04-01',
+	});
+
+	it('still builds base, build, peak and taper', () => {
+		const phases = new Set(p.weeks.map((w) => w.phase));
+		expect(phases.has('base')).toBe(true);
+		expect(phases.has('build')).toBe(true);
+		expect(phases.has('peak')).toBe(true);
+		expect(phases.has('taper')).toBe(true);
+	});
+
+	it('lands the race in a taper week, not a base one', () => {
+		const raceWeek = p.weeks.find((w) => w.sessions.some((s) => s.type === 'race'))!;
+		expect(raceWeek.phase).toBe('taper');
+	});
+
+	it('tapers the volume down from the peak', () => {
+		const peak = Math.max(
+			...p.weeks
+				.filter((w) => w.phase !== 'taper' && w.phase !== 'recovery')
+				.map((w) => w.targetVolumeKm),
+		);
+		const taper = p.weeks.filter((w) => w.phase === 'taper');
+		expect(taper.length).toBeGreaterThanOrEqual(1);
+		expect(taper[taper.length - 1]!.targetVolumeKm).toBeLessThan(peak);
+	});
+});
+
 describe('race-relative long run and post-race recovery', () => {
 	const half = GOAL_PROFILES.find((g) => g.slug === 'half-marathon')!;
 
@@ -1081,6 +1118,27 @@ describe('race-relative long run and post-race recovery', () => {
 			// Easy running only: no long run, no quality and no strength.
 			expect(w.sessions.every((s) => s.type === 'easy' || s.type === 'mobility')).toBe(true);
 			expect(w.targetVolumeKm).toBeLessThan(peakVol);
+		}
+	});
+
+	it('keeps every available day working in a recovery week, even on a two-day plan', () => {
+		const p = generatePlan({
+			profile: half,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 4],
+			startDate: '2026-11-30',
+			targetDate: '2027-04-01',
+		});
+		const recovery = p.weeks.filter((w) => w.phase === 'recovery');
+		expect(recovery.length).toBeGreaterThan(0);
+		for (const w of recovery) {
+			const runDays = w.sessions
+				.filter((s) => s.modality === 'running')
+				.map((s) => s.day)
+				.sort((a, b) => a - b);
+			// The long-run day is not dropped: both available days carry an easy run.
+			expect(runDays).toEqual([0, 4]);
+			expect(w.sessions.some((s) => s.type === 'long')).toBe(false);
 		}
 	});
 
