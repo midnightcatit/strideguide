@@ -290,6 +290,32 @@ async function pullHealthData(
 	return { daily, samples };
 }
 
+/**
+ * D1 rejects any statement that binds more than 100 parameters with "too many
+ * SQL variables" (error 7500). A wide multi-row insert binds one parameter per
+ * column per row, so a single sync can exceed it: one run over a week easily
+ * produces more than a dozen daily metric rows across the registry, and the
+ * metrics insert alone is eight bound columns wide. Kept as a constant so the cap
+ * lives in one place.
+ */
+export const D1_MAX_BOUND_PARAMS = 100;
+
+/**
+ * Split rows so each insert statement stays within D1's bound-parameter cap.
+ * `columnsPerRow` is how many parameters one row binds; the chunk size is the
+ * largest whole number of rows that fits, and it is never zero.
+ */
+export function chunkRows<T>(
+	rows: T[],
+	columnsPerRow: number,
+	maxParams: number = D1_MAX_BOUND_PARAMS,
+): T[][] {
+	const perChunk = Math.max(1, Math.floor(maxParams / Math.max(1, columnsPerRow)));
+	const chunks: T[][] = [];
+	for (let i = 0; i < rows.length; i += perChunk) chunks.push(rows.slice(i, i + perChunk));
+	return chunks;
+}
+
 /** Upsert mapped exercises, keyed so a repeated sync does not duplicate rows. */
 async function upsertActivities(
 	db: Db,
@@ -306,33 +332,36 @@ async function upsertActivities(
 	const byExternalId = new Map(rows.map((row) => [row.externalId, row]));
 	const unique = [...byExternalId.values()];
 
-	await db
-		.insert(schema.activities)
-		.values(
-			unique.map((row) => ({
-				id: crypto.randomUUID(),
-				userId,
-				provider: 'google-health' as const,
-				...row,
-			})),
-		)
-		.onConflictDoUpdate({
-			target: [schema.activities.provider, schema.activities.externalId],
-			set: {
-				modality: sql`excluded.modality`,
-				type: sql`excluded.type`,
-				startedAt: sql`excluded.started_at`,
-				durationSec: sql`excluded.duration_sec`,
-				distanceM: sql`excluded.distance_m`,
-				avgPaceSecPerKm: sql`excluded.avg_pace_sec_per_km`,
-				avgHr: sql`excluded.avg_hr`,
-				maxHr: sql`excluded.max_hr`,
-				calories: sql`excluded.calories`,
-				source: sql`excluded.source`,
-				route: sql`excluded.route`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	const values = unique.map((row) => ({
+		id: crypto.randomUUID(),
+		userId,
+		provider: 'google-health' as const,
+		...row,
+	}));
+
+	// Chunked so a busy day of exercises does not trip D1's parameter cap.
+	for (const chunk of chunkRows(values, Object.keys(values[0]!).length)) {
+		await db
+			.insert(schema.activities)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [schema.activities.provider, schema.activities.externalId],
+				set: {
+					modality: sql`excluded.modality`,
+					type: sql`excluded.type`,
+					startedAt: sql`excluded.started_at`,
+					durationSec: sql`excluded.duration_sec`,
+					distanceM: sql`excluded.distance_m`,
+					avgPaceSecPerKm: sql`excluded.avg_pace_sec_per_km`,
+					avgHr: sql`excluded.avg_hr`,
+					maxHr: sql`excluded.max_hr`,
+					calories: sql`excluded.calories`,
+					source: sql`excluded.source`,
+					route: sql`excluded.route`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return unique.length;
 }
@@ -343,16 +372,22 @@ async function upsertDaily(db: Db, userId: string, patches: DailyPatch[]): Promi
 	if (combined.length === 0) return 0;
 
 	const dates = combined.map((patch) => patch.date);
-	const existingRows = await db
-		.select()
-		.from(schema.healthDaily)
-		.where(
-			and(
-				eq(schema.healthDaily.userId, userId),
-				eq(schema.healthDaily.provider, 'google-health'),
-				inArray(schema.healthDaily.date, dates),
-			),
-		);
+	// The read binds one parameter per date, plus the user and provider, so a long
+	// window is read in chunks too; a stale connection can span many days.
+	const existingRows: (typeof schema.healthDaily.$inferSelect)[] = [];
+	for (const chunk of chunkRows(dates, 1, D1_MAX_BOUND_PARAMS - 2)) {
+		const rows = await db
+			.select()
+			.from(schema.healthDaily)
+			.where(
+				and(
+					eq(schema.healthDaily.userId, userId),
+					eq(schema.healthDaily.provider, 'google-health'),
+					inArray(schema.healthDaily.date, chunk),
+				),
+			);
+		existingRows.push(...rows);
+	}
 	const existingByDate = new Map<string, DailyPatch>(
 		existingRows.map((row) => [
 			row.date,
@@ -378,32 +413,35 @@ async function upsertDaily(db: Db, userId: string, patches: DailyPatch[]): Promi
 		return mergeDailyPatch(existing, patch);
 	});
 
-	await db
-		.insert(schema.healthDaily)
-		.values(
-			merged.map((patch) => ({
-				id: crypto.randomUUID(),
-				userId,
-				provider: 'google-health' as const,
-				date: patch.date,
-				...healthRowValues(patch),
-				raw: { ...(patch.raw ?? {}) },
-			})),
-		)
-		.onConflictDoUpdate({
-			target: [
-				schema.healthDaily.userId,
-				schema.healthDaily.provider,
-				schema.healthDaily.date,
-			],
-			set: {
-				restingHr: sql`excluded.resting_hr`,
-				hrvMs: sql`excluded.hrv_ms`,
-				sleepMin: sql`excluded.sleep_min`,
-				steps: sql`excluded.steps`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	const values = merged.map((patch) => ({
+		id: crypto.randomUUID(),
+		userId,
+		provider: 'google-health' as const,
+		date: patch.date,
+		...healthRowValues(patch),
+		raw: { ...(patch.raw ?? {}) },
+	}));
+
+	// Chunked so a longer window never trips D1's bound-parameter cap.
+	for (const chunk of chunkRows(values, Object.keys(values[0]!).length)) {
+		await db
+			.insert(schema.healthDaily)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [
+					schema.healthDaily.userId,
+					schema.healthDaily.provider,
+					schema.healthDaily.date,
+				],
+				set: {
+					restingHr: sql`excluded.resting_hr`,
+					hrvMs: sql`excluded.hrv_ms`,
+					sleepMin: sql`excluded.sleep_min`,
+					steps: sql`excluded.steps`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return merged.length;
 }
@@ -447,21 +485,25 @@ async function upsertMetrics(db: Db, userId: string, patches: DailyPatch[]): Pro
 	}
 	if (rows.length === 0) return 0;
 
-	await db
-		.insert(schema.healthMetrics)
-		.values(rows)
-		.onConflictDoUpdate({
-			target: [
-				schema.healthMetrics.userId,
-				schema.healthMetrics.provider,
-				schema.healthMetrics.date,
-				schema.healthMetrics.metric,
-			],
-			set: {
-				value: sql`excluded.value`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	// A week of daily metrics is dozens of rows across eight bound columns, which
+	// is past D1's cap in one statement; chunk so each insert stays within it.
+	for (const chunk of chunkRows(rows, 8)) {
+		await db
+			.insert(schema.healthMetrics)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [
+					schema.healthMetrics.userId,
+					schema.healthMetrics.provider,
+					schema.healthMetrics.date,
+					schema.healthMetrics.metric,
+				],
+				set: {
+					value: sql`excluded.value`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return rows.length;
 }
@@ -477,33 +519,36 @@ async function upsertSamples(db: Db, userId: string, samples: MappedSample[]): P
 	}
 	const unique = [...byKey.values()];
 
-	await db
-		.insert(schema.healthSamples)
-		.values(
-			unique.map((row) => ({
-				id: crypto.randomUUID(),
-				userId,
-				provider: 'google-health' as const,
-				metric: row.metric,
-				sampleTime: row.sampleTime,
-				value: row.value,
-				unit: row.unit,
-				raw: row.raw,
-			})),
-		)
-		.onConflictDoUpdate({
-			target: [
-				schema.healthSamples.userId,
-				schema.healthSamples.provider,
-				schema.healthSamples.metric,
-				schema.healthSamples.sampleTime,
-			],
-			set: {
-				value: sql`excluded.value`,
-				unit: sql`excluded.unit`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	const values = unique.map((row) => ({
+		id: crypto.randomUUID(),
+		userId,
+		provider: 'google-health' as const,
+		metric: row.metric,
+		sampleTime: row.sampleTime,
+		value: row.value,
+		unit: row.unit,
+		raw: row.raw,
+	}));
+
+	// Chunked so a long list of point samples stays within D1's parameter cap.
+	for (const chunk of chunkRows(values, Object.keys(values[0]!).length)) {
+		await db
+			.insert(schema.healthSamples)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [
+					schema.healthSamples.userId,
+					schema.healthSamples.provider,
+					schema.healthSamples.metric,
+					schema.healthSamples.sampleTime,
+				],
+				set: {
+					value: sql`excluded.value`,
+					unit: sql`excluded.unit`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return unique.length;
 }
@@ -521,6 +566,17 @@ async function syncActivities(
 		options.maxPages ?? 2,
 		options.baseUrl,
 	);
+}
+
+/**
+ * A short, token-free reason for a failed sync, kept for the error log. Our own
+ * errors never carry a token (a refresh failure says so, a provider error names
+ * the status, a D1 error names the SQL), so the message is safe to store.
+ */
+export function syncFailureReason(error: unknown): string {
+	const detail = error instanceof Error ? error.message : String(error);
+	const trimmed = detail.replace(/\s+/g, ' ').trim().slice(0, 300);
+	return trimmed ? `google health sync failed: ${trimmed}` : 'google health sync failed';
 }
 
 /**
@@ -564,7 +620,7 @@ export async function syncConnection(
 			metrics: metricCount,
 			samples: sampleCount,
 		};
-	} catch {
+	} catch (error) {
 		await db
 			.update(schema.connections)
 			.set({ status: 'error', updatedAt: new Date() })
@@ -574,7 +630,7 @@ export async function syncConnection(
 			.values({
 				id: crypto.randomUUID(),
 				name: 'GoogleHealthSyncError',
-				message: 'google health sync failed',
+				message: syncFailureReason(error),
 				path: `connections/google-health/${connection.id}`,
 				method: 'SYNC',
 			})
