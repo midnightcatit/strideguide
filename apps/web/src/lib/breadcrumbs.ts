@@ -58,14 +58,17 @@ function titleCase(s: string): string {
 	return s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** The full trail for a path, each crumb carrying the path it links to. */
+/** The full trail for a path, each crumb carrying the path it links to. A
+ * segment can carry a query or hash (the `from` view, for example
+ * `/today?date=2026-11-25`); the label drops it while the link keeps it. */
 function trailFor(pathname: string): Crumb[] {
 	const parts = pathname.split('/').filter(Boolean);
 	const crumbs: Crumb[] = [];
 	let href = '';
 	for (let i = 0; i < parts.length; i++) {
-		const part = parts[i]!;
-		href += `/${part}`;
+		const raw = parts[i]!;
+		const part = raw.split(/[?#]/)[0]!;
+		href += `/${raw}`;
 		crumbs.push({ label: SEGMENT_LABELS[part] ?? titleCase(part), href });
 		// Attach a following value to this crumb's link, without its own crumb.
 		if (VALUE_SEGMENTS.has(part) && i + 1 < parts.length) {

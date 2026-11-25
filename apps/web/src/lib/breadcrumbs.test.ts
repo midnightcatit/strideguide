@@ -28,6 +28,13 @@ describe('breadcrumbFor', () => {
 		]);
 	});
 
+	it('drops a query from the from view but keeps it in the link', () => {
+		expect(breadcrumbFor('/session/abc123', '/today?date=2026-11-25')).toEqual([
+			{ label: 'Today', href: '/today?date=2026-11-25' },
+			{ label: 'Session', href: '/session/abc123' },
+		]);
+	});
+
 	it('keeps the id in the parent crumb and the from trail before it', () => {
 		expect(breadcrumbFor('/session/abc123/play', '/calendar/day/2026-01-05')).toEqual([
 			{ label: 'Calendar', href: '/calendar' },
