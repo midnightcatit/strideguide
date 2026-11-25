@@ -3,8 +3,8 @@
 	import ActivityHeatmap from './ActivityHeatmap.svelte';
 
 	/**
-	 * The streak at a glance: the current run and a small heatmap. Shared by the
-	 * dashboard and the progress tab so both read the same.
+	 * The streak at a glance: the current run and a small heatmap. The progress
+	 * tab renders this card.
 	 */
 	let {
 		streak,

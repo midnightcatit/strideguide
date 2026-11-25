@@ -231,7 +231,7 @@
 			oninput={(e) => (draft.eventName = (e.currentTarget as HTMLInputElement).value)}
 			class="mt-1 w-full rounded-md border border-hairline bg-paper px-3 py-2.5 text-sm"
 		/>
-		<span class="mt-1 block text-xs text-steel">Shown on your dashboard, next to your greeting.</span>
+		<span class="mt-1 block text-xs text-steel">Names your race day when your plan does not already name it.</span>
 	</label>
 
 	<div class="mt-4 border-t border-hairline pt-4">

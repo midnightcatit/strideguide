@@ -5,9 +5,8 @@
 	/**
 	 * The circular progress-to-goal ring, drawn by hand as two SVG circles: a full
 	 * track behind, and one arc from the top going clockwise. The arc keeps the
-	 * training palette's green, so the dashboard and the progress page read as the
-	 * same family as the other charts. The arc tweens to a new value through a
-	 * stroke-dashoffset transition, which the reduced-motion setting drops, so it
+	 * training palette's green, so the ring reads as the same family as the other
+	 * charts. The arc tweens to a new value through a stroke-dashoffset transition, which the reduced-motion setting drops, so it
 	 * snaps instead. This is a single indicator, not a chart, so it needs no chart
 	 * library.
 	 */

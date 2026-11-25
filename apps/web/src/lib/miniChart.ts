@@ -1,8 +1,8 @@
 /**
- * Geometry for the tiny hand-drawn mini widgets: the dashboard sparkline and the
- * small bar strip. They need no axes, tooltip or chart library, so they are laid
- * out here as plain SVG. Kept pure and free of any DOM or colour, so the shapes
- * can be reasoned about and tested on their own; the components only place them.
+ * Geometry for the tiny hand-drawn mini widgets: the sparkline and the small bar
+ * strip. They need no axes, tooltip or chart library, so they are laid out here
+ * as plain SVG. Kept pure and free of any DOM or colour, so the shapes can be
+ * reasoned about and tested on their own; the components only place them.
  */
 
 export interface SparklineGeometry {

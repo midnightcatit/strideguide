@@ -87,8 +87,8 @@ export interface WeekPreview {
 
 /**
  * The current week as one read: how many sessions are done, how many are
- * skipped, and a segment per session. Shared by the dashboard and the progress
- * tab so the preview card shows the same numbers in both places.
+ * skipped, and a segment per session. The progress preview card renders these
+ * numbers.
  */
 export function weekPreview(
 	sessionIds: string[],

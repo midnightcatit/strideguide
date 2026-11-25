@@ -46,7 +46,7 @@
 </div>
 
 <p class="mt-4 text-sm text-steel">
-	This is the tab you see when the app opens. The Dashboard stays one tap away in the nav.
+	This is the tab you see when the app opens. Every tab stays one tap away in the nav.
 </p>
 
 <SettingsSaveBar {dirty} onSave={save} onDiscard={discard} />

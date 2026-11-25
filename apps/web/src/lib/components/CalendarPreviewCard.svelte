@@ -6,9 +6,9 @@
 	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
 
 	/**
-	 * A small month preview of the plan for the dashboard: the current month with
-	 * each planned session marked, and the whole card opens the full calendar.
-	 * It reads the shared plan store, so it always matches the calendar tab.
+	 * A small month preview of the plan: the current month with each planned
+	 * session marked, and the whole card opens the full calendar. It reads the
+	 * shared plan store, so it always matches the calendar tab.
 	 */
 	const todayIso = localIso();
 	const weeks = $derived(store.plan?.weeks ?? []);
