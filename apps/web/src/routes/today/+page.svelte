@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api } from '$lib/api';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan } from '$lib/planStore.svelte';
+	import { readView, saveView } from '$lib/viewState';
 	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
 	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
@@ -40,6 +41,8 @@
 	// The card at the scroll center of the day's carousel, so a session view can
 	// return the runner to the same card they left.
 	let activeCardId = $state<string | null>(null);
+	// The card to scroll back to on mount, from a saved view state (a Back).
+	let restoreCardId = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
 	let confirm = $state<{
 		title: string;
@@ -248,6 +251,12 @@
 	onMount(async () => {
 		const wanted = page.url.searchParams.get('date');
 		if (wanted && /^\d{4}-\d{2}-\d{2}$/.test(wanted)) selectedIso = wanted;
+		// A Back from a session view: put the day and the card back where they were.
+		const saved = readView<{ date: string; card: string | null }>('today');
+		if (saved) {
+			if (/^\d{4}-\d{2}-\d{2}$/.test(saved.date)) selectedIso = saved.date;
+			restoreCardId = saved.card;
+		}
 		// A session just added from the picker route is revealed in the list.
 		const reveal = page.url.searchParams.get('reveal');
 		if (reveal) revealId = reveal;
@@ -267,20 +276,15 @@
 		}
 	});
 
-	// SvelteKit restores this when the runner comes back from a session view. The
-	// date keeps the same day selected (the URL carries it too), and the card id
-	// drives the carousel's reveal so the scroll lands on the card they left.
-	export const snapshot = {
-		capture: () => ({
+	// Save where the view was left as the runner drills into a session, so the
+	// Back can put the day and the card back. A timing independent store, read on
+	// mount, so it works even while the day's data is still arriving.
+	beforeNavigate(() => {
+		saveView('today', {
 			date: selectedIso,
 			card: activeCardId && dayItems.some((it) => it.id === activeCardId) ? activeCardId : null,
-		}),
-		restore: (v: { date: string; card: string | null } | undefined) => {
-			if (!v) return;
-			selectedIso = v.date;
-			revealId = v.card;
-		},
-	};
+		});
+	});
 </script>
 
 {#if store.error}
@@ -383,7 +387,7 @@
 				{#if isRaceDay}
 					<RaceCard name={raceName} dateLabel={dateLabel} />
 				{:else if dayItems.length}
-					<SessionCarousel items={dayItems} card={dayCard} bind:revealId bind:activeId={activeCardId} label="workouts" />
+					<SessionCarousel items={dayItems} card={dayCard} bind:revealId bind:activeId={activeCardId} initialId={restoreCardId} label="workouts" />
 				{:else if selWeek}
 					<Card tone="sunken" frame>
 						<p class="text-sm text-steel">
