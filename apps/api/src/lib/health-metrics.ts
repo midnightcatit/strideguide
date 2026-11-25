@@ -1,6 +1,7 @@
 import type { HealthDay } from '@strideguide/shared/plan';
 import { dayFromMetrics } from '@strideguide/shared/plan';
 import type { AppBindings } from '../types';
+import { LEGACY_DAILY_METRICS } from './google-health-map';
 
 /**
  * The grouped health metrics the web charts: a series per metric over a chosen
@@ -106,6 +107,51 @@ async function hasTable(db: D1, name: string): Promise<boolean> {
 	}
 }
 
+/** The `health_daily` column that carries each legacy metric. */
+const LEGACY_DAILY_COLUMN: Record<string, string> = {
+	restingHr: 'resting_hr',
+	hrvMs: 'hrv_ms',
+	sleepMin: 'sleep_min',
+	steps: 'steps',
+};
+
+/**
+ * Read the four legacy daily metrics straight from `health_daily` and shape them
+ * like the generic store. This is a fallback only: it is consulted when
+ * `health_metrics` holds nothing for the window, so a deployment that has not been
+ * backfilled yet shows the same history the recovery view already reads, and the
+ * dashboard and the recovery read never disagree.
+ */
+async function loadLegacyMetricSeries(
+	db: D1,
+	userId: string,
+	sinceDate: string,
+): Promise<Record<string, MetricSeries<MetricPoint>>> {
+	if (!(await hasTable(db, 'health_daily'))) return {};
+	try {
+		const result = await db
+			.prepare(
+				'SELECT date, resting_hr, hrv_ms, sleep_min, steps FROM health_daily WHERE user_id = ? AND date >= ? ORDER BY date ASC',
+			)
+			.bind(userId, sinceDate)
+			.all<Record<string, unknown>>();
+		const rows: { date: string; metric: string; value: number }[] = [];
+		for (const row of result.results ?? []) {
+			const date = typeof row.date === 'string' ? row.date.slice(0, 10) : '';
+			if (!date) continue;
+			for (const { metric, column } of LEGACY_DAILY_METRICS) {
+				const value = row[LEGACY_DAILY_COLUMN[column]!];
+				if (typeof value === 'number' && Number.isFinite(value)) {
+					rows.push({ date, metric, value });
+				}
+			}
+		}
+		return withLatest(groupMetricRows(rows));
+	} catch {
+		return {};
+	}
+}
+
 /** Load every stored metric and sample for the window, grouped and newest-labelled. */
 export async function loadHealthMetrics(
 	db: D1,
@@ -117,11 +163,12 @@ export async function loadHealthMetrics(
 	const sinceDate = isoDay(new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000));
 	const sinceEpoch = Math.floor(now.getTime() / 1000) - windowDays * 24 * 60 * 60;
 
-	const [hasMetrics, hasSamples] = await Promise.all([
+	const [hasMetrics, hasSamples, hasDaily] = await Promise.all([
 		hasTable(db, 'health_metrics'),
 		hasTable(db, 'health_samples'),
+		hasTable(db, 'health_daily'),
 	]);
-	if (!hasMetrics && !hasSamples) return empty;
+	if (!hasMetrics && !hasSamples && !hasDaily) return empty;
 
 	let metrics: Record<string, MetricSeries<MetricPoint>> = {};
 	let samples: Record<string, MetricSeries<SamplePoint>> = {};
@@ -138,6 +185,13 @@ export async function loadHealthMetrics(
 		} catch {
 			metrics = {};
 		}
+	}
+
+	// The generic store is the single source. When it holds nothing for the
+	// window, fall back to the legacy daily table rather than showing nothing, so
+	// this read matches what the recovery view returns.
+	if (Object.keys(metrics).length === 0) {
+		metrics = await loadLegacyMetricSeries(db, userId, sinceDate);
 	}
 
 	if (hasSamples) {

@@ -88,6 +88,34 @@ function mapEach<T>(points: GoogleDataPoint[], map: (point: GoogleDataPoint) => 
 }
 
 /**
+ * D1 allows at most 100 bound parameters in one query. A multi-row insert binds
+ * every column of every row, so a single day of metrics (a couple of dozen of
+ * them) or a week of daily rows blows past the cap and the whole statement is
+ * rejected. Every bulk write below is split into chunks that stay under it.
+ */
+export const MAX_BOUND_PARAMS = 100;
+
+/** Split a list into runs of at most `size` items, in order. */
+function chunkArray<T>(items: T[], size: number): T[][] {
+	const step = Math.max(1, Math.floor(size));
+	const out: T[][] = [];
+	for (let i = 0; i < items.length; i += step) out.push(items.slice(i, i + step));
+	return out;
+}
+
+/**
+ * Split row objects so no single insert binds more than the cap. The row width
+ * is read from the first row, so the chunk size follows the schema: add a column
+ * and the chunks shrink on their own.
+ */
+export function chunkRows<T extends Record<string, unknown>>(rows: T[]): T[][] {
+	if (rows.length === 0) return [];
+	const columns = Object.keys(rows[0]!).length;
+	if (columns === 0) return [rows];
+	return chunkArray(rows, MAX_BOUND_PARAMS / columns);
+}
+
+/**
  * Daily metrics, one row per civil day. Interval types (steps, distance, energy)
  * sum their readings; the daily and session types carry one value already. Every
  * type the granted scopes serve through list or reconcile is here.
@@ -306,33 +334,35 @@ async function upsertActivities(
 	const byExternalId = new Map(rows.map((row) => [row.externalId, row]));
 	const unique = [...byExternalId.values()];
 
-	await db
-		.insert(schema.activities)
-		.values(
-			unique.map((row) => ({
-				id: crypto.randomUUID(),
-				userId,
-				provider: 'google-health' as const,
-				...row,
-			})),
-		)
-		.onConflictDoUpdate({
-			target: [schema.activities.provider, schema.activities.externalId],
-			set: {
-				modality: sql`excluded.modality`,
-				type: sql`excluded.type`,
-				startedAt: sql`excluded.started_at`,
-				durationSec: sql`excluded.duration_sec`,
-				distanceM: sql`excluded.distance_m`,
-				avgPaceSecPerKm: sql`excluded.avg_pace_sec_per_km`,
-				avgHr: sql`excluded.avg_hr`,
-				maxHr: sql`excluded.max_hr`,
-				calories: sql`excluded.calories`,
-				source: sql`excluded.source`,
-				route: sql`excluded.route`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	const values = unique.map((row) => ({
+		id: crypto.randomUUID(),
+		userId,
+		provider: 'google-health' as const,
+		...row,
+	}));
+
+	for (const chunk of chunkRows(values)) {
+		await db
+			.insert(schema.activities)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [schema.activities.provider, schema.activities.externalId],
+				set: {
+					modality: sql`excluded.modality`,
+					type: sql`excluded.type`,
+					startedAt: sql`excluded.started_at`,
+					durationSec: sql`excluded.duration_sec`,
+					distanceM: sql`excluded.distance_m`,
+					avgPaceSecPerKm: sql`excluded.avg_pace_sec_per_km`,
+					avgHr: sql`excluded.avg_hr`,
+					maxHr: sql`excluded.max_hr`,
+					calories: sql`excluded.calories`,
+					source: sql`excluded.source`,
+					route: sql`excluded.route`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return unique.length;
 }
@@ -343,16 +373,22 @@ async function upsertDaily(db: Db, userId: string, patches: DailyPatch[]): Promi
 	if (combined.length === 0) return 0;
 
 	const dates = combined.map((patch) => patch.date);
-	const existingRows = await db
-		.select()
-		.from(schema.healthDaily)
-		.where(
-			and(
-				eq(schema.healthDaily.userId, userId),
-				eq(schema.healthDaily.provider, 'google-health'),
-				inArray(schema.healthDaily.date, dates),
-			),
-		);
+	const existingRows: (typeof schema.healthDaily.$inferSelect)[] = [];
+	// The read binds the user id, the provider and every date, so it is chunked
+	// the same way an insert is: a long gap between syncs is still many dates.
+	for (const dateChunk of chunkArray(dates, MAX_BOUND_PARAMS - 2)) {
+		const rows = await db
+			.select()
+			.from(schema.healthDaily)
+			.where(
+				and(
+					eq(schema.healthDaily.userId, userId),
+					eq(schema.healthDaily.provider, 'google-health'),
+					inArray(schema.healthDaily.date, dateChunk),
+				),
+			);
+		existingRows.push(...rows);
+	}
 	const existingByDate = new Map<string, DailyPatch>(
 		existingRows.map((row) => [
 			row.date,
@@ -378,32 +414,34 @@ async function upsertDaily(db: Db, userId: string, patches: DailyPatch[]): Promi
 		return mergeDailyPatch(existing, patch);
 	});
 
-	await db
-		.insert(schema.healthDaily)
-		.values(
-			merged.map((patch) => ({
-				id: crypto.randomUUID(),
-				userId,
-				provider: 'google-health' as const,
-				date: patch.date,
-				...healthRowValues(patch),
-				raw: { ...(patch.raw ?? {}) },
-			})),
-		)
-		.onConflictDoUpdate({
-			target: [
-				schema.healthDaily.userId,
-				schema.healthDaily.provider,
-				schema.healthDaily.date,
-			],
-			set: {
-				restingHr: sql`excluded.resting_hr`,
-				hrvMs: sql`excluded.hrv_ms`,
-				sleepMin: sql`excluded.sleep_min`,
-				steps: sql`excluded.steps`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	const values = merged.map((patch) => ({
+		id: crypto.randomUUID(),
+		userId,
+		provider: 'google-health' as const,
+		date: patch.date,
+		...healthRowValues(patch),
+		raw: { ...(patch.raw ?? {}) },
+	}));
+
+	for (const chunk of chunkRows(values)) {
+		await db
+			.insert(schema.healthDaily)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [
+					schema.healthDaily.userId,
+					schema.healthDaily.provider,
+					schema.healthDaily.date,
+				],
+				set: {
+					restingHr: sql`excluded.resting_hr`,
+					hrvMs: sql`excluded.hrv_ms`,
+					sleepMin: sql`excluded.sleep_min`,
+					steps: sql`excluded.steps`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return merged.length;
 }
@@ -447,21 +485,23 @@ async function upsertMetrics(db: Db, userId: string, patches: DailyPatch[]): Pro
 	}
 	if (rows.length === 0) return 0;
 
-	await db
-		.insert(schema.healthMetrics)
-		.values(rows)
-		.onConflictDoUpdate({
-			target: [
-				schema.healthMetrics.userId,
-				schema.healthMetrics.provider,
-				schema.healthMetrics.date,
-				schema.healthMetrics.metric,
-			],
-			set: {
-				value: sql`excluded.value`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	for (const chunk of chunkRows(rows)) {
+		await db
+			.insert(schema.healthMetrics)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [
+					schema.healthMetrics.userId,
+					schema.healthMetrics.provider,
+					schema.healthMetrics.date,
+					schema.healthMetrics.metric,
+				],
+				set: {
+					value: sql`excluded.value`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return rows.length;
 }
@@ -477,33 +517,35 @@ async function upsertSamples(db: Db, userId: string, samples: MappedSample[]): P
 	}
 	const unique = [...byKey.values()];
 
-	await db
-		.insert(schema.healthSamples)
-		.values(
-			unique.map((row) => ({
-				id: crypto.randomUUID(),
-				userId,
-				provider: 'google-health' as const,
-				metric: row.metric,
-				sampleTime: row.sampleTime,
-				value: row.value,
-				unit: row.unit,
-				raw: row.raw,
-			})),
-		)
-		.onConflictDoUpdate({
-			target: [
-				schema.healthSamples.userId,
-				schema.healthSamples.provider,
-				schema.healthSamples.metric,
-				schema.healthSamples.sampleTime,
-			],
-			set: {
-				value: sql`excluded.value`,
-				unit: sql`excluded.unit`,
-				raw: sql`excluded.raw`,
-			},
-		});
+	const values = unique.map((row) => ({
+		id: crypto.randomUUID(),
+		userId,
+		provider: 'google-health' as const,
+		metric: row.metric,
+		sampleTime: row.sampleTime,
+		value: row.value,
+		unit: row.unit,
+		raw: row.raw,
+	}));
+
+	for (const chunk of chunkRows(values)) {
+		await db
+			.insert(schema.healthSamples)
+			.values(chunk)
+			.onConflictDoUpdate({
+				target: [
+					schema.healthSamples.userId,
+					schema.healthSamples.provider,
+					schema.healthSamples.metric,
+					schema.healthSamples.sampleTime,
+				],
+				set: {
+					value: sql`excluded.value`,
+					unit: sql`excluded.unit`,
+					raw: sql`excluded.raw`,
+				},
+			});
+	}
 
 	return unique.length;
 }
