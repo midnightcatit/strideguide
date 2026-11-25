@@ -281,6 +281,114 @@ export function weekSwipe(node: HTMLElement, onStep: ((delta: 1 | -1) => void) |
 	};
 }
 
+export interface AnchorOptions {
+	/** The element the card is attached to, usually the button that opened it. */
+	anchor: HTMLElement | null | undefined;
+	/** Space in px between the anchor and the card. */
+	gap?: number;
+	/** Least space to keep between the card and the viewport edges. */
+	margin?: number;
+	/** Preferred card width in px; it is narrowed to fit a small screen. */
+	width?: number;
+}
+
+/**
+ * Svelte action for the info card: it opens against the element it came from.
+ * The card is fixed to the viewport and its real size is measured, so it sits
+ * below the anchor when there is room, flips above it near the bottom edge, is
+ * centred on the anchor, and is clamped inside the viewport sideways, so it can
+ * never run off the screen. It re-places itself when the anchor or the card
+ * changes size, and on scroll or resize. One behaviour for every info button,
+ * so no call site positions its own card.
+ */
+export function anchor(node: HTMLElement, options: AnchorOptions) {
+	let opts = options;
+	let frame = 0;
+	let observedAnchor: HTMLElement | null = null;
+	const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => measure()) : null;
+
+	function place() {
+		const target = opts.anchor;
+		if (!target || !target.isConnected || !node.isConnected) return;
+		const rect = target.getBoundingClientRect();
+		const margin = opts.margin ?? 8;
+		const gap = opts.gap ?? 6;
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+		// The card carries its own max height, so its measured height is what
+		// decides the side: a short card stays below, a tall one flips.
+		const width = Math.min(opts.width ?? 288, Math.max(vw - margin * 2, 0));
+		node.style.width = `${width}px`;
+		const height = node.offsetHeight;
+		const below = vh - rect.bottom - gap - margin;
+		const above = rect.top - gap - margin;
+		const openAbove = height <= below ? false : height <= above ? true : above > below;
+		let top = openAbove ? rect.top - gap - height : rect.bottom + gap;
+		const maxTop = Math.max(margin, vh - height - margin);
+		top = Math.min(Math.max(top, margin), maxTop);
+		let left = rect.left + rect.width / 2 - width / 2;
+		const maxLeft = Math.max(margin, vw - width - margin);
+		left = Math.min(Math.max(left, margin), maxLeft);
+		node.style.top = `${Math.round(top)}px`;
+		node.style.left = `${Math.round(left)}px`;
+		node.dataset.side = openAbove ? 'top' : 'bottom';
+	}
+
+	function measure() {
+		if (frame) return;
+		frame = requestAnimationFrame(() => {
+			frame = 0;
+			place();
+		});
+	}
+
+	function observeAnchor(el: HTMLElement | null | undefined) {
+		if (!ro) return;
+		if (observedAnchor) ro.unobserve(observedAnchor);
+		observedAnchor = el ?? null;
+		if (observedAnchor) ro.observe(observedAnchor);
+	}
+
+	if (typeof document !== 'undefined') {
+		ro?.observe(node);
+		observeAnchor(opts.anchor);
+		node.style.position = 'fixed';
+		node.style.margin = '0';
+		node.style.right = 'auto';
+		node.style.bottom = 'auto';
+		place();
+		// A second pass after the first paint catches late layout and font swaps.
+		measure();
+		window.addEventListener('scroll', measure, true);
+		window.addEventListener('resize', measure);
+		window.visualViewport?.addEventListener('resize', measure);
+		// A running enter animation on an ancestor makes it a containing block, so
+		// while it plays the card is measured against that ancestor. Re-place once
+		// each animation or transition settles, when the offsets are viewport true.
+		document.addEventListener('animationend', measure, true);
+		document.addEventListener('transitionend', measure, true);
+	}
+
+	return {
+		update(next: AnchorOptions) {
+			if (next.anchor !== opts.anchor) observeAnchor(next.anchor);
+			opts = next;
+			measure();
+		},
+		destroy() {
+			if (frame) cancelAnimationFrame(frame);
+			ro?.disconnect();
+			if (typeof window !== 'undefined') {
+				window.removeEventListener('scroll', measure, true);
+				window.removeEventListener('resize', measure);
+				window.visualViewport?.removeEventListener('resize', measure);
+				document.removeEventListener('animationend', measure, true);
+				document.removeEventListener('transitionend', measure, true);
+			}
+		},
+	};
+}
+
 export interface DragToDayOptions {
 	/** Called with the day the card was dropped on. */
 	onDropDay: (day: number) => void;
