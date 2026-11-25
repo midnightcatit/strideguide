@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import FavoritePicker from '$lib/components/FavoritePicker.svelte';
@@ -126,6 +127,8 @@
 	// True once the plan is done and the runner is on the completion state. The
 	// tab stays here, whether they connect, skip or return from Google.
 	let done = $state(false);
+	// Set while the completion screen plays its exit before the app opens.
+	let leaving = $state(false);
 	let rebuilding = $state(false);
 
 	let stepIndex = $state(0);
@@ -672,8 +675,17 @@
 		}
 	}
 
-	function enterApp() {
-		window.location.href = '/';
+	async function enterApp() {
+		// Play the completion screen's exit, then open the app as a client-side
+		// navigation so the route transition carries the move instead of a reload.
+		if (typeof window === 'undefined') return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			await goto('/');
+			return;
+		}
+		leaving = true;
+		await new Promise((r) => setTimeout(r, 340));
+		await goto('/');
 	}
 	/** Connect in a new tab, then show the completion state in this tab. */
 	function connectFromFinish() {
@@ -824,18 +836,44 @@
 
 {#if draft}
 	{#if done}
-		<section class="mx-auto max-w-xl text-center">
-			<div class="sg-done mx-auto" aria-hidden="true">
-				<svg viewBox="0 0 48 48" fill="none" class="h-16 w-16">
-					<circle class="sg-done-ring" cx="24" cy="24" r="21" stroke="var(--signal-ink)" stroke-width="2"></circle>
-					<path class="sg-done-check" d="M15 24.5l6.5 6.5L33 18" stroke="var(--signal-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+		<section class="sg-done-screen mx-auto max-w-xl text-center" class:sg-leaving={leaving}>
+			<div class="sg-done-mark mx-auto" aria-hidden="true">
+				<svg viewBox="0 0 48 48" fill="none" class="block h-20 w-20">
+					<circle
+						class="sg-done-ring"
+						cx="24"
+						cy="24"
+						r="21"
+						stroke="var(--signal-ink)"
+						stroke-width="2"
+					></circle>
+					<path
+						class="sg-done-check"
+						d="M15 24.5l6.5 6.5L33 18"
+						stroke="var(--signal-ink)"
+						stroke-width="3"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					></path>
 				</svg>
 			</div>
-			<h1 class="font-display mt-4 text-2xl font-bold">Your plan is built</h1>
-			<p class="mt-2 text-sm leading-relaxed text-steel">
-				That is {draft.weeks.length} weeks, saved and ready. It will keep adapting as you train.
+			<p class="sg-done-item tabular mt-6 text-xs uppercase tracking-widest text-steel" style="--i: 0">
+				{draft.weeks.length} weeks ready
 			</p>
-			<button type="button" onclick={enterApp} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
+			<h1 class="sg-done-item font-display mt-2 text-3xl font-bold tracking-tight" style="--i: 1">
+				Your plan is built
+			</h1>
+			<p class="sg-done-item mt-3 text-sm leading-relaxed text-steel" style="--i: 2">
+				Saved and ready. It keeps adapting as you train, so the plan meets the runner you are
+				becoming.
+			</p>
+			<button
+				type="button"
+				onclick={enterApp}
+				disabled={leaving}
+				class="sg-done-item mt-8 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+				style="--i: 3"
+			>
 				Enter Stride Guide
 			</button>
 		</section>
@@ -1477,24 +1515,37 @@
 		-webkit-appearance: none;
 		appearance: none;
 	}
-	/* A short, quiet completion moment. The resting state is the finished
-	   drawing, so with reduced motion (durations zeroed globally, and turned off
-	   here) the mark appears complete rather than drawing in. */
-	.sg-done {
-		animation: sg-done-pop 0.5s ease-out both;
+	/* The completion moment: the mark draws in, then the copy and the button rise
+	   in turn, and the whole screen plays an exit before the app opens. The
+	   resting state is the finished drawing, so with reduced motion everything is
+	   complete at rest. */
+	.sg-done-mark {
+		width: 5rem;
+		height: 5rem;
+		animation: sg-done-pop 0.55s var(--ease-out) both;
 	}
 	.sg-done-ring {
 		stroke-dasharray: 132;
-		animation: sg-ring-draw 0.7s ease-out both;
+		animation: sg-ring-draw 0.75s var(--ease-out) both;
 	}
 	.sg-done-check {
 		stroke-dasharray: 30;
-		animation: sg-check-draw 0.45s ease-out 0.35s both;
+		animation: sg-check-draw 0.45s var(--ease-out) 0.42s both;
+	}
+	.sg-done-item {
+		animation: sg-done-rise 0.5s var(--ease-out) both;
+		animation-delay: calc(0.5s + var(--i, 0) * 0.12s);
+	}
+	.sg-done-screen.sg-leaving {
+		animation: sg-done-leave 0.34s ease-in both;
 	}
 	@keyframes sg-done-pop {
 		from {
 			opacity: 0;
-			transform: translateY(6px) scale(0.96);
+			transform: translateY(8px) scale(0.9);
+		}
+		60% {
+			transform: translateY(0) scale(1.04);
 		}
 		to {
 			opacity: 1;
@@ -1517,10 +1568,28 @@
 			stroke-dashoffset: 0;
 		}
 	}
+	@keyframes sg-done-rise {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes sg-done-leave {
+		to {
+			opacity: 0;
+			transform: translateY(-10px) scale(0.97);
+		}
+	}
 	@media (prefers-reduced-motion: reduce) {
-		.sg-done,
+		.sg-done-mark,
 		.sg-done-ring,
-		.sg-done-check {
+		.sg-done-check,
+		.sg-done-item,
+		.sg-done-screen.sg-leaving {
 			animation: none;
 		}
 	}
