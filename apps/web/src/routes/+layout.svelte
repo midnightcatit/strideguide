@@ -8,6 +8,7 @@
 	import { ensurePlan, store } from '$lib/planStore.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
+	import { breadcrumbFor } from '$lib/breadcrumbs';
 	import { installClientErrorReporting } from '$lib/clientErrors';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
@@ -38,6 +39,8 @@
 		{ href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') },
 		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 	]);
+	// Empty on a top-level page (the header shows the mark); the trail otherwise.
+	const crumbs = $derived(breadcrumbFor(page.url.pathname));
 
 	// Crossfade route changes with the View Transitions API where it exists, so
 	// navigation reads as motion instead of a hard swap. The CSS names the content
@@ -174,7 +177,22 @@
 			style="padding-top: env(safe-area-inset-top)"
 		>
 			<div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-				<a href="/" class="font-display text-lg font-bold tracking-tight">Stride Guide</a>
+				{#if crumbs.length === 0}
+					<a href="/" class="font-display text-lg font-bold tracking-tight">Stride Guide</a>
+				{:else}
+					<nav aria-label="Breadcrumb" class="min-w-0">
+						<ol class="flex items-center gap-1.5 text-sm">
+							{#each crumbs as crumb, i (crumb.href)}
+								{#if i > 0}<span class="text-steel" aria-hidden="true">›</span>{/if}
+								{#if i === crumbs.length - 1}
+									<span class="truncate font-medium text-ink" aria-current="page">{crumb.label}</span>
+								{:else}
+									<a href={crumb.href} class="truncate text-steel hover:text-signal-ink">{crumb.label}</a>
+								{/if}
+							{/each}
+						</ol>
+					</nav>
+				{/if}
 
 				<nav class="hidden items-center gap-1 sm:flex" aria-label="Primary">
 					{#each tabs as tab (tab.href)}
