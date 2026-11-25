@@ -87,24 +87,31 @@
 		{@const lg = logged(day)}
 		{@const sk = skipped(day)}
 		{@const km = distance(day)}
+		{@const isToday = todayInWeek && day === todayIndex}
+		{@const isSelected = day === selectedDay}
+		<!-- One channel per state, so they never fight: the selected day is the
+		     filled pill, today is the ring, logged is the check. The ring draws
+		     outside the box, so it adds no height and the strip stays one size
+		     whether or not today is in the week. -->
 		<button
 			type="button"
-			aria-pressed={day === selectedDay}
-			aria-label="{DAY_NAMES[day]}{lg ? ', logged' : ''}{sk ? ', has a skipped session' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
+			aria-pressed={isSelected}
+			aria-current={isToday ? 'date' : undefined}
+			aria-label="{DAY_NAMES[day]}{isToday ? ', today' : ''}{lg ? ', logged' : ''}{sk ? ', has a skipped session' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
 			onclick={() => onSelect(day)}
-			class="flex flex-col items-center gap-1.5 rounded-md py-2 transition-colors {day === selectedDay
+			class="flex flex-col items-center gap-1.5 rounded-md py-2 transition-colors {isSelected
 				? 'bg-ink text-paper'
-				: 'text-steel hover:text-ink'}"
+				: 'text-steel hover:text-ink'} {isToday ? 'ring-1 ring-signal-ink' : ''}"
 		>
-			<span class="tabular text-xs uppercase tracking-wide">{initial}</span>
+			<span class="tabular text-xs uppercase tracking-wide {isSelected ? 'font-semibold' : ''}">{initial}</span>
 			<span class="flex h-3 items-end gap-0.5" aria-hidden="true">
 				{#each [1, 2, 3] as i (i)}
 					<span
 						class="w-0.5 rounded-[1px] {i <= lv
-							? day === selectedDay
+							? isSelected
 								? 'bg-paper'
 								: 'bg-ink'
-							: day === selectedDay
+							: isSelected
 								? 'bg-paper/30'
 								: 'bg-hairline'}"
 						style="height: {3 + i * 3}px"
@@ -115,12 +122,9 @@
 				{#if lg}
 					<span class="text-[10px] text-ok">✓</span>
 				{:else if sk}
-					<span class="h-1.5 w-1.5 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-steel'}"></span>
+					<span class="h-1.5 w-1.5 rounded-full {isSelected ? 'bg-paper' : 'bg-steel'}"></span>
 				{/if}
 			</span>
-			{#if todayInWeek && day === todayIndex}
-				<span class="h-0.5 w-4 rounded-full {day === selectedDay ? 'bg-paper' : 'bg-signal-ink'}" aria-hidden="true"></span>
-			{/if}
 		</button>
 	{/each}
 	</div>
