@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ClientActivity } from '$lib/plan';
-	import { sessionTypeLabel } from '$lib/plan';
+	import { activityModalityLabel, activityTitle, formatDurationSeconds } from '$lib/plan';
 	import { fmtDistance, fmtPace } from '$lib/prefs.svelte';
 
 	/**
@@ -8,10 +8,19 @@
 	 * own: its own stats, its own date. It is never tied to a planned session, so
 	 * it reads as a separate card type from the plan's session cards.
 	 */
-	let { activity, eyebrow = '' }: { activity: ClientActivity; eyebrow?: string } = $props();
+	let {
+		activity,
+		eyebrow = '',
+		onOpen,
+	}: {
+		activity: ClientActivity;
+		eyebrow?: string;
+		/** When set, the whole card opens the activity's own page. */
+		onOpen?: () => void;
+	} = $props();
 
-	const category = $derived(activityCategory(activity.modality));
-	const title = $derived(activity.type ? sessionTypeLabel(activity.type) : category);
+	const category = $derived(activityModalityLabel(activity.modality));
+	const title = $derived(activityTitle(activity));
 	const pace = $derived(
 		activity.avgPaceSecPerKm ??
 			(activity.distanceM && activity.durationSec
@@ -22,44 +31,29 @@
 		const out: string[] = [];
 		if (activity.distanceM) out.push(fmtDistance(activity.distanceM / 1000));
 		if (pace) out.push(fmtPace(pace));
-		if (activity.durationSec) out.push(durationLabel(activity.durationSec));
+		if (activity.durationSec) out.push(formatDurationSeconds(activity.durationSec));
 		if (activity.avgHr) out.push(`${Math.round(activity.avgHr)} bpm`);
 		return out;
 	});
-
-	function activityCategory(modality: string): string {
-		switch (modality) {
-			case 'running':
-				return 'Run';
-			case 'walking':
-				return 'Walk';
-			case 'strength':
-				return 'Strength';
-			case 'mobility':
-				return 'Mobility';
-			case 'recovery':
-				return 'Recovery';
-			case 'cross-train':
-				return 'Cross';
-			default:
-				return 'Workout';
-		}
-	}
-	function durationLabel(sec: number): string {
-		const m = Math.round(sec / 60);
-		if (m >= 60) {
-			const h = Math.floor(m / 60);
-			const rest = m % 60;
-			return rest ? `${h}h ${rest}m` : `${h}h`;
-		}
-		return `${m} min`;
-	}
 </script>
 
-<article class="stage-card lift relative overflow-hidden rounded-xl border border-hairline bg-cool-wash p-4 sm:p-5">
+<article
+	class="stage-card lift relative overflow-hidden rounded-xl border border-hairline bg-cool-wash p-4 sm:p-5 {onOpen
+		? 'shadow-[0_1px_3px_rgba(25,28,34,0.06)]'
+		: ''}"
+>
 	<div class="absolute left-0 top-0 h-full w-0.5 bg-cool" aria-hidden="true"></div>
 
-	<div class="relative flex flex-col">
+	{#if onOpen}
+		<button
+			type="button"
+			class="absolute inset-0 z-0 cursor-pointer rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-signal-ink"
+			aria-label="Open {title} details"
+			onclick={onOpen}
+		></button>
+	{/if}
+
+	<div class="pointer-events-none relative z-10 flex flex-col">
 		<div class="flex items-baseline justify-between gap-3">
 			<span class="tabular truncate text-xs uppercase tracking-widest text-steel">{eyebrow}</span>
 			<span class="flex shrink-0 items-center gap-2">

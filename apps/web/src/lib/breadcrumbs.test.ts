@@ -28,6 +28,19 @@ describe('breadcrumbFor', () => {
 		]);
 	});
 
+	it('names an imported activity without showing the raw id', () => {
+		expect(breadcrumbFor('/activity/act123')).toEqual([
+			{ label: 'Activity', href: '/activity/act123' },
+		]);
+	});
+
+	it('leads an activity view with the tab it was opened from', () => {
+		expect(breadcrumbFor('/activity/act123', '/today?date=2026-11-25')).toEqual([
+			{ label: 'Today', href: '/today?date=2026-11-25' },
+			{ label: 'Activity', href: '/activity/act123' },
+		]);
+	});
+
 	it('drops a query from the from view but keeps it in the link', () => {
 		expect(breadcrumbFor('/session/abc123', '/today?date=2026-11-25')).toEqual([
 			{ label: 'Today', href: '/today?date=2026-11-25' },

@@ -106,7 +106,7 @@
 	</header>
 
 	{#if sessions.length}
-		<SessionCarousel {sessions} {card} bind:revealId />
+		<SessionCarousel items={sessions} {card} bind:revealId />
 	{:else}
 		<Card tone="sunken" frame>
 			<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
