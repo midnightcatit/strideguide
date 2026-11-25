@@ -74,7 +74,7 @@ export interface ClientSession {
 export interface ClientWeek {
 	id: string;
 	weekNumber: number;
-	/** Plan phase: base, build, peak or taper. */
+	/** Plan phase: base, build, peak, taper or recovery. */
 	phase?: string | null;
 	focus: string | null;
 	summaryText: string | null;

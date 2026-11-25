@@ -265,7 +265,7 @@
 			out.push({
 				id: 'date',
 				title: 'When is your race?',
-				lede: 'We count backwards from race day to set the length of each block: a long base, a build, a short peak, then a taper. A far-off date just means a longer base.',
+				lede: 'We count backwards from race day to set the length of each block: a long base, a build, a short peak, then a taper, with easy recovery weeks after the race. A far-off date just means a longer base.',
 				guide: [
 					'Most plans want 10 to 20 weeks. Under 8 weeks is a compressed build.',
 					'Unsure? Pick the date you are aiming for. You can rebuild later.',
