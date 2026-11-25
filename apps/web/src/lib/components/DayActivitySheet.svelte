@@ -32,6 +32,7 @@
 	} = $props();
 
 	const todayIso = localIso();
+	const titleId = `day-title-${crypto.randomUUID()}`;
 
 	const date = $derived(iso ? new Date(`${iso}T00:00:00Z`) : null);
 	const heading = $derived(
@@ -89,18 +90,21 @@
 		class="sg-sheet fixed inset-0 flex items-end justify-center"
 		role="dialog"
 		aria-modal="true"
-		aria-label={`Activity on ${heading}`}
+		aria-labelledby={titleId}
 		use:modal={onClose}
 	>
 		<button
 			type="button"
-			aria-label="Close day"
+			aria-label="Close"
+			data-modal-backdrop
 			onclick={onClose}
 			class="absolute inset-0 bg-ink/40"
 			transition:sheetOverlay
 		></button>
 		<div
-			class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-t-2xl border-t border-hairline bg-paper px-4 pb-8 pt-3"
+			data-modal-panel
+			tabindex="-1"
+			class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-t-2xl border-t border-hairline bg-paper px-4 pb-8 pt-3 outline-none"
 			transition:sheetPanel
 		>
 			<div class="mx-auto mb-2 h-1 w-10 rounded-full bg-hairline" aria-hidden="true"></div>
@@ -109,7 +113,7 @@
 					<p class="tabular text-xs uppercase tracking-widest text-steel">
 						{iso === todayIso ? 'Today' : 'Activity'}
 					</p>
-					<h2 class="mt-0.5 font-display text-lg font-medium">{heading}</h2>
+					<h2 id={titleId} class="mt-0.5 font-display text-lg font-medium">{heading}</h2>
 					{#if !isFuture && doneCount > 0}
 						<p class="tabular mt-0.5 text-sm text-steel">
 							{doneCount} logged{#if totalKm > 0} · {fmtDistance(totalKm)}{/if}
@@ -119,8 +123,8 @@
 				<button
 					type="button"
 					onclick={onClose}
-					aria-label="Close day"
-					class="-mr-1 rounded-full px-3 py-1 text-steel hover:text-ink"
+					aria-label="Close"
+					class="tap-target -mr-1 rounded-full text-steel hover:text-ink"
 				>
 					✕
 				</button>
@@ -137,7 +141,7 @@
 						<li class="flex items-start gap-3 py-3.5 first:pt-0 last:pb-1">
 							<span
 								class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {done
-									? 'bg-ok-wash text-ok'
+									? 'bg-ok-wash text-ok-ink'
 									: r.skipped
 										? 'bg-sunken text-steel ring-1 ring-hairline-strong'
 										: 'bg-sunken text-steel'}"
@@ -147,7 +151,7 @@
 							<div class="min-w-0 flex-1">
 								<div class="flex items-baseline justify-between gap-2">
 									<p class="min-w-0 break-words text-sm font-medium">{rowLabel(r)}</p>
-									<span class="shrink-0 text-[11px] {done ? 'text-ok' : 'text-steel'}">{rowStatus(r)}</span>
+									<span class="shrink-0 text-[11px] {done ? 'text-ok-ink' : 'text-steel'}">{rowStatus(r)}</span>
 								</div>
 								{#if r.log}
 									<div class="tabular mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-steel">

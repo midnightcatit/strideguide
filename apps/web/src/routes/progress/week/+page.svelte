@@ -66,7 +66,7 @@
 	<ul class="mt-4 divide-y divide-hairline">
 		{#each rows as row (row.session.id)}
 			<li class="flex items-center gap-3 py-3">
-				<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {row.done ? 'bg-ok-wash text-ok' : row.skipped ? 'bg-sunken text-steel ring-1 ring-hairline-strong' : 'bg-sunken text-steel'}">
+				<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {row.done ? 'bg-ok-wash text-ok-ink' : row.skipped ? 'bg-sunken text-steel ring-1 ring-hairline-strong' : 'bg-sunken text-steel'}">
 					<SessionIcon type={row.session.type} size="h-4 w-4" />
 				</span>
 				<span class="min-w-0 flex-1">
@@ -79,7 +79,7 @@
 					{#if row.session.modality === 'running' && row.session.prescription?.targetDistanceKm}
 						<span class="tabular block text-sm">{fmtDistance(row.session.prescription.targetDistanceKm)}</span>
 					{/if}
-					<span class="text-[11px] {row.done ? 'text-ok' : 'text-steel'}">{row.done ? 'Done' : row.skipped ? 'Skipped' : 'Not logged'}</span>
+					<span class="text-[11px] {row.done ? 'text-ok-ink' : 'text-steel'}">{row.done ? 'Done' : row.skipped ? 'Skipped' : 'Not logged'}</span>
 				</span>
 			</li>
 		{/each}

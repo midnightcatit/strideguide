@@ -48,11 +48,20 @@
 		type="button"
 		onclick={run}
 		disabled={disabled || status === 'syncing'}
+		aria-busy={status === 'syncing'}
 		class="rounded-md border border-hairline px-3.5 py-2 text-sm font-medium text-signal-ink hover:border-signal disabled:cursor-not-allowed disabled:text-steel disabled:opacity-50 disabled:hover:border-hairline"
 	>
 		{status === 'syncing' ? 'Syncing…' : label}
 	</button>
 	{#if message}
-		<span class="text-xs {status === 'error' ? 'text-danger' : 'text-steel'}">{message}</span>
+		<span
+			class="text-xs {status === 'error' ? 'text-danger' : 'text-steel'}"
+			role={status === 'error' ? 'alert' : 'status'}
+			aria-live={status === 'error' ? 'assertive' : 'polite'}
+		>{message}</span>
+	{:else}
+		<span class="text-xs {status === 'error' ? 'text-danger' : 'text-steel'}" role="status" aria-live="polite">
+			{status === 'syncing' ? 'Syncing' : ''}
+		</span>
 	{/if}
 </div>

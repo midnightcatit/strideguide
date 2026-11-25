@@ -59,6 +59,8 @@
 
 	let saving = $state(false);
 	let error = $state<string | null>(null);
+	const titleId = `log-title-${crypto.randomUUID()}`;
+	const errorId = `log-error-${crypto.randomUUID()}`;
 
 	// Prefill from the prescription.
 	$effect(() => {
@@ -163,22 +165,24 @@
 		: 'sg-sheet fixed inset-0 flex items-end justify-center sm:items-center sm:p-4'}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
-	aria-label={asPage ? undefined : 'Log session'}
+	aria-labelledby={asPage ? undefined : titleId}
 	use:modal={{ onClose, enabled: !asPage }}
 >
 	{#if !asPage}
-		<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
+		<button type="button" aria-label="Close" data-modal-backdrop onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
 	{/if}
 	<div
+		data-modal-panel
+		tabindex="-1"
 		class={asPage
 			? 'relative mx-auto w-full max-w-2xl rounded-2xl border border-hairline bg-paper p-4'
-			: 'sg-overlay-pad overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl'}
+			: 'sg-overlay-pad overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 outline-none sm:rounded-2xl'}
 		style="--overlay-pad: 1rem"
 	>
 	<div class="sticky {asPage ? 'top-16' : 'top-0'} z-10 -mx-4 -mt-4 flex items-center justify-between border-b border-hairline bg-paper px-4 pb-3 pt-4">
 		<div class="min-w-0">
 			<p class="text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
-			<h2 class="font-display truncate text-lg font-medium">{session.title ?? 'Log session'}</h2>
+			<h2 id={titleId} class="font-display truncate text-lg font-medium">{session.title ?? 'Log session'}</h2>
 		</div>
 		<button type="button" onclick={onClose} class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink" aria-label="Close">
 			✕
@@ -333,13 +337,15 @@
 	</label>
 
 	{#if error}
-		<p class="mt-3 text-sm text-signal-ink">{error}</p>
+		<p id={errorId} role="alert" class="mt-3 text-sm text-danger">{error}</p>
 	{/if}
+	<p class="sr-only" role="status" aria-live="polite">{saving ? 'Saving session' : ''}</p>
 
 	<button
 		type="button"
 		onclick={save}
 		disabled={saving}
+		aria-busy={saving}
 		class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
 	>
 		{saving ? 'Saving…' : isReflection ? 'Save' : 'Save session'}

@@ -73,12 +73,11 @@
 <MetricHeader title="Health data" {from} />
 
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-	<div class="flex flex-wrap gap-1.5" role="tablist" aria-label="Time window">
+	<div class="flex flex-wrap gap-1.5" role="group" aria-label="Time window">
 		{#each windows as w (w)}
 			<button
 				type="button"
-				role="tab"
-				aria-selected={windowDays === w}
+				aria-pressed={windowDays === w}
 				onclick={() => void load(w)}
 				class="rounded-md border px-3 py-1.5 text-xs font-medium {windowDays === w
 					? 'border-signal bg-signal-wash text-signal-ink'

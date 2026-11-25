@@ -23,15 +23,16 @@
 	} = $props();
 
 	const href = $derived(`/progress/streak?from=${from}`);
+	const openId = `streak-open-${crypto.randomUUID()}`;
 </script>
 
-<a {href} class="lift block h-full rounded-xl" aria-label="Streak, open the full activity heatmap">
+<a {href} class="lift block h-full rounded-xl" aria-labelledby={openId}>
 	<Card tone="sunken" class="flex h-full flex-col">
 		<p class="tabular text-[10px] uppercase tracking-widest text-steel">Streak</p>
-		<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
+		<p class="tabular mt-1 text-lg {streak > 0 ? 'text-ok-ink' : 'text-steel'}">{streak}<span class="text-sm">&nbsp;{streak === 1 ? 'day' : 'days'}</span></p>
 		<div class="mt-2.5 w-full">
 			<ActivityHeatmap {trainedDays} {skippedDays} {weeks} {todayIso} gap={2} showMonthLabels={false} fluid />
 		</div>
-		<p class="mt-auto pt-2 text-[11px] text-signal-ink">See the heatmap →</p>
+		<p id={openId} class="mt-auto pt-2 text-[11px] text-signal-ink">See the heatmap →</p>
 	</Card>
 </a>

@@ -23,9 +23,10 @@
 	} = $props();
 
 	const href = $derived(`/progress/week?from=${from}`);
+	const openId = `week-open-${crypto.randomUUID()}`;
 </script>
 
-<a {href} class="lift block h-full rounded-xl" aria-label="This week, open the week breakdown">
+<a {href} class="lift block h-full rounded-xl" aria-labelledby={openId}>
 	<Card tone="sunken" class="flex h-full flex-col">
 		<p class="tabular text-[10px] uppercase tracking-widest text-steel">This week</p>
 		<p class="tabular mt-1 text-xl font-semibold">{done}<span class="text-sm text-steel">/{planned}</span>{#if skipped}<span class="text-sm text-steel"> · {skipped} skipped</span>{/if}</p>
@@ -37,6 +38,6 @@
 				ariaLabel="{done} of {planned} sessions done this week{skipped ? `, ${skipped} skipped` : ''}"
 			/>
 		</div>
-		<p class="mt-auto pt-2 text-[11px] text-signal-ink">See the week →</p>
+		<p id={openId} class="mt-auto pt-2 text-[11px] text-signal-ink">See the week →</p>
 	</Card>
 </a>

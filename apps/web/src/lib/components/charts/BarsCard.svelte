@@ -50,6 +50,12 @@
 
 	const motion = $derived(prefersReducedMotion.current ? 'none' : undefined);
 
+	const summary = $derived(
+		points.length
+			? `${title}: ${value}${unit ? ` ${unit}` : ''} latest, over ${points.length} ${points.length === 1 ? 'day' : 'days'}.`
+			: `${title}: no readings in this window.`,
+	);
+
 	const maxValue = $derived(Math.max(0, ...points.map((p) => p.value ?? 0)));
 	const floor = $derived(minBarRatio > 0 && maxValue > 0 ? maxValue * minBarRatio : 0);
 
@@ -85,7 +91,7 @@
 	);
 </script>
 
-<ChartCard {title} {value} {unit} {color} {change} {note}>
+<ChartCard {title} {value} {unit} {color} {change} {summary} {note}>
 	<BarChart
 		{data}
 		x="date"

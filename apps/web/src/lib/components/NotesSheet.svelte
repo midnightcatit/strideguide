@@ -32,6 +32,9 @@
 	let saving = $state(false);
 	let error = $state<string | null>(null);
 	const remaining = $derived(SESSION_NOTES_MAX - draft.length);
+	const titleId = `notes-title-${crypto.randomUUID()}`;
+	const errorId = `notes-error-${crypto.randomUUID()}`;
+	const remainingId = `notes-remaining-${crypto.randomUUID()}`;
 
 	async function save() {
 		if (saving) return;
@@ -54,22 +57,25 @@
 		class={asPage ? 'w-full' : 'sg-sheet fixed inset-0 flex items-end justify-center'}
 		role={asPage ? undefined : 'dialog'}
 		aria-modal={asPage ? undefined : 'true'}
-		aria-label={asPage ? undefined : `Notes for ${sessionLabel(session)}`}
+		aria-labelledby={asPage ? undefined : titleId}
 		use:modal={{ onClose, enabled: !asPage }}
 	>
 		{#if !asPage}
 			<button
 				type="button"
-				aria-label="Close notes"
+				aria-label="Close"
+				data-modal-backdrop
 				onclick={onClose}
 				class="absolute inset-0 bg-ink/40"
 				transition:sheetOverlay
 			></button>
 		{/if}
 		<div
+			data-modal-panel
+			tabindex="-1"
 			class={asPage
 				? 'relative mx-auto flex w-full max-w-2xl flex-col rounded-2xl border border-hairline bg-paper'
-				: 'relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper'}
+				: 'relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper outline-none'}
 			transition:sheetPanel
 		>
 		<div class="flex-1 overflow-y-auto overscroll-contain px-4 pt-3">
@@ -77,9 +83,9 @@
 			<div class="flex items-start justify-between gap-3">
 				<div>
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Notes</p>
-					<h2 class="mt-0.5 font-display text-lg font-medium">{sessionLabel(session)}</h2>
+					<h2 id={titleId} class="mt-0.5 font-display text-lg font-medium">{sessionLabel(session)}</h2>
 				</div>
-				<button type="button" onclick={onClose} aria-label="Close notes" class="-mr-1 rounded-full px-3 py-1 text-steel hover:text-ink">
+				<button type="button" onclick={onClose} aria-label="Close" class="tap-target -mr-1 rounded-full text-steel hover:text-ink">
 					✕
 				</button>
 			</div>
@@ -89,10 +95,13 @@
 				rows="8"
 				maxlength={SESSION_NOTES_MAX}
 				placeholder="Felt strong on the last set. Left calf was tight after."
+				aria-invalid={error ? 'true' : undefined}
+				aria-describedby={error ? `${remainingId} ${errorId}` : remainingId}
 				class="mt-3 w-full resize-none rounded-lg border border-hairline bg-sunken p-3 text-sm leading-relaxed text-ink focus:border-signal focus:outline-none"
 			></textarea>
-			<p class="mt-1 text-right tabular text-[11px] text-steel">{remaining} characters left</p>
-			{#if error}<p class="mt-1 text-sm text-danger">{error}</p>{/if}
+			<p id={remainingId} class="mt-1 text-right tabular text-[11px] text-steel">{remaining} characters left</p>
+			<p class="sr-only" role="status" aria-live="polite">{saving ? 'Saving note' : ''}</p>
+			{#if error}<p id={errorId} role="alert" class="mt-1 text-sm text-danger">{error}</p>{/if}
 			<div class="h-3"></div>
 		</div>
 
@@ -112,6 +121,7 @@
 				type="button"
 				onclick={save}
 				disabled={saving}
+				aria-busy={saving}
 				class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
 			>
 				{saving ? 'Saving…' : 'Save'}

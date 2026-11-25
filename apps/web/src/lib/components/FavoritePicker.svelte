@@ -157,7 +157,7 @@
 					type="button"
 					aria-pressed={machineFilter === g.key}
 					onclick={() => (machineFilter = g.key)}
-					class="rounded-full border px-3 py-1.5 text-xs {machineFilter === g.key
+					class="flex min-h-11 items-center rounded-full border px-3 text-xs {machineFilter === g.key
 						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
 						: 'border-hairline text-steel hover:border-steel'}"
 				>
@@ -264,7 +264,7 @@
 					type="button"
 					aria-pressed={workoutFilter === g.key}
 					onclick={() => (workoutFilter = g.key)}
-					class="rounded-full border px-3 py-1.5 text-xs {workoutFilter === g.key
+					class="flex min-h-11 items-center rounded-full border px-3 text-xs {workoutFilter === g.key
 						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
 						: 'border-hairline text-steel hover:border-steel'}"
 				>

@@ -81,7 +81,7 @@
 	const skipped = $derived(status === 'skipped');
 	const statusClass = $derived(
 		status === 'done'
-			? 'bg-ok-wash text-ok'
+			? 'bg-ok-wash text-ok-ink'
 			: status === 'skipped'
 				? 'border border-hairline-strong bg-sunken text-steel'
 				: status === 'in-progress'

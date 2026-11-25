@@ -67,7 +67,7 @@
 	<div class="flex flex-wrap items-end justify-between gap-4">
 		<div>
 			<p class="tabular text-xs uppercase tracking-widest text-steel">Current streak</p>
-			<p class="tabular mt-0.5 text-2xl font-semibold {streak > 0 ? 'text-ok' : 'text-steel'}">
+			<p class="tabular mt-0.5 text-2xl font-semibold {streak > 0 ? 'text-ok-ink' : 'text-steel'}">
 				{streak}<span class="text-sm text-steel">&nbsp;{streak === 1 ? 'day' : 'days'}</span>
 			</p>
 		</div>
@@ -79,12 +79,11 @@
 		{/if}
 	</div>
 
-	<div class="mt-5 flex flex-wrap gap-1.5" role="tablist" aria-label="Timeline">
+	<div class="mt-5 flex flex-wrap gap-1.5" role="group" aria-label="Timeline">
 		{#each spans as s (s.weeks)}
 			<button
 				type="button"
-				role="tab"
-				aria-selected={span === s.weeks}
+				aria-pressed={span === s.weeks}
 				onclick={() => (span = s.weeks)}
 				class="rounded-md border px-3 py-1.5 text-xs font-medium {span === s.weeks
 					? 'border-signal bg-signal-wash text-signal-ink'
