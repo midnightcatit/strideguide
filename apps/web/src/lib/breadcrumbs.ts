@@ -9,10 +9,10 @@
  * own link, not a crumb of its own, so "session/abc/play" reads Session then
  * Play rather than showing the raw id.
  *
- * A session view has no parent path of its own (there is no /session list), so
- * its trail is the view it was opened from, passed as `from`, then the session
- * and any step. That parent crumb is the way back on a session page, which
- * carries no Back control of its own.
+ * A session or an imported activity has no parent list of its own (there is no
+ * /session or /activity index), so its trail is the view it was opened from,
+ * passed as `from`, then the view and any step. That parent crumb is the way
+ * back on one of these pages, which carries no Back control of its own.
  */
 export interface Crumb {
 	label: string;
@@ -38,6 +38,7 @@ const SEGMENT_LABELS: Record<string, string> = {
 	account: 'Account',
 	about: 'About',
 	session: 'Session',
+	activity: 'Activity',
 	play: 'Play',
 	log: 'Log',
 	notes: 'Notes',
@@ -82,11 +83,12 @@ function trailFor(pathname: string): Crumb[] {
 export function breadcrumbFor(pathname: string, from?: string | null): Crumb[] {
 	const parts = pathname.split('/').filter(Boolean);
 	if (parts.length <= 1 && PARENTS.has(parts[0] ?? '')) return [];
-	if (parts[0] === 'session') {
-		// No /session parent path exists, so lead with the view it was opened from,
-		// which gives the header a crumb to tap back to.
+	if (parts[0] === 'session' || parts[0] === 'activity') {
+		// Neither has a parent path that exists, so lead with the view it was
+		// opened from, which gives the header a crumb to tap back to.
+		const view = parts[0];
 		const crumbs = from ? trailFor(from) : [];
-		crumbs.push({ label: 'Session', href: `/session/${parts[1] ?? ''}` });
+		crumbs.push({ label: SEGMENT_LABELS[view]!, href: `/${view}/${parts[1] ?? ''}` });
 		for (const step of parts.slice(2)) {
 			crumbs.push({
 				label: SEGMENT_LABELS[step] ?? titleCase(step),

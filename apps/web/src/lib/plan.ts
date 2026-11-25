@@ -171,6 +171,35 @@ export function sessionTypeLabel(type: string): string {
 	return SESSION_TYPE_LABELS[type] ?? type.replace(/-/g, ' ');
 }
 
+/** Friendly names for an imported activity's modality, so a card reads as a type. */
+export const ACTIVITY_MODALITY_LABELS: Record<string, string> = {
+	running: 'Run',
+	walking: 'Walk',
+	strength: 'Strength',
+	mobility: 'Mobility',
+	recovery: 'Recovery',
+	'cross-train': 'Cross',
+};
+
+export function activityModalityLabel(modality: string): string {
+	return ACTIVITY_MODALITY_LABELS[modality] ?? 'Workout';
+}
+
+/** The name shown for an imported activity: its own type, or its modality. */
+export function activityTitle(activity: Pick<ClientActivity, 'type' | 'modality'>): string {
+	return activity.type ? sessionTypeLabel(activity.type) : activityModalityLabel(activity.modality);
+}
+
+/** Friendly provider names for an imported activity. */
+const ACTIVITY_PROVIDER_LABELS: Record<string, string> = {
+	'google-health': 'Google Health',
+};
+
+export function activityProviderLabel(provider: string): string {
+	if (ACTIVITY_PROVIDER_LABELS[provider]) return ACTIVITY_PROVIDER_LABELS[provider]!;
+	return provider.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function dayIndexInWeek(weekStart: string, iso: string): number {
 	const days = Math.round(
 		(Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${weekStart}T00:00:00Z`)) / 86400000,
@@ -186,6 +215,17 @@ export function weekdayIndexFromIso(iso: string): number {
 export function formatDuration(min?: number | null): string | null {
 	if (min == null) return null;
 	const m = Math.floor(min);
+	return `${m} min`;
+}
+
+/** A duration in seconds as "45 min" or "1h 20m", for an imported activity. */
+export function formatDurationSeconds(sec: number): string {
+	const m = Math.round(sec / 60);
+	if (m >= 60) {
+		const h = Math.floor(m / 60);
+		const rest = m % 60;
+		return rest ? `${h}h ${rest}m` : `${h}h`;
+	}
 	return `${m} min`;
 }
 

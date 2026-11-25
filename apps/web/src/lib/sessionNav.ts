@@ -29,3 +29,8 @@ export function logHref(id: string, from: string): string {
 export function notesHref(id: string, from: string): string {
 	return `/session/${encodeURIComponent(id)}/notes?from=${encodeURIComponent(from)}`;
 }
+
+/** An imported activity's own page, so a card can drill into all its stats. */
+export function activityHref(id: string, from: string): string {
+	return `/activity/${encodeURIComponent(id)}?from=${encodeURIComponent(from)}`;
+}

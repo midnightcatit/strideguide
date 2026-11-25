@@ -11,7 +11,7 @@
 	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
-	import { logHref, playHref, sessionHref } from '$lib/sessionNav';
+	import { logHref, playHref, sessionHref, activityHref } from '$lib/sessionNav';
 	import { TRAINING_PROGRESS, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
@@ -25,6 +25,15 @@
 	import RaceCard from '$lib/components/RaceCard.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
+
+	/**
+	 * One card in the day's scroll. Planned sessions and imported activities sit
+	 * in the same carousel, so the day reads as one list of workouts; the kind
+	 * says which card to draw.
+	 */
+	type DayItem =
+		| { kind: 'session'; id: string; session: ClientSession }
+		| { kind: 'activity'; id: string; activity: ClientActivity };
 
 	let note = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
@@ -131,6 +140,18 @@
 	// Imported activities show on their own date, each a completed workout. They
 	// never stand in for a planned session.
 	const dayActivities = $derived(activities.filter((a) => localIso(new Date(a.startedAt)) === selectedIso));
+	// The day's scroll holds the planned sessions first, then the imported
+	// activities. A session carries only an AM or PM slot, not a clock time, so a
+	// true time merge is not possible; the plan leads and the imports follow.
+	const dayItems = $derived<DayItem[]>([
+		...daySessions.map((s): DayItem => ({ kind: 'session', id: s.id, session: s })),
+		...dayActivities.map((a): DayItem => ({ kind: 'activity', id: a.id, activity: a })),
+	]);
+	// Minutes across both kinds, so the day header counts an imported workout too.
+	const dayActivityMinutes = $derived(
+		Math.round(dayActivities.reduce((m, a) => m + (a.durationSec ?? 0), 0) / 60),
+	);
+	const dayTotalMinutes = $derived(dayMinutes + dayActivityMinutes);
 	// A day inside the last 30 days can be edited. Older days are read-only
 	// history, so the runner can look back without changing the past.
 	const editCutoff = addDaysIso(todayIso, -30);
@@ -316,12 +337,18 @@
 				<SectionHeader
 					id="day-sessions"
 					eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${selectedWeekdayName}` : 'Day'}
-					meta={isRaceDay ? 'Race day' : daySessions.length ? `${daySessions.length} · ${dayMinutes} min` : dayActivities.length ? 'Imported' : 'Rest'}
+					meta={isRaceDay
+						? 'Race day'
+						: dayItems.length
+							? dayTotalMinutes
+								? `${dayItems.length} · ${dayTotalMinutes} min`
+								: `${dayItems.length}`
+							: 'Rest'}
 				/>
 				{#if isRaceDay}
 					<RaceCard name={raceName} dateLabel={dateLabel} />
-				{:else if daySessions.length}
-					<SessionCarousel sessions={daySessions} {card} bind:revealId />
+				{:else if dayItems.length}
+					<SessionCarousel items={dayItems} card={dayCard} bind:revealId label="workouts" />
 				{:else if selWeek}
 					<Card tone="sunken" frame>
 						<p class="text-sm text-steel">
@@ -335,15 +362,6 @@
 							{editable ? 'This day is outside your plan.' : 'Nothing from the plan on this day.'}
 						</p>
 					</Card>
-				{/if}
-
-				{#if dayActivities.length}
-					<div class="mt-4 space-y-3">
-						<SectionHeader id="day-activities" eyebrow="Imported workouts" meta={`${dayActivities.length}`} />
-						{#each dayActivities as a (a.id)}
-							<ActivityCard activity={a} eyebrow={selectedWeekdayName} />
-						{/each}
-					</div>
 				{/if}
 			</div>
 		{/key}
@@ -400,28 +418,36 @@
 	</div>
 {/if}
 
-{#snippet card(s: ClientSession)}
-	<SessionCard
-		session={s}
-		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
-		active={isToday}
-		editable={editable}
-		logged={loggedBySession.get(s.id) ?? null}
-		onLog={() => logSession(s)}
-		onStart={() => startSession(s)}
-		onOpen={() => goto(sessionHref(s.id, from))}
-		onUnskip={() =>
-			(confirm = {
-				title: 'Un-skip this workout?',
-				body: 'It goes back to your normal plan for the day.',
-				confirmLabel: 'Un-skip',
-				action: () => unskipSession(s.id),
-			})}
-		onCancelProgress={() => {
-			clearStarted(s.id);
-			clearProgress(s.id);
-		}}
-	/>
+{#snippet dayCard(item: DayItem)}
+	{#if item.kind === 'session'}
+		<SessionCard
+			session={item.session}
+			eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
+			active={isToday}
+			editable={editable}
+			logged={loggedBySession.get(item.session.id) ?? null}
+			onLog={() => logSession(item.session)}
+			onStart={() => startSession(item.session)}
+			onOpen={() => goto(sessionHref(item.session.id, from))}
+			onUnskip={() =>
+				(confirm = {
+					title: 'Un-skip this workout?',
+					body: 'It goes back to your normal plan for the day.',
+					confirmLabel: 'Un-skip',
+					action: () => unskipSession(item.session.id),
+				})}
+			onCancelProgress={() => {
+				clearStarted(item.session.id);
+				clearProgress(item.session.id);
+			}}
+		/>
+	{:else}
+		<ActivityCard
+			activity={item.activity}
+			eyebrow={selectedWeekdayName}
+			onOpen={() => goto(activityHref(item.activity.id, from))}
+		/>
+	{/if}
 {/snippet}
 
 <ConfirmSheet
