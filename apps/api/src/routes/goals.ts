@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { desc, eq } from 'drizzle-orm';
 import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
+import { syncGoalProfiles } from '../lib/goal-profiles';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -33,6 +34,9 @@ goals.post(
 	async (c) => {
 		const user = c.get('user')!;
 		const body = c.req.valid('json');
+		// The goal profile guard reads the reference table, so make sure it holds
+		// every built-in profile before the insert.
+		await syncGoalProfiles(c.get('db'));
 		const inserted = await c
 			.get('db')
 			.insert(schema.userGoals)
