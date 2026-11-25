@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { computeProgress, type WeekLike } from '@strideguide/shared/analytics';
-	import { fitnessState, type HealthDay, type RecoverySignal } from '@strideguide/shared/plan';
+	import { fitnessState } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { type ClientLog, type ClientSession, addDaysIso, localIso } from '$lib/plan';
@@ -9,32 +9,19 @@
 	import { api, type HealthMetricsPayload } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit, sessionLabel } from '$lib/prefs.svelte';
 	import { weekPreview, trainedDays, currentStreak, weeklyKmSeries, logMs } from '$lib/metrics';
-	import { metricColor, periodDelta } from '$lib/chartTheme';
-	import { TRAINING_PROGRESS, TRAINING_LOAD, TRAINING_PACE, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
+	import { TRAINING_LOAD, TRAINING_PACE } from '$lib/chartPalette';
 	import Card from '$lib/components/Card.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
-	import WatchVitals from '$lib/components/WatchVitals.svelte';
 	import WeekPreviewCard from '$lib/components/WeekPreviewCard.svelte';
 	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
 	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
 	import CalendarPreviewCard from '$lib/components/CalendarPreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
-	import BarsCard from '$lib/components/charts/BarsCard.svelte';
 	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
 	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
 
-	// The recovery payload carries a steps series alongside the days. The shared
-	// client type predates it, so it is widened here rather than in lib/api.
-	type RecoveryState = {
-		available: boolean;
-		signal: RecoverySignal | null;
-		days: HealthDay[];
-		steps?: { date: string; steps: number }[];
-	};
-
-	let recovery = $state<RecoveryState | null>(null);
 	let health = $state<HealthMetricsPayload | null>(null);
 	let note = $state<string | null>(null);
 
@@ -42,12 +29,6 @@
 
 	onMount(() => {
 		void ensurePlan();
-		void api
-			.recovery()
-			.then((r) => (recovery = r))
-			.catch(() => {
-				// no health data, or the call failed; the section simply does not show
-			});
 		void api
 			.healthMetrics(30)
 			.then((h) => (health = h))
@@ -141,22 +122,9 @@
 		return out;
 	});
 
-	// Steps come from the same health payload as the recovery numbers: the last
-	// two weeks, oldest first, ready to draw.
-	const stepDays = $derived(
-		(recovery?.steps ?? [])
-			.slice()
-			.sort((a, b) => a.date.localeCompare(b.date))
-			.slice(-14),
-	);
-	const stepAvg = $derived(
-		stepDays.length
-			? Math.round(stepDays.reduce((sum, d) => sum + d.steps, 0) / stepDays.length)
-			: 0,
-	);
-
-	// What the runner's own logs add up to: paces, weekly distance, effort trend,
-	// and which session types they rated well. The same read seeds a rebuild.
+	// What the runner's own logs say about their fitness: paces set from real
+	// efforts, whether effort is drifting, and which session types they rate well.
+	// The weekly-distance read lives on the volume page, so it is not repeated.
 	const fitness = $derived.by(() => {
 		const typeById = new Map<string, string>();
 		for (const w of store.plan?.weeks ?? []) {
@@ -181,22 +149,8 @@
 			: '',
 	);
 
-	// The weekly volume bars: logged distance, with the planned distance as a
-	// thin reference line. The week number is turned into the week's own start
-	// date, so the bars carry a real date axis.
-	const weekStarts = $derived.by(() => {
-		const map = new Map<number, string>();
-		for (const w of store.plan?.weeks ?? []) if (w.startDate) map.set(w.weekNumber, w.startDate);
-		return map;
-	});
-	const volumePoints = $derived(
-		(metrics?.volume.byWeek ?? []).slice(-8).map((w) => ({
-			date: weekStarts.get(w.week) ?? todayIso,
-			value: w.actualKm,
-			reference: w.plannedKm,
-		})),
-	);
-
+	// The plan's phases as one bar for the ring card, deeper as the block loads:
+	// base is the faintest, peak the strongest, and a taper falls back.
 	const phaseSegments = $derived.by(() => {
 		const weeks = store.plan?.weeks ?? [];
 		const segs: { phase: string; count: number }[] = [];
@@ -208,8 +162,6 @@
 		}
 		return segs;
 	});
-	// One hue for the plan's phases, deepening as the block loads: base is the
-	// faintest, peak the strongest, and a taper falls back.
 	const PHASE_OPACITY: Record<string, number> = { base: 0.25, build: 0.5, peak: 0.85, taper: 0.4 };
 	const phaseBars = $derived(
 		phaseSegments.map((seg) => ({
@@ -226,30 +178,6 @@
 		{ label: 'Steady', value: metrics?.intensity.steady ?? 0, opacity: 0.6 },
 		{ label: 'Hard', value: metrics?.intensity.hard ?? 0, opacity: 1 },
 	]);
-
-	const monthCells = $derived.by(() => {
-		const now = new Date();
-		const y = now.getUTCFullYear();
-		const m = now.getUTCMonth();
-		const first = new Date(Date.UTC(y, m, 1));
-		const firstDow = (first.getUTCDay() + 6) % 7;
-		const start = new Date(Date.UTC(y, m, 1 - firstDow));
-		const trained = new Set(metrics?.calendar.trainedDays ?? []);
-		const cells: { key: string; day: number; inMonth: boolean; trained: boolean; today: boolean }[] = [];
-		for (let i = 0; i < 42; i++) {
-			const d = new Date(start.getTime() + i * 86400000);
-			const key = d.toISOString().slice(0, 10);
-			cells.push({
-				key,
-				day: d.getUTCDate(),
-				inMonth: d.getUTCMonth() === m,
-				trained: trained.has(key),
-				today: key === todayIso,
-			});
-		}
-		return cells;
-	});
-	const monthName = new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
 	// The logged pace trend, long and quality runs only. Easy runs are left out
 	// on purpose, so the trend is not flattened by them.
@@ -277,36 +205,44 @@
 		<h1 class="font-display mt-1 text-2xl font-bold">{profileName}</h1>
 	</header>
 
-	<!-- The ring leads the page: where the plan stands, at a glance. -->
+	<!-- The ring leads the page: where the plan stands, at a glance, and opens
+	     the full plan with its phases and every week. -->
 	<section aria-labelledby="p-plan" class="mb-7">
-		<SectionHeader id="p-plan" eyebrow="Plan progress" meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go" />
-		<Card>
-			<div class="flex items-center gap-4">
-				<ProgressRing percent={metrics.planMeta.percent} size={96} stroke={9} />
-				<div class="min-w-0">
-					<p class="font-display text-lg font-semibold">
-						{#if metrics.planMeta.currentWeek}Week {metrics.planMeta.currentWeek} of {metrics.planMeta.weeksTotal}{:else}{metrics.planMeta.weeksTotal} weeks{/if}
-					</p>
-					{#if metrics.planMeta.currentPhase}
-						<p class="mt-0.5 text-sm text-steel">In the {metrics.planMeta.currentPhase} block</p>
-					{/if}
-					{#if metrics.planMeta.daysToRace != null}
-						<p class="mt-0.5 text-sm text-steel">{metrics.planMeta.daysToRace} days to race</p>
-					{/if}
+		<SectionHeader
+			id="p-plan"
+			eyebrow="Plan progress"
+			meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}"
+		/>
+		<a href="/progress/plan?from=/progress" class="lift block rounded-xl" aria-label="Plan progress, open the full plan">
+			<Card class="flex h-full flex-col">
+				<div class="flex items-center gap-4">
+					<ProgressRing percent={metrics.planMeta.percent} size={96} stroke={9} />
+					<div class="min-w-0">
+						<p class="font-display text-lg font-semibold">
+							{#if metrics.planMeta.currentWeek}Week {metrics.planMeta.currentWeek} of {metrics.planMeta.weeksTotal}{:else}{metrics.planMeta.weeksTotal} weeks{/if}
+						</p>
+						{#if metrics.planMeta.currentPhase}
+							<p class="mt-0.5 text-sm text-steel">In the {metrics.planMeta.currentPhase} block</p>
+						{/if}
+						{#if metrics.planMeta.daysToRace != null}
+							<p class="mt-0.5 text-sm text-steel">{metrics.planMeta.daysToRace} days to race</p>
+						{/if}
+					</div>
 				</div>
-			</div>
-			{#if phaseSegments.length > 1}
-				<div class="mt-4">
-					<ProportionBar
-						segments={phaseBars}
-						color={TRAINING_LOAD}
-						height={8}
-						ariaLabel="Plan phases, base to taper"
-					/>
-				</div>
-				<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
-			{/if}
-		</Card>
+				{#if phaseSegments.length > 1}
+					<div class="mt-4">
+						<ProportionBar
+							segments={phaseBars}
+							color={TRAINING_LOAD}
+							height={8}
+							ariaLabel="Plan phases, base to taper"
+						/>
+					</div>
+					<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
+				{/if}
+				<p class="mt-auto pt-3 text-[11px] text-signal-ink">See the whole plan →</p>
+			</Card>
+		</a>
 	</section>
 
 	<!-- The metric pages. Each card opens its full page. -->
@@ -327,7 +263,7 @@
 	</section>
 
 	{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
-		<!-- One card of mini widgets that opens the full health page. -->
+		<!-- The single health entry point. The full numbers live on the health page. -->
 		<section aria-labelledby="p-health" class="mb-7">
 			<div class="flex items-baseline justify-between gap-3">
 				<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" />
@@ -363,10 +299,6 @@
 								<span class="tabular">VDOT {Math.round(fitness.effectiveVdot)}</span>
 							</li>
 						{/if}
-						<li class="flex justify-between">
-							<span>Recent weekly distance</span>
-							<span class="tabular">{fmtDistance(fitness.recentWeeklyKm)}</span>
-						</li>
 						{#if fitness.rpeTrend}
 							<li class="flex justify-between">
 								<span>Effort trend</span>
@@ -384,93 +316,6 @@
 				</Card>
 			</section>
 		{/if}
-		{#if recovery?.available && recovery.signal && (recovery.signal.avgRestingHr || recovery.signal.avgHrvMs || recovery.signal.avgSleepMin)}
-			<section aria-labelledby="p-recovery" class="mb-7">
-				<SectionHeader id="p-recovery" eyebrow="Recovery" meta="{recovery.signal.days} days" />
-				<Card tone="sunken">
-					<WatchVitals signal={recovery.signal} days={recovery.days} />
-					{#if recovery.signal.strained}
-						<p class="mt-3 text-sm leading-relaxed text-steel">
-							Your recent numbers look strained. The plan favors easing the volume until they settle.
-						</p>
-					{:else}
-						<p class="mt-3 text-sm leading-relaxed text-steel">
-							Your recent numbers look steady against your own baseline.
-						</p>
-					{/if}
-				</Card>
-			</section>
-		{/if}
-		{#if stepDays.length}
-			<section aria-labelledby="p-steps" class="mb-7">
-				<SectionHeader id="p-steps" eyebrow="Daily steps" />
-				<BarsCard
-					title="Steps"
-					value={stepAvg.toLocaleString()}
-					unit="a day"
-					color={metricColor('steps')}
-					change={periodDelta(stepDays.map((d) => d.steps), health?.previous?.['steps'])}
-					points={stepDays.map((d) => ({ date: d.date, value: d.steps }))}
-					format={(n) => Math.round(n).toLocaleString()}
-					goal={stepAvg > 0 ? { value: stepAvg, label: 'Average' } : null}
-					note="Last {stepDays.length} days from Google Health. The line is your average."
-				/>
-			</section>
-		{/if}
-		<section aria-labelledby="p-adherence" class="mb-7">
-			<SectionHeader id="p-adherence" eyebrow="Sessions logged" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}" />
-			<Card tone="sunken">
-				<div class="flex flex-wrap gap-1" role="img" aria-label="{metrics.adherence.completed} of {metrics.adherence.planned} sessions logged{metrics.adherence.skipped ? `, ${metrics.adherence.skipped} skipped` : ''}">
-					{#each store.plan.weeks as w (w.id)}
-						{#each w.sessions as s (s.id)}
-							{@const done = store.logs.some((l) => l.sessionId === s.id)}
-							{@const sk = !done && isSkipped(s.id)}
-							<span class="h-4 w-2 rounded-[1px]" style="background: {done ? TRAINING_PROGRESS : sk ? CHART_MUTED : CHART_EMPTY}"></span>
-						{/each}
-					{/each}
-				</div>
-				<p class="mt-3 text-xs text-steel">One tick per planned session. Green is done, grey is skipped, and the lightest mark is not logged yet, not missed.</p>
-			</Card>
-		</section>
-
-		<section aria-labelledby="p-consistency" class="mb-7">
-			<SectionHeader id="p-consistency" eyebrow="Consistency" meta={monthName} />
-			<Card tone="sunken">
-				<div class="mx-auto max-w-sm">
-					<div class="grid grid-cols-7 gap-1">
-						{#each ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as d, i (i)}
-							<span class="tabular py-1 text-center text-[10px] uppercase tracking-wide text-steel">{d}</span>
-						{/each}
-						{#each monthCells as c (c.key)}
-							<span
-								class="flex aspect-square items-center justify-center rounded-md border text-[10px] {c.trained
-									? ''
-									: c.inMonth
-										? 'border-hairline text-steel'
-										: 'border-transparent text-hairline'} {c.today ? 'ring-1 ring-signal-ink' : ''}"
-								style={c.trained ? `background: ${TRAINING_PROGRESS}; border-color: ${TRAINING_PROGRESS}; color: var(--paper)` : ''}
-								aria-label="{c.key}{c.trained ? ', trained' : ''}"
-							>{c.day}</span>
-						{/each}
-					</div>
-					<p class="mt-2 text-xs text-steel">A filled day is a day you trained. Rest days stay open on purpose.</p>
-				</div>
-			</Card>
-		</section>
-
-		<section aria-labelledby="p-volume" class="mb-7">
-			<SectionHeader id="p-volume" eyebrow="Volume by week" />
-			<BarsCard
-				title="Distance logged"
-				value={fmtDistance(metrics.volume.totalActualKm)}
-				unit={`of ${fmtDistance(metrics.volume.totalPlannedKm)} planned`}
-				color={TRAINING_PROGRESS}
-				points={volumePoints}
-				reference={{ label: 'Planned' }}
-				format={(n) => fmtDistance(n)}
-				note="Last 8 weeks. The bar is distance logged, and the thin line is planned.{metrics.volume.changePct !== undefined ? ` Last change ${metrics.volume.changePct > 0 ? '+' : ''}${metrics.volume.changePct}%.` : ''}{metrics.imported.sessions ? ` Of that, ${fmtDistance(metrics.imported.km)} came from ${metrics.imported.sessions} imported workout${metrics.imported.sessions === 1 ? '' : 's'}.` : ''}"
-			/>
-		</section>
 
 		<section aria-labelledby="p-intensity" class="mb-7">
 			<SectionHeader id="p-intensity" eyebrow="Completed intensity" meta="{metrics.intensity.completed} done" />

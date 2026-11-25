@@ -11,10 +11,11 @@
 		values,
 		color,
 		height = 22,
-	}: { values: number[]; color: string; height?: number } = $props();
+		minBarRatio = 0,
+	}: { values: number[]; color: string; height?: number; minBarRatio?: number } = $props();
 
 	const WIDTH = 100;
-	const bars = $derived(barRects(values, WIDTH, height));
+	const bars = $derived(barRects(values, WIDTH, height, 1, 1, minBarRatio));
 </script>
 
 {#if bars.length}

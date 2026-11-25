@@ -30,7 +30,7 @@
 	]);
 </script>
 
-<MetricHeader eyebrow="Progress · Volume" title="Distance" {from} />
+<MetricHeader title="Distance" {from} />
 
 {#if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>
@@ -60,7 +60,8 @@
 			color={TRAINING_PROGRESS}
 			points={weeklyPoints}
 			format={(n) => fmtDistance(n)}
-			note="Each bar is one week of distance logged. Empty weeks stay flat."
+			minBarRatio={0.04}
+			note="Each bar is one week of distance logged. Empty weeks stay flat, and a light week keeps a small visible bar so a short run still shows."
 		/>
 	</section>
 

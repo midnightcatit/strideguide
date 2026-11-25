@@ -31,7 +31,7 @@
 		<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
 		<p class="tabular mt-1 text-lg text-steel">{fmtDistance(doneKm)}<span class="text-sm"> / {fmtDistance(plannedKm)}</span></p>
 		<div class="mt-2.5" aria-hidden="true">
-			<MiniBarStrip values={weekly.map((w) => w.km)} color={TRAINING_PROGRESS} height={22} />
+			<MiniBarStrip values={weekly.map((w) => w.km)} color={TRAINING_PROGRESS} height={22} minBarRatio={0.14} />
 		</div>
 		<p class="mt-auto pt-2 text-[11px] text-signal-ink">See all volume →</p>
 	</Card>

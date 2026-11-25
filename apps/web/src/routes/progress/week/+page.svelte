@@ -38,7 +38,7 @@
 	const percent = $derived(rows.length ? (doneCount / rows.length) * 100 : 0);
 </script>
 
-<MetricHeader eyebrow="Progress · This week" title={todayWeek ? `Week ${todayWeek.weekNumber}` : 'This week'} {from} />
+<MetricHeader title={todayWeek ? `Week ${todayWeek.weekNumber}` : 'This week'} {from} />
 
 {#if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>

@@ -25,6 +25,7 @@
 		goal = null,
 		reference = null,
 		height = 150,
+		minBarRatio = 0,
 		note,
 	}: {
 		title: string;
@@ -37,13 +38,31 @@
 		goal?: { value: number; label?: string } | null;
 		reference?: { label?: string; color?: string } | null;
 		height?: number;
+		/**
+		 * The smallest fraction of the tallest bar a non-zero value may draw, so a
+		 * light week next to a heavy one still shows instead of vanishing. The bar
+		 * grows to this floor; the tooltip and axis keep the real number. Zero
+		 * leaves the true height, for charts where a small value should read small.
+		 */
+		minBarRatio?: number;
 		note?: string;
 	} = $props();
 
 	const motion = $derived(prefersReducedMotion.current ? 'none' : undefined);
 
+	const maxValue = $derived(Math.max(0, ...points.map((p) => p.value ?? 0)));
+	const floor = $derived(minBarRatio > 0 && maxValue > 0 ? maxValue * minBarRatio : 0);
+
 	const data = $derived(
-		points.map((p) => ({ date: p.date, value: p.value ?? 0, reference: p.reference ?? 0 })),
+		points.map((p) => {
+			const actual = p.value ?? 0;
+			return {
+				date: p.date,
+				value: actual > 0 && floor > 0 ? Math.max(actual, floor) : actual,
+				actual,
+				reference: p.reference ?? 0,
+			};
+		}),
 	);
 
 	const annotations = $derived<ChartAnnotations>(
@@ -105,7 +124,7 @@
 				{context}
 				header={(d) => shortDay(d.date)}
 				items={(d) => [
-					{ label: title, value: format(d.value), color },
+					{ label: title, value: format(d.actual), color },
 					...(reference
 						? [{ label: reference.label ?? 'Planned', value: format(d.reference) }]
 						: []),
