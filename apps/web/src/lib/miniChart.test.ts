@@ -44,4 +44,16 @@ describe('mini bar geometry', () => {
 		expect(bars[1].h).toBe(20);
 		expect(bars[1].y).toBe(0);
 	});
+
+	it('scales a low-volume series to its own tallest reading', () => {
+		const bars = barRects([0.5, 0.25], 100, 20);
+		expect(bars[0].h).toBe(20);
+		expect(bars[1].h).toBeCloseTo(10, 0);
+	});
+
+	it('draws a light reading at a minimum visible height when asked', () => {
+		const bars = barRects([0.1, 10], 100, 20, 1, 1, 0.1);
+		expect(bars[0].h).toBe(2);
+		expect(bars[1].h).toBe(20);
+	});
 });

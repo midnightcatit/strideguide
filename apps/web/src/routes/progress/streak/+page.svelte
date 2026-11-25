@@ -8,6 +8,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import DayActivitySheet from '$lib/components/DayActivitySheet.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	onMount(() => void ensurePlan());
@@ -55,9 +56,12 @@
 	];
 	let span = $state(26);
 	const activeSpan = $derived(spans.find((s) => s.weeks === span) ?? spans[0]);
+
+	// The day whose activity is open in the sheet, or null when it is closed.
+	let selectedDay = $state<string | null>(null);
 </script>
 
-<MetricHeader eyebrow="Progress · Streak" title="Activity" {from} />
+<MetricHeader title="Activity" {from} />
 
 <Card>
 	<div class="flex flex-wrap items-end justify-between gap-4">
@@ -91,11 +95,27 @@
 		{/each}
 	</div>
 
-	<div class="mt-5 overflow-x-auto pb-1">
-		<ActivityHeatmap trainedDays={days} {skippedDays} weeks={span} {todayIso} cell={13} gap={3} showWeekdays showMonthLabels />
+	<!-- The grid fills the width at every span: fewer weeks, larger boxes. The
+	     keyed re-entry gives a smooth change when the range switches. -->
+	<div class="mt-5">
+		{#key span}
+			<div class="sg-enter-up">
+				<ActivityHeatmap
+					trainedDays={days}
+					{skippedDays}
+					weeks={span}
+					{todayIso}
+					gap={3}
+					showWeekdays
+					showMonthLabels
+					fluid
+					onDayClick={(iso) => (selectedDay = iso)}
+				/>
+			</div>
+		{/key}
 	</div>
 
-	<div class="mt-4 flex items-center gap-3 text-xs text-steel">
+	<div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-steel">
 		<span class="flex items-center gap-1.5">
 			<span class="h-3 w-3 rounded-[2px] bg-hairline"></span> No training
 		</span>
@@ -110,6 +130,8 @@
 		</span>
 	</div>
 	<p class="mt-3 text-xs text-steel">
-		Showing {activeSpan.label}. A filled square is a day you logged a session. A grey square is a day you skipped, which does not count as training. Rest days stay open on purpose.
+		Showing {activeSpan.label}. A filled square is a day you logged a session. Tap a day to see what you did. A grey square is a day you skipped, which does not count as training. Rest days stay open on purpose.
 	</p>
 </Card>
+
+<DayActivitySheet open={selectedDay !== null} iso={selectedDay} onClose={() => (selectedDay = null)} />

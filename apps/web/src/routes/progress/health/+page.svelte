@@ -70,7 +70,7 @@
 	const hasMetrics = $derived(Object.keys(metrics).length > 0 || Object.keys(samples).length > 0);
 </script>
 
-<MetricHeader eyebrow="Progress · Health" title="Health data" {from} />
+<MetricHeader title="Health data" {from} />
 
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
 	<div class="flex flex-wrap gap-1.5" role="tablist" aria-label="Time window">

@@ -11,6 +11,11 @@
 	 * a skipped day is the muted token and an untrained day the quiet one. Cells
 	 * are static once drawn; only the hover lift animates, and reduced motion
 	 * drops it, so nothing moves for people who ask for that.
+	 *
+	 * With `fluid`, the columns share the container width, so the cells grow
+	 * square to fill it at any span: fewer weeks means larger boxes. With
+	 * `onDayClick`, each day becomes a button that reports its date, so a page can
+	 * open a day's activity.
 	 */
 	let {
 		trainedDays,
@@ -22,6 +27,7 @@
 		showMonthLabels = true,
 		showWeekdays = false,
 		fluid = false,
+		onDayClick,
 	}: {
 		trainedDays: string[] | Set<string>;
 		skippedDays?: string[] | Set<string>;
@@ -33,6 +39,8 @@
 		showWeekdays?: boolean;
 		/** Fill the container width; cells grow square instead of a fixed pixel size. */
 		fluid?: boolean;
+		/** When set, each day is a button that reports its ISO date. */
+		onDayClick?: (iso: string) => void;
 	} = $props();
 
 	const trained = $derived(
@@ -101,18 +109,40 @@
 		return parts.join('; ');
 	};
 
+	const dayLabel = (day: { key: string; state: 'done' | 'skipped' | 'miss' | 'future' | 'today' }): string => {
+		const tail =
+			day.state === 'done'
+				? ', trained'
+				: day.state === 'skipped'
+					? ', skipped'
+					: day.state === 'today'
+						? ', today'
+						: day.state === 'future'
+							? ', upcoming'
+							: ', no training';
+		return `${day.key}${tail}`;
+	};
+
 	const trainedCount = $derived(columns.reduce((n, c) => n + c.days.filter((d) => d.state === 'done').length, 0));
 	const skippedCount = $derived(columns.reduce((n, c) => n + c.days.filter((d) => d.state === 'skipped').length, 0));
 	const label = $derived(
 		`${trainedCount} training days in the last ${weeks} weeks${skippedCount ? `, ${skippedCount} skipped` : ''}`,
 	);
+
+	// The weekday column's own width, measured, so the month labels line up with
+	// the day columns at any span instead of guessing at it.
+	let weekdayW = $state(0);
 </script>
 
-<div class="{fluid ? 'flex w-full' : 'inline-flex'} flex-col gap-1" role="img" aria-label={label}>
+<div
+	class="{fluid ? 'flex w-full' : 'inline-flex'} flex-col gap-1"
+	role={onDayClick ? 'group' : 'img'}
+	aria-label={label}
+>
 	{#if showMonthLabels}
-		<div class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px{fluid ? '' : `; padding-left: ${showWeekdays ? cell + 8 : 0}px`}">
+		<div class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px{showWeekdays ? `; padding-left: ${weekdayW + gap}px` : ''}">
 			{#each columns as col, i (col.key)}
-				<span class="overflow-visible text-[9px] text-steel {fluid ? 'min-w-0 flex-1' : ''}" style={fluid ? '' : `width: ${cell}px`}>
+				<span class="overflow-visible whitespace-nowrap text-[9px] text-steel {fluid ? 'min-w-0 flex-1' : ''}" style={fluid ? '' : `width: ${cell}px`}>
 					{#if i === 0 || col.month !== columns[i - 1]?.month}{col.month}{/if}
 				</span>
 			{/each}
@@ -120,20 +150,34 @@
 	{/if}
 	<div class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px">
 		{#if showWeekdays}
-			<div class="flex flex-col pr-1 text-[9px] text-steel" style="gap: {gap}px">
+			<div bind:clientWidth={weekdayW} class="flex flex-col pr-1 text-[9px] text-steel" style="gap: {gap}px">
 				{#each ['M', '', 'W', '', 'F', '', 'S'] as d, i (i)}
-					<span class="flex items-center" style="height: {cell}px">{d}</span>
+					{#if fluid}
+						<span class="flex flex-1 items-center">{d}</span>
+					{:else}
+						<span class="flex items-center" style="height: {cell}px">{d}</span>
+					{/if}
 				{/each}
 			</div>
 		{/if}
 		{#each columns as col (col.key)}
 			<div class="flex flex-col {fluid ? 'min-w-0 flex-1' : ''}" style="gap: {gap}px">
 				{#each col.days as day (day.key)}
-					<span
-						class="rounded-[2px] transition-transform hover:scale-125 {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
-						style={cellStyle(day.state)}
-						title="{day.key}{day.state === 'done' ? ' · trained' : day.state === 'skipped' ? ' · skipped' : ''}"
-					></span>
+					{#if onDayClick}
+						<button
+							type="button"
+							class="rounded-[2px] border-0 p-0 transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-signal-ink {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
+							style={cellStyle(day.state)}
+							aria-label={dayLabel(day)}
+							onclick={() => onDayClick(day.key)}
+						></button>
+					{:else}
+						<span
+							class="rounded-[2px] transition-transform hover:scale-125 {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
+							style={cellStyle(day.state)}
+							title={dayLabel(day)}
+						></span>
+					{/if}
 				{/each}
 			</div>
 		{/each}

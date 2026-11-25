@@ -60,7 +60,11 @@ export interface BarRect {
  * The bars for a small strip, one per reading, grown from the bottom and scaled
  * to the tallest. Every bar keeps the same width with a small gap between. A
  * non-finite or negative reading draws no bar, and an all-zero series divides by
- * nothing, so the strip stays a valid, empty set instead of a broken shape.
+ * nothing, so the strip stays a valid, empty set instead of a broken shape. The
+ * scale reads the series' own tallest reading, so a low-volume series still
+ * fills the strip instead of flattening against a fixed floor. `minRatio` sets a
+ * smallest fraction of the strip a non-zero reading may draw, so a light week
+ * beside a heavy one stays visible; zero keeps the true height.
  */
 export function barRects(
 	values: number[],
@@ -68,14 +72,18 @@ export function barRects(
 	height: number,
 	gap = 1,
 	radius = 1,
+	minRatio = 0,
 ): BarRect[] {
 	if (values.length === 0) return [];
-	const max = Math.max(1, ...values.filter((v) => Number.isFinite(v)));
+	const nums = values.filter((v) => Number.isFinite(v));
+	const top = nums.length ? Math.max(...nums) : 0;
+	const max = top > 0 ? top : 1;
+	const minH = minRatio > 0 ? round(minRatio * height) : 0;
 	const n = values.length;
 	const w = Math.max(0, (width - gap * (n - 1)) / n);
 	return values.map((raw, i) => {
 		const v = Number.isFinite(raw) ? Math.max(0, raw) : 0;
-		const h = round((v / max) * height);
+		const h = v > 0 ? Math.max(round((v / max) * height), minH) : 0;
 		return {
 			x: round(i * (w + gap)),
 			y: round(height - h),
