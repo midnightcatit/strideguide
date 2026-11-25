@@ -53,8 +53,8 @@
     //   "enabled": true
     // }
   },
-  "permission": {
-    "agent_manager": "deny",
-    "agent_manager_models": "deny"
-  }
+  "permissions": [
+    { "action": "agent_manager", "resource": "*", "effect": "deny" },
+    { "action": "agent_manager_models", "resource": "*", "effect": "deny" }
+  ]
 }
