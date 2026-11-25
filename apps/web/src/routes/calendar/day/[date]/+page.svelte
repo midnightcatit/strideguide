@@ -11,7 +11,7 @@
 	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
-	import { type ClientSession, addDaysIso, dayIndexInWeek, localIso } from '$lib/plan';
+	import { type ClientSession, addDaysIso, dayIndexInWeek, formatIsoDay, localIso } from '$lib/plan';
 	import { sessionHref, logHref, playHref } from '$lib/sessionNav';
 	import { readView, saveView } from '$lib/viewState';
 	import SessionCard from '$lib/components/SessionCard.svelte';
@@ -33,12 +33,7 @@
 	// A day inside the last 30 days can be edited; older days are read-only history.
 	const editable = $derived(date >= addDaysIso(todayIso, -30));
 	const label = $derived(
-		new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
-			weekday: 'long',
-			month: 'long',
-			day: 'numeric',
-			timeZone: 'UTC',
-		}),
+		formatIsoDay(date, { weekday: 'long', month: 'long', day: 'numeric' }),
 	);
 	const planStart = $derived(store.plan?.weeks[0]?.startDate ?? null);
 	const planEnd = $derived(
@@ -75,12 +70,7 @@
 	});
 
 	function dateHeading(iso: string): string {
-		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
-			weekday: 'short',
-			day: 'numeric',
-			month: 'short',
-			timeZone: 'UTC',
-		});
+		return formatIsoDay(iso, { weekday: 'short', day: 'numeric', month: 'short' });
 	}
 
 	function confirmIfFuture(label: string, action: () => void): boolean {

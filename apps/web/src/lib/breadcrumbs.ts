@@ -85,15 +85,18 @@ export function breadcrumbFor(pathname: string, from?: string | null): Crumb[] {
 	if (parts.length <= 1 && PARENTS.has(parts[0] ?? '')) return [];
 	if (parts[0] === 'session' || parts[0] === 'activity') {
 		// Neither has a parent path that exists, so lead with the view it was
-		// opened from, which gives the header a crumb to tap back to.
+		// opened from, which gives the header a crumb to tap back to. The `from`
+		// query rides on the view's own link (and each step below it), so tapping
+		// a crumb keeps the origin the page was opened with.
 		const view = parts[0];
 		const crumbs = from ? trailFor(from) : [];
-		crumbs.push({ label: SEGMENT_LABELS[view]!, href: `/${view}/${parts[1] ?? ''}` });
+		const base = `/${view}/${parts[1] ?? ''}`;
+		const query = from ? `?from=${encodeURIComponent(from)}` : '';
+		crumbs.push({ label: SEGMENT_LABELS[view]!, href: `${base}${query}` });
+		let path = base;
 		for (const step of parts.slice(2)) {
-			crumbs.push({
-				label: SEGMENT_LABELS[step] ?? titleCase(step),
-				href: `${crumbs[crumbs.length - 1]!.href}/${step}`,
-			});
+			path += `/${step}`;
+			crumbs.push({ label: SEGMENT_LABELS[step] ?? titleCase(step), href: `${path}${query}` });
 		}
 		return crumbs;
 	}

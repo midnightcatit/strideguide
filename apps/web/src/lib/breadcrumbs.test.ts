@@ -24,7 +24,7 @@ describe('breadcrumbFor', () => {
 	it('leads a session view with the tab it was opened from', () => {
 		expect(breadcrumbFor('/session/abc123', '/today')).toEqual([
 			{ label: 'Today', href: '/today' },
-			{ label: 'Session', href: '/session/abc123' },
+			{ label: 'Session', href: '/session/abc123?from=%2Ftoday' },
 		]);
 	});
 
@@ -37,23 +37,23 @@ describe('breadcrumbFor', () => {
 	it('leads an activity view with the tab it was opened from', () => {
 		expect(breadcrumbFor('/activity/act123', '/today?date=2026-11-25')).toEqual([
 			{ label: 'Today', href: '/today?date=2026-11-25' },
-			{ label: 'Activity', href: '/activity/act123' },
+			{ label: 'Activity', href: '/activity/act123?from=%2Ftoday%3Fdate%3D2026-11-25' },
 		]);
 	});
 
 	it('drops a query from the from view but keeps it in the link', () => {
 		expect(breadcrumbFor('/session/abc123', '/today?date=2026-11-25')).toEqual([
 			{ label: 'Today', href: '/today?date=2026-11-25' },
-			{ label: 'Session', href: '/session/abc123' },
+			{ label: 'Session', href: '/session/abc123?from=%2Ftoday%3Fdate%3D2026-11-25' },
 		]);
 	});
 
-	it('keeps the id in the parent crumb and the from trail before it', () => {
+	it('keeps the id and the from origin in each crumb of the trail', () => {
 		expect(breadcrumbFor('/session/abc123/play', '/calendar/day/2026-01-05')).toEqual([
 			{ label: 'Calendar', href: '/calendar' },
 			{ label: 'Day', href: '/calendar/day/2026-01-05' },
-			{ label: 'Session', href: '/session/abc123' },
-			{ label: 'Play', href: '/session/abc123/play' },
+			{ label: 'Session', href: '/session/abc123?from=%2Fcalendar%2Fday%2F2026-01-05' },
+			{ label: 'Play', href: '/session/abc123/play?from=%2Fcalendar%2Fday%2F2026-01-05' },
 		]);
 	});
 

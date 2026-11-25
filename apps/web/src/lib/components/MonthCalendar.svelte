@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
+	import { type ClientSession, DAY_INITIALS, addDaysIso, formatIsoDay, localIso } from '$lib/plan';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { sessionHref } from '$lib/sessionNav';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
@@ -74,7 +74,7 @@
 
 	const monthCells = $derived.by(() => {
 		const now = new Date();
-		const first = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + monthOffset, 1));
+		const first = new Date(Date.UTC(now.getFullYear(), now.getMonth() + monthOffset, 1));
 		const y = first.getUTCFullYear();
 		const m = first.getUTCMonth();
 		const firstDow = (first.getUTCDay() + 6) % 7; // Monday = 0
@@ -112,7 +112,7 @@
 	});
 	const monthLabel = $derived.by(() => {
 		const now = new Date();
-		const first = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + monthOffset, 1));
+		const first = new Date(Date.UTC(now.getFullYear(), now.getMonth() + monthOffset, 1));
 		return first.toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
 	});
 
@@ -148,12 +148,7 @@
 		revealId = null;
 	});
 	function dateHeading(iso: string): string {
-		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
-			weekday: 'short',
-			day: 'numeric',
-			month: 'short',
-			timeZone: 'UTC',
-		});
+		return formatIsoDay(iso, { weekday: 'short', day: 'numeric', month: 'short' });
 	}
 </script>
 

@@ -30,8 +30,8 @@
 	});
 	const month = $derived.by(() => {
 		const now = new Date();
-		const y = now.getUTCFullYear();
-		const m = now.getUTCMonth();
+		const y = now.getFullYear();
+		const m = now.getMonth();
 		const first = new Date(Date.UTC(y, m, 1));
 		const firstDow = (first.getUTCDay() + 6) % 7;
 		const start = new Date(Date.UTC(y, m, 1 - firstDow));
