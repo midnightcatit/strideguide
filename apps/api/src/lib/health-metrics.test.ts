@@ -3,6 +3,7 @@ import {
 	DEFAULT_WINDOW_DAYS,
 	groupMetricRows,
 	groupSampleRows,
+	legacyDailyMetricRows,
 	normalizeWindow,
 	withLatest,
 } from './health-metrics';
@@ -69,5 +70,30 @@ describe('withLatest', () => {
 
 	it('reports a null latest for an empty series', () => {
 		expect(withLatest({ steps: [] }).steps).toEqual({ latest: null, series: [] });
+	});
+});
+
+describe('legacyDailyMetricRows', () => {
+	it('projects the four legacy columns into store-shaped metric rows', () => {
+		const rows = legacyDailyMetricRows([
+			{ date: '2026-11-23', resting_hr: 57, hrv_ms: 51.9, sleep_min: 241, steps: 4507 },
+		]);
+		expect(rows).toEqual([
+			{ date: '2026-11-23', metric: 'resting_hr', value: 57 },
+			{ date: '2026-11-23', metric: 'hrv_ms', value: 51.9 },
+			{ date: '2026-11-23', metric: 'sleep_min', value: 241 },
+			{ date: '2026-11-23', metric: 'steps', value: 4507 },
+		]);
+	});
+
+	it('skips a null column instead of inventing a zero', () => {
+		const rows = legacyDailyMetricRows([
+			{ date: '2026-11-20', resting_hr: 57, hrv_ms: null, sleep_min: null, steps: null },
+		]);
+		expect(rows).toEqual([{ date: '2026-11-20', metric: 'resting_hr', value: 57 }]);
+	});
+
+	it('drops a row with no usable date', () => {
+		expect(legacyDailyMetricRows([{ resting_hr: 57, steps: 100 }])).toEqual([]);
 	});
 });

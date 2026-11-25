@@ -93,6 +93,38 @@ function isoDay(date: Date): string {
 	return date.toISOString().slice(0, 10);
 }
 
+/**
+ * The four legacy `health_daily` columns, paired with the metric key each one
+ * maps to in the store. The keys match `HealthMetric` in google-health-map, so a
+ * fallback row is indistinguishable from a row the sync wrote.
+ */
+const LEGACY_DAILY_COLUMNS: { column: string; metric: string }[] = [
+	{ column: 'resting_hr', metric: 'resting_hr' },
+	{ column: 'hrv_ms', metric: 'hrv_ms' },
+	{ column: 'sleep_min', metric: 'sleep_min' },
+	{ column: 'steps', metric: 'steps' },
+];
+
+/**
+ * Project legacy `health_daily` rows into the store's `{ date, metric, value }`
+ * shape. Pure, so the fallback read has no hidden behaviour and is cheap to test.
+ */
+export function legacyDailyMetricRows(
+	rows: Record<string, unknown>[],
+): { date: string; metric: string; value: number }[] {
+	const out: { date: string; metric: string; value: number }[] = [];
+	for (const row of rows) {
+		const date = typeof row.date === 'string' ? row.date.slice(0, 10) : '';
+		if (!date) continue;
+		for (const { column, metric } of LEGACY_DAILY_COLUMNS) {
+			const value = row[column];
+			if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+			out.push({ date, metric, value });
+		}
+	}
+	return out;
+}
+
 /** Whether a table is present, so a missing one is an empty payload, not an error. */
 async function hasTable(db: D1, name: string): Promise<boolean> {
 	try {
@@ -106,7 +138,14 @@ async function hasTable(db: D1, name: string): Promise<boolean> {
 	}
 }
 
-/** Load every stored metric and sample for the window, grouped and newest-labelled. */
+/**
+ * Load every stored metric and sample for the window, grouped and newest-labelled.
+ *
+ * The generic store is the single source. The legacy `health_daily` table is read
+ * only as a fallback, and only when the store has no rows for the window, so the
+ * dashboard card and the recovery read agree on the same numbers and the two
+ * never act as parallel sources.
+ */
 export async function loadHealthMetrics(
 	db: D1,
 	userId: string,
@@ -117,11 +156,12 @@ export async function loadHealthMetrics(
 	const sinceDate = isoDay(new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000));
 	const sinceEpoch = Math.floor(now.getTime() / 1000) - windowDays * 24 * 60 * 60;
 
-	const [hasMetrics, hasSamples] = await Promise.all([
+	const [hasMetrics, hasSamples, hasLegacy] = await Promise.all([
 		hasTable(db, 'health_metrics'),
 		hasTable(db, 'health_samples'),
+		hasTable(db, 'health_daily'),
 	]);
-	if (!hasMetrics && !hasSamples) return empty;
+	if (!hasMetrics && !hasSamples && !hasLegacy) return empty;
 
 	let metrics: Record<string, MetricSeries<MetricPoint>> = {};
 	let samples: Record<string, MetricSeries<SamplePoint>> = {};
@@ -135,6 +175,23 @@ export async function loadHealthMetrics(
 				.bind(userId, sinceDate)
 				.all<{ date: string; metric: string; value: number }>();
 			metrics = withLatest(groupMetricRows(result.results ?? []));
+		} catch {
+			metrics = {};
+		}
+	}
+
+	// Fallback for a deployment that has not migrated the legacy rows yet. Runs
+	// only when the store holds nothing for the window, so the store stays first
+	// and health_daily is never a parallel source.
+	if (Object.keys(metrics).length === 0 && hasLegacy) {
+		try {
+			const result = await db
+				.prepare(
+					'SELECT date, resting_hr, hrv_ms, sleep_min, steps FROM health_daily WHERE user_id = ? AND date >= ? ORDER BY date ASC',
+				)
+				.bind(userId, sinceDate)
+				.all<Record<string, unknown>>();
+			metrics = withLatest(groupMetricRows(legacyDailyMetricRows(result.results ?? [])));
 		} catch {
 			metrics = {};
 		}
