@@ -43,12 +43,12 @@
 <header class="mb-7">
 	<p class="tabular text-xs uppercase tracking-widest text-steel">Coach</p>
 	<h1 class="font-display mt-1 text-2xl font-bold">Ask about your training</h1>
-	<p class="mt-0.5 text-sm text-steel">Answers use your plan, your logged runs and our research. Not medical advice.</p>
+	<p class="mt-0.5 text-sm text-steel">Answers use your plan and logged runs, and cite the same studies as each session. Not medical advice.</p>
 </header>
 
 {#if messages.length === 0}
 	<Card>
-		<p class="text-sm text-steel">Try one of these to start:</p>
+		<p class="text-sm text-steel">Common questions:</p>
 		<div class="mt-3 flex flex-col gap-2">
 			{#each starters as s (s)}
 				<button

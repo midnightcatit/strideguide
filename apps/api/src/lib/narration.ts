@@ -5,11 +5,16 @@ import type { Env } from '../env';
 import { runAi, type AiMessage } from './ai';
 import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
 
+/**
+ * Each phase as one clause about what the week does, rather than a repeat of the
+ * phase's own label, so the deterministic fallback reads as a note about the week.
+ * Unit-free on purpose, since a runner may read kilometres or miles.
+ */
 const PHASE_FOCUS: Record<string, string> = {
-	base: 'building aerobic volume and keeping it easy',
-	build: 'adding quality work on top of the base',
-	peak: 'sharpening and practicing goal pace',
-	taper: 'freshening up while keeping the intensity',
+	base: 'volume builds while every run stays easy',
+	build: 'quality returns and volume keeps climbing',
+	peak: 'volume starts to come down as goal pace sharpens',
+	taper: 'volume drops away and short efforts keep the legs sharp',
 };
 
 /** Deterministic fallback summary, used whenever AI is unavailable or fails. */

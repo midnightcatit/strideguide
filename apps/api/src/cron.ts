@@ -47,7 +47,7 @@ async function runSummary(env: Env, kind: 'nightly' | 'weekly'): Promise<void> {
 				kind === 'weekly'
 					? `You logged ${done} session${done === 1 ? '' : 's'} this week. Keep the easy days easy and the quality sessions honest.`
 					: done
-						? `${done} session${done === 1 ? '' : 's'} logged recently. Check tomorrow's plan and keep the routine.`
+						? `${done} session${done === 1 ? '' : 's'} logged. Tomorrow's session is in your plan; keep the easy days genuinely easy.`
 						: 'Nothing logged yet. Start with today\u2019s session.';
 
 			try {
