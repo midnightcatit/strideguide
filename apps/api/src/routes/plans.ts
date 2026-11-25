@@ -29,6 +29,7 @@ import { narrateAndStore, reviewPlan, templateWeekSummary } from '../lib/narrati
 import { shapePlan } from '../lib/plan-shape';
 import { equipmentPrefsPatchSchema } from '../lib/prefs-schema';
 import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
+import { syncGoalProfiles } from '../lib/goal-profiles';
 import { prescriptionSchema } from '../lib/prescription-schema';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
@@ -827,6 +828,9 @@ plans.post(
 		const usedAi = !!shapes || review.usedAi;
 
 		const goalId = crypto.randomUUID();
+		// The goal profile guard reads the reference table, so make sure it holds
+		// every built-in profile before the goal insert.
+		await syncGoalProfiles(db);
 		await db.insert(schema.userGoals).values({
 			id: goalId,
 			userId: user.id,
