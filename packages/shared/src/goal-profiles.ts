@@ -25,6 +25,10 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		requiredInputs: ['targetDate', 'baseline', 'availableDays'],
 		sessionTypes: ['easy', 'long', 'tempo', 'threshold', 'interval', 'strides', 'hills', 'race'],
 		defaultWeeks: 23,
+		// A marathon long run builds to about 32-35 km, the classic peak.
+		longRun: { peakFractionOfRace: 0.8, maxKm: 35 },
+		// Two to three easy weeks after the race before training resumes.
+		recoveryWeeks: 3,
 	},
 	{
 		slug: 'half-marathon',
@@ -46,6 +50,9 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		requiredInputs: ['targetDate', 'baseline', 'availableDays'],
 		sessionTypes: ['easy', 'long', 'tempo', 'threshold', 'interval', 'strides', 'race'],
 		defaultWeeks: 17,
+		// A half long run builds to about 19 km (12 mi), well short of the race.
+		longRun: { peakFractionOfRace: 0.9, maxKm: 20 },
+		recoveryWeeks: 2,
 	},
 	{
 		slug: '10k',
@@ -65,6 +72,9 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		requiredInputs: ['targetDate', 'baseline', 'availableDays'],
 		sessionTypes: ['easy', 'tempo', 'threshold', 'interval', 'strides', 'hills', 'race'],
 		defaultWeeks: 12,
+		// A 10K long run reaches about 14-16 km, past the race distance.
+		longRun: { peakFractionOfRace: 1.45, maxKm: 16 },
+		recoveryWeeks: 1,
 	},
 	{
 		slug: '5k',
@@ -84,6 +94,9 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		requiredInputs: ['targetDate', 'baseline', 'availableDays'],
 		sessionTypes: ['easy', 'interval', 'strides', 'hills', 'race'],
 		defaultWeeks: 10,
+		// A 5K leans on quality, so its long run is about twice the race distance.
+		longRun: { peakFractionOfRace: 2.2, maxKm: 12 },
+		recoveryWeeks: 1,
 	},
 	{
 		slug: 'whole-fitness',
@@ -110,6 +123,9 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 			'cross-train',
 		],
 		defaultWeeks: 16,
+		// No race to anchor on, so the long run has an absolute, sustainable peak.
+		longRun: { peakKm: 12, maxKm: 12 },
+		recoveryWeeks: 0,
 	},
 ];
 

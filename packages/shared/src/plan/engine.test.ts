@@ -21,9 +21,13 @@ describe('generatePlan (marathon)', () => {
 		expect(plan.meta.totalWeeks).toBeGreaterThanOrEqual(4);
 	});
 
-	it('starts in base and ends in taper', () => {
+	it('starts in base, tapers into the race, then recovers', () => {
 		expect(plan.weeks[0]!.phase).toBe('base');
-		expect(plan.weeks[plan.weeks.length - 1]!.phase).toBe('taper');
+		// The plan no longer stops at the finish line: the race week is the last
+		// taper week, and the goal's easy weeks follow it.
+		const raceWeek = plan.weeks.find((w) => w.sessions.some((s) => s.type === 'race'))!;
+		expect(raceWeek.phase).toBe('taper');
+		expect(plan.weeks[plan.weeks.length - 1]!.phase).toBe('recovery');
 	});
 
 	it('places every training session on an available day', () => {
@@ -67,7 +71,7 @@ describe('generatePlan (marathon)', () => {
 			expect(w.phase).toBeTruthy();
 			expect(w.sessions.length).toBeGreaterThan(0);
 		}
-		expect(short.weeks[short.weeks.length - 1]!.phase).toBe('taper');
+		expect(short.weeks[short.weeks.length - 1]!.phase).toBe('recovery');
 	});
 
 	it('builds structured workouts (warm-up, set, cool-down)', () => {
@@ -492,14 +496,19 @@ describe('generatePlan (model shaping)', () => {
 		}
 	});
 
-	it('ignores a volume intent in the taper', () => {
+	it('ignores a volume intent in the taper and in a recovery week', () => {
 		const plain = generatePlan(base);
+		const lastTaper = plain.weeks.map((w) => w.phase).lastIndexOf('taper');
 		const last = plain.weeks.length - 1;
 		const shapes: ({ volumeIntent: 'ease' } | undefined)[] = plain.weeks.map(() => undefined);
+		shapes[lastTaper] = { volumeIntent: 'ease' };
 		shapes[last] = { volumeIntent: 'ease' };
 		const eased = generatePlan({ ...base, weekShapes: shapes });
+		expect(eased.weeks[lastTaper]!.targetVolumeKm).toBe(plain.weeks[lastTaper]!.targetVolumeKm);
+		expect(eased.weeks[lastTaper]!.phase).toBe('taper');
+		// A recovery week is already easy, so the model cannot ease it further.
 		expect(eased.weeks[last]!.targetVolumeKm).toBe(plain.weeks[last]!.targetVolumeKm);
-		expect(eased.weeks[last]!.phase).toBe('taper');
+		expect(eased.weeks[last]!.phase).toBe('recovery');
 	});
 
 	it('takes paces from an effective VDOT when no race time is given', () => {
@@ -593,10 +602,12 @@ describe('progression (volume builds, sessions differentiate)', () => {
 		for (const slug of slugs) {
 			const p = forLevel(slug, 'intermediate');
 			const longs = p.weeks.map(
-				(w) => w.sessions.find((s) => s.type === 'long')!.prescription.targetDistanceKm!,
+				(w) => w.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm ?? 0,
 			);
 			for (let i = 1; i < longs.length; i++) {
-				// Drops are deloads and the taper; a jump up never beats the ceiling.
+				// A recovery week carries no long run. Otherwise a drop is a deload or
+				// the taper, and a jump up never beats the ceiling.
+				if (longs[i] === 0 || longs[i - 1] === 0) continue;
 				expect(longs[i]!).toBeLessThanOrEqual(longs[i - 1]! * 1.1 + 0.35);
 			}
 		}
@@ -632,7 +643,9 @@ describe('progression (volume builds, sessions differentiate)', () => {
 
 	it('keeps the ease-in week among the lightest, never the heaviest', () => {
 		const p = forLevel('marathon', 'intermediate');
-		const build = p.weeks.filter((w) => w.phase !== 'taper').map((w) => w.targetVolumeKm);
+		const build = p.weeks
+			.filter((w) => !['taper', 'recovery'].includes(w.phase))
+			.map((w) => w.targetVolumeKm);
 		const lightest = Math.min(...build.slice(1));
 		expect(p.weeks[0]!.targetVolumeKm).toBeLessThanOrEqual(lightest * 1.05);
 	});
@@ -984,8 +997,11 @@ describe('race date coverage and the race session', () => {
 			startDate: '2026-12-01',
 			targetDate: '2026-12-10',
 		});
-		expect(p.meta.totalWeeks).toBe(4);
-		expect(p.meta.warnings?.length).toBe(1);
+		expect(p.meta.totalWeeks).toBe(4 + marathon.recoveryWeeks);
+		// The race is under four weeks away, and no marathon long run can be built
+		// in that time, so the plan says both rather than stretching in silence.
+		expect(p.meta.warnings?.some((w) => w.includes('under four weeks'))).toBe(true);
+		expect(p.meta.warnings?.some((w) => w.includes('close the gap'))).toBe(true);
 	});
 });
 
@@ -1018,5 +1034,64 @@ describe('taper volume', () => {
 				expect(taper[i]!.targetVolumeKm).toBeLessThanOrEqual(taper[i - 1]!.targetVolumeKm);
 			}
 		}
+	});
+});
+
+describe('race-relative long run and post-race recovery', () => {
+	const half = GOAL_PROFILES.find((g) => g.slug === 'half-marathon')!;
+
+	it('builds the long run toward the goal, not only the base', () => {
+		// The regression this protects: a beginner at 12.9 km a week (8 miles) used
+		// to get a 19-week half plan whose longest run never passed 6.3 km (3.9 mi).
+		const p = generatePlan({
+			profile: half,
+			baseline: { experience: 'beginner', weeklyKm: 12.9, buildPreference: 'ease-in' },
+			availableDays: [2, 4, 6],
+			startDate: '2026-11-23',
+			targetDate: '2027-04-04',
+		});
+		const longs = p.weeks.map(
+			(w) => w.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm ?? 0,
+		);
+		const peak = Math.max(...longs);
+		// Past the share ceiling the week itself has to grow, and a beginner's week
+		// grows at a deliberately gentle ~7 percent a week, so about 12 km is the
+		// honest ceiling here, against the 6.3 km the old share-only rule gave. The
+		// plan also warns that the goal itself wants more.
+		expect(peak).toBeGreaterThan(10);
+		expect(p.meta.warnings?.some((w) => w.includes('close the gap'))).toBe(true);
+		// The peak lands in the peak phase, not halfway through the plan.
+		expect(p.weeks[longs.indexOf(peak)]!.phase).toBe('peak');
+	});
+
+	it("adds the goal's easy weeks after race day", () => {
+		const p = generatePlan({
+			profile: half,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-11-30',
+			targetDate: '2027-04-04',
+		});
+		const raceWeek = p.weeks.findIndex((w) => w.sessions.some((s) => s.type === 'race'));
+		const after = p.weeks.slice(raceWeek + 1);
+		expect(after).toHaveLength(half.recoveryWeeks);
+		const peakVol = Math.max(...p.weeks.slice(0, raceWeek + 1).map((w) => w.targetVolumeKm));
+		for (const w of after) {
+			expect(w.phase).toBe('recovery');
+			// Easy running only: no long run, no quality and no strength.
+			expect(w.sessions.every((s) => s.type === 'easy' || s.type === 'mobility')).toBe(true);
+			expect(w.targetVolumeKm).toBeLessThan(peakVol);
+		}
+	});
+
+	it('warns when the base cannot reach the goal in the weeks available', () => {
+		const p = generatePlan({
+			profile: half,
+			baseline: { experience: 'beginner', weeklyKm: 8 },
+			availableDays: [2, 4, 6],
+			startDate: '2026-11-23',
+			targetDate: '2026-12-21',
+		});
+		expect(p.meta.warnings?.some((w) => w.includes('close the gap'))).toBe(true);
 	});
 });
