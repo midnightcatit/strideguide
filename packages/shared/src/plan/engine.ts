@@ -38,11 +38,8 @@ function addDays(iso: string, n: number): string {
 	d.setUTCDate(d.getUTCDate() + n);
 	return dateToIso(d);
 }
-function weeksBetween(a: string, b: string): number {
-	return Math.max(
-		1,
-		Math.round((isoToDate(b).getTime() - isoToDate(a).getTime()) / (7 * 86400000)),
-	);
+function daysBetween(a: string, b: string): number {
+	return Math.round((isoToDate(b).getTime() - isoToDate(a).getTime()) / 86400000);
 }
 /** 0 = Monday … 6 = Sunday for an ISO date. */
 function weekdayIndex(iso: string): number {
@@ -65,7 +62,7 @@ const PURPOSE: Record<SessionArchetype, string> = {
 		'Short, fast, relaxed bursts that improve running economy and leg speed. Never straining.',
 	hills: 'Strength-endurance: builds power and economy. Power up, control the descent.',
 	fartlek: 'Unstructured speed play that teaches pace changes with less pressure.',
-	race: 'Rehearsal at goal effort. Treat as a hard, purposeful effort.',
+	race: 'Race day. Run your goal effort: controlled start, even middle, strong finish.',
 	'machine-circuit': 'Builds the strength that protects joints and improves running economy.',
 	'full-body-strength': 'Builds the strength that protects joints and improves running economy.',
 	mobility: 'Range of motion and activation to keep the stride healthy.',
@@ -173,6 +170,24 @@ function baseWeeklyKm(input: PlanInput): number {
 	return suggestedWeeklyKm(input.baseline.experience, input.profile.slug, input.baseline.age);
 }
 
+/** Default weekly reduction when a taper rule does not step volume down. */
+const DEFAULT_TAPER_STEP = -0.2;
+/** The lowest share of peak a taper week may fall to, so the last week is still real training. */
+const TAPER_FLOOR = 0.4;
+
+/**
+ * A taper week's volume as a fraction of the peak. The rule's own negative
+ * volumeStep sets how fast volume comes down, applied linearly against the peak
+ * rather than compounding, so a three week taper does not collapse to a token
+ * week. A rule that does not step down (zero or positive) is not a taper at
+ * all, so a gentle default keeps it tapering, and a floor keeps the final week
+ * a real week of training.
+ */
+function taperFraction(volumeStep: number, idx: number): number {
+	const step = volumeStep < 0 ? volumeStep : DEFAULT_TAPER_STEP;
+	return clamp(1 + step * (idx + 1), TAPER_FLOOR, 1);
+}
+
 function volumeCurve(input: PlanInput, phases: string[]): number[] {
 	const base = baseWeeklyKm(input);
 	const rules = input.profile.progressionRules;
@@ -211,7 +226,7 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 			// opens closer to the current volume.
 			vol = base * startFactor;
 		} else if (phase === 'taper') {
-			vol = peak * Math.pow(1 + Math.min(0, rule.volumeStep), idx + 1);
+			vol = peak * taperFraction(rule.volumeStep, idx);
 		} else if (rule.deload && (idx + 1) % 4 === 0) {
 			vol = prev * 0.7;
 		} else {
@@ -430,6 +445,68 @@ function goalPaceFor(slug: string, paces: TrainingPaces): number {
 		default:
 			return paces.threshold;
 	}
+}
+
+/** Race distance in km per goal profile, used to size the race session. */
+const RACE_DISTANCE_KM: Record<string, number> = {
+	marathon: 42.2,
+	'half-marathon': 21.1,
+	'10k': 10,
+	'5k': 5,
+};
+
+/**
+ * The goal race itself, on the race date: a short warm-up, the race at goal
+ * pace, then a cool-down. This is the fixed event the whole plan points at, so
+ * it is a session in its own right rather than a rehearsal in the last week.
+ */
+function raceSession(
+	day: number,
+	raceKm: number,
+	goalPace: number,
+	paces?: TrainingPaces,
+): PlannedSession {
+	const raceM = Math.round(raceKm * 1000);
+	const workout: StructuredWorkout = {
+		blocks: [
+			raiseBlock(paces, 1),
+			{
+				repeat: 1,
+				steps: [
+					{
+						kind: 'work',
+						label: TITLE.race,
+						distanceM: raceM,
+						durationSec: secsForM(raceM, goalPace),
+						targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
+						targetRpe: [8, 9],
+						note: 'Hold your goal pace. Start controlled and finish strong.',
+					},
+				],
+			},
+			{ repeat: 1, steps: [cooldownStep(paces, 1)] },
+			drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
+		],
+		totalDistanceKm: raceKm,
+	};
+	return {
+		day,
+		slot: 'AM',
+		modality: 'running',
+		type: 'race',
+		title: TITLE.race,
+		purpose: PURPOSE.race,
+		prescription: {
+			summary: `Race day: ${round1(raceKm)} km at your goal pace.`,
+			targetDistanceKm: raceKm,
+			targetPaceSecPerKm: [goalPace * 0.99, goalPace * 1.01],
+			targetZone: 'Race effort',
+			targetRpe: [8, 9],
+			notes: 'Start controlled, settle into goal pace, finish strong.',
+			workout,
+		},
+		durationMin: estDuration(raceKm, goalPace),
+	};
 }
 
 /** Race-pace rep shape per profile (metres per rep; reps by phase). */
@@ -708,17 +785,50 @@ function favoriteStrengthMoves(input: PlanInput): MachineExercise[] | undefined 
 }
 
 export function generatePlan(input: PlanInput): PlanDraft {
-	const totalWeeks = clamp(
-		input.targetDate ? weeksBetween(input.startDate, input.targetDate) : input.profile.defaultWeeks,
-		4,
-		30,
-	);
+	// The runner's available training days, 0 = Monday. Sorted and deduped, with a
+	// sensible Mon/Wed/Fri default when none are given.
+	const allDays = (
+		[...new Set(input.availableDays)].length ? [...new Set(input.availableDays)] : [0, 2, 4]
+	).sort((a, b) => a - b);
+	const startWeekday = weekdayIndex(input.startDate);
+
+	// Week one is anchored to the Monday on or before the start date, and any of
+	// the runner's days that fall before the start are dropped, so a mid-week
+	// start keeps the same weekday mapping as a Monday start. When the runner's
+	// whole schedule has already passed by the start date (a late-week start),
+	// that anchored week would hold no training at all, so the plan starts on the
+	// next Monday instead. The Monday grid is unchanged, so the final week is the
+	// same either way.
+	const stubFirstWeek = !allDays.some((d) => d >= startWeekday);
+	const weekZero = addDays(input.startDate, -startWeekday + (stubFirstWeek ? 7 : 0));
+
+	// The race date drives the length: the final week's Sunday lands on or after
+	// it, so the last week always covers race day. Without a race the profile's
+	// default length applies. Below four weeks the plan is still extended to four,
+	// and past thirty it is cut to thirty; both surface a warning rather than
+	// changing length silently.
+	const warnings: string[] = [];
+	let totalWeeks: number;
+	let raceWeekIndex: number | undefined;
+	if (input.targetDate) {
+		const spanDays = daysBetween(weekZero, input.targetDate);
+		const rawWeeks = Math.ceil((spanDays + 1) / 7);
+		totalWeeks = clamp(rawWeeks, 4, 30);
+		raceWeekIndex = Math.floor(spanDays / 7);
+		if (rawWeeks < 4) {
+			warnings.push(
+				'Your race is under four weeks away, so this plan runs for four. Treat it as a sharpening block more than a build.',
+			);
+		} else if (rawWeeks > 30) {
+			warnings.push(
+				'Your race is over thirty weeks away, so this plan stops at thirty. The final weeks before race day are not covered.',
+			);
+		}
+	} else {
+		totalWeeks = clamp(input.profile.defaultWeeks, 4, 30);
+	}
 	const phases = phaseSequence(input.profile.progressionRules, totalWeeks);
 	const volumes = volumeCurve(input, phases);
-	// The weekday the plan starts on. Week one is anchored to the Monday on or
-	// before it, and its earlier days are dropped, so a mid-week start keeps the
-	// same weekday mapping as a Monday start.
-	const startWeekday = weekdayIndex(input.startDate);
 
 	// A given race time is the most trustworthy anchor. Failing that, an effective
 	// VDOT read from the runner's own logged hard efforts, so paces follow what
@@ -733,9 +843,6 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const paces: TrainingPaces | undefined = vdot ? pacesFromVdot(vdot) : undefined;
 	const easyPace = paces ? (paces.easy[0] + paces.easy[1]) / 2 : 360; // ~6:00/km fallback
 
-	const allDays = (
-		[...new Set(input.availableDays)].length ? [...new Set(input.availableDays)] : [0, 2, 4]
-	).sort((a, b) => a - b);
 	// Each sport or activity on its own days: the running keeps off them, and a
 	// named cross-training session takes their place.
 	const crossPairs: { day: number; activity: string }[] = [];
@@ -758,6 +865,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				? Math.min(3, Math.max(1, Math.floor(days.length / 2)))
 				: 2;
 
+	// Goal race pace, and the weekday the race falls on, shared by every week's
+	// quality picks and by the race session itself.
+	const goalPace = goalPaceFor(input.profile.slug, paces ?? DEFAULT_PACES);
+	const raceDay = input.targetDate ? weekdayIndex(input.targetDate) : undefined;
+
 	const weeks: PlannedWeek[] = [];
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
@@ -777,7 +889,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// calendar week that holds the chosen start date, and any of its days that
 		// fall before that date are dropped below, so the plan never schedules a
 		// session before it begins.
-		const weekStart = addDays(input.startDate, w * 7 - startWeekday);
+		const weekStart = addDays(weekZero, w * 7);
 		const weekEnd = addDays(weekStart, 6);
 		let strengthLeft = strengthCount;
 
@@ -866,7 +978,6 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		});
 
 		// quality sessions
-		const goalPace = goalPaceFor(input.profile.slug, paces ?? DEFAULT_PACES);
 		qualityDays.forEach((day, qi) => {
 			let kind: 'race-pace' | 'interval' | 'tempo' | 'hills';
 			const shaped = input.weekShapes?.[w]?.qualityKind;
@@ -1128,10 +1239,31 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		}
 
-		// Week one is anchored to its Monday, which may sit before the chosen start
-		// date. Keep only the days on or after the start, so the plan never places a
-		// session before it begins. Later weeks are whole and unaffected.
-		const inWeek = w === 0 ? sessions.filter((s) => s.day >= startWeekday) : sessions;
+		// The goal race itself, on the target weekday of the week that holds it.
+		// The race is a fixed calendar event, so it sits on that weekday even when
+		// it is not one of the runner's usual training days, and any session that
+		// would otherwise land on race day steps aside.
+		if (
+			raceWeekIndex !== undefined &&
+			raceWeekIndex >= 0 &&
+			raceDay !== undefined &&
+			w === raceWeekIndex &&
+			input.profile.sessionTypes.includes('race')
+		) {
+			const raceKm = RACE_DISTANCE_KM[input.profile.slug];
+			if (raceKm) {
+				for (let i = sessions.length - 1; i >= 0; i--) {
+					if (sessions[i]!.day === raceDay) sessions.splice(i, 1);
+				}
+				sessions.push(raceSession(raceDay, raceKm, goalPace, paces));
+			}
+		}
+
+		// A start week whose earlier days have passed keeps only the days on or
+		// after the start, so no session is placed before the plan begins. A stub
+		// week was dropped above, so its week is already whole.
+		const inWeek =
+			w === 0 && !stubFirstWeek ? sessions.filter((s) => s.day >= startWeekday) : sessions;
 
 		const withIntensity = inWeek.map((s) => {
 			const withFavorite = withFavoriteWorkout(s, input);
@@ -1150,11 +1282,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			focus: FOCUS[phase] ?? phase,
 			startDate: weekStart,
 			endDate: weekEnd,
-			// The week's running distance, summed from the sessions as planned, so
-			// the number on the card matches what the sessions add up to.
+			// The week's training distance, summed from the sessions as planned. The
+			// race is the goal, not training load, so it is left out of the number.
 			targetVolumeKm: round1(
 				withIntensity
-					.filter((s) => s.modality === 'running')
+					.filter((s) => s.modality === 'running' && s.type !== 'race')
 					.reduce((sum, s) => sum + (s.prescription.targetDistanceKm ?? 0), 0),
 			),
 			sessions: withIntensity.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
@@ -1170,6 +1302,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			targetDate: input.targetDate,
 			vdot,
 			baseWeeklyKm: baseWeeklyKm(input),
+			...(warnings.length ? { warnings } : {}),
 		},
 	};
 }

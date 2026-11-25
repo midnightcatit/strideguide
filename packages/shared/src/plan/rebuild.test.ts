@@ -123,6 +123,8 @@ describe('rebuildFromWeekOne', () => {
 		for (const w of result.weeks.slice(1)) {
 			// Only the week one days carry a session; day 4 (the old plan) is gone.
 			for (const s of w.sessions) {
+				// The race stays on its fixed calendar date, off the week one days.
+				if (s.type === 'race') continue;
 				expect([0, 2, 3]).toContain(s.day);
 			}
 			// The added cross-train repeats on its own day.
