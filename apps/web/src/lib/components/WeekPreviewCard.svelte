@@ -3,8 +3,8 @@
 	import SegmentedBar from './SegmentedBar.svelte';
 
 	/**
-	 * The week at a glance. One component so the dashboard and the progress tab
-	 * show the same card; only the origin differs, which sets where the card opens.
+	 * The week at a glance. The progress tab renders this card; the origin sets
+	 * where the card opens.
 	 */
 	let {
 		done,

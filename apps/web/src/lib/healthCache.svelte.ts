@@ -1,6 +1,6 @@
 /**
- * One shared, in-memory cache for the connected-health reads, so the dashboard
- * card and the progress drill-down do not each hit the API on every visit.
+ * One shared, in-memory cache for the connected-health reads, so the health card
+ * and the progress drill-down do not each hit the API on every visit.
  *
  * It holds the last connection status and the last health payload per window,
  * keyed by user, each with the time it was read. Reads are stale while

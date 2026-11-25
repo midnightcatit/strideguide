@@ -276,7 +276,6 @@ export async function setPersonal(fields: {
  * primary nav, so the chosen tab and the nav share one source of truth.
  */
 export const LANDING_TABS = [
-	{ key: 'dashboard', label: 'Dashboard', href: '/', description: 'Your week at a glance' },
 	{ key: 'today', label: 'Today', href: '/today', description: "Today's session and quick actions" },
 	{ key: 'calendar', label: 'Calendar', href: '/calendar', description: 'The month ahead' },
 	{ key: 'progress', label: 'Progress', href: '/progress', description: 'How the training is going' },
@@ -286,13 +285,16 @@ export type LandingTab = (typeof LANDING_TABS)[number]['key'];
 
 const LANDING_KEY = 'sg:landingTab';
 
-/** The tab the runner chose to open on. Dashboard when nothing is stored. */
+/**
+ * The tab the runner chose to open on. Today when nothing valid is stored: a
+ * first run, or a leftover value that no longer names an option.
+ */
 export function getLandingTab(): LandingTab {
 	try {
 		const stored = localStorage.getItem(LANDING_KEY);
-		return LANDING_TABS.some((tab) => tab.key === stored) ? (stored as LandingTab) : 'dashboard';
+		return LANDING_TABS.some((tab) => tab.key === stored) ? (stored as LandingTab) : 'today';
 	} catch {
-		return 'dashboard';
+		return 'today';
 	}
 }
 
@@ -306,5 +308,5 @@ export function setLandingTab(tab: LandingTab): void {
 
 /** The route for a landing tab. */
 export function landingHref(tab: LandingTab): string {
-	return LANDING_TABS.find((item) => item.key === tab)?.href ?? '/';
+	return LANDING_TABS.find((item) => item.key === tab)?.href ?? '/today';
 }

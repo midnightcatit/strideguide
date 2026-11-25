@@ -7,9 +7,8 @@
 	 * Small watch-data visuals: resting heart rate, HRV and sleep, each with a
 	 * tiny trend line when there is a series to draw. The trend is the hand-drawn
 	 * MiniSparkline in the metric's family colour, so these read as the same family
-	 * as the full health charts without pulling the chart library. Shared by the
-	 * dashboard and the progress tab so the same numbers read the same way in both
-	 * places.
+	 * as the full health charts without pulling the chart library. The progress tab
+	 * renders them, so the same numbers read the same way in both places.
 	 */
 	let {
 		signal,

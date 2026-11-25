@@ -4,8 +4,8 @@
 	import { page } from '$app/state';
 	import { goto, onNavigate } from '$app/navigation';
 	import { api } from '$lib/api';
-	import { getLandingTab, landingHref, loadPrefs } from '$lib/prefs.svelte';
-	import { ensurePlan, store } from '$lib/planStore.svelte';
+	import { loadPrefs } from '$lib/prefs.svelte';
+	import { ensurePlan } from '$lib/planStore.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { breadcrumbFor } from '$lib/breadcrumbs';
@@ -32,8 +32,7 @@
 	const onboarding = $derived(page.url.pathname.startsWith('/onboarding'));
 
 	const tabs = $derived([
-		{ href: '/', key: 'dashboard', label: 'Dashboard', active: page.url.pathname === '/' },
-		{ href: '/today', key: 'today', label: 'Today', active: page.url.pathname.startsWith('/today') },
+		{ href: '/today', key: 'today', label: 'Today', active: page.url.pathname === '/' || page.url.pathname.startsWith('/today') },
 		{ href: '/calendar', key: 'calendar', label: 'Calendar', active: page.url.pathname.startsWith('/calendar') },
 		{ href: '/progress', key: 'progress', label: 'Progress', active: page.url.pathname.startsWith('/progress') },
 		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
@@ -100,41 +99,13 @@
 		return () => window.removeEventListener('online', sync);
 	});
 
-	// A signed-in runner who opens the app at the root lands on the tab they chose.
-	// The check runs once per page load, so tapping Dashboard later still opens the
-	// dashboard. A runner without a plan keeps the dashboard's onboarding redirect.
-	let landingHandled = false;
-	let landingPending = $state(false);
-
-	$effect(() => {
-		if (landingHandled) return;
-		if (!auth.checked || !auth.user) return;
-		landingHandled = true;
-		if (page.url.pathname !== '/') return;
-		const tab = getLandingTab();
-		if (tab === 'dashboard') return;
-		landingPending = true;
-		void (async () => {
-			try {
-				await ensurePlan();
-				if (page.url.pathname === '/' && store.plan?.weeks?.length) {
-					await goto(landingHref(tab), { replaceState: true });
-				}
-			} finally {
-				landingPending = false;
-			}
-		})();
-	});
+	// The root landing redirect lives in the root page, which runs on every visit
+	// there, so this layout keeps no landing state of its own.
 </script>
 
 {#snippet tabIcon(key: string, size: string)}
 	<svg class={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-		{#if key === 'dashboard'}
-			<rect x="3" y="3" width="6" height="6" rx="1" />
-			<rect x="11" y="3" width="6" height="6" rx="1" />
-			<rect x="3" y="11" width="6" height="6" rx="1" />
-			<rect x="11" y="11" width="6" height="6" rx="1" />
-		{:else if key === 'today'}
+		{#if key === 'today'}
 			<path d="M10 2.5a7.5 7.5 0 1 0 7.5 7.5" />
 			<circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
 		{:else if key === 'calendar'}
@@ -156,7 +127,7 @@
 	</svg>
 {/snippet}
 
-{#if !auth.checked || landingPending}
+{#if !auth.checked}
 	<div class="min-h-dvh flex items-center justify-center">
 		<p class="tabular text-sm text-steel">Loading…</p>
 	</div>
@@ -177,7 +148,7 @@
 		>
 			<div class="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
 				{#if crumbs.length === 0}
-					<a href="/" class="font-display text-lg font-bold tracking-tight">Stride Guide</a>
+					<a href="/today" class="font-display text-lg font-bold tracking-tight">Stride Guide</a>
 				{:else}
 					<nav aria-label="Breadcrumb" class="min-w-0">
 						<ol class="flex items-center gap-1.5 text-sm">
@@ -256,7 +227,7 @@
 			class="sg-nav fixed inset-x-0 bottom-0 border-t border-hairline bg-paper sm:hidden"
 			aria-label="Primary"
 		>
-			<div class="mx-auto grid max-w-2xl grid-cols-5" style="padding-bottom: env(safe-area-inset-bottom)">
+			<div class="mx-auto grid max-w-2xl grid-cols-4" style="padding-bottom: env(safe-area-inset-bottom)">
 				{#each tabs as tab (tab.href)}
 					<a
 						href={tab.href}
@@ -311,8 +282,8 @@
 <ConfirmSheet
 	open={stopConfirm}
 	title="Stop building your plan?"
-	body="Your answers are not saved. You can start again any time from the dashboard."
-	confirmLabel="Stop and go to the dashboard"
+	body="Your answers are not saved. You can start again any time from Today."
+	confirmLabel="Stop and go to Today"
 	tone="danger"
 	onConfirm={() => {
 		stopConfirm = false;

@@ -8,8 +8,8 @@
 	/**
 	 * Volume at a glance: this week against plan, plus the last few weeks as small
 	 * bars, drawn on the hand-drawn MiniBarStrip in the training palette's green so
-	 * they match the plan ring and the weekly volume chart. Shared by the dashboard
-	 * and the progress tab, so this card carries no chart library.
+	 * they match the plan ring and the weekly volume chart. The progress tab
+	 * renders this card, so it carries no chart library.
 	 */
 	let {
 		doneKm,

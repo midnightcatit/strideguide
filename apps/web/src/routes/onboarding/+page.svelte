@@ -691,7 +691,7 @@
 	async function enterApp() {
 		// Refresh the shared plan store, so the app shows the plan onboarding just
 		// built. The store loads once and then bails, and a brand-new runner loads
-		// it (empty) before onboarding, so without this the dashboard keeps its
+		// it (empty) before onboarding, so without this the app keeps its
 		// "no plan yet" state even though the plan exists.
 		await reloadPlan().catch(() => {});
 		// Play the completion screen's exit, then open the app as a client-side

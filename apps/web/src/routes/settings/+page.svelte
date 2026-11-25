@@ -15,7 +15,7 @@
 	// status comes from the server, and the theme and start tab from local
 	// storage, so all three are refreshed on mount and on the way back here.
 	let theme = $state<Theme>('system');
-	let landingTab = $state<LandingTab>('dashboard');
+	let landingTab = $state<LandingTab>('today');
 	let connection = $state<ConnectionStatus | null>(null);
 	let connectionsLoaded = $state(false);
 
@@ -62,7 +62,7 @@
 	});
 
 	const landingLabel = $derived(
-		LANDING_TABS.find((tab) => tab.key === landingTab)?.label ?? 'Dashboard',
+		LANDING_TABS.find((tab) => tab.key === landingTab)?.label ?? 'Today',
 	);
 
 	const connectionValue = $derived.by(() => {

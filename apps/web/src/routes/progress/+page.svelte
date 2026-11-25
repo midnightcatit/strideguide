@@ -4,11 +4,11 @@
 	import { fitnessState, type HealthDay, type RecoverySignal } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { addDaysIso, localIso } from '$lib/plan';
+	import { type ClientLog, type ClientSession, addDaysIso, localIso } from '$lib/plan';
 	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
 	import { api, type HealthMetricsPayload } from '$lib/api';
-	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
-	import { weekPreview, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
+	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit, sessionLabel } from '$lib/prefs.svelte';
+	import { weekPreview, trainedDays, currentStreak, weeklyKmSeries, logMs } from '$lib/metrics';
 	import { metricColor, periodDelta } from '$lib/chartTheme';
 	import { TRAINING_PROGRESS, TRAINING_LOAD, TRAINING_PACE, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 	import Card from '$lib/components/Card.svelte';
@@ -18,7 +18,9 @@
 	import WeekPreviewCard from '$lib/components/WeekPreviewCard.svelte';
 	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
 	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
+	import CalendarPreviewCard from '$lib/components/CalendarPreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
+	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import BarsCard from '$lib/components/charts/BarsCard.svelte';
 	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
 	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
@@ -34,6 +36,7 @@
 
 	let recovery = $state<RecoveryState | null>(null);
 	let health = $state<HealthMetricsPayload | null>(null);
+	let note = $state<string | null>(null);
 
 	const todayIso = localIso();
 
@@ -50,6 +53,12 @@
 			.then((h) => (health = h))
 			.catch(() => {
 				// no health data, or the call failed; the section shows its empty state
+			});
+		void api
+			.latestSummary()
+			.then((s) => (note = s.summary?.body ?? null))
+			.catch(() => {
+				// no coach note yet; the section simply does not show
 			});
 	});
 
@@ -73,8 +82,8 @@
 	);
 	const hasLogs = $derived(store.logs.length > 0);
 
-	// The current-week preview, the same read the dashboard card shows. Both use
-	// the same helper and the same components, so the cards cannot drift apart.
+	// The current-week preview. Both this page's preview cards read from the same
+	// helper and the same components, so they cannot drift apart.
 	const todayWeek = $derived(
 		(store.plan?.weeks ?? []).find(
 			(w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate,
@@ -115,6 +124,22 @@
 		return out;
 	});
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
+
+	// The last three logged sessions, one row each: a re-log or an edit replaces
+	// the previous entry for that session.
+	const recentLogs = $derived.by(() => {
+		const byId = new Map<string, ClientSession>();
+		for (const w of store.plan?.weeks ?? []) for (const s of w.sessions) byId.set(s.id, s);
+		const seen = new Set<string>();
+		const out: { log: ClientLog; session: ClientSession | undefined }[] = [];
+		for (const l of [...store.logs].sort((a, b) => logMs(b.createdAt) - logMs(a.createdAt))) {
+			if (!l.sessionId || seen.has(l.sessionId)) continue;
+			seen.add(l.sessionId);
+			out.push({ log: l, session: byId.get(l.sessionId) });
+			if (out.length === 3) break;
+		}
+		return out;
+	});
 
 	// Steps come from the same health payload as the recovery numbers: the last
 	// two weeks, oldest first, ready to draw.
@@ -252,7 +277,39 @@
 		<h1 class="font-display mt-1 text-2xl font-bold">{profileName}</h1>
 	</header>
 
-	<!-- The metric pages, the same cards the dashboard shows. Each opens its full page. -->
+	<!-- The ring leads the page: where the plan stands, at a glance. -->
+	<section aria-labelledby="p-plan" class="mb-7">
+		<SectionHeader id="p-plan" eyebrow="Plan progress" meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go" />
+		<Card>
+			<div class="flex items-center gap-4">
+				<ProgressRing percent={metrics.planMeta.percent} size={96} stroke={9} />
+				<div class="min-w-0">
+					<p class="font-display text-lg font-semibold">
+						{#if metrics.planMeta.currentWeek}Week {metrics.planMeta.currentWeek} of {metrics.planMeta.weeksTotal}{:else}{metrics.planMeta.weeksTotal} weeks{/if}
+					</p>
+					{#if metrics.planMeta.currentPhase}
+						<p class="mt-0.5 text-sm text-steel">In the {metrics.planMeta.currentPhase} block</p>
+					{/if}
+					{#if metrics.planMeta.daysToRace != null}
+						<p class="mt-0.5 text-sm text-steel">{metrics.planMeta.daysToRace} days to race</p>
+					{/if}
+				</div>
+			</div>
+			{#if phaseSegments.length > 1}
+				<div class="mt-4">
+					<ProportionBar
+						segments={phaseBars}
+						color={TRAINING_LOAD}
+						height={8}
+						ariaLabel="Plan phases, base to taper"
+					/>
+				</div>
+				<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
+			{/if}
+		</Card>
+	</section>
+
+	<!-- The metric pages. Each card opens its full page. -->
 	<section aria-labelledby="p-pages" class="mb-7">
 		<SectionHeader id="p-pages" eyebrow="Metric pages" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -270,8 +327,7 @@
 	</section>
 
 	{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
-		<!-- One card of mini widgets that opens the full health page, matching the
-		     dashboard. -->
+		<!-- One card of mini widgets that opens the full health page. -->
 		<section aria-labelledby="p-health" class="mb-7">
 			<div class="flex items-baseline justify-between gap-3">
 				<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" />
@@ -293,7 +349,7 @@
 		<Card>
 			<p class="font-display text-lg font-medium">Nothing logged yet</p>
 			<p class="mt-1 text-sm text-steel">Your progress shows up here once you log a session. Start with today's.</p>
-			<a href="/" class="mt-4 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Go to today</a>
+			<a href="/today" class="mt-4 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Go to today</a>
 		</Card>
 	{:else}
 		{#if fitness.samples > 0}
@@ -361,37 +417,6 @@
 				/>
 			</section>
 		{/if}
-		<section aria-labelledby="p-plan" class="mb-7">
-			<SectionHeader id="p-plan" eyebrow="Plan progress" meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go" />
-			<Card>
-				<div class="flex items-center gap-4">
-					<ProgressRing percent={metrics.planMeta.percent} size={96} stroke={9} />
-					<div class="min-w-0">
-						<p class="font-display text-lg font-semibold">
-							{#if metrics.planMeta.currentWeek}Week {metrics.planMeta.currentWeek} of {metrics.planMeta.weeksTotal}{:else}{metrics.planMeta.weeksTotal} weeks{/if}
-						</p>
-						{#if metrics.planMeta.currentPhase}
-							<p class="mt-0.5 text-sm text-steel">In the {metrics.planMeta.currentPhase} block</p>
-						{/if}
-						{#if metrics.planMeta.daysToRace != null}
-							<p class="mt-0.5 text-sm text-steel">{metrics.planMeta.daysToRace} days to race</p>
-						{/if}
-					</div>
-				</div>
-				{#if phaseSegments.length > 1}
-					<div class="mt-4">
-						<ProportionBar
-							segments={phaseBars}
-							color={TRAINING_LOAD}
-							height={8}
-							ariaLabel="Plan phases, base to taper"
-						/>
-					</div>
-					<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
-				{/if}
-			</Card>
-		</section>
-
 		<section aria-labelledby="p-adherence" class="mb-7">
 			<SectionHeader id="p-adherence" eyebrow="Sessions logged" meta="{metrics.adherence.completed} / {metrics.adherence.planned} logged{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}" />
 			<Card tone="sunken">
@@ -507,4 +532,43 @@
 			</Card>
 		</section>
 	{/if}
+
+	{#if note}
+		<section aria-labelledby="p-coach-note" class="mb-7">
+			<SectionHeader id="p-coach-note" eyebrow="Coach note" />
+			<Card tone="sunken">
+				<p class="text-sm">{note}</p>
+			</Card>
+		</section>
+	{/if}
+
+	<section aria-labelledby="p-recent" class="mb-7">
+		<SectionHeader id="p-recent" eyebrow="Recent activity" />
+		<Card tone="sunken" class="max-w-2xl">
+			{#if recentLogs.length}
+				<div class="max-h-64 overflow-y-auto pr-1">
+					<ul class="divide-y divide-hairline">
+						{#each recentLogs as { log, session } (log.id)}
+							<li class="flex items-baseline justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+								<span class="min-w-0 break-words text-sm">{session ? sessionLabel(session) : 'Run'}</span>
+								<span class="tabular shrink-0 text-sm text-steel">
+									{#if log.runStats?.distanceKm}{fmtDistance(log.runStats.distanceKm)}{/if}
+									{#if log.rpe} · RPE {log.rpe}{/if}
+								</span>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{:else}
+				<p class="text-sm text-steel">Nothing logged yet. When you finish a session, it shows up here.</p>
+				<a href="/today" class="mt-2 inline-block text-xs text-signal-ink hover:underline">Log today's session →</a>
+			{/if}
+		</Card>
+	</section>
+
+	<div class="mb-7">
+		<CalendarPreviewCard />
+	</div>
+
+	<AdjustmentsCard />
 {/if}
