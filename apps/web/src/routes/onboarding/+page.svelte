@@ -15,6 +15,7 @@
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
+	import { reloadPlan } from '$lib/planStore.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, type ClientSession, type CurrentPlan } from '$lib/plan';
 
 	interface ProfileLite {
@@ -688,6 +689,11 @@
 	}
 
 	async function enterApp() {
+		// Refresh the shared plan store, so the app shows the plan onboarding just
+		// built. The store loads once and then bails, and a brand-new runner loads
+		// it (empty) before onboarding, so without this the dashboard keeps its
+		// "no plan yet" state even though the plan exists.
+		await reloadPlan().catch(() => {});
 		// Play the completion screen's exit, then open the app as a client-side
 		// navigation so the route transition carries the move instead of a reload.
 		if (typeof window === 'undefined') return;
