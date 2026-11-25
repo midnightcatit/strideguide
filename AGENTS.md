@@ -123,13 +123,33 @@ over doing it serially.
   when warranted, merges to `main`, and verifies the auto-deploy. Subagents do not merge or deploy.
 - Everything here still applies to delegated work: an isolated worktree, scoped `git add <path>`,
   additive migrations, no em dashes, tests in `packages/shared`.
-- **Calling Agent Manager correctly.** Start it with `action` null, `mode: "worktree"`,
-  `versions: false`, and a `tasks` array where each task has `name`, `branchName` and `prompt`. Put the
-  brief in `tasks[].prompt`. The top-level `prompt` field is only for `action: prompt` to an existing
-  session, so send it as null on a start request. A task that carries `model` or `variant` but no
-  `prompt` is the usual rejection, so never send `model`, `variant` or `agent`. Send every other field
-  as null. A task missing a `prompt`, `name` or `branchName` is rejected, and three rejected attempts
-  abort the turn, so keep the shape exact.
+- **Calling Agent Manager (the tested shape).** To start sessions, call `agent_manager` with `action`
+  null, `mode: "worktree"`, `versions: false`, and a `tasks` array, and send every other top-level
+  field as null. Each task has `name`, `branchName`, `baseBranch` and `prompt`. The brief goes in
+  `tasks[].prompt`. The top-level `prompt` field is only for `action: prompt` to an existing session,
+  so on a start request it must be null.
+
+  What not to do, because each has actually failed:
+  - Do not put the brief in the top-level `prompt` and leave the task without one. The validator reads
+    `tasks[].prompt`, so a task that carries no `prompt` is rejected even though the brief sits in the
+    other field. This is the single most common mistake.
+  - Do not send `model`, `variant`, `provider` or `agent` on a task. The user has not asked for a
+    specific model, and a task that carries `model` or `variant` but no `prompt` is the usual
+    rejection. If a different model is genuinely wanted, ask the user first.
+  - Do not retry a rejected call unchanged. Three consecutive invalid-argument failures abort the turn,
+    so fix the shape and resend once.
+
+  Other actions, all with `mode`, `tasks` and `versions` null: `action: "list"` reads the overview
+  (call it first, and again after starting, to confirm the session exists); `action: "prompt"` with
+  `sessionID` and the instruction in the top-level `prompt` sends a follow-up to an existing session;
+  `action: "stop"` with `sessionID` stops and removes one; `action: "move"` with `sessionID` and
+  `sectionID` assigns one; `action: "answer"` with `sessionID` and `answers` resolves a pending
+  question.
+
+  A subagent cannot message the coordinator on its own. It replies only to a request you send it, so a
+  follow-up sent with `action: "prompt"` that asks for a reply can get one. Otherwise the PR is the
+  completion signal: find finished work by reading `action: "list"` and the open PRs, never by waiting
+  for a push.
 
 The exact start payload, with every field present. Note the brief is inside `tasks[].prompt`, and the
 top-level `prompt` is null:
