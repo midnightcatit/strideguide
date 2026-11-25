@@ -53,6 +53,10 @@
 	const band = $derived(fmtPaceBand(p.targetPaceSecPerKm));
 	const dist = $derived(p.targetDistanceKm ?? workout?.totalDistanceKm);
 	const minutes = $derived(session.durationMin ?? workout?.estimatedDurationMin);
+	/** The content column. As a page it spans wider than the sheet measure. */
+	const col = $derived(
+		asPage ? 'mx-auto w-full max-w-3xl px-4' : 'mx-auto w-full max-w-2xl px-4',
+	);
 
 	let why = $state<Awaited<ReturnType<typeof api.explanation>> | null>(null);
 	let loading = $state(true);
@@ -219,7 +223,7 @@
 
 <div
 	class={asPage
-		? 'flex flex-col'
+		? 'sg-session-page flex flex-col'
 		: 'overlay-fade fixed inset-0 z-50 flex flex-col bg-paper'}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
@@ -235,15 +239,17 @@
 				: 'bg-steel'}"
 			aria-hidden="true"
 		></div>
-		<header class="relative mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 pt-3">
-			<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-paper/90 hover:text-paper">
-				‹ Back
-			</button>
-			<button type="button" onclick={onClose} aria-label="Close" class="px-2 py-2 text-paper/90 hover:text-paper">
-				✕
-			</button>
-		</header>
-		<div class="relative mx-auto max-w-2xl px-4 pb-5 pt-1">
+		{#if !asPage}
+			<header class="relative mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 pt-3">
+				<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-paper/90 hover:text-paper">
+					‹ Back
+				</button>
+				<button type="button" onclick={onClose} aria-label="Close" class="px-2 py-2 text-paper/90 hover:text-paper">
+					✕
+				</button>
+			</header>
+		{/if}
+		<div class="relative {col} {asPage ? 'pb-6 pt-6' : 'pb-5 pt-1'}">
 			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-paper/70">{eyebrow}</p>{/if}
 			<h1 class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
 			<div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-paper/85">
@@ -295,8 +301,8 @@
 		</div>
 	</div>
 
-	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-		<div class="mx-auto max-w-2xl px-4 py-5 pb-8 reveal">
+	<div class={asPage ? 'flex-1' : 'min-h-0 flex-1 overflow-y-auto overscroll-contain'}>
+		<div class="{col} py-5 pb-8 reveal">
 			{#if skipped}
 				<p class="mb-3 rounded-lg bg-sunken p-3 text-sm text-steel">
 					You skipped this one. It stays on your plan, marked as skipped. Un-skip it any time to bring it back.
@@ -492,8 +498,11 @@
 	</div>
 
 	{#if !readOnly}
-		<footer class="border-t border-hairline px-4 py-3" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
-			<div class="mx-auto flex max-w-2xl gap-2">
+		<footer
+			class="border-t border-hairline py-3 {asPage ? '' : 'px-4'}"
+			style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))"
+		>
+			<div class={asPage ? `${col} flex gap-2` : 'mx-auto flex max-w-2xl gap-2'}>
 				{#if onStart && workout}
 					<button type="button" onclick={onStart} class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90">
 						{logged ? 'Restart' : isStarted(session.id) ? 'Resume workout' : 'Start'}
@@ -522,3 +531,23 @@
 		onClose={() => (showNotes = false)}
 	/>
 </div>
+
+<style>
+	/*
+	 * The app shell wraps every page in a centred, padded column, so a session
+	 * that is now a route still read as a panel floating inside it. As a page it
+	 * spans the viewport instead: the header band runs edge to edge and the page
+	 * fills the height under the app header. `100vw` with the matching negative
+	 * inline margin breaks past the shell's `max-w-5xl` and its `px-4`, and the
+	 * horizontal clip on `html` (overflow-x: clip) keeps that extra width from
+	 * scrolling sideways. The shell pads its main vertically (py-6), so the hero
+	 * is pulled up under the header by that top 1.5rem while the bottom padding
+	 * stays, to clear the phone tab bar.
+	 */
+	.sg-session-page {
+		width: 100vw;
+		margin-inline: calc(50% - 50vw);
+		margin-top: -1.5rem;
+		min-height: calc(100svh - 4rem);
+	}
+</style>
