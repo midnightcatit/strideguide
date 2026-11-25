@@ -91,4 +91,32 @@ describe('fitnessState', () => {
 		expect(s.samples).toBe(0);
 		expect(s.effectiveVdot).toBeUndefined();
 	});
+
+	it('reads a numeric date as epoch seconds, not milliseconds', () => {
+		// 2026-11-20T00:00:00Z in seconds. Read as milliseconds it falls in 1970,
+		// outside the window, so the entry would drop and the volume would read 0.
+		const seconds = Date.parse('2026-11-20T00:00:00Z') / 1000;
+		const s = fitnessState([{ type: 'easy', date: seconds, distanceKm: 7 }], {
+			now: NOW,
+			windowDays: 28,
+		});
+		expect(s.samples).toBe(1);
+		expect(s.recentWeeklyKm).toBeCloseTo(1.8, 1);
+	});
+
+	it('counts only running distance, never a cross-train or strength session', () => {
+		const weekly = (entries: Parameters<typeof fitnessState>[0]) =>
+			fitnessState(entries, { now: NOW, windowDays: 28 }).recentWeeklyKm;
+		// A spin with a distance, named by type alone and then by modality.
+		expect(weekly([{ type: 'cross-train', date: '2026-11-20T00:00:00Z', distanceKm: 20 }])).toBe(0);
+		expect(
+			weekly([
+				{ type: 'cross-train', modality: 'recovery', date: '2026-11-20T00:00:00Z', distanceKm: 20 },
+			]),
+		).toBe(0);
+		// A recovery jog is still a run, so its distance counts.
+		expect(
+			weekly([{ type: 'recovery', modality: 'running', date: '2026-11-20T00:00:00Z', distanceKm: 8 }]),
+		).toBeCloseTo(2, 1);
+	});
 });

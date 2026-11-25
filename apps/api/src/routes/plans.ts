@@ -714,12 +714,14 @@ plans.post(
 				).flat()
 			: [];
 		const typeById = new Map(fitSessions.map((s) => [s.id, s.type]));
+		const modalityById = new Map(fitSessions.map((s) => [s.id, s.modality]));
 		const fitness = fitnessState(
 			fitLogs.map((l) => {
 				const stats = l.runStats ?? {};
 				return {
 					sessionId: l.sessionId,
 					type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
+					modality: l.sessionId ? (modalityById.get(l.sessionId) ?? null) : null,
 					date: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
 					distanceKm: stats.distanceKm ?? null,
 					durationSec: stats.durationSec ?? null,
@@ -968,6 +970,7 @@ plans.post('/adapt', zValidator('json', equipmentPrefsPatchSchema), async (c) =>
 		...(prefs.equipmentItems ? { equipmentItems: prefs.equipmentItems } : {}),
 	};
 	const typeById = new Map(sessions.map((s) => [s.id, s.type]));
+	const modalityById = new Map(sessions.map((s) => [s.id, s.modality]));
 	// Only the 28-day fitness window is read, pushed into SQL against the
 	// (user, started) index rather than pulling every log the runner has.
 	const fitSince = Date.now() - 28 * 86400000;
@@ -981,6 +984,7 @@ plans.post('/adapt', zValidator('json', equipmentPrefsPatchSchema), async (c) =>
 			return {
 				sessionId: l.sessionId,
 				type: l.sessionId ? (typeById.get(l.sessionId) ?? null) : null,
+				modality: l.sessionId ? (modalityById.get(l.sessionId) ?? null) : null,
 				date: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
 				distanceKm: stats.distanceKm ?? null,
 				durationSec: stats.durationSec ?? null,
