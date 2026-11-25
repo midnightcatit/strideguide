@@ -39,6 +39,9 @@
 	]);
 	// Empty on a top-level page (the header shows the mark); the trail otherwise.
 	const crumbs = $derived(breadcrumbFor(page.url.pathname));
+	// A route under the (bleed) group asks the shell to drop its centred, padded
+	// column, so the page can run edge to edge without breaking out by hand.
+	const bleed = $derived((page.data as { bleed?: boolean }).bleed === true);
 
 	// Crossfade route changes with the View Transitions API where it exists, so
 	// navigation reads as motion instead of a hard swap. The CSS names the content
@@ -214,7 +217,7 @@
 			</div>
 		{/if}
 
-		<main class="flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6">
+		<main class={bleed ? 'flex flex-1 flex-col pb-24 sm:pb-6' : 'flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6'}>
 			{#key page.url.pathname}
 				<div class="route-enter">
 					{@render children()}
