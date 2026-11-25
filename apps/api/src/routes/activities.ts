@@ -42,9 +42,12 @@ activities.get('/', async (c) => {
 		.orderBy(desc(schema.activities.startedAt))
 		.limit(60);
 
-	await ensureActivityLogs(db, user.id, rows);
+	// Listing writes the standalone import log for any activity that has none.
+	// Return them with the list so the client can merge the new logs into its
+	// plan state instead of refetching the whole plan to see them.
+	const logs = await ensureActivityLogs(db, user.id, rows);
 
-	return c.json({ activities: rows.map(rowOut) });
+	return c.json({ activities: rows.map(rowOut), logs });
 });
 
 export default activities;

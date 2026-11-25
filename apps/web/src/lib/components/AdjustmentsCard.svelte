@@ -62,7 +62,7 @@
 		adapting = true;
 		adaptNote = null;
 		try {
-			const res = await api.adaptPlan();
+			const res = await api.adaptPlan({ today: todayIso });
 			if (!res.changed) {
 				adaptNote = 'Nothing to change just yet. Keep logging and check back.';
 			} else {

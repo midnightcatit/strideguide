@@ -74,6 +74,19 @@ export function upsertLog(log: ClientLog): void {
 	if (store.plan) store.plan = { ...store.plan, logs: store.logs };
 }
 
+/**
+ * Merge logs into the plan state by id, replacing one already held and adding a
+ * new one. Used when a route returns the logs it just wrote (an imported
+ * activity's standalone log), so the client sees them without a full plan read.
+ */
+export function mergeLogs(logs: ClientLog[]): void {
+	if (!logs.length) return;
+	const byId = new Map(store.logs.map((l) => [l.id, l]));
+	for (const log of logs) byId.set(log.id, log);
+	store.logs = [...byId.values()];
+	if (store.plan) store.plan = { ...store.plan, logs: store.logs };
+}
+
 /** A session by id, across every week of the plan. */
 export function findSession(id: string): ClientSession | undefined {
 	for (const w of store.plan?.weeks ?? []) {

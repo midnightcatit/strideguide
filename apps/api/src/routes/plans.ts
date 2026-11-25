@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { asc, and, desc, eq, gte, inArray, isNotNull, isNull } from 'drizzle-orm';
+import { asc, and, desc, eq, gte, inArray, isNotNull, isNull, or } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
@@ -245,10 +245,19 @@ async function currentPlanJson(db: Db, userId: string) {
 
 	// Logs with no session: imported activities and any run the runner logged on
 	// its own. They count in Progress and the streak without belonging to a plan.
+	// Bounded to the last year so the payload cannot grow with the import history;
+	// a log with no start time is kept, since it cannot be placed on the timeline.
+	const standaloneSince = new Date(Date.now() - 365 * 86400000);
 	const standaloneLogs = await db
 		.select()
 		.from(schema.logs)
-		.where(and(eq(schema.logs.userId, userId), isNull(schema.logs.sessionId)));
+		.where(
+			and(
+				eq(schema.logs.userId, userId),
+				isNull(schema.logs.sessionId),
+				or(isNull(schema.logs.startedAt), gte(schema.logs.startedAt, standaloneSince)),
+			),
+		);
 
 	const states = await db
 		.select()
@@ -892,11 +901,24 @@ plans.post(
 );
 
 /**
+ * The body of POST /adapt: the same optional equipment change as the settings
+ * patch, plus the runner's own civil date. The client sends its local `today` so
+ * the past/future split uses the runner's day rather than the server's UTC day,
+ * which differ for a few hours either side of UTC.
+ */
+const adaptBodySchema = equipmentPrefsPatchSchema.extend({
+	today: z
+		.string()
+		.regex(/^\d{4}-\d{2}-\d{2}$/)
+		.optional(),
+});
+
+/**
  * POST /adapt: rebuild the weeks that have not started yet, from the runner's
  * own logs and feedback. Deterministic and instant, no AI in the path. Past
  * weeks are never touched.
  */
-plans.post('/adapt', zValidator('json', equipmentPrefsPatchSchema), async (c) => {
+plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 	const user = c.get('user')!;
 	const db = c.get('db');
 
@@ -995,7 +1017,10 @@ plans.post('/adapt', zValidator('json', equipmentPrefsPatchSchema), async (c) =>
 		{ raceTimes: baseline.recentTimes },
 	);
 
-	const todayIso = new Date().toISOString().slice(0, 10);
+	// The runner's own civil day, sent by the client. The server's UTC day is only
+	// a fallback: for a few hours each day the two differ, and using UTC would
+	// judge an evening session on the US west coast against tomorrow.
+	const todayIso = body.today ?? new Date().toISOString().slice(0, 10);
 	const allowed = (['tempo', 'hills', 'interval', 'race-pace'] as QualityKind[]).filter((k) =>
 		profile.sessionTypes.includes(k as SessionArchetype),
 	);
