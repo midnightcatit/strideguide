@@ -157,26 +157,32 @@
 	}
 </script>
 
-<div class="flex min-h-11 items-center justify-between gap-3">
-	<h2 class="font-display text-lg font-semibold text-ink">{mode === 'month' ? monthLabel : 'Upcoming'}</h2>
+<!-- Sticky control bar, the second on the page. It holds only the view toggle
+     and, in month view, the month arrows, so they stay reachable while the grid
+     or list scrolls under it. The title moves into that scrolling content. -->
+<div
+	class="sticky z-20 -mx-4 mb-1 flex items-center justify-between gap-2 border-b border-hairline bg-paper px-4 py-1.5"
+	style="top: calc(4rem + env(safe-area-inset-top))"
+>
+	<div class="relative w-44 shrink-0 rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
+		<span class="pointer-events-none absolute inset-0.5 grid grid-cols-2" aria-hidden="true">
+			<span class="calendar-thumb rounded-md bg-ink" style="transform: translateX({mode === 'list' ? '100%' : '0%'})"></span>
+		</span>
+		<div class="relative grid grid-cols-2">
+			<button type="button" aria-pressed={mode === 'month'} onclick={() => setMode('month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
+			<button type="button" aria-pressed={mode === 'list'} onclick={() => setMode('list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
+		</div>
+	</div>
 	{#if mode === 'month'}
-		<div class="flex items-center gap-2">
+		<div class="flex shrink-0 items-center gap-1">
 			<button type="button" onclick={() => stepMonth(-1)} aria-label="Previous month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
-			<button type="button" onclick={() => (monthOffset = 0)} class="tabular text-xs text-steel hover:text-ink">Today</button>
+			<button type="button" onclick={() => (monthOffset = 0)} class="tabular px-2 text-xs text-steel hover:text-ink">Today</button>
 			<button type="button" onclick={() => stepMonth(1)} aria-label="Next month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">›</button>
 		</div>
 	{/if}
 </div>
 
-<div class="relative mt-3 w-44 rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
-	<span class="pointer-events-none absolute inset-0.5 grid grid-cols-2" aria-hidden="true">
-		<span class="calendar-thumb rounded-md bg-ink" style="transform: translateX({mode === 'list' ? '100%' : '0%'})"></span>
-	</span>
-	<div class="relative grid grid-cols-2">
-		<button type="button" aria-pressed={mode === 'month'} onclick={() => setMode('month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
-		<button type="button" aria-pressed={mode === 'list'} onclick={() => setMode('list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
-	</div>
-</div>
+<h2 class="font-display mt-4 text-lg font-semibold text-ink">{mode === 'month' ? monthLabel : 'Upcoming'}</h2>
 
 {#key mode}
 <div class="calendar-view">
