@@ -82,13 +82,19 @@
 	});
 	const selWeek = $derived(sel?.week);
 	const selDay = $derived(sel?.day ?? todayIndex);
+	// The start of the week the selected day sits in. Inside the plan it is the
+	// plan week's own start; outside the plan it is the Monday of that calendar
+	// week, so the strip still shows seven days and a day tap still works.
+	const weekStartIso = $derived(
+		selWeek?.startDate ?? addDaysIso(selectedIso, -weekdayIndexFromIso(selectedIso)),
+	);
 	// The weekday of the date actually shown, taken from the date itself, so the
 	// label is right even on a day outside the plan's weeks, where there is no
 	// session day to read it from.
 	const selectedWeekdayName = $derived(DAY_NAMES[weekdayIndexFromIso(selectedIso)]);
 	// The strip's slide key: stable while you stay in one week, and a fresh value
 	// on every week step, including steps into weeks that are outside the plan.
-	const weekKey = $derived(selWeek?.startDate ?? selectedIso);
+	const weekKey = $derived(weekStartIso);
 	const daySessions = $derived(selWeek ? selWeek.sessions.filter((s) => s.day === selDay) : []);
 	// Skipped sessions stay on the card list, marked as skipped.
 	const loggedBySession = $derived(
@@ -228,8 +234,7 @@
 	}
 
 	function selectDay(day: number) {
-		if (!selWeek?.startDate) return;
-		const iso = addDaysIso(selWeek.startDate, day);
+		const iso = addDaysIso(weekStartIso, day);
 		changeKind = 'day';
 		dayDir = iso >= selectedIso ? 1 : -1;
 		selectedIso = iso;
