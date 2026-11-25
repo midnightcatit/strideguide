@@ -13,6 +13,21 @@ export interface MoveMedia {
 }
 
 export const MOVE_MEDIA: Record<string, MoveMedia> = {
+	'Ab crunch machine': {
+		start: '/moves/ab-crunch-machine-0.jpg',
+		end: '/moves/ab-crunch-machine-1.jpg',
+		motion: 'fade',
+	},
+	'Glute kickback machine': {
+		start: '/moves/glute-kickback-machine-0.jpg',
+		end: '/moves/glute-kickback-machine-1.jpg',
+		motion: 'horizontal',
+	},
+	'Lying leg curl': {
+		start: '/moves/lying-leg-curl-0.jpg',
+		end: '/moves/lying-leg-curl-1.jpg',
+		motion: 'fade',
+	},
 	'Leg press': {
 		start: '/moves/leg-press-0.webp',
 		end: '/moves/leg-press-1.webp',
