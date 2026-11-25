@@ -69,6 +69,42 @@ export function sessionTtlSeconds(): number {
 	return SESSION_TTL_SECONDS;
 }
 
+export interface OAuthState {
+	/** Random value echoed through Google, bound to one sign-in attempt. */
+	state: string;
+	/** Random value echoed in the id_token and checked when we verify it. */
+	nonce: string;
+}
+
+/**
+ * Sign the OAuth CSRF state so the callback can verify it on its own.
+ *
+ * Carrying the state in a signed value means the flow completes even when the
+ * state cookie is missing. That happens when the sign-in opens in a different
+ * cookie jar, for example an installed PWA handing off to the browser, or when
+ * the browser drops the cookie. The signature keeps the state unforgeable, so
+ * the anti-CSRF check still holds without the cookie.
+ */
+export async function signOAuthState(env: Env, payload: OAuthState): Promise<string> {
+	return new SignJWT({ s: payload.state, n: payload.nonce })
+		.setProtectedHeader({ alg: 'HS256' })
+		.setIssuedAt()
+		.setExpirationTime(`${STATE_TTL_SECONDS}s`)
+		.sign(sessionKey(env));
+}
+
+export async function verifyOAuthState(env: Env, token: string): Promise<OAuthState | null> {
+	try {
+		const { payload } = await jwtVerify(token, sessionKey(env), { algorithms: ['HS256'] });
+		if (typeof payload.s === 'string' && typeof payload.n === 'string') {
+			return { state: payload.s, nonce: payload.n };
+		}
+		return null;
+	} catch {
+		return null;
+	}
+}
+
 export function sessionCookieOptions(secure: boolean) {
 	return {
 		httpOnly: true,
