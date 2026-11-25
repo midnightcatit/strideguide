@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { mediaForMove, type MachineExercise } from '@strideguide/shared/plan';
-	import MoveDemo from '$lib/components/MoveDemo.svelte';
+	import ExerciseDetail from '$lib/components/ExerciseDetail.svelte';
 
 	/**
 	 * The expandable move list for a strength session: each move opens to its
-	 * demo, what it works, the cues and what to avoid. Shared by the drill-down
-	 * page's move section and the Preview sheet, so both read the same.
+	 * demo, what it works, the cues and what to avoid. Used by the Preview sheet,
+	 * so a move reads the same there.
 	 */
 	let { machines }: { machines: MachineExercise[] } = $props();
 
@@ -30,20 +30,15 @@
 				<span class="tabular shrink-0 text-xs text-steel">{open === m.name ? '−' : '+'}</span>
 			</button>
 			{#if open === m.name}
-				<div class="pb-3 pt-1">
-					{#if mediaForMove(m.name)}
-						<div class="mb-3"><MoveDemo media={mediaForMove(m.name)!} name={m.name} /></div>
-					{/if}
-					<p class="text-sm leading-relaxed">{m.why}</p>
-					<p class="mt-2 text-sm leading-relaxed text-steel">{line(m)}</p>
-					<p class="mt-2 tabular text-xs uppercase tracking-widest text-steel">Form</p>
-					<ul class="mt-1 space-y-1 text-sm">
-						{#each m.form as cue, ci (ci)}
-							<li class="flex gap-2"><span class="text-steel">·</span><span>{cue}</span></li>
-						{/each}
-					</ul>
-					<p class="mt-2 text-xs text-steel">Avoid: {m.mistakes.join('; ').toLowerCase()}.</p>
-				</div>
+				<ExerciseDetail
+					name={m.name}
+					media={mediaForMove(m.name)}
+					why={m.why}
+					works={line(m)}
+					form={m.form}
+					mistakes={m.mistakes}
+					avoidLabel="Avoid"
+				/>
 			{/if}
 		</li>
 	{/each}

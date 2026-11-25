@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, findDrill, findMove, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, findDrill, findMove, mediaForMove, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
 	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
-	import { sessionDrills } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
-	import MoveList from '$lib/components/MoveList.svelte';
-	import DrillList from '$lib/components/DrillList.svelte';
+	import ExerciseDetail from '$lib/components/ExerciseDetail.svelte';
 	import PreviewSheet from '$lib/components/PreviewSheet.svelte';
 	import NotesSheet from '$lib/components/NotesSheet.svelte';
 	import { isStarted } from '$lib/started.svelte';
@@ -134,6 +132,40 @@
 		if (drill) return drill.why;
 		return 'Part of this session. Follow the cue and keep the movement controlled.';
 	}
+
+	/**
+	 * The demo and cues for a step, when it names a drill or a move we hold
+	 * detail for. A drill or move carries its demo inside its structure row, so
+	 * it is listed once instead of a second time in a section of its own.
+	 */
+	function stepDetail(label: string) {
+		const move = findMove(label);
+		if (move) {
+			return {
+				name: move.name,
+				media: mediaForMove(move.name),
+				why: move.why,
+				works: `Works your ${move.muscles.join(' and ')}. ${move.feel}`,
+				form: move.form,
+				mistakes: move.mistakes,
+				avoidLabel: 'Avoid' as const,
+			};
+		}
+		const drill = findDrill(label);
+		if (drill) {
+			return {
+				name: drill.name,
+				media: mediaForMove(drill.name),
+				why: drill.why,
+				works: `${drill.feel} Targets ${drill.targets.join(', ')}.`,
+				form: drill.form,
+				mistakes: drill.mistakes,
+				avoidLabel: 'Watch for' as const,
+			};
+		}
+		return null;
+	}
+
 	let openRow = $state<string | null>(null);
 
 	onMount(async () => {
@@ -199,9 +231,6 @@
 		}
 		return names.map((n) => findMove(n)).filter((m): m is MachineExercise => !!m);
 	});
-
-	/** Stretches and drills in the order they appear, for a mobility session. */
-	const sd = $derived(sessionDrills(workout));
 
 	function sourceHref(doiUrl?: string): string | undefined {
 		if (!doiUrl) return undefined;
@@ -369,7 +398,7 @@
 				</section>
 			{/if}
 
-			<!-- What's to come -->
+			<!-- The session structure: every step once, with its demo and cues where we have them -->
 			{#if rows.length}
 				<hr class="my-6 border-hairline" />
 				<section aria-labelledby="to-come">
@@ -377,6 +406,7 @@
 					<ol class="mt-2 divide-y divide-hairline">
 						{#each visibleRows as row, i (i)}
 							{@const info = rowInfo(row.label)}
+							{@const detail = stepDetail(row.label)}
 							<li class="py-2.5">
 								<div class="flex items-baseline justify-between gap-3 text-sm">
 									<button
@@ -391,12 +421,17 @@
 									<span class="tabular shrink-0 text-steel">{row.target}</span>
 								</div>
 								{#if openRow === `r${i}`}
-									<p class="sg-enter-up mt-1 text-xs leading-relaxed text-steel">{info}</p>
+									{#if detail}
+										<div class="mt-1"><ExerciseDetail {...detail} /></div>
+									{:else}
+										<p class="sg-enter-up mt-1 text-xs leading-relaxed text-steel">{info}</p>
+									{/if}
 								{/if}
 								{#if row.sub}
 									<ul class="mt-1 space-y-0.5 pl-3 text-xs text-steel">
 										{#each row.sub as s, si (si)}
 											{@const sinfo = rowInfo(s.label)}
+											{@const sdetail = stepDetail(s.label)}
 											<li>
 												<div class="flex items-baseline justify-between gap-3">
 													<button
@@ -411,7 +446,11 @@
 													<span class="tabular shrink-0">{s.target}</span>
 												</div>
 												{#if openRow === `s${i}-${si}`}
-													<p class="sg-enter-up mt-1 leading-relaxed">{sinfo}</p>
+													{#if sdetail}
+														<div class="mt-1"><ExerciseDetail {...sdetail} /></div>
+													{:else}
+														<p class="sg-enter-up mt-1 leading-relaxed">{sinfo}</p>
+													{/if}
 												{/if}
 											</li>
 										{/each}
@@ -430,34 +469,6 @@
 							{showAllRows ? 'Show less' : `View more (${rows.length - 5} more)`}
 						</button>
 					{/if}
-				</section>
-			{/if}
-
-			<!-- Warm-up drills and stretches, each with a demo where we have one -->
-			{#if sd.warmups.length}
-				<hr class="my-6 border-hairline" />
-				<section aria-labelledby="warmup">
-					<h2 id="warmup" class="tabular text-xs uppercase tracking-widest text-steel">{session.type === 'mobility'
-						? 'Loosen up'
-						: 'The warm-up'}</h2>
-					<div class="mt-2"><DrillList drills={sd.warmups} /></div>
-				</section>
-			{/if}
-
-			{#if sd.stretches.length}
-				<hr class="my-6 border-hairline" />
-				<section aria-labelledby="stretches">
-					<h2 id="stretches" class="tabular text-xs uppercase tracking-widest text-steel">The stretches</h2>
-					<div class="mt-2"><DrillList drills={sd.stretches} /></div>
-				</section>
-			{/if}
-
-			<!-- Machines in this session -->
-			{#if machines.length}
-				<hr class="my-6 border-hairline" />
-				<section aria-labelledby="machines">
-					<h2 id="machines" class="tabular text-xs uppercase tracking-widest text-steel">The {session.type === 'machine-circuit' ? 'machines' : 'moves'}</h2>
-					<div class="mt-2"><MoveList {machines} /></div>
 				</section>
 			{/if}
 
