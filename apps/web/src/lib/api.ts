@@ -28,6 +28,12 @@ export interface HealthMetricsPayload {
 	windowDays: number;
 	metrics: Record<string, { latest: HealthMetricPoint | null; series: HealthMetricPoint[] }>;
 	samples: Record<string, { latest: HealthSamplePoint | null; series: HealthSamplePoint[] }>;
+	/**
+	 * Per metric, the mean of the previous window of the same length, so a card's
+	 * change compares this period against the one before it. Absent when the
+	 * earlier window has no reading for that metric.
+	 */
+	previous?: Record<string, number>;
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {

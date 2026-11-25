@@ -34,6 +34,9 @@ settings.put(
 			heightCm: z.number().min(90).max(250).nullable().optional(),
 			weightKg: z.number().min(25).max(250).nullable().optional(),
 			restingHr: z.number().int().min(30).max(120).nullable().optional(),
+			stepGoal: z.number().int().min(500).max(100000).nullable().optional(),
+			activeEnergyGoalKcal: z.number().int().min(50).max(5000).nullable().optional(),
+			activeZoneGoalMin: z.number().int().min(5).max(300).nullable().optional(),
 			autoAdvance: z.boolean().optional(),
 			countdownSec: z.number().int().min(0).max(15).optional(),
 			equipment: z

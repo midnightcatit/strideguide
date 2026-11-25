@@ -23,6 +23,12 @@ export interface Prefs {
 	weightKg?: number;
 	/** Resting heart rate, beats per minute. */
 	restingHr?: number;
+	/** Daily step goal the health charts draw a line at. Unset falls back to 10,000. */
+	stepGoal?: number;
+	/** Daily active-energy goal in kilocalories. Unset falls back to 500. */
+	activeEnergyGoalKcal?: number;
+	/** Daily active-zone-minutes goal. Unset falls back to 21, the WHO weekly target a day. */
+	activeZoneGoalMin?: number;
 	/** In the workout player, move to the next step automatically. */
 	autoAdvance?: boolean;
 	/** Seconds to count down before a step starts, 0 to 15. */

@@ -37,6 +37,12 @@ export interface HealthMetricsPayload {
 	windowDays: number;
 	metrics: Record<string, MetricSeries<MetricPoint>>;
 	samples: Record<string, MetricSeries<SamplePoint>>;
+	/**
+	 * Per metric, the mean of the previous window of the same length, so a card's
+	 * change is a true period-over-period step rather than a split of one window.
+	 * Absent when the earlier window has no reading for that metric.
+	 */
+	previous?: Record<string, number>;
 }
 
 /** The windows the client can ask for. Anything else falls back to the default. */
@@ -125,6 +131,26 @@ export function legacyDailyMetricRows(
 	return out;
 }
 
+/**
+ * The mean value per metric across a set of `{ date, metric, value }` rows. Used
+ * for the previous window's summary, so a card's change is measured against the
+ * period before this one rather than against a split of this window. Pure, so it
+ * is cheap to reason about and test.
+ */
+export function meanByMetric(
+	rows: { date: string; metric: string; value: number }[],
+): Record<string, number> {
+	const sums = new Map<string, { sum: number; n: number }>();
+	for (const row of rows) {
+		if (typeof row.value !== 'number' || !Number.isFinite(row.value)) continue;
+		const acc = sums.get(row.metric) ?? { sum: 0, n: 0 };
+		acc.sum += row.value;
+		acc.n += 1;
+		sums.set(row.metric, acc);
+	}
+	return Object.fromEntries([...sums].map(([metric, { sum, n }]) => [metric, sum / n]));
+}
+
 /** Whether a table is present, so a missing one is an empty payload, not an error. */
 async function hasTable(db: D1, name: string): Promise<boolean> {
 	try {
@@ -154,7 +180,10 @@ export async function loadHealthMetrics(
 ): Promise<HealthMetricsPayload> {
 	const empty: HealthMetricsPayload = { available: false, windowDays, metrics: {}, samples: {} };
 	const sinceDate = isoDay(new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000));
+	// The window before this one, of the same length, for the card's change.
+	const priorSinceDate = isoDay(new Date(now.getTime() - 2 * windowDays * 24 * 60 * 60 * 1000));
 	const sinceEpoch = Math.floor(now.getTime() / 1000) - windowDays * 24 * 60 * 60;
+	const priorSinceEpoch = Math.floor(now.getTime() / 1000) - 2 * windowDays * 24 * 60 * 60;
 
 	const [hasMetrics, hasSamples, hasLegacy] = await Promise.all([
 		hasTable(db, 'health_metrics'),
@@ -165,6 +194,7 @@ export async function loadHealthMetrics(
 
 	let metrics: Record<string, MetricSeries<MetricPoint>> = {};
 	let samples: Record<string, MetricSeries<SamplePoint>> = {};
+	let previous: Record<string, number> = {};
 
 	if (hasMetrics) {
 		try {
@@ -175,8 +205,23 @@ export async function loadHealthMetrics(
 				.bind(userId, sinceDate)
 				.all<{ date: string; metric: string; value: number }>();
 			metrics = withLatest(groupMetricRows(result.results ?? []));
+
+			// The previous window's mean per metric, one cheap aggregate rather than
+			// a second full series the client never draws.
+			const prior = await db
+				.prepare(
+					'SELECT metric, AVG(value) AS mean FROM health_metrics WHERE user_id = ? AND date >= ? AND date < ? GROUP BY metric',
+				)
+				.bind(userId, priorSinceDate, sinceDate)
+				.all<{ metric: string; mean: number }>();
+			previous = Object.fromEntries(
+				(prior.results ?? [])
+					.filter((row) => Number.isFinite(row.mean))
+					.map((row) => [row.metric, row.mean]),
+			);
 		} catch {
 			metrics = {};
+			previous = {};
 		}
 	}
 
@@ -192,8 +237,17 @@ export async function loadHealthMetrics(
 				.bind(userId, sinceDate)
 				.all<Record<string, unknown>>();
 			metrics = withLatest(groupMetricRows(legacyDailyMetricRows(result.results ?? [])));
+
+			const prior = await db
+				.prepare(
+					'SELECT date, resting_hr, hrv_ms, sleep_min, steps FROM health_daily WHERE user_id = ? AND date >= ? AND date < ? ORDER BY date ASC',
+				)
+				.bind(userId, priorSinceDate, sinceDate)
+				.all<Record<string, unknown>>();
+			previous = meanByMetric(legacyDailyMetricRows(prior.results ?? []));
 		} catch {
 			metrics = {};
+			previous = {};
 		}
 	}
 
@@ -215,12 +269,24 @@ export async function loadHealthMetrics(
 					})),
 				),
 			);
+
+			// The previous window's mean per sample metric, so a sample card's change
+			// also steps back a full period rather than splitting one window.
+			const prior = await db
+				.prepare(
+					'SELECT metric, AVG(value) AS mean FROM health_samples WHERE user_id = ? AND sample_time >= ? AND sample_time < ? GROUP BY metric',
+				)
+				.bind(userId, priorSinceEpoch, sinceEpoch)
+				.all<{ metric: string; mean: number }>();
+			for (const row of prior.results ?? []) {
+				if (Number.isFinite(row.mean)) previous[row.metric] = row.mean;
+			}
 		} catch {
 			samples = {};
 		}
 	}
 
-	return { available: true, windowDays, metrics, samples };
+	return { available: true, windowDays, metrics, samples, previous };
 }
 
 /** The days and step totals the recovery read wants, or null when there is none. */

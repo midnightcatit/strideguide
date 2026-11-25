@@ -18,7 +18,9 @@ import {
 } from './api';
 import { isFresh, syncDue } from './healthCache';
 
-const STORAGE_KEY = 'sg:healthCache:v1';
+// v2: the health payload now carries the previous window's means for the card
+// change, so a cached v1 payload (no `previous`) is dropped rather than served.
+const STORAGE_KEY = 'sg:healthCache:v2';
 
 interface WindowEntry {
 	payload: HealthMetricsPayload;

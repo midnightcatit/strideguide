@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { getLandingTab, LANDING_TABS, prefs, type LandingTab } from '$lib/prefs.svelte';
+	import { GOAL_DEFAULTS } from '$lib/chartTheme';
 	import { auth } from '$lib/auth.svelte';
 	import { api, type ConnectionStatus } from '$lib/api';
 	import { getTheme, type Theme } from '$lib/theme';
@@ -51,6 +52,10 @@
 		`${prefs.units === 'imperial' ? 'Miles' : 'Kilometers'} · week starts ${prefs.weekStart === 1 ? 'Sunday' : 'Monday'}`,
 	);
 
+	const goalsValue = $derived(
+		`${(prefs.stepGoal ?? GOAL_DEFAULTS.steps).toLocaleString()} steps · ${prefs.activeEnergyGoalKcal ?? GOAL_DEFAULTS.active_energy_kcal} kcal · ${prefs.activeZoneGoalMin ?? GOAL_DEFAULTS.active_zone_min} zone min`,
+	);
+
 	const favoritesValue = $derived.by(() => {
 		const n = (prefs.favoriteMachines?.length ?? 0) + (prefs.favoriteWorkouts?.length ?? 0);
 		return n ? `${n} picked` : 'None picked yet';
@@ -81,6 +86,13 @@
 			value: trainingValue,
 			edit: true,
 			icon: 'M4 14V6M7.5 14V4M11 14v-8M14.5 14V4M3 16h12',
+		},
+		{
+			href: '/settings/goals',
+			label: 'Daily goals',
+			value: goalsValue,
+			edit: true,
+			icon: 'M10 3.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
 		},
 		{
 			href: '/settings/favorites',
