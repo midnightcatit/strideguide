@@ -1,11 +1,14 @@
 /** Client-side plan shapes as returned by the API, plus small display helpers. */
 
 import { findDrill, type Drill } from '@strideguide/shared/plan';
+import type { Modality } from '@strideguide/shared';
+
+// The one shared modality set (running, walking, strength, mobility, recovery,
+// cross-train), so the client never drifts from what the API stores.
+export type { Modality };
 
 /** The runner's local civil date, re-exported so the web call sites share one helper. */
 export { localIso } from '@strideguide/shared/dates';
-
-export type Modality = 'running' | 'walking' | 'strength' | 'mobility' | 'recovery';
 
 export interface ClientStep {
 	kind: 'warmup' | 'work' | 'recovery' | 'rest' | 'cooldown';
