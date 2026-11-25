@@ -153,9 +153,22 @@ function ensurePayload(windowDays: HealthMetricWindow): Promise<void> {
  * Read the connection and the requested window, reusing the cache when it is
  * fresh. Safe to call from every view: the first caller refreshes, later callers
  * wait on the same request, and a fresh cache makes no network call at all.
+ *
+ * When the connection is cached and no sync is due, the metrics read runs
+ * alongside the connection check. Otherwise the connection read may sync first,
+ * and the metrics read must wait so it sees the synced rows rather than the
+ * state just before the sync.
  */
 export async function ensureHealth(userId: string, windowDays: HealthMetricWindow): Promise<void> {
 	resetFor(userId);
+	const now = Date.now();
+	const connectionFresh = isFresh(healthCache.connectionAt, now);
+	const syncNeeded =
+		!!healthCache.connection?.connected && syncDue(healthCache.connection.lastSyncedAt, now);
+	if (connectionFresh && !syncNeeded) {
+		await Promise.all([ensureConnection(), ensurePayload(windowDays)]);
+		return;
+	}
 	await ensureConnection();
 	await ensurePayload(windowDays);
 }

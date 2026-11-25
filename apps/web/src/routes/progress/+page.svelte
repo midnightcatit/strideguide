@@ -7,7 +7,9 @@
 	import { type ClientLog, type ClientSession, addDaysIso } from '$lib/plan';
 	import { today } from '$lib/today.svelte';
 	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
-	import { api, type HealthMetricsPayload } from '$lib/api';
+	import { auth } from '$lib/auth.svelte';
+	import { ensureHealth, healthFor } from '$lib/healthCache.svelte';
+	import { summary, ensureSummary } from '$lib/summaryStore.svelte';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit, sessionLabel } from '$lib/prefs.svelte';
 	import { weekPreview, trainedDays, currentStreak, weeklyKmSeries, logMs } from '$lib/metrics';
 	import { TRAINING_LOAD, TRAINING_PACE } from '$lib/chartPalette';
@@ -21,28 +23,28 @@
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import PlanError from '$lib/components/PlanError.svelte';
-	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
 	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
 
-	let health = $state<HealthMetricsPayload | null>(null);
-	let note = $state<string | null>(null);
+	// The health summary reads from the shared cache, the same one the drill-down
+	// uses, so opening Progress does not bypass it with its own fetch.
+	const health = $derived(healthFor(auth.user?.id ?? null, 30));
+
+	// The pace trend is the only chart on this page, and the only reason the chart
+	// library would be pulled into this route. It is loaded on demand, and only
+	// once there are enough points to draw, so the route's own chunk stays small.
+	type TrendComponent = (typeof import('$lib/components/charts/TimeSeriesCard.svelte'))['default'];
+	let Trend = $state<TrendComponent | null>(null);
 
 	const todayIso = $derived(today.iso);
 
 	onMount(() => {
 		void ensurePlan();
-		void api
-			.healthMetrics(30)
-			.then((h) => (health = h))
-			.catch(() => {
-				// no health data, or the call failed; the section shows its empty state
-			});
-		void api
-			.latestSummary()
-			.then((s) => (note = s.summary?.body ?? null))
-			.catch(() => {
-				// no coach note yet; the section simply does not show
-			});
+		void ensureSummary();
+	});
+
+	$effect(() => {
+		const id = auth.user?.id;
+		if (id) void ensureHealth(id, 30);
 	});
 
 	const weeksLike = $derived<WeekLike[]>(
@@ -193,6 +195,18 @@
 	// user's unit without the "/km" or "/mi" tail, so the ticks never crowd.
 	// It converts through fmtPace, so imperial users see the right numbers.
 	const fmtPaceShort = (sec: number): string => fmtPace(sec).split(' ')[0] ?? fmtPace(sec);
+
+	// Load the chart only once the trend is long enough to draw, so a page with
+	// too few runs never downloads the chart library at all.
+	$effect(() => {
+		if (pacePoints.length >= 3 && !Trend) {
+			void import('$lib/components/charts/TimeSeriesCard.svelte')
+				.then((m) => (Trend = m.default))
+				.catch(() => {
+					// no chart; the section keeps its placeholder
+				});
+		}
+	});
 </script>
 
 {#if store.error}
@@ -348,8 +362,8 @@
 				<Card tone="sunken">
 					<p class="text-xs text-steel">Log at least 3 long or quality runs to see a pace trend. Fewer points aren't meaningful.</p>
 				</Card>
-			{:else}
-				<TimeSeriesCard
+			{:else if Trend}
+				<Trend
 					title="Pace"
 					value={fmtPace(pacePoints[pacePoints.length - 1].value)}
 					color={TRAINING_PACE}
@@ -357,6 +371,10 @@
 					format={fmtPaceShort}
 					note="Long and quality runs only. Easy runs are left out on purpose, so the trend is not hidden by them.{metrics.pace.changeSecPerKm !== undefined ? ` Recent runs are ${metrics.pace.changeSecPerKm > 0 ? 'faster' : 'slower'} on average by ${convertPaceDelta(Math.abs(metrics.pace.changeSecPerKm))}${paceDeltaUnit()}.` : ''}"
 				/>
+			{:else}
+				<Card tone="sunken">
+					<p class="text-xs text-steel">Loading the pace chart…</p>
+				</Card>
 			{/if}
 		</section>
 
@@ -381,11 +399,11 @@
 		</section>
 	{/if}
 
-	{#if note}
+	{#if summary.body}
 		<section aria-labelledby="p-coach-note" class="mb-7">
 			<SectionHeader id="p-coach-note" eyebrow="Coach note" />
 			<Card tone="sunken">
-				<p class="text-sm">{note}</p>
+				<p class="text-sm">{summary.body}</p>
 			</Card>
 		</section>
 	{/if}

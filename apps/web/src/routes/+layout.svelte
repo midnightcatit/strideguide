@@ -14,12 +14,17 @@
 	import SignIn from '$lib/components/SignIn.svelte';
 	import AvatarMenu from '$lib/components/AvatarMenu.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	// Pages that must render without signing in, because the OAuth consent screen
 	// and reviewers open them directly. They get a bare shell, no app chrome.
 	const PUBLIC_PATHS = new Set(['/privacy', '/terms']);
 	const isPublic = $derived(PUBLIC_PATHS.has(page.url.pathname));
+
+	// The user the chrome draws from: the server read first, so the first paint
+	// is the real shell, with the shared client store as the fallback once its
+	// own check has run.
+	const user = $derived(auth.user ?? data.user ?? null);
 
 	let pending = $state(0);
 	// Set when a newer service worker takes control; we offer a reload instead of
@@ -49,7 +54,7 @@
 	// The name the avatar draws its initial from: the one set in Settings > You,
 	// else the Google display name. Empty means the avatar shows a neutral icon
 	// instead of a letter.
-	const avatarName = $derived(prefs.name ?? auth.user?.name ?? null);
+	const avatarName = $derived(prefs.name ?? user?.name ?? null);
 
 	// Crossfade route changes with the View Transitions API where it exists, so
 	// navigation reads as motion instead of a hard swap. The CSS names the content
@@ -82,6 +87,13 @@
 
 	onMount(() => {
 		installClientErrorReporting();
+		// Seed the shared auth store from the server read so the first client
+		// render matches the server and no second /auth/me call is needed. When
+		// the server could not resolve it, ensureAuth runs the check instead.
+		if (data.authResolved) {
+			auth.user = data.user ?? null;
+			auth.checked = true;
+		}
 		// Resolve the signed-in user first, then read the saved prefs only when we
 		// know there is one, so a signed-out or offline start is not read as a
 		// settings failure. When auth resolves to a user, load the prefs.
@@ -164,7 +176,7 @@
 			{@render children()}
 		</main>
 	</div>
-{:else if auth.user}
+{:else if user}
 	<div class="sg-app min-h-dvh flex flex-col">
 		<a href="#main" class="skip-link">Skip to content</a>
 		{#if !onboarding}
@@ -211,7 +223,7 @@
 						<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync" aria-hidden="true">⟳ {pending}</span>
 						<span class="sr-only" role="status" aria-live="polite">{pending} {pending === 1 ? 'log' : 'logs'} waiting to sync</span>
 					{/if}
-					<AvatarMenu name={avatarName} email={auth.user?.email} seed={auth.user?.id} />
+					<AvatarMenu name={avatarName} email={user?.email} seed={user?.id} />
 				</div>
 			</div>
 		</header>
@@ -296,7 +308,7 @@
 			</div>
 		{/if}
 	</div>
-{:else if auth.checked}
+{:else if data.authResolved || auth.checked}
 	<SignIn />
 {:else if auth.error}
 	<div class="min-h-dvh flex flex-col items-center justify-center gap-3 px-6 text-center">

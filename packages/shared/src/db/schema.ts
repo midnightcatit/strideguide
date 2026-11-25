@@ -567,6 +567,9 @@ export const healthMetrics = sqliteTable(
 			t.metric,
 		),
 		userMetricDateIdx: index('health_metrics_user_metric_date_idx').on(t.userId, t.metric, t.date),
+		// A window read filters by user and date range, so this lets it seek
+		// straight to the range instead of scanning the user's whole history.
+		userDateIdx: index('health_metrics_user_date_idx').on(t.userId, t.date),
 	}),
 );
 
@@ -598,6 +601,9 @@ export const healthSamples = sqliteTable(
 			t.metric,
 			t.sampleTime,
 		),
+		// A window read filters by user and sample time, so this lets it seek to
+		// the range rather than scan the user's whole sample history.
+		userTimeIdx: index('health_samples_user_time_idx').on(t.userId, t.sampleTime),
 	}),
 );
 
