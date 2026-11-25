@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { and, eq } from 'drizzle-orm';
 import { schema } from '../db';
+import { timingSafeEqualStr } from '../lib/session';
 import type { AppBindings } from '../types';
 
 /**
@@ -37,7 +38,9 @@ export function healthUserIdsFromPayload(payload: unknown): string[] {
 webhooks.post('/google-health', async (c) => {
 	const secret = c.env.GOOGLE_HEALTH_WEBHOOK_SECRET;
 	const provided = c.req.header('authorization') ?? '';
-	if (!secret || provided !== secret) {
+	// Constant-time compare, and treat a missing secret as inert. timingSafeEqualStr
+	// returns false on a length mismatch, so the compare does not leak length.
+	if (!secret || !timingSafeEqualStr(provided, secret)) {
 		return c.body(null, 401);
 	}
 

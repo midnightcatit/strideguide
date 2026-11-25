@@ -77,13 +77,13 @@ export interface OAuthState {
 }
 
 /**
- * Sign the OAuth CSRF state so the callback can verify it on its own.
+ * Sign the OAuth CSRF state that rides through Google in the state param.
  *
- * Carrying the state in a signed value means the flow completes even when the
- * state cookie is missing. That happens when the sign-in opens in a different
- * cookie jar, for example an installed PWA handing off to the browser, or when
- * the browser drops the cookie. The signature keeps the state unforgeable, so
- * the anti-CSRF check still holds without the cookie.
+ * The signature proves the state was ours and was not edited on the way back.
+ * It is NOT enough on its own: a signed value is replayable by anyone, so the
+ * callback also requires the state cookie and checks that the two agree. The
+ * cookie is what binds the attempt to this one browser, which is what stops an
+ * attacker from starting a flow and handing the victim its callback URL.
  */
 export async function signOAuthState(env: Env, payload: OAuthState): Promise<string> {
 	return new SignJWT({ s: payload.state, n: payload.nonce })
@@ -103,6 +103,25 @@ export async function verifyOAuthState(env: Env, token: string): Promise<OAuthSt
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * Check the browser's state cookie against the verified, signed state.
+ *
+ * The callback must require the cookie: a valid signed state alone is the login
+ * CSRF hole, because an attacker can mint one in their own browser and pass it
+ * to the victim. The cookie value is `<state>.<nonce>`, set by the start route
+ * and readable only by this origin, so requiring it and comparing constant-time
+ * binds the finishing sign-in to the browser that began it.
+ */
+export function oauthStateMatchesCookie(signed: OAuthState, cookieValue: string): boolean {
+	if (!cookieValue) return false;
+	const [cookieState, cookieNonce] = cookieValue.split('.');
+	if (!cookieState || !cookieNonce) return false;
+	return (
+		timingSafeEqualStr(cookieState, signed.state) &&
+		timingSafeEqualStr(cookieNonce, signed.nonce)
+	);
 }
 
 export function sessionCookieOptions(secure: boolean) {
