@@ -8,7 +8,7 @@
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
-	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
 	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
@@ -123,14 +123,7 @@
 	);
 
 	const dateLabel = $derived(
-		new Date(`${selectedIso}T00:00:00Z`)
-			.toLocaleDateString(undefined, {
-				weekday: 'short',
-				day: 'numeric',
-				month: 'short',
-				timeZone: 'UTC',
-			})
-			.toUpperCase(),
+		formatIsoDay(selectedIso, { weekday: 'short', day: 'numeric', month: 'short' }).toUpperCase(),
 	);
 
 	const weekLogged = $derived(selWeek ? selWeek.sessions.filter((s) => loggedBySession.has(s.id)).length : 0);
@@ -223,12 +216,7 @@
 	const from = $derived(isToday ? '/today' : `/today?date=${selectedIso}`);
 
 	function dayLabel(iso: string): string {
-		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
-			weekday: 'short',
-			day: 'numeric',
-			month: 'short',
-			timeZone: 'UTC',
-		});
+		return formatIsoDay(iso, { weekday: 'short', day: 'numeric', month: 'short' });
 	}
 
 	// The first day of the runner's own week: Monday, or Sunday when they set it

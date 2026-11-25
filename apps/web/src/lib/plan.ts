@@ -232,6 +232,16 @@ export function formatDurationSeconds(sec: number): string {
 	return `${m} min`;
 }
 
+/**
+ * Format a civil day (yyyy-mm-dd) for display. The day is parsed as UTC midnight
+ * and formatted with a fixed UTC time zone, so a label never shifts by the
+ * runner's offset. Every day label goes through here: one copy that lost
+ * `timeZone: 'UTC'` is exactly how a date drifted by one before.
+ */
+export function formatIsoDay(iso: string, opts: Intl.DateTimeFormatOptions = {}): string {
+	return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, { ...opts, timeZone: 'UTC' });
+}
+
 /** The warm-up drills and the stretches named by a workout, each in order. */
 export interface SessionDrills {
 	warmups: Drill[];

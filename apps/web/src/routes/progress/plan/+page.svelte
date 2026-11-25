@@ -4,7 +4,7 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { metricOrigin } from '$lib/metrics';
-	import { localIso } from '$lib/plan';
+	import { formatIsoDay, localIso } from '$lib/plan';
 	import { TRAINING_LOAD } from '$lib/chartPalette';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
@@ -64,12 +64,11 @@
 	const targetDate = $derived(plan?.goal?.targetDate ?? null);
 	const raceLabel = $derived(
 		targetDate
-			? new Date(`${targetDate}T00:00:00Z`).toLocaleDateString(undefined, {
+			? formatIsoDay(targetDate, {
 					weekday: 'long',
 					month: 'long',
 					day: 'numeric',
 					year: 'numeric',
-					timeZone: 'UTC',
 				})
 			: null,
 	);
@@ -86,12 +85,7 @@
 
 	function weekRange(start: string | null, end: string | null): string {
 		if (!start || !end) return '';
-		const f = (iso: string) =>
-			new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
-				month: 'short',
-				day: 'numeric',
-				timeZone: 'UTC',
-			});
+		const f = (iso: string) => formatIsoDay(iso, { month: 'short', day: 'numeric' });
 		return `${f(start)} to ${f(end)}`;
 	}
 </script>

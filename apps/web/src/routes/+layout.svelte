@@ -5,7 +5,7 @@
 	import { goto, onNavigate } from '$app/navigation';
 	import { api } from '$lib/api';
 	import { loadPrefs, prefs } from '$lib/prefs.svelte';
-	import { ensurePlan } from '$lib/planStore.svelte';
+	import { ensurePlan, reloadPlan } from '$lib/planStore.svelte';
 	import { outbox } from '$lib/offline';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { breadcrumbFor } from '$lib/breadcrumbs';
@@ -101,8 +101,14 @@
 		const sync = async () => {
 			pending = outbox().length;
 			if (navigator.onLine && pending > 0) {
-				await api.flushOutbox().catch(() => {});
+				const res = await api.flushOutbox().catch(() => null);
 				pending = outbox().length;
+				// Once the whole outbox has gone through, reload the plan so the
+				// optimistic pending logs give way to the server's own rows and the
+				// metrics count them for real.
+				if (res && res.sent > 0 && res.remaining === 0) {
+					await reloadPlan().catch(() => {});
+				}
 			}
 		};
 		void sync();

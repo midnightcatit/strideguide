@@ -1,4 +1,4 @@
-import type { ClientLog } from './plan';
+import { localIso, type ClientLog } from './plan';
 
 /** Millisecond timestamp from a log's createdAt, which may be seconds or a string. */
 export function logMs(v: unknown): number {
@@ -12,7 +12,7 @@ export function trainedDays(logs: ClientLog[]): Set<string> {
 	const days = new Set<string>();
 	for (const l of logs) {
 		const ms = logMs(l.createdAt);
-		if (ms) days.add(new Date(ms).toISOString().slice(0, 10));
+		if (ms) days.add(localIso(new Date(ms)));
 	}
 	return days;
 }
@@ -58,7 +58,7 @@ export function weeklyKmSeries(logs: ClientLog[], todayIso: string, weeks: numbe
 		const km = l.runStats?.distanceKm;
 		const ms = logMs(l.createdAt);
 		if (!km || km <= 0 || !ms) continue;
-		const iso = new Date(ms).toISOString().slice(0, 10);
+		const iso = localIso(new Date(ms));
 		byDay.set(iso, (byDay.get(iso) ?? 0) + km);
 	}
 
@@ -140,7 +140,7 @@ export function volumeBuckets(logs: ClientLog[], todayIso: string): VolumeBucket
 		const ms = logMs(l.createdAt);
 		if (ms) out.sessions++;
 		if (!km || km <= 0 || !ms) continue;
-		const iso = new Date(ms).toISOString().slice(0, 10);
+		const iso = localIso(new Date(ms));
 		const day = new Date(`${iso}T00:00:00Z`);
 		out.allTimeKm += km;
 		if (iso === todayIso) out.todayKm += km;

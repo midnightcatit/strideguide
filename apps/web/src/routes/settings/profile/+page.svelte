@@ -6,6 +6,7 @@
 	import SettingsDraftGuard from '$lib/components/SettingsDraftGuard.svelte';
 	import { prefs, setPersonal, setVitals } from '$lib/prefs.svelte';
 	import { api, type ConnectionStatus } from '$lib/api';
+	import { formatIsoDay } from '$lib/plan';
 	import type { HealthDay } from '@strideguide/shared/plan';
 
 	// The linked-device state comes from the server, not from a value captured at
@@ -49,12 +50,7 @@
 		return day?.restingHr ? { bpm: day.restingHr, date: day.date } : null;
 	});
 	const syncedDate = $derived(
-		synced
-			? new Date(`${synced.date}T00:00:00`).toLocaleDateString(undefined, {
-					month: 'short',
-					day: 'numeric',
-				})
-			: '',
+		synced ? formatIsoDay(synced.date, { month: 'short', day: 'numeric' }) : '',
 	);
 
 	function linkDevice() {

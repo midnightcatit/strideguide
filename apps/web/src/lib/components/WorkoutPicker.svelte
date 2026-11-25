@@ -7,6 +7,7 @@
 		type LibraryWorkout,
 	} from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
+	import { formatIsoDay } from '$lib/plan';
 	import { prefs } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
 	import type { CustomWorkoutInput } from '$lib/api';
@@ -126,12 +127,7 @@
 	);
 
 	const dateLabel = $derived(
-		new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, {
-			weekday: 'long',
-			day: 'numeric',
-			month: 'long',
-			timeZone: 'UTC',
-		}),
+		formatIsoDay(date, { weekday: 'long', day: 'numeric', month: 'long' }),
 	);
 	const heading = $derived(mode === 'custom' ? 'Custom workout' : 'Pick a workout');
 

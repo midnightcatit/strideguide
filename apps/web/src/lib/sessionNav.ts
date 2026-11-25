@@ -1,10 +1,16 @@
 import { goto } from '$app/navigation';
 
 /**
- * Return to the previous view. Falls back to a sensible parent when there is no
- * history to pop, which is the case for a deep link straight into a view.
+ * Leave the current view. When the view was opened with an explicit `from`
+ * route, go straight there so a deep link never steps out of the app on a
+ * history entry that predates it. Otherwise pop the history, or fall back to a
+ * sensible parent when there is nothing to pop (a deep link straight in).
  */
-export function goBack(fallback = '/today'): void {
+export function goBack(from: string | null = null, fallback = '/today'): void {
+	if (from) {
+		void goto(from);
+		return;
+	}
 	if (typeof window !== 'undefined' && window.history.length > 1) history.back();
 	else void goto(fallback);
 }

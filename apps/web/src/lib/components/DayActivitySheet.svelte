@@ -4,6 +4,7 @@
 		type ClientLog,
 		type ClientSession,
 		addDaysIso,
+		formatIsoDay,
 		localIso,
 	} from '$lib/plan';
 	import { fmtDistance, fmtPace, sessionLabel } from '$lib/prefs.svelte';
@@ -33,16 +34,8 @@
 
 	const todayIso = localIso();
 
-	const date = $derived(iso ? new Date(`${iso}T00:00:00Z`) : null);
 	const heading = $derived(
-		date
-			? date.toLocaleDateString(undefined, {
-					weekday: 'long',
-					month: 'long',
-					day: 'numeric',
-					timeZone: 'UTC',
-				})
-			: '',
+		iso ? formatIsoDay(iso, { weekday: 'long', month: 'long', day: 'numeric' }) : '',
 	);
 	const isFuture = $derived(!!iso && iso > todayIso);
 
@@ -65,7 +58,7 @@
 		for (const l of store.logs) {
 			const ms = logMs(l.createdAt);
 			if (!ms) continue;
-			if (new Date(ms).toISOString().slice(0, 10) !== iso) continue;
+			if (localIso(new Date(ms)) !== iso) continue;
 			if (l.sessionId && scheduledIds.has(l.sessionId)) continue;
 			out.push({ session: null, log: l, skipped: false });
 		}
