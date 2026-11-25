@@ -8,7 +8,8 @@
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
-	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, weekdayIndexFromIso } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
@@ -21,6 +22,7 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import ActivityCard from '$lib/components/ActivityCard.svelte';
 	import RaceCard from '$lib/components/RaceCard.svelte';
@@ -61,9 +63,12 @@
 		action: () => void;
 	} | null>(null);
 
-	const todayIndex = mondayIndex(new Date());
-	const todayIso = localIso();
-	let selectedIso = $state(todayIso);
+	const todayIso = $derived(today.iso);
+	const todayIndex = $derived(weekdayIndexFromIso(today.iso));
+	// The day the panel opens on, captured once: a later midnight rollover moves
+	// "today" but leaves the runner on the day they were looking at.
+	const initialIso = today.iso;
+	let selectedIso = $state(initialIso);
 	// Which way it moved, so the panel slides in the direction you stepped.
 	let dayDir = $state<1 | -1>(1);
 	// A week step gets a stronger slide than a single day step, so switching
@@ -210,7 +215,7 @@
 	const workoutItems = $derived(dayItems.filter((it) => it.kind !== 'milestone'));
 	// A day inside the last 30 days can be edited. Older days are read-only
 	// history, so the runner can look back without changing the past.
-	const editCutoff = addDaysIso(todayIso, -30);
+	const editCutoff = $derived(addDaysIso(todayIso, -30));
 	const editable = $derived(selectedIso >= editCutoff);
 	// Where a session view returns to: this day in Today.
 	const from = $derived(isToday ? '/today' : `/today?date=${selectedIso}`);
@@ -378,7 +383,7 @@
 </script>
 
 {#if store.error}
-	<p class="mt-6 text-sm text-steel">{store.error}</p>
+	<PlanError message={store.error} />
 {:else if !store.loaded && !weeks.length}
 	<p class="tabular mt-6 text-sm text-steel">Loading…</p>
 {:else if !weeks.length}

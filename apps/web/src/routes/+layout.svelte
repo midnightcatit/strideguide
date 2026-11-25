@@ -4,10 +4,10 @@
 	import { page } from '$app/state';
 	import { goto, onNavigate } from '$app/navigation';
 	import { api } from '$lib/api';
-	import { loadPrefs, prefs } from '$lib/prefs.svelte';
+	import { loadPrefs, prefs, prefsState } from '$lib/prefs.svelte';
 	import { ensurePlan, reloadPlan } from '$lib/planStore.svelte';
-	import { outbox } from '$lib/offline';
-	import { auth, ensureAuth } from '$lib/auth.svelte';
+	import { clearClientState, outbox } from '$lib/offline';
+	import { auth, ensureAuth, forgetUser } from '$lib/auth.svelte';
 	import { breadcrumbFor } from '$lib/breadcrumbs';
 	import { installClientErrorReporting } from '$lib/clientErrors';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
@@ -64,6 +64,7 @@
 		// navigation.complete. It is idempotent, so later navigations are instant.
 		if (auth.checked && auth.user) {
 			await ensurePlan().catch(() => {});
+			void loadPrefs();
 		}
 		if (typeof document === 'undefined') return;
 		const doc = document as Document & {
@@ -81,8 +82,14 @@
 
 	onMount(() => {
 		installClientErrorReporting();
-		void loadPrefs();
-		void ensureAuth();
+		// Resolve the signed-in user first, then read the saved prefs only when we
+		// know there is one, so a signed-out or offline start is not read as a
+		// settings failure. When auth resolves to a user, load the prefs.
+		const refreshSession = async () => {
+			await ensureAuth().catch(() => {});
+			if (auth.checked && auth.user) void loadPrefs();
+		};
+		void refreshSession();
 
 		if ('serviceWorker' in navigator) {
 			const hadController = !!navigator.serviceWorker.controller;
@@ -111,9 +118,16 @@
 				}
 			}
 		};
+		// Back online: re-check the session (a start offline left it unchecked),
+		// flush queued logs, and refetch the plan that may have failed.
+		const onOnline = () => {
+			void sync();
+			void refreshSession();
+			if (auth.checked && auth.user) void ensurePlan().catch(() => {});
+		};
 		void sync();
-		window.addEventListener('online', sync);
-		return () => window.removeEventListener('online', sync);
+		window.addEventListener('online', onOnline);
+		return () => window.removeEventListener('online', onOnline);
 	});
 
 	// The root landing redirect lives in the root page, which runs on every visit
@@ -144,19 +158,13 @@
 	</svg>
 {/snippet}
 
-{#if !auth.checked}
-	<div class="min-h-dvh flex items-center justify-center">
-		<p class="tabular text-sm text-steel">Loading…</p>
-	</div>
-{:else if isPublic}
+{#if isPublic}
 	<div class="min-h-dvh">
 		<main class="mx-auto w-full max-w-2xl px-5 py-10">
 			{@render children()}
 		</main>
 	</div>
-{:else if !auth.user}
-	<SignIn />
-{:else}
+{:else if auth.user}
 	<div class="sg-app min-h-dvh flex flex-col">
 		<a href="#main" class="skip-link">Skip to content</a>
 		{#if !onboarding}
@@ -224,6 +232,21 @@
 			</div>
 		{/if}
 
+		{#if prefsState.failed}
+			<div class="mx-auto mt-3 flex w-full max-w-5xl items-center justify-between gap-3 px-4">
+				<div class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline bg-sunken px-4 py-2 text-sm">
+					<span>Some settings did not load, so units and week start may be off.</span>
+					<button
+						type="button"
+						onclick={() => void loadPrefs()}
+						class="shrink-0 rounded-md border border-hairline-strong px-3 py-1.5 text-xs hover:border-signal hover:text-signal-ink"
+					>
+						Retry
+					</button>
+				</div>
+			</div>
+		{/if}
+
 		<main id="main" tabindex="-1" class="outline-none {bleed ? 'flex flex-1 flex-col pb-24 sm:pb-6' : 'flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6'}">
 			{#key page.url.pathname}
 				<div class="route-enter">
@@ -273,6 +296,25 @@
 			</div>
 		{/if}
 	</div>
+{:else if auth.checked}
+	<SignIn />
+{:else if auth.error}
+	<div class="min-h-dvh flex flex-col items-center justify-center gap-3 px-6 text-center">
+		<p class="max-w-sm text-sm text-steel">
+			We could not reach the server to check your sign-in. Check your connection and try again.
+		</p>
+		<button
+			type="button"
+			onclick={() => void ensureAuth()}
+			class="rounded-md border border-hairline-strong px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink"
+		>
+			Try again
+		</button>
+	</div>
+{:else}
+	<div class="min-h-dvh flex items-center justify-center">
+		<p class="tabular text-sm text-steel">Loading…</p>
+	</div>
 {/if}
 
 <ConfirmSheet
@@ -284,6 +326,8 @@
 	onConfirm={async () => {
 		signOutConfirm = false;
 		await api.logout().catch(() => {});
+		clearClientState();
+		forgetUser();
 		window.location.href = '/';
 	}}
 	onClose={() => (signOutConfirm = false)}

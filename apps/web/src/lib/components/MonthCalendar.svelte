@@ -4,14 +4,15 @@
 	import { goto } from '$app/navigation';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_INITIALS, addDaysIso, formatIsoDay, localIso } from '$lib/plan';
+	import { type ClientSession, DAY_INITIALS, addDaysIso, formatIsoDay } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { sessionHref } from '$lib/sessionNav';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
 	import { LOAD_RAMP, TRAINING_PROGRESS } from '$lib/chartPalette';
 
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 
 	let monthOffset = $state(0);
 	const MODE_KEY = 'sg:calendarMode';

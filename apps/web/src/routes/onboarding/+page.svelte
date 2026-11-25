@@ -517,7 +517,7 @@
 		// path ends on the same screen as the skip path.
 		if (page.url.searchParams.has('connected')) {
 			try {
-				const plan = await api.currentPlan();
+				const plan = await api.currentPlan(auth.user?.id ?? null);
 				if (plan?.weeks?.length) {
 					draft = plan;
 					done = true;
@@ -827,7 +827,7 @@
 				new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 25000)),
 			]);
 			// Show a preview of the first week instead of jumping straight in.
-			draft = await api.currentPlan();
+			draft = await api.currentPlan(auth.user?.id ?? null);
 			generating = false;
 			submitting = false;
 		} catch (e) {

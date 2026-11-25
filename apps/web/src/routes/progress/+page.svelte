@@ -4,7 +4,8 @@
 	import { fitnessState } from '@strideguide/shared/plan';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { type ClientLog, type ClientSession, addDaysIso, localIso } from '$lib/plan';
+	import { type ClientLog, type ClientSession, addDaysIso } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { isSkipped, skippedIds } from '$lib/skipped.svelte';
 	import { api, type HealthMetricsPayload } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit, sessionLabel } from '$lib/prefs.svelte';
@@ -19,13 +20,14 @@
 	import CalendarPreviewCard from '$lib/components/CalendarPreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
 	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
 
 	let health = $state<HealthMetricsPayload | null>(null);
 	let note = $state<string | null>(null);
 
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 
 	onMount(() => {
 		void ensurePlan();
@@ -193,7 +195,9 @@
 	const fmtPaceShort = (sec: number): string => fmtPace(sec).split(' ')[0] ?? fmtPace(sec);
 </script>
 
-{#if !store.loaded}
+{#if store.error}
+	<PlanError message={store.error} />
+{:else if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !store.plan}
 	<p class="mt-6 text-sm text-steel">No plan yet. <a href="/onboarding" class="text-signal-ink hover:underline">Build one →</a></p>

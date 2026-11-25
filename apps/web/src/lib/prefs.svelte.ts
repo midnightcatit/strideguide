@@ -12,7 +12,28 @@ import { api } from './api';
 /** Reactive app preferences (units, week start). Mutate properties; don't reassign. */
 export const prefs = $state<Prefs>({ ...DEFAULT_PREFS });
 
-export async function loadPrefs(): Promise<void> {
+/**
+ * Whether the saved prefs have loaded, and whether the last try failed. A
+ * failure keeps the metric defaults and is retried on the next visit, so units
+ * are not silently wrong for the rest of the session.
+ */
+export const prefsState = $state<{ loaded: boolean; failed: boolean }>({
+	loaded: false,
+	failed: false,
+});
+
+let prefsInflight: Promise<void> | null = null;
+
+export function loadPrefs(): Promise<void> {
+	if (prefsState.loaded) return Promise.resolve();
+	if (prefsInflight) return prefsInflight;
+	prefsInflight = applyPrefs().finally(() => {
+		prefsInflight = null;
+	});
+	return prefsInflight;
+}
+
+async function applyPrefs(): Promise<void> {
 	try {
 		const res = await api.getSettings();
 		prefs.units = res.prefs.units ?? DEFAULT_PREFS.units;
@@ -35,8 +56,11 @@ export async function loadPrefs(): Promise<void> {
 		prefs.favoriteMachines = res.prefs.favoriteMachines;
 		prefs.favoriteWorkouts = res.prefs.favoriteWorkouts;
 		prefs.connectNudgeDismissed = res.prefs.connectNudgeDismissed;
+		prefsState.loaded = true;
+		prefsState.failed = false;
 	} catch {
-		// unauthenticated or offline: keep defaults
+		// Offline or a failed read: keep the defaults and try again on the next visit.
+		prefsState.failed = true;
 	}
 }
 

@@ -11,17 +11,19 @@
 	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
-	import { type ClientSession, addDaysIso, dayIndexInWeek, formatIsoDay, localIso } from '$lib/plan';
+	import { type ClientSession, addDaysIso, dayIndexInWeek, formatIsoDay } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { sessionHref, logHref, playHref } from '$lib/sessionNav';
 	import { readView, saveView } from '$lib/viewState';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 
 	const date = $derived(page.params.date ?? '');
 	const from = $derived(`/calendar/day/${date}`);
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 
 	const week = $derived(weekForDate(date));
 	const dayIdx = $derived(week?.startDate ? dayIndexInWeek(week.startDate, date) : -1);
@@ -97,7 +99,7 @@
 </script>
 
 {#if store.error}
-	<p class="mt-6 text-sm text-steel">{store.error}</p>
+	<PlanError message={store.error} />
 {:else if !store.loaded && !store.plan}
 	<p class="tabular mt-6 text-sm text-steel">Loading…</p>
 {:else}

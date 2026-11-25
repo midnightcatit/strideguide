@@ -7,6 +7,7 @@
 		formatIsoDay,
 		localIso,
 	} from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { fmtDistance, fmtPace, sessionLabel } from '$lib/prefs.svelte';
 	import { logMs } from '$lib/metrics';
 	import { isSkipped } from '$lib/skipped.svelte';
@@ -32,7 +33,7 @@
 		onClose: () => void;
 	} = $props();
 
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 	const titleId = `day-title-${crypto.randomUUID()}`;
 
 	const heading = $derived(

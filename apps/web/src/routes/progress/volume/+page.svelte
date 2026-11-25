@@ -4,17 +4,18 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { volumeBuckets, weeklyKmSeries, metricOrigin } from '$lib/metrics';
-	import { localIso } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { volumeComparisons } from '@strideguide/shared/comparisons';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import BarsCard from '$lib/components/charts/BarsCard.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 	const buckets = $derived(volumeBuckets(store.logs, todayIso));
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 12));
 	const weeklyPoints = $derived(weekly.map((w) => ({ date: w.startIso, value: w.km })));
@@ -32,7 +33,9 @@
 
 <MetricHeader title="Distance" {from} />
 
-{#if !store.loaded}
+{#if store.error}
+	<PlanError message={store.error} />
+{:else if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if buckets.sessions === 0}
 	<Card>
