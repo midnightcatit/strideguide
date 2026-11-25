@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { modal } from '$lib/actions';
 	import { sheetOverlay, sheetPanel } from '$lib/motion';
+	import { overlayHistory } from '$lib/overlayHistory.svelte';
 
 	// A destructive action that only fires after the person holds the button for a
 	// set time. The fill shows how far they are; letting go resets it. This is the
@@ -23,11 +24,25 @@
 		onClose: () => void;
 	} = $props();
 
+	// Back closes the dialog instead of leaving the page. The confirm handler
+	// waits for `release` first, so an action that navigates or goes back runs on
+	// the page's own history entry, not the one this dialog pushed on top.
+	const { release: releaseHistory } = overlayHistory(
+		() => open,
+		() => onClose(),
+	);
+
 	let holding = $state(false);
 	let progress = $state(0);
 	let raf = 0;
 	let startedAt = 0;
 	let fired = false;
+
+	async function fire() {
+		await releaseHistory();
+		onConfirm();
+		onClose();
+	}
 
 	function frame(now: number) {
 		if (!holding) return;
@@ -36,8 +51,7 @@
 		if (p >= 1) {
 			fired = true;
 			holding = false;
-			onConfirm();
-			onClose();
+			void fire();
 			return;
 		}
 		raf = requestAnimationFrame(frame);

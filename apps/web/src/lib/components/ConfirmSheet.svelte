@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { modal } from '$lib/actions';
 	import { sheetOverlay, sheetPanel } from '$lib/motion';
+	import { overlayHistory } from '$lib/overlayHistory.svelte';
 
 	let {
 		open,
@@ -21,6 +22,23 @@
 		onConfirm: () => void;
 		onClose: () => void;
 	} = $props();
+
+	// Back closes the confirm instead of leaving the page. The confirm handler
+	// waits for `release` first, so an action that navigates or goes back runs on
+	// the page's own history entry, not the one this sheet pushed on top.
+	const { release: releaseHistory } = overlayHistory(
+		() => open,
+		() => onClose(),
+	);
+	let confirming = false;
+
+	async function runConfirm() {
+		if (confirming) return;
+		confirming = true;
+		await releaseHistory();
+		onConfirm();
+		onClose();
+	}
 </script>
 
 {#if open}
@@ -55,10 +73,7 @@
 				</button>
 				<button
 					type="button"
-					onclick={() => {
-						onConfirm();
-						onClose();
-					}}
+					onclick={runConfirm}
 					class="flex-1 rounded-md px-4 py-3 text-sm font-medium text-paper hover:opacity-90 {tone === 'danger'
 						? 'bg-danger'
 						: 'bg-ink'}"

@@ -11,21 +11,48 @@ import { navigating } from '$app/state';
  * the next Back leaves the page as the user expects.
  *
  * Call once per host, during component init:
- *   overlayHistory(() => !!target, () => (target = null));
+ *   const { release } = overlayHistory(() => !!target, () => (target = null));
  *
  * `isOpen` is read reactively; `closeTop` must clear whichever overlay is open.
+ *
+ * `release` is for a momentary confirm. Its action often navigates (sign out,
+ * delete, discard, go back), and that navigation has to run against the page's
+ * own entry, not the one the dialog pushed on top. `release` drops the entry and
+ * resolves once the browser has left it, so the action then runs on a clean
+ * stack. See ConfirmSheet and HoldConfirmDialog.
  */
-export function overlayHistory(isOpen: () => boolean, closeTop: () => void): void {
-	// A token in the history state marks the entry as ours, so a popstate from
-	// another source never closes an overlay, and Forward back into our entry is
-	// not mistaken for a close.
-	const token = Math.random().toString(36).slice(2);
+export function overlayHistory(
+	isOpen: () => boolean,
+	closeTop: () => void,
+): { release: () => Promise<void> } {
+	function newToken(): string {
+		return Math.random().toString(36).slice(2);
+	}
+
+	// A fresh token per push marks the entry as ours, so a popstate from another
+	// source never closes an overlay, and Forward back into an older entry of ours
+	// (with a stale token) is not mistaken for a close.
+	let token = newToken();
 	let pushed = false;
+	// True while `release` is dropping the entry on purpose, so the popstate it
+	// causes is not also read as the user closing the overlay.
+	let releasing = false;
+
+	// True when the current history entry is the one this host pushed. SvelteKit's
+	// `pushState` keeps the value we pass under its own key, so look there, and
+	// fall back to a flat read for safety.
+	function isOurs(): boolean {
+		const state = (history.state ?? {}) as {
+			sgOverlay?: string;
+			'sveltekit:states'?: { sgOverlay?: string };
+		};
+		return state.sgOverlay === token || state['sveltekit:states']?.sgOverlay === token;
+	}
 
 	function onPopState() {
+		if (releasing) return;
 		if (!pushed) return;
-		const state = (history.state ?? {}) as { sgOverlay?: string };
-		const stillOurs = state.sgOverlay === token;
+		const stillOurs = isOurs();
 		pushed = stillOurs;
 		if (!stillOurs) closeTop();
 	}
@@ -42,6 +69,7 @@ export function overlayHistory(isOpen: () => boolean, closeTop: () => void): voi
 	$effect(() => {
 		if (isOpen()) {
 			if (!pushed) {
+				token = newToken();
 				pushState(location.href, { sgOverlay: token });
 				pushed = true;
 			}
@@ -58,4 +86,24 @@ export function overlayHistory(isOpen: () => boolean, closeTop: () => void): voi
 			if (typeof window !== 'undefined') window.removeEventListener('popstate', onPopState);
 		};
 	});
+
+	async function release(): Promise<void> {
+		if (!pushed) return;
+		pushed = false;
+		releasing = true;
+		await new Promise<void>((resolve) => {
+			const settle = () => {
+				window.removeEventListener('popstate', settle);
+				clearTimeout(timer);
+				resolve();
+			};
+			window.addEventListener('popstate', settle);
+			// A safety net, in case a popstate never arrives for any reason.
+			const timer = setTimeout(settle, 300);
+			history.back();
+		});
+		releasing = false;
+	}
+
+	return { release };
 }
