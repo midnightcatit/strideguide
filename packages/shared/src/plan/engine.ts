@@ -297,13 +297,17 @@ function planTargets(
 	const peak = peakLongKm(input);
 	const shareOfWeek = (km: number) => round1(clamp(km * shape.long, 3, 38));
 
-	/** Fill the easy weeks that follow the race from the volume the build reached. */
+	/**
+	 * Fill the easy weeks that follow the race. The first is the lightest, and none
+	 * is heavier than the heaviest week the build reached.
+	 */
 	const fillRecovery = (volumes: number[], longKm: number[]) => {
 		const reached = volumes[buildWeeks - 1] ?? volumes[0]!;
+		const cap = Math.max(...volumes.slice(0, buildWeeks));
 		let idx = 0;
 		phases.forEach((phase, w) => {
 			if (phase !== 'recovery') return;
-			volumes[w] = round1(clamp(reached * (0.45 + 0.1 * idx), 5, 160));
+			volumes[w] = round1(clamp(reached * (0.3 + 0.15 * idx), 5, cap));
 			longKm[w] = 0;
 			idx += 1;
 		});
@@ -343,23 +347,50 @@ function planTargets(
 
 	// The long run is the arc, held inside its week, but never less than the plain
 	// share would give: an adequate plan is left as it was, and the arc only lifts
-	// one that was falling short of its goal.
+	// one that was falling short of its goal. It is capped at the goal's own peak,
+	// so a big week can never push the long run past what the goal calls for.
 	const longKm = phases.map((_, w) =>
 		round1(
 			clamp(
-				Math.max(shareOfWeek(volumes[w]!), Math.min(arc[w]!, volumes[w]! * LONG_RUN_SHARE_CEILING)),
+				Math.min(
+					peak,
+					Math.max(shareOfWeek(volumes[w]!), Math.min(arc[w]!, volumes[w]! * LONG_RUN_SHARE_CEILING)),
+				),
 				3,
 				38,
 			),
 		),
 	);
+
+	// A taper week brings the long run down with the week, instead of holding the
+	// peak flat into race week.
+	const taperRule = input.profile.progressionRules.find((r) => r.phase === 'taper');
+	const taperPeak = longKm[rampEnd]!;
+	let taperIdx = 0;
+	phases.forEach((phase, w) => {
+		if (phase !== 'taper') return;
+		longKm[w] = round1(
+			clamp(
+				Math.min(
+					peak,
+					shareOfWeek(volumes[w]!),
+					taperPeak * taperFraction(taperRule?.volumeStep ?? 0, taperIdx),
+				),
+				3,
+				38,
+			),
+		);
+		taperIdx += 1;
+	});
 	fillRecovery(volumes, longKm);
 
-	const achieved = longKm[rampEnd]!;
-	if (achieved < peak * 0.9) {
+	// A goal with no race is never short of itself: it has all the time there is.
+	const raceGoal = input.profile.longRun?.peakFractionOfRace !== undefined;
+	const built = Math.max(...longKm.slice(0, buildWeeks));
+	if (raceGoal && built < peak * 0.9) {
 		// Unit-free on purpose: a distance here would be wrong for a mile reader.
 		warnings.push(
-			`The weeks you have build to about ${Math.round((achieved / peak) * 100)}% of the long run this goal wants, short of what a ${input.profile.name} plan needs. A longer plan, or a few weeks of easy running before you start, would close the gap.`,
+			`Your plan builds to about ${Math.round((built / peak) * 100)}% of the long run a ${input.profile.name} wants in the weeks you have. A longer plan, or a few weeks of easy running before you start, would close the gap.`,
 		);
 	}
 	return { volumes, longKm, warnings };
@@ -962,7 +993,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	if (input.targetDate) {
 		const spanDays = daysBetween(weekZero, input.targetDate);
 		const rawWeeks = Math.ceil((spanDays + 1) / 7);
-		buildWeeks = clamp(rawWeeks, 4, 30);
+		// A short run-in keeps its own length rather than being padded out before
+		// the race, because padding there would put the taper after the finish. A
+		// very long run-in is cut at thirty weeks, and the race falls past the plan.
+		buildWeeks = clamp(rawWeeks, 1, 30);
 		raceWeekIndex = Math.floor(spanDays / 7);
 		if (rawWeeks < 4) {
 			warnings.push(
@@ -976,9 +1010,16 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	} else {
 		buildWeeks = clamp(input.profile.defaultWeeks, 4, 30);
 	}
-	// The build ends at the race. The easy weeks the goal asks for follow it, so
-	// the plan does not stop dead at the finish line.
-	const recoveryWeeks = input.targetDate ? (input.profile.recoveryWeeks ?? 0) : 0;
+	// The build ends at the race. The easy weeks the goal asks for follow it, so the
+	// plan does not stop dead at the finish line. They are added only when the plan
+	// actually covers the race, and a short run-in gets its padding to four weeks as
+	// easy weeks too, not as training before the start.
+	const raceCovered =
+		raceWeekIndex !== undefined && raceWeekIndex >= 0 && raceWeekIndex < buildWeeks;
+	const recoveryWeeks =
+		input.targetDate && raceCovered
+			? (input.profile.recoveryWeeks ?? 0) + Math.max(0, 4 - buildWeeks)
+			: 0;
 	const totalWeeks = buildWeeks + recoveryWeeks;
 	const phases = [
 		...phaseSequence(input.profile.progressionRules, buildWeeks),

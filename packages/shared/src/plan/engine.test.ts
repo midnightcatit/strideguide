@@ -1094,4 +1094,20 @@ describe('race-relative long run and post-race recovery', () => {
 		});
 		expect(p.meta.warnings?.some((w) => w.includes('close the gap'))).toBe(true);
 	});
+
+	it('never lets the long run pass the goal peak, even on a huge week', () => {
+		// The goal's own ceiling, not the week's size, decides the longest run.
+		for (const profile of GOAL_PROFILES) {
+			const p = generatePlan({
+				profile,
+				baseline: { experience: 'advanced', weeklyKm: 120 },
+				availableDays: [0, 1, 2, 3, 4, 5, 6],
+				startDate: '2026-11-30',
+			});
+			const longs = p.weeks.map(
+				(w) => w.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm ?? 0,
+			);
+			expect(Math.max(...longs)).toBeLessThanOrEqual(profile.longRun.maxKm);
+		}
+	});
 });
