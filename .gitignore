@@ -15,3 +15,10 @@ coverage/
 
 # Local chat transcripts / notes (not part of the app)
 session-*.md
+
+# Local Kilo config and Agent Manager state. The config holds MCP credentials,
+# so it stays on disk and out of git. Shared, non-secret config belongs in
+# .kilo/command/ and .kilo/agent/, which stay tracked.
+.kilo/kilo.jsonc
+.kilo/kilo.json
+.kilo/agent-manager.json
