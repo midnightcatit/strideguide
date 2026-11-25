@@ -15,6 +15,21 @@ export const TRAINING_PROGRESS = 'var(--chart-4)';
 /** The ordered intensity and plan-phase ramps: the amber load slot. */
 export const TRAINING_LOAD = 'var(--chart-5)';
 
+/**
+ * The four-step load scale for a day or month grid: the load slot at rising
+ * strength, each step mixed toward the card surface, so the steps read as one
+ * intensity, not four hues. Index 0 is an empty day (a rest day); 1 to 4 are the
+ * load steps from lightest to heaviest. Kept here so every load grid draws the
+ * same ramp from the shared palette.
+ */
+export const LOAD_RAMP = [
+	'transparent',
+	`color-mix(in oklab, ${TRAINING_LOAD} 12%, var(--paper))`,
+	`color-mix(in oklab, ${TRAINING_LOAD} 30%, var(--paper))`,
+	`color-mix(in oklab, ${TRAINING_LOAD} 52%, var(--paper))`,
+	`color-mix(in oklab, ${TRAINING_LOAD} 74%, var(--paper))`,
+] as const;
+
 /** The pace and effort trend: the indigo slot, kept apart from the health hues. */
 export const TRAINING_PACE = 'var(--chart-1)';
 

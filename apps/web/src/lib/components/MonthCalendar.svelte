@@ -9,6 +9,7 @@
 	import { sessionHref } from '$lib/sessionNav';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
+	import { LOAD_RAMP, TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	const todayIso = localIso();
 
@@ -69,9 +70,6 @@
 		if (load < 85) return 2;
 		if (load < 130) return 3;
 		return 4;
-	}
-	function levelClass(level: number): string {
-		return ['', 'pressure-1', 'pressure-2', 'pressure-3', 'pressure-4'][level] ?? '';
 	}
 
 	const monthCells = $derived.by(() => {
@@ -193,15 +191,19 @@
 			<a
 				href={`/calendar/day/${cell.iso}`}
 				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}{cell.skipped ? ', a skipped session' : ''}"
-				style="animation-delay: {Math.min(i * 8, 260)}ms"
+				style="animation-delay: {Math.min(i * 8, 260)}ms; background: {LOAD_RAMP[level]}"
 				class="reveal relative flex aspect-square flex-col items-center justify-center rounded-md border transition-colors {cell.inMonth
 					? 'border-hairline'
-					: 'border-transparent opacity-40'} {levelClass(level)}"
+					: 'border-transparent opacity-40'}"
 			>
 				<span class="tabular text-xs {cell.skipped ? 'text-steel' : ''}">{cell.day}</span>
 				{#if cell.km}<span class="tabular text-[9px] text-steel">{fmtDistance(cell.km)}</span>{/if}
 				{#if cell.done}
-					<span class="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true"></span>
+					<span
+						class="absolute right-1 top-1 h-1.5 w-1.5 rounded-full"
+						style="background: {TRAINING_PROGRESS}"
+						aria-hidden="true"
+					></span>
 				{/if}
 				{#if cell.skipped}
 					<span class="absolute left-1 top-1 h-1.5 w-1.5 rounded-full bg-steel" aria-hidden="true"></span>
@@ -214,15 +216,15 @@
 	</div>
 	<div class="mt-3 flex items-center justify-center gap-2 text-xs text-steel">
 		<span>Less</span>
-		{#each [0, 1, 2, 3, 4] as l (l)}
-			<span class="h-3 w-3 rounded-[2px] border border-hairline {levelClass(l)}" aria-hidden="true"></span>
+		{#each LOAD_RAMP as swatch, l (l)}
+			<span class="h-3 w-3 rounded-[2px] border border-hairline" style="background: {swatch}" aria-hidden="true"></span>
 		{/each}
 		<span>More pressure</span>
 		<span class="ml-2 h-1.5 w-1.5 rounded-full bg-steel" aria-hidden="true"></span>
 		<span>Skipped</span>
 		<InfoButton
 			term="Pressure"
-			definition="How much a day asks of you, from the length and intensity of its sessions. A darker day is a harder day. A green dot means it is done. A grey dot means it has a skipped session."
+			definition="How much a day asks of you, from the length and intensity of its sessions. A stronger tint is a harder day. A green dot means it is done. A grey dot means it has a skipped session."
 		/>
 	</div>
 	</div>
