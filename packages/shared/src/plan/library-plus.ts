@@ -990,4 +990,123 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		refs: ['wave-6/16a-viral-and-fun-formats'],
 		tags: ['walking', 'easy', 'low-impact', 'habit'],
 	},
+	// ---- Gym equipment coverage (wave-6) ---------------------------------
+	{
+		id: 'recumbent-bike-35',
+		title: 'Recumbent bike, 35 minutes',
+		modality: 'recovery',
+		type: 'cross-train',
+		durationMin: 35,
+		intensity: 'easy',
+		summary:
+			'A steady ride on a recumbent bike, seated back with the legs out front, easy enough to talk the whole way.',
+		purpose:
+			'Low-impact aerobic work that spares the legs from running impact while the heart and lungs still work. Good on a recovery day or when a niggle needs a break from pounding.',
+		targetRpe: [3, 5],
+		workout: wk([
+			block([step('warmup', 'Easy spin', 5 * MIN, 'Start light and let the legs wake up.')]),
+			block([step('work', 'Steady ride', 25 * MIN, 'Even effort, cadence comfortable.')]),
+			block([step('cooldown', 'Easy spin', 5 * MIN, 'Let the legs come down.')]),
+		]),
+		refs: ['wave-6/16b-gym-equipment-coverage'],
+		tags: ['cross-train', 'low-impact', 'recovery'],
+	},
+	{
+		id: 'recumbent-stepper-30',
+		title: 'Recumbent stepper, 30 minutes',
+		modality: 'recovery',
+		type: 'cross-train',
+		durationMin: 30,
+		intensity: 'steady',
+		summary: 'A seated stepping machine that drives the legs through a smooth arc with no impact.',
+		purpose:
+			'A low-impact way to get the legs moving and the heart rate up without the landing forces of running. It gives the knees a break while still working the legs.',
+		targetRpe: [4, 6],
+		workout: wk([
+			block([step('warmup', 'Easy step', 5 * MIN, 'Light resistance to start.')]),
+			block([step('work', 'Steady step', 20 * MIN, 'Smooth and even, sit tall.')]),
+			block([step('cooldown', 'Easy step', 5 * MIN, 'Ease the resistance down.')]),
+		]),
+		refs: ['wave-6/16b-gym-equipment-coverage'],
+		tags: ['cross-train', 'low-impact'],
+	},
+	{
+		id: 'arm-ergometer-30',
+		title: 'Arm ergometer intervals, 30 minutes',
+		modality: 'recovery',
+		type: 'cross-train',
+		durationMin: 30,
+		intensity: 'steady',
+		summary:
+			'An upper-body ergometer you crank with the arms, in short harder efforts with easy turns between.',
+		purpose:
+			'Aerobic work for the arms and trunk that keeps the legs out of it, useful when the legs need a rest but you still want a session.',
+		targetRpe: [4, 7],
+		workout: wk([
+			block([step('warmup', 'Easy crank', 6 * MIN, 'Both arms, steady and light.')]),
+			block(
+				[
+					step('work', 'Hard crank', 60, 'Quick and strong, arms and trunk engaged.', {
+						targetRpe: [7, 8],
+					}),
+					step('recovery', 'Easy crank', 60, 'Turn the arms over gently.'),
+				],
+				8,
+				'Round',
+			),
+			block([step('cooldown', 'Easy crank', 6 * MIN, 'Let the arms come down.')]),
+		]),
+		refs: ['wave-6/16b-gym-equipment-coverage'],
+		tags: ['cross-train', 'low-impact', 'upper-body'],
+	},
+	{
+		id: 'arc-trainer-35',
+		title: 'Arc trainer, 35 minutes',
+		modality: 'recovery',
+		type: 'cross-train',
+		durationMin: 35,
+		intensity: 'steady',
+		summary: 'A smooth, low-impact arc machine that keeps the feet on the pedals the whole time.',
+		purpose:
+			'Low-impact aerobic work with a longer stride than a stepper, easy on the joints and useful for building fitness without running load.',
+		targetRpe: [4, 6],
+		workout: wk([
+			block([step('warmup', 'Easy glide', 5 * MIN, 'Light resistance, find a rhythm.')]),
+			block([step('work', 'Steady glide', 25 * MIN, 'Even effort, relaxed posture.')]),
+			block([step('cooldown', 'Easy glide', 5 * MIN, 'Ease off.')]),
+		]),
+		refs: ['wave-6/16b-gym-equipment-coverage'],
+		tags: ['cross-train', 'low-impact'],
+	},
+	{
+		id: 'functional-gym-circuit-35',
+		title: 'Functional gym circuit, 35 minutes',
+		modality: 'strength',
+		type: 'full-body-strength',
+		durationMin: 35,
+		intensity: 'steady',
+		summary:
+			'Three rounds through the functional kit: battle ropes, medicine-ball throws, TRX rows and a cable pull-through.',
+		purpose:
+			'Works the trunk, hips and upper body the way running does not, building the power and stability that support a stronger stride. The kit is the one most clubs keep in the functional area.',
+		targetRpe: [6, 8],
+		workout: wk([
+			block([step('warmup', 'Warm-up', 5 * MIN, 'March and swing the arms, then rehearse each move.')]),
+			block(
+				[
+					step('work', 'Battling ropes', 40, 'Fast alternating waves, stay low and braced.'),
+					step('work', 'Medicine-ball chest pass', 40, 'Drive the ball from the chest, catch and reset.'),
+					step('work', 'Medicine-ball slam', 40, 'Slam from overhead, then pick it up and reset.'),
+					step('work', 'TRX row', 40, 'Lean back, pull the chest to the handles, elbows in.'),
+					step('work', 'Cable pull-through', 40, 'Hips drive the handle, arms stay long.'),
+					step('rest', 'Rest', 60, 'Breathe and set up the next round.'),
+				],
+				3,
+				'Circuit',
+			),
+			block([step('cooldown', 'Easy walk', 4 * MIN, 'Let the heart rate settle.')]),
+		]),
+		refs: ['wave-6/16b-gym-equipment-coverage'],
+		tags: ['strength', 'functional', 'battle-ropes', 'medicine-ball', 'trx'],
+	},
 ];

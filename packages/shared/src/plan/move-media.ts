@@ -13,6 +13,21 @@ export interface MoveMedia {
 }
 
 export const MOVE_MEDIA: Record<string, MoveMedia> = {
+	'Battling ropes': {
+		start: '/moves/battling-ropes-0.jpg',
+		end: '/moves/battling-ropes-1.jpg',
+		motion: 'horizontal',
+	},
+	'Medicine-ball chest pass': {
+		start: '/moves/medicine-ball-chest-pass-0.jpg',
+		end: '/moves/medicine-ball-chest-pass-1.jpg',
+		motion: 'horizontal',
+	},
+	'Medicine-ball slam': {
+		start: '/moves/medicine-ball-slam-0.jpg',
+		end: '/moves/medicine-ball-slam-1.jpg',
+		motion: 'vertical',
+	},
 	'Ab crunch machine': {
 		start: '/moves/ab-crunch-machine-0.jpg',
 		end: '/moves/ab-crunch-machine-1.jpg',
