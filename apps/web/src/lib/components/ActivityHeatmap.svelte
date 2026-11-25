@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { localIso } from '$lib/plan';
+	import { TRAINING_PROGRESS, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 
 	/**
 	 * A GitHub-style weekly activity heatmap. Columns are weeks (oldest on the
 	 * left), rows are the days of the week. The span is the only knob, so the same
 	 * component serves a small card and a full-size page with changeable timelines.
-	 * Cells are static once drawn; only the hover lift animates, and reduced motion
+	 * A trained day draws in the training palette's green, the same hue the plan
+	 * ring and the volume bars use, so the streak reads as part of the same family;
+	 * a skipped day is the muted token and an untrained day the quiet one. Cells
+	 * are static once drawn; only the hover lift animates, and reduced motion
 	 * drops it, so nothing moves for people who ask for that.
 	 */
 	let {
@@ -77,16 +81,25 @@
 		return out;
 	});
 
-	const cellClass = (state: 'done' | 'skipped' | 'miss' | 'future' | 'today'): string =>
+	const cellFill = (state: 'done' | 'skipped' | 'miss' | 'future' | 'today'): string =>
 		state === 'done'
-			? 'bg-ok'
+			? TRAINING_PROGRESS
 			: state === 'skipped'
-				? 'bg-steel'
+				? CHART_MUTED
 				: state === 'today'
-					? 'bg-signal-wash ring-1 ring-signal-ink'
+					? 'var(--signal-wash)'
 					: state === 'future'
-						? 'bg-transparent'
-						: 'bg-hairline';
+						? 'transparent'
+						: CHART_EMPTY;
+
+	const cellClass = (state: 'done' | 'skipped' | 'miss' | 'future' | 'today'): string =>
+		state === 'today' ? 'ring-1 ring-signal-ink' : '';
+
+	const cellStyle = (state: 'done' | 'skipped' | 'miss' | 'future' | 'today'): string => {
+		const parts = [`background: ${cellFill(state)}`];
+		if (!fluid) parts.push(`width: ${cell}px`, `height: ${cell}px`);
+		return parts.join('; ');
+	};
 
 	const trainedCount = $derived(columns.reduce((n, c) => n + c.days.filter((d) => d.state === 'done').length, 0));
 	const skippedCount = $derived(columns.reduce((n, c) => n + c.days.filter((d) => d.state === 'skipped').length, 0));
@@ -118,7 +131,7 @@
 				{#each col.days as day (day.key)}
 					<span
 						class="rounded-[2px] transition-transform hover:scale-125 {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
-						style={fluid ? '' : `width: ${cell}px; height: ${cell}px`}
+						style={cellStyle(day.state)}
 						title="{day.key}{day.state === 'done' ? ' · trained' : day.state === 'skipped' ? ' · skipped' : ''}"
 					></span>
 				{/each}

@@ -2,6 +2,7 @@
 	import Card from './Card.svelte';
 	import { store } from '$lib/planStore.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
+	import { TRAINING_PROGRESS } from '$lib/chartPalette';
 	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
 
 	/**
@@ -71,8 +72,14 @@
 		};
 	});
 
+	function cellStyle(c: { done: boolean }): string {
+		// A finished day draws in the training palette's green, the same hue the
+		// plan ring and the heatmap use.
+		return c.done ? `background: ${TRAINING_PROGRESS}; border-color: ${TRAINING_PROGRESS}; color: var(--paper)` : '';
+	}
+
 	function cellClass(c: { inMonth: boolean; done: boolean; skipped: boolean; planned: boolean }): string {
-		if (c.done) return 'border-ok bg-ok text-paper';
+		if (c.done) return '';
 		if (c.skipped) return 'border-hairline bg-steel text-paper';
 		if (c.planned) return 'border-transparent bg-signal-wash text-signal-ink';
 		return c.inMonth ? 'border-hairline text-steel' : 'border-transparent text-hairline';
@@ -100,6 +107,7 @@
 					{#each month.cells as c (c.key)}
 						<span
 							class="tabular flex h-7 items-center justify-center rounded-md border text-[11px] {cellClass(c)} {c.today ? 'ring-1 ring-signal-ink' : ''}"
+							style={cellStyle(c)}
 							aria-label="{c.key}{c.planned ? `, ${c.count} session${c.count === 1 ? '' : 's'}` : ', rest'}"
 						>{c.day}</span>
 					{/each}

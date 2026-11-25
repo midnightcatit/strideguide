@@ -1,11 +1,15 @@
 <script lang="ts">
+	import { TRAINING_PROGRESS, CHART_MUTED } from '$lib/chartPalette';
+
 	/**
 	 * A horizontal segmented indicator: one segment per item, filled when done,
 	 * with the percentage beside it. A segment can instead read as skipped, its
 	 * own muted state, so a skipped session never looks like an empty one.
 	 * Horizontal on purpose, so a card can carry a progress read without the
-	 * roundness of a ring. Fills animate with transform only (scaleX from the
-	 * left), so nothing reflows and reduced motion zeroes it.
+	 * roundness of a ring. The fill takes the training palette's green, the same
+	 * hue the plan ring and the volume bars use, so the at-a-glance cards read as
+	 * one family. Fills animate with transform only (scaleX from the left), so
+	 * nothing reflows and reduced motion zeroes it.
 	 */
 	let {
 		segments,
@@ -34,8 +38,8 @@
 		{#each segments as seg, i (i)}
 			<span class="relative flex-1 overflow-hidden rounded-full bg-hairline {height}">
 				<span
-					class="absolute inset-0 origin-left rounded-full {seg.filled ? 'bg-ok' : seg.skipped ? 'bg-steel' : 'bg-ok'}"
-					style="transform: scaleX({seg.filled || seg.skipped ? 1 : 0}); transition: transform var(--dur-2) var(--ease-out)"
+					class="absolute inset-0 origin-left rounded-full"
+					style="background: {seg.skipped ? CHART_MUTED : TRAINING_PROGRESS}; transform: scaleX({seg.filled || seg.skipped ? 1 : 0}); transition: transform var(--dur-2) var(--ease-out)"
 				></span>
 			</span>
 		{/each}

@@ -12,6 +12,7 @@
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import { logHref, playHref, sessionHref } from '$lib/sessionNav';
+	import { TRAINING_PROGRESS, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
@@ -379,7 +380,7 @@
 				{#each selWeek.sessions as s (s.id)}
 					{@const done = loggedBySession.has(s.id)}
 					{@const sk = !done && isSkipped(s.id)}
-					<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : sk ? 'bg-steel' : 'bg-ink/40'}"></span>
+					<span class="h-4 w-2 rounded-[1px]" style="background: {done ? TRAINING_PROGRESS : sk ? CHART_MUTED : CHART_EMPTY}"></span>
 				{/each}
 			</div>
 			<p class="tabular mt-2 text-sm">

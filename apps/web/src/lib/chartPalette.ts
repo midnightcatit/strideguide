@@ -1,0 +1,25 @@
+/**
+ * Palette slots for the surfaces that are not health metrics: the app's own plan,
+ * training and pace charts. They read from the same categorical palette as the
+ * health charts (`--chart-1` to `--chart-8` in @strideguide/shared/tokens), so
+ * every chart in the app comes from one family. Health metrics keep their own
+ * mapping in `chartTheme`; this file does not replace it, it only gives the
+ * training surfaces the same palette to draw from.
+ *
+ * Kept pure so it can be imported anywhere and reasoned about on its own.
+ */
+
+/** Done, volume, streak and plan progress: the green slot. */
+export const TRAINING_PROGRESS = 'var(--chart-4)';
+
+/** The ordered intensity and plan-phase ramps: the amber load slot. */
+export const TRAINING_LOAD = 'var(--chart-5)';
+
+/** The pace and effort trend: the indigo slot, kept apart from the health hues. */
+export const TRAINING_PACE = 'var(--chart-1)';
+
+/** A muted state on a chart, such as a skipped day or a reference line. */
+export const CHART_MUTED = 'var(--steel)';
+
+/** A quiet state on a chart, such as an empty heatmap cell. */
+export const CHART_EMPTY = 'var(--hairline)';
