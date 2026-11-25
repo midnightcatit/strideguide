@@ -223,7 +223,7 @@
 
 <div
 	class={asPage
-		? 'sg-session-page flex flex-col'
+		? 'flex flex-1 flex-col'
 		: 'overlay-fade fixed inset-0 z-50 flex flex-col bg-paper'}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
@@ -531,23 +531,3 @@
 		onClose={() => (showNotes = false)}
 	/>
 </div>
-
-<style>
-	/*
-	 * The app shell wraps every page in a centred, padded column, so a session
-	 * that is now a route still read as a panel floating inside it. As a page it
-	 * spans the viewport instead: the header band runs edge to edge and the page
-	 * fills the height under the app header. `100vw` with the matching negative
-	 * inline margin breaks past the shell's `max-w-5xl` and its `px-4`, and the
-	 * horizontal clip on `html` (overflow-x: clip) keeps that extra width from
-	 * scrolling sideways. The shell pads its main vertically (py-6), so the hero
-	 * is pulled up under the header by that top 1.5rem while the bottom padding
-	 * stays, to clear the phone tab bar.
-	 */
-	.sg-session-page {
-		width: 100vw;
-		margin-inline: calc(50% - 50vw);
-		margin-top: -1.5rem;
-		min-height: calc(100svh - 4rem);
-	}
-</style>
