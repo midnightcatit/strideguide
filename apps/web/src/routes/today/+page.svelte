@@ -37,6 +37,9 @@
 
 	let note = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
+	// The card at the scroll center of the day's carousel, so a session view can
+	// return the runner to the same card they left.
+	let activeCardId = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
 	let confirm = $state<{
 		title: string;
@@ -72,6 +75,10 @@
 	});
 	const selWeek = $derived(sel?.week);
 	const selDay = $derived(sel?.day ?? todayIndex);
+	// The strip's highlighted column is where the shown date sits in the week on
+	// screen, read from the date itself. That way a swipe or a tap to a day
+	// outside the plan still moves the indicator to the day actually selected.
+	const stripSelectedDay = $derived(weekdayIndexFromIso(selectedIso));
 	// The start of the week the selected day sits in. Inside the plan it is the
 	// plan week's own start; outside the plan it is the Monday of that calendar
 	// week, so the strip still shows seven days and a day tap still works.
@@ -176,13 +183,26 @@
 		});
 	}
 
-	// A week step moves the whole window. The week arrows and the strip's swipe
-	// and horizontal wheel all land here, so the strip and the day panel slide
-	// together. Tapping a day still moves a single day.
+	// The first day of the runner's own week: Monday, or Sunday when they set it
+	// that way. A week step lands here, so it always lands on a week boundary
+	// instead of a week from whatever day happened to be selected.
+	function startOfRunnerWeek(iso: string): string {
+		const back =
+			prefs.weekStart === 1 ? (weekdayIndexFromIso(iso) + 1) % 7 : weekdayIndexFromIso(iso);
+		return addDaysIso(iso, -back);
+	}
+
+	// A week step moves the whole window onto the first day of the next (or
+	// previous) week. Stepping into the week that holds today lands on today
+	// itself, so the runner is not sent to a Monday when today is what they want.
+	// The week arrows and the strip's swipe and horizontal wheel all land here, so
+	// the strip and the day panel slide together. Tapping a day still moves a
+	// single day.
 	function stepWeek(n: number) {
 		changeKind = 'week';
 		dayDir = n >= 0 ? 1 : -1;
-		selectedIso = addDaysIso(selectedIso, n * 7);
+		const target = addDaysIso(startOfRunnerWeek(selectedIso), n * 7);
+		selectedIso = target === startOfRunnerWeek(todayIso) ? todayIso : target;
 	}
 
 	function sessionDate(s: ClientSession): string | undefined {
@@ -246,6 +266,21 @@
 			note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
 		}
 	});
+
+	// SvelteKit restores this when the runner comes back from a session view. The
+	// date keeps the same day selected (the URL carries it too), and the card id
+	// drives the carousel's reveal so the scroll lands on the card they left.
+	export const snapshot = {
+		capture: () => ({
+			date: selectedIso,
+			card: activeCardId && dayItems.some((it) => it.id === activeCardId) ? activeCardId : null,
+		}),
+		restore: (v: { date: string; card: string | null } | undefined) => {
+			if (!v) return;
+			selectedIso = v.date;
+			revealId = v.card;
+		},
+	};
 </script>
 
 {#if store.error}
@@ -307,7 +342,7 @@
 		<WeekStrip
 			week={selWeek}
 			{weekKey}
-			selectedDay={selDay}
+			selectedDay={stripSelectedDay}
 			{todayIndex}
 			{todayInWeek}
 			{loggedBySession}
@@ -348,7 +383,7 @@
 				{#if isRaceDay}
 					<RaceCard name={raceName} dateLabel={dateLabel} />
 				{:else if dayItems.length}
-					<SessionCarousel items={dayItems} card={dayCard} bind:revealId label="workouts" />
+					<SessionCarousel items={dayItems} card={dayCard} bind:revealId bind:activeId={activeCardId} label="workouts" />
 				{:else if selWeek}
 					<Card tone="sunken" frame>
 						<p class="text-sm text-steel">
