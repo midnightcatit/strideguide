@@ -12,6 +12,13 @@ export interface Env {
 	ENVIRONMENT: string;
 	APP_ORIGIN: string;
 	WEB_ORIGIN: string;
+	/**
+	 * Comma-separated root admin email addresses, matched case-insensitively.
+	 * Root admins are always admin and cannot be demoted or removed through the
+	 * admin UI. Unset (or empty) means there are no root admins, so the admin
+	 * surface fails closed if the var is missing.
+	 */
+	ADMIN_EMAILS?: string;
 
 	// Secrets (never committed)
 	GOOGLE_CLIENT_ID: string;

@@ -7,5 +7,8 @@ export type AppBindings = {
 	Variables: {
 		db: Db;
 		user?: ApiUser;
+		/** Set by requireAdmin once an admin request is authorized. */
+		isAdmin?: boolean;
+		isRoot?: boolean;
 	};
 };

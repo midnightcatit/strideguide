@@ -37,6 +37,7 @@ const SEGMENT_LABELS: Record<string, string> = {
 	landing: 'Landing tab',
 	account: 'Account',
 	about: 'About',
+	admin: 'Admin',
 	session: 'Session',
 	activity: 'Activity',
 	play: 'Play',
