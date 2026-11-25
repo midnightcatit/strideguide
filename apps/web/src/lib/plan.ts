@@ -95,6 +95,9 @@ export interface ClientLog {
 	/** A quick thumbs up or down on how the session felt, after finishing it. */
 	feedback: 'up' | 'down' | null;
 	notes: string | null;
+	/** When the work happened. A standalone log (a goal day, for instance) is
+	 * dated here, since it has no session to carry its day. */
+	startedAt?: string | null;
 	createdAt?: string | number | null;
 	/** True when the log was queued offline and has not synced yet. */
 	pending?: boolean;

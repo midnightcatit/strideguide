@@ -1,6 +1,7 @@
 import { api } from './api';
 import { getGoalProfile } from '@strideguide/shared/profiles';
 import type { ClientLog, ClientSession, ClientWeek, CurrentPlan } from './plan';
+import { localIso } from './plan';
 import { hydrateSkipped } from './skipped.svelte';
 import { hydrateStarted } from './started.svelte';
 import { hydrateProgress } from './sessionProgress.svelte';
@@ -36,7 +37,20 @@ export function reloadPlan(): Promise<void> {
 }
 
 export function upsertLog(log: ClientLog): void {
-	store.logs = [...store.logs.filter((l) => l.sessionId !== log.sessionId), log];
+	if (log.sessionId) {
+		store.logs = [...store.logs.filter((l) => l.sessionId !== log.sessionId), log];
+	} else {
+		// A standalone log (a goal day, or a run logged on its own) has no session
+		// to key on. Replace the one already saved for the same day, so the day
+		// holds a single result, and leave imported activities untouched.
+		const day = log.startedAt ? localIso(new Date(log.startedAt)) : null;
+		const kept = store.logs.filter((l) => {
+			if (l.sessionId || l.source === 'import') return true;
+			if (!day || !l.startedAt) return true;
+			return localIso(new Date(l.startedAt)) !== day;
+		});
+		store.logs = [...kept, log];
+	}
 	if (store.plan) store.plan = { ...store.plan, logs: store.logs };
 }
 

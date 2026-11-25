@@ -297,6 +297,7 @@ export const api = {
 						rpe: b.rpe ?? null,
 						feedback: b.feedback ?? null,
 						notes: b.notes ?? null,
+						startedAt: (b.startedAt as string) ?? null,
 						pending: true,
 					},
 				};

@@ -9,6 +9,13 @@
 		session,
 		eyebrow,
 		asPage = false,
+		/** 'reflection' is the goal day's wrap up: no distance or strength, just
+		 * how it went, so a plan-complete card can be logged like a session. */
+		variant = 'session',
+		/** A goal day has no session behind it, so its log stands on its own. */
+		standalone = false,
+		/** The civil date to date a standalone log with. */
+		startedAtDate,
 		onClose,
 		onSaved,
 	}: {
@@ -16,11 +23,15 @@
 		eyebrow: string;
 		/** True when this is a route, so it renders in flow instead of as a sheet. */
 		asPage?: boolean;
+		variant?: 'session' | 'reflection';
+		standalone?: boolean;
+		startedAtDate?: string;
 		onClose: () => void;
 		onSaved: (log: ClientLog) => void;
 	} = $props();
 
-	const isStrength = $derived(session.modality === 'strength');
+	const isReflection = $derived(variant === 'reflection');
+	const isStrength = $derived(session.modality === 'strength' && !isReflection);
 	const isCross = $derived(session.type === 'cross-train');
 	const machines = $derived(session.prescription?.blocks ?? []);
 
@@ -109,28 +120,34 @@
 						weightUnit === 'lb' ? Math.round((s.weightKg / 2.20462) * 10) / 10 : s.weightKg,
 				})),
 			}));
+			const base = {
+				...(standalone ? {} : { sessionId: session.id }),
+				...(standalone && startedAtDate ? { startedAt: `${startedAtDate}T12:00:00` } : {}),
+			};
 			const body = isStrength
-				? { sessionId: session.id, strengthSets, rpe, feedback, notes: notes || undefined }
-				: isCross
-					? {
-							sessionId: session.id,
-							runStats: { ...(durationSec ? { durationSec } : {}) },
-							rpe,
-							feedback,
-							notes: notes || undefined,
-						}
-					: {
-						sessionId: session.id,
-						runStats: {
-							...(distanceKm ? { distanceKm } : {}),
-							...(durationSec ? { durationSec } : {}),
-							...(runHr ? { avgHr: Number(runHr) } : {}),
-							...(paceSecPerKm ? { avgPaceSecPerKm: paceSecPerKm } : {}),
-						},
-						rpe,
-						feedback,
-						notes: notes || undefined,
-					};
+				? { ...base, strengthSets, rpe, feedback, notes: notes || undefined }
+				: isReflection
+					? { ...base, rpe, feedback, notes: notes || undefined }
+					: isCross
+						? {
+								...base,
+								runStats: { ...(durationSec ? { durationSec } : {}) },
+								rpe,
+								feedback,
+								notes: notes || undefined,
+							}
+						: {
+								...base,
+								runStats: {
+									...(distanceKm ? { distanceKm } : {}),
+									...(durationSec ? { durationSec } : {}),
+									...(runHr ? { avgHr: Number(runHr) } : {}),
+									...(paceSecPerKm ? { avgPaceSecPerKm: paceSecPerKm } : {}),
+								},
+								rpe,
+								feedback,
+								notes: notes || undefined,
+							};
 			const res = await api.log(body);
 			onSaved(res.log as ClientLog);
 		} catch (e) {
@@ -170,7 +187,11 @@
 
 	<div class="mt-3"></div>
 
-	{#if isCross}
+	{#if isReflection}
+		<p class="mt-1 text-sm leading-relaxed text-steel">
+			Mark the day. Add a note about how the plan went, and how you feel now.
+		</p>
+	{:else if isCross}
 		<label class="block text-xs text-steel">
 			How long did you play? (mm:ss)
 			<input
@@ -321,7 +342,7 @@
 		disabled={saving}
 		class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
 	>
-		{saving ? 'Saving…' : 'Save session'}
+		{saving ? 'Saving…' : isReflection ? 'Save' : 'Save session'}
 	</button>
 	</div>
 </div>
