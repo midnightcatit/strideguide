@@ -93,8 +93,6 @@
 			return `You are training for ${event} and you also do ${acts.join(', ')}. We built this around both, and the reasoning below comes from that.`;
 		if (event)
 			return `You are training for ${event}. We built this session with that in mind, and the reasoning below comes from that.`;
-		if (acts.length)
-			return `Because you also do ${acts.join(', ')}, we keep this session in balance with those.`;
 		return '';
 	});
 
