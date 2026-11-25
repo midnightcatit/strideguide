@@ -120,6 +120,13 @@
       "when": 1795622309938,
       "tag": "0016_gray_paladin",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1795626352990,
+      "tag": "0017_parched_mindworm",
+      "breakpoints": true
     }
   ]
 }
