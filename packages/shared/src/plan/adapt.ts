@@ -238,7 +238,7 @@ export function suggestAdjustments(
 				id: `spike-${r.day}`,
 				kind: 'run-spike',
 				severity: 'info',
-				title: 'A run jumped over 10%',
+				title: 'Long run jumped too far',
 				detail: `One run was more than 10% longer than your recent longest. Keep increases under 10%.`,
 			});
 			break;

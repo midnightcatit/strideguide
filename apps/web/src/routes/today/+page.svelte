@@ -552,7 +552,7 @@
 			{#if daySessions[0]}
 				<hr class="my-6 border-hairline" />
 				<SectionHeader id="why" eyebrow="Why this workout" />
-				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
+				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'What this session trains, and why.'}</p>
 				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-2 text-sm text-signal-ink hover:underline">
 					Why this workout, and what's to come →
 				</button>
