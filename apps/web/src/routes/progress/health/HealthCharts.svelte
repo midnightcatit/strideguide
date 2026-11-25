@@ -10,6 +10,7 @@
 		spreadBand,
 	} from '$lib/chartTheme';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import LazySection from '$lib/components/LazySection.svelte';
 	import QueryValueCard from '$lib/components/charts/QueryValueCard.svelte';
 	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
 	import BarsCard from '$lib/components/charts/BarsCard.svelte';
@@ -187,7 +188,7 @@
 </script>
 
 {#if hasKey('resting_hr') || hasKey('hrv_ms')}
-	<section aria-labelledby="h-heart" class="mb-7">
+	<LazySection><section aria-labelledby="h-heart" class="mb-7">
 		<SectionHeader id="h-heart" eyebrow="Heart" meta="Daily" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#if hasKey('resting_hr')}
@@ -239,11 +240,11 @@
 				/>
 			{/if}
 		</div>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if hasRange}
-	<section aria-labelledby="h-hr" class="mb-7">
+	<LazySection><section aria-labelledby="h-hr" class="mb-7">
 		<SectionHeader id="h-hr" eyebrow="Heart rate" meta="Min, average and max each day" />
 		<TimeSeriesCard
 			title="Daily heart rate"
@@ -257,11 +258,11 @@
 			height={170}
 			note="The band is the day's minimum to maximum, and the line is the daily average."
 		/>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if hasSpo2}
-	<section aria-labelledby="h-spo2" class="mb-7">
+	<LazySection><section aria-labelledby="h-spo2" class="mb-7">
 		<SectionHeader id="h-spo2" eyebrow="Blood oxygen" meta={valueText('spo2_avg', fmtPct)} />
 		<TimeSeriesCard
 			title="Blood oxygen"
@@ -275,11 +276,11 @@
 			height={170}
 			note="The band is the confidence range the device reports around each day's average."
 		/>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if hasKey('respiratory_rate') || hasKey('vo2_max')}
-	<section aria-labelledby="h-fit" class="mb-7">
+	<LazySection><section aria-labelledby="h-fit" class="mb-7">
 		<SectionHeader id="h-fit" eyebrow="Breathing and fitness" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#if hasKey('respiratory_rate')}
@@ -316,11 +317,11 @@
 				/>
 			</div>
 		{/if}
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if hasStages || hasSleepTotal}
-	<section aria-labelledby="h-sleep" class="mb-7">
+	<LazySection><section aria-labelledby="h-sleep" class="mb-7">
 		<SectionHeader id="h-sleep" eyebrow="Sleep" meta={hasSleepTotal || sleepNightly.length ? sleepTotalText : 'By stage'} />
 		<div class="space-y-3">
 			{#if hasStages}
@@ -353,11 +354,11 @@
 				/>
 			{/if}
 		</div>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if hasKey('sleep_temp_c')}
-	<section aria-labelledby="h-sleeptemp" class="mb-7">
+	<LazySection><section aria-labelledby="h-sleeptemp" class="mb-7">
 		<SectionHeader id="h-sleeptemp" eyebrow="Sleep temperature" />
 		<TimeSeriesCard
 			title="Nightly skin temperature"
@@ -368,11 +369,11 @@
 			points={points('sleep_temp_c')}
 			format={fmtTemp}
 		/>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if activity.length}
-	<section aria-labelledby="h-activity" class="mb-7">
+	<LazySection><section aria-labelledby="h-activity" class="mb-7">
 		<SectionHeader id="h-activity" eyebrow="Activity" meta="Daily totals" />
 		<div class="space-y-3">
 			{#each activity as m (m.key)}
@@ -399,11 +400,11 @@
 				<TopListCard title="Best days by steps" color={metricColor('steps')} rows={topSteps} />
 			{/if}
 		</div>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if hasKey('distance_m')}
-	<section aria-labelledby="h-distance" class="mb-7">
+	<LazySection><section aria-labelledby="h-distance" class="mb-7">
 		<SectionHeader id="h-distance" eyebrow="Distance" meta={valueText('distance_m', fmtKm)} />
 		<BarsCard
 			title="Distance"
@@ -414,11 +415,11 @@
 			format={fmtKm}
 			note="Distance the device recorded each day, in your units."
 		/>
-	</section>
+	</section></LazySection>
 {/if}
 
 {#if sampleCards.length}
-	<section aria-labelledby="h-samples" class="mb-7">
+	<LazySection><section aria-labelledby="h-samples" class="mb-7">
 		<SectionHeader id="h-samples" eyebrow="Measurements" meta="{sampleCards.length} tracked" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#each sampleCards as s (s.key)}
@@ -433,5 +434,5 @@
 				/>
 			{/each}
 		</div>
-	</section>
+	</section></LazySection>
 {/if}

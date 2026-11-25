@@ -6,6 +6,7 @@
 	import { api } from '$lib/api';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
+	import { summary, ensureSummary } from '$lib/summaryStore.svelte';
 	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
 	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, weekdayIndexFromIso } from '$lib/plan';
@@ -42,7 +43,6 @@
 		| { kind: 'activity'; id: string; activity: ClientActivity }
 		| { kind: 'milestone'; id: string; milestone: 'complete' };
 
-	let note = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
 	// The card at the scroll center of the day's carousel, so a session view can
 	// return the runner to the same card they left.
@@ -367,7 +367,7 @@
 			} catch {
 				// no imports to show, or the call failed; Today still works
 			}
-			note = (await api.latestSummary().catch(() => ({ summary: null }))).summary?.body ?? null;
+			await ensureSummary();
 		}
 	});
 
@@ -532,7 +532,7 @@
 
 		<AdjustmentsCard />
 
-		{#if note}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{note}</p>{/if}
+		{#if summary.body}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{summary.body}</p>{/if}
 
 		{#if selWeek}
 			<hr class="my-6 border-hairline" />

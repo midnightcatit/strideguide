@@ -2,7 +2,7 @@
 	"name": "Stride Guide",
 	"short_name": "Stride",
 	"description": "Goal-tailored running and strength training for two runners.",
-	"start_url": "/",
+	"start_url": "/today",
 	"scope": "/",
 	"display": "standalone",
 	"orientation": "portrait",
