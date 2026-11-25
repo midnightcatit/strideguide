@@ -34,11 +34,30 @@ function unlockScroll() {
 	}
 }
 
+export interface ModalParams {
+	onClose: () => void;
+	/** False for a full-page view: no scroll lock, focus trap or Escape handling. */
+	enabled?: boolean;
+}
+
 /**
  * Svelte action for full-screen overlays: Escape to close, background scroll lock,
  * focus moved in and returned on close, and a simple focus trap.
+ *
+ * Pass a function for the plain overlay case, or an object to switch the trap off
+ * for a view that is a real page rather than an overlay.
  */
-export function modal(node: HTMLElement, onClose: () => void) {
+export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
+	let onClose = typeof params === 'function' ? params : params.onClose;
+	const enabled = typeof params === 'function' ? true : (params.enabled ?? true);
+	if (!enabled) {
+		return {
+			update(next: (() => void) | ModalParams) {
+				onClose = typeof next === 'function' ? next : next.onClose;
+			},
+			destroy() {},
+		};
+	}
 	const previouslyFocused = (
 		typeof document !== 'undefined' ? document.activeElement : null
 	) as HTMLElement | null;
@@ -78,8 +97,8 @@ export function modal(node: HTMLElement, onClose: () => void) {
 	}
 
 	return {
-		update(next: () => void) {
-			onClose = next;
+		update(next: (() => void) | ModalParams) {
+			onClose = typeof next === 'function' ? next : next.onClose;
 		},
 		destroy() {
 			if (typeof document !== 'undefined') {

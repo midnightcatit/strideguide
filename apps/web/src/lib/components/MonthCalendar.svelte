@@ -1,25 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getGoalProfile } from '@strideguide/shared/profiles';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { fmtDistance } from '$lib/prefs.svelte';
-	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
-	import { api, type CustomWorkoutInput } from '$lib/api';
-	import type { LibraryWorkout } from '@strideguide/shared/plan';
+	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
-	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
-	import { clearStarted, markStarted } from '$lib/started.svelte';
-	import { clearProgress } from '$lib/sessionProgress.svelte';
-	import { modal } from '$lib/actions';
-	import SessionCard from '$lib/components/SessionCard.svelte';
-	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
-	import LogSheet from '$lib/components/LogSheet.svelte';
-	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
-	import SessionDetail from '$lib/components/SessionDetail.svelte';
-	import Card from '$lib/components/Card.svelte';
-	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
+	import { isSkipped } from '$lib/skipped.svelte';
+	import { sessionHref } from '$lib/sessionNav';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
-	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
 
 	const todayIso = localIso();
@@ -46,40 +34,10 @@
 			// A private window can block storage; the choice still holds this visit.
 		}
 	}
-	let sheetIso = $state<string | null>(null);
-	let detailTarget = $state<ClientSession | null>(null);
-	let playTarget = $state<ClientSession | null>(null);
-	let logTarget = $state<ClientSession | null>(null);
-	let pickerDate = $state<string | null>(null);
-	let addError = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
 	let listEl = $state<HTMLDivElement | undefined>(undefined);
-	let confirm = $state<{
-		title: string;
-		body: string;
-		confirmLabel: string;
-		tone?: 'default' | 'danger';
-		action: () => void;
-	} | null>(null);
-
-	// Back (browser or hardware) closes the topmost overlay: a session, then the day sheet.
-	overlayHistory(
-		() => !!(sheetIso || pickerDate || detailTarget || playTarget || logTarget),
-		() => {
-			if (logTarget) logTarget = null;
-			else if (playTarget) playTarget = null;
-			else if (detailTarget) detailTarget = null;
-			else if (pickerDate) pickerDate = null;
-			else sheetIso = null;
-		},
-	);
 
 	const weeks = $derived(store.plan?.weeks ?? []);
-	const profileName = $derived(
-		store.plan?.goal
-			? (getGoalProfile(store.plan.goal.goalProfileSlug)?.name ?? store.plan.goal.goalProfileSlug)
-			: '',
-	);
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
 	);
@@ -160,95 +118,17 @@
 		return first.toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
 	});
 
-	const sheetSessions = $derived(sheetIso ? (byDate.get(sheetIso) ?? []) : []);
-	const sheetWeek = $derived.by(() => {
-		const iso = sheetIso;
-		if (!iso) return undefined;
-		return weeks.find((w) => w.startDate && w.endDate && iso >= w.startDate && iso <= w.endDate);
-	});
-	const sheetLabel = $derived(
-		sheetIso
-			? new Date(`${sheetIso}T00:00:00Z`).toLocaleDateString(undefined, {
-					weekday: 'long',
-					month: 'long',
-					day: 'numeric',
-					timeZone: 'UTC',
-				})
-			: '',
-	);
-	// The API only accepts days inside the plan, so the sheet says why when the
-	// open day is not one of them, instead of failing on tap.
-	const planStart = $derived(weeks[0]?.startDate ?? null);
-	const planEnd = $derived(weeks.length ? weeks[weeks.length - 1]?.endDate ?? null : null);
-	const dayInPlan = $derived(!!sheetWeek);
-	const outsidePlanNote = $derived(
-		planStart && planEnd
-			? `Your plan runs ${dateHeading(planStart)} to ${dateHeading(planEnd)}. Pick a day inside it to add a workout.`
-			: 'Your plan has no days yet. Pick a day inside it to add a workout.',
-	);
-
 	onMount(() => {
+		// A workout just added from the list's add route is revealed in the list.
+		const reveal = page.url.searchParams.get('reveal');
+		if (reveal) revealId = reveal;
 		void ensurePlan();
 	});
-
-	function confirmIfFuture(_s: ClientSession, label: string, action: () => void): boolean {
-		const d = sheetIso;
-		if (d && d > todayIso) {
-			confirm = {
-				title: `${label} a future workout?`,
-				body: `This one is on ${d}. ${label} it anyway?`,
-				confirmLabel: `${label} anyway`,
-				action,
-			};
-			return true;
-		}
-		return false;
-	}
-	function startSession(s: ClientSession) {
-		if (confirmIfFuture(s, 'Start', () => { markStarted(s.id); playTarget = s; })) return;
-		markStarted(s.id);
-		playTarget = s;
-	}
-	function logSession(s: ClientSession) {
-		if (confirmIfFuture(s, 'Log', () => (logTarget = s))) return;
-		logTarget = s;
-	}
 
 	function stepMonth(delta: number) {
 		monthOffset += delta;
 	}
 
-
-	async function addFromLibrary(w: LibraryWorkout) {
-		const date = pickerDate;
-		pickerDate = null;
-		if (!date) return;
-		try {
-			const { session } = await api.addWorkout(date, w.id);
-			addError = null;
-			// The day sheet belongs to the month view. In the list, stay put and
-			// let the reveal effect scroll the new card into view.
-			if (mode === 'month') sheetIso = date;
-			revealId = session.id;
-			reloadPlan();
-		} catch (e) {
-			addError = e instanceof Error ? e.message : 'Could not add that workout.';
-		}
-	}
-	async function addCustom(c: CustomWorkoutInput) {
-		const date = pickerDate;
-		pickerDate = null;
-		if (!date) return;
-		try {
-			const { session } = await api.addCustomWorkout(date, c);
-			addError = null;
-			if (mode === 'month') sheetIso = date;
-			revealId = session.id;
-			reloadPlan();
-		} catch (e) {
-			addError = e instanceof Error ? e.message : 'Could not add that workout.';
-		}
-	}
 	/** Upcoming sessions from today, for the list view. */
 	const listDays = $derived.by(() => {
 		const dates = [...byDate.keys()].filter((d) => d >= todayIso).sort();
@@ -257,8 +137,8 @@
 	/** Total sessions in the list, so the reveal effect re-runs when one is added. */
 	const listCount = $derived(listDays.reduce((n, day) => n + day.sessions.length, 0));
 	// Bring a freshly added session into view in the list view, where the runner
-	// already is. Mirrors the carousel reveal: it waits for the card to render,
-	// scrolls the nearest edge into view, then clears revealId.
+	// already is. It waits for the card to render, scrolls the nearest edge into
+	// view, then clears revealId.
 	$effect(() => {
 		const id = revealId;
 		void listCount;
@@ -310,9 +190,8 @@
 		{/each}
 		{#each monthCells as cell, i (cell.iso)}
 			{@const level = loadLevel(cell.load)}
-			<button
-				type="button"
-				onclick={() => (sheetIso = cell.iso)}
+			<a
+				href={`/calendar/day/${cell.iso}`}
 				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}{cell.skipped ? ', a skipped session' : ''}"
 				style="animation-delay: {Math.min(i * 8, 260)}ms"
 				class="reveal relative flex aspect-square flex-col items-center justify-center rounded-md border transition-colors {cell.inMonth
@@ -330,7 +209,7 @@
 				{#if cell.isToday}
 					<span class="absolute bottom-1 h-0.5 w-4 rounded-full bg-signal-ink" aria-hidden="true"></span>
 				{/if}
-			</button>
+			</a>
 		{/each}
 	</div>
 	<div class="mt-3 flex items-center justify-center gap-2 text-xs text-steel">
@@ -355,7 +234,7 @@
 					<p class="tabular text-xs uppercase tracking-widest text-steel">{dateHeading(day.date)}</p>
 					<button
 						type="button"
-						onclick={() => (pickerDate = day.date)}
+						onclick={() => goto(`/calendar/add/${day.date}?back=${encodeURIComponent('/calendar')}`)}
 						class="text-xs text-signal-ink hover:underline"
 					>
 						＋ Add
@@ -368,7 +247,7 @@
 								<MiniSessionCard
 									session={s}
 									logged={loggedBySession.get(s.id) ?? null}
-									onOpen={() => (detailTarget = s)}
+									onOpen={() => goto(sessionHref(s.id, '/calendar'))}
 								/>
 							</div>
 						{/each}
@@ -385,150 +264,6 @@
 {/if}
 </div>
 {/key}
-
-{#if sheetIso}
-	<div class="fixed inset-0 z-40" role="dialog" aria-modal="true" aria-label={sheetLabel} use:modal={() => (sheetIso = null)}>
-		<button type="button" aria-label="Close" onclick={() => (sheetIso = null)} class="overlay-fade absolute inset-0 bg-ink/30"></button>
-		<div class="overlay-sheet absolute inset-x-2 bottom-2 top-12 mx-auto flex max-w-2xl flex-col rounded-2xl border border-hairline bg-paper sm:bottom-16 sm:top-16">
-			<div class="flex items-center justify-between gap-3 border-b border-hairline p-4">
-				<div class="min-w-0">
-					<p class="tabular text-xs uppercase tracking-widest text-steel">Day</p>
-					<h2 class="font-display truncate text-lg font-bold">{sheetLabel}</h2>
-				</div>
-				<button type="button" onclick={() => (sheetIso = null)} aria-label="Close" class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink">✕</button>
-			</div>
-			<div class="scroll-modern min-h-0 flex-1 overflow-y-auto p-4">
-				{#if sheetSessions.length}
-					<SessionCarousel sessions={sheetSessions} {card} bind:revealId />
-				{:else}
-					<Card tone="sunken" frame>
-						<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>
-					</Card>
-				{/if}
-				<button
-					type="button"
-					disabled={!dayInPlan}
-					onclick={() => {
-						if (!dayInPlan || !sheetIso) return;
-						addError = null;
-						pickerDate = sheetIso;
-					}}
-					class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan
-						? 'border-hairline-strong text-signal-ink hover:border-signal'
-						: 'border-hairline text-steel'}"
-				>
-					＋ Add a workout
-				</button>
-				{#if !dayInPlan}
-					<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
-				{:else if addError}
-					<p class="mt-2 text-sm text-signal-ink">{addError}</p>
-				{/if}
-			</div>
-		</div>
-	</div>
-{/if}
-
-{#if pickerDate}
-	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onCustom={addCustom} onClose={() => (pickerDate = null)} />
-{/if}
-
-{#if playTarget}
-	<SessionPlayer
-		session={playTarget}
-		eyebrow="{profileName} · W{sheetWeek?.weekNumber ?? ''}"
-		onClose={() => (playTarget = null)}
-		onFinish={() => {
-			logTarget = playTarget;
-			playTarget = null;
-		}}
-	/>
-{/if}
-
-{#if logTarget}
-	<LogSheet
-		session={logTarget}
-		eyebrow="{profileName} · W{sheetWeek?.weekNumber ?? ''}"
-		onClose={() => (logTarget = null)}
-		onSaved={(log) => {
-			upsertLog(log);
-			logTarget = null;
-		}}
-	/>
-{/if}
-
-{#if detailTarget}
-	<SessionDetail
-		session={detailTarget}
-		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
-		logged={loggedBySession.get(detailTarget.id) ?? null}
-		skipped={isSkipped(detailTarget.id)}
-		onClose={() => (detailTarget = null)}
-		onLog={() => {
-			logTarget = detailTarget;
-			detailTarget = null;
-		}}
-		onStart={() => {
-			if (detailTarget) markStarted(detailTarget.id);
-			playTarget = detailTarget;
-			detailTarget = null;
-		}}
-		onSkip={() => {
-			if (detailTarget)
-				confirm = {
-					title: 'Skip this workout?',
-					body: 'It stays on your calendar, marked as skipped. You can un-skip it any time.',
-					confirmLabel: 'Skip it',
-					action: () => {
-						skipSession(detailTarget!.id);
-						detailTarget = null;
-					},
-				};
-		}}
-		onUnskip={() => {
-			if (detailTarget)
-				confirm = {
-					title: 'Un-skip this workout?',
-					body: 'It goes back to your normal plan for the day.',
-					confirmLabel: 'Un-skip',
-					action: () => unskipSession(detailTarget!.id),
-				};
-		}}
-	/>
-{/if}
-
-{#snippet card(s: ClientSession)}
-	<SessionCard
-		session={s}
-		eyebrow={`${profileName} · W${sheetWeek?.weekNumber ?? ''}`}
-		active={false}
-		logged={loggedBySession.get(s.id) ?? null}
-		onLog={() => (logTarget = s)}
-		onStart={() => startSession(s)}
-		onOpen={() => (detailTarget = s)}
-		onUnskip={() =>
-			(confirm = {
-				title: 'Un-skip this workout?',
-				body: 'It goes back to your normal plan for the day.',
-				confirmLabel: 'Un-skip',
-				action: () => unskipSession(s.id),
-			})}
-		onCancelProgress={() => {
-			clearStarted(s.id);
-			clearProgress(s.id);
-		}}
-	/>
-{/snippet}
-
-<ConfirmSheet
-	open={confirm !== null}
-	title={confirm?.title ?? ''}
-	body={confirm?.body ?? ''}
-	confirmLabel={confirm?.confirmLabel ?? 'Confirm'}
-	tone={confirm?.tone ?? 'default'}
-	onConfirm={() => confirm?.action()}
-	onClose={() => (confirm = null)}
-/>
 
 <style>
 	/*

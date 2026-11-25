@@ -13,11 +13,14 @@
 
 	let {
 		date,
+		asPage = false,
 		onPick,
 		onCustom,
 		onClose,
 	}: {
 		date: string;
+		/** True when this is a route, so it renders in flow instead of as a sheet. */
+		asPage?: boolean;
 		onPick: (w: LibraryWorkout) => void;
 		onCustom?: (c: CustomWorkoutInput) => void;
 		onClose: () => void;
@@ -274,15 +277,21 @@
 </script>
 
 <div
-	class="fixed inset-0 z-40 flex items-end justify-center sm:items-center sm:p-4"
-	role="dialog"
-	aria-modal="true"
-	aria-label="Add a workout"
-	use:modal={onClose}
+	class={asPage
+		? 'w-full'
+		: 'fixed inset-0 z-40 flex items-end justify-center sm:items-center sm:p-4'}
+	role={asPage ? undefined : 'dialog'}
+	aria-modal={asPage ? undefined : 'true'}
+	aria-label={asPage ? undefined : 'Add a workout'}
+	use:modal={{ onClose, enabled: !asPage }}
 >
-	<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
+	{#if !asPage}
+		<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
+	{/if}
 	<div
-		class="overlay-sheet relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl border border-hairline bg-paper sm:rounded-2xl"
+		class={asPage
+			? 'relative mx-auto flex w-full max-w-2xl flex-col rounded-2xl border border-hairline bg-paper'
+			: 'overlay-sheet relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl border border-hairline bg-paper sm:rounded-2xl'}
 		style="padding-bottom: env(safe-area-inset-bottom)"
 	>
 		<div class="flex items-center justify-between gap-3 border-b border-hairline p-4">

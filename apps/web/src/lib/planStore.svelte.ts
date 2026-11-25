@@ -1,5 +1,6 @@
 import { api } from './api';
-import type { ClientLog, CurrentPlan } from './plan';
+import { getGoalProfile } from '@strideguide/shared/profiles';
+import type { ClientLog, ClientSession, ClientWeek, CurrentPlan } from './plan';
 import { hydrateSkipped } from './skipped.svelte';
 import { hydrateStarted } from './started.svelte';
 import { hydrateProgress } from './sessionProgress.svelte';
@@ -29,12 +30,51 @@ export async function ensurePlan(): Promise<void> {
 	}
 }
 
-export function reloadPlan(): void {
+export function reloadPlan(): Promise<void> {
 	store.loaded = false;
-	void ensurePlan();
+	return ensurePlan();
 }
 
 export function upsertLog(log: ClientLog): void {
 	store.logs = [...store.logs.filter((l) => l.sessionId !== log.sessionId), log];
 	if (store.plan) store.plan = { ...store.plan, logs: store.logs };
+}
+
+/** A session by id, across every week of the plan. */
+export function findSession(id: string): ClientSession | undefined {
+	for (const w of store.plan?.weeks ?? []) {
+		const s = w.sessions.find((x) => x.id === id);
+		if (s) return s;
+	}
+	return undefined;
+}
+
+/** The plan week a date falls in, if any. */
+export function weekForDate(iso: string): ClientWeek | undefined {
+	return (store.plan?.weeks ?? []).find(
+		(w) => !!w.startDate && !!w.endDate && iso >= w.startDate && iso <= w.endDate,
+	);
+}
+
+/** The plan week a session belongs to. */
+export function weekForSession(session: ClientSession): ClientWeek | undefined {
+	return (store.plan?.weeks ?? []).find((w) => w.sessions.some((s) => s.id === session.id));
+}
+
+/** The goal profile's display name, for the session eyebrow. */
+export function planProfileName(): string {
+	const slug = store.plan?.goal?.goalProfileSlug;
+	if (!slug) return '';
+	return getGoalProfile(slug)?.name ?? slug;
+}
+
+/** Store a saved note on the session, so a view that reads it sees the update. */
+export function applySessionNotes(id: string, notes: string): void {
+	for (const w of store.plan?.weeks ?? []) {
+		const s = w.sessions.find((x) => x.id === id);
+		if (s) {
+			s.notes = notes;
+			return;
+		}
+	}
 }

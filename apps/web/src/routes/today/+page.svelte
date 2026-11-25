@@ -1,41 +1,31 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
 	import { api } from '$lib/api';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
-	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
+	import { store, ensurePlan, reloadPlan } from '$lib/planStore.svelte';
 	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
-	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { isSkipped, skipSession, unskipSession } from '$lib/skipped.svelte';
+	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
+	import { logHref, playHref, sessionHref } from '$lib/sessionNav';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
-	import LogSheet from '$lib/components/LogSheet.svelte';
-	import SessionPlayer from '$lib/components/SessionPlayer.svelte';
-	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
-	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
-	import type { LibraryWorkout } from '@strideguide/shared/plan';
-	import type { CustomWorkoutInput } from '$lib/api';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import ActivityCard from '$lib/components/ActivityCard.svelte';
 	import RaceCard from '$lib/components/RaceCard.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
 
-	let logTarget = $state<ClientSession | null>(null);
-	let playTarget = $state<ClientSession | null>(null);
-	let detailTarget = $state<ClientSession | null>(null);
 	let note = $state<string | null>(null);
-	let pickerDate = $state<string | null>(null);
-	let addError = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
 	let confirm = $state<{
@@ -45,16 +35,6 @@
 		tone?: 'default' | 'danger';
 		action: () => void;
 	} | null>(null);
-
-	// Back (browser or hardware) closes an open overlay instead of leaving the page.
-	overlayHistory(
-		() => !!(detailTarget || playTarget || logTarget),
-		() => {
-			if (logTarget) logTarget = null;
-			else if (playTarget) playTarget = null;
-			else detailTarget = null;
-		},
-	);
 
 	const todayIndex = mondayIndex(new Date());
 	const todayIso = localIso();
@@ -163,6 +143,8 @@
 			profileName ||
 			'Race day',
 	);
+	// Where a session view returns to: this day in Today.
+	const from = $derived(isToday ? '/today' : `/today?date=${selectedIso}`);
 
 	function dayLabel(iso: string): string {
 		return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
@@ -179,32 +161,6 @@
 		changeKind = 'week';
 		dayDir = n >= 0 ? 1 : -1;
 		selectedIso = addDaysIso(selectedIso, n * 7);
-	}
-	async function addFromLibrary(w: LibraryWorkout) {
-		const date = pickerDate;
-		pickerDate = null;
-		if (!date) return;
-		try {
-			const { session } = await api.addWorkout(date, w.id);
-			addError = null;
-			revealId = session.id;
-			reloadPlan();
-		} catch (e) {
-			addError = e instanceof Error ? e.message : 'Could not add that workout.';
-		}
-	}
-	async function addCustom(c: CustomWorkoutInput) {
-		const date = pickerDate;
-		pickerDate = null;
-		if (!date) return;
-		try {
-			const { session } = await api.addCustomWorkout(date, c);
-			addError = null;
-			revealId = session.id;
-			reloadPlan();
-		} catch (e) {
-			addError = e instanceof Error ? e.message : 'Could not add that workout.';
-		}
 	}
 
 	function sessionDate(s: ClientSession): string | undefined {
@@ -224,13 +180,15 @@
 		return false;
 	}
 	function startSession(s: ClientSession) {
-		if (confirmIfFuture(s, 'Start', () => { markStarted(s.id); playTarget = s; })) return;
+		const href = playHref(s.id, from);
+		if (confirmIfFuture(s, 'Start', () => { markStarted(s.id); void goto(href); })) return;
 		markStarted(s.id);
-		playTarget = s;
+		void goto(href);
 	}
 	function logSession(s: ClientSession) {
-		if (confirmIfFuture(s, 'Log', () => (logTarget = s))) return;
-		logTarget = s;
+		const href = logHref(s.id, from);
+		if (confirmIfFuture(s, 'Log', () => void goto(href))) return;
+		void goto(href);
 	}
 
 	function selectDay(day: number) {
@@ -248,6 +206,9 @@
 	onMount(async () => {
 		const wanted = page.url.searchParams.get('date');
 		if (wanted && /^\d{4}-\d{2}-\d{2}$/.test(wanted)) selectedIso = wanted;
+		// A session just added from the picker route is revealed in the list.
+		const reveal = page.url.searchParams.get('reveal');
+		if (reveal) revealId = reveal;
 		await ensureAuth();
 		if (auth.user) {
 			await ensurePlan();
@@ -256,7 +217,7 @@
 				activities = res.activities;
 				// Listing writes a standalone log for each new imported activity.
 				// Reload the plan so those logs count in Progress and the streak now.
-				if (activities.length && store.plan) reloadPlan();
+				if (activities.length && store.plan) void reloadPlan();
 			} catch {
 				// no imports to show, or the call failed; Today still works
 			}
@@ -391,8 +352,7 @@
 			disabled={!dayInPlan || !editable}
 			onclick={() => {
 				if (!dayInPlan || !editable) return;
-				addError = null;
-				pickerDate = selectedIso;
+				void goto(`/today/add/${selectedIso}`);
 			}}
 			class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan && editable
 				? 'border-hairline-strong text-signal-ink hover:border-signal'
@@ -406,8 +366,6 @@
 			</p>
 		{:else if !dayInPlan}
 			<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
-		{:else if addError}
-			<p class="mt-2 text-sm text-signal-ink">{addError}</p>
 		{/if}
 
 		<AdjustmentsCard />
@@ -433,50 +391,12 @@
 				<hr class="my-6 border-hairline" />
 				<SectionHeader id="why" eyebrow="Why this workout" />
 				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'The reasoning behind this session.'}</p>
-				<button type="button" onclick={() => (detailTarget = daySessions[0] ?? null)} class="mt-2 text-sm text-signal-ink hover:underline">
+				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-2 text-sm text-signal-ink hover:underline">
 					Why this workout, and what's to come →
 				</button>
 			{/if}
 		{/if}
 	</div>
-{/if}
-
-{#if playTarget}
-	<SessionPlayer session={playTarget} eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`} onClose={() => (playTarget = null)} onFinish={() => { logTarget = playTarget; playTarget = null; }} />
-{/if}
-
-{#if logTarget}
-	<LogSheet session={logTarget} eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`} onClose={() => (logTarget = null)} onSaved={(log) => { upsertLog(log); logTarget = null; }} />
-{/if}
-
-{#if detailTarget}
-	<SessionDetail
-		session={detailTarget}
-		eyebrow={`${profileName} · Week ${selWeek?.weekNumber ?? ''}`}
-		logged={loggedBySession.get(detailTarget.id) ?? null}
-		skipped={isSkipped(detailTarget.id)}
-		readOnly={!editable}
-		onClose={() => (detailTarget = null)}
-		onLog={() => { logTarget = detailTarget; detailTarget = null; }}
-		onStart={() => { playTarget = detailTarget; detailTarget = null; }}
-		onSkip={() =>
-			(confirm = {
-				title: 'Skip this workout?',
-				body: 'It stays on your calendar, marked as skipped. You can un-skip it any time.',
-				confirmLabel: 'Skip it',
-				action: () => {
-					skipSession(detailTarget!.id);
-					detailTarget = null;
-				},
-			})}
-		onUnskip={() =>
-			(confirm = {
-				title: 'Un-skip this workout?',
-				body: 'It goes back to your normal plan for the day.',
-				confirmLabel: 'Un-skip',
-				action: () => unskipSession(detailTarget!.id),
-			})}
-	/>
 {/if}
 
 {#snippet card(s: ClientSession)}
@@ -488,7 +408,7 @@
 		logged={loggedBySession.get(s.id) ?? null}
 		onLog={() => logSession(s)}
 		onStart={() => startSession(s)}
-		onOpen={() => (detailTarget = s)}
+		onOpen={() => goto(sessionHref(s.id, from))}
 		onUnskip={() =>
 			(confirm = {
 				title: 'Un-skip this workout?',
@@ -512,7 +432,3 @@
 	onConfirm={() => confirm?.action()}
 	onClose={() => (confirm = null)}
 />
-
-{#if pickerDate}
-	<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onCustom={addCustom} onClose={() => (pickerDate = null)} />
-{/if}

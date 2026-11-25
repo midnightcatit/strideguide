@@ -23,11 +23,13 @@
 		logged,
 		skipped = false,
 		readOnly = false,
+		asPage = false,
 		onClose,
 		onLog,
 		onStart,
 		onSkip,
 		onUnskip,
+		onNotes,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
@@ -35,11 +37,15 @@
 		skipped?: boolean;
 		/** True for a day past the edit window: view only, no start, log or skip. */
 		readOnly?: boolean;
+		/** True when this is a route, so it renders in flow instead of as an overlay. */
+		asPage?: boolean;
 		onClose: () => void;
 		onLog?: () => void;
 		onStart?: () => void;
 		onSkip?: () => void;
 		onUnskip?: () => void;
+		/** When set, Notes opens a route instead of the in-place sheet. */
+		onNotes?: () => void;
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
@@ -65,6 +71,12 @@
 	/** Close the whole card, but leave it open while a sheet is on top of it. */
 	function closeFromBackdrop() {
 		if (!showPreview && !showNotes) onClose();
+	}
+
+	/** Notes opens a route when one is given, otherwise the in-place sheet. */
+	function openNotes() {
+		if (onNotes) onNotes();
+		else showNotes = true;
 	}
 
 	/** A line that ties the session to what the runner told us at setup. */
@@ -206,11 +218,13 @@
 </script>
 
 <div
-	class="overlay-fade fixed inset-0 z-50 flex flex-col bg-paper"
-	role="dialog"
-	aria-modal="true"
-	aria-label={sessionLabel(session)}
-	use:modal={closeFromBackdrop}
+	class={asPage
+		? 'flex flex-col'
+		: 'overlay-fade fixed inset-0 z-50 flex flex-col bg-paper'}
+	role={asPage ? undefined : 'dialog'}
+	aria-modal={asPage ? undefined : 'true'}
+	aria-label={asPage ? undefined : sessionLabel(session)}
+	use:modal={{ onClose: closeFromBackdrop, enabled: !asPage }}
 >
 	<!-- Coloured header band, tinted by the session's demand -->
 	<div class="relative overflow-hidden bg-ink text-paper">
@@ -252,7 +266,7 @@
 					</svg>
 					<span class="text-[10px] uppercase tracking-wide">Preview</span>
 				</button>
-				<button type="button" aria-pressed={showNotes} onclick={() => (showNotes = true)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
+				<button type="button" aria-pressed={asPage ? undefined : showNotes} onclick={openNotes} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M5 3.5h7l3 3v10H5z" />
 						<path d="M8 9h4" />
@@ -343,7 +357,7 @@
 				<section aria-labelledby="your-notes">
 					<h2 id="your-notes" class="tabular text-xs uppercase tracking-widest text-steel">Your notes</h2>
 					<p class="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed">{savedNote}</p>
-					<button type="button" onclick={() => (showNotes = true)} class="mt-2 text-sm text-signal-ink hover:underline">
+					<button type="button" onclick={openNotes} class="mt-2 text-sm text-signal-ink hover:underline">
 						Edit note
 					</button>
 				</section>

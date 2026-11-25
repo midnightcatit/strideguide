@@ -8,11 +8,14 @@
 	let {
 		session,
 		eyebrow,
+		asPage = false,
 		onClose,
 		onSaved,
 	}: {
 		session: ClientSession;
 		eyebrow: string;
+		/** True when this is a route, so it renders in flow instead of as a sheet. */
+		asPage?: boolean;
 		onClose: () => void;
 		onSaved: (log: ClientLog) => void;
 	} = $props();
@@ -137,13 +140,25 @@
 	}
 </script>
 
-<div class="sg-sheet fixed inset-0 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Log session" use:modal={onClose}>
-	<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
+<div
+	class={asPage
+		? 'w-full'
+		: 'sg-sheet fixed inset-0 flex items-end justify-center sm:items-center sm:p-4'}
+	role={asPage ? undefined : 'dialog'}
+	aria-modal={asPage ? undefined : 'true'}
+	aria-label={asPage ? undefined : 'Log session'}
+	use:modal={{ onClose, enabled: !asPage }}
+>
+	{#if !asPage}
+		<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
+	{/if}
 	<div
-		class="sg-overlay-pad overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl"
+		class={asPage
+			? 'relative mx-auto w-full max-w-2xl rounded-2xl border border-hairline bg-paper p-4'
+			: 'sg-overlay-pad overlay-sheet relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-2xl border border-hairline bg-paper p-4 sm:rounded-2xl'}
 		style="--overlay-pad: 1rem"
 	>
-	<div class="sticky top-0 z-10 -mx-4 -mt-4 flex items-center justify-between border-b border-hairline bg-paper px-4 pb-3 pt-4">
+	<div class="sticky {asPage ? 'top-16' : 'top-0'} z-10 -mx-4 -mt-4 flex items-center justify-between border-b border-hairline bg-paper px-4 pb-3 pt-4">
 		<div class="min-w-0">
 			<p class="text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 			<h2 class="font-display truncate text-lg font-medium">{session.title ?? 'Log session'}</h2>
