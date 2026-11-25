@@ -12,6 +12,7 @@
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
 	import { dragToDay } from '$lib/actions';
+	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, type ClientSession, type CurrentPlan } from '$lib/plan';
@@ -120,6 +121,17 @@
 	let draft = $state<CurrentPlan | null>(null);
 	let pickerDate = $state<string | null>(null);
 	let previewDetail = $state<ClientSession | null>(null);
+
+	// The preview keeps WorkoutPicker and SessionDetail as overlays here, so the
+	// in-progress onboarding answers stay put. Back closes the top one instead of
+	// leaving the flow.
+	overlayHistory(
+		() => !!(pickerDate || previewDetail),
+		() => {
+			if (previewDetail) previewDetail = null;
+			else pickerDate = null;
+		},
+	);
 	// True once the weeks ahead have been rebuilt from the edited week one. When
 	// there is a connector to offer, this shows the connect screen; otherwise the
 	// flow goes straight to the completion state.

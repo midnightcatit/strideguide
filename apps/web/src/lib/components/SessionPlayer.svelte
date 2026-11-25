@@ -13,11 +13,14 @@
 	let {
 		session,
 		eyebrow = '',
+		asPage = false,
 		onClose: onCloseProp,
 		onFinish,
 	}: {
 		session: ClientSession;
 		eyebrow?: string;
+		/** True when this is a route, so it renders in flow instead of as an overlay. */
+		asPage?: boolean;
 		onClose: () => void;
 		onFinish: () => void;
 	} = $props();
@@ -264,14 +267,16 @@
 </script>
 
 <div
-	class="overlay-fade fixed inset-0 z-50 overflow-y-auto bg-paper"
-	role="dialog"
-	aria-modal="true"
-	aria-label={sessionLabel(session)}
-	use:modal={close}
+	class={asPage
+		? 'overflow-y-auto bg-paper'
+		: 'overlay-fade fixed inset-0 z-50 overflow-y-auto bg-paper'}
+	role={asPage ? undefined : 'dialog'}
+	aria-modal={asPage ? undefined : 'true'}
+	aria-label={asPage ? undefined : sessionLabel(session)}
+	use:modal={{ onClose: close, enabled: !asPage }}
 >
 	<div class="mx-auto max-w-2xl px-4 pb-24">
-		<div class="sticky top-0 z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5">
+		<div class="sticky {asPage ? 'top-16' : 'top-0'} z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5">
 		<div class="flex items-center justify-between">
 			<button type="button" onclick={close} class="-ml-2 px-2 py-2 text-sm text-steel hover:text-ink">‹ Back</button>
 			<div class="flex items-center gap-1">

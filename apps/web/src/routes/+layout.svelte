@@ -10,7 +10,6 @@
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { breadcrumbFor } from '$lib/breadcrumbs';
 	import { installClientErrorReporting } from '$lib/clientErrors';
-	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 

@@ -16,11 +16,14 @@
 	let {
 		open,
 		session,
+		asPage = false,
 		onSaved,
 		onClose,
 	}: {
 		open: boolean;
 		session: ClientSession;
+		/** True when this is a route, so it renders in flow instead of as a sheet. */
+		asPage?: boolean;
 		onSaved: (notes: string) => void;
 		onClose: () => void;
 	} = $props();
@@ -48,21 +51,25 @@
 
 {#if open}
 	<div
-		class="sg-sheet fixed inset-0 flex items-end justify-center"
-		role="dialog"
-		aria-modal="true"
-		aria-label={`Notes for ${sessionLabel(session)}`}
-		use:modal={onClose}
+		class={asPage ? 'w-full' : 'sg-sheet fixed inset-0 flex items-end justify-center'}
+		role={asPage ? undefined : 'dialog'}
+		aria-modal={asPage ? undefined : 'true'}
+		aria-label={asPage ? undefined : `Notes for ${sessionLabel(session)}`}
+		use:modal={{ onClose, enabled: !asPage }}
 	>
-		<button
-			type="button"
-			aria-label="Close notes"
-			onclick={onClose}
-			class="absolute inset-0 bg-ink/40"
-			transition:sheetOverlay
-		></button>
+		{#if !asPage}
+			<button
+				type="button"
+				aria-label="Close notes"
+				onclick={onClose}
+				class="absolute inset-0 bg-ink/40"
+				transition:sheetOverlay
+			></button>
+		{/if}
 		<div
-			class="relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper"
+			class={asPage
+				? 'relative mx-auto flex w-full max-w-2xl flex-col rounded-2xl border border-hairline bg-paper'
+				: 'relative flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper'}
 			transition:sheetPanel
 		>
 		<div class="flex-1 overflow-y-auto overscroll-contain px-4 pt-3">
