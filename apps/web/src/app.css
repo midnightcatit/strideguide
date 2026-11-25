@@ -28,6 +28,20 @@
 	--danger: #dc2626;
 	--cool: #2f6df6;
 	--cool-wash: rgba(47, 109, 246, 0.1);
+	/*
+	 * Categorical chart palette. Mirrors @strideguide/shared/tokens (chartColor);
+	 * kept inline so SSR has no theme flash. One hue per metric family, so a
+	 * metric keeps its colour on every surface. Read by the LayerChart bridge
+	 * below and by the chart components.
+	 */
+	--chart-1: #4f46e5;
+	--chart-2: #2563eb;
+	--chart-3: #0d9488;
+	--chart-4: #15803d;
+	--chart-5: #b45309;
+	--chart-6: #be185d;
+	--chart-7: #7c3aed;
+	--chart-8: #dc2626;
 	--pressure: #3b6fe0;
 	--tint-easy: #ddebe1;
 	--tint-steady: #f2e6cb;
@@ -114,6 +128,14 @@
 		--danger: #f2726f;
 		--cool: #7fb0ff;
 		--cool-wash: rgba(127, 176, 255, 0.14);
+		--chart-1: #a5b4fc;
+		--chart-2: #93c5fd;
+		--chart-3: #5eead4;
+		--chart-4: #4ade80;
+		--chart-5: #fbbf24;
+		--chart-6: #f9a8d4;
+		--chart-7: #c4b5fd;
+		--chart-8: #fca5a5;
 		--pressure: #7fa3e0;
 		--tint-easy: #1a2e23;
 		--tint-steady: #332814;
@@ -143,6 +165,14 @@
 	--danger: #dc2626;
 	--cool: #2f6df6;
 	--cool-wash: rgba(47, 109, 246, 0.1);
+	--chart-1: #4f46e5;
+	--chart-2: #2563eb;
+	--chart-3: #0d9488;
+	--chart-4: #15803d;
+	--chart-5: #b45309;
+	--chart-6: #be185d;
+	--chart-7: #7c3aed;
+	--chart-8: #dc2626;
 	--tint-easy: #ddebe1;
 	--tint-steady: #f2e6cb;
 	--tint-hard: #f3dcd8;
@@ -170,6 +200,14 @@
 	--danger: #f2726f;
 	--cool: #7fb0ff;
 	--cool-wash: rgba(127, 176, 255, 0.14);
+	--chart-1: #a5b4fc;
+	--chart-2: #93c5fd;
+	--chart-3: #5eead4;
+	--chart-4: #4ade80;
+	--chart-5: #fbbf24;
+	--chart-6: #f9a8d4;
+	--chart-7: #c4b5fd;
+	--chart-8: #fca5a5;
 	--pressure: #7fa3e0;
 	--tint-easy: #1a2e23;
 	--tint-steady: #332814;
@@ -198,6 +236,14 @@
 	--color-danger: var(--danger);
 	--color-cool: var(--cool);
 	--color-cool-wash: var(--cool-wash);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--color-chart-6: var(--chart-6);
+	--color-chart-7: var(--chart-7);
+	--color-chart-8: var(--chart-8);
 	--color-tint-easy: var(--tint-easy);
 	--color-tint-steady: var(--tint-steady);
 	--color-tint-hard: var(--tint-hard);
@@ -209,6 +255,23 @@
 	--font-display: 'Space Grotesk', system-ui, sans-serif;
 	--font-body: 'IBM Plex Sans', system-ui, sans-serif;
 	--font-data: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/*
+ * LayerChart theme bridge. LayerChart reads its colours from a small set of
+ * variables on `.lc-root-container`; a portaled tooltip renders outside that
+ * element (on body), so it carries its own copy via `.lc-tooltip-root`. Both
+ * point at the app tokens, so charts and tooltips follow the theme with no
+ * per-component colour wiring. The categorical palette rides along as the
+ * default mark colour.
+ */
+.lc-root-container,
+.lc-tooltip-root {
+	--color-primary: var(--chart-2);
+	--color-surface-100: var(--paper);
+	--color-surface-200: var(--sunken);
+	--color-surface-300: var(--hairline);
+	--color-surface-content: var(--ink);
 }
 
 html,

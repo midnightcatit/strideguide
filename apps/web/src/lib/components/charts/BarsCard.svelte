@@ -1,0 +1,89 @@
+<script lang="ts">
+	import { BarChart, type ChartAnnotations } from 'layerchart';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import ChartCard from './ChartCard.svelte';
+	import ChartTooltip from './ChartTooltip.svelte';
+	import { shortDay } from '$lib/chartTheme';
+
+	/**
+	 * A daily metric as bars, with an optional goal line. Takes the metric's
+	 * family colour, a real axis and grid, and a hover tooltip. Used for steps,
+	 * active energy and active-zone minutes, where each day stands on its own.
+	 */
+	let {
+		title,
+		value,
+		unit,
+		color,
+		change = null,
+		points,
+		format,
+		goal = null,
+		height = 150,
+		note,
+	}: {
+		title: string;
+		value: string;
+		unit?: string;
+		color: string;
+		change?: number | null;
+		points: { date: string; value: number | null }[];
+		format: (n: number) => string;
+		goal?: { value: number; label?: string } | null;
+		height?: number;
+		note?: string;
+	} = $props();
+
+	const motion = $derived(prefersReducedMotion.current ? 'none' : undefined);
+
+	const data = $derived(points.map((p) => ({ date: p.date, value: p.value ?? 0 })));
+
+	const annotations = $derived<ChartAnnotations>(
+		goal
+			? [
+					{
+						type: 'line',
+						y: goal.value,
+						label: goal.label ?? 'Goal',
+						labelPlacement: 'top',
+						labelXOffset: 4,
+						labelYOffset: -2,
+						props: {
+							line: { stroke: 'var(--steel)', dashArray: [3, 3], strokeWidth: 1.5 },
+							label: { fill: 'var(--steel)' },
+						},
+					},
+				]
+			: [],
+	);
+</script>
+
+<ChartCard {title} {value} {unit} {color} {change} {note}>
+	<BarChart
+		{data}
+		x="date"
+		y="value"
+		series={[{ key: 'value', label: title, color }]}
+		axis={true}
+		grid={true}
+		legend={false}
+		{annotations}
+		props={{
+			xAxis: { format: (v: string) => shortDay(v), tickLength: 0, stroke: 'var(--hairline)', fill: 'var(--steel)' },
+			yAxis: { format, tickLength: 0, stroke: 'var(--hairline)', fill: 'var(--steel)' },
+			grid: { y: { stroke: 'var(--hairline)', strokeWidth: 1 } },
+			bars: { radius: 3 },
+		}}
+		padding={{ top: 8, right: 8, bottom: 22, left: 48 }}
+		{motion}
+		{height}
+	>
+		{#snippet tooltip({ context })}
+			<ChartTooltip
+				{context}
+				header={(d) => shortDay(d.date)}
+				items={(d) => [{ label: title, value: format(d.value), color }]}
+			/>
+		{/snippet}
+	</BarChart>
+</ChartCard>

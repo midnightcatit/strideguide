@@ -13,7 +13,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@strideguide/shared": "workspace:*"
+    "@strideguide/shared": "workspace:*",
+    "layerchart": "^2.11.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-cloudflare": "^4.9.0",
