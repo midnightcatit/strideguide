@@ -488,3 +488,29 @@ export async function rollUpDataPoints(
 	const parsed = (await res.json()) as GoogleRollupResponse;
 	return { rollupDataPoints: parsed.rollupDataPoints ?? [], nextPageToken: parsed.nextPageToken ?? '' };
 }
+
+/**
+ * Roll a data type up across a bounded number of pages. A day-windowed rollup
+ * returns only `pageSize` windows per page, so a backfill or a long-idle
+ * connection would otherwise stop at the first page and drop every day after it.
+ * `maxPages` keeps one pass cheap; the caller keeps the window, so the next run
+ * picks up where this one stopped.
+ */
+export async function rollUpDataPointsBounded(
+	accessToken: string,
+	dataType: GoogleHealthDataTypeValue,
+	options: RollupOptions & { maxPages?: number },
+): Promise<GoogleRollupDataPoint[]> {
+	const maxPages = options.maxPages ?? 1;
+	const out: GoogleRollupDataPoint[] = [];
+	let pageToken = options.pageToken;
+
+	for (let page = 0; page < maxPages; page++) {
+		const res = await rollUpDataPoints(accessToken, dataType, { ...options, pageToken });
+		out.push(...(res.rollupDataPoints ?? []));
+		if (!res.nextPageToken) break;
+		pageToken = res.nextPageToken;
+	}
+
+	return out;
+}

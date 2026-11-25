@@ -34,6 +34,7 @@ import {
 	syncSince,
 	totalCaloriesRollupByDate,
 	DEFAULT_SYNC_WINDOW_DAYS,
+	SYNC_OVERLAP_HOURS,
 } from './google-health-map';
 
 const runningExercise: GoogleDataPoint = {
@@ -446,12 +447,21 @@ describe('daily merge and projection', () => {
 });
 
 describe('sync window', () => {
-	it('resumes from the last sync time', () => {
+	it('resumes from just before the last sync, less the overlap', () => {
 		const last = new Date('2026-04-19T10:00:00Z');
-		expect(syncSince(last, new Date('2026-04-20T10:00:00Z'))).toEqual(last);
+		const since = syncSince(last, new Date('2026-04-20T10:00:00Z'));
+		expect(since).toEqual(new Date(last.getTime() - SYNC_OVERLAP_HOURS * 60 * 60 * 1000));
+		// The margin is a fixed number of hours, so a late-arriving interval or a
+		// re-edited reading from before the last sync is read again.
+		expect((last.getTime() - since.getTime()) / (60 * 60 * 1000)).toBe(SYNC_OVERLAP_HOURS);
 	});
 
-	it('looks back a bounded window on a first sync', () => {
+	it('honours an explicit overlap', () => {
+		const last = new Date('2026-04-19T10:00:00Z');
+		expect(syncSince(last, last, DEFAULT_SYNC_WINDOW_DAYS, 0)).toEqual(last);
+	});
+
+	it('looks back a bounded window on a first sync, with no overlap', () => {
 		const now = new Date('2026-04-20T10:00:00Z');
 		const since = syncSince(null, now);
 		const days = (now.getTime() - since.getTime()) / (24 * 60 * 60 * 1000);

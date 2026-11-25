@@ -10,7 +10,7 @@ import { getCached, putCache } from './cache';
 import {
 	GoogleHealthDataType,
 	listDataPointsBounded,
-	rollUpDataPoints,
+	rollUpDataPointsBounded,
 	type GoogleDataPoint,
 	type GoogleHealthDataTypeValue,
 	type GoogleRollupDataPoint,
@@ -54,9 +54,10 @@ import {
  *
  * The types to pull live in the two registries below, not in branches: a new
  * data type is one entry with its page size, filter shape and mapper. Each run is
- * bounded (a small page count per type) and resumes from `lastSyncedAt`, so the
- * next run picks up where this one stopped. Failures land on the connection's
- * status; nothing here logs a token.
+ * bounded (a small page count per type) and resumes from `lastSyncedAt` minus an
+ * overlap, so the next run picks up where this one stopped. A type that fails is
+ * named on the connection and in the log, and the resume point is held back so
+ * the failed window is re-read; nothing here logs a token.
  */
 
 /** How a filter start is written for a type: interval, sample, daily or session. */
@@ -222,23 +223,44 @@ function startOfUtcDay(date: Date): Date {
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
+/** What one pull pass collected, and which data types it could not read. */
+export interface PullOutcome {
+	daily: DailyPatch[];
+	samples: MappedSample[];
+	failedTypes: string[];
+}
+
+/**
+ * Thrown when every registered type failed, so the run is treated as an error
+ * rather than a quiet partial success. Carries the failed type names so the
+ * connection can record them.
+ */
+export class SyncPullError extends Error {
+	constructor(readonly failedTypes: string[]) {
+		super('every data type fetch failed');
+		this.name = 'SyncPullError';
+	}
+}
+
 /**
  * Fetch every registered type for the window, bounded by maxPages.
  *
  * Each type is fetched on its own. If one fails (say the token lacks the scope
- * for that data type), the rest still sync; only a run where every type fails is
- * treated as an error, so a partial grant does not stall the rest.
+ * for that data type), the rest still sync and the failed type is named in the
+ * result, so the caller can hold the resume point back and re-read that window.
+ * Only a run where every type fails is thrown as an error, so a partial grant
+ * does not stall the rest.
  */
 async function pullHealthData(
 	accessToken: string,
 	since: Date,
 	now: Date,
 	options: SyncOptions,
-): Promise<{ daily: DailyPatch[]; samples: MappedSample[] }> {
+): Promise<PullOutcome> {
 	const maxPages = options.maxPages ?? 2;
 	const daily: DailyPatch[] = [];
 	const samples: MappedSample[] = [];
-	let failures = 0;
+	const failedTypes: string[] = [];
 	let attempts = 0;
 
 	for (const pull of DAILY_PULLS) {
@@ -247,7 +269,7 @@ async function pullHealthData(
 			const points = await fetchPoints(accessToken, pull, since, maxPages, options.baseUrl);
 			daily.push(...pull.map(points));
 		} catch {
-			failures += 1;
+			failedTypes.push(pull.dataType);
 		}
 	}
 
@@ -258,16 +280,17 @@ async function pullHealthData(
 	for (const pull of ROLLUP_PULLS) {
 		attempts += 1;
 		try {
-			const res = await rollUpDataPoints(accessToken, pull.dataType, {
+			const points = await rollUpDataPointsBounded(accessToken, pull.dataType, {
 				rangeStart,
 				rangeEnd,
 				windowSize: `${ROLLUP_WINDOW_SECONDS}s`,
 				pageSize: pull.pageSize,
+				maxPages,
 				baseUrl: options.baseUrl,
 			});
-			daily.push(...pull.map(res.rollupDataPoints ?? []));
+			daily.push(...pull.map(points));
 		} catch {
-			failures += 1;
+			failedTypes.push(pull.dataType);
 		}
 	}
 
@@ -280,14 +303,36 @@ async function pullHealthData(
 				if (row) samples.push(row);
 			}
 		} catch {
-			failures += 1;
+			failedTypes.push(pull.dataType);
 		}
 	}
 
-	if (attempts > 0 && failures === attempts) {
-		throw new Error('every data type fetch failed');
+	if (attempts > 0 && failedTypes.length === attempts) {
+		throw new SyncPullError(failedTypes);
 	}
-	return { daily, samples };
+	return { daily, samples, failedTypes };
+}
+
+/**
+ * The resume point and failure record a finished run writes. The watermark only
+ * moves to `now` when every type was read; if any type failed, the previous
+ * value stands so the next run re-reads the window that type missed. The failed
+ * names are stored so the failure is visible on the connection.
+ */
+export interface SyncOutcome {
+	lastSyncedAt: Date | null;
+	lastSyncFailedTypes: string | null;
+}
+
+export function resolveSyncOutcome(
+	previous: Date | null,
+	now: Date,
+	failedTypes: string[],
+): SyncOutcome {
+	if (failedTypes.length === 0) {
+		return { lastSyncedAt: now, lastSyncFailedTypes: null };
+	}
+	return { lastSyncedAt: previous, lastSyncFailedTypes: failedTypes.join(',') };
 }
 
 /**
@@ -570,13 +615,13 @@ async function syncActivities(
 
 /**
  * A short, token-free reason for a failed sync, kept for the error log. Our own
- * errors never carry a token (a refresh failure says so, a provider error names
- * the status, a D1 error names the SQL), so the message is safe to store.
+ * errors never carry a token, and the reason stops at the first line: D1 errors
+ * append the SQL and its bound params on later lines, which we do not persist.
  */
 export function syncFailureReason(error: unknown): string {
 	const detail = error instanceof Error ? error.message : String(error);
-	const trimmed = detail.replace(/\s+/g, ' ').trim().slice(0, 300);
-	return trimmed ? `google health sync failed: ${trimmed}` : 'google health sync failed';
+	const firstLine = detail.split('\n')[0]!.replace(/\s+/g, ' ').trim().slice(0, 300);
+	return firstLine ? `google health sync failed: ${firstLine}` : 'google health sync failed';
 }
 
 /**
@@ -595,21 +640,38 @@ export async function syncConnection(
 
 		const now = new Date();
 		const since = syncSince(connection.lastSyncedAt, now);
-		const { daily, samples } = await pullHealthData(accessToken, since, now, options);
+		const pull = await pullHealthData(accessToken, since, now, options);
+		const failedTypes = [...pull.failedTypes];
 
-		const exercisePoints = await syncActivities(accessToken, since, options).catch(() => []);
+		// Exercises are their own type; a failed fetch names it here so the run is
+		// held back instead of quietly dropping the window.
+		let exercisePoints: GoogleDataPoint[] = [];
+		try {
+			exercisePoints = await syncActivities(accessToken, since, options);
+		} catch {
+			failedTypes.push(GoogleHealthDataType.exercise);
+		}
 
 		const activityCount = await upsertActivities(db, connection.userId, exercisePoints);
-		const dailyCount = await upsertDaily(db, connection.userId, daily);
-		const metricCount = await upsertMetrics(db, connection.userId, daily);
-		const sampleCount = await upsertSamples(db, connection.userId, samples);
+		const dailyCount = await upsertDaily(db, connection.userId, pull.daily);
+		const metricCount = await upsertMetrics(db, connection.userId, pull.daily);
+		const sampleCount = await upsertSamples(db, connection.userId, pull.samples);
+
+		const outcome = resolveSyncOutcome(connection.lastSyncedAt, now, failedTypes);
+		if (failedTypes.length > 0) {
+			console.warn('google_health_sync_partial', {
+				connectionId: connection.id,
+				failedTypes,
+			});
+		}
 
 		await db
 			.update(schema.connections)
 			.set({
-				lastSyncedAt: now,
+				lastSyncedAt: outcome.lastSyncedAt,
 				syncRequestedAt: null,
 				status: 'connected',
+				lastSyncFailedTypes: outcome.lastSyncFailedTypes,
 				updatedAt: now,
 			})
 			.where(eq(schema.connections.id, connection.id));
@@ -621,10 +683,21 @@ export async function syncConnection(
 			samples: sampleCount,
 		};
 	} catch (error) {
+		const failedTypes = error instanceof SyncPullError ? error.failedTypes : null;
+		console.error('google_health_sync_failed', {
+			connectionId: connection.id,
+			failedTypes,
+			reason: syncFailureReason(error),
+		});
 		await db
 			.update(schema.connections)
-			.set({ status: 'error', updatedAt: new Date() })
-			.where(eq(schema.connections.id, connection.id));
+			.set({
+				status: 'error',
+				updatedAt: new Date(),
+				...(failedTypes ? { lastSyncFailedTypes: failedTypes.join(',') } : {}),
+			})
+			.where(eq(schema.connections.id, connection.id))
+			.catch(() => undefined);
 		await db
 			.insert(schema.appErrors)
 			.values({
@@ -705,7 +778,12 @@ export async function manualSyncConnection(
 		.where(eq(schema.connections.id, connection.id))
 		.limit(1);
 	const updated = rows[0];
-	const succeeded = updated?.status === 'connected' && updated.lastSyncedAt != null;
+	// A run that named any failed type is not a clean success, so it is neither
+	// cached nor reported as synced; the caller can ask again.
+	const succeeded =
+		updated?.status === 'connected' &&
+		updated.lastSyncedAt != null &&
+		updated.lastSyncFailedTypes == null;
 
 	if (succeeded) {
 		await putCache(
@@ -748,6 +826,15 @@ export async function runConnectionSyncs(env: Env, db: Db): Promise<void> {
 		.limit(MAX_CONNECTIONS_PER_RUN);
 
 	for (const row of rows) {
-		await syncConnection(env, db, row);
+		try {
+			await syncConnection(env, db, row);
+		} catch (error) {
+			// syncConnection records its own failure; this guard keeps one failing
+			// row from skipping every connection after it in the run.
+			console.error('google_health_sync_failed', {
+				connectionId: row.id,
+				reason: syncFailureReason(error),
+			});
+		}
 	}
 }

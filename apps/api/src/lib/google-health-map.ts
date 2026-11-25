@@ -645,14 +645,27 @@ export function healthRowValues(patch: DailyPatch): DailyRowValues {
 export const DEFAULT_SYNC_WINDOW_DAYS = 7;
 
 /**
- * The instant to pull records since. A prior sync resumes from its own end; a
- * first sync looks back a bounded number of days so the first pass stays small.
+ * How far before the previous sync to re-read on resume. Google delivers
+ * intervals and sleep whose start_time sits before the prior sync, and re-edited
+ * readings arrive after their own start, so a window that begins exactly at the
+ * last sync would miss both. Every read upserts on its own key, so the overlap
+ * costs a re-read, never a duplicate.
+ */
+export const SYNC_OVERLAP_HOURS = 24;
+
+/**
+ * The instant to pull records since. A prior sync resumes from just before its
+ * own end, minus the overlap, so late-arriving data is not skipped; a first sync
+ * looks back a bounded number of days so the first pass stays small.
  */
 export function syncSince(
 	lastSyncedAt: Date | null | undefined,
 	now: Date,
 	windowDays: number = DEFAULT_SYNC_WINDOW_DAYS,
+	overlapHours: number = SYNC_OVERLAP_HOURS,
 ): Date {
-	if (lastSyncedAt) return lastSyncedAt;
+	if (lastSyncedAt) {
+		return new Date(lastSyncedAt.getTime() - overlapHours * 60 * 60 * 1000);
+	}
 	return new Date(now.getTime() - windowDays * 24 * 60 * 60 * 1000);
 }
