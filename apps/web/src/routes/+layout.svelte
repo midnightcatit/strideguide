@@ -44,7 +44,15 @@
 	// and header groups, so only those animate. No support, or reduced motion,
 	// means an instant change (the keyed content wrapper then carries a short
 	// enter for browsers without the API).
-	onNavigate((navigation) => {
+	onNavigate(async (navigation) => {
+		// Make sure the shared data the next route renders from is ready before the
+		// swap. The plan store is the one every app route reads, and without this
+		// the transition captures the next route's pre-data frame (a loading line
+		// or the no-plan empty state) because the store loads in onMount, after
+		// navigation.complete. It is idempotent, so later navigations are instant.
+		if (auth.checked && auth.user) {
+			await ensurePlan().catch(() => {});
+		}
 		if (typeof document === 'undefined') return;
 		const doc = document as Document & {
 			startViewTransition?: (cb: () => void | Promise<void>) => unknown;

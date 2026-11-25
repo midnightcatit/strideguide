@@ -16,7 +16,6 @@
 	import WeekPreviewCard from '$lib/components/WeekPreviewCard.svelte';
 	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
 	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
-	import HealthPreviewCard from '$lib/components/HealthPreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
 
 	// The recovery payload carries a steps series alongside the days. The shared
@@ -239,16 +238,25 @@
 			/>
 			<StreakPreviewCard {streak} trainedDays={logDays} skippedDays={skippedDaySet} {todayIso} from="/progress" />
 			<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} {weeklyMax} from="/progress" />
-			<HealthPreviewCard payload={health} from="/progress" />
 		</div>
 	</section>
 
 	{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
+		<!-- One card of mini widgets that opens the full health page, matching the
+		     dashboard. -->
 		<section aria-labelledby="p-health" class="mb-7">
-			<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" />
+			<div class="flex items-baseline justify-between gap-3">
+				<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" />
+				<a href="/progress/health?from=/progress" class="shrink-0 text-xs font-medium text-signal-ink hover:underline">See all →</a>
+			</div>
 			<Card>
-				<HealthSummary payload={health} max={6} />
-				<a href="/progress/health?from=/progress" class="mt-3 inline-block text-xs text-signal-ink hover:underline">See all health data →</a>
+				<a
+					href="/progress/health?from=/progress"
+					aria-label="Open all your health data"
+					class="no-press block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-ink"
+				>
+					<HealthSummary payload={health} max={6} />
+				</a>
 			</Card>
 		</section>
 	{/if}
