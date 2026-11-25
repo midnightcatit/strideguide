@@ -605,6 +605,78 @@ export const PF_MACHINES: MachineExercise[] = [
 			'Rushing the recovery between strokes.',
 		],
 	},
+	{
+		name: 'Battling ropes',
+		muscles: ['deltoids', 'pectoralis major', 'forearms'],
+		pattern: 'cardio',
+		equipment: 'battle ropes',
+		why: 'A short, hard conditioning move that lifts the heart rate and works the shoulders and trunk without loading the legs.',
+		feel: 'Burning in the shoulders and a quick breath, with the trunk holding you steady.',
+		form: [
+			'Hold a rope in each hand with the knees soft and the chest up.',
+			'Drive one arm up and the other down fast, alternating.',
+			'Keep the waves reaching the anchor and the hips still.',
+		],
+		mistakes: [
+			'Standing tall and swinging the arms instead of driving waves.',
+			'Letting the shoulders round forward.',
+			'Holding the breath.',
+		],
+	},
+	{
+		name: 'Medicine-ball chest pass',
+		muscles: ['pectoralis major', 'deltoids', 'triceps brachii'],
+		pattern: 'push',
+		equipment: 'medicine ball',
+		why: 'Trains upper-body power the way a push does, quick and forceful, which is useful for arm drive and general athleticism.',
+		feel: 'A strong push through the chest and arms as you throw.',
+		form: [
+			'Hold the ball at the chest with the elbows out.',
+			'Throw it straight forward to a partner or wall.',
+			'Catch and reset, then repeat with the same force.',
+		],
+		mistakes: [
+			'Pushing with the arms only and no leg or hip drive.',
+			'Throwing with a rounded back.',
+			'Letting the effort drop as the set goes on.',
+		],
+	},
+	{
+		name: 'Medicine-ball slam',
+		muscles: ['rectus abdominis', 'latissimus dorsi', 'deltoids'],
+		pattern: 'core',
+		equipment: 'medicine ball',
+		why: 'A trunk-driven power move that trains the abs to snap the whole body, the kind of force transfer that helps at the end of a run.',
+		feel: 'The abs and lats doing the work as you drive the ball down.',
+		form: [
+			'Lift the ball overhead with the arms long.',
+			'Slam it down hard with the whole trunk, hinging at the hips.',
+			'Pick it up and reset, keeping the back flat.',
+		],
+		mistakes: [
+			'Slamming with the arms only and no trunk.',
+			'Rounding the lower back on the pick-up.',
+			'Rushing so the slams get smaller.',
+		],
+	},
+	{
+		name: 'TRX row',
+		muscles: ['latissimus dorsi', 'rhomboids', 'biceps brachii'],
+		pattern: 'pull',
+		equipment: 'suspension trainer',
+		why: 'A bodyweight row on the suspension straps that trains the upper back and the trunk holding you steady, with no demo frames in the open library yet.',
+		feel: 'The back working as you pull the chest to the handles, with the trunk braced.',
+		form: [
+			'Hold the handles and lean back so the body is straight and the heels take the weight.',
+			'Pull the chest up to the handles, elbows in and shoulders down.',
+			'Lower slowly to a straight line, keeping the hips up.',
+		],
+		mistakes: [
+			'Letting the hips sag so the body bends at the waist.',
+			'Pulling with the arms only and no shoulder-blade movement.',
+			'Standing too upright so there is no load.',
+		],
+	},
 ];
 
 /** A running-relevant strength circuit: legs + posterior chain + push/pull balance. */

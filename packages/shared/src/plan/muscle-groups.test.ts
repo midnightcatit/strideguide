@@ -94,9 +94,9 @@ describe('groupByMuscleGroup', () => {
 		expect(groups.every((g) => g.moves.length > 0)).toBe(true);
 	});
 
-	it('puts the rower in its own Cardio group', () => {
+	it('groups the cardio moves together', () => {
 		const groups = groupByMuscleGroup(PF_MACHINES);
 		const cardio = groups.find((g) => g.group === 'Cardio');
-		expect(cardio?.moves.map((m) => m.name)).toEqual(['Rowing machine']);
+		expect(cardio?.moves.map((m) => m.name)).toEqual(['Rowing machine', 'Battling ropes']);
 	});
 });
