@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import {
 		store,
 		ensurePlan,
@@ -13,6 +13,7 @@
 	import { clearProgress } from '$lib/sessionProgress.svelte';
 	import { type ClientSession, addDaysIso, dayIndexInWeek, localIso } from '$lib/plan';
 	import { sessionHref, logHref, playHref } from '$lib/sessionNav';
+	import { readView, saveView } from '$lib/viewState';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
 	import Card from '$lib/components/Card.svelte';
@@ -50,6 +51,8 @@
 	);
 
 	let revealId = $state<string | null>(null);
+	let activeCardId = $state<string | null>(null);
+	let restoreCardId = $state<string | null>(null);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -60,7 +63,15 @@
 	onMount(() => {
 		const reveal = page.url.searchParams.get('reveal');
 		if (reveal) revealId = reveal;
+		// A Back from a session view: put the card back where it was.
+		const saved = readView<{ card: string | null }>(`calendar-day:${date}`);
+		if (saved) restoreCardId = saved.card;
 		void ensurePlan();
+	});
+
+	// Save the card as the runner drills into a session, so the Back can put it back.
+	beforeNavigate(() => {
+		saveView(`calendar-day:${date}`, { card: activeCardId });
 	});
 
 	function dateHeading(iso: string): string {
@@ -106,7 +117,7 @@
 	</header>
 
 	{#if sessions.length}
-		<SessionCarousel items={sessions} {card} bind:revealId />
+		<SessionCarousel items={sessions} {card} bind:revealId bind:activeId={activeCardId} initialId={restoreCardId} />
 	{:else}
 		<Card tone="sunken" frame>
 			<p class="text-sm text-steel">Rest day. Nothing scheduled here, and that is part of the plan.</p>

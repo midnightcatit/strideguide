@@ -12,6 +12,7 @@
 		card,
 		revealId = $bindable<string | null>(null),
 		activeId = $bindable<string | null>(null),
+		initialId = null,
 		label = 'workouts',
 	}: {
 		items: T[];
@@ -20,6 +21,10 @@
 		// The id of the card currently at the scroll center, so a caller can save
 		// and restore where the day was left.
 		activeId?: string | null;
+		// A saved scroll position to restore on mount, from a Back. It scrolls
+		// instantly, unlike the reveal, because the runner expects to be where they
+		// left, not to watch it animate there.
+		initialId?: string | null;
 		label?: string;
 	} = $props();
 
@@ -67,6 +72,18 @@
 		if (!node) return;
 		node.scrollIntoView({ behavior: scrollBehavior(), block: 'nearest', inline: 'nearest' });
 		revealId = null;
+	});
+
+	// Restore a saved scroll position once, when the card is on screen. Waits for
+	// the list, so it works while the day's data is still arriving.
+	let restored = false;
+	$effect(() => {
+		void items.length;
+		if (restored || !initialId || !el) return;
+		const node = el.querySelector(`[data-item-id="${CSS.escape(initialId)}"]`);
+		if (!node) return;
+		restored = true;
+		node.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
 	});
 </script>
 
