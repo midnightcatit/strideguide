@@ -113,7 +113,12 @@
 
 	const dateLabel = $derived(
 		new Date(`${selectedIso}T00:00:00Z`)
-			.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
+			.toLocaleDateString(undefined, {
+				weekday: 'short',
+				day: 'numeric',
+				month: 'short',
+				timeZone: 'UTC',
+			})
 			.toUpperCase(),
 	);
 
@@ -183,6 +188,7 @@
 			weekday: 'short',
 			day: 'numeric',
 			month: 'short',
+			timeZone: 'UTC',
 		});
 	}
 
