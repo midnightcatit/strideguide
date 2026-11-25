@@ -88,7 +88,7 @@ Add to that set deliberately, not broadly.
 ## Workflow
 
 - **Work in an isolated worktree, not the shared checkout.** Any task that changes files runs in its
-  own working tree: an Agent Manager worktree, or `git worktree add` for a plain branch. Several
+  own working tree: use `git worktree add` for a plain branch. Several
   sessions may share one repo directory, so editing there risks colliding with another session's
   uncommitted work. `git worktree list` shows what is checked out where.
 - **Stage only the files you changed.** Use `git add <path>` (or review `git status` first), never a
@@ -105,99 +105,39 @@ Add to that set deliberately, not broadly.
 
 ## Delegation (main session)
 
-In the main session, prefer delegating independent, read-heavy or parallelizable work to a subagent
-over doing it serially.
+In the main session, delegate independent, read-heavy or parallelizable work to the `task` tool rather
+than doing it serially. This project does not use Agent Manager: the `agent_manager` and
+`agent_manager_models` tools are denied in `.kilo/kilo.jsonc`, so those calls fail here. Use `task`.
 
-- **Preferred: Agent Manager worktrees** in the VS Code Kilo Code extension, one session per task, each
-  in its own worktree. **Fallback: the dispatched `task` subagents** when Agent Manager is not in use.
+- **Delegate with the `task` tool.** A subagent runs in this session's context and can post a note on
+  the board when it needs to report something back.
 - **Each delegated prompt starts with a pre-plan.** Tell the subagent to research and verify first,
   rework the plan when a better or more nuanced approach exists and say so, then implement, then open a
   PR. Give it the goal, the constraints, the relevant files, and the verification steps.
-- **Completion is a PR, not a message.** An Agent Manager session runs in its own tree and cannot wake
-  the coordinator, so a brief must not rely on a completion message from it. Every brief ends by
-  telling the subagent to open a PR against `main` when it finishes or blocks, with a clear title and a
-  one-line status in the body, and never to merge or deploy. The coordinator finds finished work by
-  checking the Agent Manager list and open PRs, not by waiting for a push. A dispatched `task`
-  subagent is on the coordinator's board and can post a note instead.
+- **Completion is a PR, not a message.** A subagent may not wake the coordinator, so a brief must not
+  rely on a completion message. Every brief ends by telling the subagent to open a PR against `main`
+  when it finishes or blocks, with a clear title and a one-line status in the body, and never to merge
+  or deploy. The coordinator finds finished work by checking open PRs, plus any board note a `task`
+  subagent posts, not by waiting for a push.
 - **The main session reviews and releases.** The main agent reviews every subagent PR, requests changes
   when warranted, merges to `main`, and verifies the auto-deploy. Subagents do not merge or deploy.
 - Everything here still applies to delegated work: an isolated worktree, scoped `git add <path>`,
   additive migrations, no em dashes, tests in `packages/shared`.
-- **Calling Agent Manager (the tested shape).** To start sessions, call `agent_manager` with `action`
-  null, `mode: "worktree"`, `versions: false`, and a `tasks` array, and send every other top-level
-  field as null. Each task has `name`, `branchName`, `baseBranch` and `prompt`. The brief goes in
-  `tasks[].prompt`. The top-level `prompt` field is only for `action: prompt` to an existing session,
-  so on a start request it must be null.
 
-  What not to do, because each has actually failed:
-  - Do not put the brief in the top-level `prompt` and leave the task without one. The validator reads
-    `tasks[].prompt`, so a task that carries no `prompt` is rejected even though the brief sits in the
-    other field. This is the single most common mistake.
-  - Do not send `model`, `variant`, `provider` or `agent` on a task. The user has not asked for a
-    specific model, and a task that carries `model` or `variant` but no `prompt` is the usual
-    rejection. If a different model is genuinely wanted, ask the user first.
-  - Do not retry a rejected call unchanged. Three consecutive invalid-argument failures abort the turn,
-    so fix the shape and resend once.
+## Tool retries
 
-  Other actions, all with `mode`, `tasks` and `versions` null: `action: "list"` reads the overview
-  (call it first, and again after starting, to confirm the session exists); `action: "prompt"` with
-  `sessionID` and the instruction in the top-level `prompt` sends a follow-up to an existing session;
-  `action: "stop"` with `sessionID` stops and removes one; `action: "move"` with `sessionID` and
-  `sectionID` assigns one; `action: "answer"` with `sessionID` and `answers` resolves a pending
-  question.
+A tool call can be rejected before it runs because its arguments do not match its schema. When that
+happens:
 
-  A subagent cannot message the coordinator on its own. It replies only to a request you send it, so a
-  follow-up sent with `action: "prompt"` that asks for a reply can get one. Otherwise the PR is the
-  completion signal: find finished work by reading `action: "list"` and the open PRs, never by waiting
-  for a push.
+- **Never resend the same shape.** The same arguments will be rejected the same way.
+- **Fix it once.** Read the error, change the shape, and send it a single time.
+- **If it is rejected again, switch mechanism.** Do not try a third take on the same call. Use a
+  different tool, or do the step by hand.
+- **Three invalid attempts in a row abort the turn.** The count does not reset between calls, so a
+  retry loop can burn the whole turn. One repair is the budget.
 
-The exact start payload, with every field present. Note the brief is inside `tasks[].prompt`, and the
-top-level `prompt` is null:
-
-```json
-{
-  "action": null,
-  "mode": "worktree",
-  "versions": false,
-  "tasks": [
-    {
-      "name": "health UI",
-      "branchName": "feat/health-ui",
-      "baseBranch": "main",
-      "prompt": "The full brief goes here, inside tasks[].prompt, never the top-level prompt field."
-    }
-  ],
-  "worktreeID": null,
-  "filter": null,
-  "sessionID": null,
-  "prompt": null,
-  "replyTo": null,
-  "sectionID": null,
-  "questionID": null,
-  "answers": null
-}
-```
-
-The same request as it gets rejected, so it is not sent again. Here the brief sits in the top-level
-`prompt`, the task carries option keys it must not, and the task has no `prompt` of its own:
-
-```json
-{
-  "mode": "worktree",
-  "tasks": [
-    {
-      "name": "health UI",
-      "branchName": "feat/health-ui",
-      "model": "claude-sonnet-4.5",
-      "variant": "high"
-    }
-  ],
-  "prompt": "The full brief goes here."
-}
-```
-
-That fails with `A task model requires an initial prompt` and `A task variant requires an initial
-prompt`. The validator reads `tasks[].prompt`, there is none, and the top-level `prompt` is ignored on
-a start. The fix is the payload above: move the brief into `tasks[].prompt`, set the top-level
-`prompt` to null, and delete `model`, `variant`, `provider` and `agent`. When writing the call, put
-`prompt` in the task first and never type those four keys at all.
+The old failure this guards against: a brief sent in the top-level `prompt` with `model` or `variant`
+on a task and no `tasks[].prompt`, which the tool rejects. `scripts/check-am-payload.mjs` checks that
+shape before a call (`pnpm check:am-payload payload.json`, or pipe a payload in as stdin). Agent
+Manager is denied in this project, so treat the script as a reference for what the failure looked
+like, not as a tool this project calls.
