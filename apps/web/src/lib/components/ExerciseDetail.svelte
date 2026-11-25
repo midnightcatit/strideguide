@@ -31,7 +31,7 @@
 	} = $props();
 </script>
 
-<div class="pb-3 pt-1">
+<div class="expand-body">
 	{#if media}
 		<div class="mb-3"><MoveDemo {media} {name} /></div>
 	{/if}
