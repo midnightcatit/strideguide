@@ -77,7 +77,7 @@
 		</div>
 
 		<div class="mt-3 flex items-center gap-2">
-			<span class="rounded-full bg-ok-wash px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ok">Done</span>
+			<span class="rounded-full bg-ok-wash px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ok-ink">Done</span>
 			<p class="text-sm text-steel">Imported from your health app</p>
 		</div>
 	</div>

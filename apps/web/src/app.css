@@ -22,6 +22,7 @@
 	 * neutral, so a colour always reads as a signal (NN/g: colour as signifier).
 	 */
 	--ok: #16a34a;
+	--ok-ink: #166534;
 	--ok-wash: rgba(22, 163, 74, 0.14);
 	--warn: #b45309;
 	--warn-wash: rgba(180, 83, 9, 0.12);
@@ -76,7 +77,7 @@
 	 * any card wash (cool, ok, signal). Kept apart from the state colours above
 	 * so a badge never looks like a status.
 	 */
-	--badge: #b45309;
+	--badge: #92400e;
 	--badge-wash: #faeccf;
 
 	/*
@@ -121,6 +122,7 @@
 		--signal-wash: rgba(169, 155, 255, 0.16);
 		--sunken: #171c25;
 		--ok: #34d399;
+		--ok-ink: #6ee7b7;
 		--ok-wash: rgba(52, 211, 153, 0.16);
 		--warn: #e0a458;
 		--warn-wash: rgba(224, 164, 88, 0.16);
@@ -157,6 +159,7 @@
 	--signal-wash: rgba(109, 94, 240, 0.12);
 	--sunken: #eef1f7;
 	--ok: #16a34a;
+	--ok-ink: #166534;
 	--ok-wash: rgba(22, 163, 74, 0.14);
 	--warn: #b45309;
 	--warn-wash: rgba(180, 83, 9, 0.12);
@@ -177,7 +180,7 @@
 	--tint-strength: #e0e3f0;
 	--tint-mobility: #d8eae6;
 	--tint-crosstrain: #dae8f3;
-	--badge: #b45309;
+	--badge: #92400e;
 	--badge-wash: #faeccf;
 }
 
@@ -227,6 +230,7 @@
 	--color-signal-wash: var(--signal-wash);
 	--color-sunken: var(--sunken);
 	--color-ok: var(--ok);
+	--color-ok-ink: var(--ok-ink);
 	--color-ok-wash: var(--ok-wash);
 	--color-warn: var(--warn);
 	--color-warn-wash: var(--warn-wash);
@@ -394,10 +398,59 @@ summary,
 }
 
 @media (prefers-reduced-motion: reduce) {
-	* {
+	*,
+	*::before,
+	*::after {
 		animation-duration: 0.001ms !important;
+		/* Zeroing the duration alone leaves an infinite loop spinning as fast as
+		   the frame rate; pin the count to one so looping animations stop dead. */
+		animation-iteration-count: 1 !important;
+		animation-delay: -0.001ms !important;
 		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
 	}
+}
+
+/*
+ * Skip link. Off-screen until focused, then it sits over the top-left corner so
+ * a keyboard user can jump straight past the chrome to the main content.
+ */
+.skip-link {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	z-index: 80;
+}
+.skip-link:focus {
+	width: auto;
+	height: auto;
+	overflow: visible;
+	clip-path: none;
+	left: 0.75rem;
+	top: 0.75rem;
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--hairline);
+	border-radius: 0.5rem;
+	background: var(--paper);
+	color: var(--ink);
+	font-size: 0.875rem;
+	font-weight: 500;
+	box-shadow: 0 10px 15px -3px rgba(15, 18, 24, 0.2);
+}
+
+/*
+ * Icon-only controls keep the glyph at its designed size while the tappable box
+ * never falls below the 44px minimum. Opt in with .tap-target.
+ */
+.tap-target {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--tap-min);
+	min-width: var(--tap-min);
 }
 
 /*
@@ -416,6 +469,12 @@ summary,
 
 .breathe {
 	animation: sg-breathe 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.breathe {
+		animation: none;
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -62,12 +62,74 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 		typeof document !== 'undefined' ? document.activeElement : null
 	) as HTMLElement | null;
 
+	/**
+	 * The dialog's own panel (its sheet or card), marked with `data-modal-panel`.
+	 * Focus lands here on open, so the dialog's own heading is read first, instead
+	 * of the first focusable element, which is usually the invisible backdrop.
+	 */
+	const panel = () =>
+		node.matches('[data-modal-panel]')
+			? node
+			: node.querySelector<HTMLElement>('[data-modal-panel]');
+
 	const focusable = () =>
 		Array.from(
 			node.querySelectorAll<HTMLElement>(
 				'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
 			),
-		).filter((el) => el.offsetParent !== null);
+		)
+			// The backdrop is a full-screen dismiss button; it is focusable only so a
+			// tap closes the dialog, and it must never take keyboard focus or sit in
+			// the Tab cycle.
+			.filter((el) => !el.hasAttribute('data-modal-backdrop'))
+			.filter((el) => el.offsetParent !== null);
+
+	/** Focus the panel, or the first real control when no panel is marked. */
+	function focusIn() {
+		const el = panel();
+		if (el) {
+			if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+			el.focus();
+			return;
+		}
+		(focusable()[0] ?? node).focus?.();
+	}
+
+	/**
+	 * Background isolation. The dialog is rendered inside the page tree, so the
+	 * whole shell cannot be made inert without inerting the dialog too. Instead,
+	 * every sibling along the dialog's ancestor chain is marked inert and
+	 * aria-hidden, which hides the header, the tab bar and the page behind the
+	 * modal from the keyboard and from assistive tech alike. Previous values are
+	 * saved, so a stack of overlays restores cleanly in reverse order.
+	 */
+	type Hidden = { el: HTMLElement; aria: string | null; inert: boolean };
+	const hidden: Hidden[] = [];
+	function hideBackground() {
+		let el: HTMLElement | null = node;
+		while (el && el !== document.body && el.parentElement) {
+			const parent: HTMLElement = el.parentElement;
+			for (const child of Array.from(parent.children)) {
+				if (child === el || !(child instanceof HTMLElement)) continue;
+				if (child.hasAttribute('data-modal-keep')) continue;
+				hidden.push({
+					el: child,
+					aria: child.getAttribute('aria-hidden'),
+					inert: child.hasAttribute('inert'),
+				});
+				child.setAttribute('aria-hidden', 'true');
+				child.setAttribute('inert', '');
+			}
+			el = parent;
+		}
+	}
+	function showBackground() {
+		for (const h of hidden.splice(0)) {
+			if (h.aria === null) h.el.removeAttribute('aria-hidden');
+			else h.el.setAttribute('aria-hidden', h.aria);
+			if (!h.inert) h.el.removeAttribute('inert');
+		}
+	}
 
 	function onKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
@@ -80,10 +142,14 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 		if (els.length === 0) return;
 		const first = els[0]!;
 		const last = els[els.length - 1]!;
-		if (e.shiftKey && document.activeElement === first) {
+		const active = document.activeElement;
+		// Tab can start on the panel itself (or the container), which is not in the
+		// focusable list, so a backward wrap is anchored on those too.
+		const atStart = active === first || active === panel() || active === node;
+		if (e.shiftKey && atStart) {
 			e.preventDefault();
 			last.focus();
-		} else if (!e.shiftKey && document.activeElement === last) {
+		} else if (!e.shiftKey && active === last) {
 			e.preventDefault();
 			first.focus();
 		}
@@ -92,8 +158,10 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 	if (typeof document !== 'undefined') {
 		document.addEventListener('keydown', onKeydown);
 		lockScroll();
-		const els = focusable();
-		(els[0] ?? node).focus?.();
+		// Focus before hiding the background, so aria-hidden is never put on an
+		// ancestor of the focused element (which browsers block and warn about).
+		focusIn();
+		hideBackground();
 	}
 
 	return {
@@ -104,6 +172,7 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 			if (typeof document !== 'undefined') {
 				document.removeEventListener('keydown', onKeydown);
 				unlockScroll();
+				showBackground();
 			}
 			previouslyFocused?.focus?.();
 		},

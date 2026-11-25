@@ -24,15 +24,16 @@
 	} = $props();
 
 	const href = $derived(`/progress/volume?from=${from}`);
+	const openId = `volume-open-${crypto.randomUUID()}`;
 </script>
 
-<a {href} class="lift block h-full rounded-xl" aria-label="Volume, open the full distance view">
+<a {href} class="lift block h-full rounded-xl" aria-labelledby={openId}>
 	<Card tone="sunken" class="flex h-full flex-col">
 		<p class="tabular text-[10px] uppercase tracking-widest text-steel">Volume</p>
 		<p class="tabular mt-1 text-lg text-steel">{fmtDistance(doneKm)}<span class="text-sm"> / {fmtDistance(plannedKm)}</span></p>
 		<div class="mt-2.5" aria-hidden="true">
 			<MiniBarStrip values={weekly.map((w) => w.km)} color={TRAINING_PROGRESS} height={22} minBarRatio={0.14} />
 		</div>
-		<p class="mt-auto pt-2 text-[11px] text-signal-ink">See all volume →</p>
+		<p id={openId} class="mt-auto pt-2 text-[11px] text-signal-ink">See all volume →</p>
 	</Card>
 </a>

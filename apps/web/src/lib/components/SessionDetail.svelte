@@ -64,6 +64,7 @@
 	let showWhyDetail = $state(false);
 	let showPreview = $state(false);
 	let showNotes = $state(false);
+	const titleId = `detail-title-${crypto.randomUUID()}`;
 	/** The note shown on the card, seeded from the plan and updated after a save. */
 	let savedNote = $state(untrack(() => session.notes ?? ''));
 	const statusLabel = $derived(
@@ -250,11 +251,13 @@
 
 <div
 	class={asPage
-		? 'flex flex-1 flex-col'
-		: 'overlay-fade fixed inset-0 z-50 flex flex-col bg-paper'}
+		? 'flex flex-1 flex-col outline-none'
+		: 'overlay-fade fixed inset-0 z-50 flex flex-col bg-paper outline-none'}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
-	aria-label={asPage ? undefined : sessionLabel(session)}
+	aria-labelledby={asPage ? undefined : titleId}
+	data-modal-panel
+	tabindex="-1"
 	use:modal={{ onClose: closeFromBackdrop, enabled: !asPage }}
 >
 	<!-- Coloured header band, tinted by the session's demand -->
@@ -268,17 +271,17 @@
 		></div>
 		{#if !asPage}
 			<header class="relative mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 pt-3">
-				<button type="button" onclick={onClose} class="-ml-2 px-2 py-2 text-sm text-paper/90 hover:text-paper">
+				<button type="button" onclick={onClose} class="-ml-2 flex h-11 items-center px-2 text-sm text-paper/90 hover:text-paper">
 					‹ Back
 				</button>
-				<button type="button" onclick={onClose} aria-label="Close" class="px-2 py-2 text-paper/90 hover:text-paper">
+				<button type="button" onclick={onClose} aria-label="Close" class="tap-target rounded-md text-paper/90 hover:text-paper">
 					✕
 				</button>
 			</header>
 		{/if}
 		<div class="relative {col} {asPage ? 'pb-6 pt-6' : 'pb-5 pt-1'}">
 			{#if eyebrow}<p class="tabular text-xs uppercase tracking-widest text-paper/70">{eyebrow}</p>{/if}
-			<h1 class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
+			<h1 id={titleId} class="mt-1 font-display text-2xl font-semibold tracking-tight">{sessionLabel(session)}</h1>
 			<div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-paper/85">
 				<span class="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {skipped
 					? 'bg-paper/10 text-paper/70'
@@ -292,14 +295,14 @@
 
 			<!-- Controls -->
 			<div class="mt-4 flex gap-2">
-				<button type="button" aria-pressed={showPreview} onclick={() => (showPreview = true)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
+				<button type="button" aria-haspopup="dialog" onclick={() => (showPreview = true)} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M2.5 10S5 5.5 10 5.5 17.5 10 17.5 10 15 14.5 10 14.5 2.5 10 2.5 10z" />
 						<circle cx="10" cy="10" r="2.2" />
 					</svg>
 					<span class="text-[10px] uppercase tracking-wide">Preview</span>
 				</button>
-				<button type="button" aria-pressed={asPage ? undefined : showNotes} onclick={openNotes} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
+				<button type="button" aria-haspopup={asPage ? undefined : 'dialog'} onclick={openNotes} class="flex flex-1 flex-col items-center gap-1 rounded-xl border border-paper/15 px-1 py-2 text-paper/85 hover:border-paper hover:text-paper">
 					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M5 3.5h7l3 3v10H5z" />
 						<path d="M8 9h4" />

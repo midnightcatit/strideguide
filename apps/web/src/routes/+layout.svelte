@@ -158,6 +158,7 @@
 	<SignIn />
 {:else}
 	<div class="sg-app min-h-dvh flex flex-col">
+		<a href="#main" class="skip-link">Skip to content</a>
 		{#if !onboarding}
 		<header
 			class="sg-header sticky top-0 border-b border-hairline bg-paper"
@@ -199,7 +200,8 @@
 
 				<div class="flex items-center gap-2">
 					{#if pending > 0}
-						<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync">⟳ {pending}</span>
+						<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync" aria-hidden="true">⟳ {pending}</span>
+						<span class="sr-only" role="status" aria-live="polite">{pending} {pending === 1 ? 'log' : 'logs'} waiting to sync</span>
 					{/if}
 					<AvatarMenu name={avatarName} email={auth.user?.email} seed={auth.user?.id} />
 				</div>
@@ -209,7 +211,7 @@
 
 		{#if updateReady}
 			<div class="mx-auto mt-3 flex w-full max-w-5xl items-center justify-between gap-3 px-4">
-				<div class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline bg-sunken px-4 py-2 text-sm">
+				<div role="status" aria-live="polite" class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline bg-sunken px-4 py-2 text-sm">
 					<span>A new version of Stride Guide is ready.</span>
 					<button
 						type="button"
@@ -222,7 +224,7 @@
 			</div>
 		{/if}
 
-		<main class={bleed ? 'flex flex-1 flex-col pb-24 sm:pb-6' : 'flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6'}>
+		<main id="main" tabindex="-1" class="outline-none {bleed ? 'flex flex-1 flex-col pb-24 sm:pb-6' : 'flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6'}">
 			{#key page.url.pathname}
 				<div class="route-enter">
 					{@render children()}

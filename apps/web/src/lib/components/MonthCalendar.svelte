@@ -164,8 +164,8 @@
 			<span class="calendar-thumb rounded-md bg-ink" style="transform: translateX({mode === 'list' ? '100%' : '0%'})"></span>
 		</span>
 		<div class="relative grid grid-cols-2">
-			<button type="button" aria-pressed={mode === 'month'} onclick={() => setMode('month')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
-			<button type="button" aria-pressed={mode === 'list'} onclick={() => setMode('list')} class="min-h-9 rounded-md px-2.5 py-1 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
+			<button type="button" aria-pressed={mode === 'month'} onclick={() => setMode('month')} class="min-h-11 rounded-md px-2.5 text-xs {mode === 'month' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">Month</button>
+			<button type="button" aria-pressed={mode === 'list'} onclick={() => setMode('list')} class="min-h-11 rounded-md px-2.5 text-xs {mode === 'list' ? 'font-medium text-paper' : 'text-steel hover:text-ink'}">List</button>
 		</div>
 	</div>
 	{#if mode === 'month'}

@@ -25,6 +25,7 @@
 	} = $props();
 
 	const name = $derived(move?.name ?? drill?.name ?? '');
+	const titleId = `form-title-${crypto.randomUUID()}`;
 </script>
 
 {#if open}
@@ -32,27 +33,30 @@
 		class="sg-sheet fixed inset-0"
 		role="dialog"
 		aria-modal="true"
-		aria-label={`${name} form`}
+		aria-labelledby={titleId}
 		use:modal={onClose}
 	>
 		<button
 			class="absolute inset-0 h-full w-full bg-ink/40"
-			aria-label="Close form"
+			aria-label="Close"
+			data-modal-backdrop
 			onclick={onClose}
 			transition:sheetOverlay
 		></button>
 		<div
-			class="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-hairline bg-paper px-4 pb-8 pt-3 shadow-xl"
+			data-modal-panel
+			tabindex="-1"
+			class="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-hairline bg-paper px-4 pb-8 pt-3 shadow-xl outline-none"
 			transition:sheetPanel
 		>
 			<div class="mx-auto mb-2 h-1 w-10 rounded-full bg-hairline" aria-hidden="true"></div>
 			<div class="flex items-start justify-between gap-3">
-				<h2 class="font-display text-lg font-medium">{name}</h2>
+				<h2 id={titleId} class="font-display text-lg font-medium">{name}</h2>
 				<button
 					type="button"
 					onclick={onClose}
-					aria-label="Close form"
-					class="-mr-1 rounded-full px-3 py-1 text-steel hover:text-ink"
+					aria-label="Close"
+					class="tap-target -mr-1 rounded-full text-steel hover:text-ink"
 				>
 					✕
 				</button>

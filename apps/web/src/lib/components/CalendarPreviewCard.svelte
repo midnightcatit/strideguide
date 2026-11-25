@@ -84,9 +84,11 @@
 		if (c.planned) return 'border-transparent bg-signal-wash text-signal-ink';
 		return c.inMonth ? 'border-hairline text-steel' : 'border-transparent text-hairline';
 	}
+
+	const openId = `calendar-open-${crypto.randomUUID()}`;
 </script>
 
-<a href="/calendar" class="lift block h-full rounded-xl" aria-label="Calendar, open the full month view">
+<a href="/calendar" class="lift block h-full rounded-xl" aria-labelledby={openId}>
 	<Card class="flex h-full flex-col">
 		<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 			<div class="min-w-0">
@@ -97,7 +99,7 @@
 						? 'No sessions this month.'
 						: `${month.monthCount} session${month.monthCount === 1 ? '' : 's'} planned.`}
 				</p>
-				<p class="mt-2 text-[11px] text-signal-ink">Open the calendar →</p>
+				<p id={openId} class="mt-2 text-[11px] text-signal-ink">Open the calendar →</p>
 			</div>
 			<div class="w-full sm:max-w-[17rem]">
 				<div class="grid grid-cols-7 gap-1">

@@ -17,6 +17,7 @@
 
 <div
 	class="sticky z-30 -mx-4 border-t border-hairline bg-paper/95 px-4 py-3 backdrop-blur bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] sm:bottom-0"
+	aria-busy={saving}
 >
 	<div class="flex items-center gap-2">
 		<button
@@ -36,4 +37,7 @@
 			{saving ? 'Saving…' : 'Save'}
 		</button>
 	</div>
+	<p class="sr-only" role="status" aria-live="polite">
+		{saving ? 'Saving settings' : dirty ? 'Unsaved changes' : 'All changes saved'}
+	</p>
 </div>

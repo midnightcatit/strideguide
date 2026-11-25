@@ -11,6 +11,7 @@
 	let input = $state('');
 	let sending = $state(false);
 	let error = $state<string | null>(null);
+	let announcement = $state('');
 
 	const starters = [
 		'How hard should today feel?',
@@ -25,12 +26,12 @@
 		input = '';
 		sending = true;
 		error = null;
+		announcement = '';
 		try {
 			const res = await api.chat(q);
-			messages = [
-				...messages,
-				{ role: 'coach', text: res.reply?.trim() || "I don't have a useful answer for that one." },
-			];
+			const reply = res.reply?.trim() || "I don't have a useful answer for that one.";
+			messages = [...messages, { role: 'coach', text: reply }];
+			announcement = `Coach: ${reply}`;
 		} catch {
 			error = 'The coach is unavailable right now. Try again in a moment.';
 		} finally {
@@ -87,8 +88,10 @@
 	</ul>
 {/if}
 
+<p class="sr-only" role="status" aria-live="polite">{announcement}</p>
+
 {#if error}
-	<p class="mt-4 text-sm text-signal-ink">{error}</p>
+	<p role="alert" class="mt-4 text-sm text-danger">{error}</p>
 {/if}
 
 <div class="mt-6 flex gap-2">
@@ -105,6 +108,7 @@
 		type="button"
 		onclick={() => ask(input)}
 		disabled={sending || !input.trim()}
+		aria-busy={sending}
 		class="rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
 	>
 		Send

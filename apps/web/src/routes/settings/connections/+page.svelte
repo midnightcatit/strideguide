@@ -105,11 +105,11 @@
 </p>
 
 {#if connectedParam}
-	<p class="mb-4 rounded-md border border-signal-ink bg-signal-wash px-4 py-3 text-sm">
+	<p role="status" aria-live="polite" class="mb-4 rounded-md border border-signal-ink bg-signal-wash px-4 py-3 text-sm">
 		Linked. The first sync can take a few minutes.
 	</p>
 {:else if errorParam}
-	<p class="mb-4 rounded-md border border-danger px-4 py-3 text-sm">
+	<p role="alert" class="mb-4 rounded-md border border-danger px-4 py-3 text-sm">
 		{ERROR_TEXT[errorParam] ?? 'Something went wrong. Try again.'}
 	</p>
 {/if}
@@ -118,7 +118,7 @@
 	<p class="text-sm text-steel">Loading connections.</p>
 {:else if loadError}
 	<div class="rounded-xl border border-hairline bg-paper p-4">
-		<p class="text-sm text-steel">{loadError}</p>
+		<p role="alert" class="text-sm text-steel">{loadError}</p>
 		<button
 			type="button"
 			onclick={() => load()}
@@ -165,6 +165,7 @@
 							<button
 								type="button"
 								disabled={syncingId !== null}
+								aria-busy={syncingId === provider.id}
 								onclick={() => syncNow(provider)}
 								class="flex items-center gap-2 rounded-md border border-hairline px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink disabled:opacity-60"
 							>
@@ -188,9 +189,9 @@
 							</button>
 						</div>
 						{#if syncNote}
-							<p class="mt-2 text-xs text-steel">{syncNote}</p>
+							<p role="status" aria-live="polite" class="mt-2 text-xs text-steel">{syncNote}</p>
 						{:else if syncError}
-							<p class="mt-2 text-xs text-danger">{syncError}</p>
+							<p role="alert" class="mt-2 text-xs text-danger">{syncError}</p>
 						{/if}
 					{:else}
 						<button

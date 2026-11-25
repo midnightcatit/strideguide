@@ -130,6 +130,7 @@
 		formatIsoDay(date, { weekday: 'long', day: 'numeric', month: 'long' }),
 	);
 	const heading = $derived(mode === 'custom' ? 'Custom workout' : 'Pick a workout');
+	const titleId = `picker-title-${crypto.randomUUID()}`;
 
 	/** mm:ss (or a bare minute count) to whole seconds. Null when unusable. */
 	function parseClock(text: string): number | null {
@@ -278,22 +279,24 @@
 		: 'fixed inset-0 z-40 flex items-end justify-center sm:items-center sm:p-4'}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
-	aria-label={asPage ? undefined : 'Add a workout'}
+	aria-labelledby={asPage ? undefined : titleId}
 	use:modal={{ onClose, enabled: !asPage }}
 >
 	{#if !asPage}
-		<button type="button" aria-label="Close" onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
+		<button type="button" aria-label="Close" data-modal-backdrop onclick={onClose} class="overlay-fade absolute inset-0 bg-ink/30"></button>
 	{/if}
 	<div
+		data-modal-panel
+		tabindex="-1"
 		class={asPage
 			? 'relative mx-auto flex w-full max-w-2xl flex-col rounded-2xl border border-hairline bg-paper'
-			: 'overlay-sheet relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl border border-hairline bg-paper sm:rounded-2xl'}
+			: 'overlay-sheet relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl border border-hairline bg-paper outline-none sm:rounded-2xl'}
 		style="padding-bottom: env(safe-area-inset-bottom)"
 	>
 		<div class="flex items-center justify-between gap-3 border-b border-hairline p-4">
 			<div class="min-w-0">
 				<p class="tabular text-xs uppercase tracking-widest text-steel">Add to {dateLabel}</p>
-				<h2 class="font-display text-lg font-bold">{heading}</h2>
+				<h2 id={titleId} class="font-display text-lg font-bold">{heading}</h2>
 			</div>
 			{#if mode === 'custom'}
 				<button
@@ -325,7 +328,7 @@
 						type="button"
 						aria-pressed={filter === g.key}
 						onclick={() => (filter = g.key)}
-						class="shrink-0 rounded-full border px-3 py-1.5 text-xs {filter === g.key
+						class="flex min-h-11 shrink-0 items-center rounded-full border px-3 text-xs {filter === g.key
 							? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
 							: 'border-hairline text-steel hover:border-steel'}"
 					>
@@ -337,7 +340,7 @@
 						type="button"
 						aria-pressed={myKit}
 						onclick={() => (myKit = !myKit)}
-						class="ml-auto shrink-0 rounded-full border px-3 py-1.5 text-xs {myKit
+						class="ml-auto flex min-h-11 shrink-0 items-center rounded-full border px-3 text-xs {myKit
 							? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
 							: 'border-hairline text-steel hover:border-steel'}"
 					>
@@ -461,7 +464,7 @@
 											type="button"
 											onclick={() => removeMove(move.machine)}
 											aria-label="Remove {move.machine}"
-											class="flex h-8 w-8 items-center justify-center text-steel hover:text-danger"
+											class="tap-target shrink-0 rounded-md text-steel hover:text-danger"
 										>
 											✕
 										</button>
@@ -490,7 +493,7 @@
 													type="button"
 													onclick={() => removeSet(move, i)}
 													aria-label="Remove set {i + 1}"
-													class="ml-auto flex h-8 w-8 shrink-0 items-center justify-center text-steel hover:text-danger"
+													class="tap-target ml-auto shrink-0 rounded-md text-steel hover:text-danger"
 												>
 													✕
 												</button>
@@ -550,7 +553,7 @@
 				{/if}
 
 				{#if customError}
-					<p class="mt-3 text-sm text-signal-ink">{customError}</p>
+					<p role="alert" class="mt-3 text-sm text-danger">{customError}</p>
 				{/if}
 
 				<button

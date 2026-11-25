@@ -7,6 +7,7 @@
 	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
 	import FormSheet from '$lib/components/FormSheet.svelte';
+	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import { markStarted } from '$lib/started.svelte';
 	import { getProgress, setProgress } from '$lib/sessionProgress.svelte';
 
@@ -24,6 +25,8 @@
 		onClose: () => void;
 		onFinish: () => void;
 	} = $props();
+
+	const titleId = `player-title-${crypto.randomUUID()}`;
 
 	interface Instance {
 		blockLabel?: string;
@@ -99,6 +102,7 @@
 	let autoNext = $state(prefs.autoAdvance ?? true);
 	let hold = $state(0);
 	let holdTimer: ReturnType<typeof setInterval> | undefined;
+	let confirmFinish = $state(false);
 
 	const current = $derived(instances[idx]);
 	const machine = $derived(findMove(current?.step.machine ?? current?.step.label));
@@ -211,7 +215,9 @@
 		return;
 	});
 
-	// Hold to finish (3 seconds). Shown while not running.
+	// Hold to finish (3 seconds). Shown while not running. Works from a pointer
+	// and from the keyboard (hold Space or Enter), and there is a plain tap path
+	// ("Tap to finish") that opens a confirm for anyone who cannot hold.
 	function startHold() {
 		if (holdTimer || finished) return;
 		holdTimer = setInterval(() => {
@@ -229,6 +235,16 @@
 			holdTimer = undefined;
 		}
 		if (hold < 100) hold = 0;
+	}
+	/** Keyboard path for the hold: Space or Enter holds while pressed. */
+	function holdKeyDown(e: KeyboardEvent) {
+		if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+			e.preventDefault();
+			startHold();
+		}
+	}
+	function holdKeyUp(e: KeyboardEvent) {
+		if (e.key === ' ' || e.key === 'Enter') cancelHold();
 	}
 	onDestroy(() => cancelHold());
 
@@ -268,23 +284,25 @@
 
 <div
 	class={asPage
-		? 'overflow-y-auto bg-paper'
-		: 'overlay-fade fixed inset-0 z-50 overflow-y-auto bg-paper'}
+		? 'overflow-y-auto bg-paper outline-none'
+		: 'overlay-fade fixed inset-0 z-50 overflow-y-auto bg-paper outline-none'}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
-	aria-label={asPage ? undefined : sessionLabel(session)}
+	aria-labelledby={asPage ? undefined : titleId}
+	data-modal-panel
+	tabindex="-1"
 	use:modal={{ onClose: close, enabled: !asPage }}
 >
 	<div class="mx-auto max-w-2xl px-4 pb-24">
 		<div class="sticky {asPage ? 'top-16' : 'top-0'} z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5">
 		<div class="flex items-center justify-between">
-			<button type="button" onclick={close} class="-ml-2 px-2 py-2 text-sm text-steel hover:text-ink">‹ Back</button>
+			<button type="button" onclick={close} class="-ml-2 flex h-11 items-center px-2 text-sm text-steel hover:text-ink">‹ Back</button>
 			<div class="flex items-center gap-1">
-				<button type="button" onclick={goHome} class="px-2 py-2 text-sm text-steel hover:text-ink">Stride Guide</button>
-				<button type="button" onclick={close} class="px-2 py-2 text-steel hover:text-ink" aria-label="Close">✕</button>
+				<button type="button" onclick={goHome} class="flex h-11 items-center px-2 text-sm text-steel hover:text-ink">Stride Guide</button>
+				<button type="button" onclick={close} class="tap-target rounded-md text-steel hover:text-ink" aria-label="Close">✕</button>
 			</div>
 		</div>
-		<h1 class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>
+		<h1 id={titleId} class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>
 		<div class="mt-1 flex items-center justify-between gap-3">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 			<button
@@ -322,7 +340,7 @@
 			</div>
 		{:else if awaitingNext}
 			<div class="mt-6 rounded-xl border border-hairline bg-sunken p-6 text-center">
-				<p class="text-xs uppercase tracking-widest text-ok">Step complete</p>
+				<p class="text-xs uppercase tracking-widest text-ok-ink">Step complete</p>
 				{#if instances[idx + 1]}
 					<p class="font-display mt-1 text-lg font-medium">Next: {instances[idx + 1]!.step.label}</p>
 					<p class="tabular mt-1 text-sm text-steel">{stepTarget(instances[idx + 1]!.step)}</p>
@@ -400,10 +418,19 @@
 							onpointerup={cancelHold}
 							onpointerleave={cancelHold}
 							onpointercancel={cancelHold}
-							class="relative flex-1 overflow-hidden rounded-md border border-hairline-strong px-4 py-2 text-sm text-steel hover:border-ok hover:text-ok"
+							onkeydown={holdKeyDown}
+							onkeyup={holdKeyUp}
+							class="relative flex-1 overflow-hidden rounded-md border border-hairline-strong px-4 py-2 text-sm text-steel hover:border-ok hover:text-ok-ink"
 						>
 							<span class="absolute inset-y-0 left-0 bg-ok/25 transition-[width] duration-100 ease-linear" style="width: {hold}%" aria-hidden="true"></span>
 							<span class="relative">{hold > 0 ? 'Keep holding…' : 'Hold to finish and log'}</span>
+						</button>
+						<button
+							type="button"
+							onclick={() => (confirmFinish = true)}
+							class="shrink-0 rounded-md border border-hairline px-4 py-2 text-sm text-signal-ink hover:border-signal"
+						>
+							Tap to finish
 						</button>
 					{/if}
 					{#if machine || drill}
@@ -456,4 +483,16 @@
 			Each step starts after a short countdown. With auto next on, steps move on by themselves; with it off, you tap Go to next. Your place is saved, so you can leave and come back. Form cues are guidance, not medical advice.
 		</p>
 	</div>
+
+	<ConfirmSheet
+		open={confirmFinish}
+		title="Finish and log this workout?"
+		body="This marks the session done and takes you to the log."
+		confirmLabel="Finish and log"
+		onConfirm={() => {
+			confirmFinish = false;
+			onFinish();
+		}}
+		onClose={() => (confirmFinish = false)}
+	/>
 </div>

@@ -42,6 +42,12 @@
 
 	const motion = $derived(prefersReducedMotion.current ? 'none' : undefined);
 
+	const summary = $derived(
+		points.length
+			? `${title}: ${value}${unit ? ` ${unit}` : ''} latest, across ${points.length} ${mode === 'range' ? 'days' : 'readings'}.`
+			: `${title}: no readings in this window.`,
+	);
+
 	const lineData = $derived(
 		points
 			.map((p) => ({ x: toDate(p.date), y: p.value ?? null, iso: p.date }))
@@ -90,7 +96,7 @@
 	});
 </script>
 
-<ChartCard {title} {value} {unit} {color} {change} {note}>
+<ChartCard {title} {value} {unit} {color} {change} {summary} {note}>
 	{#if mode === 'range'}
 		<AreaChart
 			data={rangeData}

@@ -120,7 +120,7 @@
 			</span>
 			<span class="flex h-3 items-center justify-center" aria-hidden="true">
 				{#if lg}
-					<span class="text-[10px] text-ok">✓</span>
+					<span class="text-[10px] text-ok-ink" aria-hidden="true">✓</span>
 				{:else if sk}
 					<span class="h-1.5 w-1.5 rounded-full {isSelected ? 'bg-paper' : 'bg-steel'}"></span>
 				{/if}

@@ -213,7 +213,7 @@
 			eyebrow="Plan progress"
 			meta="{metrics.planMeta.percent}% · {metrics.planMeta.weeksToGo} weeks to go{metrics.adherence.skipped ? ` · ${metrics.adherence.skipped} skipped` : ''}"
 		/>
-		<a href="/progress/plan?from=/progress" class="lift block rounded-xl" aria-label="Plan progress, open the full plan">
+		<a href="/progress/plan?from=/progress" class="lift block rounded-xl">
 			<Card class="flex h-full flex-col">
 				<div class="flex items-center gap-4">
 					<ProgressRing percent={metrics.planMeta.percent} size={96} stroke={9} />
@@ -272,7 +272,6 @@
 			<Card>
 				<a
 					href="/progress/health?from=/progress"
-					aria-label="Open all your health data"
 					class="no-press block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-ink"
 				>
 					<HealthSummary payload={health} max={6} />
