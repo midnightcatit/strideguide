@@ -45,8 +45,8 @@
 		{ length: currentYear - 10 - 1900 + 1 },
 		(_, i) => currentYear - 10 - i,
 	);
-	// A sensible default (about age 40) so the picker is never blank.
-	let birthYear = $state(currentYear - 40);
+	// A fixed default so the picker is never blank before the runner chooses.
+	let birthYear = $state(1998);
 	let heightInput = $state('');
 	let weightInput = $state('');
 	let restingHrInput = $state('');

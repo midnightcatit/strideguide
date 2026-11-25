@@ -168,9 +168,11 @@
 
 		{#if pickedMachines.length}
 			<!-- A fixed-height strip: the picks grow sideways and scroll, so the
-			     section never grows taller as you add more. -->
+			     section never grows taller as you add more. `relative` keeps the
+			     absolutely positioned screen-reader label inside the strip, so it
+			     cannot spill past the viewport and widen the page. -->
 			<div
-				class="scroll-modern mt-3 flex h-16 items-center gap-2 overflow-x-auto overflow-y-hidden"
+				class="scroll-modern relative mt-3 flex h-16 items-center gap-2 overflow-x-auto overflow-y-hidden"
 			>
 				{#each pickedMachines as m (m.name)}
 					<button
@@ -195,7 +197,7 @@
 				{#each shownMachineGroups as group (group.group)}
 					<div>
 						<h4 class="px-1 text-xs font-medium text-steel">{group.group}</h4>
-						<ul class="mt-1 grid gap-1">
+						<ul class="mt-1 grid grid-cols-1 gap-1">
 							{#each group.moves as m (m.name)}
 								{@const picked = favoriteMachines.includes(m.name)}
 								<li>
@@ -273,7 +275,7 @@
 
 		{#if pickedWorkouts.length}
 			<div
-				class="scroll-modern mt-3 flex h-16 items-center gap-2 overflow-x-auto overflow-y-hidden"
+				class="scroll-modern relative mt-3 flex h-16 items-center gap-2 overflow-x-auto overflow-y-hidden"
 			>
 				{#each pickedWorkouts as w (w.id)}
 					<button
