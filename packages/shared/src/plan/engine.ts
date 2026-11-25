@@ -130,6 +130,7 @@ const FOCUS: Record<string, string> = {
 	build: 'Build: add quality',
 	peak: 'Peak: sharpen and rehearse goal pace',
 	taper: 'Taper: freshen up, keep intensity',
+	recovery: 'Recovery: easy running only',
 };
 
 /* ------------------------------- phases ---------------------------------- */
@@ -188,7 +189,16 @@ function taperFraction(volumeStep: number, idx: number): number {
 	return clamp(1 + step * (idx + 1), TAPER_FLOOR, 1);
 }
 
-function volumeCurve(input: PlanInput, phases: string[]): number[] {
+/**
+ * The week's volume across the plan.
+ *
+ * The shape comes from the profile's phase rules. When a `longFloorKm` is given,
+ * a week that cannot hold its long run inside a sane share of itself is grown,
+ * never past the weekly ceiling, and a deload week is left alone: its whole point
+ * is to be lighter. The growth happens here, in the same pass as the taper, so a
+ * taper is always computed from the peak the build actually reached.
+ */
+function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[]): number[] {
 	const base = baseWeeklyKm(input);
 	const rules = input.profile.progressionRules;
 	const byPhase = new Map(rules.map((r) => [r.phase, r]));
@@ -219,6 +229,7 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 		const rule = byPhase.get(phase) ?? { phase, weeks: 1, volumeStep: 0.05, deload: false };
 		const idx = withinPhase.get(phase) ?? 0;
 		withinPhase.set(phase, idx + 1);
+		const isDeload = Boolean(rule.deload) && (idx + 1) % 4 === 0;
 		let vol: number;
 		if (w === 0) {
 			// Ease in: the first week starts below the runner's current volume and
@@ -227,11 +238,19 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 			vol = base * startFactor;
 		} else if (phase === 'taper') {
 			vol = peak * taperFraction(rule.volumeStep, idx);
-		} else if (rule.deload && (idx + 1) % 4 === 0) {
+		} else if (isDeload) {
 			vol = prev * 0.7;
 		} else {
 			const step = Math.min(Math.max(0, rule.volumeStep * levelStep), 0.1);
 			vol = prev * (1 + step);
+		}
+		// Grow a week that is too light to hold the long run the plan is building
+		// to. Never on a deload or taper week, and never past the ceiling above.
+		const floor = longFloorKm?.[w];
+		if (floor !== undefined && floor > 0 && !isDeload && phase !== 'taper' && phase !== 'recovery') {
+			const need = floor / LONG_RUN_SHARE_CEILING;
+			const ceiling = w === 0 ? need : prev * (1 + WEEKLY_STEP_CEILING);
+			vol = Math.max(vol, Math.min(need, Math.max(ceiling, vol)));
 		}
 		vol = clamp(round1(vol), 5, 160);
 		if (phase !== 'taper') peak = Math.max(peak, vol);
@@ -239,6 +258,142 @@ function volumeCurve(input: PlanInput, phases: string[]): number[] {
 		prev = vol;
 	}
 	return out;
+}
+
+/** The peak long run a goal builds to, from the goal's own data. */
+function peakLongKm(input: PlanInput): number | undefined {
+	const longRun = input.profile.longRun;
+	if (!longRun) return undefined;
+	const raceKm = RACE_DISTANCE_KM[input.profile.slug];
+	const fromRace =
+		longRun.peakFractionOfRace !== undefined && raceKm
+			? longRun.peakFractionOfRace * raceKm
+			: undefined;
+	const raw = longRun.peakKm ?? fromRace;
+	if (raw === undefined) return undefined;
+	return round1(clamp(raw, 3, longRun.maxKm));
+}
+
+/**
+ * The plan's volume and long-run targets, week by week.
+ *
+ * For a goal with a peak long run, the long run is the anchor: it ramps from the
+ * plan's own first week to that peak at the last week before the taper, and the
+ * week grows only as far as it must to hold the long run inside a sane share of
+ * it. Both are held to the ~10 percent weekly ceiling. When the runner's base
+ * cannot reach the peak inside that ceiling, the long run stops where it safely
+ * can and a warning says so, instead of the plan quietly shipping a short one.
+ *
+ * A goal with no peak of its own keeps the plain share-of-the-week rule, and a
+ * recovery week is easy at any rate.
+ */
+function planTargets(
+	input: PlanInput,
+	phases: string[],
+): { volumes: number[]; longKm: number[]; warnings: string[] } {
+	const warnings: string[] = [];
+	const shape = SESSION_SHAPE[input.profile.slug] ?? SESSION_SHAPE.default!;
+	const buildWeeks = phases.filter((p) => p !== 'taper' && p !== 'recovery').length;
+	const peak = peakLongKm(input);
+	const shareOfWeek = (km: number) => round1(clamp(km * shape.long, 3, 38));
+
+	/**
+	 * Fill the easy weeks that follow the race. The first is the lightest, and none
+	 * is heavier than the heaviest week the build reached.
+	 */
+	const fillRecovery = (volumes: number[], longKm: number[]) => {
+		const reached = volumes[buildWeeks - 1] ?? volumes[0]!;
+		const cap = Math.max(...volumes.slice(0, buildWeeks));
+		let idx = 0;
+		phases.forEach((phase, w) => {
+			if (phase !== 'recovery') return;
+			volumes[w] = round1(clamp(reached * (0.3 + 0.15 * idx), 5, cap));
+			longKm[w] = 0;
+			idx += 1;
+		});
+	};
+
+	// The plain curve, which is also what a goal with no peak of its own keeps.
+	const seedVolumes = volumeCurve(input, phases);
+	if (peak === undefined || buildWeeks < 2) {
+		const volumes = [...seedVolumes];
+		const longKm = volumes.map((v) => shareOfWeek(v));
+		fillRecovery(volumes, longKm);
+		return { volumes, longKm, warnings };
+	}
+
+	// The long run's arc: a geometric ramp from the plan's own first week to the
+	// goal's peak at the last week before the taper, dipping on deload weeks and
+	// never jumping over the weekly ceiling.
+	const rampEnd = buildWeeks - 1;
+	const start = shareOfWeek(seedVolumes[0]!);
+	const reachable = round1(Math.min(peak, start * Math.pow(1 + WEEKLY_STEP_CEILING, rampEnd)));
+	const ratio = Math.pow(reachable / start, 1 / rampEnd);
+	const arc = seedVolumes.map((v) => shareOfWeek(v));
+	let prev = start;
+	for (let w = 0; w < buildWeeks; w++) {
+		const dip = w > 0 && seedVolumes[w]! < seedVolumes[w - 1]!;
+		let want = start * Math.pow(ratio, w);
+		if (dip) want *= 0.85;
+		if (w > 0) want = Math.min(want, prev * (1 + WEEKLY_STEP_CEILING));
+		want = round1(clamp(Math.min(want, peak), 3, 38));
+		arc[w] = want;
+		prev = want;
+	}
+
+	// Grow the weeks the arc needs, in the same pass as the taper, so the taper
+	// follows the peak the build actually reached.
+	const volumes = volumeCurve(input, phases, arc);
+
+	// The long run is the arc, held inside its week, but never less than the plain
+	// share would give: an adequate plan is left as it was, and the arc only lifts
+	// one that was falling short of its goal. It is capped at the goal's own peak,
+	// so a big week can never push the long run past what the goal calls for.
+	const longKm = phases.map((_, w) =>
+		round1(
+			clamp(
+				Math.min(
+					peak,
+					Math.max(shareOfWeek(volumes[w]!), Math.min(arc[w]!, volumes[w]! * LONG_RUN_SHARE_CEILING)),
+				),
+				3,
+				38,
+			),
+		),
+	);
+
+	// A taper week brings the long run down with the week, instead of holding the
+	// peak flat into race week.
+	const taperRule = input.profile.progressionRules.find((r) => r.phase === 'taper');
+	const taperPeak = longKm[rampEnd]!;
+	let taperIdx = 0;
+	phases.forEach((phase, w) => {
+		if (phase !== 'taper') return;
+		longKm[w] = round1(
+			clamp(
+				Math.min(
+					peak,
+					shareOfWeek(volumes[w]!),
+					taperPeak * taperFraction(taperRule?.volumeStep ?? 0, taperIdx),
+				),
+				3,
+				38,
+			),
+		);
+		taperIdx += 1;
+	});
+	fillRecovery(volumes, longKm);
+
+	// A goal with no race is never short of itself: it has all the time there is.
+	const raceGoal = input.profile.longRun?.peakFractionOfRace !== undefined;
+	const built = Math.max(...longKm.slice(0, buildWeeks));
+	if (raceGoal && built < peak * 0.9) {
+		// Unit-free on purpose: a distance here would be wrong for a mile reader.
+		warnings.push(
+			`Your plan builds to about ${Math.round((built / peak) * 100)}% of the long run a ${input.profile.name} wants in the weeks you have. A longer plan, or a few weeks of easy running before you start, would close the gap.`,
+		);
+	}
+	return { volumes, longKm, warnings };
 }
 
 /* --------------------------- session allocation --------------------------- */
@@ -453,6 +608,31 @@ const RACE_DISTANCE_KM: Record<string, number> = {
 	'half-marathon': 21.1,
 	'10k': 10,
 	'5k': 5,
+};
+
+/**
+ * The share of a week the long run may take. Past this the week is one big run
+ * and almost nothing else, so the plan grows the week instead of the long run.
+ * It is deliberately at the loose end of the usual 25-35 percent, because a
+ * runner whose base is light needs the long run to carry more of the week.
+ */
+const LONG_RUN_SHARE_CEILING = 0.5;
+
+/** The most the long run, or the week that carries it, may grow in one step. */
+const WEEKLY_STEP_CEILING = 0.1;
+
+/**
+ * Session shape by goal: the long run's share of the week before the goal's own
+ * peak takes over, and how much of the week one quality day takes. A 5K leans on
+ * quality with a shorter long run; a marathon leans on a long, progressive one.
+ */
+const SESSION_SHAPE: Record<string, { long: number; quality: number }> = {
+	marathon: { long: 0.34, quality: 0.17 },
+	'half-marathon': { long: 0.33, quality: 0.19 },
+	'10k': { long: 0.3, quality: 0.24 },
+	'5k': { long: 0.3, quality: 0.26 },
+	'whole-fitness': { long: 0.3, quality: 0.12 },
+	default: { long: 0.3, quality: 0.16 },
 };
 
 /**
@@ -808,12 +988,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	// and past thirty it is cut to thirty; both surface a warning rather than
 	// changing length silently.
 	const warnings: string[] = [];
-	let totalWeeks: number;
+	let buildWeeks: number;
 	let raceWeekIndex: number | undefined;
 	if (input.targetDate) {
 		const spanDays = daysBetween(weekZero, input.targetDate);
 		const rawWeeks = Math.ceil((spanDays + 1) / 7);
-		totalWeeks = clamp(rawWeeks, 4, 30);
+		// A short run-in keeps its own length rather than being padded out before
+		// the race, because padding there would put the taper after the finish. A
+		// very long run-in is cut at thirty weeks, and the race falls past the plan.
+		buildWeeks = clamp(rawWeeks, 1, 30);
 		raceWeekIndex = Math.floor(spanDays / 7);
 		if (rawWeeks < 4) {
 			warnings.push(
@@ -825,10 +1008,25 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			);
 		}
 	} else {
-		totalWeeks = clamp(input.profile.defaultWeeks, 4, 30);
+		buildWeeks = clamp(input.profile.defaultWeeks, 4, 30);
 	}
-	const phases = phaseSequence(input.profile.progressionRules, totalWeeks);
-	const volumes = volumeCurve(input, phases);
+	// The build ends at the race. The easy weeks the goal asks for follow it, so the
+	// plan does not stop dead at the finish line. They are added only when the plan
+	// actually covers the race, and a short run-in gets its padding to four weeks as
+	// easy weeks too, not as training before the start.
+	const raceCovered =
+		raceWeekIndex !== undefined && raceWeekIndex >= 0 && raceWeekIndex < buildWeeks;
+	const recoveryWeeks =
+		input.targetDate && raceCovered
+			? (input.profile.recoveryWeeks ?? 0) + Math.max(0, 4 - buildWeeks)
+			: 0;
+	const totalWeeks = buildWeeks + recoveryWeeks;
+	const phases = [
+		...phaseSequence(input.profile.progressionRules, buildWeeks),
+		...Array.from({ length: recoveryWeeks }, () => 'recovery'),
+	];
+	const { volumes, longKm: longTargets, warnings: shapeWarnings } = planTargets(input, phases);
+	warnings.push(...shapeWarnings);
 
 	// A given race time is the most trustworthy anchor. Failing that, an effective
 	// VDOT read from the runner's own logged hard efforts, so paces follow what
@@ -873,13 +1071,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const weeks: PlannedWeek[] = [];
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
+		const isRecovery = phase === 'recovery';
 		// The model may hold or ease a single week (a coach-like microcycle). The
 		// numbers stay deterministic: an intent only scales or holds the plan's own
-		// curve, never sets a distance, and a taper week is left untouched.
+		// curve, never sets a distance, and a taper or recovery week is left alone.
 		const intent = input.weekShapes?.[w]?.volumeIntent;
+		const shaped = phase !== 'taper' && !isRecovery;
 		let volume = volumes[w]!;
-		if (phase !== 'taper' && intent === 'ease') volume = volume * 0.9;
-		else if (phase !== 'taper' && intent === 'hold') {
+		if (shaped && intent === 'ease') volume = volume * 0.9;
+		else if (shaped && intent === 'hold') {
 			volume = Math.min(volumes[w - 1] ?? volume, volume);
 		}
 		volume = clamp(round1(volume), 5, 160);
@@ -903,7 +1103,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			['tempo', 'interval', 'hills', 'race-pace', 'threshold', 'strides', 'fartlek'].includes(t),
 		);
 		const qualitySlots = Math.min(hasQuality ? 2 : 0, Math.max(0, rest.length - 1));
-		const hardCount = !hasQuality ? 0 : w === 0 ? 0 : phase === 'base' || phase === 'taper' ? 1 : 2;
+		const hardCount = isRecovery
+			? 0
+			: !hasQuality
+				? 0
+				: w === 0
+					? 0
+					: phase === 'base' || phase === 'taper'
+						? 1
+						: 2;
 		const slotDays = pickSpaced(rest, qualitySlots);
 		const qualityDays = slotDays.slice(0, Math.min(hardCount, slotDays.length));
 		const softDays = slotDays.filter((d) => !qualityDays.includes(d));
@@ -912,27 +1120,19 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		// Strength gets its own days, never sharing with a run, and takes them before
 		// the remaining days become easy runs.
-		const wantStrength = Math.min(strengthLeft, runFree.length);
+		const wantStrength = isRecovery ? 0 : Math.min(strengthLeft, runFree.length);
 		const strengthDays = runFree.slice(0, wantStrength);
 		const easyDays = [...softDays, ...runFree.slice(wantStrength)];
 		strengthLeft -= wantStrength;
 
 		const load = sportLoad(input);
-		// Session shape by goal: the long run's share of the week, and how much of
-		// the week one quality day takes (its whole distance, bookends included).
-		// A 5K leans on quality with a shorter long run; a marathon leans on a
-		// genuinely long, progressive long run.
-		const SHAPE: Record<string, { long: number; quality: number }> = {
-			marathon: { long: 0.34, quality: 0.17 },
-			'half-marathon': { long: 0.33, quality: 0.19 },
-			'10k': { long: 0.3, quality: 0.24 },
-			'5k': { long: 0.3, quality: 0.26 },
-			'whole-fitness': { long: 0.3, quality: 0.12 },
-		};
-		const shape = SHAPE[input.profile.slug] ?? { long: 0.3, quality: 0.16 };
-		// The long run is its own arc: a goal-aware share of the week that grows as
-		// the week grows, with a small floor so a light week still has one.
-		const longKm = round1(clamp(volume * shape.long, 3, 38));
+		const shape = SESSION_SHAPE[input.profile.slug] ?? SESSION_SHAPE.default!;
+		// The long run is its own arc: the goal-aware target the plan worked out for
+		// this week, held inside a sane share of the week so a light week is never
+		// one long run and little else. A recovery week carries no long run.
+		const longKm = isRecovery
+			? 0
+			: round1(clamp(Math.min(longTargets[w]!, volume * LONG_RUN_SHARE_CEILING), 3, 38));
 		// One quality day's whole distance, held under the long run so the long run
 		// is always the longest run and a light week is not one giant quality day.
 		const qualityRaw = clamp(volume * shape.quality, 1.6, 16);
@@ -947,7 +1147,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// percent of it) and never below a small floor, so the long run always reads
 		// as the long run while both still progress together across the plan.
 		const leftover = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
-		const easyCap = Math.max(1, round1(longKm * 0.8));
+		// A recovery week has no long run, so the easy runs take the whole week.
+		const easyCap = isRecovery
+			? Math.max(1, round1(volume))
+			: Math.max(1, round1(longKm * 0.8));
 		const easyPer =
 			easyDays.length && leftover > 0
 				? round1(clamp(leftover / easyDays.length, Math.min(2, leftover), easyCap))
@@ -959,23 +1162,25 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const sessions: PlannedSession[] = [];
 
 		// long run
-		sessions.push({
-			day: longDay,
-			slot: 'AM',
-			modality: 'running',
-			type: 'long',
-			title: TITLE.long,
-			purpose: PURPOSE.long,
-			prescription: {
-				summary: 'Long run, easy and even.',
-				targetDistanceKm: longKm,
-				targetPaceSecPerKm: paces ? paces.easy : undefined,
-				targetZone: 'Z2',
-				targetRpe: [4, 5],
-				workout: singleRunWorkout('long', longKm, paces),
-			},
-			durationMin: estDuration(longKm, paces ? paces.easy[1] : easyPace + 15),
-		});
+		if (!isRecovery) {
+			sessions.push({
+				day: longDay,
+				slot: 'AM',
+				modality: 'running',
+				type: 'long',
+				title: TITLE.long,
+				purpose: PURPOSE.long,
+				prescription: {
+					summary: 'Long run, easy and even.',
+					targetDistanceKm: longKm,
+					targetPaceSecPerKm: paces ? paces.easy : undefined,
+					targetZone: 'Z2',
+					targetRpe: [4, 5],
+					workout: singleRunWorkout('long', longKm, paces),
+				},
+				durationMin: estDuration(longKm, paces ? paces.easy[1] : easyPace + 15),
+			});
+		}
 
 		// quality sessions
 		qualityDays.forEach((day, qi) => {

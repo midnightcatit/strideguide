@@ -70,6 +70,10 @@ export interface PlanInput {
 		progressionRules: { phase: string; weeks: number; volumeStep: number; deload: boolean }[];
 		sessionTypes: SessionArchetype[];
 		defaultWeeks: number;
+		/** The goal's peak long run, as data (see GoalProfileData). */
+		longRun: { peakFractionOfRace?: number; peakKm?: number; maxKm: number };
+		/** Easy weeks the plan adds after race day. */
+		recoveryWeeks: number;
 	};
 	baseline: Baseline;
 	/** Available training days, 0 = Monday … 6 = Sunday. */

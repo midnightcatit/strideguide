@@ -75,6 +75,25 @@ export interface GoalProfileData {
 	sessionTypes: SessionArchetype[];
 	/** Typical plan length in weeks when a target date is not driving it. */
 	defaultWeeks: number;
+	/**
+	 * The long run's peak for this goal, as data. A race goal states it as a
+	 * fraction of the race distance; a goal with no race states an absolute
+	 * distance. The engine ramps the long run toward this and grows the week only
+	 * as far as it must to hold the long run inside a sane share of it.
+	 */
+	longRun: {
+		/** Peak long run as a fraction of the race distance. Race goals only. */
+		peakFractionOfRace?: number;
+		/** Peak long run in km, for a goal with no race. */
+		peakKm?: number;
+		/** Hard ceiling on the peak, so a fraction cannot run away. */
+		maxKm: number;
+	};
+	/**
+	 * Easy weeks after race day. The plan adds them on top of the race build so it
+	 * does not stop dead at the finish line. Zero for a goal with no race.
+	 */
+	recoveryWeeks: number;
 }
 
 /** What the user trains strength with. */
