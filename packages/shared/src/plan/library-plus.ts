@@ -918,4 +918,76 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		refs: ['wave-5/14d-yoga-pilates-breath'],
 		tags: ['mobility', 'core', 'pilates', 'no-equipment'],
 	},
+	// ---- Fun and viral formats (wave-6) ----------------------------------
+	{
+		id: 'ten-twenty-thirty-35',
+		title: '10-20-30 intervals, 35 minutes',
+		modality: 'running',
+		type: 'interval',
+		durationMin: 35,
+		intensity: 'hard',
+		summary:
+			'Three sets of five rounds, each round 30 seconds easy, 20 seconds steady, 10 seconds quick, with an easy jog between sets.',
+		purpose:
+			'The 10-20-30 format raised VO2max about 4 percent and cut 5K times in a controlled study, on roughly half the usual training volume. The 10-second bursts are short enough to stay sharp, which is the point of the format.',
+		targetRpe: [7, 9],
+		workout: wk([
+			block([step('warmup', 'Easy jog', 12 * MIN, 'Build gradually and add a few short strides.')]),
+			block(
+				[
+					step('work', '30 s easy', 30, 'Relaxed, a slow jog.'),
+					step('work', '20 s steady', 20, 'Comfortably hard, controlled.'),
+					step('work', '10 s quick', 10, 'Fast but relaxed, not a sprint.'),
+				],
+				5,
+				'Round',
+			),
+			block([step('rest', 'Easy jog', 2 * MIN, 'Recover before the next set.')], 3, 'Set'),
+			block([step('cooldown', 'Easy jog', 8 * MIN, 'Let your heart rate come down.')]),
+		]),
+		refs: ['wave-6/16a-viral-and-fun-formats'],
+		tags: ['running', 'interval', 'vo2max'],
+	},
+	{
+		id: 'ruck-walk-40',
+		title: 'Ruck walk, 40 minutes',
+		modality: 'walking',
+		type: 'walk',
+		durationMin: 40,
+		intensity: 'steady',
+		summary:
+			'A steady walk with a loaded pack at about 10 to 15 percent of your body weight, brisk enough to talk in short sentences.',
+		purpose:
+			'Carrying a pack raises the aerobic cost of walking by about 10 to 30 percent at the same pace, without the impact of running. Load-carriage research supports building it up over weeks, and the injury data argues for keeping the load moderate.',
+		targetRpe: [4, 6],
+		workout: wk([
+			block([step('warmup', 'Walk, no pack', 5 * MIN, 'Start light before you shoulder the pack.')]),
+			block([
+				step('work', 'Ruck walk', 30 * MIN, 'Steady pace, tall posture, pack snug to your back.'),
+			]),
+			block([step('cooldown', 'Walk, pack off', 5 * MIN, 'Ease off and let your breathing settle.')]),
+		]),
+		refs: ['wave-6/16a-viral-and-fun-formats'],
+		tags: ['walking', 'rucking', 'low-impact', 'strength-endurance'],
+	},
+	{
+		id: 'cozy-cardio-30',
+		title: 'Cozy cardio, 30 minutes',
+		modality: 'walking',
+		type: 'walk',
+		durationMin: 30,
+		intensity: 'easy',
+		summary:
+			'A gentle indoor walk you can do while a show plays, at a pace that never feels like a workout.',
+		purpose:
+			'The point is low-effort movement you will actually do. Easy walking has solid cardiovascular and metabolic support, and it is the low-impact counterpart to the running in your plan.',
+		targetRpe: [2, 4],
+		workout: wk([
+			block([
+				step('work', 'Easy walk', 30 * MIN, 'Comfortable and unhurried. You should be able to chat.'),
+			]),
+		]),
+		refs: ['wave-6/16a-viral-and-fun-formats'],
+		tags: ['walking', 'easy', 'low-impact', 'habit'],
+	},
 ];
