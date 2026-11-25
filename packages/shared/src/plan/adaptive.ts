@@ -94,5 +94,13 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 		}
 	});
 
+	// The fresh plan can be longer than the stored one: the engine appends the
+	// goal's easy weeks after race day. Carry those extra weeks over, with their
+	// own numbers, phases, dates and sessions, so an adapt ends with the same
+	// week count a fresh generate would give for the same inputs.
+	for (let i = existingWeeks.length; i < fresh.weeks.length; i++) {
+		weeks.push(fresh.weeks[i]!);
+	}
+
 	return { weeks, changedFromWeek, swapped };
 }

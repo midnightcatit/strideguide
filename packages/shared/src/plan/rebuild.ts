@@ -207,5 +207,15 @@ export function rebuildFromWeekOne(input: RebuildInput): RebuildResult {
 		};
 	});
 
+	// The fresh plan can be longer than the stored one: the engine appends the
+	// goal's easy weeks after race day. Carry those extra weeks over too, with the
+	// runner's added workouts repeated on them, so a rebuild ends with the same
+	// week count a fresh generate would give for the same inputs.
+	for (let i = input.existingWeeks.length; i < fresh.weeks.length; i++) {
+		const w = fresh.weeks[i]!;
+		const sessions = withRecurring(w.sessions, recurring);
+		weeks.push({ ...w, sessions, targetVolumeKm: runningVolumeKm(sessions) });
+	}
+
 	return { weeks, pattern };
 }
