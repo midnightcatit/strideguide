@@ -3,12 +3,16 @@ import { build, files, version } from '$service-worker';
 
 const CACHE = `strideguide-${version}`;
 const ASSETS = [...build, ...files];
+// The app shell served for any navigation that misses the network offline. It
+// boots the client router, so a cold launch or an unvisited deep link still
+// lands on a working page instead of the browser's offline error.
+const OFFLINE_FALLBACK = '/';
 
 self.addEventListener('install', (event) => {
 	event.waitUntil(
 		caches
 			.open(CACHE)
-			.then((cache) => cache.addAll(ASSETS))
+			.then((cache) => cache.addAll([...ASSETS, OFFLINE_FALLBACK]))
 			.then(() => self.skipWaiting()),
 	);
 });
@@ -46,6 +50,6 @@ self.addEventListener('fetch', (event) => {
 				caches.open(CACHE).then((cache) => cache.put(request, copy));
 				return response;
 			})
-			.catch(() => caches.match(request).then((cached) => cached ?? caches.match('/'))),
+			.catch(() => caches.match(request).then((cached) => cached ?? caches.match(OFFLINE_FALLBACK))),
 	);
 });

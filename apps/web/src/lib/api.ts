@@ -6,6 +6,13 @@ import type { ClientActivity, CurrentPlan } from './plan';
 import { cachePlan, cachedPlan, isOnline, outbox, queueLog, removeFromOutbox } from './offline';
 import { reportClientError } from './clientErrors';
 
+/** True when a failure looks like a lost connection rather than a server
+ * rejection. A 4xx comes back as a plain Error carrying the server's message,
+ * while a dropped connection rejects fetch with a TypeError. */
+function isNetworkFailure(e: unknown): boolean {
+	return e instanceof TypeError;
+}
+
 /** The windows the health drill-down can ask the API for. */
 export type HealthMetricWindow = 7 | 30 | 90;
 
@@ -285,7 +292,10 @@ export const api = {
 		try {
 			return await req<{ log: unknown }>('/logs', { method: 'POST', body: JSON.stringify(body) });
 		} catch (e) {
-			if (!isOnline()) {
+			// Offline, or a connection that dropped while the browser still thought
+			// it was online: queue it and hand back an optimistic log. A 4xx
+			// validation error is left to surface, since retrying it never succeeds.
+			if (!isOnline() || isNetworkFailure(e)) {
 				const item = queueLog(body);
 				const b = (body ?? {}) as Record<string, unknown>;
 				return {
@@ -298,6 +308,10 @@ export const api = {
 						feedback: b.feedback ?? null,
 						notes: b.notes ?? null,
 						startedAt: (b.startedAt as string) ?? null,
+						// The day a queued log counts on is read from startedAt when set,
+						// else from createdAt, so stamp the moment it was written. Hours
+						// later the flush replaces this with the server's own row.
+						createdAt: Math.floor(Date.now() / 1000),
 						pending: true,
 					},
 				};
