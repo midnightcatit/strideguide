@@ -120,6 +120,45 @@ export interface ConnectionStatus {
 	scopes: string | null;
 }
 
+/** The signed-in user's admin state, for showing or hiding the Settings entry. */
+export interface AdminMe {
+	isAdmin: boolean;
+	isRoot: boolean;
+}
+
+/**
+ * One row of the admin user list. Metadata only: no health values, log contents,
+ * notes, RPE, run stats or routes.
+ */
+export interface AdminUser {
+	id: string;
+	email: string;
+	createdAt: string | null;
+	role: 'user' | 'admin';
+	isRoot: boolean;
+	goalProfileSlug: string | null;
+	planCount: number;
+	lastLogAt: string | null;
+	connectionCount: number;
+	connectionStatus: 'connected' | 'error' | null;
+}
+
+/** One recent error row, as the admin ops summary shows it. */
+export interface AdminErrorRow {
+	at: string | null;
+	name: string | null;
+	message: string | null;
+	path: string | null;
+	method: string | null;
+}
+
+/** Operational metadata for the admin view. No user content. */
+export interface AdminOps {
+	appErrors: { recentCount: number; items: AdminErrorRow[] };
+	clientErrors: { recentCount: number; items: AdminErrorRow[] };
+	rateLimits: { keys: number; totalCount: number; newestWindowStart: string | null };
+}
+
 export interface GeneratePlanInput {
 	goalProfileSlug: string;
 	targetDate?: string;
@@ -378,6 +417,14 @@ export const api = {
 	getSettings: () => req<{ prefs: Prefs }>('/settings'),
 	putSettings: (body: Partial<Prefs>) =>
 		req<{ prefs: Prefs }>('/settings', { method: 'PUT', body: JSON.stringify(body) }),
+
+	/** The signed-in user's admin state, checked once so Settings can show its
+	 * admin entry. The admin routes themselves are guarded server-side. */
+	adminMe: () => req<AdminMe>('/admin/me'),
+	/** Metadata-only user list for the admin page. */
+	adminUsers: () => req<{ users: AdminUser[] }>('/admin/users'),
+	/** Operational error counts and a rate-limiter summary. */
+	adminOps: () => req<AdminOps>('/admin/ops'),
 
 	explanation: (type: string) =>
 		req<{

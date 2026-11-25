@@ -29,6 +29,18 @@ export const users = sqliteTable(
 		googleSub: text('google_sub'),
 		name: text('name'),
 		avatarUrl: text('avatar_url'),
+		/**
+		 * Admin state for users who are not root admins. Root admins come from the
+		 * ADMIN_EMAILS Worker var, never from this column, so a root admin cannot be
+		 * demoted through the admin UI. This column only ever moves a user up to
+		 * 'admin'; the default keeps everyone else a plain user.
+		 */
+		role: text('role', { enum: ['user', 'admin'] })
+			.notNull()
+			.default('user'),
+		/** Who invited this user, and when. Reserved for a later invite phase. */
+		invitedBy: text('invited_by'),
+		invitedAt: integer('invited_at', { mode: 'timestamp' }),
 		createdAt,
 	},
 	(t) => ({
@@ -638,6 +650,34 @@ export const clientErrors = sqliteTable(
 	},
 	(t) => ({
 		createdIdx: index('client_errors_created_idx').on(t.createdAt),
+	}),
+);
+
+/**
+ * Append-only audit trail for the admin surface. Every admin mutation writes
+ * exactly one row here, so a change can always be traced to the actor who made
+ * it and the thing it touched. Phase 1 creates the table and writes nothing to
+ * it; later phases (force rebuild, sync, disable, delete and the like) fill it.
+ *
+ * `actor_id` is plain text, not a foreign key on purpose: the trail must outlive
+ * the accounts it names, so deleting a user never erases the record of what an
+ * admin did. `target_id` and `detail` are free-form, since the target can be a
+ * user, a plan or a connection and the detail shape depends on the action.
+ */
+export const adminActions = sqliteTable(
+	'admin_actions',
+	{
+		id: text('id').primaryKey(),
+		actorId: text('actor_id').notNull(),
+		action: text('action').notNull(),
+		targetType: text('target_type').notNull(),
+		targetId: text('target_id'),
+		detail: text('detail', { mode: 'json' }),
+		createdAt,
+	},
+	(t) => ({
+		actorIdx: index('admin_actions_actor_idx').on(t.actorId),
+		createdIdx: index('admin_actions_created_idx').on(t.createdAt),
 	}),
 );
 

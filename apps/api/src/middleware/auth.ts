@@ -3,6 +3,7 @@ import { getCookie } from 'hono/cookie';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '../db';
 import { secureCookies, sessionCookieName, sha256Hex, verifySession } from '../lib/session';
+import { resolveAdminState } from '../lib/admin';
 import type { AppBindings } from '../types';
 
 export const attachDb = createMiddleware<AppBindings>(async (c, next) => {
@@ -36,6 +37,26 @@ export const requireAuth = createMiddleware<AppBindings>(async (c, next) => {
 	}
 
 	c.set('user', { id: payload.uid, email: payload.email, name: null, avatarUrl: null });
+	await next();
+});
+
+/**
+ * Require an admin. Runs after requireAuth, so the user is already resolved.
+ * A root admin (from ADMIN_EMAILS) always passes; anyone else passes only when
+ * their stored users.role is 'admin'. Everything else is a 403. The check is
+ * server-side on purpose: a client that hides the button is not a boundary.
+ */
+export const requireAdmin = createMiddleware<AppBindings>(async (c, next) => {
+	const user = c.get('user');
+	if (!user) {
+		return c.json({ error: 'unauthorized' }, 401);
+	}
+	const state = await resolveAdminState(c.env, c.get('db'), user);
+	if (!state.isAdmin) {
+		return c.json({ error: 'forbidden' }, 403);
+	}
+	c.set('isAdmin', true);
+	c.set('isRoot', state.isRoot);
 	await next();
 });
 

@@ -15,3 +15,9 @@ CONNECTIONS_KEY=""
 # The exact Authorization header Google sends with Health API push notifications,
 # set as the subscriber's endpoint secret. Unset keeps the webhook inert.
 GOOGLE_HEALTH_WEBHOOK_SECRET=""
+
+# Root admin emails, comma separated and matched case-insensitively. These are
+# always admin and can never be demoted or removed through the UI. Production
+# reads this from wrangler.jsonc vars, so it is commented out here; uncomment and
+# set your own address to override locally while developing the admin surface.
+# ADMIN_EMAILS="you@example.com"

@@ -19,10 +19,23 @@
 	let landingTab = $state<LandingTab>('today');
 	let connection = $state<ConnectionStatus | null>(null);
 	let connectionsLoaded = $state(false);
+	// Whether to show the Admin entry. Checked once per load; the admin routes
+	// are guarded on the server, so this only decides whether to draw the row.
+	let isAdmin = $state(false);
+	let adminChecked = $state(false);
 
 	async function refresh() {
 		theme = getTheme();
 		landingTab = getLandingTab();
+		if (!adminChecked) {
+			try {
+				isAdmin = (await api.adminMe()).isAdmin;
+			} catch {
+				// Not signed in, or the check failed; leave the entry hidden.
+			} finally {
+				adminChecked = true;
+			}
+		}
 		try {
 			const res = await api.connections();
 			connection = res.providers.find((p) => p.id === 'google-health') ?? null;
@@ -130,6 +143,17 @@
 			edit: true,
 			icon: 'M10 3.5l6 2.5v4c0 3.5-2.5 6.2-6 7-3.5-.8-6-3.5-6-7v-4z',
 		},
+		...(isAdmin
+			? [
+					{
+						href: '/settings/admin',
+						label: 'Admin',
+						value: 'Users and system status',
+						edit: false,
+						icon: 'M10 3.5l5.5 2.2v4.3c0 3.2-2.3 5.6-5.5 6.5-3.2-.9-5.5-3.3-5.5-6.5V5.7zM7.6 10l1.8 1.8 3.2-3.6',
+					},
+				]
+			: []),
 		{
 			href: '/settings/about',
 			label: 'About',

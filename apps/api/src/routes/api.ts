@@ -5,6 +5,7 @@ import type { AppBindings } from '../types';
 import ai from './ai';
 import account from './account';
 import activities from './activities';
+import admin from './admin';
 import clientErrors from './client-errors';
 import exercises from './exercises';
 import explanations from './explanations';
@@ -43,6 +44,7 @@ secured.route('/activities', activities);
 secured.route('/recovery', recovery);
 secured.route('/health-metrics', healthMetrics);
 secured.route('/me', account);
+secured.route('/admin', admin);
 
 api.route('/', secured);
 
