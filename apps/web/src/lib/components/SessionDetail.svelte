@@ -424,7 +424,7 @@
 									{#if detail}
 										<div class="mt-1"><ExerciseDetail {...detail} /></div>
 									{:else}
-										<p class="sg-enter-up mt-1 text-xs leading-relaxed text-steel">{info}</p>
+										<p class="expand-body sg-enter-up text-xs leading-relaxed text-steel">{info}</p>
 									{/if}
 								{/if}
 								{#if row.sub}
@@ -449,7 +449,7 @@
 													{#if sdetail}
 														<div class="mt-1"><ExerciseDetail {...sdetail} /></div>
 													{:else}
-														<p class="sg-enter-up mt-1 leading-relaxed">{sinfo}</p>
+														<p class="expand-body sg-enter-up leading-relaxed">{sinfo}</p>
 													{/if}
 												{/if}
 											</li>

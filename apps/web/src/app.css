@@ -373,6 +373,20 @@ summary,
 	font-variant-numeric: tabular-nums slashed-zero;
 }
 
+/*
+ * Expanded row body. A title row opens to this panel, so the detail reads as its
+ * own surface instead of more lines under the title. The title row keeps its
+ * own styling; only the opened body carries the frame. Uses the sunken surface
+ * and hairline border, so it reads as a panel in both light and dark themes.
+ */
+.expand-body {
+	margin-top: 0.5rem;
+	padding: 0.75rem;
+	border: 1px solid var(--hairline);
+	border-radius: 0.5rem;
+	background: var(--sunken);
+}
+
 :focus-visible {
 	outline: 2px solid var(--signal-ink);
 	outline-offset: 2px;
