@@ -38,7 +38,9 @@
 		{ href: '/coach', key: 'coach', label: 'Coach', active: page.url.pathname.startsWith('/coach') },
 	]);
 	// Empty on a top-level page (the header shows the mark); the trail otherwise.
-	const crumbs = $derived(breadcrumbFor(page.url.pathname));
+	const crumbs = $derived(
+		breadcrumbFor(page.url.pathname, page.url.searchParams.get('from')),
+	);
 	// A route under the (bleed) group asks the shell to drop its centred, padded
 	// column, so the page can run edge to edge without breaking out by hand.
 	const bleed = $derived((page.data as { bleed?: boolean }).bleed === true);
