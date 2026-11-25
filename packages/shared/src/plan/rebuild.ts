@@ -119,10 +119,11 @@ function toPlanned(session: WeekOneSession, slot: string): PlannedSession {
 	};
 }
 
-/** The week's running distance, so the card matches the sessions it holds. */
+/** The week's training distance, so the card matches the sessions it holds. The
+ * race is the goal, not training load, so it is left out, as the engine does. */
 function runningVolumeKm(sessions: PlannedSession[]): number {
 	const km = sessions.reduce((sum, s) => {
-		if (s.modality !== 'running') return sum;
+		if (s.modality !== 'running' || s.type === 'race') return sum;
 		const d = (s.prescription as { targetDistanceKm?: number } | null)?.targetDistanceKm;
 		return sum + (typeof d === 'number' ? d : 0);
 	}, 0);

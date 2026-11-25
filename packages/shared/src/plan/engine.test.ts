@@ -26,9 +26,13 @@ describe('generatePlan (marathon)', () => {
 		expect(plan.weeks[plan.weeks.length - 1]!.phase).toBe('taper');
 	});
 
-	it('places every session on an available day', () => {
+	it('places every training session on an available day', () => {
 		for (const w of plan.weeks) {
-			for (const s of w.sessions) expect([0, 2, 4, 6]).toContain(s.day);
+			for (const s of w.sessions) {
+				// The race sits on its fixed date, so it can fall off the usual days.
+				if (s.type === 'race') continue;
+				expect([0, 2, 4, 6]).toContain(s.day);
+			}
 		}
 	});
 
@@ -475,11 +479,12 @@ describe('generatePlan (model shaping)', () => {
 		const held = generatePlan({ ...base, weekShapes: [undefined, { volumeIntent: 'hold' }] });
 		expect(eased.weeks[1]!.targetVolumeKm).toBeLessThan(plain.weeks[1]!.targetVolumeKm);
 		expect(held.weeks[1]!.targetVolumeKm).toBeLessThanOrEqual(plain.weeks[1]!.targetVolumeKm);
-		// The long run is still the longest run in an eased week.
+		// The long run is still the longest training run in an eased week. The race
+		// is the goal itself, not a training run, so it is left out.
 		for (const w of eased.weeks) {
 			const long = w.sessions.find((s) => s.type === 'long');
 			if (!long) continue;
-			for (const r of w.sessions.filter((s) => s.modality === 'running')) {
+			for (const r of w.sessions.filter((s) => s.modality === 'running' && s.type !== 'race')) {
 				expect(r.prescription.targetDistanceKm ?? 0).toBeLessThanOrEqual(
 					long.prescription.targetDistanceKm! + 0.06,
 				);
@@ -893,4 +898,125 @@ describe('race taper per distance', () => {
 			expect(quality).toBe(true);
 		},
 	);
+});
+
+describe('race date coverage and the race session', () => {
+	const iso = (s: string) => new Date(`${s}T00:00:00Z`);
+	const addDays = (s: string, n: number) => {
+		const d = iso(s);
+		d.setUTCDate(d.getUTCDate() + n);
+		return d.toISOString().slice(0, 10);
+	};
+
+	it('extends the final week to cover the race date', () => {
+		// A Tuesday start with a Thursday race: rounding whole weeks used to leave
+		// the last week ending four days short of the race.
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-04-01',
+		});
+		const last = p.weeks[p.weeks.length - 1]!;
+		expect(last.endDate >= '2027-04-01').toBe(true);
+		// Every week is still a Monday to Sunday span.
+		for (const w of p.weeks) expect(w.endDate).toBe(addDays(w.startDate, 6));
+	});
+
+	it('places one race session on the race date', () => {
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { recentTimes: { '5k': '22:00' }, experience: 'intermediate' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-04-01',
+		});
+		const races = p.weeks.flatMap((w) => w.sessions).filter((s) => s.type === 'race');
+		expect(races).toHaveLength(1);
+		const week = p.weeks.find((w) => w.sessions.some((s) => s.type === 'race'))!;
+		expect(addDays(week.startDate, races[0]!.day)).toBe('2027-04-01');
+		// The race is the goal distance and carries a full workout.
+		expect(races[0]!.prescription.targetDistanceKm).toBeCloseTo(42.2, 1);
+		expect(
+			races[0]!.prescription.workout!.blocks.flatMap((b) => b.steps).length,
+		).toBeGreaterThan(0);
+	});
+
+	it('never counts the race in the week training volume', () => {
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { recentTimes: { '5k': '22:00' }, experience: 'intermediate' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-04-01',
+		});
+		const week = p.weeks.find((w) => w.sessions.some((s) => s.type === 'race'))!;
+		const training = week.sessions
+			.filter((s) => s.modality === 'running' && s.type !== 'race')
+			.reduce((sum, s) => sum + (s.prescription.targetDistanceKm ?? 0), 0);
+		expect(week.targetVolumeKm).toBeCloseTo(Math.round(training * 10) / 10, 1);
+	});
+
+	it('does not leave an empty first week on a late-week start', () => {
+		// A Sunday start with an early-week schedule: every chosen day has already
+		// passed in the anchored week, so it would otherwise hold no sessions.
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 2, 4],
+			startDate: '2026-12-06',
+			targetDate: '2027-05-01',
+		});
+		expect(p.weeks[0]!.sessions.length).toBeGreaterThan(0);
+		for (const s of p.weeks[0]!.sessions) {
+			expect(addDays(p.weeks[0]!.startDate, s.day) >= '2026-12-06').toBe(true);
+		}
+		// The grid still reaches the race date.
+		expect(p.weeks[p.weeks.length - 1]!.endDate >= '2027-05-01').toBe(true);
+	});
+
+	it('warns instead of silently stretching a race under four weeks out', () => {
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 2, 4],
+			startDate: '2026-12-01',
+			targetDate: '2026-12-10',
+		});
+		expect(p.meta.totalWeeks).toBe(4);
+		expect(p.meta.warnings?.length).toBe(1);
+	});
+});
+
+describe('taper volume', () => {
+	it('still tapers when the rule does not step volume down', () => {
+		// A taper rule with a zero or positive step is not a taper. The engine
+		// falls back to a default reduction rather than holding at the peak.
+		const marathonProfile = GOAL_PROFILES.find((g) => g.slug === 'marathon')!;
+		const withZeroStep = {
+			...marathonProfile,
+			progressionRules: marathonProfile.progressionRules.map((r) =>
+				r.phase === 'taper' ? { ...r, volumeStep: 0 } : r,
+			),
+		};
+		const p = generatePlan({
+			profile: withZeroStep,
+			baseline: { experience: 'intermediate' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-04-01',
+		});
+		const taper = p.weeks.filter((w) => w.phase === 'taper');
+		expect(taper.length).toBeGreaterThanOrEqual(2);
+		const peak = Math.max(
+			...p.weeks.filter((w) => w.phase !== 'taper').map((w) => w.targetVolumeKm),
+		);
+		for (let i = 0; i < taper.length; i++) {
+			expect(taper[i]!.targetVolumeKm).toBeLessThan(peak);
+			if (i > 0) {
+				expect(taper[i]!.targetVolumeKm).toBeLessThanOrEqual(taper[i - 1]!.targetVolumeKm);
+			}
+		}
+	});
 });

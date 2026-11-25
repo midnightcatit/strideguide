@@ -33,6 +33,12 @@ export interface PlanDraft {
 		targetDate?: string;
 		vdot?: number;
 		baseWeeklyKm: number;
+		/**
+		 * Non-fatal notes about how the plan was shaped, e.g. a race date that
+		 * forced the length up to the four-week floor or down to the thirty-week
+		 * ceiling. Absent when the plan needed no adjustment.
+		 */
+		warnings?: string[];
 	};
 }
 
