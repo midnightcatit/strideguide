@@ -6,9 +6,9 @@
 	import { api } from '$lib/api';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
-	import { store, ensurePlan, reloadPlan } from '$lib/planStore.svelte';
+	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
-	import { type ClientActivity, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, localIso, mondayIndex, weekdayIndexFromIso } from '$lib/plan';
 	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
 	import { clearProgress } from '$lib/sessionProgress.svelte';
@@ -24,17 +24,21 @@
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import ActivityCard from '$lib/components/ActivityCard.svelte';
 	import RaceCard from '$lib/components/RaceCard.svelte';
+	import PlanCompleteCard from '$lib/components/PlanCompleteCard.svelte';
+	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
 
 	/**
 	 * One card in the day's scroll. Planned sessions and imported activities sit
 	 * in the same carousel, so the day reads as one list of workouts; the kind
-	 * says which card to draw.
+	 * says which card to draw. A goal day adds a milestone card, always last, so
+	 * the finish line follows whatever else is on the day.
 	 */
 	type DayItem =
 		| { kind: 'session'; id: string; session: ClientSession }
-		| { kind: 'activity'; id: string; activity: ClientActivity };
+		| { kind: 'activity'; id: string; activity: ClientActivity }
+		| { kind: 'milestone'; id: string; milestone: 'complete' };
 
 	let note = $state<string | null>(null);
 	let revealId = $state<string | null>(null);
@@ -44,6 +48,11 @@
 	// The card to scroll back to on mount, from a saved view state (a Back).
 	let restoreCardId = $state<string | null>(null);
 	let activities = $state<ClientActivity[]>([]);
+	// The goal day's log sheet, when the runner opens it from the milestone card.
+	let milestoneSheet = $state<{
+		session: ClientSession;
+		variant: 'session' | 'reflection';
+	} | null>(null);
 	let confirm = $state<{
 		title: string;
 		body: string;
@@ -68,6 +77,8 @@
 			: '',
 	);
 	const weeks = $derived(store.plan?.weeks ?? []);
+	// The plan's total planned distance, for the plan-complete card's totals.
+	const planKm = $derived(weeks.reduce((sum, w) => sum + (w.targetVolumeKm ?? 0), 0));
 	const sel = $derived.by(() => {
 		for (const w of weeks) {
 			if (w.startDate && w.endDate && selectedIso >= w.startDate && selectedIso <= w.endDate) {
@@ -155,22 +166,6 @@
 	// Imported activities show on their own date, each a completed workout. They
 	// never stand in for a planned session.
 	const dayActivities = $derived(activities.filter((a) => localIso(new Date(a.startedAt)) === selectedIso));
-	// The day's scroll holds the planned sessions first, then the imported
-	// activities. A session carries only an AM or PM slot, not a clock time, so a
-	// true time merge is not possible; the plan leads and the imports follow.
-	const dayItems = $derived<DayItem[]>([
-		...daySessions.map((s): DayItem => ({ kind: 'session', id: s.id, session: s })),
-		...dayActivities.map((a): DayItem => ({ kind: 'activity', id: a.id, activity: a })),
-	]);
-	// Minutes across both kinds, so the day header counts an imported workout too.
-	const dayActivityMinutes = $derived(
-		Math.round(dayActivities.reduce((m, a) => m + (a.durationSec ?? 0), 0) / 60),
-	);
-	const dayTotalMinutes = $derived(dayMinutes + dayActivityMinutes);
-	// A day inside the last 30 days can be edited. Older days are read-only
-	// history, so the runner can look back without changing the past.
-	const editCutoff = addDaysIso(todayIso, -30);
-	const editable = $derived(selectedIso >= editCutoff);
 	const raceDate = $derived(store.plan?.goal?.targetDate ?? null);
 	const isRaceDay = $derived(!!raceDate && raceDate === selectedIso);
 	const raceName = $derived(
@@ -180,6 +175,50 @@
 			profileName ||
 			'Race day',
 	);
+	// The finish line the day belongs to: the race day for a race goal, else the
+	// last day of the plan. Only one of the two ever applies.
+	const milestoneKind = $derived<'race' | 'complete' | null>(
+		isRaceDay ? 'race' : !raceDate && !!planEnd && selectedIso === planEnd ? 'complete' : null,
+	);
+	const milestoneDate = $derived(
+		milestoneKind === 'race' ? raceDate : milestoneKind === 'complete' ? planEnd : null,
+	);
+	// The goal day's own result, a standalone log dated to the day. Imported
+	// activities share the null session but are never the goal's result.
+	const milestoneLog = $derived.by<ClientLog | null>(() => {
+		if (!milestoneDate) return null;
+		return (
+			store.logs.find(
+				(l) =>
+					!l.sessionId &&
+					l.source !== 'import' &&
+					!!l.startedAt &&
+					localIso(new Date(l.startedAt)) === milestoneDate,
+			) ?? null
+		);
+	});
+	// The day's scroll holds the planned sessions first, then the imported
+	// activities, then the finish-line card, so the goal day always reads last.
+	// A session carries only an AM or PM slot, not a clock time, so a true time
+	// merge is not possible; the plan leads and the imports follow.
+	const dayItems = $derived<DayItem[]>([
+		...daySessions.map((s): DayItem => ({ kind: 'session', id: s.id, session: s })),
+		...dayActivities.map((a): DayItem => ({ kind: 'activity', id: a.id, activity: a })),
+		...(milestoneKind === 'complete'
+			? [{ kind: 'milestone', id: 'milestone-complete', milestone: 'complete' } as DayItem]
+			: []),
+	]);
+	// Minutes across both kinds, so the day header counts an imported workout too.
+	const dayActivityMinutes = $derived(
+		Math.round(dayActivities.reduce((m, a) => m + (a.durationSec ?? 0), 0) / 60),
+	);
+	const dayTotalMinutes = $derived(dayMinutes + dayActivityMinutes);
+	// The day's actual workouts, without the milestone card, for the header count.
+	const workoutItems = $derived(dayItems.filter((it) => it.kind !== 'milestone'));
+	// A day inside the last 30 days can be edited. Older days are read-only
+	// history, so the runner can look back without changing the past.
+	const editCutoff = addDaysIso(todayIso, -30);
+	const editable = $derived(selectedIso >= editCutoff);
 	// Where a session view returns to: this day in Today.
 	const from = $derived(isToday ? '/today' : `/today?date=${selectedIso}`);
 
@@ -240,6 +279,63 @@
 		const href = logHref(s.id, from);
 		if (confirmIfFuture(s, 'Log', () => void goto(href))) return;
 		void goto(href);
+	}
+
+	// The named distance for a race goal, so its log opens with the distance set.
+	function raceDistanceKm(slug: string | undefined): number | undefined {
+		switch (slug) {
+			case '5k':
+				return 5;
+			case '10k':
+				return 10;
+			case 'half-marathon':
+				return 21.1;
+			case 'marathon':
+				return 42.2;
+			default:
+				return undefined;
+		}
+	}
+	// A goal day has no session, so its result is a standalone log opened in the
+	// same sheet a session uses. The date carries the standalone log's day.
+	function openMilestoneLog(kind: 'race' | 'complete') {
+		if (kind === 'race') {
+			const km = raceDistanceKm(store.plan?.goal?.goalProfileSlug);
+			milestoneSheet = {
+				variant: 'session',
+				session: {
+					id: 'milestone-race',
+					day: 0,
+					slot: null,
+					modality: 'running',
+					type: 'race',
+					title: raceName,
+					purpose: null,
+					prescription: km ? { targetDistanceKm: km } : null,
+					durationMin: null,
+				},
+			};
+		} else {
+			milestoneSheet = {
+				variant: 'reflection',
+				session: {
+					id: 'milestone-complete',
+					day: 0,
+					slot: null,
+					modality: 'recovery',
+					type: 'milestone',
+					title: 'Plan complete',
+					purpose: null,
+					prescription: null,
+					durationMin: null,
+				},
+			};
+		}
+	}
+	function saveMilestoneLog(log: ClientLog) {
+		// The card reads from the store, so it flips to logged without a refetch.
+		upsertLog(log);
+		milestoneSheet = null;
 	}
 
 	function selectDay(day: number) {
@@ -329,6 +425,8 @@
 				{daySessions.length > 1 ? `${daySessions.length} sessions` : sessionLabel(daySessions[0])}
 			{:else if dayActivities.length}
 				{dayActivities.length > 1 ? `${dayActivities.length} imported workouts` : 'Imported workout'}
+			{:else if milestoneKind === 'complete'}
+				Plan complete
 			{:else}
 				Rest day
 			{/if}
@@ -384,14 +482,21 @@
 					eyebrow={selWeek ? `Week ${selWeek.weekNumber} · ${selectedWeekdayName}` : 'Day'}
 					meta={isRaceDay
 						? 'Race day'
-						: dayItems.length
+						: workoutItems.length
 							? dayTotalMinutes
-								? `${dayItems.length} · ${dayTotalMinutes} min`
-								: `${dayItems.length}`
-							: 'Rest'}
+								? `${workoutItems.length} · ${dayTotalMinutes} min`
+								: `${workoutItems.length}`
+							: milestoneKind === 'complete'
+								? 'Plan complete'
+								: 'Rest'}
 				/>
 				{#if isRaceDay}
-					<RaceCard name={raceName} dateLabel={dateLabel} />
+					<RaceCard
+						name={raceName}
+						dateLabel={dateLabel}
+						logged={!!milestoneLog}
+						onLog={() => openMilestoneLog('race')}
+					/>
 				{:else if dayItems.length}
 					<SessionCarousel items={dayItems} card={dayCard} bind:revealId bind:activeId={activeCardId} initialId={restoreCardId} label="workouts" />
 				{:else if selWeek}
@@ -486,11 +591,20 @@
 				clearProgress(item.session.id);
 			}}
 		/>
-	{:else}
+	{:else if item.kind === 'activity'}
 		<ActivityCard
 			activity={item.activity}
 			eyebrow={selectedWeekdayName}
 			onOpen={() => goto(activityHref(item.activity.id, from))}
+		/>
+	{:else}
+		<PlanCompleteCard
+			name={profileName}
+			dateLabel={dateLabel}
+			weeks={weeks.length}
+			distanceLabel={planKm > 0 ? fmtDistance(planKm) : undefined}
+			logged={!!milestoneLog}
+			onLog={() => openMilestoneLog('complete')}
 		/>
 	{/if}
 {/snippet}
@@ -504,3 +618,15 @@
 	onConfirm={() => confirm?.action()}
 	onClose={() => (confirm = null)}
 />
+
+{#if milestoneSheet}
+	<LogSheet
+		session={milestoneSheet.session}
+		eyebrow={milestoneSheet.variant === 'reflection' ? 'Plan complete' : 'Race day'}
+		variant={milestoneSheet.variant}
+		standalone
+		startedAtDate={milestoneDate ?? undefined}
+		onClose={() => (milestoneSheet = null)}
+		onSaved={saveMilestoneLog}
+	/>
+{/if}
