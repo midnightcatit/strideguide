@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
 	FAMILY_CHART,
+	GOAL_DEFAULTS,
 	METRIC_FAMILY,
 	familyColor,
 	metricColor,
 	metricFamily,
+	metricGoal,
 	periodDelta,
 	signed,
 	shortDay,
@@ -41,17 +43,42 @@ describe('metric to colour mapping', () => {
 });
 
 describe('period change', () => {
-	it('is the newer-half mean minus the older-half mean', () => {
-		expect(periodDelta([10, 10, 20, 20])).toBe(10);
+	it('is this window mean minus the previous window mean', () => {
+		expect(periodDelta([20, 20], 10)).toBe(10);
+		expect(periodDelta([4, 5, 6], 5)).toBe(0);
 	});
 
-	it('is null when there is nothing to compare', () => {
-		expect(periodDelta([])).toBeNull();
-		expect(periodDelta([42])).toBeNull();
+	it('is null when the previous window has no reading', () => {
+		expect(periodDelta([10, 20], null)).toBeNull();
+		expect(periodDelta([10, 20], undefined)).toBeNull();
 	});
 
-	it('ignores non-finite readings', () => {
-		expect(periodDelta([Number.NaN, 10, 10, 20, 20])).toBe(10);
+	it('is null when this window has nothing to average', () => {
+		expect(periodDelta([], 10)).toBeNull();
+	});
+
+	it('ignores non-finite readings in this window', () => {
+		expect(periodDelta([Number.NaN, 20, 20], 10)).toBe(10);
+	});
+});
+
+describe('activity goals', () => {
+	it('reads a metric goal from the stored prefs', () => {
+		expect(metricGoal('steps', { stepGoal: 8000 })).toBe(8000);
+		expect(metricGoal('active_energy_kcal', { activeEnergyGoalKcal: 650 })).toBe(650);
+		expect(metricGoal('active_zone_min', { activeZoneGoalMin: 30 })).toBe(30);
+	});
+
+	it('falls back to the default when a goal is unset or not usable', () => {
+		expect(metricGoal('steps', {})).toBe(GOAL_DEFAULTS.steps);
+		expect(metricGoal('steps', { stepGoal: 0 })).toBe(GOAL_DEFAULTS.steps);
+		expect(metricGoal('active_energy_kcal', { activeEnergyGoalKcal: Number.NaN })).toBe(
+			GOAL_DEFAULTS.active_energy_kcal,
+		);
+	});
+
+	it('gives no goal to a metric that has none', () => {
+		expect(metricGoal('resting_hr', {})).toBeNull();
 	});
 });
 

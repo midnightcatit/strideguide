@@ -4,6 +4,7 @@ import {
 	groupMetricRows,
 	groupSampleRows,
 	legacyDailyMetricRows,
+	meanByMetric,
 	normalizeWindow,
 	withLatest,
 } from './health-metrics';
@@ -95,5 +96,30 @@ describe('legacyDailyMetricRows', () => {
 
 	it('drops a row with no usable date', () => {
 		expect(legacyDailyMetricRows([{ resting_hr: 57, steps: 100 }])).toEqual([]);
+	});
+});
+
+describe('meanByMetric', () => {
+	it('averages each metric across the previous window', () => {
+		const means = meanByMetric([
+			{ date: '2026-11-01', metric: 'steps', value: 8000 },
+			{ date: '2026-11-02', metric: 'steps', value: 10000 },
+			{ date: '2026-11-01', metric: 'resting_hr', value: 50 },
+			{ date: '2026-11-02', metric: 'resting_hr', value: 52 },
+		]);
+		expect(means.steps).toBe(9000);
+		expect(means.resting_hr).toBe(51);
+	});
+
+	it('skips a non-finite reading instead of skewing the mean', () => {
+		const means = meanByMetric([
+			{ date: '2026-11-01', metric: 'steps', value: 8000 },
+			{ date: '2026-11-02', metric: 'steps', value: Number.NaN },
+		]);
+		expect(means.steps).toBe(8000);
+	});
+
+	it('returns nothing for an empty window', () => {
+		expect(meanByMetric([])).toEqual({});
 	});
 });

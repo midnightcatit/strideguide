@@ -25,6 +25,9 @@ export async function loadPrefs(): Promise<void> {
 		prefs.heightCm = res.prefs.heightCm;
 		prefs.weightKg = res.prefs.weightKg;
 		prefs.restingHr = res.prefs.restingHr;
+		prefs.stepGoal = res.prefs.stepGoal;
+		prefs.activeEnergyGoalKcal = res.prefs.activeEnergyGoalKcal;
+		prefs.activeZoneGoalMin = res.prefs.activeZoneGoalMin;
 		prefs.equipment = res.prefs.equipment;
 		prefs.equipmentItems = res.prefs.equipmentItems;
 		prefs.gymPreset = res.prefs.gymPreset;
@@ -204,6 +207,26 @@ export async function setVitals(fields: {
 		});
 	} catch {
 		// best-effort
+	}
+}
+
+/**
+ * The daily activity goals the health charts draw a line at. Values are positive
+ * whole numbers; the chart falls back to the app default when a goal is unset.
+ * All three are saved in one request.
+ */
+export async function setHealthGoals(goals: {
+	stepGoal: number;
+	activeEnergyGoalKcal: number;
+	activeZoneGoalMin: number;
+}): Promise<void> {
+	prefs.stepGoal = goals.stepGoal;
+	prefs.activeEnergyGoalKcal = goals.activeEnergyGoalKcal;
+	prefs.activeZoneGoalMin = goals.activeZoneGoalMin;
+	try {
+		await api.putSettings(goals);
+	} catch {
+		// best-effort; ui already updated
 	}
 }
 

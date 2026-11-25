@@ -5,9 +5,9 @@
 
 	/**
 	 * A single headline reading: one large number with its unit, the change
-	 * against the earlier half of the window, and a sparkline in the metric's
-	 * family colour. Used for the measurements where the number matters more than
-	 * the shape (resting HR, HRV, VO2 max, weight, and the other samples).
+	 * against the previous window of the same length, and a sparkline in the
+	 * metric's family colour. Used for the measurements where the number matters
+	 * more than the shape (resting HR, HRV, VO2 max, weight, and the other samples).
 	 */
 	let {
 		title,
@@ -15,19 +15,21 @@
 		unit,
 		values,
 		color,
+		previous = null,
 		decimals = 1,
-		changeLabel = 'vs first half',
+		changeLabel = 'vs previous period',
 	}: {
 		title: string;
 		value: string;
 		unit?: string;
 		values: number[];
 		color: string;
+		previous?: number | null;
 		decimals?: number;
 		changeLabel?: string;
 	} = $props();
 
-	const change = $derived(periodDelta(values));
+	const change = $derived(periodDelta(values, previous));
 </script>
 
 <Card tone="sunken">

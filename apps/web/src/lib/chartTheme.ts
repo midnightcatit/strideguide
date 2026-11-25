@@ -7,6 +7,8 @@
  * period-over-period change.
  */
 
+import type { Prefs } from '@strideguide/shared/units';
+
 export type ChartFamily = 'heart' | 'sleep' | 'activity' | 'body' | 'load';
 
 /**
@@ -90,15 +92,42 @@ export const SLEEP_STAGES: { key: string; label: string; opacity: number }[] = [
 ];
 
 /**
- * Goals drawn as a line on the activity bars. Rough daily targets, not medical
- * advice: 10,000 steps is the common consumer default, 500 kcal a common active
- * energy goal, and 21 active-zone minutes is the WHO 150 a week goal per day.
+ * Goals drawn as a line on the activity bars. The defaults are rough daily
+ * targets, not medical advice: 10,000 steps is the common consumer default, 500
+ * kcal a common active energy goal, and 21 active-zone minutes is the WHO 150 a
+ * week goal per day. A runner who sets their own goals in Settings overrides
+ * these; anything unset falls back to the default here.
  */
-export const METRIC_GOALS: Record<string, number> = {
+export const GOAL_DEFAULTS = {
 	steps: 10000,
 	active_energy_kcal: 500,
 	active_zone_min: 21,
-};
+} as const;
+
+/** The goal prefs a metric's line reads, the fields a runner can override. */
+export type GoalPrefs = Pick<Prefs, 'stepGoal' | 'activeEnergyGoalKcal' | 'activeZoneGoalMin'>;
+
+/** A positive stored override, or the default when it is unset or not usable. */
+function goalOr(value: number | undefined, fallback: number): number {
+	return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+/**
+ * The daily goal for a metric, from the runner's prefs with the app default as
+ * the fallback. Null for a metric that has no goal, so the chart draws no line.
+ */
+export function metricGoal(key: string, prefs: GoalPrefs): number | null {
+	switch (key) {
+		case 'steps':
+			return goalOr(prefs.stepGoal, GOAL_DEFAULTS.steps);
+		case 'active_energy_kcal':
+			return goalOr(prefs.activeEnergyGoalKcal, GOAL_DEFAULTS.active_energy_kcal);
+		case 'active_zone_min':
+			return goalOr(prefs.activeZoneGoalMin, GOAL_DEFAULTS.active_zone_min);
+		default:
+			return null;
+	}
+}
 
 /** Parse an ISO day or timestamp into a Date at UTC, or null when unreadable. */
 export function toDate(iso: string): Date | null {
@@ -121,19 +150,22 @@ export function shortWeekday(iso: string): string {
 }
 
 /**
- * The change between the newer half and the older half of a window: the mean of
- * the most recent readings minus the mean of the earlier ones. Null when there
- * are fewer than two readings, so a lone day gets no delta. This is the
- * closest an honest read can get to a previous window without a second fetch.
+ * The period-over-period change: the mean of this window's readings minus the
+ * mean of the previous window of the same length. `previousMean` is the mean the
+ * server computed over the window before this one, so the change is a true step
+ * back in time rather than a split of a single window. Null when the previous
+ * window carries no reading, or this window has none, so a lone day shows no
+ * change instead of a made-up one.
  */
-export function periodDelta(values: number[]): number | null {
+export function periodDelta(
+	values: number[],
+	previousMean: number | null | undefined,
+): number | null {
+	if (previousMean == null || !Number.isFinite(previousMean)) return null;
 	const nums = values.filter((v) => Number.isFinite(v));
-	if (nums.length < 2) return null;
-	const mid = Math.floor(nums.length / 2);
-	const earlier = nums.slice(0, mid);
-	const later = nums.slice(mid);
-	const mean = (xs: number[]) => xs.reduce((s, x) => s + x, 0) / xs.length;
-	return mean(later) - mean(earlier);
+	if (nums.length === 0) return null;
+	const mean = nums.reduce((s, x) => s + x, 0) / nums.length;
+	return mean - previousMean;
 }
 
 /** A signed value with a fixed number of decimals and an explicit sign. */

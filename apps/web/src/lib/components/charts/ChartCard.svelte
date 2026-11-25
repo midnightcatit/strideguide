@@ -4,8 +4,8 @@
 
 	/**
 	 * One chart card: a title with its family colour, the current value and unit,
-	 * an optional change against the earlier half of the window, the chart, and an
-	 * optional note or legend. Presentation only; the chart is passed in as a
+	 * an optional change against the previous window of the same length, the chart,
+	 * and an optional note or legend. Presentation only; the chart is passed in as a
 	 * snippet so every surface shares the same frame.
 	 */
 	let {
@@ -15,7 +15,7 @@
 		color,
 		change = null,
 		changeDecimals = 1,
-		changeLabel = 'vs first half',
+		changeLabel = 'vs previous period',
 		ariaLabel,
 		note,
 		footer,
