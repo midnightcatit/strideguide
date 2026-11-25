@@ -2,7 +2,7 @@
 import type { GoalProfileData } from '@strideguide/shared';
 import type { Prefs } from '@strideguide/shared/units';
 import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
-import type { ClientActivity, CurrentPlan } from './plan';
+import type { ClientActivity, ClientLog, CurrentPlan } from './plan';
 import { cachePlan, cachedPlan, isOnline, outbox, queueLog, removeFromOutbox } from './offline';
 import { reportClientError } from './clientErrors';
 
@@ -255,6 +255,9 @@ export const api = {
 		equipmentItems?: ('machines' | 'dumbbells' | 'barbell' | 'kettlebell' | 'bands')[];
 		gymPreset?: string;
 		machineItems?: string[];
+		/** The runner's local civil date (yyyy-mm-dd), so the rebuild's past/future
+		 * split uses their day, not the server's UTC day. */
+		today?: string;
 	}) =>
 		req<{
 			changed: boolean;
@@ -362,7 +365,7 @@ export const api = {
 		),
 
 	/** Imported activities, each a completed workout on its own. */
-	activities: () => req<{ activities: ClientActivity[] }>('/activities'),
+	activities: () => req<{ activities: ClientActivity[]; logs: ClientLog[] }>('/activities'),
 
 	/** Daily recovery context, when a connector has supplied any. */
 	recovery: () =>

@@ -5,6 +5,7 @@
 	import SettingsDraftGuard from '$lib/components/SettingsDraftGuard.svelte';
 	import Switch from '$lib/components/Switch.svelte';
 	import { api } from '$lib/api';
+	import { today } from '$lib/today.svelte';
 	import {
 		prefs,
 		setAutoAdvance,
@@ -137,6 +138,7 @@
 				equipmentItems: next.equipmentItems,
 				gymPreset: next.gymPreset,
 				machineItems: next.machineItems,
+				today: today.iso,
 			});
 			message = res.changed
 				? 'Updated. The weeks ahead now match your equipment.'

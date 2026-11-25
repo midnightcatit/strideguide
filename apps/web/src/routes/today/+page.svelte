@@ -7,7 +7,7 @@
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { summary, ensureSummary } from '$lib/summaryStore.svelte';
-	import { store, ensurePlan, reloadPlan, upsertLog } from '$lib/planStore.svelte';
+	import { store, ensurePlan, mergeLogs, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
 	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, weekdayIndexFromIso } from '$lib/plan';
 	import { today } from '$lib/today.svelte';
@@ -361,9 +361,9 @@
 			try {
 				const res = await api.activities();
 				activities = res.activities;
-				// Listing writes a standalone log for each new imported activity.
-				// Reload the plan so those logs count in Progress and the streak now.
-				if (activities.length && store.plan) void reloadPlan();
+				// Listing writes a standalone log for each new imported activity and
+				// returns it, so merge those in rather than refetching the whole plan.
+				mergeLogs(res.logs ?? []);
 			} catch {
 				// no imports to show, or the call failed; Today still works
 			}
