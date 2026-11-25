@@ -3,18 +3,20 @@
 	import { page } from '$app/state';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { trainedDays, currentStreak, metricOrigin } from '$lib/metrics';
-	import { addDaysIso, localIso } from '$lib/plan';
+	import { addDaysIso } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import DayActivitySheet from '$lib/components/DayActivitySheet.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 	const days = $derived(trainedDays(store.logs));
 	const streak = $derived(currentStreak(days, todayIso));
 	// Days the plan marked skipped, so the streak read shows them as their own
@@ -63,6 +65,11 @@
 
 <MetricHeader title="Activity" {from} />
 
+{#if store.error}
+	<PlanError message={store.error} />
+{:else if !store.loaded}
+	<p class="tabular text-sm text-steel">Loading…</p>
+{:else}
 <Card>
 	<div class="flex flex-wrap items-end justify-between gap-4">
 		<div>
@@ -132,5 +139,6 @@
 		Showing {activeSpan.label}. A filled square is a day you logged a session. Tap a day to see what you did. A grey square is a day you skipped, which does not count as training. Rest days stay open on purpose.
 	</p>
 </Card>
+{/if}
 
 <DayActivitySheet open={selectedDay !== null} iso={selectedDay} onClose={() => (selectedDay = null)} />

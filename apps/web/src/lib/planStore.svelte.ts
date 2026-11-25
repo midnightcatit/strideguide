@@ -2,6 +2,7 @@ import { api } from './api';
 import { getGoalProfile } from '@strideguide/shared/profiles';
 import type { ClientLog, ClientSession, ClientWeek, CurrentPlan } from './plan';
 import { localIso } from './plan';
+import { ensureAuth, auth } from './auth.svelte';
 import { hydrateSkipped } from './skipped.svelte';
 import { hydrateStarted } from './started.svelte';
 import { hydrateProgress } from './sessionProgress.svelte';
@@ -14,25 +15,44 @@ export const store = $state<{
 	error: string | null;
 }>({ plan: null, logs: [], loaded: false, error: null });
 
+let inflight: Promise<void> | null = null;
+
+/**
+ * Load the plan once. A failure leaves `loaded` false and records `error`, so a
+ * page can show the failure with a retry instead of caching the bad state as the
+ * empty plan. Callers share one in-flight request.
+ */
 export async function ensurePlan(): Promise<void> {
 	if (store.loaded) return;
+	if (inflight) return inflight;
+	inflight = run().finally(() => {
+		inflight = null;
+	});
+	return inflight;
+}
+
+async function run(): Promise<void> {
+	store.error = null;
+	// Resolve the user first, so the offline plan cache is read and written under
+	// the right account.
+	await ensureAuth().catch(() => {});
 	try {
-		const plan = await api.currentPlan();
+		const plan = await api.currentPlan(auth.user?.id ?? null);
 		store.plan = plan;
 		store.logs = plan.logs ?? [];
 		const states = plan.sessionStates ?? [];
 		hydrateSkipped(states.filter((x) => x.state === 'skipped').map((x) => x.sessionId));
 		hydrateStarted(states.filter((x) => x.state === 'started').map((x) => x.sessionId));
 		hydrateProgress(states.map((x) => ({ sessionId: x.sessionId, progress: x.progress ?? null })));
+		store.loaded = true;
 	} catch (e) {
 		store.error = e instanceof Error ? e.message : 'Could not load your plan.';
-	} finally {
-		store.loaded = true;
 	}
 }
 
 export function reloadPlan(): Promise<void> {
 	store.loaded = false;
+	store.error = null;
 	return ensurePlan();
 }
 

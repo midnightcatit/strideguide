@@ -4,51 +4,33 @@
  * local update.
  */
 import { api } from './api';
+import { createSessionStateStore, decodeIdList, encodeIdList } from './sessionState.svelte';
 
-const KEY = 'sg:skipped';
-
-let ids = $state<Set<string>>(new Set());
-if (typeof localStorage !== 'undefined') {
-	try {
-		ids = new Set<string>(JSON.parse(localStorage.getItem(KEY) ?? '[]') as string[]);
-	} catch {
-		ids = new Set();
-	}
-}
-
-function persist(): void {
-	if (typeof localStorage === 'undefined') return;
-	try {
-		localStorage.setItem(KEY, JSON.stringify([...ids]));
-	} catch {
-		// ignore
-	}
-}
+const store = createSessionStateStore<true>({
+	key: 'sg:skipped',
+	write: (id) => api.setSessionState(id, 'skipped'),
+	unset: (id) => api.setSessionState(id, null),
+	decode: decodeIdList<true>,
+	encode: encodeIdList<true>,
+});
 
 export function isSkipped(id: string): boolean {
-	return ids.has(id);
+	return store.has(id);
 }
 
 /** The session ids currently marked skipped, so completion reads can tell them apart. */
 export function skippedIds(): string[] {
-	return [...ids];
+	return store.ids();
 }
 
 export function hydrateSkipped(list: string[]): void {
-	ids = new Set(list);
-	persist();
+	store.hydrate(list.map((id) => ({ id, value: true as const })));
 }
 
 export function skipSession(id: string): void {
-	ids = new Set(ids).add(id);
-	persist();
-	void api.setSessionState(id, 'skipped').catch(() => {});
+	store.set(id, true);
 }
 
 export function unskipSession(id: string): void {
-	const next = new Set(ids);
-	next.delete(id);
-	ids = next;
-	persist();
-	void api.setSessionState(id, null).catch(() => {});
+	store.clear(id);
 }

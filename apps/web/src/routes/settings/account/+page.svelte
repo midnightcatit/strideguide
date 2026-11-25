@@ -3,13 +3,16 @@
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
 	import HoldConfirmDialog from '$lib/components/HoldConfirmDialog.svelte';
 	import { api } from '$lib/api';
-	import { auth } from '$lib/auth.svelte';
+	import { auth, forgetUser } from '$lib/auth.svelte';
+	import { clearClientState } from '$lib/offline';
 
 	let confirmSignOut = $state(false);
 	let confirmDelete = $state(false);
 
 	async function signOut() {
 		await api.logout().catch(() => {});
+		clearClientState();
+		forgetUser();
 		window.location.href = '/';
 	}
 
@@ -22,13 +25,8 @@
 		} catch {
 			// proceed to a fresh start either way
 		}
-		try {
-			for (const k of Object.keys(localStorage)) {
-				if (k.startsWith('sg:')) localStorage.removeItem(k);
-			}
-		} catch {
-			// ignore
-		}
+		clearClientState();
+		forgetUser();
 		window.location.href = '/';
 	}
 </script>

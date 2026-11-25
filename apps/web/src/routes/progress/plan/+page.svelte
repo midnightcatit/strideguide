@@ -4,13 +4,15 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { metricOrigin } from '$lib/metrics';
-	import { formatIsoDay, localIso } from '$lib/plan';
+	import { formatIsoDay } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { TRAINING_LOAD } from '$lib/chartPalette';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 
 	/**
 	 * The plan overview: the whole race plan in one place. The ring shows where the
@@ -21,7 +23,7 @@
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 	const plan = $derived(store.plan);
 	const weeks = $derived(plan?.weeks ?? []);
 	const totalWeeks = $derived(weeks.length);
@@ -92,7 +94,9 @@
 
 <MetricHeader title="Plan overview" {from} />
 
-{#if !store.loaded}
+{#if store.error}
+	<PlanError message={store.error} />
+{:else if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !plan}
 	<p class="mt-6 text-sm text-steel">No plan yet. <a href="/onboarding" class="text-signal-ink hover:underline">Build one →</a></p>

@@ -187,7 +187,11 @@ export interface PreviewSessionInput {
 export const api = {
 	me: async (): Promise<ApiUser | null> => {
 		const res = await fetch('/auth/me', { credentials: 'include' });
-		if (!res.ok) return null;
+		// A real "not signed in" answer is a resolved null; anything else is a
+		// failure the caller should see, so an offline or broken server does not
+		// read as a sign-out.
+		if (res.status === 401 || res.status === 403) return null;
+		if (!res.ok) throw new Error(`Sign-in check failed (${res.status}).`);
 		const data = (await res.json()) as {
 			user: { uid: string; email: string; name?: string | null } | null;
 		};
@@ -211,13 +215,13 @@ export const api = {
 
 	profiles: () => req<{ profiles: GoalProfileData[] }>('/goals/profiles'),
 
-	currentPlan: async (): Promise<CurrentPlan> => {
+	currentPlan: async (userId: string | null): Promise<CurrentPlan> => {
 		try {
 			const plan = await req<CurrentPlan>('/plans/current');
-			cachePlan(plan);
+			cachePlan(userId, plan);
 			return plan;
 		} catch (e) {
-			const cached = cachedPlan<CurrentPlan>();
+			const cached = cachedPlan<CurrentPlan>(userId);
 			if (cached) return cached;
 			throw e;
 		}

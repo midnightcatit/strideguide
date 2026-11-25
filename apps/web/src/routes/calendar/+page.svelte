@@ -4,13 +4,16 @@
 	import MonthCalendar from '$lib/components/MonthCalendar.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 
 	onMount(() => {
 		void ensurePlan();
 	});
 </script>
 
-{#if !store.loaded && !store.plan}
+{#if store.error}
+	<PlanError message={store.error} />
+{:else if !store.loaded && !store.plan}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !(store.plan?.weeks?.length)}
 	<EmptyState

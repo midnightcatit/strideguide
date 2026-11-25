@@ -3,7 +3,8 @@
 	import { afterNavigate } from '$app/navigation';
 	import { getLandingTab, LANDING_TABS, prefs, type LandingTab } from '$lib/prefs.svelte';
 	import { GOAL_DEFAULTS } from '$lib/chartTheme';
-	import { auth } from '$lib/auth.svelte';
+	import { auth, forgetUser } from '$lib/auth.svelte';
+	import { clearClientState } from '$lib/offline';
 	import { api, type ConnectionStatus } from '$lib/api';
 	import { getTheme, type Theme } from '$lib/theme';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
@@ -140,6 +141,8 @@
 
 	async function signOut() {
 		await api.logout().catch(() => {});
+		clearClientState();
+		forgetUser();
 		window.location.href = '/';
 	}
 </script>

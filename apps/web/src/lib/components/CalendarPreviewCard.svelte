@@ -3,14 +3,15 @@
 	import { store } from '$lib/planStore.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
-	import { type ClientSession, DAY_INITIALS, addDaysIso, localIso } from '$lib/plan';
+	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 
 	/**
 	 * A small month preview of the plan: the current month with each planned
 	 * session marked, and the whole card opens the full calendar. It reads the
 	 * shared plan store, so it always matches the calendar tab.
 	 */
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 	const weeks = $derived(store.plan?.weeks ?? []);
 	const loggedIds = $derived(
 		new Set(store.logs.filter((l) => l.sessionId).map((l) => l.sessionId as string)),

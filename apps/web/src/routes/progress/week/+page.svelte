@@ -4,17 +4,19 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
-	import { DAY_NAMES, addDaysIso, localIso } from '$lib/plan';
+	import { DAY_NAMES, addDaysIso } from '$lib/plan';
+	import { today } from '$lib/today.svelte';
 	import { metricOrigin } from '$lib/metrics';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import SegmentedBar from '$lib/components/SegmentedBar.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
+	import PlanError from '$lib/components/PlanError.svelte';
 
 	onMount(() => void ensurePlan());
 
 	const from = $derived(metricOrigin(page.url.searchParams.get('from')));
-	const todayIso = localIso();
+	const todayIso = $derived(today.iso);
 	const weeks = $derived(store.plan?.weeks ?? []);
 	const todayWeek = $derived(
 		weeks.find((w) => w.startDate && w.endDate && todayIso >= w.startDate && todayIso <= w.endDate) ??
@@ -40,7 +42,9 @@
 
 <MetricHeader title={todayWeek ? `Week ${todayWeek.weekNumber}` : 'This week'} {from} />
 
-{#if !store.loaded}
+{#if store.error}
+	<PlanError message={store.error} />
+{:else if !store.loaded}
 	<p class="tabular text-sm text-steel">Loading…</p>
 {:else if !rows.length}
 	<Card>
