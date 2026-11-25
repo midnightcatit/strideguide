@@ -435,6 +435,12 @@ export const connections = sqliteTable(
 			.default('connected'),
 		lastSyncedAt: integer('last_synced_at', { mode: 'timestamp' }),
 		/**
+		 * Comma-separated data types that failed on the last sync, or null when the
+		 * last run read every type. When any type is listed the watermark is held
+		 * back, so the window it missed is re-read on the next run.
+		 */
+		lastSyncFailedTypes: text('last_sync_failed_types'),
+		/**
 		 * Set by a provider push notification to ask for a sync on the next cron
 		 * pass. The webhook never fetches inline, so it only flips this marker.
 		 */
