@@ -403,21 +403,21 @@
 				<hr class="my-6 border-hairline" />
 				<section aria-labelledby="to-come">
 					<h2 id="to-come" class="tabular text-xs uppercase tracking-widest text-steel">What's to come</h2>
-					<ol class="mt-2 divide-y divide-hairline">
+					<ol class="mt-2 space-y-1.5">
 						{#each visibleRows as row, i (i)}
 							{@const info = rowInfo(row.label)}
 							{@const detail = stepDetail(row.label)}
-							<li class="py-2.5">
+							<li>
 								<button
 									type="button"
 									onclick={() => (openRow = openRow === `r${i}` ? null : `r${i}`)}
 									aria-expanded={openRow === `r${i}`}
-									class="flex w-full items-baseline justify-between gap-3 text-left text-sm hover:text-signal-ink"
+									class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline px-3 py-3 text-left text-base hover:border-signal-ink hover:bg-sunken"
 								>
 									<span class="truncate font-medium">{row.label}</span>
 									<span class="flex shrink-0 items-baseline gap-3">
-										<span class="tabular text-steel">{row.target}</span>
-										<span class="tabular text-xs text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
+										<span class="tabular text-sm text-steel">{row.target}</span>
+										<span class="tabular text-sm text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
 									</span>
 								</button>
 								{#if openRow === `r${i}`}
@@ -428,7 +428,7 @@
 									{/if}
 								{/if}
 								{#if row.sub}
-									<ul class="mt-1 space-y-0.5 pl-3 text-xs text-steel">
+									<ul class="mt-2 space-y-1 pl-3 text-sm">
 										{#each row.sub as s, si (si)}
 											{@const sinfo = rowInfo(s.label)}
 											{@const sdetail = stepDetail(s.label)}
@@ -437,12 +437,12 @@
 													type="button"
 													onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
 													aria-expanded={openRow === `s${i}-${si}`}
-													class="flex w-full items-baseline justify-between gap-3 text-left hover:text-signal-ink"
+													class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline px-3 py-2 text-left hover:border-signal-ink hover:bg-sunken"
 												>
 													<span class="truncate">{s.label}</span>
 													<span class="flex shrink-0 items-baseline gap-3">
-														<span class="tabular">{s.target}</span>
-														<span class="tabular text-xs text-steel" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
+														<span class="tabular text-steel">{s.target}</span>
+														<span class="tabular text-steel" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
 													</span>
 												</button>
 												{#if openRow === `s${i}-${si}`}
