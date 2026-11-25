@@ -12,6 +12,7 @@ import {
 	encryptToken,
 	exchangeCode,
 	fetchProviderUserId,
+	isConnectionsKeyConfigured,
 	revokeToken,
 	safeReturnPath,
 	signState,
@@ -91,6 +92,14 @@ connections.get('/:provider/start', requireAuth, async (c) => {
 	const cfg = PROVIDERS[provider];
 	const clientId = providerClientId(c.env, cfg);
 	if (!clientId || !providerClientSecret(c.env, cfg)) {
+		return c.json(
+			{ error: 'not_configured', message: `${cfg.label} is not set up on this server.` },
+			400,
+		);
+	}
+	// The state token is signed with a key derived from CONNECTIONS_KEY. Check it
+	// up front so a missing or malformed key is a handled error, not a 500.
+	if (!isConnectionsKeyConfigured(c.env)) {
 		return c.json(
 			{ error: 'not_configured', message: `${cfg.label} is not set up on this server.` },
 			400,

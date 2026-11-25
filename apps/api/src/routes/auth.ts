@@ -21,7 +21,7 @@ import {
 	signSession,
 	stateCookieName,
 	stateCookieOptions,
-	timingSafeEqualStr,
+	oauthStateMatchesCookie,
 	verifyOAuthState,
 	verifySession,
 } from '../lib/session';
@@ -95,11 +95,19 @@ async function authFailure(c: Context<AppBindings>, reason: string) {
 }
 
 auth.get('/google', async (c) => {
+	// Cap how fast one IP can start sign-ins, so the redirect endpoint cannot be
+	// used to hammer Google or to mint signed states in bulk.
+	const rl = await checkRateLimit(c.env.DB, `auth-start:${clientIp(c.req.raw)}`, 30, 600);
+	if (!rl.ok) {
+		return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '600' });
+	}
+
 	const secure = secureCookies(c.env);
 	const state = crypto.randomUUID();
 	const nonce = crypto.randomUUID();
-	// The signed state rides through Google in the state param, so the callback
-	// can verify the attempt even when the cookie is not sent back.
+	// The signed state rides through Google in the state param so the callback can
+	// check its integrity; the cookie holds the plain state and nonce and is what
+	// ties the attempt to this browser. The callback requires both.
 	const signedState = await signOAuthState(c.env, { state, nonce });
 	setCookie(c, stateCookieName(c.env), `${state}.${nonce}`, stateCookieOptions(secure));
 	return c.redirect(buildGoogleAuthUrl(c.env, appOrigin(c.env), signedState, nonce));
@@ -122,23 +130,18 @@ auth.get('/google/callback', async (c) => {
 		return authFailure(c, 'access_denied');
 	}
 
-	// Verify the CSRF state from the signed value, which is enough on its own.
+	// Verify the CSRF state. The signed value proves integrity, but the browser's
+	// own cookie must also be present and agree: a signed state alone is
+	// replayable, so an attacker could begin a flow and hand the victim its
+	// callback URL, fixing the victim into the attacker's session. Requiring the
+	// cookie is what binds the finishing sign-in to this browser.
 	const signedState = stateParam ? await verifyOAuthState(c.env, stateParam) : null;
 	if (!code || !signedState) {
 		return authFailure(c, 'invalid_oauth_state');
 	}
 
-	// The cookie is a second check when the browser did send it back.
-	if (cookieState) {
-		const [cookieNonceState, cookieNonce] = cookieState.split('.');
-		if (
-			!cookieNonceState ||
-			!cookieNonce ||
-			!timingSafeEqualStr(cookieNonceState, signedState.state) ||
-			!timingSafeEqualStr(cookieNonce, signedState.nonce)
-		) {
-			return authFailure(c, 'oauth_state_mismatch');
-		}
+	if (!oauthStateMatchesCookie(signedState, cookieState)) {
+		return authFailure(c, 'oauth_state_mismatch');
 	}
 
 	const expectedNonce = signedState.nonce;
@@ -176,6 +179,11 @@ auth.get('/google/callback', async (c) => {
 
 /** Real logout: revoke the ledger row (server-side) and clear the cookie (M0-SEC-01/02). */
 auth.post('/logout', async (c) => {
+	const rl = await checkRateLimit(c.env.DB, `auth-logout:${clientIp(c.req.raw)}`, 30, 60);
+	if (!rl.ok) {
+		return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '60' });
+	}
+
 	const token = getCookie(c, sessionCookieName(c.env));
 	deleteCookie(c, sessionCookieName(c.env), { path: '/', secure: secureCookies(c.env) });
 	if (token) {
@@ -189,6 +197,13 @@ auth.post('/logout', async (c) => {
 });
 
 auth.get('/me', async (c) => {
+	// A light per-IP cap so an unauthenticated caller cannot hammer the session
+	// read. It is generous enough that normal app polling never trips it.
+	const rl = await checkRateLimit(c.env.DB, `auth-me:${clientIp(c.req.raw)}`, 120, 60);
+	if (!rl.ok) {
+		return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '60' });
+	}
+
 	const token = getCookie(c, sessionCookieName(c.env));
 	if (!token) return c.json({ user: null });
 	const payload = await verifySession(c.env, token);

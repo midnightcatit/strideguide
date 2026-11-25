@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Env } from '../env';
-import { signOAuthState, verifyOAuthState } from './session';
+import { oauthStateMatchesCookie, signOAuthState, verifyOAuthState } from './session';
 
 function env(secret: string): Env {
 	return { SESSION_SECRET: secret } as unknown as Env;
@@ -30,5 +30,31 @@ describe('signOAuthState / verifyOAuthState', () => {
 			nonce: 'nonce-1',
 		});
 		expect(await verifyOAuthState(env(secret), token)).toBeNull();
+	});
+});
+
+describe('oauthStateMatchesCookie', () => {
+	const signed = { state: 'state-1', nonce: 'nonce-1' };
+
+	it('accepts a cookie that matches the signed state and nonce', () => {
+		expect(oauthStateMatchesCookie(signed, 'state-1.nonce-1')).toBe(true);
+	});
+
+	it('rejects a missing cookie, so a bare signed state cannot be replayed', () => {
+		expect(oauthStateMatchesCookie(signed, '')).toBe(false);
+	});
+
+	it('rejects a cookie that does not match the signed state', () => {
+		expect(oauthStateMatchesCookie(signed, 'state-2.nonce-1')).toBe(false);
+	});
+
+	it('rejects a cookie that does not match the signed nonce', () => {
+		expect(oauthStateMatchesCookie(signed, 'state-1.nonce-2')).toBe(false);
+	});
+
+	it('rejects a malformed cookie', () => {
+		expect(oauthStateMatchesCookie(signed, 'state-1')).toBe(false);
+		expect(oauthStateMatchesCookie(signed, 'state-1.')).toBe(false);
+		expect(oauthStateMatchesCookie(signed, '.nonce-1')).toBe(false);
 	});
 });

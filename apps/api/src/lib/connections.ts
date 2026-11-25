@@ -9,13 +9,16 @@ import { providerClientId, providerClientSecret, type ProviderConfig } from './p
  * Health connector security and token plumbing.
  *
  * Tokens are encrypted at rest with AES-GCM under a base64 32-byte key from the
- * CONNECTIONS_KEY secret. The same key signs the short-lived OAuth state. Nothing
- * in this file logs a token value.
+ * CONNECTIONS_KEY secret. The short-lived OAuth state is signed with a separate
+ * key derived from CONNECTIONS_KEY through HKDF, so the AES key and the HMAC key
+ * are never the same bytes. Nothing in this file logs a token value.
  */
 
 const KEY_BYTES = 32;
 const IV_BYTES = 12;
 const STATE_TTL_SECONDS = 600;
+/** Domain separation so the HKDF output cannot collide with the AES key. */
+const STATE_KEY_INFO = 'strideguide-connections-state-v1';
 /** Refresh a little before expiry so an in-flight call does not race the clock. */
 const EXPIRY_SKEW_MS = 60_000;
 
@@ -73,6 +76,37 @@ async function aesKey(env: Env): Promise<CryptoKey> {
 	return crypto.subtle.importKey('raw', decodeKey(env), 'AES-GCM', false, ['encrypt', 'decrypt']);
 }
 
+/**
+ * Derive the HMAC key used to sign the OAuth state from CONNECTIONS_KEY with
+ * HKDF-SHA-256 and a fixed info string. Deriving instead of reusing the raw key
+ * keeps the encryption key and the signing key distinct, so a weakness in one
+ * does not carry to the other.
+ */
+async function stateSigningKey(env: Env): Promise<Uint8Array> {
+	const base = await crypto.subtle.importKey('raw', decodeKey(env), 'HKDF', false, ['deriveBits']);
+	const bits = await crypto.subtle.deriveBits(
+		{
+			name: 'HKDF',
+			hash: 'SHA-256',
+			salt: new Uint8Array(0),
+			info: new TextEncoder().encode(STATE_KEY_INFO),
+		},
+		base,
+		256,
+	);
+	return new Uint8Array(bits);
+}
+
+/** Whether the token key is present and well formed, so callers can fail gracefully. */
+export function isConnectionsKeyConfigured(env: Env): boolean {
+	try {
+		decodeKey(env);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 /** Encrypt a token for storage. Output is `v1.<iv>.<ciphertext>`, all base64. */
 export async function encryptToken(env: Env, plaintext: string): Promise<string> {
 	const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
@@ -112,7 +146,7 @@ export async function signState(
 		.setProtectedHeader({ alg: 'HS256' })
 		.setIssuedAt()
 		.setExpirationTime(`${STATE_TTL_SECONDS}s`)
-		.sign(decodeKey(env));
+		.sign(await stateSigningKey(env));
 }
 
 export async function verifyState(
@@ -120,7 +154,9 @@ export async function verifyState(
 	token: string,
 ): Promise<{ uid: string; provider: string; nonce: string; returnPath: string | null } | null> {
 	try {
-		const { payload } = await jwtVerify(token, decodeKey(env), { algorithms: ['HS256'] });
+		const { payload } = await jwtVerify(token, await stateSigningKey(env), {
+			algorithms: ['HS256'],
+		});
 		if (
 			typeof payload.uid === 'string' &&
 			typeof payload.p === 'string' &&

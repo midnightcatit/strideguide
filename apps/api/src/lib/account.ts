@@ -1,4 +1,4 @@
-import { eq, inArray, or } from 'drizzle-orm';
+import { eq, inArray, like, or, sql } from 'drizzle-orm';
 import { schema } from '../db';
 import type { Db } from '../db';
 
@@ -93,6 +93,19 @@ export const ACCOUNT_DELETES: Record<string, AccountDeleteRunner> = {
 		db.delete(schema.healthDaily).where(eq(schema.healthDaily.userId, userId)),
 	session_states: (db, userId) =>
 		db.delete(schema.sessionStates).where(eq(schema.sessionStates.userId, userId)),
+	// Cached manual-sync results are keyed by connection id, which is not a user
+	// column. Clear them here, before the connections rows go away and their ids
+	// are no longer discoverable.
+	ai_cache: (db, userId) =>
+		db.delete(schema.aiCache).where(
+			inArray(
+				schema.aiCache.cacheKey,
+				db
+					.select({ cacheKey: sql<string>`'connection-sync:' || ${schema.connections.id}` })
+					.from(schema.connections)
+					.where(eq(schema.connections.userId, userId)),
+			),
+		),
 	connections: (db, userId) =>
 		db.delete(schema.connections).where(eq(schema.connections.userId, userId)),
 	auth_sessions: (db, userId) =>
@@ -100,6 +113,10 @@ export const ACCOUNT_DELETES: Record<string, AccountDeleteRunner> = {
 	app_errors: (db, userId) => db.delete(schema.appErrors).where(eq(schema.appErrors.userId, userId)),
 	client_errors: (db, userId) =>
 		db.delete(schema.clientErrors).where(eq(schema.clientErrors.userId, userId)),
+	// Rate-limit rows are keyed `<prefix>:<id>`, and the user-scoped prefixes embed
+	// the user id at the end. IP-keyed rows (auth, clienterr) do not match and stay.
+	rate_limits: (db, userId) =>
+		db.delete(schema.rateLimits).where(like(schema.rateLimits.key, `%:${userId}`)),
 
 	// The account itself, always last.
 	users: (db, userId) => db.delete(schema.users).where(eq(schema.users.id, userId)),
