@@ -56,7 +56,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 			{ phase: 'base', weeks: 4, volumeStep: 0.1, deload: false },
 			{ phase: 'build', weeks: 5, volumeStep: 0.08, deload: true },
 			{ phase: 'peak', weeks: 2, volumeStep: 0.03, deload: false },
-			{ phase: 'taper', weeks: 1, volumeStep: -0.35, deload: false },
+			{ phase: 'taper', weeks: 2, volumeStep: -0.3, deload: false },
 		],
 		successMetrics: [
 			{ key: 'time', label: 'Improve 10K time', weight: 0.6 },
@@ -75,7 +75,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 			{ phase: 'base', weeks: 3, volumeStep: 0.1, deload: false },
 			{ phase: 'build', weeks: 4, volumeStep: 0.07, deload: true },
 			{ phase: 'peak', weeks: 2, volumeStep: 0.03, deload: false },
-			{ phase: 'taper', weeks: 1, volumeStep: -0.35, deload: false },
+			{ phase: 'taper', weeks: 2, volumeStep: -0.35, deload: false },
 		],
 		successMetrics: [
 			{ key: 'time', label: 'Improve 5K time', weight: 0.6 },

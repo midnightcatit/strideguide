@@ -859,3 +859,38 @@ describe('week alignment when the plan starts on a non-Monday', () => {
 		expect(monday.weeks[0]!.sessions.some((s) => s.day === 1)).toBe(true);
 	});
 });
+
+describe('race taper per distance', () => {
+	const weeksFor = (slug: string) =>
+		generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === slug)!,
+			baseline: { recentTimes: { '5k': '22:00' }, experience: 'intermediate' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-04-01',
+		}).weeks;
+
+	it.each(['5k', '10k', 'half-marathon', 'marathon'])(
+		'tapers %s into the race and keeps a sharp session',
+		(slug) => {
+			const weeks = weeksFor(slug);
+			const taper = weeks.filter((w) => w.phase === 'taper');
+			// The evidence floor: a race goal gets at least a two-week taper.
+			expect(taper.length).toBeGreaterThanOrEqual(2);
+			// Volume falls off the peak by the race.
+			const peak = Math.max(
+				...weeks.filter((w) => w.phase !== 'taper').map((w) => w.targetVolumeKm),
+			);
+			expect(taper[taper.length - 1]!.targetVolumeKm).toBeLessThan(peak);
+			// Intensity is held: the taper still runs a quality session.
+			const quality = taper
+				.flatMap((w) => w.sessions)
+				.some((s) =>
+					['tempo', 'interval', 'hills', 'race-pace', 'threshold', 'strides', 'fartlek'].includes(
+						s.type,
+					),
+				);
+			expect(quality).toBe(true);
+		},
+	);
+});
