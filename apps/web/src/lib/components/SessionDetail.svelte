@@ -408,18 +408,18 @@
 							{@const info = rowInfo(row.label)}
 							{@const detail = stepDetail(row.label)}
 							<li class="py-2.5">
-								<div class="flex items-baseline justify-between gap-3 text-sm">
-									<button
-										type="button"
-										onclick={() => (openRow = openRow === `r${i}` ? null : `r${i}`)}
-										aria-expanded={openRow === `r${i}`}
-										class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
-									>
-										<span class="truncate">{row.label}</span>
-										<span class="shrink-0 text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
-									</button>
-									<span class="tabular shrink-0 text-steel">{row.target}</span>
-								</div>
+								<button
+									type="button"
+									onclick={() => (openRow = openRow === `r${i}` ? null : `r${i}`)}
+									aria-expanded={openRow === `r${i}`}
+									class="flex w-full items-baseline justify-between gap-3 text-left text-sm hover:text-signal-ink"
+								>
+									<span class="truncate font-medium">{row.label}</span>
+									<span class="flex shrink-0 items-baseline gap-3">
+										<span class="tabular text-steel">{row.target}</span>
+										<span class="tabular text-xs text-steel" aria-hidden="true">{openRow === `r${i}` ? '−' : '+'}</span>
+									</span>
+								</button>
 								{#if openRow === `r${i}`}
 									{#if detail}
 										<div class="mt-1"><ExerciseDetail {...detail} /></div>
@@ -433,18 +433,18 @@
 											{@const sinfo = rowInfo(s.label)}
 											{@const sdetail = stepDetail(s.label)}
 											<li>
-												<div class="flex items-baseline justify-between gap-3">
-													<button
-														type="button"
-														onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
-														aria-expanded={openRow === `s${i}-${si}`}
-														class="flex min-w-0 items-center gap-1.5 text-left hover:text-signal-ink"
-													>
-														<span class="truncate">{s.label}</span>
-														<span class="shrink-0" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
-													</button>
-													<span class="tabular shrink-0">{s.target}</span>
-												</div>
+												<button
+													type="button"
+													onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
+													aria-expanded={openRow === `s${i}-${si}`}
+													class="flex w-full items-baseline justify-between gap-3 text-left hover:text-signal-ink"
+												>
+													<span class="truncate">{s.label}</span>
+													<span class="flex shrink-0 items-baseline gap-3">
+														<span class="tabular">{s.target}</span>
+														<span class="tabular text-xs text-steel" aria-hidden="true">{openRow === `s${i}-${si}` ? '−' : '+'}</span>
+													</span>
+												</button>
 												{#if openRow === `s${i}-${si}`}
 													{#if sdetail}
 														<div class="mt-1"><ExerciseDetail {...sdetail} /></div>
