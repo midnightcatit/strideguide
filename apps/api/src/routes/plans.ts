@@ -14,8 +14,6 @@ import {
 import { compareDaySessions } from '../lib/session-order';
 import type {
 	Baseline,
-	EquipmentItem,
-	EquipmentPreference,
 	Modality,
 	PlannedWeek,
 	PlanInput,
@@ -28,6 +26,9 @@ import { schema } from '../db';
 import type { Db } from '../db';
 import { narrateAndStore, reviewPlan, templateWeekSummary } from '../lib/narration';
 import { shapePlan } from '../lib/plan-shape';
+import { equipmentPrefsPatchSchema } from '../lib/prefs-schema';
+import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
+import { prescriptionSchema } from '../lib/prescription-schema';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
 
@@ -499,11 +500,11 @@ plans.post(
 	zValidator(
 		'json',
 		z.object({
-			goalProfileSlug: z.string(),
-			targetDate: z.string().optional(),
+			goalProfileSlug: goalSlugSchema,
+			targetDate: targetDateSchema.optional(),
 			startDate: z.string().optional(),
 			baseline: z.record(z.string(), z.unknown()).optional(),
-			availableDays: z.array(z.number().int().min(0).max(6)).max(7).optional(),
+			availableDays: availableDaysSchema.optional(),
 		}),
 	),
 	async (c) => {
@@ -772,27 +773,25 @@ plans.post(
  * own logs and feedback. Deterministic and instant, no AI in the path. Past
  * weeks are never touched.
  */
-plans.post('/adapt', async (c) => {
+plans.post('/adapt', zValidator('json', equipmentPrefsPatchSchema), async (c) => {
 	const user = c.get('user')!;
 	const db = c.get('db');
 
-	// An equipment change arrives here: store it, then rebuild the weeks ahead.
-	const body = (await c.req.json().catch(() => ({}))) as {
-		equipment?: EquipmentPreference;
-		equipmentItems?: EquipmentItem[];
-		gymPreset?: string;
-		machineItems?: string[];
-	};
-	const patch: Partial<Prefs> = {};
-	if (typeof body.equipment === 'string') patch.equipment = body.equipment;
-	if (Array.isArray(body.equipmentItems)) patch.equipmentItems = body.equipmentItems;
-	if (typeof body.gymPreset === 'string') patch.gymPreset = body.gymPreset;
-	if (Array.isArray(body.machineItems)) patch.machineItems = body.machineItems;
-	if (Object.keys(patch).length) await upsertPrefs(db, user.id, patch);
-	const prefs = await loadPrefs(db, user.id);
-
+	// Rebuilding costs the rate limit; check it before any write, so a burst
+	// cannot keep persisting equipment changes past the limit.
 	const rl = await checkRateLimit(c.env.DB, `adapt:${user.id}`, 30, 3600);
 	if (!rl.ok) return c.json({ error: 'rate_limited' }, 429, { 'Retry-After': '600' });
+
+	// An equipment change arrives here: store it (bounded to the same fields and
+	// values as the settings endpoint), then rebuild the weeks ahead.
+	const body = c.req.valid('json');
+	const patch: Partial<Prefs> = {};
+	if (body.equipment !== undefined) patch.equipment = body.equipment;
+	if (body.equipmentItems !== undefined) patch.equipmentItems = body.equipmentItems;
+	if (body.gymPreset !== undefined) patch.gymPreset = body.gymPreset;
+	if (body.machineItems !== undefined) patch.machineItems = body.machineItems;
+	if (Object.keys(patch).length) await upsertPrefs(db, user.id, patch);
+	const prefs = await loadPrefs(db, user.id);
 
 	const found = await currentPlanWithWeeks(db, user.id);
 	if (!found) return c.json({ error: 'no_plan' }, 404);
@@ -1046,7 +1045,7 @@ plans.post(
 						type: z.string().min(1).max(40),
 						title: z.string().max(200).optional(),
 						purpose: z.string().max(600).optional(),
-						prescription: z.unknown().optional(),
+						prescription: prescriptionSchema.optional(),
 						durationMin: z.number().int().min(0).max(600).optional(),
 						libraryId: z.string().min(1).max(60).optional(),
 					}),

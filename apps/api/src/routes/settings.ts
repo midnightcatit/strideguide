@@ -4,6 +4,12 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { DEFAULT_PREFS, type Prefs } from '@strideguide/shared/units';
 import { birthYearSchema } from '../lib/birth-year';
+import {
+	equipmentItemsSchema,
+	equipmentPreferenceSchema,
+	gymPresetSchema,
+	machineItemsSchema,
+} from '../lib/prefs-schema';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -39,24 +45,10 @@ settings.put(
 			activeZoneGoalMin: z.number().int().min(5).max(300).nullable().optional(),
 			autoAdvance: z.boolean().optional(),
 			countdownSec: z.number().int().min(0).max(15).optional(),
-			equipment: z
-				.enum([
-					'machines',
-					'bodyweight',
-					'bodyweight-dumbbells',
-					'dumbbells',
-					'barbell',
-					'kettlebell',
-					'bands',
-					'both',
-					'full-gym',
-				])
-				.optional(),
-			equipmentItems: z
-				.array(z.enum(['machines', 'dumbbells', 'barbell', 'kettlebell', 'bands']))
-				.optional(),
-			gymPreset: z.string().max(40).optional(),
-			machineItems: z.array(z.string().max(60)).max(60).optional(),
+			equipment: equipmentPreferenceSchema.optional(),
+			equipmentItems: equipmentItemsSchema.optional(),
+			gymPreset: gymPresetSchema.optional(),
+			machineItems: machineItemsSchema.optional(),
 			favoriteMachines: z.array(z.string().max(60)).max(60).optional(),
 			favoriteWorkouts: z.array(z.string().max(60)).max(60).optional(),
 			connectNudgeDismissed: z.boolean().optional(),

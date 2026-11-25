@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { desc, eq } from 'drizzle-orm';
+import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -23,10 +24,10 @@ goals.post(
 	zValidator(
 		'json',
 		z.object({
-			goalProfileSlug: z.string(),
-			targetDate: z.string().optional(),
+			goalProfileSlug: goalSlugSchema,
+			targetDate: targetDateSchema.optional(),
 			baseline: z.record(z.string(), z.unknown()).optional(),
-			availableDays: z.array(z.number()).optional(),
+			availableDays: availableDaysSchema.optional(),
 		}),
 	),
 	async (c) => {
