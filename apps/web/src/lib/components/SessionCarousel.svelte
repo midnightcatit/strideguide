@@ -11,11 +11,15 @@
 		items,
 		card,
 		revealId = $bindable<string | null>(null),
+		activeId = $bindable<string | null>(null),
 		label = 'workouts',
 	}: {
 		items: T[];
 		card: Snippet<[T]>;
 		revealId?: string | null;
+		// The id of the card currently at the scroll center, so a caller can save
+		// and restore where the day was left.
+		activeId?: string | null;
 		label?: string;
 	} = $props();
 
@@ -35,6 +39,7 @@
 		const node = e.currentTarget as HTMLElement;
 		const step = node.scrollWidth / Math.max(1, items.length);
 		active = Math.min(items.length - 1, Math.max(0, Math.round(node.scrollLeft / step)));
+		activeId = items[active]?.id ?? null;
 	}
 
 	function onKeydown(e: KeyboardEvent) {
