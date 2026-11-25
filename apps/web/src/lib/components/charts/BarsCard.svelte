@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { BarChart, type ChartAnnotations } from 'layerchart';
+	import { BarChart, Bars, Spline, type ChartAnnotations } from 'layerchart';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import ChartCard from './ChartCard.svelte';
 	import ChartTooltip from './ChartTooltip.svelte';
 	import { shortDay } from '$lib/chartTheme';
+	import { CHART_MUTED } from '$lib/chartPalette';
 
 	/**
 	 * A daily metric as bars, with an optional goal line. Takes the metric's
 	 * family colour, a real axis and grid, and a hover tooltip. Used for steps,
 	 * active energy and active-zone minutes, where each day stands on its own.
+	 * When a `reference` is given, each point may carry that value too, drawn as a
+	 * thin line over the bars (the weekly volume chart uses it for the planned
+	 * distance); the bars and the line then read as one figure.
 	 */
 	let {
 		title,
@@ -19,6 +23,7 @@
 		points,
 		format,
 		goal = null,
+		reference = null,
 		height = 150,
 		note,
 	}: {
@@ -27,16 +32,19 @@
 		unit?: string;
 		color: string;
 		change?: number | null;
-		points: { date: string; value: number | null }[];
+		points: { date: string; value: number | null; reference?: number | null }[];
 		format: (n: number) => string;
 		goal?: { value: number; label?: string } | null;
+		reference?: { label?: string; color?: string } | null;
 		height?: number;
 		note?: string;
 	} = $props();
 
 	const motion = $derived(prefersReducedMotion.current ? 'none' : undefined);
 
-	const data = $derived(points.map((p) => ({ date: p.date, value: p.value ?? 0 })));
+	const data = $derived(
+		points.map((p) => ({ date: p.date, value: p.value ?? 0, reference: p.reference ?? 0 })),
+	);
 
 	const annotations = $derived<ChartAnnotations>(
 		goal
@@ -49,8 +57,8 @@
 						labelXOffset: 4,
 						labelYOffset: -2,
 						props: {
-							line: { stroke: 'var(--steel)', dashArray: [3, 3], strokeWidth: 1.5 },
-							label: { fill: 'var(--steel)' },
+							line: { stroke: CHART_MUTED, dashArray: [3, 3], strokeWidth: 1.5 },
+							label: { fill: CHART_MUTED },
 						},
 					},
 				]
@@ -78,11 +86,30 @@
 		{motion}
 		{height}
 	>
+		{#if reference}
+			{#snippet marks({ context }: { context: any })}
+				{#each context.series.visibleSeries as s (s.key)}
+					<Bars seriesKey={s.key} radius={3} />
+				{/each}
+				<Spline
+					data={data}
+					x="date"
+					y="reference"
+					stroke={reference.color ?? CHART_MUTED}
+					strokeWidth={1.5}
+				/>
+			{/snippet}
+		{/if}
 		{#snippet tooltip({ context })}
 			<ChartTooltip
 				{context}
 				header={(d) => shortDay(d.date)}
-				items={(d) => [{ label: title, value: format(d.value), color }]}
+				items={(d) => [
+					{ label: title, value: format(d.value), color },
+					...(reference
+						? [{ label: reference.label ?? 'Planned', value: format(d.reference) }]
+						: []),
+				]}
 			/>
 		{/snippet}
 	</BarChart>

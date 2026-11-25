@@ -1,10 +1,14 @@
 <script lang="ts">
 	import type { HealthDay, RecoverySignal } from '@strideguide/shared/plan';
+	import Sparkline from '$lib/components/charts/Sparkline.svelte';
+	import { metricColor } from '$lib/chartTheme';
 
 	/**
 	 * Small watch-data visuals: resting heart rate, HRV and sleep, each with a
-	 * tiny trend line when there is a series to draw. Shared by the dashboard and
-	 * the progress tab so the same numbers read the same way in both places.
+	 * tiny trend line when there is a series to draw. The trend is the shared
+	 * Sparkline in the metric's family colour, so these read as the same family as
+	 * the full health charts. Shared by the dashboard and the progress tab so the
+	 * same numbers read the same way in both places.
 	 */
 	let {
 		signal,
@@ -18,16 +22,8 @@
 		[...days].filter((d) => !!d.date).sort((a, b) => a.date.localeCompare(b.date)),
 	);
 
-	function spark(values: (number | null | undefined)[]): string | null {
-		const nums = values.filter((v): v is number => typeof v === 'number');
-		if (nums.length < 2) return null;
-		const min = Math.min(...nums);
-		const max = Math.max(...nums);
-		const span = max - min || 1;
-		return nums
-			.map((v, i) => `${(i / (nums.length - 1)) * 100},${21 - ((v - min) / span) * 18}`)
-			.join(' ');
-	}
+	const series = (pick: (d: HealthDay) => number | null | undefined): number[] =>
+		ascending.map(pick).filter((v): v is number => typeof v === 'number');
 
 	function fmtSleep(min: number): string {
 		const h = Math.floor(min / 60);
@@ -36,29 +32,29 @@
 	}
 
 	const tiles = $derived.by(() => {
-		const out: { key: string; label: string; value: string; points: string | null }[] = [];
+		const out: { key: string; label: string; value: string; values: number[] }[] = [];
 		if (signal.avgRestingHr) {
 			out.push({
-				key: 'rhr',
+				key: 'resting_hr',
 				label: 'Resting HR',
 				value: `${signal.avgRestingHr} bpm`,
-				points: spark(ascending.map((d) => d.restingHr)),
+				values: series((d) => d.restingHr),
 			});
 		}
 		if (signal.avgHrvMs) {
 			out.push({
-				key: 'hrv',
+				key: 'hrv_ms',
 				label: 'HRV',
 				value: `${signal.avgHrvMs} ms`,
-				points: spark(ascending.map((d) => d.hrvMs)),
+				values: series((d) => d.hrvMs),
 			});
 		}
 		if (signal.avgSleepMin) {
 			out.push({
-				key: 'sleep',
+				key: 'sleep_min',
 				label: 'Sleep',
 				value: fmtSleep(signal.avgSleepMin),
-				points: spark(ascending.map((d) => d.sleepMin)),
+				values: series((d) => d.sleepMin),
 			});
 		}
 		return out;
@@ -71,21 +67,9 @@
 			<div class="rounded-lg border border-hairline bg-sunken px-3 py-2.5">
 				<p class="tabular text-[10px] uppercase tracking-widest text-steel">{tile.label}</p>
 				<p class="tabular mt-0.5 text-base font-semibold">{tile.value}</p>
-				{#if tile.points}
-					<svg viewBox="0 0 100 24" preserveAspectRatio="none" class="mt-1.5 h-5 w-full" aria-hidden="true">
-						<polyline
-							points={tile.points}
-							fill="none"
-							stroke="var(--cool)"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							vector-effect="non-scaling-stroke"
-						></polyline>
-					</svg>
-				{:else}
-					<div class="mt-1.5 h-5"></div>
-				{/if}
+				<div class="mt-1.5">
+					<Sparkline values={tile.values} color={metricColor(tile.key)} height={20} />
+				</div>
 			</div>
 		{/each}
 	</div>

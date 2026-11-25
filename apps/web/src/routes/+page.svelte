@@ -116,7 +116,6 @@
 	});
 	const streak = $derived(currentStreak(logDays, todayIso));
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
-	const weeklyMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
 	const weeksLike = $derived<WeekLike[]>(
 		(store.plan?.weeks ?? []).map((w) => ({
 			weekNumber: w.weekNumber,
@@ -277,7 +276,7 @@
 			from="/"
 		/>
 		<StreakPreviewCard {streak} trainedDays={logDays} {skippedDays} {todayIso} from="/" />
-		<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} {weeklyMax} from="/" />
+		<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} from="/" />
 	</div>
 
 	<!-- Calendar preview: the current month with sessions marked, opening the

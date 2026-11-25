@@ -9,6 +9,8 @@
 	import { api, type HealthMetricsPayload } from '$lib/api';
 	import { fmtDistance, fmtPace, convertPaceDelta, paceDeltaUnit } from '$lib/prefs.svelte';
 	import { weekPreview, trainedDays, currentStreak, weeklyKmSeries } from '$lib/metrics';
+	import { metricColor, periodDelta } from '$lib/chartTheme';
+	import { TRAINING_PROGRESS, TRAINING_LOAD, TRAINING_PACE, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 	import Card from '$lib/components/Card.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -17,6 +19,9 @@
 	import StreakPreviewCard from '$lib/components/StreakPreviewCard.svelte';
 	import VolumePreviewCard from '$lib/components/VolumePreviewCard.svelte';
 	import HealthSummary from '$lib/components/HealthSummary.svelte';
+	import BarsCard from '$lib/components/charts/BarsCard.svelte';
+	import TimeSeriesCard from '$lib/components/charts/TimeSeriesCard.svelte';
+	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
 
 	// The recovery payload carries a steps series alongside the days. The shared
 	// client type predates it, so it is widened here rather than in lib/api.
@@ -110,7 +115,6 @@
 		return out;
 	});
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 6));
-	const weeklyMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
 
 	// Steps come from the same health payload as the recovery numbers: the last
 	// two weeks, oldest first, ready to draw.
@@ -120,7 +124,6 @@
 			.sort((a, b) => a.date.localeCompare(b.date))
 			.slice(-14),
 	);
-	const stepMax = $derived(Math.max(1, ...stepDays.map((d) => d.steps)));
 	const stepAvg = $derived(
 		stepDays.length
 			? Math.round(stepDays.reduce((sum, d) => sum + d.steps, 0) / stepDays.length)
@@ -153,10 +156,21 @@
 			: '',
 	);
 
-	const volumeMax = $derived.by(() => {
-		if (!metrics) return 0;
-		return Math.max(1, ...metrics.volume.byWeek.flatMap((w) => [w.plannedKm, w.actualKm]));
+	// The weekly volume bars: logged distance, with the planned distance as a
+	// thin reference line. The week number is turned into the week's own start
+	// date, so the bars carry a real date axis.
+	const weekStarts = $derived.by(() => {
+		const map = new Map<number, string>();
+		for (const w of store.plan?.weeks ?? []) if (w.startDate) map.set(w.weekNumber, w.startDate);
+		return map;
 	});
+	const volumePoints = $derived(
+		(metrics?.volume.byWeek ?? []).slice(-8).map((w) => ({
+			date: weekStarts.get(w.week) ?? todayIso,
+			value: w.actualKm,
+			reference: w.plannedKm,
+		})),
+	);
 
 	const phaseSegments = $derived.by(() => {
 		const weeks = store.plan?.weeks ?? [];
@@ -169,8 +183,24 @@
 		}
 		return segs;
 	});
-	const phaseColour = (p: string) =>
-		p === 'build' ? 'bg-ink/45' : p === 'peak' ? 'bg-ink/70' : p === 'taper' ? 'bg-ink/25' : 'bg-ink/15';
+	// One hue for the plan's phases, deepening as the block loads: base is the
+	// faintest, peak the strongest, and a taper falls back.
+	const PHASE_OPACITY: Record<string, number> = { base: 0.25, build: 0.5, peak: 0.85, taper: 0.4 };
+	const phaseBars = $derived(
+		phaseSegments.map((seg) => ({
+			label: seg.phase,
+			value: seg.count,
+			opacity: PHASE_OPACITY[seg.phase] ?? 0.4,
+		})),
+	);
+
+	// Completed intensity as one ordered ramp: easy is the faintest, hard the
+	// strongest, so the split reads as one metric divided up.
+	const intensitySegments = $derived([
+		{ label: 'Easy', value: metrics?.intensity.easy ?? 0, opacity: 0.3 },
+		{ label: 'Steady', value: metrics?.intensity.steady ?? 0, opacity: 0.6 },
+		{ label: 'Hard', value: metrics?.intensity.hard ?? 0, opacity: 1 },
+	]);
 
 	const monthCells = $derived.by(() => {
 		const now = new Date();
@@ -196,20 +226,18 @@
 	});
 	const monthName = new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
-	const PACE_H = 72;
-	const paceGeom = $derived.by(() => {
-		const pts = (metrics?.pace.points ?? []).filter((p) => p.intensity !== 'easy');
-		if (pts.length < 3) return null;
-		const paces = pts.map((p) => p.paceSecPerKm);
-		const min = Math.min(...paces);
-		const max = Math.max(...paces);
-		const span = Math.max(1, max - min);
-		return pts.map((p, i) => ({
-			x: (i / (pts.length - 1)) * 100,
-			y: ((p.paceSecPerKm - min) / span) * (PACE_H - 12) + 6,
-			fast: p.paceSecPerKm === min,
-		}));
-	});
+	// The logged pace trend, long and quality runs only. Easy runs are left out
+	// on purpose, so the trend is not flattened by them.
+	const pacePoints = $derived(
+		(metrics?.pace.points ?? [])
+			.filter((p) => p.intensity !== 'easy')
+			.map((p) => ({ date: p.day, value: p.paceSecPerKm })),
+	);
+
+	// A compact pace for the axis and the tooltip: the formatted pace in the
+	// user's unit without the "/km" or "/mi" tail, so the ticks never crowd.
+	// It converts through fmtPace, so imperial users see the right numbers.
+	const fmtPaceShort = (sec: number): string => fmtPace(sec).split(' ')[0] ?? fmtPace(sec);
 </script>
 
 {#if !store.loaded}
@@ -237,7 +265,7 @@
 				from="/progress"
 			/>
 			<StreakPreviewCard {streak} trainedDays={logDays} skippedDays={skippedDaySet} {todayIso} from="/progress" />
-			<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} {weeklyMax} from="/progress" />
+			<VolumePreviewCard doneKm={weekDoneKm} plannedKm={weekKm} {weekly} from="/progress" />
 		</div>
 	</section>
 
@@ -319,28 +347,18 @@
 		{/if}
 		{#if stepDays.length}
 			<section aria-labelledby="p-steps" class="mb-7">
-				<SectionHeader id="p-steps" eyebrow="Daily steps" meta="{stepAvg.toLocaleString()} a day" />
-				<Card tone="sunken">
-					<div
-						class="flex items-end gap-1"
-						style="height: 96px"
-						role="img"
-						aria-label="Steps per day over the last {stepDays.length} days"
-					>
-						{#each stepDays as d (d.date)}
-							<div class="relative flex-1" title="{d.date}: {d.steps.toLocaleString()} steps">
-								<div class="absolute left-0 right-0 border-t border-steel" style="bottom: {Math.round((stepAvg / stepMax) * 84)}px"></div>
-								<div
-									class="absolute bottom-0 left-1/4 right-1/4 rounded-[1px] bg-ink/55"
-									style="height: {Math.max(2, Math.round((d.steps / stepMax) * 84))}px"
-								></div>
-							</div>
-						{/each}
-					</div>
-					<p class="mt-3 text-xs text-steel">
-						Last {stepDays.length} days from Google Health. The bar is that day's steps, and the thin line is your average.
-					</p>
-				</Card>
+				<SectionHeader id="p-steps" eyebrow="Daily steps" />
+				<BarsCard
+					title="Steps"
+					value={stepAvg.toLocaleString()}
+					unit="a day"
+					color={metricColor('steps')}
+					change={periodDelta(stepDays.map((d) => d.steps), health?.previous?.['steps'])}
+					points={stepDays.map((d) => ({ date: d.date, value: d.steps }))}
+					format={(n) => Math.round(n).toLocaleString()}
+					goal={stepAvg > 0 ? { value: stepAvg, label: 'Average' } : null}
+					note="Last {stepDays.length} days from Google Health. The line is your average."
+				/>
 			</section>
 		{/if}
 		<section aria-labelledby="p-plan" class="mb-7">
@@ -361,10 +379,13 @@
 					</div>
 				</div>
 				{#if phaseSegments.length > 1}
-					<div class="mt-4 flex h-2 w-full overflow-hidden rounded-full" role="img" aria-label="Plan phases">
-						{#each phaseSegments as seg (seg.phase + seg.count)}
-							<div class={phaseColour(seg.phase)} style="width: {(seg.count / metrics.planMeta.weeksTotal) * 100}%"></div>
-						{/each}
+					<div class="mt-4">
+						<ProportionBar
+							segments={phaseBars}
+							color={TRAINING_LOAD}
+							height={8}
+							ariaLabel="Plan phases, base to taper"
+						/>
 					</div>
 					<p class="mt-1.5 text-xs text-steel">Base, build, peak, taper.</p>
 				{/if}
@@ -379,7 +400,7 @@
 						{#each w.sessions as s (s.id)}
 							{@const done = store.logs.some((l) => l.sessionId === s.id)}
 							{@const sk = !done && isSkipped(s.id)}
-							<span class="h-4 w-2 rounded-[1px] {done ? 'bg-ok' : sk ? 'bg-steel' : 'bg-ink/40'}"></span>
+							<span class="h-4 w-2 rounded-[1px]" style="background: {done ? TRAINING_PROGRESS : sk ? CHART_MUTED : CHART_EMPTY}"></span>
 						{/each}
 					{/each}
 				</div>
@@ -398,10 +419,11 @@
 						{#each monthCells as c (c.key)}
 							<span
 								class="flex aspect-square items-center justify-center rounded-md border text-[10px] {c.trained
-									? 'border-ok bg-ok text-paper'
+									? ''
 									: c.inMonth
 										? 'border-hairline text-steel'
 										: 'border-transparent text-hairline'} {c.today ? 'ring-1 ring-signal-ink' : ''}"
+								style={c.trained ? `background: ${TRAINING_PROGRESS}; border-color: ${TRAINING_PROGRESS}; color: var(--paper)` : ''}
 								aria-label="{c.key}{c.trained ? ', trained' : ''}"
 							>{c.day}</span>
 						{/each}
@@ -412,27 +434,17 @@
 		</section>
 
 		<section aria-labelledby="p-volume" class="mb-7">
-			<SectionHeader id="p-volume" eyebrow="Volume by week" meta="{fmtDistance(metrics.volume.totalActualKm)} / {fmtDistance(metrics.volume.totalPlannedKm)}" />
-			<Card tone="sunken">
-				<div class="flex items-end gap-1" style="height: 96px" role="img" aria-label="Weekly distance logged against planned">
-					{#each metrics.volume.byWeek.slice(-8) as w (w.week)}
-						{@const h = Math.round((w.actualKm / volumeMax) * 84)}
-						{@const ph = Math.round((w.plannedKm / volumeMax) * 84)}
-						<div class="relative flex-1" title="Week {w.week}: {fmtDistance(w.actualKm)} of {fmtDistance(w.plannedKm)}">
-							<div class="absolute left-0 right-0 border-t border-steel" style="bottom: {ph}px"></div>
-							<div class="absolute bottom-0 left-1/4 right-1/4 rounded-[1px] bg-ok" style="height: {h}px"></div>
-						</div>
-					{/each}
-				</div>
-				<p class="mt-3 text-xs text-steel">
-					Last 8 weeks. The bar is distance logged, and the thin line is planned.{#if metrics.volume.changePct !== undefined} Last change {metrics.volume.changePct > 0 ? '+' : ''}{metrics.volume.changePct}%.{/if}
-				</p>
-				{#if metrics.imported.sessions}
-					<p class="mt-1 text-xs text-steel">
-						Of that, {fmtDistance(metrics.imported.km)} came from {metrics.imported.sessions} imported workout{metrics.imported.sessions === 1 ? '' : 's'}.
-					</p>
-				{/if}
-			</Card>
+			<SectionHeader id="p-volume" eyebrow="Volume by week" />
+			<BarsCard
+				title="Distance logged"
+				value={fmtDistance(metrics.volume.totalActualKm)}
+				unit={`of ${fmtDistance(metrics.volume.totalPlannedKm)} planned`}
+				color={TRAINING_PROGRESS}
+				points={volumePoints}
+				reference={{ label: 'Planned' }}
+				format={(n) => fmtDistance(n)}
+				note="Last 8 weeks. The bar is distance logged, and the thin line is planned.{metrics.volume.changePct !== undefined ? ` Last change ${metrics.volume.changePct > 0 ? '+' : ''}${metrics.volume.changePct}%.` : ''}{metrics.imported.sessions ? ` Of that, ${fmtDistance(metrics.imported.km)} came from ${metrics.imported.sessions} imported workout${metrics.imported.sessions === 1 ? '' : 's'}.` : ''}"
+			/>
 		</section>
 
 		<section aria-labelledby="p-intensity" class="mb-7">
@@ -441,12 +453,12 @@
 				{#if metrics.intensity.completed === 0}
 					<p class="text-xs text-steel">No completed sessions yet.</p>
 				{:else}
-					{@const total = metrics.intensity.easy + metrics.intensity.steady + metrics.intensity.hard || 1}
-					<div class="flex h-4 w-full overflow-hidden rounded-full" role="img" aria-label="{metrics.intensity.easy} easy, {metrics.intensity.steady} steady, {metrics.intensity.hard} hard">
-						<div class="bg-ink/25" style="width: {(metrics.intensity.easy / total) * 100}%"></div>
-						<div class="bg-ink/55" style="width: {(metrics.intensity.steady / total) * 100}%"></div>
-						<div class="bg-ink" style="width: {(metrics.intensity.hard / total) * 100}%"></div>
-					</div>
+					<ProportionBar
+						segments={intensitySegments}
+						color={TRAINING_LOAD}
+						height={16}
+						ariaLabel="{metrics.intensity.easy} easy, {metrics.intensity.steady} steady, {metrics.intensity.hard} hard"
+					/>
 					<div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-steel">
 						<span class="tabular">Easy {metrics.intensity.easy}</span>
 						<span class="tabular">Steady {metrics.intensity.steady}</span>
@@ -459,23 +471,20 @@
 
 		<section aria-labelledby="p-pace" class="mb-7">
 			<SectionHeader id="p-pace" eyebrow="Pace trend" />
-			<Card tone="sunken">
-				{#if !paceGeom}
+			{#if pacePoints.length < 3}
+				<Card tone="sunken">
 					<p class="text-xs text-steel">Log at least 3 long or quality runs to see a pace trend. Fewer points aren't meaningful.</p>
-				{:else}
-					<svg viewBox="0 0 100 {PACE_H}" preserveAspectRatio="none" class="w-full" style="height: {PACE_H}px" role="img" aria-label="Logged run paces over time">
-						{#each paceGeom as p, i (i)}
-							<circle cx={p.x} cy={p.y} r="1.6" class={p.fast ? 'fill-signal-ink' : 'fill-ink'}></circle>
-						{/each}
-					</svg>
-					<p class="mt-3 text-xs text-steel">
-						Long and quality runs only. Easy runs are left out on purpose, so the trend is not hidden by them.
-						{#if metrics.pace.changeSecPerKm !== undefined}
-							{metrics.pace.changeSecPerKm > 0 ? 'Recent runs are faster on average by ' : 'Recent runs are slower on average by '}{convertPaceDelta(Math.abs(metrics.pace.changeSecPerKm))}{paceDeltaUnit()}.
-						{/if}
-					</p>
-				{/if}
-			</Card>
+				</Card>
+			{:else}
+				<TimeSeriesCard
+					title="Pace"
+					value={fmtPace(pacePoints[pacePoints.length - 1].value)}
+					color={TRAINING_PACE}
+					points={pacePoints}
+					format={fmtPaceShort}
+					note="Long and quality runs only. Easy runs are left out on purpose, so the trend is not hidden by them.{metrics.pace.changeSecPerKm !== undefined ? ` Recent runs are ${metrics.pace.changeSecPerKm > 0 ? 'faster' : 'slower'} on average by ${convertPaceDelta(Math.abs(metrics.pace.changeSecPerKm))}${paceDeltaUnit()}.` : ''}"
+				/>
+			{/if}
 		</section>
 
 		<section aria-labelledby="p-pb" class="mb-7">

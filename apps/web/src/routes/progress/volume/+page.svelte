@@ -8,6 +8,8 @@
 	import { volumeComparisons } from '@strideguide/shared/comparisons';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
+	import BarsCard from '$lib/components/charts/BarsCard.svelte';
+	import { TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	onMount(() => void ensurePlan());
 
@@ -15,7 +17,8 @@
 	const todayIso = localIso();
 	const buckets = $derived(volumeBuckets(store.logs, todayIso));
 	const weekly = $derived(weeklyKmSeries(store.logs, todayIso, 12));
-	const weekMax = $derived(Math.max(1, ...weekly.map((w) => w.km)));
+	const weeklyPoints = $derived(weekly.map((w) => ({ date: w.startIso, value: w.km })));
+	const weeklyTotal = $derived(weekly.reduce((sum, w) => sum + w.km, 0));
 	const comparisons = $derived(volumeComparisons(buckets.allTimeKm));
 
 	const tiles = $derived([
@@ -50,19 +53,15 @@
 
 	<section aria-labelledby="v-weeks" class="mt-6">
 		<h2 id="v-weeks" class="tabular mb-2 text-xs uppercase tracking-widest text-steel">Last 12 weeks</h2>
-		<Card tone="sunken">
-			<div class="flex items-end gap-1" style="height: 96px" role="img" aria-label="Weekly distance for the last 12 weeks">
-				{#each weekly as w (w.startIso)}
-					<div class="flex flex-1 items-end" title="Week of {w.startIso}: {fmtDistance(w.km)}">
-						<div
-							class="grow-y w-full rounded-[2px] bg-ok"
-							style="height: {Math.max(2, Math.round((w.km / weekMax) * 88))}px"
-						></div>
-					</div>
-				{/each}
-			</div>
-			<p class="mt-3 text-xs text-steel">Each bar is one week of distance logged. Empty weeks stay flat.</p>
-		</Card>
+		<BarsCard
+			title="Weekly distance"
+			value={fmtDistance(weeklyTotal)}
+			unit="last 12 weeks"
+			color={TRAINING_PROGRESS}
+			points={weeklyPoints}
+			format={(n) => fmtDistance(n)}
+			note="Each bar is one week of distance logged. Empty weeks stay flat."
+		/>
 	</section>
 
 	{#if comparisons.length}

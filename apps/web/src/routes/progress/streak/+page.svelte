@@ -8,6 +8,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import { TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	onMount(() => void ensurePlan());
 
@@ -99,7 +100,7 @@
 			<span class="h-3 w-3 rounded-[2px] bg-hairline"></span> No training
 		</span>
 		<span class="flex items-center gap-1.5">
-			<span class="h-3 w-3 rounded-[2px] bg-ok"></span> Trained
+			<span class="h-3 w-3 rounded-[2px]" style="background: {TRAINING_PROGRESS}"></span> Trained
 		</span>
 		<span class="flex items-center gap-1.5">
 			<span class="h-3 w-3 rounded-[2px] bg-steel"></span> Skipped
