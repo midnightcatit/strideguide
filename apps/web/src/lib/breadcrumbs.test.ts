@@ -21,8 +21,17 @@ describe('breadcrumbFor', () => {
 		]);
 	});
 
-	it('keeps the id in the parent crumb for a deeper session view', () => {
-		expect(breadcrumbFor('/session/abc123/play')).toEqual([
+	it('leads a session view with the tab it was opened from', () => {
+		expect(breadcrumbFor('/session/abc123', '/today')).toEqual([
+			{ label: 'Today', href: '/today' },
+			{ label: 'Session', href: '/session/abc123' },
+		]);
+	});
+
+	it('keeps the id in the parent crumb and the from trail before it', () => {
+		expect(breadcrumbFor('/session/abc123/play', '/calendar/day/2026-01-05')).toEqual([
+			{ label: 'Calendar', href: '/calendar' },
+			{ label: 'Day', href: '/calendar/day/2026-01-05' },
 			{ label: 'Session', href: '/session/abc123' },
 			{ label: 'Play', href: '/session/abc123/play' },
 		]);
