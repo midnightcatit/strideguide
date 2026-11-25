@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { localIso } from './dates';
+import { epochMs, localIso } from './dates';
 
 describe('localIso', () => {
 	it('formats a local date as yyyy-mm-dd with padded month and day', () => {
@@ -20,5 +20,19 @@ describe('localIso', () => {
 			if (previous === undefined) delete process.env.TZ;
 			else process.env.TZ = previous;
 		}
+	});
+});
+
+describe('epochMs', () => {
+	it('reads a number as epoch seconds and an ISO string as milliseconds', () => {
+		expect(epochMs(1767225600)).toBe(1767225600000);
+		expect(epochMs('2026-01-01T00:00:00Z')).toBe(Date.parse('2026-01-01T00:00:00Z'));
+	});
+
+	it('returns undefined for a missing or unparseable value', () => {
+		expect(epochMs(null)).toBeUndefined();
+		expect(epochMs(undefined)).toBeUndefined();
+		expect(epochMs('not a date')).toBeUndefined();
+		expect(epochMs(Number.NaN)).toBeUndefined();
 	});
 });

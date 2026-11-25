@@ -3,6 +3,8 @@
  * These are SUGGESTIONS shown to the user; the plan is never changed silently.
  */
 
+import { epochMs } from '../dates';
+
 export interface AdaptSession {
 	id: string;
 	day: number;
@@ -44,10 +46,9 @@ export interface Adjustment {
 }
 
 function isoDay(value: string | number | null | undefined): string | undefined {
-	if (value == null) return undefined;
-	const d = typeof value === 'number' ? new Date(value * 1000) : new Date(value);
-	if (Number.isNaN(d.getTime())) return undefined;
-	return d.toISOString().slice(0, 10);
+	const ms = epochMs(value);
+	if (ms === undefined) return undefined;
+	return new Date(ms).toISOString().slice(0, 10);
 }
 
 function addDays(iso: string, n: number): string {
@@ -138,13 +139,25 @@ export function suggestAdjustments(
 	// Only weeks that have fully finished are judged. The current, in-progress
 	// week is never compared against its full plan, so a plan that started today
 	// (or this week) never looks like a shortfall.
+	// One pass over the logs into a session-id map, so each week's actual volume is
+	// a lookup rather than a scan of every log for every session. Duplicate logs
+	// for one session (a re-save) sum, instead of only the first one counting.
+	const kmBySession = new Map<string, number>();
+	for (const l of logs) {
+		if (!l.sessionId) continue;
+		kmBySession.set(
+			l.sessionId,
+			(kmBySession.get(l.sessionId) ?? 0) + (l.runStats?.distanceKm ?? 0),
+		);
+	}
+
 	const byWeek = weeks.map((w) => {
 		const planned = w.sessions
 			.filter((s) => s.modality === 'running')
 			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0);
 		const actual = w.sessions
 			.filter((s) => loggedIds.has(s.id))
-			.reduce((sum, s) => sum + (logs.find((l) => l.sessionId === s.id)?.runStats?.distanceKm ?? 0), 0);
+			.reduce((sum, s) => sum + (kmBySession.get(s.id) ?? 0), 0);
 		return { week: w, planned, actual };
 	});
 	const completed = byWeek.filter((b) => {

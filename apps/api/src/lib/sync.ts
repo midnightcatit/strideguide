@@ -24,7 +24,6 @@ import {
 	combineDailyPatches,
 	distanceByDate,
 	floorsByDate,
-	healthRowValues,
 	heartRateRollupByDate,
 	mapBloodGlucose,
 	mapBodyFat,
@@ -39,7 +38,6 @@ import {
 	mapHeight,
 	mapSleep,
 	mapWeight,
-	mergeDailyPatch,
 	sedentaryMinutesByDate,
 	stepsByDate,
 	syncSince,
@@ -411,97 +409,18 @@ async function upsertActivities(
 	return unique.length;
 }
 
-/** Upsert merged daily rows into `health_daily`, keeping any field the batch omits. */
-async function upsertDaily(db: Db, userId: string, patches: DailyPatch[]): Promise<number> {
-	const combined = combineDailyPatches(patches);
-	if (combined.length === 0) return 0;
-
-	const dates = combined.map((patch) => patch.date);
-	// The read binds one parameter per date, plus the user and provider, so a long
-	// window is read in chunks too; a stale connection can span many days.
-	const existingRows: (typeof schema.healthDaily.$inferSelect)[] = [];
-	for (const chunk of chunkRows(dates, 1, D1_MAX_BOUND_PARAMS - 2)) {
-		const rows = await db
-			.select()
-			.from(schema.healthDaily)
-			.where(
-				and(
-					eq(schema.healthDaily.userId, userId),
-					eq(schema.healthDaily.provider, 'google-health'),
-					inArray(schema.healthDaily.date, chunk),
-				),
-			);
-		existingRows.push(...rows);
-	}
-	const existingByDate = new Map<string, DailyPatch>(
-		existingRows.map((row) => [
-			row.date,
-			{
-				date: row.date,
-				metrics: {
-					resting_hr: row.restingHr ?? undefined,
-					hrv_ms: row.hrvMs ?? undefined,
-					sleep_min: row.sleepMin ?? undefined,
-					steps: row.steps ?? undefined,
-					// undefined values in a spread overwrite, so cleanMetrics drops the empties.
-				} as Record<string, number>,
-				raw: (row.raw as Record<string, unknown> | null) ?? undefined,
-			},
-		]),
-	);
-
-	const merged = combined.map((patch) => {
-		const base = existingByDate.get(patch.date);
-		const existing: DailyPatch | undefined = base
-			? { date: base.date, metrics: cleanMetrics(base.metrics), raw: base.raw }
-			: undefined;
-		return mergeDailyPatch(existing, patch);
-	});
-
-	const values = merged.map((patch) => ({
-		id: crypto.randomUUID(),
-		userId,
-		provider: 'google-health' as const,
-		date: patch.date,
-		...healthRowValues(patch),
-		raw: { ...(patch.raw ?? {}) },
-	}));
-
-	// Chunked so a longer window never trips D1's bound-parameter cap.
-	for (const chunk of chunkRows(values, Object.keys(values[0]!).length)) {
-		await db
-			.insert(schema.healthDaily)
-			.values(chunk)
-			.onConflictDoUpdate({
-				target: [
-					schema.healthDaily.userId,
-					schema.healthDaily.provider,
-					schema.healthDaily.date,
-				],
-				set: {
-					restingHr: sql`excluded.resting_hr`,
-					hrvMs: sql`excluded.hrv_ms`,
-					sleepMin: sql`excluded.sleep_min`,
-					steps: sql`excluded.steps`,
-					raw: sql`excluded.raw`,
-				},
-			});
-	}
-
-	return merged.length;
-}
-
-/** Drop keys whose value is not a number, so a null column never becomes a metric. */
-function cleanMetrics(metrics: Record<string, number>): Record<string, number> {
-	const out: Record<string, number> = {};
-	for (const [key, value] of Object.entries(metrics)) {
-		if (typeof value === 'number' && Number.isFinite(value)) out[key] = value;
-	}
-	return out;
-}
-
-/** Upsert the generic daily metrics, one row per day and metric. */
-async function upsertMetrics(db: Db, userId: string, patches: DailyPatch[]): Promise<number> {
+/**
+ * Upsert the generic daily metrics, one row per day and metric. This is the only
+ * daily store the sync writes: the four metrics that predate it (resting heart
+ * rate, HRV, sleep, steps) live here like every other metric, so the dashboard
+ * card and the recovery read can never disagree. The legacy `health_daily` table
+ * is no longer written, and is kept only for rows from an older deployment.
+ */
+async function upsertMetrics(
+	db: Db,
+	userId: string,
+	patches: DailyPatch[],
+): Promise<{ metrics: number; days: number }> {
 	const combined = combineDailyPatches(patches);
 	const rows: {
 		id: string;
@@ -528,7 +447,7 @@ async function upsertMetrics(db: Db, userId: string, patches: DailyPatch[]): Pro
 			});
 		}
 	}
-	if (rows.length === 0) return 0;
+	if (rows.length === 0) return { metrics: 0, days: 0 };
 
 	// A week of daily metrics is dozens of rows across eight bound columns, which
 	// is past D1's cap in one statement; chunk so each insert stays within it.
@@ -550,7 +469,7 @@ async function upsertMetrics(db: Db, userId: string, patches: DailyPatch[]): Pro
 			});
 	}
 
-	return rows.length;
+	return { metrics: rows.length, days: combined.length };
 }
 
 /** Upsert sparse point samples, one row per metric and sample time. */
@@ -653,8 +572,9 @@ export async function syncConnection(
 		}
 
 		const activityCount = await upsertActivities(db, connection.userId, exercisePoints);
-		const dailyCount = await upsertDaily(db, connection.userId, pull.daily);
-		const metricCount = await upsertMetrics(db, connection.userId, pull.daily);
+		// The only daily store written. Its `days` count stands in for the daily
+		// rows the old health_daily write used to report.
+		const metrics = await upsertMetrics(db, connection.userId, pull.daily);
 		const sampleCount = await upsertSamples(db, connection.userId, pull.samples);
 
 		const outcome = resolveSyncOutcome(connection.lastSyncedAt, now, failedTypes);
@@ -678,8 +598,8 @@ export async function syncConnection(
 
 		return {
 			activities: activityCount,
-			daily: dailyCount,
-			metrics: metricCount,
+			daily: metrics.days,
+			metrics: metrics.metrics,
 			samples: sampleCount,
 		};
 	} catch (error) {

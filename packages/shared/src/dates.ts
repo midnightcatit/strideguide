@@ -12,3 +12,16 @@ export function localIso(date: Date = new Date()): string {
 	const day = String(date.getDate()).padStart(2, '0');
 	return `${year}-${month}-${day}`;
 }
+
+/**
+ * A stored timestamp as epoch milliseconds, from either an ISO string or a
+ * number. The number form is seconds: that is what a `created_at` column holds
+ * and what the client writes when it queues a log offline, so every reader
+ * agrees on one convention instead of guessing per call site.
+ */
+export function epochMs(value: string | number | null | undefined): number | undefined {
+	if (value == null) return undefined;
+	if (typeof value === 'number') return Number.isFinite(value) ? value * 1000 : undefined;
+	const t = Date.parse(value);
+	return Number.isNaN(t) ? undefined : t;
+}

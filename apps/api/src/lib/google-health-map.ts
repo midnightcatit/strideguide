@@ -110,28 +110,6 @@ export interface DailyPatch {
 	raw?: Record<string, unknown>;
 }
 
-/** The four metrics that predate the generic store, projected into `health_daily`. */
-export const LEGACY_DAILY_METRICS: { metric: HealthMetricKey; column: keyof DailyRowValues }[] = [
-	{ metric: HealthMetric.restingHr, column: 'restingHr' },
-	{ metric: HealthMetric.hrvMs, column: 'hrvMs' },
-	{ metric: HealthMetric.sleepMin, column: 'sleepMin' },
-	{ metric: HealthMetric.steps, column: 'steps' },
-];
-
-/** The `health_daily` columns a patch fills, so the recovery signal keeps reading it. */
-export interface DailyRowValues {
-	restingHr: number | null;
-	hrvMs: number | null;
-	sleepMin: number | null;
-	steps: number | null;
-}
-
-/** A `health_daily` row as stored, before a merge. */
-export interface DailyRow extends DailyRowValues {
-	date: string;
-	raw: Record<string, unknown> | null;
-}
-
 /** A sparse point measurement: one value at one instant. */
 export interface MappedSample {
 	metric: HealthMetricKey;
@@ -629,16 +607,6 @@ export function combineDailyPatches(patches: DailyPatch[]): DailyPatch[] {
 		byDate.set(patch.date, mergeDailyPatch(byDate.get(patch.date), patch));
 	}
 	return [...byDate.values()];
-}
-
-/** Project a merged day into the four `health_daily` columns the recovery signal reads. */
-export function healthRowValues(patch: DailyPatch): DailyRowValues {
-	const values: DailyRowValues = { restingHr: null, hrvMs: null, sleepMin: null, steps: null };
-	for (const { metric, column } of LEGACY_DAILY_METRICS) {
-		const value = patch.metrics[metric];
-		if (value !== undefined) values[column] = value;
-	}
-	return values;
 }
 
 /** Default lookback for a connection that has never synced. */

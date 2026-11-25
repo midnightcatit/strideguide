@@ -1,3 +1,4 @@
+import { epochMs } from '../dates';
 import { VDOT_MAX, VDOT_MIN, vdotFromRace } from './vdot';
 
 /**
@@ -12,7 +13,9 @@ export interface FitnessEntry {
 	sessionId?: string | null;
 	/** The plan session's type (easy, long, tempo, interval, strength, ...). */
 	type?: string | null;
-	/** ISO date or epoch milliseconds. */
+	/** The plan session's modality (running, strength, mobility, recovery), when known. */
+	modality?: string | null;
+	/** ISO date or epoch seconds. */
 	date?: string | number | null;
 	distanceKm?: number | null;
 	durationSec?: number | null;
@@ -49,11 +52,23 @@ const DAY_MS = 86400000;
 /** A session type that is a genuine hard effort, so its pace can set VDOT. */
 const HARD_TYPES = new Set(['race', 'race-pace', 'interval', 'tempo', 'hills']);
 
+/**
+ * Session types that are never a run, so their distance must not read as run
+ * volume. Kept as a last resort for an entry that carries no modality; when the
+ * modality is known it decides, since a recovery jog is running but a spin is not.
+ */
+const NON_RUNNING_TYPES = new Set([
+	'strength',
+	'machine-circuit',
+	'full-body-strength',
+	'mobility',
+	'cross-train',
+	'walk',
+	'walking',
+]);
+
 function entryTime(entry: FitnessEntry): number | undefined {
-	if (entry.date == null) return undefined;
-	if (typeof entry.date === 'number') return entry.date;
-	const t = Date.parse(entry.date);
-	return Number.isNaN(t) ? undefined : t;
+	return epochMs(entry.date);
 }
 
 /** Best VDOT readable from a recent hard effort with a distance and a time. */
@@ -103,11 +118,19 @@ export function fitnessState(entries: FitnessEntry[], opts: FitnessOptions = {})
 	});
 	const feed = feedbackByType(recent);
 
-	// Weekly volume from recent running.
+	// Weekly volume from recent running only. The modality decides when the entry
+	// carries one, so a recovery jog counts but a spin, a strength session or a
+	// mobility session never does; without a modality, only the never-running
+	// types drop out.
 	let km = 0;
 	for (const e of recent) {
-		if (e.type === 'strength' || e.type === 'mobility') continue;
-		if (typeof e.distanceKm === 'number' && e.distanceKm > 0) km += e.distanceKm;
+		if (typeof e.distanceKm !== 'number' || e.distanceKm <= 0) continue;
+		if (e.modality != null) {
+			if (e.modality !== 'running') continue;
+		} else if (e.type && NON_RUNNING_TYPES.has(e.type)) {
+			continue;
+		}
+		km += e.distanceKm;
 	}
 	const recentWeeklyKm = Math.round((km / (windowDays / 7)) * 10) / 10;
 

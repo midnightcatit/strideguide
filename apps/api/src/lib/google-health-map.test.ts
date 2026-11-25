@@ -10,7 +10,6 @@ import {
 	dateFromGoogleDate,
 	distanceByDate,
 	floorsByDate,
-	healthRowValues,
 	heartRateRollupByDate,
 	mapBloodGlucose,
 	mapBodyFat,
@@ -427,22 +426,6 @@ describe('daily merge and projection', () => {
 		const stored = { date: '2026-04-20', metrics: { resting_hr: 52, sleep_min: 455 } };
 		const merged = mergeDailyPatch(stored, { date: '2026-04-20', metrics: { steps: 400 } });
 		expect(merged.metrics).toEqual({ resting_hr: 52, sleep_min: 455, steps: 400 });
-	});
-
-	it('projects only the four legacy columns into a health_daily row', () => {
-		expect(
-			healthRowValues({
-				date: '2026-04-21',
-				metrics: { steps: 50, resting_hr: 51, hrv_ms: 60, sleep_min: 430, spo2_avg: 97, distance_m: 5000 },
-			}),
-		).toEqual({ restingHr: 51, hrvMs: 60, sleepMin: 430, steps: 50 });
-
-		expect(healthRowValues({ date: '2026-04-21', metrics: { spo2_avg: 97 } })).toEqual({
-			restingHr: null,
-			hrvMs: null,
-			sleepMin: null,
-			steps: null,
-		});
 	});
 });
 

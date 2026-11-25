@@ -96,4 +96,18 @@ describe('suggestAdjustments', () => {
 		];
 		expect(suggestAdjustments(logs, onTrack, '2026-11-05')).toHaveLength(0);
 	});
+
+	it('sums duplicate logs for one session instead of reading only the first', () => {
+		const logs: AdaptLog[] = [
+			{ sessionId: 'a', runStats: { distanceKm: 2 }, rpe: 5, createdAt: '2026-11-02' },
+			{ sessionId: 'a', runStats: { distanceKm: 2 }, rpe: 5, createdAt: '2026-11-03' },
+			{ sessionId: 'b', runStats: { distanceKm: 4 }, rpe: 6, createdAt: '2026-11-04' },
+		];
+		// Week 1 planned 11 km. Summing the two 'a' logs gives 8 km (73%, the gentler
+		// "under" note); reading only the first would give 6 km (55%, the louder
+		// "big drop" warning).
+		const out = suggestAdjustments(logs, weeks, '2026-11-16');
+		expect(out.some((a) => a.id === 'vol-under-80')).toBe(true);
+		expect(out.some((a) => a.id === 'vol-under-60')).toBe(false);
+	});
 });
