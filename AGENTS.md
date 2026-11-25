@@ -177,3 +177,27 @@ top-level `prompt` is null:
   "answers": null
 }
 ```
+
+The same request as it gets rejected, so it is not sent again. Here the brief sits in the top-level
+`prompt`, the task carries option keys it must not, and the task has no `prompt` of its own:
+
+```json
+{
+  "mode": "worktree",
+  "tasks": [
+    {
+      "name": "health UI",
+      "branchName": "feat/health-ui",
+      "model": "claude-sonnet-4.5",
+      "variant": "high"
+    }
+  ],
+  "prompt": "The full brief goes here."
+}
+```
+
+That fails with `A task model requires an initial prompt` and `A task variant requires an initial
+prompt`. The validator reads `tasks[].prompt`, there is none, and the top-level `prompt` is ignored on
+a start. The fix is the payload above: move the brief into `tasks[].prompt`, set the top-level
+`prompt` to null, and delete `model`, `variant`, `provider` and `agent`. When writing the call, put
+`prompt` in the task first and never type those four keys at all.
