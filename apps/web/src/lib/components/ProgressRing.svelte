@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { ArcChart } from 'layerchart';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { TRAINING_PROGRESS, CHART_EMPTY } from '$lib/chartPalette';
 
 	/**
-	 * The circular progress-to-goal ring, drawn on LayerChart's ArcChart so it
-	 * animates to a new value instead of snapping. The shape and the percentage
-	 * are the same as the hand-built ring: a full track behind, and one arc from
-	 * the top going clockwise. The arc keeps the training palette's green, so the
-	 * dashboard and the progress page read as the same family as the other
-	 * charts. The reduced-motion setting swaps the arc in instantly.
+	 * The circular progress-to-goal ring, drawn by hand as two SVG circles: a full
+	 * track behind, and one arc from the top going clockwise. The arc keeps the
+	 * training palette's green, so the dashboard and the progress page read as the
+	 * same family as the other charts. The arc tweens to a new value through a
+	 * stroke-dashoffset transition, which the reduced-motion setting drops, so it
+	 * snaps instead. This is a single indicator, not a chart, so it needs no chart
+	 * library.
 	 */
 	let {
 		percent,
@@ -26,10 +26,11 @@
 	} = $props();
 
 	const clamped = $derived(Math.max(0, Math.min(100, Math.round(percent))));
-	const motion = $derived(prefersReducedMotion.current ? 'none' : 'tween');
+	const reduce = $derived(prefersReducedMotion.current);
 	// The arc spans exactly the stroke width, so the outer edge reaches the box.
-	const inner = $derived(size / 2 - stroke);
-	const outer = $derived(size / 2);
+	const r = $derived(size / 2 - stroke / 2);
+	const circumference = $derived(2 * Math.PI * r);
+	const dashOffset = $derived(circumference * (1 - clamped / 100));
 </script>
 
 <div
@@ -38,20 +39,30 @@
 	role="img"
 	aria-label="{clamped} percent complete"
 >
-	<ArcChart
-		data={[{ key: 'progress', value: clamped, color }]}
-		maxValue={100}
-		range={[0, 360]}
-		innerRadius={inner}
-		outerRadius={outer}
-		cornerRadius={clamped > 0 ? stroke / 2 : 0}
-		width={size}
-		height={size}
-		padding={0}
-		legend={false}
-		tooltipContext={false}
-		props={{ arc: { tooltip: false, motion, track: { fill: CHART_EMPTY } } }}
-	/>
+	<svg width={size} height={size} viewBox="0 0 {size} {size}" aria-hidden="true">
+		<g transform="rotate(-90 {size / 2} {size / 2})">
+			<circle
+				cx={size / 2}
+				cy={size / 2}
+				{r}
+				fill="none"
+				stroke={CHART_EMPTY}
+				stroke-width={stroke}
+			/>
+			<circle
+				cx={size / 2}
+				cy={size / 2}
+				{r}
+				fill="none"
+				stroke={color}
+				stroke-width={stroke}
+				stroke-linecap="round"
+				style="stroke-dasharray: {circumference}; stroke-dashoffset: {dashOffset}; transition: stroke-dashoffset {reduce
+					? '0s'
+					: 'var(--dur-3) var(--ease-out)'}"
+			/>
+		</g>
+	</svg>
 	{#if showLabel}
 		<span class="tabular absolute text-sm font-semibold">{clamped}%</span>
 	{/if}

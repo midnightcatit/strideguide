@@ -1,13 +1,14 @@
 <script lang="ts">
 	import type { HealthMetricsPayload } from '$lib/api';
-	import Sparkline from '$lib/components/charts/Sparkline.svelte';
+	import MiniSparkline from '$lib/components/MiniSparkline.svelte';
 	import { metricColor } from '$lib/chartTheme';
 
 	/**
 	 * A short row of headlines for the condensed health cards. Takes the grouped
 	 * payload and shows the metrics that are present, each with a tiny trend line
-	 * in the metric's family colour. A metric the payload does not carry is left
-	 * out, never shown as zero.
+	 * in the metric's family colour. The trend is the hand-drawn MiniSparkline, so
+	 * this dash widget carries no chart library. A metric the payload does not
+	 * carry is left out, never shown as zero.
 	 */
 	let { payload, max = 6 }: { payload: HealthMetricsPayload | null; max?: number } = $props();
 
@@ -51,7 +52,7 @@
 				<p class="tabular text-[10px] uppercase tracking-widest text-steel">{tile.label}</p>
 				<p class="tabular mt-0.5 text-base font-semibold">{tile.value}</p>
 				<div class="mt-1">
-					<Sparkline values={tile.values} color={metricColor(tile.key)} height={20} />
+					<MiniSparkline values={tile.values} color={metricColor(tile.key)} height={20} />
 				</div>
 			</div>
 		{/each}

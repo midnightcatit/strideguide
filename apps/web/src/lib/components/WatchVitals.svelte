@@ -1,14 +1,15 @@
 <script lang="ts">
 	import type { HealthDay, RecoverySignal } from '@strideguide/shared/plan';
-	import Sparkline from '$lib/components/charts/Sparkline.svelte';
+	import MiniSparkline from '$lib/components/MiniSparkline.svelte';
 	import { metricColor } from '$lib/chartTheme';
 
 	/**
 	 * Small watch-data visuals: resting heart rate, HRV and sleep, each with a
-	 * tiny trend line when there is a series to draw. The trend is the shared
-	 * Sparkline in the metric's family colour, so these read as the same family as
-	 * the full health charts. Shared by the dashboard and the progress tab so the
-	 * same numbers read the same way in both places.
+	 * tiny trend line when there is a series to draw. The trend is the hand-drawn
+	 * MiniSparkline in the metric's family colour, so these read as the same family
+	 * as the full health charts without pulling the chart library. Shared by the
+	 * dashboard and the progress tab so the same numbers read the same way in both
+	 * places.
 	 */
 	let {
 		signal,
@@ -68,7 +69,7 @@
 				<p class="tabular text-[10px] uppercase tracking-widest text-steel">{tile.label}</p>
 				<p class="tabular mt-0.5 text-base font-semibold">{tile.value}</p>
 				<div class="mt-1.5">
-					<Sparkline values={tile.values} color={metricColor(tile.key)} height={20} />
+					<MiniSparkline values={tile.values} color={metricColor(tile.key)} height={20} />
 				</div>
 			</div>
 		{/each}
