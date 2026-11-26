@@ -3,10 +3,12 @@
 # Nudge for the rule-carrying parts of the system.
 #
 # A pull request that changes the plan engine, the load/change code, the
-# database schema or its migrations, or the writing rules should also update
-# the system map (SYSTEM.md) or record a decision (docs/decisions.md). Docs
-# rot when keeping them current is left to discipline, so this makes it a
-# check. It is the logic behind .github/workflows/system-nudge.yml.
+# database schema or its migrations, the writing rules, or an AI path that
+# bounds what a model may say (the shaping and reason passes and the gates that
+# hold them) should also update the system map (SYSTEM.md) or record a decision
+# (docs/decisions.md). Docs rot when keeping them current is left to discipline,
+# so this makes it a check. It is the logic behind
+# .github/workflows/system-nudge.yml.
 #
 # Input: the changed file paths on stdin, one per line (the workflow builds
 # this with `git diff --name-only`). The `no-system-change` label, passed in
@@ -28,6 +30,15 @@ guard_paths=(
   "packages/shared/src/plan/change.ts"
   "packages/shared/src/db/schema.ts"
   "packages/shared/src/writing.ts"
+  # The AI paths that carry a rule, beyond the closed set in change.ts: the
+  # shaping pass (the typed intents it keeps and the writing rules it embeds),
+  # the deterministic reason composer and the gate that stops a reworded line
+  # adding a number (the "a model never writes a number" boundary), and the
+  # reason pass that runs the model and stores only what the gate kept.
+  "apps/api/src/lib/plan-shape.ts"
+  "packages/shared/src/plan/why.ts"
+  "packages/shared/src/plan/why-rephrase.ts"
+  "apps/api/src/lib/session-why.ts"
 )
 # Whole directories that count. Drizzle migrations are a separate file per
 # change, so match the directory rather than each migration.
