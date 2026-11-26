@@ -14,6 +14,7 @@
 		setEquipment,
 		setEquipmentItems,
 		setGymPreset,
+		setLoadModelMode,
 		setMachineItems,
 		setSchedule,
 		setUnits,
@@ -37,6 +38,7 @@
 		gymPreset: Prefs['gymPreset'];
 		machineItems: NonNullable<Prefs['machineItems']>;
 		schedule: NonNullable<Prefs['schedule']>;
+		loadModelMode: NonNullable<NonNullable<Prefs['loadModel']>['mode']>;
 	};
 	function readPrefs(): Draft {
 		return {
@@ -49,6 +51,9 @@
 			gymPreset: prefs.gymPreset,
 			machineItems: prefs.machineItems ?? [],
 			schedule: prefs.schedule ?? [],
+			// The model is on in shadow by default, so a runner who never touches
+			// this still gathers data without any change to their plan.
+			loadModelMode: prefs.loadModel?.mode ?? 'shadow',
 		};
 	}
 	function clone(d: Draft): Draft {
@@ -75,7 +80,8 @@
 			a.gymPreset === b.gymPreset &&
 			sameItems(a.equipmentItems, b.equipmentItems) &&
 			sameItems(a.machineItems, b.machineItems) &&
-			sameSchedule(a.schedule, b.schedule)
+			sameSchedule(a.schedule, b.schedule) &&
+			a.loadModelMode === b.loadModelMode
 		);
 	}
 
@@ -149,6 +155,7 @@
 			// The windows are prefs only; they do not change the built weeks, so they
 			// are saved on their own rather than through the plan rebuild below.
 			await setSchedule(next.schedule);
+			await setLoadModelMode(next.loadModelMode);
 			const res = await api.adaptPlan({
 				equipment: next.equipment,
 				equipmentItems: next.equipmentItems,
@@ -245,6 +252,33 @@
 			<button type="button" onclick={() => bump(1)} disabled={draft.countdownSec >= 15} aria-label="More" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">+</button>
 		</div>
 		<p class="mt-2 text-xs text-steel">How long the player waits before the workout and each step starts. Off starts straight away.</p>
+	</div>
+
+	<div>
+		<div class="flex items-baseline justify-between gap-3">
+			<h2 class="tabular text-xs uppercase tracking-widest text-steel">Training load model</h2>
+			<span class="text-xs text-steel capitalize">{saved.loadModelMode}</span>
+		</div>
+		<div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+			{#each [{ v: 'off', l: 'Off' }, { v: 'shadow', l: 'Shadow' }, { v: 'advisory', l: 'Advisory' }, { v: 'apply', l: 'Apply' }] as opt (opt.v)}
+				<button
+					type="button"
+					aria-pressed={draft.loadModelMode === opt.v}
+					onclick={() => (draft.loadModelMode = opt.v as Draft['loadModelMode'])}
+					class="rounded-md border px-3 py-2.5 text-sm transition-colors {draft.loadModelMode === opt.v
+						? 'border-signal bg-signal-wash text-signal-ink'
+						: 'border-hairline text-steel hover:text-ink'}"
+				>
+					{opt.l}
+				</button>
+			{/each}
+		</div>
+		<p class="mt-2 text-xs text-steel">
+			A model of your fitness, fatigue and form. Shadow (the default) records what it would change
+			and changes nothing. Advisory shows the suggestion on the plan page. Apply lets it ease or
+			hold a future week within the plan's limits, and never adds load. Off turns it off. Advisory
+			and Apply are still being developed.
+		</p>
 	</div>
 
 	<div class="flex items-center justify-between gap-4">

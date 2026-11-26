@@ -17,6 +17,7 @@ export * from './ingest';
 export * from './recovery';
 export * from './adapt';
 export * from './fitness';
+export * from './load';
 export * from './adaptive';
 export * from './change';
 export * from './rebuild';

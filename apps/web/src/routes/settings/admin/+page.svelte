@@ -117,6 +117,10 @@
 		<p class="mb-2 text-sm">
 			<a href="/settings/admin/admins" class="text-signal-ink hover:underline">Manage admins</a>
 		</p>
+		<p class="mb-2 text-sm">
+			<a href="/settings/admin/load" class="text-signal-ink hover:underline">Load shadow</a>
+			<span class="text-steel">: what the load model would have changed, across accounts.</span>
+		</p>
 
 		<div class="mb-4 flex items-end gap-3">
 			<label class="block flex-1">

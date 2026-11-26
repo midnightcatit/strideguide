@@ -6,18 +6,26 @@ import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
 	adaptPlan,
+	applyLoadToShapes,
 	deriveHistory,
 	fitnessState,
+	loadReadout,
 	machinesForPreset,
+	readLoad,
 	rebuildFromWeekOne,
+	resolveLoadConfig,
 	summarizePreviousWeeks,
+	thresholdPaceFromVdot,
 	weekChangeNote,
 	weekOnePattern,
+	recoverySignal,
 } from '@strideguide/shared/plan';
 import { compareDaySessions } from '../lib/session-order';
 import { reconcileSessions } from '../lib/plan-reconcile';
 import { buildPlanChange, MAX_AI_WEEKS } from '../lib/plan-change';
 import type { AdaptLog, AdaptWeek, PlanChangeContext } from '@strideguide/shared/plan';
+import type { LoadEntry, LoadRead, LoadWeek } from '@strideguide/shared/plan';
+import type { RecoverySignal } from '@strideguide/shared/plan';
 import type {
 	Baseline,
 	Modality,
@@ -26,6 +34,7 @@ import type {
 	QualityKind,
 	SessionArchetype,
 	SessionPrescription,
+	WeekShape,
 } from '@strideguide/shared';
 import { DEFAULT_PREFS, ageFromBirthYear, type Prefs } from '@strideguide/shared/units';
 import { schema } from '../db';
@@ -38,6 +47,7 @@ import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/go
 import { syncGoalProfiles } from '../lib/goal-profiles';
 import { prescriptionSchema } from '../lib/prescription-schema';
 import { checkRateLimit } from '../lib/rate-limit';
+import { loadHealthDaysFromMetrics } from '../lib/health-metrics';
 import type { AppBindings } from '../types';
 
 const plans = new Hono<AppBindings>();
@@ -210,6 +220,92 @@ async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promi
 export function resolveMachines(prefs: Prefs): string[] | undefined {
 	if (prefs.machineItems?.length) return prefs.machineItems;
 	return machinesForPreset(prefs.gymPreset);
+}
+
+/** A logged session as the load model scores it, with its plan modality resolved. */
+function loadEntriesFrom(
+	logs: { sessionId: string | null; runStats: unknown; rpe: number | null; startedAt: Date | string | null }[],
+	modalityById: Map<string, string>,
+): LoadEntry[] {
+	return logs.map((l) => {
+		const stats = (l.runStats ?? {}) as {
+			distanceKm?: number;
+			durationSec?: number;
+			avgPaceSecPerKm?: number;
+			avgHr?: number;
+		};
+		return {
+			date: l.startedAt instanceof Date ? l.startedAt.toISOString() : l.startedAt,
+			modality: l.sessionId ? (modalityById.get(l.sessionId) ?? null) : null,
+			distanceKm: stats.distanceKm ?? null,
+			durationSec: stats.durationSec ?? null,
+			avgPaceSecPerKm: stats.avgPaceSecPerKm ?? null,
+			rpe: l.rpe ?? null,
+			avgHr: stats.avgHr ?? null,
+		};
+	});
+}
+
+/**
+ * Build the load model's read for a runner: score their logs, extend with the
+ * plan's own planned load, and decide where it would ease or hold. Best-effort:
+ * a missing threshold pace or a thin history returns a silent read, so the plan
+ * is exactly as the engine built it.
+ */
+async function buildLoadRead(args: {
+	d1: AppBindings['Bindings']['DB'];
+	userId: string;
+	weeks: LoadWeek[];
+	today: string;
+	logs: LoadEntry[];
+	thresholdPaceSecPerKm?: number;
+	experience?: string;
+	prefs: Prefs;
+}): Promise<LoadRead> {
+	const config = resolveLoadConfig(args.prefs);
+	if (config.mode === 'off') {
+		return readLoad({ weeks: [], today: args.today, logged: [], config });
+	}
+	let recovery: RecoverySignal | null = null;
+	try {
+		const health = await loadHealthDaysFromMetrics(args.d1, args.userId, 21);
+		if (health?.days.length) recovery = recoverySignal(health.days);
+	} catch {
+		// No health data: the model runs on the runner's training alone.
+	}
+	return readLoad({
+		weeks: args.weeks,
+		today: args.today,
+		logged: args.logs,
+		thresholdPaceSecPerKm: args.thresholdPaceSecPerKm,
+		experience: args.experience,
+		recovery,
+		config,
+		restHr: args.prefs.restingHr,
+		age: ageFromBirthYear(args.prefs.birthYear),
+	});
+}
+
+/**
+ * The load model's state to store on the plan's params (existing JSON, no schema
+ * change). In shadow and advisory it records what it would have changed and
+ * applies nothing; in apply it records what it did. Absent when the model is
+ * silent or off.
+ */
+function loadModelState(read?: LoadRead) {
+	if (!read?.available) return undefined;
+	const out = loadReadout(read);
+	return {
+		mode: read.mode,
+		fitness: read.fitness,
+		fatigue: read.fatigue,
+		form: read.form,
+		readiness: read.readiness.score,
+		at: new Date().toISOString(),
+		shadow: read.shadow,
+		applied: read.mode === 'apply' && read.weekIntents.length > 0,
+		...(out ? { status: out.status } : {}),
+	};
 }
 
 /**
@@ -796,6 +892,20 @@ plans.post(
 		};
 		const baseDraft = generatePlan(planInput);
 
+		// The load model, dark by default. In shadow it records what it would change
+		// and applies nothing; in apply it may ease or hold a future week, never
+		// build past the engine's own curve. Off means it never runs.
+		const loadRead = await buildLoadRead({
+			d1: c.env.DB,
+			userId: user.id,
+			weeks: baseDraft.weeks,
+			today: startDate,
+			logs: loadEntriesFrom(fitLogs, modalityById),
+			thresholdPaceSecPerKm: thresholdPaceFromVdot(baseDraft.meta.vdot ?? fitness.effectiveVdot),
+			experience: seededBaseline.experience,
+			prefs,
+		});
+
 		// The engine lays the plan out instantly. Then, in parallel, the model shapes
 		// each week (quality kind and emphasis) within the profile's rules, and writes
 		// a short plan review. Both are bounded and best-effort, so a slow or invalid
@@ -831,7 +941,13 @@ plans.post(
 				firstWeek: firstWeekSessions.map((s) => s.title),
 			}),
 		]);
-		const draft = shapes ? generatePlan({ ...planInput, weekShapes: shapes }) : baseDraft;
+		// The load model's easing and holding fold onto the shaping pass's choices,
+		// lowering a `build` to a `hold` or an `ease` where it asks. A no-op unless
+		// the mode is apply, so shadow and advisory leave the shapes as they were.
+		const weekNumbers = baseDraft.weeks.map((w) => w.weekNumber);
+		const shaped: (WeekShape | undefined)[] = shapes ?? baseDraft.weeks.map(() => undefined);
+		const withLoad = applyLoadToShapes(shaped, loadRead, weekNumbers);
+		const draft = withLoad.some(Boolean) ? generatePlan({ ...planInput, weekShapes: withLoad }) : baseDraft;
 		const usedAi = !!shapes || review.usedAi;
 
 		const goalId = crypto.randomUUID();
@@ -861,6 +977,8 @@ plans.post(
 				// The plan review shown in the review step. Unit-free, so it reads the
 				// same whatever units the runner later picks.
 				review: review.text,
+				// The load model's read, when it ran. Shadow records without applying.
+				...(loadModelState(loadRead) ? { loadModel: loadModelState(loadRead) } : {}),
 			},
 			status: 'active',
 		});
@@ -1118,6 +1236,23 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 	};
 	const change = await buildPlanChange(c.env, changeContext);
 
+	// The load model's read, dark by default. It can only ease or hold a future
+	// week inside the engine's own ceilings, so it is safe to fold onto whatever
+	// else changed and can never raise load. In shadow it records without applying.
+	const loadRead = await buildLoadRead({
+		d1: c.env.DB,
+		userId: user.id,
+		weeks: existingWeeks,
+		today: todayIso,
+		logs: loadEntriesFrom(fitLogs, modalityById),
+		thresholdPaceSecPerKm: thresholdPaceFromVdot(
+			(plan.params as { vdot?: number } | null)?.vdot ?? fitness.effectiveVdot,
+		),
+		experience: baseline.experience,
+		prefs,
+	});
+	const loadModel = loadModelState(loadRead);
+
 	const result = adaptPlan({
 		profile,
 		baseline,
@@ -1135,13 +1270,24 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 		favoriteMachines: prefs.favoriteMachines,
 		favoriteWorkouts: prefs.favoriteWorkouts,
 		schedule: prefs.schedule,
+		// The load model's easing and holding, only applied in apply mode. It can
+		// only lower a week's intent, never raise it.
+		load: loadRead,
 		// The pipeline's decisions, when it made any. Absent means the engine
 		// keeps its own curve for every week ahead, exactly as today.
 		weekShapes: change ? existingWeeks.map((w) => change.shapes.get(w.weekNumber)) : undefined,
 	} as unknown as Parameters<typeof adaptPlan>[0]);
 
 	if (result.changedFromWeek == null) {
-		return c.json({ changed: false, changedFromWeek: null, swapped: [] });
+		// Nothing to rebuild, but a shadow run still records what it would change,
+		// so the read is auditable without the plan moving.
+		if (loadModel) {
+			await db
+				.update(schema.plans)
+				.set({ params: { ...(plan.params ?? {}), loadModel } })
+				.where(eq(schema.plans.id, plan.id));
+		}
+		return c.json({ changed: false, changedFromWeek: null, swapped: [], loadModel: loadModel ?? null });
 	}
 
 	// Replace the weeks ahead in place, leaving past weeks and their logs
@@ -1191,6 +1337,7 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 			params: {
 				...(plan.params ?? {}),
 				adaptedAt: new Date().toISOString(),
+				...(loadModel ? { loadModel } : {}),
 				...(change
 					? { adaptedWithAi: true, changeReasons: change.reasons, changeDecisions: change.decisions }
 					: {}),
@@ -1203,6 +1350,7 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 		changedFromWeek: result.changedFromWeek,
 		swapped: result.swapped,
 		weeks: changed.length,
+		loadModel: loadModel ?? null,
 	});
 });
 
@@ -1471,5 +1619,85 @@ plans.post(
 		return c.json(await currentPlanJson(db, user.id));
 	},
 );
+
+/**
+ * GET /load: the fitness, fatigue and form the model reads today, plus what it
+ * would change. Descriptive only, and absent unless the runner has the model on.
+ * The numbers are computed on read from the runner's own logs and plan, so this
+ * is a read-out, not a stored claim.
+ */
+plans.get('/load', async (c) => {
+	const user = c.get('user')!;
+	const db = c.get('db');
+	const found = await currentPlanWithWeeks(db, user.id);
+	if (!found) return c.json({ available: false, readout: null });
+	const { goal, plan, weeks } = found;
+	const prefs = await loadPrefs(db, user.id);
+	const config = resolveLoadConfig(prefs);
+	if (config.mode === 'off') return c.json({ available: false, readout: null, mode: 'off' });
+
+	const weekIds = weeks.map((w) => w.id);
+	const sessions = weekIds.length
+		? (
+				await Promise.all(
+					chunk(weekIds, 90).map((part) =>
+						db.select().from(schema.sessionsPlan).where(inArray(schema.sessionsPlan.planWeekId, part)),
+					),
+				)
+			).flat()
+		: [];
+	const modalityById = new Map(sessions.map((s) => [s.id, s.modality]));
+
+	const todayIso = new Date().toISOString().slice(0, 10);
+	const fitSince = Date.now() - 28 * 86400000;
+	const fitLogs = await db
+		.select()
+		.from(schema.logs)
+		.where(and(eq(schema.logs.userId, user.id), gte(schema.logs.startedAt, new Date(fitSince))));
+
+	const loadWeeks: LoadWeek[] = weeks.map((w) => ({
+		weekNumber: w.weekNumber,
+		phase: w.phase,
+		startDate: w.startDate,
+		endDate: w.endDate,
+		sessions: sessions
+			.filter((s) => s.planWeekId === w.id)
+			.map((s) => ({
+				day: s.day,
+				modality: s.modality,
+				durationMin: s.durationMin ?? 0,
+				prescription: (s.prescription ?? {}) as { targetDistanceKm?: number },
+			})),
+	}));
+	const baseline = (goal.baseline ?? {}) as Baseline;
+	const read = await buildLoadRead({
+		d1: c.env.DB,
+		userId: user.id,
+		weeks: loadWeeks,
+		today: todayIso,
+		logs: loadEntriesFrom(fitLogs, modalityById),
+		thresholdPaceSecPerKm: thresholdPaceFromVdot(
+			(plan.params as { vdot?: number } | null)?.vdot ?? baseline.effectiveVdot,
+		),
+		experience: baseline.experience,
+		prefs,
+	});
+
+	return c.json({
+		available: read.available,
+		mode: read.mode,
+		readout: loadReadout(read),
+		readiness: read.readiness,
+		// The easing or holding for the weeks ahead, so advisory can show it.
+		weekIntents: read.weekIntents,
+		shadow: read.shadow,
+		points: read.points.map((p) => ({
+			date: p.date,
+			fitness: p.fitness,
+			fatigue: p.fatigue,
+			form: p.form,
+		})),
+	});
+});
 
 export default plans;

@@ -37,7 +37,8 @@ export type AdjustmentKind =
 	| 'fatigue'
 	| 'run-spike'
 	| 'cross-load'
-	| 'recovery';
+	| 'recovery'
+	| 'load';
 
 export interface Adjustment {
 	id: string;
@@ -69,11 +70,13 @@ function addDays(iso: string, n: number): string {
  */
 
 import type { RecoverySignal } from './recovery';
+import type { LoadRead } from './load';
 export function suggestAdjustments(
 	logs: AdaptLog[],
 	weeks: AdaptWeek[],
 	todayIso: string,
 	recovery?: RecoverySignal,
+	load?: LoadRead,
 ): Adjustment[] {
 	const out: Adjustment[] = [];
 	const loggedIds = new Set(logs.filter((l) => l.sessionId).map((l) => l.sessionId as string));
@@ -262,6 +265,24 @@ export function suggestAdjustments(
 			severity: 'info',
 			title: 'Recovery looks strained',
 			detail: `Your recent health data suggests ${bits.join(', ')}. Ease the volume and keep the effort easy until it settles.`,
+		});
+	}
+
+	// --- load model: advise an ease or hold the model would make, when advisory ---
+	// Only advisory surfaces it: apply has already moved the plan, and shadow
+	// records without showing. The model never builds, so this can only ease.
+	if (load?.available && load.mode === 'advisory' && load.weekIntents.length) {
+		const first = load.weekIntents[0]!;
+		const weeksText =
+			load.weekIntents.length === 1
+				? `week ${first.weekNumber}`
+				: `${load.weekIntents.length} weeks ahead`;
+		out.push({
+			id: 'load-ease',
+			kind: 'load',
+			severity: 'info',
+			title: 'The load model suggests easing',
+			detail: `Fitness ${Math.round(load.fitness)}, fatigue ${Math.round(load.fatigue)}, form ${Math.round(load.form)} today. It would ${first.intent} ${weeksText}: ${first.reason}`,
 		});
 	}
 

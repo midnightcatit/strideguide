@@ -59,6 +59,19 @@ export interface Prefs {
 	/** True once the runner dismisses the Connect Google Health nudge, so it stays gone. */
 	connectNudgeDismissed?: boolean;
 	/**
+	 * The fitness and fatigue load model. Off by default, so a runner opts in.
+	 * `shadow` runs the model and records what it would change but applies
+	 * nothing; `advisory` shows it as a suggestion; `apply` lets it ease or hold a
+	 * future week inside the engine's own ceilings. The time constants are
+	 * tunables, the conventional 42 and 7 by default, never fixed truth.
+	 */
+	loadModel?: {
+		mode?: 'off' | 'shadow' | 'advisory' | 'apply';
+		fitnessDays?: number;
+		fatigueDays?: number;
+		formFloor?: number;
+	};
+	/**
 	 * The free windows the runner blocked out per weekday, in local time. Optional:
 	 * a runner who skips the onboarding step has none, and the plan uses the chosen
 	 * days alone. The plan engine places sessions inside these windows when present.

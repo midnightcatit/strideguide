@@ -203,6 +203,28 @@ export interface PlanParams {
 	previewedAt?: string;
 	/** ISO time of the last admin-triggered rebuild from week one. */
 	rebuiltAt?: string;
+	/**
+	 * The load model's read, stored when it ran. In shadow and advisory it records
+	 * what it would have changed and applies nothing; in apply it records what it
+	 * did. Additive JSON, so no schema change.
+	 */
+	loadModel?: {
+		mode: 'off' | 'shadow' | 'advisory' | 'apply';
+		fitness: number;
+		fatigue: number;
+		form: number;
+		readiness: number;
+		at: string;
+		shadow: {
+			weekNumber: number;
+			fromVolumeKm: number;
+			toVolumeKm: number;
+			intent: string;
+			reason: string;
+		}[];
+		applied: boolean;
+		status?: string;
+	};
 }
 
 export interface StrengthSet {
@@ -244,6 +266,11 @@ export interface SessionWeekContext {
 	longRunDips?: boolean;
 	/** The model's volume intent for this week, when it set one. */
 	volumeIntent?: 'ease' | 'hold' | 'build';
+	/**
+	 * Why the load model eased or held this week, when it did. Deterministic and
+	 * true, naming the modelled form and the floor. Absent when it changed nothing.
+	 */
+	loadNote?: string;
 }
 
 /** The goal facts a session's reason is composed from. */

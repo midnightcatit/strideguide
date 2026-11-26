@@ -284,6 +284,9 @@ function planContext(
 	if (week) {
 		const shape = weekShapeText(week);
 		if (shape) parts.push(shape);
+		// The load model's own reason, when it eased or held the week. It is always
+		// true: it names the modelled form and the floor, never a distance.
+		if (week.loadNote) parts.push(week.loadNote);
 		if (session.modality === 'running' && session.type !== 'race') {
 			const arc = longRunArcText(session, week);
 			if (arc) parts.push(arc);

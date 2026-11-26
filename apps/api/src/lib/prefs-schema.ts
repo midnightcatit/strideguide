@@ -54,3 +54,15 @@ export const equipmentPrefsPatchSchema = z.object({
 	gymPreset: gymPresetSchema.optional(),
 	machineItems: machineItemsSchema.optional(),
 });
+
+/**
+ * The fitness and fatigue load model preference: whether it runs, and how far its
+ * decisions reach, plus the conventional time constants as tunables. Off by
+ * default. The bounds keep a stored value sane even if a client sends nonsense.
+ */
+export const loadModelSchema = z.object({
+	mode: z.enum(['off', 'shadow', 'advisory', 'apply']).optional(),
+	fitnessDays: z.number().int().min(7).max(120).optional(),
+	fatigueDays: z.number().int().min(2).max(60).optional(),
+	formFloor: z.number().min(-80).max(0).optional(),
+});

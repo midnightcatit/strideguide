@@ -12,6 +12,7 @@
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import ProgressRing from '$lib/components/ProgressRing.svelte';
 	import ProportionBar from '$lib/components/charts/ProportionBar.svelte';
+	import LoadModelCard from '$lib/components/LoadModelCard.svelte';
 	import PlanError from '$lib/components/PlanError.svelte';
 
 	/**
@@ -159,6 +160,8 @@
 			{/if}
 		</Card>
 	</section>
+
+	<LoadModelCard />
 
 	<section aria-labelledby="pl-weeks" class="mb-7">
 		<SectionHeader id="pl-weeks" eyebrow="The weeks" meta="{totalWeeks} planned" />

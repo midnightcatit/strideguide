@@ -15,11 +15,37 @@ function isNetworkFailure(e: unknown): boolean {
 
 /** The windows the health drill-down can ask the API for. */
 export type HealthMetricWindow = 7 | 30 | 90;
-
 /** One day's value for a metric. */
 export interface HealthMetricPoint {
 	date: string;
 	value: number;
+}
+
+/**
+ * The load model's read-out: the current fitness, fatigue and form, plus what it
+ * would ease or hold in the weeks ahead. Descriptive only, never a prediction.
+ */
+export interface LoadReadPayload {
+	available: boolean;
+	mode: 'off' | 'shadow' | 'advisory' | 'apply';
+	readout: { fitness: number; fatigue: number; form: number; status: string } | null;
+	readiness: { score: number; factors: string[] };
+	weekIntents: {
+		weekNumber: number;
+		intent: 'ease' | 'hold';
+		reason: string;
+		note: string;
+		form: number;
+		targetFitness: number;
+	}[];
+	shadow: {
+		weekNumber: number;
+		fromVolumeKm: number;
+		toVolumeKm: number;
+		intent: string;
+		reason: string;
+	}[];
+	points: { date: string; fitness: number; fatigue: number; form: number }[];
 }
 
 /** One sampled value for a metric. */
@@ -258,6 +284,28 @@ export interface AdminOps {
 	appErrors: { recentCount: number; items: AdminErrorRow[] };
 	clientErrors: { recentCount: number; items: AdminErrorRow[] };
 	rateLimits: { keys: number; totalCount: number; newestWindowStart: string | null };
+}
+
+/** One ease or hold the load model would have made, across accounts. */
+export interface AdminLoadShadowDecision {
+	planId: string;
+	email: string;
+	at: string | null;
+	mode: string | null;
+	weekNumber: number;
+	intent: string;
+	fromVolumeKm: number;
+	toVolumeKm: number;
+	reason: string;
+	fitness: number | null;
+	fatigue: number | null;
+	form: number | null;
+}
+
+/** The cross-user load-shadow view for the admin page. Metadata only. */
+export interface AdminLoadShadow {
+	summary: { plans: number; users: number; records: number; ease: number; hold: number };
+	decisions: AdminLoadShadowDecision[];
 }
 
 export interface GeneratePlanInput {
@@ -511,6 +559,12 @@ export const api = {
 	recovery: () =>
 		req<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] }>('/recovery'),
 
+	/**
+	 * The fitness, fatigue and form the load model reads today, when the runner
+	 * has it switched on. Descriptive only, computed on read from their own logs.
+	 */
+	loadRead: () => req<LoadReadPayload>('/plans/load'),
+
 	/** Grouped daily metrics and point samples for the health card and drill-down charts. */
 	healthMetrics: (windowDays: HealthMetricWindow = 30) =>
 		req<HealthMetricsPayload>(`/health-metrics?window=${windowDays}`),
@@ -534,6 +588,14 @@ export const api = {
 	},
 	/** One user's metadata-only detail. */
 	adminUser: (id: string) => req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`),
+
+	/** The load model's shadow records across accounts, for the admin page. */
+	adminLoadShadow: (query: { limit?: number } = {}) => {
+		const params = new URLSearchParams();
+		if (query.limit != null) params.set('limit', String(query.limit));
+		const qs = params.toString();
+		return req<AdminLoadShadow>(`/admin/load-shadow${qs ? `?${qs}` : ''}`);
+	},
 	/** Rebuild the user's plan from week one and return the refreshed detail. */
 	adminRebuildPlan: (id: string) =>
 		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/rebuild-plan`, { method: 'POST' }),

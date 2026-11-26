@@ -10,6 +10,7 @@ import {
 	parseAdminEmails,
 	projectAdminUser,
 	projectAdminUserDetail,
+	projectLoadShadow,
 	removalRefusal,
 	type AdminUserAggregate,
 	type AdminUserDetailAggregate,
@@ -347,5 +348,58 @@ describe('projectAdminUserDetail', () => {
 		const detail = projectAdminUserDetail({ ...aggregate, disabledAt: null }, false);
 		expect(detail.disabled).toBe(false);
 		expect(detail.disabledAt).toBeNull();
+	});
+});
+
+describe('projectLoadShadow', () => {
+	const row = (over: Partial<Parameters<typeof projectLoadShadow>[0][number]> = {}) => ({
+		planId: 'p1',
+		email: 'runner@example.com',
+		mode: 'shadow',
+		fitness: 14.2,
+		fatigue: 30.5,
+		form: -16.3,
+		at: '2026-02-01T06:00:00.000Z',
+		shadow: JSON.stringify([
+			{ weekNumber: 6, fromVolumeKm: 54, toVolumeKm: 48.6, intent: 'ease', reason: 'form low' },
+			{ weekNumber: 5, fromVolumeKm: 48, toVolumeKm: 48, intent: 'hold', reason: 'near floor' },
+		]),
+		...over,
+	});
+
+	it('flattens the stored shadow records and counts them', () => {
+		const view = projectLoadShadow([row(), row({ planId: 'p2', email: 'other@example.com' })], 100);
+		expect(view.summary).toEqual({ plans: 2, users: 2, records: 4, ease: 2, hold: 2 });
+		expect(view.decisions).toHaveLength(4);
+		const first = view.decisions[0]!;
+		expect(first).toMatchObject({
+			planId: 'p1',
+			email: 'runner@example.com',
+			weekNumber: 6,
+			intent: 'ease',
+			fromVolumeKm: 54,
+			toVolumeKm: 48.6,
+			fitness: 14.2,
+			fatigue: 30.5,
+			form: -16.3,
+		});
+	});
+
+	it('caps the decisions at the limit but still counts every record', () => {
+		const view = projectLoadShadow([row()], 1);
+		expect(view.decisions).toHaveLength(1);
+		expect(view.summary.records).toBe(2);
+	});
+
+	it('skips a plan with no records, or a malformed shadow value', () => {
+		expect(projectLoadShadow([row({ shadow: '[]' })], 10).summary).toEqual({
+			plans: 0,
+			users: 0,
+			records: 0,
+			ease: 0,
+			hold: 0,
+		});
+		expect(projectLoadShadow([row({ shadow: 'not json' })], 10).decisions).toHaveLength(0);
+		expect(projectLoadShadow([row({ shadow: null })], 10).decisions).toHaveLength(0);
 	});
 });

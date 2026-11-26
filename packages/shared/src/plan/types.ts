@@ -76,6 +76,12 @@ export interface WeekShape {
 	qualityDayCount?: QualityDayCount;
 	/** Whether the week's long run eases, holds or builds. */
 	longRunDelta?: LongRunDelta;
+	/**
+	 * A short, deterministic note on why the load model eased or held this week,
+	 * when it did. Not from the AI shaping pass, and only ever true: it names the
+	 * modelled form and floor. Absent when the model changed nothing.
+	 */
+	loadNote?: string;
 }
 
 export interface PlanInput {

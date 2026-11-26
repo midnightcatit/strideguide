@@ -1,5 +1,6 @@
 import { generatePlan } from './engine';
 import type { FitnessState } from './fitness';
+import { loadWeekShapes, stricterIntent, type LoadRead } from './load';
 import type { PlannedWeek, PlanInput, QualityKind, WeekShape } from './types';
 
 /**
@@ -17,6 +18,13 @@ export interface AdaptInput extends PlanInput {
 	fitness: FitnessState;
 	/** Quality kinds the profile allows, for the feedback-driven swap. */
 	allowedQuality: QualityKind[];
+	/**
+	 * The load model's read, when the runner has it switched on. Its easing and
+	 * holding layer onto the week shapes, and it can only ever lower a week's
+	 * intent, never raise it. Absent means the plan is exactly as the engine built
+	 * it, so a missing input changes nothing.
+	 */
+	load?: LoadRead;
 }
 
 export interface AdaptResult {
@@ -61,6 +69,12 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 	// Swap a quality kind the runner rated down for one they rated up, where the
 	// profile allows it. Everything else stays the engine's own choice.
 	const liked = allowedQuality.filter((k) => fitness.likedTypes.includes(k));
+	// The load model's easing and holding, by week number. Empty unless the runner
+	// has it set to apply, so in shadow and advisory the plan is never changed.
+	const loadById = loadWeekShapes(input.load);
+	const loadNoteByWeek = new Map(
+		(input.load?.mode === 'apply' ? input.load.weekIntents : []).map((w) => [w.weekNumber, w.note]),
+	);
 	const weekShapes: (WeekShape | undefined)[] = existingWeeks.map((w, i) => {
 		if (!isFuture[i]) return undefined;
 		const dislikedHere =
@@ -71,7 +85,16 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 		// deterministic swap: it may set the volume intent, the quality count or
 		// the long-run delta, while the feedback swap keeps its quality kind.
 		const provided = input.weekShapes?.[i];
-		const merged = { ...deterministic, ...provided };
+		const merged: WeekShape = { ...deterministic, ...provided };
+		// The load model may only lower the week's intent, never raise it, so an AI
+		// "build" becomes "hold" or "ease" when the model asks. The note is only
+		// set when the model actually moved the week.
+		const loadIntent = loadById.get(w.weekNumber)?.volumeIntent;
+		if (loadIntent) {
+			merged.volumeIntent = stricterIntent(merged.volumeIntent, loadIntent);
+			const note = loadNoteByWeek.get(w.weekNumber);
+			if (note) merged.loadNote = note;
+		}
 		return Object.keys(merged).length ? merged : undefined;
 	});
 
