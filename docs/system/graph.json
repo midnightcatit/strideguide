@@ -16,63 +16,63 @@
 				"label": "Goal and baseline",
 				"kind": "data",
 				"note": "The goal profile, target date, baseline (recent time, weekly volume, experience, age), available days, kit and schedule.",
-				"href": "packages/shared/src/goal-profiles.ts"
+				"links": [{ "kind": "code", "label": "goal-profiles.ts", "href": "packages/shared/src/goal-profiles.ts" }]
 			},
 			{
 				"id": "onboarding",
 				"label": "Onboarding",
 				"kind": "stage",
 				"note": "Collects the goal and baseline and posts the plan request.",
-				"href": "apps/web/src/routes/onboarding"
+				"links": [{ "kind": "code", "label": "onboarding", "href": "apps/web/src/routes/onboarding" }]
 			},
 			{
 				"id": "engine",
 				"label": "Engine generation",
 				"kind": "module",
 				"note": "Deterministic: the phase arc, the weekly volume and long-run curve, VDOT paces, and every session. It computes every number.",
-				"href": "packages/shared/src/plan/engine.ts"
+				"links": [{ "kind": "code", "label": "engine.ts", "href": "packages/shared/src/plan/engine.ts" }]
 			},
 			{
 				"id": "shape",
 				"label": "AI shaping pass",
 				"kind": "module",
 				"note": "Reads the engine's plan and chooses typed intents only. An answer outside the set is dropped.",
-				"href": "apps/api/src/lib/plan-shape.ts"
+				"links": [{ "kind": "code", "label": "plan-shape.ts", "href": "apps/api/src/lib/plan-shape.ts" }]
 			},
 			{
 				"id": "store",
 				"label": "Stored plan",
 				"kind": "data",
 				"note": "The goal, plan, weeks and sessions written to D1.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "reason",
 				"label": "Reason pass",
 				"kind": "module",
 				"note": "Rewords each session's reason after the plan is saved, in the background, and keeps the deterministic reason as the fallback.",
-				"href": "apps/api/src/lib/session-why.ts"
+				"links": [{ "kind": "code", "label": "session-why.ts", "href": "apps/api/src/lib/session-why.ts" }]
 			},
 			{
 				"id": "load",
 				"label": "Load model",
 				"kind": "module",
 				"note": "Reads the plan and the runner's logs in shadow, and can only ease or hold a future week.",
-				"href": "packages/shared/src/plan/load.ts"
+				"links": [{ "kind": "code", "label": "load.ts", "href": "packages/shared/src/plan/load.ts" }]
 			},
 			{
 				"id": "adapt",
 				"label": "Adapt",
 				"kind": "module",
 				"note": "Rebuilds only the weeks that have not started, seeded with real recent volume and feedback.",
-				"href": "packages/shared/src/plan/adapt.ts"
+				"links": [{ "kind": "code", "label": "adapt.ts", "href": "packages/shared/src/plan/adapt.ts" }]
 			},
 			{
 				"id": "ui",
 				"label": "UI surfaces",
 				"kind": "stage",
 				"note": "Today, Week, Coach and Progress render the stored plan and convert units at the edge.",
-				"href": "apps/web/src/routes"
+				"links": [{ "kind": "code", "label": "routes", "href": "apps/web/src/routes" }]
 			}
 		],
 		"edges": [
@@ -109,168 +109,168 @@
 				"label": "Create a plan",
 				"kind": "trigger",
 				"note": "Onboarding submit, and the admin rebuild on a user's behalf.",
-				"href": "apps/api/src/routes/plans.ts"
+				"links": [{ "kind": "code", "label": "plans.ts", "href": "apps/api/src/routes/plans.ts" }]
 			},
 			{
 				"id": "trig:preview",
 				"label": "Preview a plan",
 				"kind": "trigger",
 				"note": "A dry run on the same engine that stores nothing.",
-				"href": "apps/api/src/routes/plans.ts"
+				"links": [{ "kind": "code", "label": "plans.ts", "href": "apps/api/src/routes/plans.ts" }]
 			},
 			{
 				"id": "trig:rebuild",
 				"label": "Rebuild later weeks",
 				"kind": "trigger",
 				"note": "The runner approves an edited first week and asks for the rest to match it.",
-				"href": "packages/shared/src/plan/rebuild.ts"
+				"links": [{ "kind": "code", "label": "rebuild.ts", "href": "packages/shared/src/plan/rebuild.ts" }]
 			},
 			{
 				"id": "trig:adapt",
 				"label": "Adapt the plan",
 				"kind": "trigger",
 				"note": "The runner asks to bring the plan in line with their recent training.",
-				"href": "apps/api/src/routes/plans.ts"
+				"links": [{ "kind": "code", "label": "plans.ts", "href": "apps/api/src/routes/plans.ts" }]
 			},
 			{
 				"id": "trig:goal",
 				"label": "Change the goal",
 				"kind": "trigger",
 				"note": "A new goal profile or target date is saved.",
-				"href": "apps/api/src/routes/goals.ts"
+				"links": [{ "kind": "code", "label": "goals.ts", "href": "apps/api/src/routes/goals.ts" }]
 			},
 			{
 				"id": "trig:log",
 				"label": "Log a run or mark a session",
 				"kind": "trigger",
 				"note": "A finished session is logged, or a session is marked started or skipped.",
-				"href": "apps/api/src/routes/logs.ts"
+				"links": [{ "kind": "code", "label": "logs.ts", "href": "apps/api/src/routes/logs.ts" }]
 			},
 			{
 				"id": "trig:sync",
 				"label": "Connection sync",
 				"kind": "trigger",
 				"note": "The cron pulls new activity and daily health from a linked account.",
-				"href": "apps/api/src/lib/sync.ts"
+				"links": [{ "kind": "code", "label": "sync.ts", "href": "apps/api/src/lib/sync.ts" }]
 			},
 			{
 				"id": "trig:webhook",
 				"label": "Provider push",
 				"kind": "trigger",
 				"note": "The provider tells us something changed and the webhook only asks for a sync.",
-				"href": "apps/api/src/routes/webhooks.ts"
+				"links": [{ "kind": "code", "label": "webhooks.ts", "href": "apps/api/src/routes/webhooks.ts" }]
 			},
 			{
 				"id": "trig:cron",
 				"label": "Nightly and weekly cron",
 				"kind": "trigger",
 				"note": "0 7 daily and 0 8 on Monday. Writes the coach note and runs the connection syncs.",
-				"href": "apps/api/src/cron.ts"
+				"links": [{ "kind": "code", "label": "cron.ts", "href": "apps/api/src/cron.ts" }]
 			},
 			{
 				"id": "dec:shape",
 				"label": "Answer in the closed set?",
 				"kind": "decision",
 				"note": "A quality kind and a volume, strength and mobility intent of ease, hold or build. An out-of-set answer is dropped.",
-				"href": "apps/api/src/lib/plan-shape.ts"
+				"links": [{ "kind": "code", "label": "plan-shape.ts", "href": "apps/api/src/lib/plan-shape.ts" }]
 			},
 			{
 				"id": "dec:load",
 				"label": "Load model mode?",
 				"kind": "decision",
 				"note": "shadow records and changes nothing. advisory and apply are opt-in per runner, and off turns it off.",
-				"href": "packages/shared/src/plan/load.ts"
+				"links": [{ "kind": "code", "label": "load.ts", "href": "packages/shared/src/plan/load.ts" }]
 			},
 			{
 				"id": "dec:neverbuild",
 				"label": "Does a lower intent win?",
 				"kind": "decision",
 				"note": "Load may ease or hold, never build. A stricter intent beats an AI build, never the other way.",
-				"href": "packages/shared/src/plan/load.ts"
+				"links": [{ "kind": "code", "label": "load.ts", "href": "packages/shared/src/plan/load.ts" }]
 			},
 			{
 				"id": "dec:match",
 				"label": "Does an activity match a session?",
 				"kind": "decision",
 				"note": "Proposed until the runner confirms or rejects it, kept so it is not proposed again.",
-				"href": "packages/shared/src/plan/match.ts"
+				"links": [{ "kind": "code", "label": "match.ts", "href": "packages/shared/src/plan/match.ts" }]
 			},
 			{
 				"id": "bound:numbers",
 				"label": "Engine computes every number",
 				"kind": "boundary",
 				"note": "A model never writes a distance, a pace or a count.",
-				"href": "SYSTEM.md#boundaries-everyone-must-hold"
+				"links": [{ "kind": "doc", "label": "SYSTEM.md", "href": "SYSTEM.md#boundaries-everyone-must-hold" }]
 			},
 			{
 				"id": "bound:ease",
 				"label": "Load may ease or hold, never build",
 				"kind": "boundary",
 				"note": "No path raises a week above the engine's own curve.",
-				"href": "SYSTEM.md#boundaries-everyone-must-hold"
+				"links": [{ "kind": "doc", "label": "SYSTEM.md", "href": "SYSTEM.md#boundaries-everyone-must-hold" }]
 			},
 			{
 				"id": "data:user_goals",
 				"label": "user_goals",
 				"kind": "data",
 				"note": "The chosen goal profile per runner, with the target date and baseline.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:plans",
 				"label": "plans",
 				"kind": "data",
 				"note": "One row per generated plan, with its params and status.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:plan_weeks",
 				"label": "plan_weeks",
 				"kind": "data",
 				"note": "Each week's phase, focus and dates.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:sessions_plan",
 				"label": "sessions_plan",
 				"kind": "data",
 				"note": "Each prescribed session, with its prescription and reason.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:logs",
 				"label": "logs",
 				"kind": "data",
 				"note": "A runner's logged session, with its stats and feedback.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:activities",
 				"label": "activities",
 				"kind": "data",
 				"note": "An activity pulled from a connector, with its match state.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:session_states",
 				"label": "session_states",
 				"kind": "data",
 				"note": "Per-session started or skipped state, kept on the server.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:connections",
 				"label": "connections",
 				"kind": "data",
 				"note": "A linked account, its encrypted tokens and its sync watermark.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			},
 			{
 				"id": "data:summaries",
 				"label": "summaries",
 				"kind": "data",
 				"note": "A cron-generated coach note, nightly or weekly.",
-				"href": "packages/shared/src/db/schema.ts"
+				"links": [{ "kind": "code", "label": "schema.ts", "href": "packages/shared/src/db/schema.ts" }]
 			}
 		],
 		"edges": [

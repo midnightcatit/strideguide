@@ -29,12 +29,21 @@ export const NODE_KINDS: readonly GraphNodeKind[] = [
 	'trigger',
 ] as const;
 
+/** What one link points at. Mirrors the shared contract. */
+export type GraphLinkKind = 'code' | 'test' | 'decision' | 'pr' | 'doc';
+
+export interface GraphLink {
+	kind: GraphLinkKind;
+	label: string;
+	href: string;
+}
+
 export interface GraphNode {
 	id: string;
 	label: string;
 	kind: GraphNodeKind;
 	note?: string;
-	href?: string;
+	links?: GraphLink[];
 }
 
 /** The data Svelte Flow carries on each node object. */

@@ -10,6 +10,31 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## A system-map node carries several links, not one
+
+2026-11-26
+
+Decided: each system-map node carries a list of links, one for each place it points:
+its code, the test that guards it, the decision entry behind it and the pull request.
+Each link is a kind, a short label and a target. A node with no real target carries no
+links rather than a placeholder, and a link whose kind is unknown is a `doc` rather than
+a guess.
+
+Why: a node genuinely points at more than one place. The first shape carried a single
+`href` because the graph data was briefed with one link while the page was briefed with
+several, so the page was reconciled down to one source chip. The plural list matches what
+a node is, and the parsers fill it: a rules node links to its SYSTEM.md section plus the
+test file and the test name that enforces it, a why node links to its decision-log anchor
+and any pull request the entry names, a data node links to the schema file, and a test
+node links to its test file (`packages/shared/src/system-graph.ts`,
+`packages/shared/src/system-graph-parse.mjs`).
+
+Rules out: a single-link node, and a placeholder link where no target exists. The canvas
+card keeps a count as its only hint, and the detail panel and the list row show one
+labelled chip per link.
+
+---
+
 ## Every prose model path is guarded for the writing rules and the sanitizer
 
 2026-11-26

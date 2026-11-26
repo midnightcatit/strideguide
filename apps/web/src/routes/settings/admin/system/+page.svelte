@@ -27,14 +27,12 @@
 	const views = graph.views;
 
 	type GraphNode = GraphView['nodes'][number];
+	type GraphLink = NonNullable<GraphNode['links']>[number];
 	type SystemGraphCanvas = (typeof import('$lib/components/system/SystemGraph.svelte'))['default'];
 
-	// A node carries one source: the file, test or document it came from. The label
-	// is that target shortened, so a reader sees where a claim comes from.
-	function linkLabel(href: string): string {
-		if (isExternal(href)) return 'open';
-		return href.split('#')[0]!.split('/').pop() ?? href;
-	}
+	// Links whose label is data (a file name, a test name, a PR number) read in the
+	// mono face; a decision entry's label is its title, so it stays in the body face.
+	const MONO_KINDS = new Set(['code', 'test', 'pr', 'doc']);
 
 	let loading = $state(true);
 	let isAdmin = $state(false);
@@ -175,20 +173,22 @@
 	});
 </script>
 
-{#snippet linkChip(href: string)}
+{#snippet linkChips(links: GraphLink[])}
 	<ul class="mt-2 flex flex-wrap gap-2">
-		<li>
-			<a
-				{href}
-				title={href}
-				target={isExternal(href) ? '_blank' : undefined}
-				rel={isExternal(href) ? 'noreferrer noopener' : undefined}
-				class="inline-flex items-center gap-1.5 rounded-full border border-hairline px-2 py-0.5 text-xs hover:border-signal hover:text-signal-ink"
-			>
-				<span class="uppercase tracking-wide text-steel">source</span>
-				<span class="tabular">{linkLabel(href)}</span>
-			</a>
-		</li>
+		{#each links as link, i (i)}
+			<li>
+				<a
+					href={link.href}
+					title={link.href}
+					target={isExternal(link.href) ? '_blank' : undefined}
+					rel={isExternal(link.href) ? 'noreferrer noopener' : undefined}
+					class="inline-flex items-center gap-1.5 rounded-full border border-hairline px-2 py-0.5 text-xs hover:border-signal hover:text-signal-ink"
+				>
+					<span class="uppercase tracking-wide text-steel">{link.kind}</span>
+					<span class={MONO_KINDS.has(link.kind) ? 'tabular' : ''}>{link.label}</span>
+				</a>
+			</li>
+		{/each}
 	</ul>
 {/snippet}
 
@@ -209,10 +209,10 @@
 	{#if node.note}
 		<p class="mt-2 text-sm leading-relaxed text-steel">{node.note}</p>
 	{/if}
-	{#if node.href}
-		{@render linkChip(node.href)}
+	{#if node.links?.length}
+		{@render linkChips(node.links)}
 	{:else}
-		<p class="mt-2 text-xs text-steel">This node has no source link.</p>
+		<p class="mt-2 text-xs text-steel">This node has no links yet.</p>
 	{/if}
 {/snippet}
 
@@ -329,7 +329,7 @@
 						</div>
 					{:else if canvasFailed}
 						<p class="rounded-xl border border-hairline bg-paper p-4 text-sm text-steel">
-							The diagram could not load. The list beside it still has every node and its source link.
+							The diagram could not load. The list beside it still has every node and its links.
 						</p>
 					{/if}
 				</div>
@@ -366,8 +366,8 @@
 												</span>
 											{/if}
 										</button>
-										{#if node.href}
-											{@render linkChip(node.href)}
+										{#if node.links?.length}
+											{@render linkChips(node.links)}
 										{/if}
 									</li>
 								{/each}
@@ -396,7 +396,7 @@
 		>
 			<div>
 				<p class="text-sm font-medium">{currentView.title}</p>
-				<p class="text-xs text-steel">Tap a node for its note and the source it came from.</p>
+				<p class="text-xs text-steel">Tap a node for its note and links.</p>
 			</div>
 			<button
 				type="button"
