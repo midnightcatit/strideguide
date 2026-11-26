@@ -317,10 +317,10 @@
 			},
 			{
 				id: 'volume',
-				title: 'What does a normal week look like?',
-				lede: `Your typical weekly distance in ${distanceUnit()}. This is where the plan starts and how fast it builds.`,
+				title: 'Where should the plan start?',
+				lede: `The weekly distance the plan starts from, in ${distanceUnit()}. It builds up from there, so this is a starting point, not a limit.`,
 				guide: [
-					'Use a normal recent week, not your biggest ever.',
+					'Use a recent week, not your biggest ever.',
 					'The plan builds gradually, around 10 percent a week, with a lighter week every fourth week.',
 					'Starting honest is the best way to stay injury-free.',
 				],
@@ -1258,7 +1258,7 @@
 							placeholder={prefs.units === 'imperial'
 								? String(Math.round(recWeekly.value / 1.609344))
 								: String(recWeekly.value)}
-							aria-label="Typical weekly distance"
+							aria-label="Starting weekly distance"
 							class="tabular w-24 min-w-0 shrink-0 rounded-xl border border-hairline bg-paper px-4 py-3 text-sm"
 						/>
 						<span class="min-w-0 text-sm text-steel">{distanceUnit()} per week</span>
