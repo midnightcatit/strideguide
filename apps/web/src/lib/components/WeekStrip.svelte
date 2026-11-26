@@ -3,6 +3,8 @@
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { weekSwipe } from '$lib/actions';
 	import { isSkipped } from '$lib/skipped.svelte';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 
 	let {
 		week,
@@ -60,6 +62,15 @@
 			.filter((s) => s.modality === 'running')
 			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0);
 	}
+
+	// A week step slides the outgoing week out and the incoming one in along the
+	// swipe direction, so the change reads as a deliberate move. The letters ride
+	// with the grid rather than animating on their own. Reduced motion drops it to
+	// an instant swap.
+	const reduceMotion =
+		typeof window !== 'undefined' &&
+		window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const weekMotion = { duration: reduceMotion ? 0 : 340, easing: cubicOut };
 </script>
 
 <!-- Week control: the arrows move a whole week at a time. They only show on a
@@ -87,11 +98,15 @@
 	</div>
 {/if}
 
+<!-- A week step keys the whole grid on the calendar week. Both copies overlap in
+     one grid cell, so the outgoing week can leave as the incoming one arrives
+     without the page jumping. -->
+<div class="grid" role="group" aria-label="Days of the week">
 {#key weekKey}
 	<div
-		class="grid grid-cols-7 gap-1 {weekDir >= 0 ? 'sg-enter-week-right' : 'sg-enter-week-left'}"
-		role="group"
-		aria-label="Days of the week"
+		class="col-start-1 row-start-1 grid grid-cols-7 gap-1"
+		in:fly={{ x: weekDir >= 0 ? 52 : -52, ...weekMotion }}
+		out:fly={{ x: weekDir >= 0 ? -52 : 52, ...weekMotion }}
 		use:weekSwipe={onWeekStep}
 	>
 	{#each [0, 1, 2, 3, 4, 5, 6] as day (day)}
@@ -142,3 +157,4 @@
 	{/each}
 	</div>
 {/key}
+</div>
