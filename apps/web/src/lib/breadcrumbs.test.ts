@@ -74,4 +74,19 @@ describe('breadcrumbFor', () => {
 			{ label: 'Add', href: '/calendar/add/2026-01-05' },
 		]);
 	});
+
+	it('reads an admin user detail as Settings > Admin > User without the raw id', () => {
+		expect(breadcrumbFor('/settings/admin/users/u1')).toEqual([
+			{ label: 'Settings', href: '/settings' },
+			{ label: 'Admin', href: '/settings/admin' },
+			{ label: 'User', href: '/settings/admin/users/u1' },
+		]);
+	});
+
+	it('keeps the plain admin trail for the admin landing page', () => {
+		expect(breadcrumbFor('/settings/admin')).toEqual([
+			{ label: 'Settings', href: '/settings' },
+			{ label: 'Admin', href: '/settings/admin' },
+		]);
+	});
 });

@@ -101,6 +101,15 @@ function identityFromClaims(p: JWTPayload): GoogleIdentity {
 	};
 }
 
+/**
+ * True when the account is soft-disabled. A disabled account can neither sign in
+ * nor use the API: the sign-in callback refuses it and the auth middleware
+ * rejects its sessions. Null (or a missing row) means active.
+ */
+export function isAccountDisabled(user: { disabledAt: Date | null } | null | undefined): boolean {
+	return !!user && user.disabledAt != null;
+}
+
 /** Upsert the user keyed on the stable OIDC subject (googleSub), refreshing profile fields. */
 export async function upsertUser(db: Db, identity: GoogleIdentity) {
 	const existing = await db

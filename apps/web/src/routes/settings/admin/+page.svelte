@@ -3,11 +3,52 @@
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import { api, type AdminOps, type AdminUser } from '$lib/api';
 
+	const PAGE_SIZE = 25;
+
 	let loading = $state(true);
 	let isAdmin = $state(false);
 	let users = $state<AdminUser[]>([]);
 	let ops = $state<AdminOps | null>(null);
 	let error = $state('');
+	let q = $state('');
+	let offset = $state(0);
+	let total = $state(0);
+	let limit = $state(PAGE_SIZE);
+	let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+	async function loadUsers() {
+		try {
+			const res = await api.adminUsers({ limit, offset, q });
+			users = res.users;
+			total = res.total;
+			limit = res.limit;
+			offset = res.offset;
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Could not load users.';
+		}
+	}
+
+	function onSearch(value: string) {
+		q = value;
+		offset = 0;
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => void loadUsers(), 250);
+	}
+
+	function prevPage() {
+		if (offset === 0) return;
+		offset = Math.max(0, offset - limit);
+		void loadUsers();
+	}
+
+	function nextPage() {
+		if (offset + limit >= total) return;
+		offset += limit;
+		void loadUsers();
+	}
+
+	const rangeStart = $derived(total === 0 ? 0 : offset + 1);
+	const rangeEnd = $derived(Math.min(offset + limit, total));
 
 	function formatDate(iso: string | null): string {
 		if (!iso) return 'None';
@@ -42,9 +83,9 @@
 			const me = await api.adminMe();
 			isAdmin = me.isAdmin;
 			if (!isAdmin) return;
-			const [usersRes, opsRes] = await Promise.all([api.adminUsers(), api.adminOps()]);
-			users = usersRes.users;
+			const opsRes = await api.adminOps();
 			ops = opsRes;
+			await loadUsers();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Could not load admin data.';
 		} finally {
@@ -72,8 +113,21 @@
 			the app.
 		</p>
 
+		<div class="mb-4 flex items-end gap-3">
+			<label class="block flex-1">
+				<span class="mb-1 block text-xs uppercase tracking-wider text-steel">Search by email</span>
+				<input
+					type="search"
+					value={q}
+					oninput={(e) => onSearch((e.currentTarget as HTMLInputElement).value)}
+					placeholder="name@example.com"
+					class="w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
+				/>
+			</label>
+		</div>
+
 		<div class="overflow-x-auto rounded-xl border border-hairline">
-			<table class="w-full min-w-[40rem] border-collapse text-sm">
+			<table class="w-full min-w-[44rem] border-collapse text-sm">
 				<thead>
 					<tr class="border-b border-hairline text-left text-xs uppercase tracking-wider text-steel">
 						<th scope="col" class="px-3 py-2 font-medium">Email</th>
@@ -88,7 +142,11 @@
 				<tbody>
 					{#each users as user (user.id)}
 						<tr class="border-b border-hairline last:border-b-0">
-							<td class="px-3 py-2 font-medium text-ink">{user.email}</td>
+							<td class="px-3 py-2 font-medium text-ink">
+								<a href={`/settings/admin/users/${user.id}`} class="hover:text-signal-ink">
+									{user.email}
+								</a>
+							</td>
 							<td class="px-3 py-2">
 								<span
 									class="rounded-full px-2 py-0.5 text-xs {user.isRoot || user.role === 'admin'
@@ -97,6 +155,11 @@
 								>
 									{roleLabel(user)}
 								</span>
+								{#if user.disabled}
+									<span class="ml-1 rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">
+										Disabled
+									</span>
+								{/if}
 							</td>
 							<td class="px-3 py-2 text-steel">{user.goalProfileSlug ?? 'None'}</td>
 							<td class="tabular px-3 py-2 text-steel">{user.planCount}</td>
@@ -111,11 +174,35 @@
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="7" class="px-3 py-4 text-sm text-steel">No users yet.</td>
+							<td colspan="7" class="px-3 py-4 text-sm text-steel">
+								{q ? 'No users match that search.' : 'No users yet.'}
+							</td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
+		</div>
+
+		<div class="mt-3 flex items-center justify-between gap-3 text-sm text-steel">
+			<span class="tabular">{rangeStart} to {rangeEnd} of {total}</span>
+			<div class="flex gap-2">
+				<button
+					type="button"
+					onclick={prevPage}
+					disabled={offset === 0}
+					class="rounded-md border border-hairline px-3 py-1.5 text-xs hover:border-signal hover:text-signal-ink disabled:cursor-not-allowed disabled:opacity-40"
+				>
+					Previous
+				</button>
+				<button
+					type="button"
+					onclick={nextPage}
+					disabled={offset + limit >= total}
+					class="rounded-md border border-hairline px-3 py-1.5 text-xs hover:border-signal hover:text-signal-ink disabled:cursor-not-allowed disabled:opacity-40"
+				>
+					Next
+				</button>
+			</div>
 		</div>
 	</section>
 

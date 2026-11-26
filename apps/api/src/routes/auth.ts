@@ -8,6 +8,7 @@ import {
 	exchangeCodeForTokens,
 	upsertUser,
 	verifyGoogleIdToken,
+	isAccountDisabled,
 	type GoogleIdentity,
 } from '../lib/auth';
 import { checkRateLimit, clientIp } from '../lib/rate-limit';
@@ -38,6 +39,7 @@ const AUTH_ERROR_TEXT: Record<string, string> = {
 	token_exchange_failed: 'Google did not finish the sign-in. Try again in a moment.',
 	invalid_id_token: 'We could not verify the reply from Google. Try again.',
 	invalid_google_identity: 'Your Google account did not share a verified email address.',
+	account_disabled: 'This account is disabled. Ask an admin to turn it back on.',
 };
 
 /** Where the error page sends the runner back so they can try once more. */
@@ -164,6 +166,11 @@ auth.get('/google/callback', async (c) => {
 
 	const db = c.get('db');
 	const user = await upsertUser(db, identity);
+	// A disabled account cannot start a new session. Refuse before minting the
+	// token, so no session row or cookie is created for it.
+	if (isAccountDisabled(user)) {
+		return authFailure(c, 'account_disabled');
+	}
 	const token = await signSession(c.env, { uid: user.id, email: user.email, name: user.name });
 
 	await db.insert(schema.authSessions).values({
@@ -218,6 +225,17 @@ auth.get('/me', async (c) => {
 		.limit(1);
 	const session = rows[0];
 	if (!session || session.revokedAt || session.expiresAt.getTime() <= Date.now()) {
+		return c.json({ user: null });
+	}
+	// A disabled account reads as signed out here, so the app drops to the sign-in
+	// screen instead of looping on a session the API will keep rejecting.
+	const userRows = await c
+		.get('db')
+		.select({ disabledAt: schema.users.disabledAt })
+		.from(schema.users)
+		.where(eq(schema.users.id, payload.uid))
+		.limit(1);
+	if (isAccountDisabled(userRows[0])) {
 		return c.json({ user: null });
 	}
 	return c.json({ user: payload });
