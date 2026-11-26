@@ -244,44 +244,48 @@
 				</p>
 
 				<div class="grid gap-4 sm:grid-cols-2">
-					<div>
+					<div class="min-w-0">
 						<h3 class="mb-2 text-sm font-medium">Recent API errors</h3>
 						{#if ops.appErrors.items.length}
-							<ul class="grid gap-2">
-								{#each ops.appErrors.items as item, i (i)}
-									<li class="rounded-lg border border-hairline bg-paper p-3">
-										<p class="text-xs text-steel">{formatTime(item.at)}</p>
-										<p class="mt-1 truncate text-sm font-medium text-ink">
-											{item.name ?? 'Error'}
-										</p>
-										<p class="truncate text-sm text-steel">{item.message ?? 'No message'}</p>
-										<p class="mt-1 truncate text-xs text-steel">
-											{item.method ?? ''}
-											{item.path ?? ''}
-										</p>
-									</li>
-								{/each}
-							</ul>
+							<div class="max-h-96 overflow-y-auto">
+								<ul class="grid gap-2">
+									{#each ops.appErrors.items as item, i (i)}
+										<li class="min-w-0 rounded-lg border border-hairline bg-paper p-3">
+											<p class="text-xs text-steel">{formatTime(item.at)}</p>
+											<p class="mt-1 truncate text-sm font-medium text-ink">
+												{item.name ?? 'Error'}
+											</p>
+											<p class="truncate text-sm text-steel">{item.message ?? 'No message'}</p>
+											<p class="mt-1 truncate text-xs text-steel">
+												{item.method ?? ''}
+												{item.path ?? ''}
+											</p>
+										</li>
+									{/each}
+								</ul>
+							</div>
 						{:else}
 							<p class="text-sm text-steel">Nothing recent.</p>
 						{/if}
 					</div>
 
-					<div>
+					<div class="min-w-0">
 						<h3 class="mb-2 text-sm font-medium">Recent client errors</h3>
 						{#if ops.clientErrors.items.length}
-							<ul class="grid gap-2">
-								{#each ops.clientErrors.items as item, i (i)}
-									<li class="rounded-lg border border-hairline bg-paper p-3">
-										<p class="text-xs text-steel">{formatTime(item.at)}</p>
-										<p class="mt-1 truncate text-sm font-medium text-ink">
-											{item.name ?? 'Error'}
-										</p>
-										<p class="truncate text-sm text-steel">{item.message ?? 'No message'}</p>
-										<p class="mt-1 truncate text-xs text-steel">{item.path ?? ''}</p>
-									</li>
-								{/each}
-							</ul>
+							<div class="max-h-96 overflow-y-auto">
+								<ul class="grid gap-2">
+									{#each ops.clientErrors.items as item, i (i)}
+										<li class="min-w-0 rounded-lg border border-hairline bg-paper p-3">
+											<p class="text-xs text-steel">{formatTime(item.at)}</p>
+											<p class="mt-1 truncate text-sm font-medium text-ink">
+												{item.name ?? 'Error'}
+											</p>
+											<p class="truncate text-sm text-steel">{item.message ?? 'No message'}</p>
+											<p class="mt-1 truncate text-xs text-steel">{item.path ?? ''}</p>
+										</li>
+									{/each}
+								</ul>
+							</div>
 						{:else}
 							<p class="text-sm text-steel">Nothing recent.</p>
 						{/if}
@@ -298,6 +302,37 @@
 						Newest window started {formatTime(ops.rateLimits.newestWindowStart)}.
 					{/if}
 				</p>
+
+				{#if ops.rateLimits.items.length}
+					<div class="mt-3 overflow-x-auto rounded-xl border border-hairline">
+						<table class="w-full min-w-[32rem] border-collapse text-sm">
+							<thead>
+								<tr
+									class="border-b border-hairline text-left text-xs uppercase tracking-wider text-steel"
+								>
+									<th scope="col" class="px-3 py-2 font-medium">Key</th>
+									<th scope="col" class="px-3 py-2 font-medium">Used</th>
+									<th scope="col" class="px-3 py-2 font-medium">Limit</th>
+									<th scope="col" class="px-3 py-2 font-medium">Window ends</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each ops.rateLimits.items as item (item.key)}
+									<tr class="border-b border-hairline last:border-b-0">
+										<td class="tabular px-3 py-2 text-steel">{item.key}</td>
+										<td class="tabular px-3 py-2 text-ink">{item.used}</td>
+										<td class="tabular px-3 py-2 text-steel">{item.limit ?? 'Unknown'}</td>
+										<td class="px-3 py-2 text-steel">
+											{item.windowEnd ? formatTime(item.windowEnd) : 'Unknown'}
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{:else}
+					<p class="mt-3 text-sm text-steel">No rate-limit windows yet.</p>
+				{/if}
 			</div>
 		</section>
 	{/if}

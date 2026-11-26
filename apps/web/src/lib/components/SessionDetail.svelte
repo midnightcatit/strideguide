@@ -391,11 +391,11 @@
 				{:else if why?.summary}
 					{#if showWhyDetail}
 						<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
-						<button type="button" onclick={() => (showWhyDetail = false)} class="mt-2 text-sm text-signal-ink hover:underline">
+						<button type="button" onclick={() => (showWhyDetail = false)} class="tap-target mt-2 text-sm text-signal-ink hover:underline">
 							Show less
 						</button>
 					{:else}
-						<button type="button" onclick={() => (showWhyDetail = true)} class="mt-2 text-sm text-signal-ink hover:underline">
+						<button type="button" onclick={() => (showWhyDetail = true)} class="tap-target mt-2 text-sm text-signal-ink hover:underline">
 							Why, in detail
 						</button>
 					{/if}
@@ -408,7 +408,7 @@
 				<section aria-labelledby="your-notes">
 					<h2 id="your-notes" class="tabular text-xs uppercase tracking-widest text-steel">Your notes</h2>
 					<p class="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed">{savedNote}</p>
-					<button type="button" onclick={openNotes} class="mt-2 text-sm text-signal-ink hover:underline">
+					<button type="button" onclick={openNotes} class="tap-target mt-2 text-sm text-signal-ink hover:underline">
 						Edit note
 					</button>
 				</section>
@@ -453,7 +453,7 @@
 													type="button"
 													onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
 													aria-expanded={openRow === `s${i}-${si}`}
-													class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline px-3 py-2 text-left hover:border-signal-ink hover:bg-sunken"
+													class="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-hairline px-3 py-2 text-left hover:border-signal-ink hover:bg-sunken"
 												>
 													<span class="truncate">{s.label}</span>
 													<span class="flex shrink-0 items-baseline gap-3">
@@ -480,7 +480,7 @@
 							type="button"
 							onclick={() => (showAllRows = !showAllRows)}
 							aria-expanded={showAllRows}
-							class="mt-2 text-sm text-signal-ink hover:underline"
+							class="tap-target mt-2 text-sm text-signal-ink hover:underline"
 						>
 							{showAllRows ? 'Show less' : `View more (${rows.length - 5} more)`}
 						</button>
@@ -513,7 +513,7 @@
 							type="button"
 							onclick={() => (showAllSources = !showAllSources)}
 							aria-expanded={showAllSources}
-							class="mt-2 text-xs text-signal-ink hover:underline"
+							class="tap-target mt-2 text-xs text-signal-ink hover:underline"
 						>
 							{showAllSources ? 'Show fewer sources' : `View all ${why.sources.length} sources`}
 						</button>
@@ -525,9 +525,15 @@
 	</div>
 
 	{#if !readOnly}
+		<!-- As a page the action row rides the bottom of the viewport, clearing
+		     the phone tab bar and the home indicator, so Restart and Edit details
+		     are always in reach. The overlay keeps its row at the foot of the card,
+		     inside the fixed frame, with safe-area padding for the home bar. -->
 		<footer
-			class="border-t border-hairline py-3 {asPage ? '' : 'px-4'}"
-			style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))"
+			class="border-t border-hairline bg-paper py-3 {asPage
+				? 'sticky z-30 bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] sm:bottom-0'
+				: 'px-4'}"
+			style={asPage ? undefined : 'padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))'}
 		>
 			<div class={asPage ? `${col} flex gap-2` : 'mx-auto flex max-w-2xl gap-2'}>
 				{#if onStart && workout}

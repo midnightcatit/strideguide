@@ -8,7 +8,7 @@
  * length bound, or materially different from the line it rewrites. Nothing here
  * calls a provider, so it is cheap to test and free of I/O.
  */
-import type { SessionWhy } from '../types';
+import type { Modality, SessionWhy } from '../types';
 import { sanitizeText, WRITING_RULES } from '../writing';
 
 /** The parts of a reason, so the gate can judge each line on its own. */
@@ -22,6 +22,11 @@ export interface WhyRephraseInput {
 	title: string;
 	weekNumber: number;
 	phase: string;
+	/**
+	 * The modality the session trains. A mobility, strength, walking or recovery
+	 * session is not a run, so the model is told not to force a running frame on it.
+	 */
+	modality?: Modality;
 	/** The goal's name, the same for every session in one plan. */
 	goalName?: string;
 	/** The deterministic reason, the only thing the model may reword. */
@@ -40,9 +45,10 @@ export function buildWhyRephrasePrompt(inputs: WhyRephraseInput[]): {
 	const goal = inputs.find((i) => i.goalName)?.goalName;
 	const system = `${WRITING_RULES}
 
-You are a running coach rewording the notes on a training plan's sessions. Each session comes with the role it plays, why it sits on its day, and how it fits the plan. Rewrite each line so it reads better, keeping the meaning exactly.
+You are a running coach rewording the notes on a training plan's sessions. Each session comes with the modality it trains, the role it plays, why it sits on its day, and how it fits the plan. Rewrite each line so it reads better, keeping the meaning exactly.
 - Say only what the line already says. Do not add facts, and do not bring in anything about the runner that is not in the line.
 - Never introduce a number, a distance, a unit, or a pace that is not already in the line.
+- A session is only a run when its modality is running. Never call a strength, mobility, walking or recovery session a run, and never imply it sits before or after a run unless the line already says so.
 - Never give medical advice, and never mention injury, pain or illness.
 - Keep each line about as long as the original, one plain sentence.
 - Give every line new wording. Never hand a line back exactly as it was given, but never change what it says.
@@ -54,6 +60,7 @@ Reply with ONLY a JSON array, one object per session, in the same order. Each ob
 		title: i.title,
 		week: i.weekNumber,
 		phase: i.phase,
+		modality: i.modality ?? null,
 		role: i.reason.role ?? null,
 		dayReason: i.reason.dayReason ?? null,
 		planContext: i.reason.planContext ?? null,
