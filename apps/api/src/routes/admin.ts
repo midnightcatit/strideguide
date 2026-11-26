@@ -28,6 +28,7 @@ import {
 	projectAdminUser,
 	projectAdminUserDetail,
 	projectLoadShadow,
+	projectRateLimit,
 	removalRefusal,
 	resolveAdminState,
 	toIsoTimestamp,
@@ -50,6 +51,9 @@ const admin = new Hono<AppBindings>();
 /** How far back the ops summary counts errors, and how many it lists per source. */
 const RECENT_WINDOW_SECONDS = 24 * 60 * 60;
 const RECENT_ITEMS = 10;
+
+/** How many rate-limit windows the ops summary lists, the fullest first. */
+const RATE_LIMIT_ITEMS = 50;
 
 /** How many plans with load records the load view reads in one pass. */
 const ADMIN_SHADOW_MAX_PLANS = 200;
@@ -184,6 +188,19 @@ admin.get('/ops', requireAdmin, async (c) => {
 		]);
 
 	const summary = rateLimits[0];
+
+	// The fullest windows first, so the ops view leads with what is closest to its
+	// limit. Bounded so a long-lived table never turns the summary into a dump.
+	const rateLimitRows = await db
+		.select({
+			key: schema.rateLimits.key,
+			windowStart: schema.rateLimits.windowStart,
+			count: schema.rateLimits.count,
+		})
+		.from(schema.rateLimits)
+		.orderBy(desc(schema.rateLimits.count))
+		.limit(RATE_LIMIT_ITEMS);
+
 	return c.json({
 		appErrors: {
 			recentCount: appErrorCount[0]?.n ?? 0,
@@ -211,6 +228,7 @@ admin.get('/ops', requireAdmin, async (c) => {
 			keys: summary?.keys ?? 0,
 			totalCount: summary?.totalCount ?? 0,
 			newestWindowStart: toIsoTimestamp(summary?.newestWindowStart ?? null),
+			items: rateLimitRows.map(projectRateLimit),
 		},
 	});
 });
