@@ -179,50 +179,65 @@ is published (**not found**).
 
 ### 1.3 Wearable ecosystems
 
-**Garmin.** Runs two plan products with different owners. Garmin Coach plans are
-authored by named human coaches and are performance-adaptive: "Simply select your
-race goal... and you'll be able to sync workouts to your compatible Garmin watch.
-These workouts will adjust based on your performance as your fitness improves,"
-with "three experienced coaches... Jeff Galloway, physiologist and online running
-coach Greg McMillan, or physical therapist and running expert Amy
-Parkerson-Mitchell" (garmin.com blog, "How to Use Garmin Coach Training Plans").
-A second product, Garmin Run Coach, is the machine-adaptive one: "Garmin Run Coach
-will create a training plan built for you that provides personalised daily
-workouts that adapt to your performance, recovery and health metrics," and the
-inputs are spelled out: the watch "can factor in metrics, including your VO2 max,
-lactate threshold, training history and more. Stats like these, as well as your
-sleep quality, stress levels and recovery status, will influence your daily
-workouts," with the example that poor sleep and recovery can call for "a lighter
-training day." The owner's manual is explicit about the plan adapting to "your
-current level of fitness, coaching and schedule preferences, and race date." The
-physiology underneath comes from Firstbeat analytics, which Garmin acquired;
-Garmin does not publish the plan-generation algorithm (**not found**).
+**Garmin.** Two plan products with different owners, plus a third adaptive surface.
+Garmin Coach plans are authored by named human coaches and performance-adaptive:
+"Once you select your distance and goal, you'll be set up with a personalized
+training plan, tailored to how many weeks and how many days per week you want to
+train," it "changes based on your performance" and "even gives you a confidence
+score as you complete runs." The coaches are "Jeff Galloway... Greg McMillan,
+physiologist and online running coach, [and] Amy Parkerson-Mitchell, physical
+therapist" (garmin.com blog, "Which Garmin Coach is right for you"). Garmin Run
+Coach is the machine-adaptive product: it "will create a training plan built for
+you that provides personalized daily workouts that adapt to your performance,
+recovery and health metrics," from "VO2 max, lactate threshold, training history
+and more... sleep quality, stress levels and recovery status," with poor sleep
+and recovery calling for "a lighter training day." Daily Suggested Workouts are
+the third surface: "seven workout structures" from recovery and base through
+tempo, threshold and VO2 max to sprint, mapped "onto the Anaerobic, Low Aerobic
+and High Aerobic bars," with sprint work withheld unless recovered ("you shouldn't
+expect to see these suggested workouts if you have a significant amount of
+recovery time remaining"). The physiology is Firstbeat (Garmin's own blog cites
+Gerber 2013, Teisala 2014 and Pietila 2018), with HRV Status built from "3 weeks"
+to a personal baseline and Body Battery from beat-to-beat HRV. Garmin does not
+publish the plan-generation algorithm (**not found**).
 
-**Polar.** The Running Program is documented as personalized and adaptive:
-"Running Program is a personal and adaptive training plan that is based on your
-individual metrics. It adapts along the way, learning about you from your workout
-data," and "lets you know when you can step up a notch as well as when you need
-to cut back a little bit" (polar.com). Intensity is heart-rate-zone based, and
-"the science behind the Polar heart rate zones is the cornerstone of the
-program." Event-time prediction comes from the Running Index. Supporting
-strength, core and mobility exercises are included. Polar runs its own research
-and a white-paper library, but the plan-generation algorithm is not published
-(**not found**).
+**COROS.** EvoLab supplies the substrate: Training Load on "a 3:1 training cycle
+ratio" (three weeks building, then "the fourth week will have a lower
+recommendation for enhanced recovery"), Training Status from "a rolling average of
+7 days and 42 days," Recovery banded 0 to 100 ("Exhausted" to "Fresh"), and a race
+predictor "based on your past 6 weeks' training" (support.coros.com). Plans are
+"official" courses "from COROS coaches and professional athletes," with Training
+Hub phase labels (Base, Peak, Preparation, Progress, Race, Transition). The
+honest, load-bearing detail is what Recovery excludes: "other factors such as
+Sleep, HRV, Daily Stress, or muscular fatigue... are not part of the Recovery
+calculation, so it's important to listen to your body." Automatic daily replanning
+from HRV or sleep is **not found**; COROS plans are coach-authored and delivered
+through a web hub.
 
-**COROS.** Documented as a plan library plus an app: "Training plans can be
-created directly in the COROS app, downloaded from our official Training Plan
-Library, or synced from third party apps," and "Free training plans are available
-from certified COROS coaches... The next two weeks of the training plan will be
-synced to your watch" (support.coros.com). How the plans are generated and
-whether they adapt to readiness are **not found** in the pages reviewed; COROS's
-readiness and load work (EvoLab) is not documented as feeding the plans.
+**Polar.** The Running Program is personalized and adaptive, with the base build
+"updated every four weeks" and the app proposing to "proceed to the next level,
+continue at the same level or go down a level" while the runner chooses
+(support.polar.com). Session targets are heart-rate zones ("the science behind
+the Polar heart rate zones is the cornerstone of the program"), event prediction
+comes from the Running Index, and adherence is judged by zone ("No stars if you've
+trained too much (more than 200%) in the moderate zone"). Notably, creating a
+program requires answering a "Physical activity readiness questionnaire," the
+closest a wearable comes to the ACSM screening step. FitSpark offers "2-4 workout
+options every day... matched to your fitness level, training history and your
+recovery and readiness, based on your Nightly Recharge status." The readiness
+stack is documented: Nightly Recharge (a Sleep Charge and an ANS Charge "compared
+to your usual levels from the past 28 days"), the Orthostatic Test (HRV-based),
+and Training Load Pro ("TRIMP and RPE... commonly accepted by the sports science
+community"). Polar publishes white papers for these.
 
-**Suunto.** No documented plan-generation method was found (**not found**).
+**Suunto.** No native plan generator was found (**not found**); Suunto defers to
+TrainingPeaks plans, and its own docs note "Training plans created in
+TrainingPeaks are not synchronized to Suunto watches."
 
-The wearable pattern is the same as the rest: a deterministic or coach-built
-plan, an adaptive layer driven by recovery and health metrics, and no published
-algorithm. Garmin and Polar document the inputs (sleep, stress, recovery, HR);
-neither documents the maths.
+The wearable pattern matches the rest: a deterministic or coach-built plan, an
+adaptive layer driven by recovery and health metrics, and no published generation
+algorithm. Two details are worth stealing. Polar screens before it plans, and
+COROS is explicit about what its recovery score leaves out.
 
 ### 1.4 AI-first endurance engines (TriDot, Athletica, AI Endurance, Humango, 2PEAK)
 
@@ -383,7 +398,11 @@ session." The consistent pattern: **the engine decides, the model narrates.**
 check-ins feed a readiness read. AI Endurance fits "a recovery model to your HRV,
 resting heart rate, DFA alpha 1 and training load, together with your morning
 check-in and soreness feedback"; Athletica uses a three-channel response model.
-But the evidence for HRV-guided prescription is modest and should be stated
+Garmin builds an HRV baseline over three weeks and reads Body Battery from
+beat-to-beat HRV; Polar compares Nightly Recharge "to your usual levels from the
+past 28 days." COROS is the exception that proves the point: it deliberately
+leaves sleep, HRV and stress out of its Recovery score. But the evidence for
+HRV-guided prescription is modest and should be stated
 honestly. Manresa-Rocamora et al. 2021 (*IJERPH* 18:10299, PMID 34639599) found
 HRV-guided training was superior for vagal HRV indices but that benefits for
 maximal aerobic capacity, second-threshold capacity and endurance performance
@@ -424,7 +443,9 @@ possible unnecessary barriers" (Riebe et al. 2015, *Med Sci Sports Exerc*
 PMID 38206661) scored AI chatbot exercise recommendations and found them only
 "41.2% comprehensive" and "90.7% accurate," with the single largest source of
 inaccuracy being "the need for exercise preparticipation medical clearance."
-That is the failure mode to design against.
+That is the failure mode to design against. Among the wearables, Polar is the
+lone one that gates plan creation behind a "Physical activity readiness
+questionnaire"; the rest start planning with no such step.
 
 **Injury and medical red flags.** Running injury risk is real and partly
 screenable. Joachim et al. 2024 (systematic review, PMID 37970801) found
@@ -681,11 +702,19 @@ be verified, the finding says so.
 - RunnersConnect: runnersconnect.net (training plans, pricing, blog on the 10
   percent rule and injury).
 - Runkeeper: help.runkeeper.com (personalized race training plans; training plans).
-- Garmin: garmin.com/en-GB/blog/how-to-use-garmin-coach-training-plans-for-runners;
-  Forerunner 165 Series owner's manual, "Adaptive Training Plans"; garmin.com/
-  en-US/garmin-coach/overview.
-- Polar: polar.com/us-en/smart-coaching/running-program.
-- COROS: support.coros.com, "Creating and Using Training Plans".
+- Garmin: garmin.com blog ("Which Garmin Coach is right for you"; "Garmin
+  training plans for runners"; "Types of daily suggested workouts for runners";
+  "Garmin Training Status"; "Understanding the HRV Status"; "5 reasons your Body
+  Battery is running low"); Forerunner 165 Series owner's manual, "Adaptive
+  Training Plans"; garmin-coach/overview; Firstbeat white-papers index.
+- COROS: support.coros.com ("Creating and Using Training Plans"; "COROS Fitness
+  Metrics Explained"; "Understanding the Recovery Widget"; "COROS Training Hub
+  Manual"); us.coros.com/training.
+- Polar: polar.com/smart-coaching ("Running Program"; "FitSpark"; "Training Load
+  Pro"; "Nightly Recharge"; "Orthostatic Test"; "Recovery Pro");
+  support.polar.com, "Get started with the Polar Running Program";
+  polar.com/en/science/whitepapers.
+- Suunto: suunto.com (home; TrainingPeaks partner page).
 - Strava: support.strava.com (Fitness & Freshness; Athlete Intelligence;
   training plans for cyclists; running plans now powered by Runna; Recover
   Athletics; AI assistant connector).
