@@ -16,7 +16,25 @@
 	import { sessionHref } from '$lib/sessionNav';
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
+	import ModalityMark from '$lib/components/ModalityMark.svelte';
 	import { LOAD_RAMP, TRAINING_PROGRESS } from '$lib/chartPalette';
+
+	// A stable order for a day's modalities in its accessible name, so the same
+	// mix always reads the same way. Strength and mobility also get a corner mark
+	// on the cell; every modality is named in the label.
+	const MODALITY_WORDS: [string, string][] = [
+		['running', 'running'],
+		['walking', 'walking'],
+		['strength', 'strength'],
+		['mobility', 'mobility'],
+		['recovery', 'recovery'],
+		['cross-train', 'cross-training'],
+	];
+	function listWords(words: string[]): string {
+		if (words.length <= 1) return words[0] ?? '';
+		if (words.length === 2) return `${words[0]} and ${words[1]}`;
+		return `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
+	}
 
 	const todayIso = $derived(today.iso);
 
@@ -102,11 +120,15 @@
 			count: number;
 			done: boolean;
 			skipped: boolean;
+			strength: boolean;
+			mobility: boolean;
+			modalities: string[];
 		}[] = [];
 		for (let i = 0; i < 42; i++) {
 			const d = new Date(start.getTime() + i * 86400000);
 			const key = d.toISOString().slice(0, 10);
 			const sessions = byDate.get(key) ?? [];
+			const modSet = new Set<string>(sessions.map((s) => s.modality));
 			cells.push({
 				iso: key,
 				day: d.getUTCDate(),
@@ -119,6 +141,9 @@
 				count: sessions.length,
 				done: sessions.some((s) => loggedBySession.has(s.id)),
 				skipped: sessions.some((s) => isSkipped(s.id)),
+				strength: modSet.has('strength'),
+				mobility: modSet.has('mobility'),
+				modalities: MODALITY_WORDS.filter(([m]) => modSet.has(m)).map(([, w]) => w),
 			});
 		}
 		return cells;
@@ -172,7 +197,7 @@
 	class="sticky z-20 -mx-4 mb-1 flex items-center justify-between gap-2 border-b border-hairline bg-paper px-4 py-1.5"
 	style="top: calc(4rem + env(safe-area-inset-top))"
 >
-	<div class="relative w-44 shrink-0 rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
+	<div class="relative w-44 min-w-0 max-w-full shrink rounded-lg border border-hairline p-0.5" role="group" aria-label="Calendar view">
 		<span class="pointer-events-none absolute inset-0.5 grid grid-cols-2" aria-hidden="true">
 			<span class="calendar-thumb rounded-md bg-ink" style="transform: translateX({mode === 'list' ? '100%' : '0%'})"></span>
 		</span>
@@ -204,7 +229,7 @@
 			{@const level = loadLevel(cell.load)}
 			<a
 				href={`/calendar/day/${cell.iso}`}
-				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}{cell.skipped ? ', a skipped session' : ''}"
+				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.modalities.length ? `, ${listWords(cell.modalities)}` : ''}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}{cell.skipped ? ', a skipped session' : ''}"
 				style="animation-delay: {Math.min(i * 8, 260)}ms; background: {LOAD_RAMP[level]}"
 				class="reveal relative flex aspect-square flex-col items-center justify-center rounded-md border transition-colors {cell.inMonth
 					? 'border-hairline'
@@ -212,15 +237,21 @@
 			>
 				<span class="tabular text-xs {cell.skipped ? 'text-steel' : ''}">{cell.day}</span>
 				{#if cell.km}<span class="tabular text-[9px] text-steel">{fmtDistance(cell.km)}</span>{/if}
+				{#if cell.strength}
+					<span class="absolute left-1 top-1 text-ink" aria-hidden="true"><ModalityMark modality="strength" /></span>
+				{/if}
+				{#if cell.mobility}
+					<span class="absolute right-1 top-1 text-ink" aria-hidden="true"><ModalityMark modality="mobility" /></span>
+				{/if}
 				{#if cell.done}
 					<span
-						class="absolute right-1 top-1 h-1.5 w-1.5 rounded-full"
+						class="absolute bottom-1 right-1 h-1.5 w-1.5 rounded-full"
 						style="background: {TRAINING_PROGRESS}"
 						aria-hidden="true"
 					></span>
 				{/if}
 				{#if cell.skipped}
-					<span class="absolute left-1 top-1 h-1.5 w-1.5 rounded-full bg-steel" aria-hidden="true"></span>
+					<span class="absolute bottom-1 left-1 h-1.5 w-1.5 rounded-full bg-steel" aria-hidden="true"></span>
 				{/if}
 				{#if cell.isToday}
 					<span class="absolute bottom-1 h-0.5 w-4 rounded-full bg-signal-ink" aria-hidden="true"></span>
@@ -238,7 +269,7 @@
 		<span>Skipped</span>
 		<InfoButton
 			term="Pressure"
-			definition="How much a day asks of you, from the length and intensity of its sessions. A stronger tint is a harder day. A green dot means it is done. A grey dot means it has a skipped session."
+			definition="How much a day asks of you, from the length and intensity of its sessions. A stronger tint is a harder day. A dumbbell in the top left marks a strength session and a stretch arrow in the top right marks mobility. A green dot means it is done. A grey dot means it has a skipped session."
 		/>
 	</div>
 	</div>

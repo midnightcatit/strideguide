@@ -12,8 +12,8 @@
 /** Done, volume, streak and plan progress: the green slot. */
 export const TRAINING_PROGRESS = 'var(--chart-4)';
 
-/** The ordered intensity and plan-phase ramps: the amber load slot. */
-export const TRAINING_LOAD = 'var(--chart-5)';
+/** The ordered intensity and plan-phase ramps: the blue load slot. */
+export const TRAINING_LOAD = 'var(--chart-2)';
 
 /**
  * The four-step load scale for a day or month grid: the load slot at rising
