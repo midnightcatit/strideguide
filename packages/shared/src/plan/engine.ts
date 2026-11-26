@@ -18,6 +18,7 @@ import {
 import { WORKOUT_LIBRARY, type LibraryWorkout } from './library';
 import { mobilityPrescription } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
+import { placeSessions, scheduleWarnings, type UnplacedSession } from './schedule';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
 
@@ -1095,6 +1096,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	const raceDay = input.targetDate ? weekdayIndex(input.targetDate) : undefined;
 
 	const weeks: PlannedWeek[] = [];
+	// The same window problem repeats every week, so placement notes are gathered
+	// here and deduped into one warning each before they reach meta.warnings.
+	const unplacedSessions: UnplacedSession[] = [];
+	let noWindowsOnTrainingDays = false;
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
 		const isRecovery = phase === 'recovery';
@@ -1490,10 +1495,18 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		}
 
+		// Fit the week's sessions into the runner's blocked-out windows, when they
+		// gave any. This only sets a start time, and moves a session to another day
+		// only when its own day has windows that cannot hold it. With no schedule
+		// it is a no-op, so the plan is exactly what it is without one.
+		const placement = placeSessions(sessions, input.schedule, allDays);
+		unplacedSessions.push(...placement.unplaced);
+		noWindowsOnTrainingDays ||= placement.noWindowsOnTrainingDays;
+
 		// Sessions were placed on weekdays above. Store each one as an offset from
 		// its week's first day, so the same offset names the same date and the week
 		// rolls with the start day.
-		const withIntensity = sessions.map((s) => {
+		const withIntensity = placement.sessions.map((s) => {
 			const withFavorite = withFavoriteWorkout(s, input);
 			return {
 				...withFavorite,
@@ -1521,6 +1534,8 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			sessions: withIntensity.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
 		});
 	}
+
+	warnings.push(...scheduleWarnings(unplacedSessions, noWindowsOnTrainingDays));
 
 	return {
 		profileSlug: input.profile.slug,

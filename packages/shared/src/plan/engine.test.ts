@@ -1221,3 +1221,72 @@ describe('race-relative long run and post-race recovery', () => {
 		}
 	});
 });
+
+describe("plan engine uses the runner's schedule", () => {
+	const windows = [
+		{ day: 2, start: '06:00', end: '07:30' },
+		{ day: 4, start: '18:00', end: '19:00' },
+	];
+	const minutes = (hhmm: string) => {
+		const [h, m] = hhmm.split(':').map(Number);
+		return (h ?? 0) * 60 + (m ?? 0);
+	};
+	const input = {
+		profile: wholeFitness,
+		baseline: { experience: 'beginner' as const, weeklyKm: 25 },
+		availableDays: [0, 2, 4],
+		// A Monday start, so a session's day offset is the weekday it lands on.
+		startDate: '2026-11-30',
+	};
+
+	it('gives no session a time, and changes nothing, without a schedule', () => {
+		const plain = generatePlan(input);
+		const explicit = generatePlan({ ...input, schedule: undefined });
+		expect(JSON.stringify(plain)).toBe(JSON.stringify(explicit));
+		for (const s of plain.weeks.flatMap((w) => w.sessions)) {
+			expect(s.prescription.timeStart).toBeUndefined();
+		}
+	});
+
+	it('sets a start time inside a window that can hold the session', () => {
+		const plan = generatePlan({ ...input, schedule: windows });
+		const placed = plan.weeks
+			.flatMap((w) => w.sessions)
+			.filter((s) => s.prescription.timeStart);
+		expect(placed.length).toBeGreaterThan(0);
+		for (const w of plan.weeks) {
+			for (const s of w.sessions) {
+				const time = s.prescription.timeStart;
+				if (!time) continue;
+				// The session stands on a day that has a window, and fits inside it.
+				const weekday = weekdayOf(addDays(w.startDate, s.day));
+				const onDay = windows.filter((x) => x.day === weekday);
+				expect(onDay.length).toBeGreaterThan(0);
+				const start = minutes(time);
+				expect(
+					onDay.some((x) => start >= minutes(x.start) && start + s.durationMin <= minutes(x.end)),
+				).toBe(true);
+			}
+		}
+	});
+
+	it('warns plainly when the windows cannot fit the week, and keeps the session', () => {
+		const plan = generatePlan({
+			...input,
+			schedule: [
+				{ day: 2, start: '06:00', end: '06:30' },
+				{ day: 4, start: '18:00', end: '18:30' },
+			],
+		});
+		const warnings = plan.meta.warnings ?? [];
+		const note = warnings.find((w) => w.includes('cannot fit it in'));
+		expect(note).toBeTruthy();
+		expect(note).toContain('Friday');
+		// One note per session, not one for every week of the plan.
+		expect(warnings.filter((w) => w.includes('long run')).length).toBe(1);
+		// The long run is still planned, just without a set time.
+		const long = plan.weeks[0]!.sessions.find((s) => s.type === 'long')!;
+		expect(long).toBeTruthy();
+		expect(long.prescription.timeStart).toBeUndefined();
+	});
+});

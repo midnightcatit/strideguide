@@ -786,6 +786,7 @@ plans.post(
 			machines: resolveMachines(prefs),
 			favoriteMachines: prefs.favoriteMachines,
 			favoriteWorkouts: prefs.favoriteWorkouts,
+			schedule: prefs.schedule,
 		};
 		const baseDraft = generatePlan(planInput);
 
@@ -1057,6 +1058,7 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 		machines: resolveMachines(prefs),
 		favoriteMachines: prefs.favoriteMachines,
 		favoriteWorkouts: prefs.favoriteWorkouts,
+		schedule: prefs.schedule,
 	} as unknown as Parameters<typeof adaptPlan>[0]);
 
 	if (result.changedFromWeek == null) {
@@ -1287,6 +1289,7 @@ plans.post(
 			machines: resolveMachines(prefs),
 			favoriteMachines: prefs.favoriteMachines,
 			favoriteWorkouts: prefs.favoriteWorkouts,
+			schedule: prefs.schedule,
 		};
 
 		// The engine lays out the later weeks instantly. Then the model shapes them

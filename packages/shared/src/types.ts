@@ -220,6 +220,8 @@ export interface SessionPrescription {
 	targetZone?: string;
 	targetRpe?: [number, number];
 	targetDistanceKm?: number;
+	/** A local start time ("HH:MM") for this session, set from the runner's schedule. */
+	timeStart?: string;
 	/** For strength sessions. */
 	blocks?: StrengthSet[];
 	notes?: string;

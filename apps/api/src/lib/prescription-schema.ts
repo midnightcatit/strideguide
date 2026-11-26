@@ -50,6 +50,9 @@ const workoutSchema = z.object({
 	estimatedDurationMin: z.number().min(0).max(10000).optional(),
 });
 
+/** A local "HH:MM" time, 24-hour, as the engine sets a session from the schedule. */
+const clockSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+
 export const prescriptionSchema = z.object({
 	summary: z.string().max(600).optional(),
 	intensity: z.enum(['easy', 'steady', 'hard']).optional(),
@@ -57,6 +60,7 @@ export const prescriptionSchema = z.object({
 	targetZone: z.string().max(40).optional(),
 	targetRpe: rpePair.optional(),
 	targetDistanceKm: z.number().min(0).max(1000).optional(),
+	timeStart: clockSchema.optional(),
 	blocks: z.array(strengthSetSchema).max(100).optional(),
 	notes: z.string().max(2000).optional(),
 	why: z.string().max(2000).optional(),

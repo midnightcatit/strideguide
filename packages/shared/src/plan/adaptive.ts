@@ -44,6 +44,7 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 		favoriteMachines: input.favoriteMachines,
 		favoriteWorkouts: input.favoriteWorkouts,
 		crossLoad: input.crossLoad,
+		schedule: input.schedule,
 		baseline: {
 			...input.baseline,
 			...(fitness.recentWeeklyKm > 0 && fitness.samples >= 3
