@@ -4,7 +4,7 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { fmtDistance, sessionLabel } from '$lib/prefs.svelte';
-	import { DAY_NAMES, addDaysIso } from '$lib/plan';
+	import { DAY_NAMES, addDaysIso, weekdayIndexFromIso } from '$lib/plan';
 	import { today } from '$lib/today.svelte';
 	import { metricOrigin } from '$lib/metrics';
 	import Card from '$lib/components/Card.svelte';
@@ -76,7 +76,7 @@
 				<span class="min-w-0 flex-1">
 					<span class="block truncate text-sm font-medium">{sessionLabel(row.session)}</span>
 					<span class="tabular block text-xs text-steel">
-						{DAY_NAMES[row.session.day]}{row.date === todayIso ? ' · today' : ''}
+						{DAY_NAMES[weekdayIndexFromIso(row.date)]}{row.date === todayIso ? ' · today' : ''}
 					</span>
 				</span>
 				<span class="shrink-0 text-right">

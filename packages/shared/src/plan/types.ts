@@ -2,7 +2,7 @@ import type { Baseline, Modality, SessionArchetype, SessionPrescription } from '
 
 /** A single prescribed session within a week. */
 export interface PlannedSession {
-	/** 0 = Monday … 6 = Sunday. */
+	/** 0 = the week's first day … 6 = its last (offset from the week's startDate). */
 	day: number;
 	slot: string;
 	modality: Modality;

@@ -143,7 +143,7 @@ const FOCUS: Record<string, string> = {
  * proportional, so the same shape scales to any plan length.
  */
 const DEFAULT_PROGRESSION: PlanInput['profile']['progressionRules'] = [
-	{ phase: 'base', weeks: 6, volumeStep: 0.08, deload: false },
+	{ phase: 'base', weeks: 6, volumeStep: 0.08, deload: true },
 	{ phase: 'build', weeks: 6, volumeStep: 0.08, deload: true },
 	{ phase: 'peak', weeks: 3, volumeStep: 0.04, deload: false },
 	{ phase: 'taper', weeks: 2, volumeStep: -0.25, deload: false },
@@ -219,10 +219,12 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 	// Level sets how fast the plan builds. Beginners build more gently, advanced
 	// runners a little faster. The self-assessed build preference leans the whole
 	// curve one way or the other. No positive step may exceed the ~10 percent
-	// weekly ceiling that keeps injury risk down, and deload weeks still step back.
+	// weekly ceiling that keeps injury risk down, and a stepback week still steps
+	// down in base as well as build, so the shape is build three weeks, take a
+	// lighter one, rather than a straight climb.
 	const LEVEL_STEP: Record<string, number> = { beginner: 0.85, intermediate: 1, advanced: 1.15 };
 	const BUILD: Record<string, { step: number; start: number }> = {
-		'ease-in': { step: 0.8, start: 0.85 },
+		'ease-in': { step: 0.8, start: 0.7 },
 		steady: { step: 1, start: 0.9 },
 		ambitious: { step: 1.2, start: 0.95 },
 	};
@@ -234,6 +236,10 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 		build.step *
 		ageBuildFactor(input.baseline.age);
 	const startFactor = build.start;
+	// The most a week may grow to hold its long run, eased for older runners the
+	// same way their build rate is. Level and preference shape the normal ramp, not
+	// this catch-up, so a gentle ease-in plan can still lift a week to hold the goal.
+	const arcCeiling = WEEKLY_STEP_CEILING * ageBuildFactor(input.baseline.age);
 	const out: number[] = [];
 	let prev = base;
 	let peak = base;
@@ -253,17 +259,19 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 		} else if (phase === 'taper') {
 			vol = peak * taperFraction(rule.volumeStep, idx);
 		} else if (isDeload) {
-			vol = prev * 0.7;
+			vol = prev * STEPBACK_FACTOR;
 		} else {
-			const step = Math.min(Math.max(0, rule.volumeStep * levelStep), 0.1);
+			const step = Math.min(Math.max(0, rule.volumeStep * levelStep), WEEKLY_STEP_CEILING);
 			vol = prev * (1 + step);
 		}
 		// Grow a week that is too light to hold the long run the plan is building
-		// to. Never on a deload or taper week, and never past the ceiling above.
+		// to. Never on a deload or taper week, and never past the safety ceiling.
+		// The catch-up is eased for older runners the same way their build rate is,
+		// so age still shows at the peak rather than being erased by the ceiling.
 		const floor = longFloorKm?.[w];
 		if (floor !== undefined && floor > 0 && !isDeload && phase !== 'taper' && phase !== 'recovery') {
 			const need = floor / LONG_RUN_SHARE_CEILING;
-			const ceiling = w === 0 ? need : prev * (1 + WEEKLY_STEP_CEILING);
+			const ceiling = w === 0 ? need : prev * (1 + arcCeiling);
 			vol = Math.max(vol, Math.min(need, Math.max(ceiling, vol)));
 		}
 		vol = clamp(round1(vol), 5, 160);
@@ -636,6 +644,14 @@ const LONG_RUN_SHARE_CEILING = 0.5;
 const WEEKLY_STEP_CEILING = 0.1;
 
 /**
+ * How far a stepback week drops from the week before. The ramp builds for about
+ * three weeks, then takes a lighter one, in base as well as build. It is a
+ * stepback, not a collapse: a gentle drop that a next week can climb back from
+ * keeps the plan moving forward while giving the body an easier week.
+ */
+const STEPBACK_FACTOR = 0.9;
+
+/**
  * Session shape by goal: the long run's share of the week before the goal's own
  * peak takes over, and how much of the week one quality day takes. A 5K leans on
  * quality with a shorter long run; a marathon leans on a long, progressive one.
@@ -985,18 +1001,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		[...new Set(input.availableDays)].length ? [...new Set(input.availableDays)] : [0, 2, 4]
 	).sort((a, b) => a - b);
 	const startWeekday = weekdayIndex(input.startDate);
+	// Week one begins on the start day and every later week follows it, so a
+	// Wednesday start reads Wednesday to Tuesday. A session carries a day offset
+	// from its week's first day, mapped once from the runner's weekday choices at
+	// the end, so the same weekday lands on the same real weekday in every week
+	// whatever day the plan starts on.
+	const toOffset = (weekday: number) => (weekday - startWeekday + 7) % 7;
 
-	// Week one is anchored to the Monday on or before the start date, and any of
-	// the runner's days that fall before the start are dropped, so a mid-week
-	// start keeps the same weekday mapping as a Monday start. When the runner's
-	// whole schedule has already passed by the start date (a late-week start),
-	// that anchored week would hold no training at all, so the plan starts on the
-	// next Monday instead. The Monday grid is unchanged, so the final week is the
-	// same either way.
-	const stubFirstWeek = !allDays.some((d) => d >= startWeekday);
-	const weekZero = addDays(input.startDate, -startWeekday + (stubFirstWeek ? 7 : 0));
-
-	// The race date drives the length: the final week's Sunday lands on or after
+	// The race date drives the length: the final week's last day lands on or after
 	// it, so the last week always covers race day. Without a race the profile's
 	// default length applies. Below four weeks the plan is still extended to four,
 	// and past thirty it is cut to thirty; both surface a warning rather than
@@ -1005,7 +1017,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	let buildWeeks: number;
 	let raceWeekIndex: number | undefined;
 	if (input.targetDate) {
-		const spanDays = daysBetween(weekZero, input.targetDate);
+		const spanDays = daysBetween(input.startDate, input.targetDate);
 		const rawWeeks = Math.ceil((spanDays + 1) / 7);
 		// A short run-in keeps its own length rather than being padded out before
 		// the race, because padding there would put the taper after the finish. A
@@ -1097,13 +1109,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			volume = Math.min(volumes[w - 1] ?? volume, volume);
 		}
 		volume = clamp(round1(volume), 5, 160);
-		// Every week is anchored to its Monday, and a session's day is a weekday
-		// index (0 = Monday). So the same weekday index lands on the same real
-		// weekday in every week, whatever day the plan starts on. Week one is the
-		// calendar week that holds the chosen start date, and any of its days that
-		// fall before that date are dropped below, so the plan never schedules a
-		// session before it begins.
-		const weekStart = addDays(weekZero, w * 7);
+		// Each week is seven days from the start day: week one runs from the chosen
+		// start date, and every later week follows it, so the stored dates roll with
+		// the start day rather than snapping to a Monday.
+		const weekStart = addDays(input.startDate, w * 7);
 		const weekEnd = addDays(weekStart, 6);
 		let strengthLeft = strengthCount;
 
@@ -1481,16 +1490,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		}
 
-		// A start week whose earlier days have passed keeps only the days on or
-		// after the start, so no session is placed before the plan begins. A stub
-		// week was dropped above, so its week is already whole.
-		const inWeek =
-			w === 0 && !stubFirstWeek ? sessions.filter((s) => s.day >= startWeekday) : sessions;
-
-		const withIntensity = inWeek.map((s) => {
+		// Sessions were placed on weekdays above. Store each one as an offset from
+		// its week's first day, so the same offset names the same date and the week
+		// rolls with the start day.
+		const withIntensity = sessions.map((s) => {
 			const withFavorite = withFavoriteWorkout(s, input);
 			return {
 				...withFavorite,
+				day: toOffset(withFavorite.day),
 				prescription: {
 					...withFavorite.prescription,
 					intensity: withFavorite.prescription.intensity ?? intensityFor(withFavorite.type),

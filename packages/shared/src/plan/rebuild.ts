@@ -12,7 +12,7 @@ import type { PlannedSession, PlannedWeek, PlanInput, WeekShape } from './types'
 
 /** One session of the approved week one, as the client sent it. */
 export interface WeekOneSession {
-	/** 0 = Monday … 6 = Sunday. */
+	/** 0 = the week's first day … 6 = its last (offset from the week's startDate). */
 	day: number;
 	slot: string;
 	modality: string;
@@ -59,6 +59,11 @@ const QUALITY = ['tempo', 'hills', 'interval', 'race-pace', 'threshold', 'fartle
 
 function byDaySlot(a: { day: number; slot: string }, b: { day: number; slot: string }): number {
 	return a.day - b.day || a.slot.localeCompare(b.slot);
+}
+
+/** 0 = Monday … 6 = Sunday for an ISO date. */
+function weekdayOf(iso: string): number {
+	return (new Date(`${iso}T00:00:00Z`).getUTCDay() + 6) % 7;
 }
 
 /** True when the session is something the runner added, not the engine's own. */
@@ -183,9 +188,13 @@ export interface RebuildResult {
  */
 export function rebuildFromWeekOne(input: RebuildInput): RebuildResult {
 	const pattern = weekOnePattern(input.weekOne);
+	// Week one's days are offsets from its own start; the engine takes weekday
+	// indices, so map them back before seeding, whatever weekday the plan starts on.
+	const startWeekday = weekdayOf(input.plan.startDate);
+	const availableWeekdays = pattern.availableDays.map((offset) => (offset + startWeekday) % 7);
 	const seeded: PlanInput = {
 		...input.plan,
-		availableDays: pattern.availableDays.length ? pattern.availableDays : input.plan.availableDays,
+		availableDays: availableWeekdays.length ? availableWeekdays : input.plan.availableDays,
 	};
 	const fresh = generatePlan({ ...seeded, weekShapes: input.weekShapes });
 	const byNumber = new Map(fresh.weeks.map((w) => [w.weekNumber, w] as const));

@@ -7,6 +7,15 @@ import { WORKOUT_LIBRARY } from './library';
 const marathon = GOAL_PROFILES.find((p) => p.slug === 'marathon')!;
 const wholeFitness = GOAL_PROFILES.find((p) => p.slug === 'whole-fitness')!;
 
+const isoToDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
+const addDays = (iso: string, n: number) => {
+	const d = isoToDate(iso);
+	d.setUTCDate(d.getUTCDate() + n);
+	return d.toISOString().slice(0, 10);
+};
+/** 0 = Monday … 6 = Sunday for an ISO date. */
+const weekdayOf = (iso: string) => (isoToDate(iso).getUTCDay() + 6) % 7;
+
 const plan = generatePlan({
 	profile: marathon,
 	baseline: { recentTimes: { '5k': '22:00' }, experience: 'intermediate' },
@@ -35,7 +44,9 @@ describe('generatePlan (marathon)', () => {
 			for (const s of w.sessions) {
 				// The race sits on its fixed date, so it can fall off the usual days.
 				if (s.type === 'race') continue;
-				expect([0, 2, 4, 6]).toContain(s.day);
+				// A day is an offset into the week, so read the real weekday from
+				// the session's date.
+				expect([0, 2, 4, 6]).toContain(weekdayOf(addDays(w.startDate, s.day)));
 			}
 		}
 	});
@@ -528,8 +539,11 @@ describe('generatePlan (model shaping)', () => {
 			dislikedTypes?: string[];
 		}) => {
 			const plan = generatePlan({ ...base, baseline });
-			return plan.weeks[1]!.sessions.find((s) => s.modality === 'running' && s.type !== 'easy')
-				?.type;
+			// The week's quality run, whichever day it lands on. Day order is no
+			// longer a weekday order, so pick it out by type, not by being first.
+			return plan.weeks[1]!.sessions.find(
+				(s) => s.modality === 'running' && s.type !== 'easy' && s.type !== 'long',
+			)?.type;
 		};
 		// By default the base week is a tempo session.
 		expect(week2Kind({ experience: 'intermediate' })).toBe('tempo');
@@ -641,13 +655,17 @@ describe('progression (volume builds, sessions differentiate)', () => {
 		}
 	});
 
-	it('keeps the ease-in week among the lightest, never the heaviest', () => {
+	it('keeps the ease-in week out of the heaviest weeks', () => {
 		const p = forLevel('marathon', 'intermediate');
 		const build = p.weeks
 			.filter((w) => !['taper', 'recovery'].includes(w.phase))
 			.map((w) => w.targetVolumeKm);
-		const lightest = Math.min(...build.slice(1));
-		expect(p.weeks[0]!.targetVolumeKm).toBeLessThanOrEqual(lightest * 1.05);
+		const peak = Math.max(...build);
+		const week1 = p.weeks[0]!.targetVolumeKm;
+		// Week one eases in, so it is never the heaviest week and sits well below
+		// the peak. A later stepback week is allowed to be lighter still.
+		expect(week1).toBeLessThan(peak);
+		expect(week1).toBeLessThanOrEqual(peak * 0.85);
 	});
 
 	it('starts an advanced runner higher than a beginner, same plan', () => {
@@ -796,16 +814,7 @@ describe('favorites', () => {
 	});
 });
 
-describe('week alignment when the plan starts on a non-Monday', () => {
-	const isoToDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
-	const addDays = (iso: string, n: number) => {
-		const d = isoToDate(iso);
-		d.setUTCDate(d.getUTCDate() + n);
-		return d.toISOString().slice(0, 10);
-	};
-	/** 0 = Monday … 6 = Sunday for an ISO date. */
-	const weekdayOf = (iso: string) => (isoToDate(iso).getUTCDay() + 6) % 7;
-
+describe('week anchoring when the plan starts on a non-Monday', () => {
 	// 2026-12-01 is a Tuesday. The runner trains Tuesday, Thursday and Saturday,
 	// and asks the plan to start today.
 	const tuesdayStart = '2026-12-01';
@@ -817,19 +826,18 @@ describe('week alignment when the plan starts on a non-Monday', () => {
 		targetDate: '2027-05-01',
 	});
 
-	it('anchors every week to its Monday', () => {
-		for (const w of plan.weeks) {
-			expect(weekdayOf(w.startDate)).toBe(0);
+	it('starts week one on the chosen start day and rolls in sevens', () => {
+		expect(plan.weeks[0]!.startDate).toBe(tuesdayStart);
+		plan.weeks.forEach((w, i) => {
+			expect(w.startDate).toBe(addDays(tuesdayStart, i * 7));
 			expect(w.endDate).toBe(addDays(w.startDate, 6));
-		}
-		// Week one is the calendar week that holds the chosen Tuesday.
-		expect(plan.weeks[0]!.startDate).toBe('2026-11-30');
+		});
 	});
 
-	it('lands every session on the weekday its day index names', () => {
+	it('lands every session on the real weekday its day names', () => {
 		for (const w of plan.weeks) {
 			for (const s of w.sessions) {
-				expect(weekdayOf(addDays(w.startDate, s.day))).toBe(s.day);
+				expect([1, 3, 5]).toContain(weekdayOf(addDays(w.startDate, s.day)));
 			}
 		}
 	});
@@ -843,7 +851,7 @@ describe('week alignment when the plan starts on a non-Monday', () => {
 
 	it('puts the runner Tuesday training day on the actual Tuesday', () => {
 		const w1 = plan.weeks[0]!;
-		const tuesday = w1.sessions.find((s) => s.day === 1)!;
+		const tuesday = w1.sessions.find((s) => weekdayOf(addDays(w1.startDate, s.day)) === 1)!;
 		expect(tuesday).toBeTruthy();
 		expect(addDays(w1.startDate, tuesday.day)).toBe(tuesdayStart);
 	});
@@ -851,8 +859,8 @@ describe('week alignment when the plan starts on a non-Monday', () => {
 	it('puts a session on the same date in the day view and the calendar', () => {
 		const w1 = plan.weeks[0]!;
 		// The calendar maps a session to weekStart + day. The day view selects a
-		// date by its offset from the week start, which is the same number only when
-		// the week is a Monday. This pins that agreement.
+		// date by its offset from the week start, which is the same number whatever
+		// day the week begins on. This pins that agreement.
 		const offsetFromWeekStart = (iso: string) =>
 			((Math.round((isoToDate(iso).getTime() - isoToDate(w1.startDate).getTime()) / 86400000) % 7) +
 				7) %
@@ -860,8 +868,17 @@ describe('week alignment when the plan starts on a non-Monday', () => {
 		for (const s of w1.sessions) {
 			const calendarDate = addDays(w1.startDate, s.day);
 			expect(offsetFromWeekStart(calendarDate)).toBe(s.day);
-			expect(weekdayOf(calendarDate)).toBe(s.day);
 		}
+	});
+
+	it('keeps the race in the week that contains it, seven days from the start day', () => {
+		const raceWeek = plan.weeks.find((w) => w.sessions.some((s) => s.type === 'race'))!;
+		const race = raceWeek.sessions.find((s) => s.type === 'race')!;
+		// The race week rolls from the start day like every other, and the race
+		// still lands on the target date.
+		expect(raceWeek.startDate).toBe(addDays(tuesdayStart, (raceWeek.weekNumber - 1) * 7));
+		expect(raceWeek.endDate).toBe(addDays(raceWeek.startDate, 6));
+		expect(addDays(raceWeek.startDate, race.day)).toBe('2027-05-01');
 	});
 
 	it('leaves a Monday start unchanged', () => {
@@ -875,6 +892,41 @@ describe('week alignment when the plan starts on a non-Monday', () => {
 		expect(monday.weeks[0]!.startDate).toBe('2026-11-30');
 		// Week one is whole, so its Tuesday session is still there.
 		expect(monday.weeks[0]!.sessions.some((s) => s.day === 1)).toBe(true);
+	});
+});
+
+describe('ramp shape (step pattern with stepbacks)', () => {
+	// A half-marathon beginner easing in. The ramp should build for about three
+	// weeks and then take a lighter one, in base as well as build, rather than
+	// climbing in a straight line.
+	const plan = generatePlan({
+		profile: GOAL_PROFILES.find((p) => p.slug === 'half-marathon')!,
+		baseline: { experience: 'beginner', weeklyKm: 30, buildPreference: 'ease-in' },
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-11-30',
+		targetDate: '2027-04-25',
+	});
+
+	it('takes a stepback week inside the base phase', () => {
+		const base = plan.weeks.filter((w) => w.phase === 'base');
+		expect(base.length).toBeGreaterThanOrEqual(4);
+		const droppedToLighter = base.some(
+			(w, i) => i > 0 && w.targetVolumeKm < base[i - 1]!.targetVolumeKm,
+		);
+		expect(droppedToLighter).toBe(true);
+	});
+
+	it('still holds the roughly ten percent weekly ceiling on the long run', () => {
+		for (let i = 1; i < plan.weeks.length; i++) {
+			const prev = plan.weeks[i - 1]!;
+			const cur = plan.weeks[i]!;
+			if (prev.phase === 'taper' || cur.phase === 'recovery') continue;
+			const prevLong = prev.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm;
+			const curLong = cur.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm;
+			if (prevLong != null && curLong != null) {
+				expect(curLong).toBeLessThanOrEqual(prevLong * 1.1 + 0.35);
+			}
+		}
 	});
 });
 
@@ -933,7 +985,7 @@ describe('race date coverage and the race session', () => {
 		});
 		const last = p.weeks[p.weeks.length - 1]!;
 		expect(last.endDate >= '2027-04-01').toBe(true);
-		// Every week is still a Monday to Sunday span.
+		// Every week is a seven-day span that rolls from the start day.
 		for (const w of p.weeks) expect(w.endDate).toBe(addDays(w.startDate, 6));
 	});
 
@@ -972,8 +1024,8 @@ describe('race date coverage and the race session', () => {
 	});
 
 	it('does not leave an empty first week on a late-week start', () => {
-		// A Sunday start with an early-week schedule: every chosen day has already
-		// passed in the anchored week, so it would otherwise hold no sessions.
+		// A Sunday start: week one runs from the Sunday, so the runner's early-week
+		// days land at the end of that first week rather than before it.
 		const p = generatePlan({
 			profile: marathon,
 			baseline: { experience: 'intermediate' },
