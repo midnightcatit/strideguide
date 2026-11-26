@@ -318,10 +318,11 @@ function planTargets(
 	phases: string[],
 ): { volumes: number[]; longKm: number[]; warnings: string[] } {
 	const warnings: string[] = [];
-	const shape = SESSION_SHAPE[input.profile.slug] ?? SESSION_SHAPE.default!;
 	const buildWeeks = phases.filter((p) => p !== 'taper' && p !== 'recovery').length;
 	const peak = peakLongKm(input);
-	const shareOfWeek = (km: number) => round1(clamp(km * shape.long, 3, 38));
+	// The long run's share of the week falls as volume rises, so a light week is
+	// still anchored by its long run and a heavy week spreads out around it.
+	const shareOfWeek = (km: number) => round1(clamp(km * longRunShare(km), 3, 38));
 
 	/**
 	 * Fill the easy weeks that follow the race. The first is the lightest, and none
@@ -423,15 +424,6 @@ function planTargets(
 }
 
 /* --------------------------- session allocation --------------------------- */
-
-function pickSpaced(days: number[], count: number): number[] {
-	if (count <= 0 || days.length === 0) return [];
-	if (count >= days.length) return [...days];
-	const out: number[] = [];
-	const step = days.length / count;
-	for (let i = 0; i < count; i++) out.push(days[Math.floor(i * step)]!);
-	return [...new Set(out)];
-}
 
 function estDuration(distanceKm: number, paceSecPerKm: number): number {
 	return Math.round((distanceKm * paceSecPerKm) / 60);
@@ -656,18 +648,107 @@ const WEEKLY_STEP_CEILING = 0.1;
 const STEPBACK_FACTOR = 0.9;
 
 /**
- * Session shape by goal: the long run's share of the week before the goal's own
- * peak takes over, and how much of the week one quality day takes. A 5K leans on
- * quality with a shorter long run; a marathon leans on a long, progressive one.
+ * How much of the week one quality day takes, by goal. A 5K leans on quality, a
+ * marathon on the long run instead. The long run's own share is not fixed here:
+ * it falls as the week's volume rises (see longRunShare).
  */
-const SESSION_SHAPE: Record<string, { long: number; quality: number }> = {
-	marathon: { long: 0.34, quality: 0.17 },
-	'half-marathon': { long: 0.33, quality: 0.19 },
-	'10k': { long: 0.3, quality: 0.24 },
-	'5k': { long: 0.3, quality: 0.26 },
-	'whole-fitness': { long: 0.3, quality: 0.12 },
-	default: { long: 0.3, quality: 0.16 },
+const SESSION_SHAPE: Record<string, { quality: number }> = {
+	marathon: { quality: 0.17 },
+	'half-marathon': { quality: 0.19 },
+	'10k': { quality: 0.24 },
+	'5k': { quality: 0.26 },
+	'whole-fitness': { quality: 0.12 },
+	default: { quality: 0.16 },
 };
+
+/**
+ * The long run's share of the week as volume rises. Research (wave-6, section 5)
+ * found the share is not fixed: about 35 to 50 percent at low beginner volume,
+ * about 25 to 30 percent at moderate to high volume, with a hard ceiling near 50
+ * percent. So the share falls as the week grows. The ceiling itself stays
+ * LONG_RUN_SHARE_CEILING below; this only sets the share a week starts from and
+ * the floor it is held above, so at low volume the long run dominates as the
+ * sources show and at high volume the week spreads out around it.
+ */
+const LONG_SHARE_LOW_VOLUME_KM = 25;
+const LONG_SHARE_HIGH_VOLUME_KM = 75;
+const LONG_SHARE_AT_LOW_VOLUME = 0.45;
+const LONG_SHARE_AT_HIGH_VOLUME = 0.27;
+
+function longRunShare(volumeKm: number): number {
+	const t = clamp(
+		(volumeKm - LONG_SHARE_LOW_VOLUME_KM) /
+			(LONG_SHARE_HIGH_VOLUME_KM - LONG_SHARE_LOW_VOLUME_KM),
+		0,
+		1,
+	);
+	return LONG_SHARE_AT_LOW_VOLUME + t * (LONG_SHARE_AT_HIGH_VOLUME - LONG_SHARE_AT_LOW_VOLUME);
+}
+
+/**
+ * Weekly volume (km) at which a midweek medium-long run earns its place.
+ * Pfitzinger and Douglas (Advanced Marathoning) pair the long run with a medium-
+ * long run of about 11 to 15 miles once weekly volume is in the 55-mile region,
+ * so no single day carries the whole week (research/wave-6, sections 4 and 5,
+ * item 6). Below this the week is better left as one long run plus easy days.
+ */
+const MEDIUM_LONG_MIN_VOLUME_KM = 70;
+/** The medium-long run's share of the week, kept clearly under the long run. */
+const MEDIUM_LONG_SHARE = 0.2;
+/** The shortest an easy or recovery run may be, so no token jog is ever planned. */
+const MIN_EASY_KM = 3.5;
+const MEDIUM_LONG_TITLE = 'Medium-long run';
+
+/**
+ * Leave at least `minRest` true rest days in the week. The runner's available days
+ * are a ceiling, not a target, so a runner who offers all seven still gets a rest
+ * day. Research (wave-6, section 7): one to two rest days a week for most runners,
+ * more for beginners, and no source schedules a zero-rest week. Days are dropped
+ * from the middle so the long run at the week's end, and the recovery day after
+ * it, stay put. Never drops below two running days.
+ */
+function withRestGap(days: number[], activeCross: number, minRest: number): number[] {
+	const out = [...days];
+	const limit = 7 - minRest;
+	while (out.length + activeCross > limit && out.length > 2) {
+		out.splice(Math.floor(out.length / 2), 1);
+	}
+	return out;
+}
+
+/**
+ * The most hard sessions a set of days can hold while keeping two easy days
+ * between each pair. Research (wave-6, section 1): hard sessions want two or
+ * three easy days between them (Daniels: "2 or 3 E days between Q days"), so k
+ * hard days need 3k-2 training days.
+ */
+function hardCapacity(dayCount: number): number {
+	if (dayCount <= 0) return 0;
+	return Math.floor((dayCount + 2) / 3);
+}
+
+/**
+ * Choose a week's hard-session days from the non-long-run days. The set is spread
+ * as widely as the week allows, keeping two easy days between hard sessions. The
+ * day before the long run is avoided when the week still has room, since the long
+ * run is already the heaviest single session (wave-6, section 3); when it does not,
+ * the session is kept and stacked, which Higdon's Intermediate 1 does on purpose.
+ * Returns at most hardCapacity(pool.length) days, so a short week holds fewer
+ * hard sessions rather than crowding them together.
+ */
+function pickHardDays(pool: number[], count: number, longDay: number): number[] {
+	const n = Math.min(count, hardCapacity(pool.length));
+	if (n <= 0 || !pool.length) return [];
+	// Prefer days that are not the day before the long run, when enough remain.
+	const avoided = pool.filter((d) => d !== longDay - 1);
+	const source = hardCapacity(avoided.length) >= n ? avoided : pool;
+	if (n === 1) return [source[Math.floor((source.length - 1) / 2)]!];
+	const out: number[] = [];
+	for (let i = 0; i < n; i++) {
+		out.push(source[Math.round((i * (source.length - 1)) / (n - 1))]!);
+	}
+	return [...new Set(out)];
+}
 
 /**
  * The goal race itself, on the race date: a short warm-up, the race at goal
@@ -1081,7 +1162,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	}
 	const crossDays = [...new Set(crossPairs.map((p) => p.day))].sort((a, b) => a - b);
 	const runDays = allDays.filter((d) => !crossDays.includes(d));
-	const days = runDays.length >= 2 ? runDays : allDays;
+	const rawDays = runDays.length >= 2 ? runDays : allDays;
+	// Keep at least one true rest day, and two for beginners (research/wave-6,
+	// section 7: no source schedules a zero-rest week).
+	const minRestDays = (input.baseline.experience ?? 'beginner') === 'beginner' ? 2 : 1;
+	const days = withRestGap(rawDays, crossDays.length, minRestDays);
 	const longDay = days[days.length - 1]!;
 	const rest = days.slice(0, -1);
 
@@ -1131,40 +1216,59 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// A profile with no hard session types (general fitness) never gets a
 		// quality day. Every other profile keeps a constant number of quality slots
 		// across the whole plan, so the week's run days never change shape: in base
-		// and taper fewer of those slots run hard (the rest run easy), and the first
-		// week eases in with every slot easy. A constant shape means the week's
-		// volume follows the plan curve instead of jumping the week quality starts.
+		// and taper one slot runs hard (the rest stay easy), and the first week eases
+		// in with every slot easy. A constant shape means the week's volume follows
+		// the plan curve instead of jumping the week quality starts.
 		const hasQuality = input.profile.sessionTypes.some((t) =>
 			['tempo', 'interval', 'hills', 'race-pace', 'threshold', 'strides', 'fartlek'].includes(t),
 		);
-		const qualitySlots = Math.min(hasQuality ? 2 : 0, Math.max(0, rest.length - 1));
+		// Beginners get at most one hard session a week, everyone else up to two:
+		// the research ceiling for 5K and 10K and for intermediate runners
+		// (research/wave-6, section 1 and the constants list).
+		const experience = input.baseline.experience ?? 'beginner';
+		const qualityCap = hasQuality ? (experience === 'beginner' ? 1 : 2) : 0;
+		// The day after the long run is the recovery day. When the long run sits on
+		// the week's last day and the first run day follows it directly, that first
+		// day is kept off the hard work (research/wave-6, sections 2 and 3: the day
+		// after a long run is rest, easy or cross-training, not a hard session).
+		const recoveryDay = !isRecovery && longDay === 6 && days.includes(0) ? 0 : undefined;
+		// Hard sessions are chosen from the non-long-run days, keeping two easy days
+		// between them and staying off the recovery day.
+		const hardPool = rest.filter((d) => d !== recoveryDay);
+		const qualitySlots = Math.min(qualityCap, hardCapacity(hardPool.length));
 		const hardCount = isRecovery
 			? 0
-			: !hasQuality
+			: w === 0
 				? 0
-				: w === 0
-					? 0
-					: phase === 'base' || phase === 'taper'
-						? 1
-						: 2;
-		const slotDays = pickSpaced(rest, qualitySlots);
-		const qualityDays = slotDays.slice(0, Math.min(hardCount, slotDays.length));
+				: phase === 'base' || phase === 'taper'
+					? Math.min(1, qualitySlots)
+					: Math.min(2, qualitySlots);
+		const slotDays = pickHardDays(hardPool, qualitySlots, longDay);
+		const qualityDays = slotDays.slice(0, hardCount);
 		const softDays = slotDays.filter((d) => !qualityDays.includes(d));
 		// A recovery week carries no long run, so the long-run day is not reserved:
 		// it can take an easy run, so the easy runs cover the whole week rather than
-		// leaving that day empty.
-		const usedForRun = new Set(isRecovery ? slotDays : [longDay, ...slotDays]);
+		// leaving that day empty. Otherwise the long run, the quality slots and the
+		// recovery day are reserved for running, so strength never takes them.
+		const reservedRunDays = isRecovery
+			? [...slotDays]
+			: [longDay, ...slotDays, ...(recoveryDay !== undefined ? [recoveryDay] : [])];
+		const usedForRun = new Set(reservedRunDays);
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
 		// Strength gets its own days, never sharing with a run, and takes them before
 		// the remaining days become easy runs.
 		const wantStrength = isRecovery ? 0 : Math.min(strengthLeft, runFree.length);
 		const strengthDays = runFree.slice(0, wantStrength);
-		const easyDays = [...softDays, ...runFree.slice(wantStrength)];
+		const easyDays = [
+			...softDays,
+			...(recoveryDay !== undefined ? [recoveryDay] : []),
+			...runFree.slice(wantStrength),
+		];
 		strengthLeft -= wantStrength;
 
 		const load = sportLoad(input);
-		const shape = SESSION_SHAPE[input.profile.slug] ?? SESSION_SHAPE.default!;
+		const qualityShare = SESSION_SHAPE[input.profile.slug]?.quality ?? SESSION_SHAPE.default!.quality;
 		// The long run is its own arc: the goal-aware target the plan worked out for
 		// this week, held inside a sane share of the week so a light week is never
 		// one long run and little else. A recovery week carries no long run.
@@ -1173,7 +1277,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			: round1(clamp(Math.min(longTargets[w]!, volume * LONG_RUN_SHARE_CEILING), 3, 38));
 		// One quality day's whole distance, held under the long run so the long run
 		// is always the longest run and a light week is not one giant quality day.
-		const qualityRaw = clamp(volume * shape.quality, 1.6, 16);
+		const qualityRaw = clamp(volume * qualityShare, 1.6, 16);
 		const qualityDayKm = round1(Math.min(qualityRaw, longKm * 0.85));
 		// A very heavy sport week takes a slice off the quality work. The long run
 		// is left whole, since endurance is the point.
@@ -1181,17 +1285,40 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const qualityWhy = load.veryHeavy
 			? `Shortened by about 15 percent. In the last week you logged ${load.describe}, and the long run stays whole.`
 			: undefined;
+		// At higher volume a midweek medium-long run spreads the aerobic work so no
+		// single day carries the week. Pfitzinger and Douglas pair it with the long
+		// run once weekly volume is around 55 miles (research/wave-6, sections 4 and
+		// 5, item 6); below that the week is one long run plus easy days, and the day
+		// after the long run is kept light.
+		const mediumLongCandidates = easyDays.filter(
+			(d) => d !== recoveryDay && d !== longDay - 1 && d !== longDay,
+		);
+		const mediumLongDay =
+			!isRecovery && volume >= MEDIUM_LONG_MIN_VOLUME_KM && mediumLongCandidates.length
+				? mediumLongCandidates[mediumLongCandidates.length - 1]
+				: undefined;
+		const mediumLongKm =
+			mediumLongDay !== undefined
+				? round1(clamp(volume * MEDIUM_LONG_SHARE, 8, Math.min(longKm - 0.5, 24)))
+				: 0;
 		// Easy runs take what is left, never as long as the long run (at most 80
-		// percent of it) and never below a small floor, so the long run always reads
-		// as the long run while both still progress together across the plan.
-		const leftover = Math.max(0, round1(volume - longKm - qualityKm * qualityDays.length));
-		// A recovery week has no long run, so the easy runs take the whole week.
+		// percent of it) and never a token jog: the shortest is a real recovery run
+		// of about 20 minutes, and the day after the long run is one of these
+		// (research/wave-6, section 2). The long run is always the longest run.
+		const leftover = Math.max(
+			0,
+			round1(volume - longKm - qualityKm * qualityDays.length - mediumLongKm),
+		);
+		// A recovery week has no long run, so its easy runs take the whole week.
 		const easyCap = isRecovery
 			? Math.max(1, round1(volume))
 			: Math.max(1, round1(longKm * 0.8));
+		const otherEasyDays = easyDays.filter((d) => d !== mediumLongDay);
 		const easyPer =
-			easyDays.length && leftover > 0
-				? round1(clamp(leftover / easyDays.length, Math.min(2, leftover), easyCap))
+			otherEasyDays.length && leftover > 0
+				? round1(
+						clamp(leftover / otherEasyDays.length, Math.min(MIN_EASY_KM, leftover), easyCap),
+					)
 				: 0;
 		// Quality bookends scale with the session, and the reps fill what is left.
 		const { wu: qWu, cd: qCd } = qualityWarmupCooldown(qualityKm);
@@ -1373,9 +1500,31 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		});
 
-		// easy runs (+ strength as a second slot)
+		// easy runs: the midweek medium-long run at higher volume, the short recovery
+		// run the day after the long run, and the rest as plain easy runs
 		easyDays.forEach((day) => {
+			if (day === mediumLongDay && mediumLongKm > 0) {
+				sessions.push({
+					day,
+					slot: 'AM',
+					modality: 'running',
+					type: 'easy',
+					title: MEDIUM_LONG_TITLE,
+					purpose: PURPOSE.long,
+					prescription: {
+						summary: 'A longer midweek easy run, steady and comfortable.',
+						targetDistanceKm: mediumLongKm,
+						targetPaceSecPerKm: paces ? paces.easy : undefined,
+						targetZone: 'Z2',
+						targetRpe: [4, 5],
+						workout: singleRunWorkout('easy', mediumLongKm, paces),
+					},
+					durationMin: estDuration(mediumLongKm, easyPace),
+				});
+				return;
+			}
 			if (easyPer > 0) {
+				const afterLongRun = day === recoveryDay;
 				sessions.push({
 					day,
 					slot: 'AM',
@@ -1384,11 +1533,16 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					title: TITLE.easy,
 					purpose: PURPOSE.easy,
 					prescription: {
-						summary: 'Easy run, conversational.',
+						summary: afterLongRun
+							? 'Easy recovery run, short and very easy.'
+							: 'Easy run, conversational.',
 						targetDistanceKm: easyPer,
 						targetPaceSecPerKm: paces ? paces.easy : undefined,
 						targetZone: 'Z2',
 						targetRpe: [3, 4],
+						notes: afterLongRun
+							? 'The day after your long run. If you are sore, rest or cross-train easily for 30 to 60 minutes instead.'
+							: undefined,
 						workout: singleRunWorkout('easy', easyPer, paces),
 					},
 					durationMin: estDuration(easyPer, easyPace),
@@ -1408,7 +1562,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			input.baseline.crossTraining?.length &&
 			input.profile.sessionTypes.includes('cross-train')
 		) {
-			const idx = [...sessions].reverse().findIndex((s) => s.type === 'easy');
+			const idx = [...sessions]
+				.reverse()
+				.findIndex((s) => s.type === 'easy' && s.title !== MEDIUM_LONG_TITLE);
 			if (idx >= 0) {
 				const realIdx = sessions.length - 1 - idx;
 				const easy = sessions[realIdx]!;
