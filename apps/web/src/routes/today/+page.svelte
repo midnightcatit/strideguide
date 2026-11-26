@@ -64,7 +64,6 @@
 	} | null>(null);
 
 	const todayIso = $derived(today.iso);
-	const todayIndex = $derived(weekdayIndexFromIso(today.iso));
 	// The day the panel opens on, captured once: a later midnight rollover moves
 	// "today" but leaves the runner on the day they were looking at.
 	const initialIso = today.iso;
@@ -93,17 +92,20 @@
 		return undefined;
 	});
 	const selWeek = $derived(sel?.week);
-	const selDay = $derived(sel?.day ?? todayIndex);
-	// The strip's highlighted column is where the shown date sits in the week on
-	// screen, read from the date itself. That way a swipe or a tap to a day
-	// outside the plan still moves the indicator to the day actually selected.
-	const stripSelectedDay = $derived(weekdayIndexFromIso(selectedIso));
 	// The start of the week the selected day sits in. Inside the plan it is the
 	// plan week's own start; outside the plan it is the Monday of that calendar
 	// week, so the strip still shows seven days and a day tap still works.
 	const weekStartIso = $derived(
 		selWeek?.startDate ?? addDaysIso(selectedIso, -weekdayIndexFromIso(selectedIso)),
 	);
+	// Day offsets within the week on screen, so the strip's columns line up with
+	// the plan week whether or not it begins on a Monday.
+	const selDay = $derived(sel?.day ?? dayIndexInWeek(weekStartIso, todayIso));
+	const todayOffset = $derived(dayIndexInWeek(weekStartIso, todayIso));
+	// The strip's highlighted column is where the shown date sits in the week on
+	// screen, read from the date itself. That way a swipe or a tap to a day
+	// outside the plan still moves the indicator to the day actually selected.
+	const stripSelectedDay = $derived(dayIndexInWeek(weekStartIso, selectedIso));
 	// The weekday of the date actually shown, taken from the date itself, so the
 	// label is right even on a day outside the plan's weeks, where there is no
 	// session day to read it from.
@@ -443,8 +445,9 @@
 		<WeekStrip
 			week={selWeek}
 			{weekKey}
+			weekStart={weekStartIso}
 			selectedDay={stripSelectedDay}
-			{todayIndex}
+			todayIndex={todayOffset}
 			{todayInWeek}
 			{loggedBySession}
 			onSelect={selectDay}

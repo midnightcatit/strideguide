@@ -985,18 +985,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		[...new Set(input.availableDays)].length ? [...new Set(input.availableDays)] : [0, 2, 4]
 	).sort((a, b) => a - b);
 	const startWeekday = weekdayIndex(input.startDate);
+	// Week one begins on the start day and every later week follows it, so a
+	// Wednesday start reads Wednesday to Tuesday. A session carries a day offset
+	// from its week's first day, mapped once from the runner's weekday choices at
+	// the end, so the same weekday lands on the same real weekday in every week
+	// whatever day the plan starts on.
+	const toOffset = (weekday: number) => (weekday - startWeekday + 7) % 7;
 
-	// Week one is anchored to the Monday on or before the start date, and any of
-	// the runner's days that fall before the start are dropped, so a mid-week
-	// start keeps the same weekday mapping as a Monday start. When the runner's
-	// whole schedule has already passed by the start date (a late-week start),
-	// that anchored week would hold no training at all, so the plan starts on the
-	// next Monday instead. The Monday grid is unchanged, so the final week is the
-	// same either way.
-	const stubFirstWeek = !allDays.some((d) => d >= startWeekday);
-	const weekZero = addDays(input.startDate, -startWeekday + (stubFirstWeek ? 7 : 0));
-
-	// The race date drives the length: the final week's Sunday lands on or after
+	// The race date drives the length: the final week's last day lands on or after
 	// it, so the last week always covers race day. Without a race the profile's
 	// default length applies. Below four weeks the plan is still extended to four,
 	// and past thirty it is cut to thirty; both surface a warning rather than
@@ -1005,7 +1001,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	let buildWeeks: number;
 	let raceWeekIndex: number | undefined;
 	if (input.targetDate) {
-		const spanDays = daysBetween(weekZero, input.targetDate);
+		const spanDays = daysBetween(input.startDate, input.targetDate);
 		const rawWeeks = Math.ceil((spanDays + 1) / 7);
 		// A short run-in keeps its own length rather than being padded out before
 		// the race, because padding there would put the taper after the finish. A
@@ -1097,13 +1093,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			volume = Math.min(volumes[w - 1] ?? volume, volume);
 		}
 		volume = clamp(round1(volume), 5, 160);
-		// Every week is anchored to its Monday, and a session's day is a weekday
-		// index (0 = Monday). So the same weekday index lands on the same real
-		// weekday in every week, whatever day the plan starts on. Week one is the
-		// calendar week that holds the chosen start date, and any of its days that
-		// fall before that date are dropped below, so the plan never schedules a
-		// session before it begins.
-		const weekStart = addDays(weekZero, w * 7);
+		// Each week is seven days from the start day: week one runs from the chosen
+		// start date, and every later week follows it, so the stored dates roll with
+		// the start day rather than snapping to a Monday.
+		const weekStart = addDays(input.startDate, w * 7);
 		const weekEnd = addDays(weekStart, 6);
 		let strengthLeft = strengthCount;
 
@@ -1481,16 +1474,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		}
 
-		// A start week whose earlier days have passed keeps only the days on or
-		// after the start, so no session is placed before the plan begins. A stub
-		// week was dropped above, so its week is already whole.
-		const inWeek =
-			w === 0 && !stubFirstWeek ? sessions.filter((s) => s.day >= startWeekday) : sessions;
-
-		const withIntensity = inWeek.map((s) => {
+		// Sessions were placed on weekdays above. Store each one as an offset from
+		// its week's first day, so the same offset names the same date and the week
+		// rolls with the start day.
+		const withIntensity = sessions.map((s) => {
 			const withFavorite = withFavoriteWorkout(s, input);
 			return {
 				...withFavorite,
+				day: toOffset(withFavorite.day),
 				prescription: {
 					...withFavorite.prescription,
 					intensity: withFavorite.prescription.intensity ?? intensityFor(withFavorite.type),

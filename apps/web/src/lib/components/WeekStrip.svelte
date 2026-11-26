@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type ClientWeek, DAY_INITIALS, DAY_NAMES } from '$lib/plan';
+	import { type ClientWeek, DAY_INITIALS, DAY_NAMES, addDaysIso, weekdayIndexFromIso } from '$lib/plan';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { weekSwipe } from '$lib/actions';
 	import { isSkipped } from '$lib/skipped.svelte';
@@ -7,6 +7,7 @@
 	let {
 		week,
 		weekKey,
+		weekStart,
 		selectedDay,
 		todayIndex,
 		todayInWeek = false,
@@ -19,6 +20,9 @@
 		// Changes on every week step, even between two weeks outside the plan, so
 		// the strip always replays its slide. A plain day tap keeps it stable.
 		weekKey: string;
+		// The first day shown, so the columns label the real weekdays even when the
+		// plan's week does not begin on a Monday.
+		weekStart: string;
 		selectedDay: number;
 		todayIndex: number;
 		todayInWeek?: boolean;
@@ -27,6 +31,11 @@
 		onWeekStep?: (delta: 1 | -1) => void;
 		weekDir?: number;
 	} = $props();
+
+	/** The weekday (0 = Monday) shown in a column, read from its real date. */
+	function weekdayAt(day: number): number {
+		return weekStart ? weekdayIndexFromIso(addDaysIso(weekStart, day)) : day;
+	}
 
 	function level(day: number): number {
 		const ds = week?.sessions.filter((s) => s.day === day) ?? [];
@@ -82,7 +91,8 @@
 		aria-label="Days of the week"
 		use:weekSwipe={onWeekStep}
 	>
-	{#each DAY_INITIALS as initial, day (day)}
+	{#each [0, 1, 2, 3, 4, 5, 6] as day (day)}
+		{@const wd = weekdayAt(day)}
 		{@const lv = level(day)}
 		{@const lg = logged(day)}
 		{@const sk = skipped(day)}
@@ -97,13 +107,13 @@
 			type="button"
 			aria-pressed={isSelected}
 			aria-current={isToday ? 'date' : undefined}
-			aria-label="{DAY_NAMES[day]}{isToday ? ', today' : ''}{lg ? ', logged' : ''}{sk ? ', has a skipped session' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
+			aria-label="{DAY_NAMES[wd]}{isToday ? ', today' : ''}{lg ? ', logged' : ''}{sk ? ', has a skipped session' : ''}{km ? `, ${fmtDistance(km)}` : ''}"
 			onclick={() => onSelect(day)}
 			class="flex flex-col items-center gap-1.5 rounded-md py-2 transition-colors {isSelected
 				? 'bg-ink text-paper'
 				: 'text-steel hover:text-ink'} {isToday ? 'ring-1 ring-signal-ink' : ''}"
 		>
-			<span class="tabular text-xs uppercase tracking-wide {isSelected ? 'font-semibold' : ''}">{initial}</span>
+			<span class="tabular text-xs uppercase tracking-wide {isSelected ? 'font-semibold' : ''}">{DAY_INITIALS[wd]}</span>
 			<span class="flex h-3 items-end gap-0.5" aria-hidden="true">
 				{#each [1, 2, 3] as i (i)}
 					<span

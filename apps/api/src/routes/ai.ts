@@ -14,6 +14,11 @@ const ai = new Hono<AppBindings>();
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+/** 0 = Monday … 6 = Sunday for an ISO date. */
+function weekdayOf(iso: string): number {
+	return (new Date(`${iso}T00:00:00Z`).getUTCDay() + 6) % 7;
+}
+
 ai.post(
 	'/chat',
 	zValidator('json', z.object({ message: z.string().min(1).max(2000) })),
@@ -72,7 +77,10 @@ ai.post(
 							sessions
 								.map((s) => {
 									const p = s.prescription;
-									return `${DAYS[s.day]} ${s.type}${p?.targetDistanceKm ? ` ${formatDistance(p.targetDistanceKm, units)}` : ''}`;
+									// The day is an offset into the week, so name the real
+									// weekday from the week's own start (a plan can start mid-week).
+									const wd = current.startDate ? (weekdayOf(current.startDate) + s.day) % 7 : s.day;
+									return `${DAYS[wd]} ${s.type}${p?.targetDistanceKm ? ` ${formatDistance(p.targetDistanceKm, units)}` : ''}`;
 								})
 								.join('; ') +
 							'.',
