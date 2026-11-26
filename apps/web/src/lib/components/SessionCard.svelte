@@ -229,7 +229,7 @@
 
 		<div class="mt-auto flex items-center gap-2 pt-3">
 			<span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide {statusClass}">{statusLabel}</span>
-			{#if metaLine}<p class="tabular min-w-0 truncate text-sm {logged ? 'text-ink' : 'text-steel'}">{metaLine}</p>{/if}
+			{#if metaLine}<p class="tabular min-w-0 line-clamp-2 text-sm {logged ? 'text-ink' : 'text-steel'} sm:line-clamp-1">{metaLine}</p>{/if}
 		</div>
 	</div>
 

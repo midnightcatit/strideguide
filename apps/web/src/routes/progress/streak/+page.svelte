@@ -60,6 +60,19 @@
 	let span = $state(26);
 	const activeSpan = $derived(spans.find((s) => s.weeks === span) ?? spans[0]);
 
+	// A phone draws each day as a 44px square, the minimum comfortable tap target,
+	// and the strip scrolls sideways. A wider screen keeps the denser 28px cell
+	// the heatmap was drawn for.
+	let coarse = $state(false);
+	onMount(() => {
+		const mq = window.matchMedia('(max-width: 639px)');
+		const sync = () => (coarse = mq.matches);
+		sync();
+		mq.addEventListener('change', sync);
+		return () => mq.removeEventListener('change', sync);
+	});
+	const cellSize = $derived(coarse ? 44 : STREAK_CELL);
+
 	// The day whose activity is open in the sheet, or null when it is closed.
 	let selectedDay = $state<string | null>(null);
 </script>
@@ -102,9 +115,10 @@
 		{/each}
 	</div>
 
-	<!-- Every range keeps the same cell size, so a day stays a comfortable tap
-	     target; the strip scrolls sideways rather than shrinking the squares. The
-	     keyed re-entry gives a smooth change when the range switches. -->
+	<!-- Every range keeps the same cell size at a given width, so a day stays a
+	     comfortable tap target; the strip scrolls sideways rather than shrinking
+	     the squares. The keyed re-entry gives a smooth change when the range
+	     switches. -->
 	<div class="mt-5">
 		{#key span}
 			<div class="sg-enter-up">
@@ -113,7 +127,7 @@
 					{skippedDays}
 					weeks={span}
 					{todayIso}
-					cell={STREAK_CELL}
+					cell={cellSize}
 					gap={STREAK_GAP}
 					showWeekdays
 					showMonthLabels
