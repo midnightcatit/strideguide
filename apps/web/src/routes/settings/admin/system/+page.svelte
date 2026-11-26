@@ -27,12 +27,14 @@
 	const views = graph.views;
 
 	type GraphNode = GraphView['nodes'][number];
-	type GraphLink = NonNullable<GraphNode['links']>[number];
 	type SystemGraphCanvas = (typeof import('$lib/components/system/SystemGraph.svelte'))['default'];
 
-	// Links whose value is data (a path, a test name, a number) read in the mono
-	// face; a decision is prose, so it stays in the body face.
-	const MONO_KINDS = new Set(['file', 'test', 'pr']);
+	// A node carries one source: the file, test or document it came from. The label
+	// is that target shortened, so a reader sees where a claim comes from.
+	function linkLabel(href: string): string {
+		if (isExternal(href)) return 'open';
+		return href.split('#')[0]!.split('/').pop() ?? href;
+	}
 
 	let loading = $state(true);
 	let isAdmin = $state(false);
@@ -173,30 +175,20 @@
 	});
 </script>
 
-{#snippet linkChips(links: GraphLink[])}
+{#snippet linkChip(href: string)}
 	<ul class="mt-2 flex flex-wrap gap-2">
-		{#each links as link, i (i)}
-			<li>
-				{#if link.href}
-					<a
-						href={link.href}
-						target={isExternal(link.href) ? '_blank' : undefined}
-						rel={isExternal(link.href) ? 'noreferrer noopener' : undefined}
-						class="inline-flex items-center gap-1.5 rounded-full border border-hairline px-2 py-0.5 text-xs hover:border-signal hover:text-signal-ink"
-					>
-						<span class="uppercase tracking-wide text-steel">{link.kind}</span>
-						<span class={MONO_KINDS.has(link.kind) ? 'tabular' : ''}>{link.label}</span>
-					</a>
-				{:else}
-					<span
-						class="inline-flex items-center gap-1.5 rounded-full border border-hairline px-2 py-0.5 text-xs"
-					>
-						<span class="uppercase tracking-wide text-steel">{link.kind}</span>
-						<span class={MONO_KINDS.has(link.kind) ? 'tabular' : ''}>{link.label}</span>
-					</span>
-				{/if}
-			</li>
-		{/each}
+		<li>
+			<a
+				{href}
+				title={href}
+				target={isExternal(href) ? '_blank' : undefined}
+				rel={isExternal(href) ? 'noreferrer noopener' : undefined}
+				class="inline-flex items-center gap-1.5 rounded-full border border-hairline px-2 py-0.5 text-xs hover:border-signal hover:text-signal-ink"
+			>
+				<span class="uppercase tracking-wide text-steel">source</span>
+				<span class="tabular">{linkLabel(href)}</span>
+			</a>
+		</li>
 	</ul>
 {/snippet}
 
@@ -217,10 +209,10 @@
 	{#if node.note}
 		<p class="mt-2 text-sm leading-relaxed text-steel">{node.note}</p>
 	{/if}
-	{#if node.links?.length}
-		{@render linkChips(node.links)}
+	{#if node.href}
+		{@render linkChip(node.href)}
 	{:else}
-		<p class="mt-2 text-xs text-steel">This node has no links yet.</p>
+		<p class="mt-2 text-xs text-steel">This node has no source link.</p>
 	{/if}
 {/snippet}
 
@@ -333,11 +325,11 @@
 							class="overflow-hidden rounded-xl border border-hairline bg-paper"
 							style="height: clamp(24rem, 60svh, 40rem)"
 						>
-							<Canvas view={currentView} onNode={focusNode} focusedId={focusedId} />
+							<Canvas view={currentView} onNode={(node) => focusNode(node.id)} focusedId={focusedId} />
 						</div>
 					{:else if canvasFailed}
 						<p class="rounded-xl border border-hairline bg-paper p-4 text-sm text-steel">
-							The diagram could not load. The list beside it still has every node and its links.
+							The diagram could not load. The list beside it still has every node and its source link.
 						</p>
 					{/if}
 				</div>
@@ -374,8 +366,8 @@
 												</span>
 											{/if}
 										</button>
-										{#if node.links?.length}
-											{@render linkChips(node.links)}
+										{#if node.href}
+											{@render linkChip(node.href)}
 										{/if}
 									</li>
 								{/each}
@@ -404,7 +396,7 @@
 		>
 			<div>
 				<p class="text-sm font-medium">{currentView.title}</p>
-				<p class="text-xs text-steel">Tap a node for its note and links.</p>
+				<p class="text-xs text-steel">Tap a node for its note and the source it came from.</p>
 			</div>
 			<button
 				type="button"
@@ -417,7 +409,7 @@
 
 		<div class="min-h-0 flex-1">
 			{#if Canvas}
-				<Canvas view={currentView} onNode={focusNode} focusedId={focusedId} />
+				<Canvas view={currentView} onNode={(node) => focusNode(node.id)} focusedId={focusedId} />
 			{/if}
 		</div>
 
