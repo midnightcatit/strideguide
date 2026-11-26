@@ -10,6 +10,39 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## A mid-week start opens with a short week, and the week floor follows the goal and the runner
+
+2026-11-26
+
+Decided: a plan that starts after Monday opens with a genuinely short first week,
+pro-rated to the days left in the calendar week the runner started in (a Thursday
+start is four days, `firstWeekFraction`). Only the delivered first week is short;
+the ramp chains on the normal curve, so the next whole week is the plan it always
+was. The flat five-km weekly floor is replaced by a minimum derived from the goal
+and the runner's experience (`weekFloorKm`): a beginner on a short goal may run a
+genuinely short week, an experienced marathoner keeps a real one, and the floor
+never drops below one real run. A week too light to hold a long run and a second
+run becomes a single short easy run rather than a token jog, and a long run is not
+repeated verbatim by a rebuild when the approved first week is unrealistic.
+
+Why: a Thursday start used to pack a whole week into the days left in the real
+week, so week one read as a full week the runner could not fit. One flat floor
+also forced a beginner with a tiny base into a week heavier than they had run, and
+a light plan repeated one easy length week after week. The long-run share now
+falls on a smoothstep between the researched band (about 0.45 at low volume to
+about 0.28 at high volume), and the midweek medium-long run appears from 60 km a
+week where a real aerobic session fits rather than only at very high volume
+(research/wave-6/plan-structure.md, sections 5 and 6). The no-token-run invariant
+still holds, so the literal half-mile first run is below the fifteen-minute floor
+the repo enforces and a beginner's shortest week is one real short run instead.
+
+Rules out: a full first week on a mid-week start, a single flat weekly floor, and
+repeating an unrealistic approved first week on a preview rebuild. See
+`packages/shared/src/plan/engine.ts`, `rebuild.ts`, `engine.test.ts`,
+`rebuild.test.ts`.
+
+---
+
 ## A system-map node carries several links, not one
 
 2026-11-26

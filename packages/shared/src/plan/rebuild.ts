@@ -177,6 +177,28 @@ export interface RebuildInput {
 export interface RebuildResult {
 	weeks: PlannedWeek[];
 	pattern: WeekOnePattern;
+	/**
+	 * Plain notes about the rebuild, e.g. that the approved week one was too heavy
+	 * to build from and the engine's own progression was used instead. Empty for a
+	 * normal rebuild. The route surfaces these in the plan output.
+	 */
+	warnings: string[];
+}
+
+/**
+ * Whether the approved week one is a realistic progression the rebuild can lean
+ * on. A week with more than one long run, or clearly more running than the goal
+ * and volume call for, is not something to repeat verbatim: the weeks after it
+ * should follow the engine's own progression instead. Deliberately conservative,
+ * so a normal edited first week is never flagged.
+ */
+function weekOneIsRealistic(sessions: WeekOneSession[], referenceWeekOneKm: number): boolean {
+	const runs = sessions.filter((s) => s.modality === 'running');
+	const longRuns = runs.filter((s) => s.type === 'long').length;
+	if (longRuns > 1) return false;
+	const km = runningVolumeKm(runs.map((r) => toPlanned(r, r.slot)));
+	if (referenceWeekOneKm > 0 && km > referenceWeekOneKm * 1.6) return false;
+	return true;
 }
 
 /**
@@ -185,6 +207,11 @@ export interface RebuildResult {
  * engine with the week one days as its available days (so an AI failure still
  * leaves a full deterministic plan), then the runner's added workouts are put
  * back on their days.
+ *
+ * The preview is a guide, not gospel: when the approved week one is unrealistic
+ * for the goal and volume (three long runs in a week, say), its days are not
+ * trusted and its added workouts are not repeated. The later weeks fall back to
+ * the engine's own available days and progression, and a warning says so.
  */
 export function rebuildFromWeekOne(input: RebuildInput): RebuildResult {
 	const pattern = weekOnePattern(input.weekOne);
@@ -192,13 +219,26 @@ export function rebuildFromWeekOne(input: RebuildInput): RebuildResult {
 	// indices, so map them back before seeding, whatever weekday the plan starts on.
 	const startWeekday = weekdayOf(input.plan.startDate);
 	const availableWeekdays = pattern.availableDays.map((offset) => (offset + startWeekday) % 7);
-	const seeded: PlanInput = {
-		...input.plan,
-		availableDays: availableWeekdays.length ? availableWeekdays : input.plan.availableDays,
-	};
+	// The engine's own first week is the yardstick: the plan's own volume and days
+	// say what a realistic opening week is for this goal and runner.
+	const reference = generatePlan(input.plan);
+	const referenceWeekOneKm = reference.weeks[0]?.targetVolumeKm ?? 0;
+	const realistic = weekOneIsRealistic(input.weekOne, referenceWeekOneKm);
+	const warnings: string[] = [];
+	if (!realistic) {
+		warnings.push(
+			"Your first week looked heavier than this plan can build from, so the weeks after it follow the plan's own progression instead of repeating it.",
+		);
+	}
+	const seeded: PlanInput = realistic
+		? {
+				...input.plan,
+				availableDays: availableWeekdays.length ? availableWeekdays : input.plan.availableDays,
+			}
+		: input.plan;
 	const fresh = generatePlan({ ...seeded, weekShapes: input.weekShapes });
 	const byNumber = new Map(fresh.weeks.map((w) => [w.weekNumber, w] as const));
-	const recurring = input.weekOne.filter(isAdded);
+	const recurring = realistic ? input.weekOne.filter(isAdded) : [];
 
 	const weeks = input.existingWeeks.map((w, i) => {
 		// Week one is the runner's own edit; the rebuild never touches it.
@@ -226,5 +266,5 @@ export function rebuildFromWeekOne(input: RebuildInput): RebuildResult {
 		weeks.push({ ...w, sessions, targetVolumeKm: runningVolumeKm(sessions) });
 	}
 
-	return { weeks, pattern };
+	return { weeks, pattern, warnings };
 }

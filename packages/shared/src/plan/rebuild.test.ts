@@ -159,4 +159,58 @@ describe('rebuildFromWeekOne', () => {
 			expect(w.sessions.length).toBeGreaterThan(0);
 		});
 	});
+
+	it('does not trust an unrealistic week one: it falls back to the engine progression', () => {
+		const existing = generatePlan(baseInput);
+		// A first week of three long runs, on days the plan never used.
+		const weekOne: WeekOneSession[] = [
+			{ day: 0, slot: 'AM', modality: 'running', type: 'long', title: 'Long run' },
+			{ day: 2, slot: 'AM', modality: 'running', type: 'long', title: 'Long run' },
+			{ day: 4, slot: 'AM', modality: 'running', type: 'long', title: 'Long run' },
+		];
+		const result = rebuildFromWeekOne({
+			existingWeeks: existing.weeks,
+			weekOne,
+			plan: baseInput,
+		});
+		expect(result.warnings.length).toBeGreaterThan(0);
+		// The later weeks follow the plan's own days (baseInput's Mon/Wed/Fri map
+		// to day offsets 6, 1 and 3 from a Tuesday start), not week one's days.
+		const allowed = new Set([1, 3, 6]);
+		for (const w of result.weeks.slice(1)) {
+			for (const s of w.sessions.filter((x) => x.modality === 'running' && x.type !== 'race')) {
+				expect(allowed.has(s.day)).toBe(true);
+			}
+		}
+	});
+
+	it('keeps its days and added workouts when week one is realistic', () => {
+		const existing = generatePlan(baseInput);
+		const weekOne: WeekOneSession[] = [
+			{ day: 1, slot: 'AM', modality: 'running', type: 'easy', title: 'Easy run' },
+			{ day: 3, slot: 'AM', modality: 'running', type: 'tempo', title: 'Tempo run' },
+			{
+				day: 3,
+				slot: 'PM',
+				modality: 'recovery',
+				type: 'cross-train',
+				title: 'Row',
+				libraryId: 'row-30',
+			},
+		];
+		const result = rebuildFromWeekOne({
+			existingWeeks: existing.weeks,
+			weekOne,
+			plan: baseInput,
+		});
+		expect(result.warnings).toEqual([]);
+		for (const w of result.weeks.slice(1)) {
+			// The rebuilt weeks stay on the week one days, and the added cross-train
+			// repeats on its own day.
+			for (const s of w.sessions.filter((x) => x.modality === 'running' && x.type !== 'race')) {
+				expect([1, 3]).toContain(s.day);
+			}
+			expect(w.sessions.some((s) => s.type === 'cross-train' && s.day === 3)).toBe(true);
+		}
+	});
 });
