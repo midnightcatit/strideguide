@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- fix(web): show distance and pace for run steps in What's to come (#287)
 - feat(web): full-screen workout player and an explicit countdown switch (#286)
 - feat(plan): rotate the strength focus across the body each week (#285)
 - fix(web): show the update prompt reliably and re-check on foreground (#284)
