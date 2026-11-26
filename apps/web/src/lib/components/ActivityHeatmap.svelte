@@ -13,9 +13,12 @@
 	 * drops it, so nothing moves for people who ask for that.
 	 *
 	 * With `fluid`, the columns share the container width, so the cells grow
-	 * square to fill it at any span: fewer weeks means larger boxes. With
-	 * `onDayClick`, each day becomes a button that reports its date, so a page can
-	 * open a day's activity.
+	 * square to fill it at any span: fewer weeks means larger boxes. That suits a
+	 * small preview. With `scroll`, the cells instead hold a fixed size and the
+	 * strip scrolls sideways, so every span keeps the same, tappable square and
+	 * the weekday labels stay pinned while the columns move under them. `scroll`
+	 * takes precedence over `fluid`. With `onDayClick`, each day becomes a button
+	 * that reports its date, so a page can open a day's activity.
 	 */
 	let {
 		trainedDays,
@@ -27,6 +30,7 @@
 		showMonthLabels = true,
 		showWeekdays = false,
 		fluid = false,
+		scroll = false,
 		onDayClick,
 	}: {
 		trainedDays: string[] | Set<string>;
@@ -39,9 +43,14 @@
 		showWeekdays?: boolean;
 		/** Fill the container width; cells grow square instead of a fixed pixel size. */
 		fluid?: boolean;
+		/** Keep cells at their fixed size and scroll the strip sideways instead. */
+		scroll?: boolean;
 		/** When set, each day is a button that reports its ISO date. */
 		onDayClick?: (iso: string) => void;
 	} = $props();
+
+	// Scrolling keeps the cells at their fixed size, so it wins over `fluid`.
+	const expand = $derived(fluid && !scroll);
 
 	const trained = $derived(
 		trainedDays instanceof Set ? trainedDays : new Set<string>(trainedDays),
@@ -105,7 +114,7 @@
 
 	const cellStyle = (state: 'done' | 'skipped' | 'miss' | 'future' | 'today'): string => {
 		const parts = [`background: ${cellFill(state)}`];
-		if (!fluid) parts.push(`width: ${cell}px`, `height: ${cell}px`);
+		if (!expand) parts.push(`width: ${cell}px`, `height: ${cell}px`);
 		return parts.join('; ');
 	};
 
@@ -173,59 +182,64 @@
 </script>
 
 <div
-	class="{fluid ? 'flex w-full' : 'inline-flex'} flex-col gap-1"
-	role={onDayClick ? 'group' : 'img'}
-	aria-label={label}
+	class={scroll ? 'scroll-modern overflow-x-auto overflow-y-hidden py-0.5' : ''}
+	style={scroll ? 'touch-action: pan-x; -webkit-overflow-scrolling: touch;' : ''}
 >
-	{#if showMonthLabels}
-		<div class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px{showWeekdays ? `; padding-left: ${weekdayW + gap}px` : ''}">
-			{#each columns as col, i (col.key)}
-				<span class="overflow-visible whitespace-nowrap text-[9px] text-steel {fluid ? 'min-w-0 flex-1' : ''}" style={fluid ? '' : `width: ${cell}px`}>
-					{#if i === 0 || col.month !== columns[i - 1]?.month}{col.month}{/if}
-				</span>
-			{/each}
-		</div>
-	{/if}
-	<div bind:this={gridEl} class="flex {fluid ? 'w-full' : ''}" style="gap: {gap}px">
-		{#if showWeekdays}
-			<div bind:clientWidth={weekdayW} class="flex flex-col pr-1 text-[9px] text-steel" style="gap: {gap}px">
-				{#each ['M', '', 'W', '', 'F', '', 'S'] as d, i (i)}
-					{#if fluid}
-						<span class="flex flex-1 items-center">{d}</span>
-					{:else}
-						<span class="flex items-center" style="height: {cell}px">{d}</span>
-					{/if}
+	<div
+		class="{expand ? 'flex w-full' : 'inline-flex'} flex-col gap-1"
+		role={onDayClick ? 'group' : 'img'}
+		aria-label={label}
+	>
+		{#if showMonthLabels}
+			<div class="flex {expand ? 'w-full' : ''}" style="gap: {gap}px{showWeekdays ? `; padding-left: ${weekdayW + gap}px` : ''}">
+				{#each columns as col, i (col.key)}
+					<span class="overflow-visible whitespace-nowrap text-[9px] text-steel {expand ? 'min-w-0 flex-1' : ''}" style={expand ? '' : `width: ${cell}px`}>
+						{#if i === 0 || col.month !== columns[i - 1]?.month}{col.month}{/if}
+					</span>
 				{/each}
 			</div>
 		{/if}
-		{#each columns as col, w (col.key)}
-			<div class="flex flex-col {fluid ? 'min-w-0 flex-1' : ''}" style="gap: {gap}px">
-				{#each col.days as day, d (day.key)}
-					{#if onDayClick}
-						<button
-							type="button"
-							class="rounded-[2px] border-0 p-0 transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-signal-ink {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
-							style={cellStyle(day.state)}
-							data-heat-w={w}
-							data-heat-d={d}
-							tabindex={isActiveCell(w, d) ? 0 : -1}
-							aria-label={dayLabel(day)}
-							onfocus={() => {
-								focusW = w;
-								focusD = d;
-							}}
-							onkeydown={(e) => onCellKey(e, w, d)}
-							onclick={() => onDayClick(day.key)}
-						></button>
-					{:else}
-						<span
-							class="rounded-[2px] transition-transform hover:scale-125 {fluid ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
-							style={cellStyle(day.state)}
-							title={dayLabel(day)}
-						></span>
-					{/if}
-				{/each}
-			</div>
-		{/each}
+		<div bind:this={gridEl} class="flex {expand ? 'w-full' : ''}" style="gap: {gap}px">
+			{#if showWeekdays}
+				<div bind:clientWidth={weekdayW} class="flex flex-col pr-1 text-[9px] text-steel {scroll ? 'sticky left-0 z-10 bg-paper' : ''}" style="gap: {gap}px">
+					{#each ['M', '', 'W', '', 'F', '', 'S'] as d, i (i)}
+						{#if expand}
+							<span class="flex flex-1 items-center">{d}</span>
+						{:else}
+							<span class="flex items-center" style="height: {cell}px">{d}</span>
+						{/if}
+					{/each}
+				</div>
+			{/if}
+			{#each columns as col, w (col.key)}
+				<div class="flex flex-col {expand ? 'min-w-0 flex-1' : ''}" style="gap: {gap}px">
+					{#each col.days as day, d (day.key)}
+						{#if onDayClick}
+							<button
+								type="button"
+								class="rounded-[2px] border-0 p-0 transition-transform hover:scale-125 focus-visible:ring-2 focus-visible:ring-signal-ink {expand ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
+								style={cellStyle(day.state)}
+								data-heat-w={w}
+								data-heat-d={d}
+								tabindex={isActiveCell(w, d) ? 0 : -1}
+								aria-label={dayLabel(day)}
+								onfocus={() => {
+									focusW = w;
+									focusD = d;
+								}}
+								onkeydown={(e) => onCellKey(e, w, d)}
+								onclick={() => onDayClick(day.key)}
+							></button>
+						{:else}
+							<span
+								class="rounded-[2px] transition-transform hover:scale-125 {expand ? 'aspect-square w-full' : ''} {cellClass(day.state)}"
+								style={cellStyle(day.state)}
+								title={dayLabel(day)}
+							></span>
+						{/if}
+					{/each}
+				</div>
+			{/each}
+		</div>
 	</div>
 </div>

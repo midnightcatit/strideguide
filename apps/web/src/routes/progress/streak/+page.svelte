@@ -12,6 +12,7 @@
 	import DayActivitySheet from '$lib/components/DayActivitySheet.svelte';
 	import PlanError from '$lib/components/PlanError.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
+	import { STREAK_CELL, STREAK_GAP } from '$lib/heatmapLayout';
 
 	onMount(() => void ensurePlan());
 
@@ -101,7 +102,8 @@
 		{/each}
 	</div>
 
-	<!-- The grid fills the width at every span: fewer weeks, larger boxes. The
+	<!-- Every range keeps the same cell size, so a day stays a comfortable tap
+	     target; the strip scrolls sideways rather than shrinking the squares. The
 	     keyed re-entry gives a smooth change when the range switches. -->
 	<div class="mt-5">
 		{#key span}
@@ -111,10 +113,11 @@
 					{skippedDays}
 					weeks={span}
 					{todayIso}
-					gap={3}
+					cell={STREAK_CELL}
+					gap={STREAK_GAP}
 					showWeekdays
 					showMonthLabels
-					fluid
+					scroll
 					onDayClick={(iso) => (selectedDay = iso)}
 				/>
 			</div>
@@ -136,7 +139,7 @@
 		</span>
 	</div>
 	<p class="mt-3 text-xs text-steel">
-		Showing {activeSpan.label}. A filled square is a day you logged a session. Tap a day to see what you did. A grey square is a day you skipped, which does not count as training. Rest days stay open on purpose.
+		Showing {activeSpan.label}. A filled square is a day you logged a session. Tap a day to see what you did. A grey square is a day you skipped, which does not count as training. Rest days stay open on purpose. Scroll the strip sideways to reach earlier weeks.
 	</p>
 </Card>
 {/if}
