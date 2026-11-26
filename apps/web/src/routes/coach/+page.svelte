@@ -72,7 +72,7 @@
 				{:else}
 					<div class="flex gap-3">
 						<span class="tabular mt-0.5 shrink-0 text-xs uppercase tracking-widest text-steel">Coach</span>
-						<p class="flex-1 whitespace-pre-line text-sm">{m.text}</p>
+						<p class="min-w-0 flex-1 whitespace-pre-line break-words text-sm">{m.text}</p>
 					</div>
 				{/if}
 			</li>

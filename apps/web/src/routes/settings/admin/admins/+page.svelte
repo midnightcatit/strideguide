@@ -119,8 +119,8 @@
 		<ul class="divide-y divide-hairline rounded-xl border border-hairline bg-paper">
 			{#each admins as admin (admin.email)}
 				<li class="flex items-center justify-between gap-3 px-4 py-3">
-					<div>
-						<p class="text-sm">{admin.email}</p>
+					<div class="min-w-0">
+						<p class="truncate text-sm">{admin.email}</p>
 						<p class="text-xs text-steel">{invitedLabel(admin)}</p>
 					</div>
 					{#if !admin.isRoot && admin.id}

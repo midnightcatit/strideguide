@@ -51,7 +51,7 @@
 {#if store.error}
 	<p class="mt-6 text-sm text-steel">{store.error}</p>
 {:else if settled}
-	<div class="flex min-h-dvh flex-col items-center justify-center gap-4 px-6 text-center">
+	<div class="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
 		<p class="text-sm text-steel">You don't have a plan yet.</p>
 		<a
 			href="/onboarding"
@@ -62,7 +62,7 @@
 		<a href="/today" class="text-xs text-signal-ink hover:underline">Go to today</a>
 	</div>
 {:else}
-	<div class="flex min-h-dvh items-center justify-center">
+	<div class="flex min-h-full items-center justify-center">
 		<p class="tabular text-sm text-steel">Loading…</p>
 	</div>
 {/if}
