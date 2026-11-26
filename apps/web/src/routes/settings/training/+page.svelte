@@ -10,6 +10,7 @@
 	import {
 		prefs,
 		setAutoAdvance,
+		setCountdownEnabled,
 		setCountdownSec,
 		setEquipment,
 		setEquipmentItems,
@@ -21,7 +22,14 @@
 		setWeekStart,
 	} from '$lib/prefs.svelte';
 	import { GYM_PRESETS, PF_MACHINES, EXTRA_MACHINES } from '@strideguide/shared/plan';
-	import type { Units, Prefs } from '@strideguide/shared/units';
+	import {
+		clampCountdownSec,
+		DEFAULT_COUNTDOWN_SEC,
+		COUNTDOWN_MAX_SEC,
+		COUNTDOWN_MIN_SEC,
+		type Units,
+		type Prefs,
+	} from '@strideguide/shared/units';
 
 	const MACHINES = [...PF_MACHINES, ...EXTRA_MACHINES].map((m) => m.name);
 
@@ -31,6 +39,7 @@
 	type Draft = {
 		units: Units;
 		weekStart: 0 | 1;
+		countdownEnabled: boolean;
 		countdownSec: number;
 		autoAdvance: boolean;
 		equipment: Prefs['equipment'];
@@ -44,7 +53,8 @@
 		return {
 			units: prefs.units,
 			weekStart: prefs.weekStart,
-			countdownSec: prefs.countdownSec ?? 5,
+			countdownEnabled: prefs.countdownEnabled ?? true,
+			countdownSec: clampCountdownSec(prefs.countdownSec ?? DEFAULT_COUNTDOWN_SEC),
 			autoAdvance: prefs.autoAdvance ?? true,
 			equipment: prefs.equipment,
 			equipmentItems: prefs.equipmentItems ?? [],
@@ -74,6 +84,7 @@
 		return (
 			a.units === b.units &&
 			a.weekStart === b.weekStart &&
+			a.countdownEnabled === b.countdownEnabled &&
 			a.countdownSec === b.countdownSec &&
 			a.autoAdvance === b.autoAdvance &&
 			a.equipment === b.equipment &&
@@ -130,7 +141,7 @@
 	}
 
 	function bump(d: number) {
-		draft.countdownSec = Math.max(0, Math.min(15, draft.countdownSec + d));
+		draft.countdownSec = Math.max(COUNTDOWN_MIN_SEC, Math.min(COUNTDOWN_MAX_SEC, draft.countdownSec + d));
 	}
 	function discard() {
 		const s = readPrefs();
@@ -147,6 +158,7 @@
 			await setUnits(next.units);
 			await setWeekStart(next.weekStart);
 			await setCountdownSec(next.countdownSec);
+			await setCountdownEnabled(next.countdownEnabled);
 			await setAutoAdvance(next.autoAdvance);
 			await setEquipment(next.equipment);
 			await setEquipmentItems(next.equipmentItems);
@@ -242,16 +254,21 @@
 	</div>
 
 	<div>
-		<div class="flex items-baseline justify-between gap-3">
-			<h2 class="tabular text-xs uppercase tracking-widest text-steel">Countdown before a step</h2>
-			<span class="text-xs text-steel">{saved.countdownSec === 0 ? 'Off' : `${saved.countdownSec}s`}</span>
+		<div class="flex items-center justify-between gap-4">
+			<div class="min-w-0">
+				<div class="flex items-baseline gap-2">
+					<h2 class="text-sm font-medium">Countdown</h2>
+					<span class="text-xs text-steel">{saved.countdownEnabled ? `${saved.countdownSec}s` : 'Off'}</span>
+				</div>
+				<p class="mt-0.5 text-xs text-steel">Wait a few seconds before the workout and each step starts. Off starts straight away.</p>
+			</div>
+			<Switch checked={draft.countdownEnabled} label="Countdown" onChange={(v) => (draft.countdownEnabled = v)} />
 		</div>
-		<div class="mt-2 flex items-center gap-3">
-			<button type="button" onclick={() => bump(-1)} disabled={draft.countdownSec <= 0} aria-label="Less" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">−</button>
-			<span class="tabular w-20 text-center text-lg font-medium">{draft.countdownSec === 0 ? 'Off' : `${draft.countdownSec}s`}</span>
-			<button type="button" onclick={() => bump(1)} disabled={draft.countdownSec >= 15} aria-label="More" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">+</button>
+		<div class="mt-3 flex items-center gap-3" aria-disabled={!draft.countdownEnabled}>
+			<button type="button" onclick={() => bump(-1)} disabled={!draft.countdownEnabled || draft.countdownSec <= COUNTDOWN_MIN_SEC} aria-label="Less" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">−</button>
+			<span class="tabular w-20 text-center text-lg font-medium {draft.countdownEnabled ? '' : 'text-steel'}">{draft.countdownEnabled ? `${draft.countdownSec}s` : 'Off'}</span>
+			<button type="button" onclick={() => bump(1)} disabled={!draft.countdownEnabled || draft.countdownSec >= COUNTDOWN_MAX_SEC} aria-label="More" class="flex h-11 w-11 items-center justify-center rounded-md border border-hairline text-lg disabled:opacity-40">+</button>
 		</div>
-		<p class="mt-2 text-xs text-steel">How long the player waits before the workout and each step starts. Off starts straight away.</p>
 	</div>
 
 	<div>

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+	clampCountdownSec,
 	convertPace,
+	countdownSeconds,
 	formatDistance,
 	formatPace,
 	formatPaceBand,
@@ -47,5 +49,29 @@ describe('units', () => {
 	it('leaves metric prose untouched', () => {
 		const text = 'a 5 km time trial at 5:00 /km';
 		expect(localizeUnits(text, 'metric')).toBe(text);
+	});
+});
+
+describe('countdownSeconds', () => {
+	it('is off when the countdown is disabled', () => {
+		expect(countdownSeconds({ countdownEnabled: false, countdownSec: 5 })).toBe(0);
+	});
+
+	it('clamps the length to 3 to 10 seconds when it is on', () => {
+		expect(countdownSeconds({ countdownEnabled: true, countdownSec: 0 })).toBe(3);
+		expect(countdownSeconds({ countdownEnabled: true, countdownSec: 1 })).toBe(3);
+		expect(countdownSeconds({ countdownEnabled: true, countdownSec: 7 })).toBe(7);
+		expect(countdownSeconds({ countdownEnabled: true, countdownSec: 15 })).toBe(10);
+		expect(countdownSeconds({ countdownEnabled: true })).toBe(5);
+	});
+});
+
+describe('clampCountdownSec', () => {
+	it('holds the 3 to 10 range', () => {
+		expect(clampCountdownSec(2)).toBe(3);
+		expect(clampCountdownSec(3)).toBe(3);
+		expect(clampCountdownSec(10)).toBe(10);
+		expect(clampCountdownSec(11)).toBe(10);
+		expect(clampCountdownSec(6.6)).toBe(7);
 	});
 });

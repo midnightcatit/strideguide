@@ -65,6 +65,10 @@
 	// A route under the (bleed) group asks the shell to drop its centred, padded
 	// column, so the page can run edge to edge without breaking out by hand.
 	const bleed = $derived((page.data as { bleed?: boolean }).bleed === true);
+	// The workout player owns the whole screen: it brings its own Back / Close
+	// header, so the shell hides its header and its bottom tab bar for this route
+	// alone. Only the play route sets the flag.
+	const fullscreen = $derived((page.data as { fullscreen?: boolean }).fullscreen === true);
 
 	// The name the avatar draws its initial from: the one set in Settings > You,
 	// else the Google display name. Empty means the avatar shows a neutral icon
@@ -211,7 +215,7 @@
 {:else if user}
 	<div class="sg-app min-h-dvh flex flex-col">
 		<a href="#main" class="skip-link">Skip to content</a>
-		{#if !onboarding}
+		{#if !onboarding && !fullscreen}
 		<header
 			class="sg-header sticky top-0 border-b border-hairline bg-paper"
 			style="padding-top: env(safe-area-inset-top)"
@@ -291,7 +295,7 @@
 			</div>
 		{/if}
 
-		<main id="main" tabindex="-1" class="outline-none {bleed ? 'flex flex-1 flex-col pb-24 sm:pb-6' : 'flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6'}">
+		<main id="main" tabindex="-1" class="outline-none {fullscreen ? 'flex flex-1 flex-col' : bleed ? 'flex flex-1 flex-col pb-24 sm:pb-6' : 'flex-1 mx-auto w-full max-w-5xl px-4 py-6 pb-24 sm:pb-6'}">
 			{#key page.url.pathname}
 				<div class="route-enter">
 					{@render children()}
@@ -299,7 +303,7 @@
 			{/key}
 		</main>
 
-		{#if !onboarding}
+		{#if !onboarding && !fullscreen}
 		<nav
 			class="sg-nav fixed inset-x-0 bottom-0 border-t border-hairline bg-paper sm:hidden"
 			aria-label="Primary"
