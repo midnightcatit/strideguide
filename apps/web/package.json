@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@strideguide/shared": "workspace:*",
+    "@xyflow/svelte": "^2.0.3",
+    "elkjs": "^0.12.2",
     "layerchart": "^2.11.0"
   },
   "devDependencies": {
