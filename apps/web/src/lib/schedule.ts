@@ -212,6 +212,59 @@ export function addBlock(
 	]);
 }
 
+/** The day range a bulk add covers, clamped to the seven weekdays, in order. */
+export function bulkDays(dayFrom: number, dayTo: number): { lo: number; hi: number } {
+	return {
+		lo: Math.max(0, Math.min(dayFrom, dayTo)),
+		hi: Math.min(6, Math.max(dayFrom, dayTo)),
+	};
+}
+
+/** How many days a bulk add spans, inclusive. */
+export function bulkDayCount(dayFrom: number, dayTo: number): number {
+	const { lo, hi } = bulkDays(dayFrom, dayTo);
+	return hi - lo + 1;
+}
+
+/**
+ * Add the same window on every day from `dayFrom` to `dayTo`, inclusive, so a
+ * person can block a whole week or a working stretch in one go. Each day merges
+ * with what is already there, exactly as a single add does, so a day still never
+ * holds two windows that meet. The day range is tolerated in either order.
+ */
+export function addBulk(
+	blocks: ScheduleBlock[],
+	dayFrom: number,
+	dayTo: number,
+	startMin: number,
+	endMin: number,
+): ScheduleBlock[] {
+	const { lo, hi } = bulkDays(dayFrom, dayTo);
+	let next = blocks;
+	for (let day = lo; day <= hi; day += 1) {
+		next = addBlock(next, day, startMin, endMin);
+	}
+	return next;
+}
+
+/**
+ * The preview line for a bulk add, so what is about to be added is shown before
+ * it is: how many windows, the time range and the day range.
+ */
+export function describeBulk(
+	dayFrom: number,
+	dayTo: number,
+	startMin: number,
+	endMin: number,
+): string {
+	const { lo, hi } = bulkDays(dayFrom, dayTo);
+	const days = hi - lo + 1;
+	const windows = days === 1 ? '1 window' : `${days} windows`;
+	const dayRange =
+		lo === hi ? (DAY_LABELS[lo] ?? '') : `${DAY_LABELS[lo] ?? ''} to ${DAY_LABELS[hi] ?? ''}`;
+	return `${windows}, ${formatWindow(startMin, endMin)}, on ${dayRange}.`;
+}
+
 /** The block on a day that contains a time, or null when none does. */
 export function blockAt(blocks: ScheduleBlock[], day: number, min: number): ScheduleBlock | null {
 	return (

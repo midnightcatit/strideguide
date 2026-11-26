@@ -3,12 +3,13 @@
 	 * A weekly training-window grid: seven day columns, quarter-hour rows.
 	 *
 	 * Pointer: tap a slot to add an hour, drag to add a longer window, and tap a
-	 * saved window's body to remove it. Each saved window also has a handle: tap
-	 * it to nudge the window fifteen minutes earlier, or press and hold and drag
-	 * to move it up and down the day. Keyboard: the "Add a window" controls below
-	 * add a window with a day and two times, every saved window's body is a real
-	 * button you can focus and activate to remove it, and the handle is a real
-	 * button whose arrow keys nudge the window. So nothing here is drag-only.
+	 * saved window's body to remove it. Each saved window also has a handle: its
+	 * arrows nudge the window fifteen minutes earlier or later, and a press and
+	 * drag on the handle moves it up and down the day. Keyboard: the "Add a
+	 * window" and "Add a window to several days" controls below add windows with a
+	 * day range and two times, every saved window's body is a real button you can
+	 * focus and activate to remove it, and the handle's arrows are real buttons
+	 * whose arrow keys nudge the window. So nothing here is drag-only.
 	 *
 	 * The day columns hold a fixed minimum width and the grid scrolls sideways,
 	 * so a phone shows a comfortable column and the whole week stays reachable.
@@ -18,8 +19,10 @@
 		GRID_START_MIN,
 		STEP_MIN,
 		addBlock,
+		addBulk,
 		blockMinutes,
 		daySummary,
+		describeBulk,
 		formatHourLabel,
 		formatTime,
 		formatWindow,
@@ -54,11 +57,11 @@
 	// A block shorter than this still draws tall enough for its handle and a
 	// tappable body. A quarter-hour block is one cell (16px) tall, which the
 	// handle alone would cover.
-	const MIN_BLOCK_H = 30;
-	// The move handle's height, tall against a short block so it is an easy
-	// target, with the arrow drawn inside it. Kept well under MIN_BLOCK_H so a
-	// tappable body is always left below it.
-	const HANDLE_H = 16;
+	const MIN_BLOCK_H = 34;
+	// The move handle's height, tall enough for the two arrow targets and an easy
+	// grab, with the arrows drawn inside it. Kept under MIN_BLOCK_H so a tappable
+	// body is always left below it.
+	const HANDLE_H = 20;
 	const DAYS = [0, 1, 2, 3, 4, 5, 6];
 	const bounds = $derived(gridBounds(blocks));
 	const rowIndexes = $derived(Array.from({ length: bounds.rows }, (_, i) => i));
@@ -86,6 +89,24 @@
 	let endTime = $state(minutesToTime(GRID_START_MIN + 120));
 	let message = $state('');
 
+	// The bulk path: the same window on every day from one weekday to another, so
+	// a whole week or a working stretch takes one go. Kept beside the single-day
+	// path rather than replacing it.
+	let bulkFromDay = $state('0');
+	let bulkToDay = $state('6');
+	let bulkStartTime = $state(minutesToTime(GRID_START_MIN + 60));
+	let bulkEndTime = $state(minutesToTime(GRID_START_MIN + 18 * 60));
+	let bulkMessage = $state('');
+
+	// What the bulk add will do, shown before it is done. The band above the
+	// button waits for a valid time range and names the days it will cover.
+	const bulkPreview = $derived.by(() => {
+		const start = timeToMinutes(bulkStartTime);
+		const end = timeToMinutes(bulkEndTime);
+		if (!(end > start)) return '';
+		return describeBulk(Number(bulkFromDay), Number(bulkToDay), start, end);
+	});
+
 	function addFromForm() {
 		const start = timeToMinutes(startTime);
 		const end = timeToMinutes(endTime);
@@ -97,8 +118,25 @@
 		message = '';
 	}
 
+	function addBulkFromForm() {
+		const start = timeToMinutes(bulkStartTime);
+		const end = timeToMinutes(bulkEndTime);
+		if (!(end > start)) {
+			bulkMessage = 'Pick an end time after the start time.';
+			return;
+		}
+		onChange(addBulk(blocks, Number(bulkFromDay), Number(bulkToDay), start, end));
+		bulkMessage = '';
+	}
+
 	function remove(block: ScheduleBlock) {
 		onChange(removeBlockAt(blocks, block.day, timeToMinutes(block.start)));
+	}
+
+	// Move the block that starts at the given time by `delta` minutes, the same
+	// way the arrows, the keyboard and a drag all do.
+	function nudge(block: ScheduleBlock, delta: number) {
+		onChange(shiftBlock(blocks, block.day, timeToMinutes(block.start), delta, bounds));
 	}
 
 	// Pointer painting on the grid. A mouse drag starts as soon as it moves; a
@@ -110,6 +148,11 @@
 	let startCell: { day: number; row: number } | null = null;
 	let armed = $state(false);
 	let preview = $state<{ day: number; start: number; end: number } | null>(null);
+	// The window under an active pointer press, keyed like the each block. Set the
+	// moment a press starts on a saved window and cleared on release, so the block
+	// reads as picked up before any drag begins. Not drag-only: it is only ever a
+	// visual lift over the keyboard-reachable controls.
+	let activeKey = $state<string | null>(null);
 	let startX = 0;
 	let startY = 0;
 	let holdTimer: ReturnType<typeof setTimeout> | undefined;
@@ -202,6 +245,9 @@
 	}
 
 	function finish(e: PointerEvent) {
+		// Any pointer release inside the grid ends a press on a saved window too,
+		// so the lifted state never sticks.
+		activeKey = null;
 		if (pointerId === null || e.pointerId !== pointerId) return;
 		clearHold();
 		const wasArmed = armed;
@@ -227,6 +273,7 @@
 	}
 
 	function cancel(e: PointerEvent) {
+		activeKey = null;
 		if (pointerId === null || e.pointerId !== pointerId) return;
 		clearHold();
 		release(e.pointerId);
@@ -240,49 +287,33 @@
 		if (armed) e.preventDefault();
 	}
 
-	// The move handle on a saved window. A tap nudges the window one step
-	// earlier; a press and hold (touch) or a move (mouse) begins a drag up and
-	// down the day. The move is shown live while the drag runs and committed on
-	// release, so a hold that never moves is treated as a tap. Edges clamp at the
-	// day range; a window never rolls into the next day.
+	// The move handle on a saved window. The block sets `touch-action: none`, so a
+	// press on the handle never scrolls the page or the grid, and the drag can arm
+	// at once with no press-and-hold wait. A tap that never moves nudges the
+	// window one step earlier; a drag moves it up and down the day, shown live
+	// while it runs and committed on release. Edges clamp at the day range; a
+	// window never rolls into the next day.
 	let movePid: number | null = null;
 	let moveHandle: HTMLElement | null = null;
 	let moveBlock: ScheduleBlock | null = null;
 	let moveGrabRow = 0;
 	let moveStartY = 0;
-	let moveArmed = false;
 	let moveDragged = false;
-	let moveHold: ReturnType<typeof setTimeout> | undefined;
-	let suppressMoveClick = false;
 	let moving = $state<{ day: number; start: number; window: MinuteWindow } | null>(null);
 
-	function clearMoveHold() {
-		if (moveHold) {
-			clearTimeout(moveHold);
-			moveHold = undefined;
-		}
-	}
-
 	function armMove(id: number) {
-		moveArmed = true;
-		if (moveHandle) {
-			moveHandle.style.touchAction = 'none';
-			try {
-				moveHandle.setPointerCapture(id);
-			} catch {
-				// capture is a nicety; the drag works without it
-			}
+		try {
+			moveHandle?.setPointerCapture(id);
+		} catch {
+			// capture is a nicety; the drag works without it
 		}
 	}
 
 	function releaseMove(id: number) {
-		if (moveHandle) {
-			moveHandle.style.touchAction = '';
-			try {
-				moveHandle.releasePointerCapture(id);
-			} catch {
-				// already released
-			}
+		try {
+			moveHandle?.releasePointerCapture(id);
+		} catch {
+			// already released
 		}
 	}
 
@@ -290,12 +321,12 @@
 		movePid = null;
 		moveHandle = null;
 		moveBlock = null;
-		moveArmed = false;
 		moveDragged = false;
 		moving = null;
+		activeKey = null;
 	}
 
-	function handleDown(e: PointerEvent, block: ScheduleBlock) {
+	function handleDown(e: PointerEvent, block: ScheduleBlock, key: string) {
 		if (e.pointerType === 'mouse' && e.button !== 0) return;
 		if (movePid !== null) return;
 		e.stopPropagation();
@@ -306,36 +337,15 @@
 		moveBlock = block;
 		moveStartY = e.clientY;
 		moveGrabRow = Math.round((e.clientY - rect.top) / CELL_H);
-		moveArmed = false;
 		moveDragged = false;
-		suppressMoveClick = false;
 		moving = null;
-		if (e.pointerType === 'touch') {
-			// A touch press-and-holds first, so a swipe still scrolls the grid and
-			// a tap still nudges.
-			clearMoveHold();
-			moveHold = setTimeout(() => {
-				moveHold = undefined;
-				armMove(e.pointerId);
-			}, 250);
-		} else {
-			armMove(e.pointerId);
-		}
+		activeKey = key;
+		armMove(e.pointerId);
 	}
 
 	function handleMove(e: PointerEvent) {
 		if (movePid === null || e.pointerId !== movePid || !moveBlock) return;
 		e.stopPropagation();
-		if (!moveArmed) {
-			if (Math.abs(e.clientY - moveStartY) <= 8) return;
-			if (moveHold) {
-				// Moved before the hold completed: a scroll, not a drag.
-				clearMoveHold();
-				resetMove();
-				return;
-			}
-			armMove(e.pointerId);
-		}
 		const rect = layer?.getBoundingClientRect();
 		if (!rect) return;
 		if (Math.abs(e.clientY - moveStartY) > 8) moveDragged = true;
@@ -348,48 +358,31 @@
 	function handleUp(e: PointerEvent) {
 		if (movePid === null || e.pointerId !== movePid || !moveBlock) return;
 		e.stopPropagation();
-		clearMoveHold();
 		const block = moveBlock;
-		const dragged = moveDragged;
 		const preview = moving;
-		if (dragged && preview) {
+		if (moveDragged && preview) {
 			onChange(
 				shiftBlock(blocks, block.day, preview.start, preview.window.start - preview.start, bounds),
 			);
 		} else {
-			onChange(shiftBlock(blocks, block.day, timeToMinutes(block.start), -STEP_MIN, bounds));
+			nudge(block, -STEP_MIN);
 		}
-		suppressMoveClick = true;
 		releaseMove(e.pointerId);
 		resetMove();
 	}
 
 	function handleCancel(e: PointerEvent) {
 		if (movePid === null || e.pointerId !== movePid) return;
-		clearMoveHold();
 		releaseMove(e.pointerId);
 		resetMove();
 	}
 
-	function handleClick(e: MouseEvent, block: ScheduleBlock) {
-		e.stopPropagation();
-		// A pointer tap already nudged in handleUp; only a keyboard activation
-		// (Enter or Space, which fires no pointer events) reaches here unguarded.
-		if (suppressMoveClick) {
-			suppressMoveClick = false;
-			return;
-		}
-		onChange(shiftBlock(blocks, block.day, timeToMinutes(block.start), -STEP_MIN, bounds));
-	}
-
-	// Arrow keys on a focused window move it one step, up for earlier and down
-	// for later. The handle and the body both bubble here, so either control
-	// works.
+	// Arrow keys on a focused control move the window one step, up for earlier and
+	// down for later. The arrows and the body all bubble here, so either works.
 	function onBlockKey(e: KeyboardEvent, block: ScheduleBlock) {
 		if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
 		e.preventDefault();
-		const delta = e.key === 'ArrowUp' ? -STEP_MIN : STEP_MIN;
-		onChange(shiftBlock(blocks, block.day, timeToMinutes(block.start), delta, bounds));
+		nudge(block, e.key === 'ArrowUp' ? -STEP_MIN : STEP_MIN);
 	}
 
 	// Geometry for a block's place on the grid, in the same units the cells use.
@@ -407,8 +400,8 @@
 	const summary = $derived(daySummary(blocks));
 </script>
 
-<div class="grid gap-3">
-	<div class="rounded-xl border border-hairline bg-sunken/60 p-3">
+<div class="grid min-w-0 gap-3">
+	<div class="min-w-0 rounded-xl border border-hairline bg-sunken/60 p-3">
 		<p class="text-xs font-medium">Add a window</p>
 		<div class="mt-2 flex flex-wrap items-end gap-2">
 			<label class="flex flex-col gap-1">
@@ -457,8 +450,74 @@
 		{/if}
 	</div>
 
-	<div class="rounded-xl border border-hairline bg-paper p-2">
-		<div class="scroll-modern max-h-[60vh] overflow-auto overscroll-contain">
+	<div class="min-w-0 rounded-xl border border-hairline bg-sunken/60 p-3">
+		<p class="text-xs font-medium">Add a window to several days</p>
+		<p class="mt-1 text-xs text-steel">
+			Adds the same window on every day in the range, from the first day to the last one.
+		</p>
+		<div class="mt-2 flex flex-wrap items-end gap-2">
+			<label class="flex flex-col gap-1">
+				<span class="text-[10px] uppercase tracking-wide text-steel">First day</span>
+				<select
+					bind:value={bulkFromDay}
+					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
+				>
+					{#each DAY_LABELS as label, d (d)}
+						<option value={String(d)}>{label}</option>
+					{/each}
+				</select>
+			</label>
+			<label class="flex flex-col gap-1">
+				<span class="text-[10px] uppercase tracking-wide text-steel">Last day</span>
+				<select
+					bind:value={bulkToDay}
+					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
+				>
+					{#each DAY_LABELS as label, d (d)}
+						<option value={String(d)}>{label}</option>
+					{/each}
+				</select>
+			</label>
+			<label class="flex flex-col gap-1">
+				<span class="text-[10px] uppercase tracking-wide text-steel">From</span>
+				<select
+					bind:value={bulkStartTime}
+					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
+				>
+					{#each startSlots as m (m)}
+						<option value={minutesToTime(m)}>{formatTime(m)}</option>
+					{/each}
+				</select>
+			</label>
+			<label class="flex flex-col gap-1">
+				<span class="text-[10px] uppercase tracking-wide text-steel">To</span>
+				<select
+					bind:value={bulkEndTime}
+					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
+				>
+					{#each endSlots as m (m)}
+						<option value={minutesToTime(m)}>{formatTime(m)}</option>
+					{/each}
+				</select>
+			</label>
+			<button
+				type="button"
+				onclick={addBulkFromForm}
+				class="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper hover:opacity-90"
+			>
+				Add to those days
+			</button>
+		</div>
+		{#if bulkPreview}
+			<p class="mt-2 text-xs text-steel" aria-live="polite">This adds {bulkPreview}</p>
+		{/if}
+		{#if bulkMessage}
+			<p class="mt-2 text-xs text-warn">{bulkMessage}</p>
+		{/if}
+	</div>
+
+	<div class="min-w-0 rounded-xl border border-hairline bg-paper p-2">
+		<div class="grid-scroll scroll-modern min-w-0 overflow-auto overscroll-contain">
 			<div style="min-width: {7 * DAY_W + 44}px">
 				<div class="sticky top-0 z-20 flex gap-1 bg-paper pb-1" aria-hidden="true">
 					<div class="w-10 shrink-0"></div>
@@ -490,7 +549,7 @@
 							class="relative touch-manipulation select-none rounded-md ring-1 ring-hairline"
 							style="height: {bounds.rows * CELL_H}px"
 							role="group"
-							aria-label="Weekly training windows. Tap or drag an empty slot to add a window. Each saved window's body removes it and its handle moves it."
+							aria-label="Weekly training windows. Tap or drag an empty slot to add a window. Each saved window's body removes it, its arrows move it fifteen minutes earlier or later, and you can drag its handle to move it further."
 							onpointerdown={down}
 							onpointermove={move}
 							onpointerup={finish}
@@ -533,21 +592,33 @@
 								{@const end = timeToMinutes(block.end)}
 								{@const h = spanHeight(start, end)}
 								{@const rh = Math.max(h, MIN_BLOCK_H)}
+								{@const key = block.day + '-' + block.start}
 								{@const isMoving =
 									moving !== null && moving.day === block.day && moving.start === start}
 								{@const win = isMoving && moving ? moving.window : { start, end }}
+								{@const lifted = activeKey === key || isMoving}
 								{@const label = `${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
 								<div
 									data-block
-									class="absolute overflow-hidden rounded-md border border-signal-ink bg-signal-wash text-[10px] font-medium leading-tight text-signal-ink"
+									class="absolute touch-none overflow-hidden rounded-md border border-signal-ink bg-signal-wash text-[10px] font-medium leading-tight text-signal-ink transition-[box-shadow,transform] duration-150 {lifted
+										? 'z-30 origin-top scale-[1.03] shadow-lg outline outline-2 outline-offset-1 outline-signal-ink'
+										: ''}"
 									style="left: calc({colLeft(block.day)}% + 2px); width: calc({COL_W}% - 4px); top: {blockTop(
 										win.start,
 									)}px; height: {rh}px"
 									role="group"
 									aria-label={label}
+									onpointerup={() => (activeKey = null)}
+									onpointercancel={() => (activeKey = null)}
 								>
 									<button
 										type="button"
+										onpointerdown={() => (activeKey = key)}
+										onpointerleave={() => {
+											// Leaving the body ends a body press; a handle drag is
+											// kept, so its own capture clears the lift.
+											if (movePid === null) activeKey = null;
+										}}
 										onclick={() => remove(block)}
 										onkeydown={(e) => onBlockKey(e, block)}
 										aria-label={`Remove ${label}`}
@@ -560,31 +631,61 @@
 											>
 										{/if}
 									</button>
-									<button
-										type="button"
-										onpointerdown={(e) => handleDown(e, block)}
+									<div
+										class="absolute inset-x-0 top-0 flex items-center justify-between px-0.5 transition-colors {lifted
+											? 'bg-signal/35'
+											: 'bg-signal/15'} {lifted ? 'md:cursor-grabbing' : 'md:cursor-grab'}"
+										style="height: {Math.min(HANDLE_H, rh)}px"
+										role="group"
+										aria-label={`Move ${label}`}
+										onpointerdown={(e) => handleDown(e, block, key)}
 										onpointermove={handleMove}
 										onpointerup={handleUp}
 										onpointercancel={handleCancel}
-										onclick={(e) => handleClick(e, block)}
-										onkeydown={(e) => onBlockKey(e, block)}
-										aria-label={`Move ${label}. Tap to move it fifteen minutes earlier, or press and hold and drag to move it up or down. The arrow keys also move it.`}
-										class="absolute inset-x-0 top-0 flex items-center justify-center border-b border-signal-ink/30 bg-signal/15 text-signal-ink hover:bg-signal/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
-										style="height: {Math.min(HANDLE_H, rh)}px"
 									>
-										<svg
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											class="h-3 w-3"
-											aria-hidden="true"
+										<button
+											type="button"
+											onpointerdown={(e) => e.stopPropagation()}
+											onclick={() => nudge(block, -STEP_MIN)}
+											onkeydown={(e) => onBlockKey(e, block)}
+											aria-label={`Move ${label} fifteen minutes earlier`}
+											class="flex h-full w-4 items-center justify-center rounded-sm text-signal-ink hover:bg-signal/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
 										>
-											<path d="M6 15l6-6 6 6" />
-										</svg>
-									</button>
+											<svg
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2.5"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												class="h-3 w-3"
+												aria-hidden="true"
+											>
+												<path d="M6 15l6-6 6 6" />
+											</svg>
+										</button>
+										<button
+											type="button"
+											onpointerdown={(e) => e.stopPropagation()}
+											onclick={() => nudge(block, STEP_MIN)}
+											onkeydown={(e) => onBlockKey(e, block)}
+											aria-label={`Move ${label} fifteen minutes later`}
+											class="flex h-full w-4 items-center justify-center rounded-sm text-signal-ink hover:bg-signal/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
+										>
+											<svg
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2.5"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												class="h-3 w-3"
+												aria-hidden="true"
+											>
+												<path d="M6 9l6 6 6-6" />
+											</svg>
+										</button>
+									</div>
 								</div>
 							{/each}
 						</div>
@@ -593,17 +694,18 @@
 			</div>
 		</div>
 		<p class="mt-2 text-xs leading-relaxed text-steel">
-			Tap a slot to add an hour, or drag to add a longer window. On a phone, press and hold first,
-			then drag. Tap a window's body to remove it. Drag the arrow at the top of a window to move it,
-			or tap the arrow to nudge it fifteen minutes earlier. Every window is also a button you can
-			focus and activate, and its arrow takes the arrow keys. The grid runs from 4 in the morning to
-			11 at night, and scrolls sideways to reach every day and up and down to reach the early and
-			late rows.
+			Tap an empty slot to add an hour, or drag across slots to add a longer window. On a phone,
+			press and hold an empty slot, then drag. Tap a window's body to remove it. The arrows at the
+			top of a window move it fifteen minutes earlier or later, and you can drag the middle of the
+			handle to slide it further. Every window is a button you can focus, and its arrows take the
+			arrow keys. Skipping this is fine: with no windows, the plan treats any day and any time as
+			available. The grid runs from 4 in the morning to 11 at night, and scrolls sideways to reach
+			every day and up and down to reach the early and late rows.
 		</p>
 	</div>
 
 	{#if summary.length}
-		<div class="rounded-xl border border-hairline bg-paper p-3">
+		<div class="min-w-0 rounded-xl border border-hairline bg-paper p-3">
 			<div class="flex items-baseline justify-between gap-2">
 				<p class="tabular text-xs uppercase tracking-widest text-steel">Your windows</p>
 				<button
@@ -617,15 +719,28 @@
 			<ul class="mt-2 grid gap-1 text-sm">
 				{#each summary as d (d.day)}
 					<li class="flex justify-between gap-3">
-						<span>{d.label}</span>
-						<span class="tabular text-right text-steel">{d.windows}</span>
+						<span class="min-w-0">{d.label}</span>
+						<span class="tabular min-w-0 text-right text-steel">{d.windows}</span>
 					</li>
 				{/each}
 			</ul>
 		</div>
 	{:else}
 		<p class="text-xs leading-relaxed text-steel">
-			No windows yet. Add the times you are usually free on each day, or carry on without any.
+			No windows yet. Add the times you are usually free on each day, or skip this. Skipping is
+			fine: with no windows, any day and any time is treated as available.
 		</p>
 	{/if}
 </div>
+
+<style>
+	/*
+	 * The grid is a deliberate two-way scroller, so it gets its own height cap.
+	 * vh keeps it bounded everywhere; dvh is the upgrade where the mobile browser
+	 * reports it, so the bottom rows are not hidden behind the browser chrome.
+	 */
+	.grid-scroll {
+		max-height: 60vh;
+		max-height: 60dvh;
+	}
+</style>
