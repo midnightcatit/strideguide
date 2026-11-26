@@ -188,7 +188,7 @@
 </script>
 
 {#if hasKey('resting_hr') || hasKey('hrv_ms')}
-	<LazySection><section aria-labelledby="h-heart" class="mb-7">
+	<LazySection><section aria-labelledby="h-heart">
 		<SectionHeader id="h-heart" eyebrow="Heart" meta="Daily" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#if hasKey('resting_hr')}
@@ -244,7 +244,7 @@
 {/if}
 
 {#if hasRange}
-	<LazySection><section aria-labelledby="h-hr" class="mb-7">
+	<LazySection><section aria-labelledby="h-hr">
 		<SectionHeader id="h-hr" eyebrow="Heart rate" meta="Min, average and max each day" />
 		<TimeSeriesCard
 			title="Daily heart rate"
@@ -262,7 +262,7 @@
 {/if}
 
 {#if hasSpo2}
-	<LazySection><section aria-labelledby="h-spo2" class="mb-7">
+	<LazySection><section aria-labelledby="h-spo2">
 		<SectionHeader id="h-spo2" eyebrow="Blood oxygen" meta={valueText('spo2_avg', fmtPct)} />
 		<TimeSeriesCard
 			title="Blood oxygen"
@@ -280,7 +280,7 @@
 {/if}
 
 {#if hasKey('respiratory_rate') || hasKey('vo2_max')}
-	<LazySection><section aria-labelledby="h-fit" class="mb-7">
+	<LazySection><section aria-labelledby="h-fit">
 		<SectionHeader id="h-fit" eyebrow="Breathing and fitness" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#if hasKey('respiratory_rate')}
@@ -321,7 +321,7 @@
 {/if}
 
 {#if hasStages || hasSleepTotal}
-	<LazySection><section aria-labelledby="h-sleep" class="mb-7">
+	<LazySection><section aria-labelledby="h-sleep">
 		<SectionHeader id="h-sleep" eyebrow="Sleep" meta={hasSleepTotal || sleepNightly.length ? sleepTotalText : 'By stage'} />
 		<div class="space-y-3">
 			{#if hasStages}
@@ -358,7 +358,7 @@
 {/if}
 
 {#if hasKey('sleep_temp_c')}
-	<LazySection><section aria-labelledby="h-sleeptemp" class="mb-7">
+	<LazySection><section aria-labelledby="h-sleeptemp">
 		<SectionHeader id="h-sleeptemp" eyebrow="Sleep temperature" />
 		<TimeSeriesCard
 			title="Nightly skin temperature"
@@ -373,7 +373,7 @@
 {/if}
 
 {#if activity.length}
-	<LazySection><section aria-labelledby="h-activity" class="mb-7">
+	<LazySection><section aria-labelledby="h-activity">
 		<SectionHeader id="h-activity" eyebrow="Activity" meta="Daily totals" />
 		<div class="space-y-3">
 			{#each activity as m (m.key)}
@@ -404,7 +404,7 @@
 {/if}
 
 {#if hasKey('distance_m')}
-	<LazySection><section aria-labelledby="h-distance" class="mb-7">
+	<LazySection><section aria-labelledby="h-distance">
 		<SectionHeader id="h-distance" eyebrow="Distance" meta={valueText('distance_m', fmtKm)} />
 		<BarsCard
 			title="Distance"
@@ -419,7 +419,7 @@
 {/if}
 
 {#if sampleCards.length}
-	<LazySection><section aria-labelledby="h-samples" class="mb-7">
+	<LazySection><section aria-labelledby="h-samples">
 		<SectionHeader id="h-samples" eyebrow="Measurements" meta="{sampleCards.length} tracked" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#each sampleCards as s (s.key)}

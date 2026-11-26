@@ -501,6 +501,7 @@
 							: milestoneKind === 'complete'
 								? 'Plan complete'
 								: 'Rest'}
+					topGap={false}
 				/>
 				{#if isRaceDay}
 					<RaceCard
@@ -555,7 +556,7 @@
 
 		{#if selWeek}
 			<hr class="my-6 border-hairline" />
-			<SectionHeader id="week-so-far" eyebrow="Week so far" />
+			<SectionHeader id="week-so-far" eyebrow="Week so far" topGap={false} />
 			<div class="flex flex-wrap gap-1" role="img" aria-label="{weekLogged} of {weekPlanned} sessions done this week{weekSkipped ? `, ${weekSkipped} skipped` : ''}">
 				{#each selWeek.sessions as s (s.id)}
 					{@const done = loggedBySession.has(s.id)}
@@ -570,7 +571,7 @@
 
 			{#if daySessions[0]}
 				<hr class="my-6 border-hairline" />
-				<SectionHeader id="why" eyebrow="Why this workout" />
+				<SectionHeader id="why" eyebrow="Why this workout" topGap={false} />
 				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'What this session trains, and why.'}</p>
 				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-2 text-sm text-signal-ink hover:underline">
 					Why this workout, and what's to come →

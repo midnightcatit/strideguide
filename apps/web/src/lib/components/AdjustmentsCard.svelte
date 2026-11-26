@@ -90,7 +90,7 @@
 </script>
 
 {#if adjustments.length}
-	<section aria-labelledby="adjustments" class="mt-7">
+	<section aria-labelledby="adjustments">
 		<SectionHeader id="adjustments" eyebrow="Suggested adjustments" meta={String(adjustments.length)} />
 		<Card>
 			<ul class="divide-y divide-hairline">

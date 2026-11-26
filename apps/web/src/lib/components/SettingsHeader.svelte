@@ -5,4 +5,4 @@
 	let { title }: { title: string; back?: string; backLabel?: string } = $props();
 </script>
 
-<h1 class="font-display mb-5 text-2xl font-bold">{title}</h1>
+<h1 class="font-display mb-7 text-2xl font-bold">{title}</h1>

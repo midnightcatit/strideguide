@@ -153,7 +153,7 @@
 		<p role="alert" class="text-sm text-steel">{error || 'No user with that id.'}</p>
 	</div>
 {:else}
-	<header class="mb-6">
+	<header class="mb-7">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">User</p>
 		<h1 class="font-display mt-1 break-all text-2xl font-bold">{detail.email}</h1>
 		<div class="mt-2 flex flex-wrap items-center gap-2 text-sm">

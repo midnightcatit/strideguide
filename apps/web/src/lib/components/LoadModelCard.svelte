@@ -26,7 +26,7 @@
 </script>
 
 {#if data?.available && data.readout}
-	<section aria-labelledby="load-h" class="mt-7">
+	<section aria-labelledby="load-h">
 		<SectionHeader id="load-h" eyebrow="Training load" meta="fitness, fatigue and form" />
 		<Card>
 			<div class="grid grid-cols-3 gap-3 text-center">
