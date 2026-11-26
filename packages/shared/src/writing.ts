@@ -82,3 +82,5 @@ export function sanitizeText(input: string): string {
 	text = text.replace(/^[,;:\s]+/, '');
 	return text.trim();
 }
+
+// selftest: exercise the armed nudge path, reverted right after
