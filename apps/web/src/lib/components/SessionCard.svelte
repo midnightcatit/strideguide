@@ -109,7 +109,9 @@
 	// Facts that fit, as pills, so the card reads at a glance.
 	const pills = $derived.by(() => {
 		const out: { text: string }[] = [];
-		out.push({ text: session.slot === 'PM' ? 'Evening' : 'Morning' });
+		// A scheduled start time, when the runner blocked out a window, says more
+		// than the bare morning or evening slot, so it takes that pill's place.
+		out.push({ text: p.timeStart ?? (session.slot === 'PM' ? 'Evening' : 'Morning') });
 		if (isStrength) {
 			if (machines.length) out.push({ text: `${machines.length} moves` });
 			if (reps) out.push({ text: `3 × ${reps}` });

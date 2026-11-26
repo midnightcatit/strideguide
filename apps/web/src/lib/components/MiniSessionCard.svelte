@@ -44,11 +44,15 @@
 					: 'bg-sunken text-steel',
 	);
 	const p = $derived(session.prescription ?? {});
-	const detail = $derived(
-		session.modality === 'running' && p.targetDistanceKm != null
-			? fmtDistance(p.targetDistanceKm)
-			: (formatDuration(session.durationMin) ?? ''),
-	);
+	const detail = $derived.by(() => {
+		const base =
+			session.modality === 'running' && p.targetDistanceKm != null
+				? fmtDistance(p.targetDistanceKm)
+				: (formatDuration(session.durationMin) ?? '');
+		// The scheduled start time leads, so a card reads as "06:00 · 5.2 km".
+		if (!p.timeStart) return base;
+		return base ? `${p.timeStart} · ${base}` : p.timeStart;
+	});
 </script>
 
 <button
