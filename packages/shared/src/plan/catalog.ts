@@ -73,6 +73,64 @@ export function circuitSize(minutes?: number): number {
 	return 6;
 }
 
+/**
+ * A strength day's focus. The week rotates through these so each strength day
+ * leans on a different part of the body and the why can name it. The patterns
+ * are a priority order, not a filter: the circuit leans on them and tops up with
+ * the balanced sequence, so a session still covers the body.
+ */
+export interface StrengthFocus {
+	id: string;
+	label: string;
+	patterns: MovePattern[];
+}
+
+const LEGS_FOCUS: StrengthFocus = {
+	id: 'legs',
+	label: 'legs and hips',
+	patterns: ['squat', 'hinge', 'knee-extension', 'posterior-chain'],
+};
+const UPPER_PUSH_FOCUS: StrengthFocus = {
+	id: 'upper-push',
+	label: 'chest, shoulders and triceps',
+	patterns: ['push', 'push', 'core'],
+};
+const UPPER_PULL_FOCUS: StrengthFocus = {
+	id: 'upper-pull',
+	label: 'back and biceps',
+	patterns: ['pull', 'pull', 'core'],
+};
+const CORE_FOCUS: StrengthFocus = {
+	id: 'core',
+	label: 'core and stability',
+	patterns: ['core', 'posterior-chain', 'plyometric'],
+};
+const UPPER_FOCUS: StrengthFocus = {
+	id: 'upper',
+	label: 'upper body',
+	patterns: ['push', 'pull', 'core'],
+};
+
+/** The order the week rotates through when there are three or more strength days. */
+const FOCUS_ROTATION: StrengthFocus[] = [
+	LEGS_FOCUS,
+	UPPER_PUSH_FOCUS,
+	UPPER_PULL_FOCUS,
+	CORE_FOCUS,
+];
+
+/**
+ * The focus for the `index`-th strength day of a week with `count` strength days.
+ * One strength day is a full-body circuit (no focus), two split into legs and
+ * upper body, and three or more rotate legs, upper push, upper pull and core so
+ * the week covers the body. Legs lead, since running loads them most.
+ */
+export function focusFor(index: number, count: number): StrengthFocus | null {
+	if (count <= 1) return null;
+	if (count === 2) return index === 0 ? LEGS_FOCUS : UPPER_FOCUS;
+	return FOCUS_ROTATION[index % FOCUS_ROTATION.length] ?? null;
+}
+
 // Running-relevant pattern order: legs and hips first, then push/pull, then core.
 const PATTERN_SEQUENCE: MovePattern[] = [
 	'squat',
@@ -179,16 +237,22 @@ function selectBalanced(
 	pool: MachineExercise[],
 	size: number,
 	favorites?: string[],
+	focus?: StrengthFocus | null,
+	variant = 0,
 ): MachineExercise[] {
 	const out: MachineExercise[] = [];
 	const used = new Set<string>();
 	const fav = new Set(favorites ?? []);
 	const isFav = (m: MachineExercise) => fav.has(m.name);
+	const patterns = focus?.patterns ?? PATTERN_SEQUENCE;
 	for (let i = 0; i < size; i++) {
-		const pattern = PATTERN_SEQUENCE[i % PATTERN_SEQUENCE.length]!;
+		const pattern = patterns[i % patterns.length]!;
+		const matches = pool.filter((m) => !used.has(m.name) && m.pattern === pattern);
+		// Rotate within a pattern by the variant, so the same squat or hinge is not
+		// chosen every session; a favorite still wins its pattern.
 		const pick =
-			pool.find((m) => !used.has(m.name) && m.pattern === pattern && isFav(m)) ??
-			pool.find((m) => !used.has(m.name) && m.pattern === pattern) ??
+			matches.find(isFav) ??
+			matches[variant % Math.max(1, matches.length)] ??
 			pool.find((m) => !used.has(m.name) && isFav(m)) ??
 			pool.find((m) => !used.has(m.name));
 		if (!pick) break;
@@ -214,6 +278,8 @@ export function circuitFor(
 	level?: string,
 	machines?: string[],
 	favorites?: string[],
+	focus?: StrengthFocus | null,
+	variant = 0,
 ): MachineExercise[] {
 	const size = circuitSize(minutes);
 	const base = poolFor(mode, level, loaded);
@@ -222,5 +288,5 @@ export function circuitFor(
 	const pool = filtered.length
 		? dedupeByName([...filtered, ...bodyweightPool(level)])
 		: bodyweightPool(level);
-	return selectBalanced(pool, size, favorites);
+	return selectBalanced(pool, size, favorites, focus, variant);
 }

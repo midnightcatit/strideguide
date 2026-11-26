@@ -8,7 +8,7 @@ import type {
 	StructuredWorkout,
 	WorkoutStep,
 } from '../types';
-import { circuitFor, findMove, moveAvailable, strengthShape } from './catalog';
+import { circuitFor, findMove, focusFor, moveAvailable, strengthShape } from './catalog';
 import type { MachineExercise } from './machines';
 import {
 	COOLDOWN_STRETCHES,
@@ -1738,10 +1738,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		});
 
-		// Strength on its own days, in the morning.
-		for (const day of strengthDays) {
-			sessions.push(strengthSession(day, 'AM', phase, input, strengthIntent));
-		}
+		// Strength on its own days, in the morning. The week rotates the focus
+		// across the body, so the index and the count go into the session.
+		strengthDays.forEach((day, i) => {
+			sessions.push(strengthSession(day, 'AM', phase, input, strengthIntent, i, strengthDays.length));
+		});
 
 		// Cross-training: when the user has it and the profile allows it, swap the
 		// last easy run for a low-impact session, sparing the running legs.
@@ -1989,15 +1990,19 @@ function strengthSession(
 	phase: string,
 	input: PlanInput,
 	strengthIntent?: StrengthIntent,
+	index = 0,
+	count = 1,
 ): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
 	const level = input.baseline.experience ?? 'beginner';
 	const load = sportLoad(input);
 	const heavySport = load.heavy;
 	const loaded = phase !== 'base';
+	const focus = focusFor(index, count);
 	// A favorite strength workout wins when the runner has one and it fits, since
-	// it is their own choice of session. Otherwise the generated circuit prefers
-	// their favorite machines, then falls back to the usual balanced pick.
+	// it is their own choice of session. Otherwise the generated circuit leans on
+	// the day's focus, rotates the moves by the session index, and prefers their
+	// favorite machines.
 	const fullCircuit =
 		favoriteStrengthMoves(input) ??
 		circuitFor(
@@ -2008,6 +2013,8 @@ function strengthSession(
 			level,
 			input.machines,
 			input.favoriteMachines,
+			focus,
+			index,
 		);
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
@@ -2027,7 +2034,9 @@ function strengthSession(
 	const noun = shape === 'machines' ? 'machines' : 'moves';
 	const why = heavySport
 		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
-		: undefined;
+		: focus
+			? `Today leans on ${focus.label}. The week spreads strength across the body, so each strength day covers a different area.`
+			: undefined;
 	return {
 		day,
 		slot,
@@ -2036,7 +2045,7 @@ function strengthSession(
 		title: TITLE[type],
 		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} ${noun} · ${setCount} × ${reps}, control the lowering phase.`,
+			summary: `${sets.length} ${noun} · ${setCount} × ${reps}${focus ? ` · ${focus.label}` : ''}, control the lowering phase.`,
 			blocks: sets,
 			targetRpe: [7, 8],
 			notes: copy.load,

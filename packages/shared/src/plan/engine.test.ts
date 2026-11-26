@@ -287,6 +287,23 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks[0]!.sessions.filter((s) => s.modality === 'strength').length).toBe(1);
 	});
 
+	it('rotates the strength focus across the week so the days are not identical', () => {
+		const p = generatePlan({
+			...base,
+			availableDays: [0, 1, 2, 3, 4, 5, 6],
+			baseline: { experience: 'intermediate', strengthDays: 2 },
+		});
+		const strength = p.weeks[0]!.sessions.filter((s) => s.modality === 'strength');
+		expect(strength.length).toBe(2);
+		// The two strength days name different focuses and draw different circuits,
+		// so the week is not the same session twice.
+		expect(new Set(strength.map((s) => s.prescription.why ?? '')).size).toBe(2);
+		const circuits = strength.map((s) =>
+			(s.prescription.blocks ?? []).map((b) => b.machine).join('|'),
+		);
+		expect(new Set(circuits).size).toBe(2);
+	});
+
 	it('prefers hill reps on hilly terrain', () => {
 		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', terrain: 'hilly' } });
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'hills')).toBe(true);

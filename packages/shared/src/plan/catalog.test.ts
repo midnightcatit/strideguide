@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_MOVES, circuitFor, findMove, moveCategory, strengthShape } from './catalog';
+import { ALL_MOVES, circuitFor, findMove, focusFor, moveCategory, strengthShape } from './catalog';
 import { PF_MACHINES } from './machines';
 import { GYM_PRESETS } from './gyms';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
@@ -30,6 +30,55 @@ describe('exercise catalog', () => {
 				}
 			}
 		}
+	});
+});
+
+describe('strength focus rotation', () => {
+	it('gives one strength day a full-body circuit and splits two days into legs and upper body', () => {
+		expect(focusFor(0, 1)).toBeNull();
+		expect(focusFor(0, 2)?.id).toBe('legs');
+		expect(focusFor(1, 2)?.id).toBe('upper');
+	});
+
+	it('rotates legs, push, pull and core across three or more days', () => {
+		expect([0, 1, 2].map((i) => focusFor(i, 3)?.id)).toEqual(['legs', 'upper-push', 'upper-pull']);
+		expect([0, 1, 2, 3].map((i) => focusFor(i, 4)?.id)).toEqual([
+			'legs',
+			'upper-push',
+			'upper-pull',
+			'core',
+		]);
+	});
+
+	it('leans the circuit on the focus and rotates the move by the variant', () => {
+		const lower = new Set(['squat', 'hinge', 'knee-extension', 'posterior-chain']);
+		const legs = circuitFor(
+			'machines',
+			45,
+			undefined,
+			false,
+			'intermediate',
+			undefined,
+			undefined,
+			focusFor(0, 3),
+			0,
+		);
+		const legsNext = circuitFor(
+			'machines',
+			45,
+			undefined,
+			false,
+			'intermediate',
+			undefined,
+			undefined,
+			focusFor(0, 3),
+			1,
+		);
+		// The legs focus draws mostly lower-body patterns.
+		expect(legs.filter((m) => lower.has(m.pattern)).length).toBeGreaterThanOrEqual(4);
+		// A different variant picks a different circuit, so the same squat is not
+		// chosen every time.
+		expect(legsNext.map((m) => m.name)).not.toEqual(legs.map((m) => m.name));
 	});
 });
 

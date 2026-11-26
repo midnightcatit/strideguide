@@ -10,6 +10,27 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## The week rotates the strength focus across the body
+
+2026-11-26
+
+Decided: a strength day leans on a focus (legs and hips, upper push, upper pull,
+core and stability) chosen by the session's position among the week's strength
+days, and the moves within a focus rotate by the session index. One strength day
+stays a full-body circuit, two split into legs and upper body, and three or more
+rotate legs, upper push, upper pull and core. The why names the focus.
+
+Why: the circuit picker always took the first move for each pattern, so every
+strength session was identical and the owner saw the same machines week after
+week. The catalog already carries a pattern and a muscle list per move, so the
+split is a selection change, not new data. Legs lead because running loads them
+most (`packages/shared/src/plan/catalog.ts`, `engine.ts`).
+
+Rules out: the same circuit on every strength day, and a bodybuilding split that
+ignores running.
+
+---
+
 ## The system map's selected view is component state, not a derive of the hash
 
 2026-11-26
