@@ -106,8 +106,16 @@ function identityFromClaims(p: JWTPayload): GoogleIdentity {
  * nor use the API: the sign-in callback refuses it and the auth middleware
  * rejects its sessions. Null (or a missing row) means active.
  */
-export function isAccountDisabled(user: { disabledAt: Date | null } | null | undefined): boolean {
-	return !!user && user.disabledAt != null;
+/**
+ * Whether an account is blocked from using the API: a disabled account is paused,
+ * a soft-deleted one is on its way out. Both are refused even with a valid
+ * session, so the change takes effect at once across every device. Null, or a
+ * missing row, is treated as blocked for callers that pass a lookup result.
+ */
+export function isAccountBlocked(
+	user: { disabledAt: Date | null; deletedAt?: Date | null } | null | undefined,
+): boolean {
+	return !!user && (user.disabledAt != null || user.deletedAt != null);
 }
 
 /** Upsert the user keyed on the stable OIDC subject (googleSub), refreshing profile fields. */

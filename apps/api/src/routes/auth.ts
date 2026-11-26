@@ -8,7 +8,7 @@ import {
 	exchangeCodeForTokens,
 	upsertUser,
 	verifyGoogleIdToken,
-	isAccountDisabled,
+	isAccountBlocked,
 	type GoogleIdentity,
 } from '../lib/auth';
 import { checkRateLimit, clientIp } from '../lib/rate-limit';
@@ -166,9 +166,9 @@ auth.get('/google/callback', async (c) => {
 
 	const db = c.get('db');
 	const user = await upsertUser(db, identity);
-	// A disabled account cannot start a new session. Refuse before minting the
-	// token, so no session row or cookie is created for it.
-	if (isAccountDisabled(user)) {
+	// A disabled or soft-deleted account cannot start a new session. Refuse before
+	// minting the token, so no session row or cookie is created for it.
+	if (isAccountBlocked(user)) {
 		return authFailure(c, 'account_disabled');
 	}
 	const token = await signSession(c.env, { uid: user.id, email: user.email, name: user.name });
@@ -227,15 +227,15 @@ auth.get('/me', async (c) => {
 	if (!session || session.revokedAt || session.expiresAt.getTime() <= Date.now()) {
 		return c.json({ user: null });
 	}
-	// A disabled account reads as signed out here, so the app drops to the sign-in
-	// screen instead of looping on a session the API will keep rejecting.
+	// A disabled or soft-deleted account reads as signed out here, so the app drops
+	// to the sign-in screen instead of looping on a session the API keeps rejecting.
 	const userRows = await c
 		.get('db')
-		.select({ disabledAt: schema.users.disabledAt })
+		.select({ disabledAt: schema.users.disabledAt, deletedAt: schema.users.deletedAt })
 		.from(schema.users)
 		.where(eq(schema.users.id, payload.uid))
 		.limit(1);
-	if (isAccountDisabled(userRows[0])) {
+	if (isAccountBlocked(userRows[0])) {
 		return c.json({ user: null });
 	}
 	return c.json({ user: payload });

@@ -63,6 +63,7 @@ export interface AdminUserAggregate {
 	createdAt: Date | number | null;
 	role: AdminRole;
 	disabledAt: Date | number | null;
+	deletedAt: Date | number | null;
 	goalProfileSlug: string | null;
 	planCount: number | null;
 	lastLogAt: number | null;
@@ -83,6 +84,7 @@ export interface AdminUserRow {
 	role: AdminRole;
 	isRoot: boolean;
 	disabled: boolean;
+	deleted: boolean;
 	goalProfileSlug: string | null;
 	planCount: number;
 	lastLogAt: string | null;
@@ -112,6 +114,7 @@ export function projectAdminUser(row: AdminUserAggregate, isRoot: boolean): Admi
 		role: row.role,
 		isRoot,
 		disabled: row.disabledAt != null,
+		deleted: row.deletedAt != null,
 		goalProfileSlug: row.goalProfileSlug,
 		planCount: row.planCount ?? 0,
 		lastLogAt: toIsoTimestamp(row.lastLogAt),
@@ -184,23 +187,40 @@ export function buildAdminAction(input: AdminActionInput): AdminActionRow {
 	};
 }
 
-/** The target of a disable, as the rule below needs it. */
+/** An email as stored and compared: trimmed and lowercased. */
+export function normalizeEmail(raw: string | null | undefined): string {
+	return (raw ?? '').trim().toLowerCase();
+}
+
+/** The target of a disable, soft delete or permanent delete, as the rule needs it. */
 export interface DisableTarget {
 	id: string;
 	role: AdminRole;
 	isRoot: boolean;
 }
 
+/** The verb the refusal message reads with, so one rule covers every removal. */
+export type RemovalVerb = 'disable' | 'delete' | 'permanently delete';
+
 /**
- * Why a disable is refused, or null when it is allowed. A root admin, another
- * admin, or the acting admin themselves can never be disabled. Pure so the rule
- * is testable without a route or a database.
+ * Why a removal is refused, or null when it is allowed. A root admin, another
+ * admin, or the acting admin themselves can never be disabled or deleted. Pure so
+ * the rule is testable without a route or a database.
  */
-export function disableRefusal(target: DisableTarget, actorId: string): string | null {
-	if (target.id === actorId) return 'You cannot disable your own account.';
-	if (target.isRoot) return 'You cannot disable a root admin.';
-	if (target.role === 'admin') return 'You cannot disable another admin.';
+export function removalRefusal(
+	target: DisableTarget,
+	actorId: string,
+	verb: RemovalVerb,
+): string | null {
+	if (target.id === actorId) return `You cannot ${verb} your own account.`;
+	if (target.isRoot) return `You cannot ${verb} a root admin.`;
+	if (target.role === 'admin') return `You cannot ${verb} another admin.`;
 	return null;
+}
+
+/** The disable case of the removal rule, kept as its own name for the route. */
+export function disableRefusal(target: DisableTarget, actorId: string): string | null {
+	return removalRefusal(target, actorId, 'disable');
 }
 
 /** A raw goal row for the detail view, before projection. */
@@ -254,6 +274,7 @@ export interface AdminUserDetailAggregate {
 	createdAt: Date | number | null;
 	role: AdminRole;
 	disabledAt: Date | number | null;
+	deletedAt: Date | number | null;
 	goals: AdminGoalAggregate[];
 	plans: AdminPlanAggregate[];
 	logs: { count: number; earliest: Date | number | null; latest: Date | number | null };
@@ -278,6 +299,8 @@ export interface AdminUserDetail {
 	isRoot: boolean;
 	disabled: boolean;
 	disabledAt: string | null;
+	deleted: boolean;
+	deletedAt: string | null;
 	goals: { slug: string; targetDate: string | null; status: string; createdAt: string | null }[];
 	plans: { version: number; generatedAt: string | null; weekCount: number; status: string }[];
 	logs: { count: number; earliest: string | null; latest: string | null };
@@ -316,6 +339,8 @@ export function projectAdminUserDetail(
 		isRoot,
 		disabled: aggregate.disabledAt != null,
 		disabledAt: toIsoTimestamp(aggregate.disabledAt),
+		deleted: aggregate.deletedAt != null,
+		deletedAt: toIsoTimestamp(aggregate.deletedAt),
 		goals: aggregate.goals.map((g) => ({
 			slug: g.slug,
 			targetDate: g.targetDate,

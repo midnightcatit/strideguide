@@ -14,11 +14,12 @@
 	let offset = $state(0);
 	let total = $state(0);
 	let limit = $state(PAGE_SIZE);
+	let includeDeleted = $state(false);
 	let searchTimer: ReturnType<typeof setTimeout> | undefined;
 
 	async function loadUsers() {
 		try {
-			const res = await api.adminUsers({ limit, offset, q });
+			const res = await api.adminUsers({ limit, offset, q, includeDeleted });
 			users = res.users;
 			total = res.total;
 			limit = res.limit;
@@ -113,6 +114,10 @@
 			the app.
 		</p>
 
+		<p class="mb-2 text-sm">
+			<a href="/settings/admin/admins" class="text-signal-ink hover:underline">Manage admins</a>
+		</p>
+
 		<div class="mb-4 flex items-end gap-3">
 			<label class="block flex-1">
 				<span class="mb-1 block text-xs uppercase tracking-wider text-steel">Search by email</span>
@@ -123,6 +128,17 @@
 					placeholder="name@example.com"
 					class="w-full rounded-md border border-hairline bg-paper px-3 py-2 text-sm"
 				/>
+			</label>
+			<label class="flex items-center gap-2 pb-2 text-xs text-steel">
+				<input
+					type="checkbox"
+					bind:checked={includeDeleted}
+					onchange={() => {
+						offset = 0;
+						void loadUsers();
+					}}
+				/>
+				Show deleted
 			</label>
 		</div>
 
@@ -155,6 +171,11 @@
 								>
 									{roleLabel(user)}
 								</span>
+								{#if user.deleted}
+									<span class="ml-1 rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">
+										Deleted
+									</span>
+								{/if}
 								{#if user.disabled}
 									<span class="ml-1 rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">
 										Disabled

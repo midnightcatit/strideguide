@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { GOAL_PROFILES } from '@strideguide/shared';
 import type {
 	Baseline,
@@ -11,6 +11,7 @@ import type {
 import { rebuildFromWeekOne, type WeekOneSession } from '@strideguide/shared/plan';
 import { ageFromBirthYear } from '@strideguide/shared/units';
 import { schema } from '../db';
+import { deleteUserAccount } from '../lib/account';
 import { requireAdmin } from '../middleware/auth';
 import { compareDaySessions } from '../lib/session-order';
 import { templateWeekSummary } from '../lib/narration';
@@ -22,9 +23,11 @@ import {
 	floorAdminOffset,
 	isRootAdminEmail,
 	normalizeAdminSearch,
+	normalizeEmail,
 	parseAdminEmails,
 	projectAdminUser,
 	projectAdminUserDetail,
+	removalRefusal,
 	resolveAdminState,
 	toIsoTimestamp,
 	type AdminUserAggregate,
@@ -69,8 +72,14 @@ admin.get('/users', requireAdmin, async (c) => {
 	const offset = floorAdminOffset(c.req.query('offset'));
 	const q = normalizeAdminSearch(c.req.query('q'));
 	// A case-insensitive substring match on the email. lower() on both sides so
-	// the match does not depend on SQLite's ASCII-only LIKE folding.
-	const filter = q ? sql`lower(${schema.users.email}) like ${`%${q.toLowerCase()}%`}` : undefined;
+	// the match does not depend on SQLite's ASCII-only LIKE folding. Soft-deleted
+	// accounts are hidden unless they are asked for, so a delete stays recoverable
+	// rather than vanishing.
+	const includeDeleted = c.req.query('includeDeleted') === '1';
+	const filter = and(
+		q ? sql`lower(${schema.users.email}) like ${`%${q.toLowerCase()}%`}` : undefined,
+		includeDeleted ? undefined : isNull(schema.users.deletedAt),
+	);
 	const db = c.get('db');
 
 	const rows = await db
@@ -80,6 +89,7 @@ admin.get('/users', requireAdmin, async (c) => {
 			createdAt: schema.users.createdAt,
 			role: schema.users.role,
 			disabledAt: schema.users.disabledAt,
+			deletedAt: schema.users.deletedAt,
 			goalProfileSlug: sql<string | null>`(
 				select ug.goal_profile_slug from user_goals ug
 				where ug.user_id = users.id and ug.status = 'active'
@@ -210,6 +220,7 @@ async function findAdminUserById(db: AppBindings['Variables']['db'], id: string)
 			createdAt: schema.users.createdAt,
 			role: schema.users.role,
 			disabledAt: schema.users.disabledAt,
+			deletedAt: schema.users.deletedAt,
 		})
 		.from(schema.users)
 		.where(eq(schema.users.id, id))
@@ -311,6 +322,7 @@ async function adminUserDetailPayload(
 		createdAt: user.createdAt,
 		role: user.role,
 		disabledAt: user.disabledAt,
+		deletedAt: user.deletedAt,
 		goals,
 		plans,
 		logs: logRows[0] ?? { count: 0, earliest: null, latest: null },
@@ -608,6 +620,212 @@ admin.post('/users/:id/enable', requireAdmin, async (c) => {
 		}),
 	);
 	return c.json(await adminUserDetailPayload(c.env, db, id));
+});
+
+/**
+ * Soft delete: hide the account and block it, keeping every row. Reversible with
+ * restore, which is what makes offering a delete safe at all.
+ */
+admin.post('/users/:id/soft-delete', requireAdmin, async (c) => {
+	const actor = c.get('user')!;
+	const id = c.req.param('id');
+	const db = c.get('db');
+	const target = await findAdminUserById(db, id);
+	if (!target) return c.json({ error: 'not_found', message: 'No user with that id.' }, 404);
+	const refusal = removalRefusal(
+		{ id: target.id, role: target.role, isRoot: isRootAdminEmail(c.env.ADMIN_EMAILS, target.email) },
+		actor.id,
+		'delete',
+	);
+	if (refusal) return c.json({ error: 'cannot_delete', message: refusal }, 400);
+
+	await db.update(schema.users).set({ deletedAt: new Date() }).where(eq(schema.users.id, id));
+	await db.delete(schema.authSessions).where(eq(schema.authSessions.userId, id));
+	await db.insert(schema.adminActions).values(
+		buildAdminAction({
+			actorId: actor.id,
+			action: 'soft_delete_user',
+			targetType: 'user',
+			targetId: id,
+			detail: null,
+		}),
+	);
+	return c.json(await adminUserDetailPayload(c.env, db, id));
+});
+
+/** Undo a soft delete. Enabling and restoring are always allowed. */
+admin.post('/users/:id/restore', requireAdmin, async (c) => {
+	const actor = c.get('user')!;
+	const id = c.req.param('id');
+	const db = c.get('db');
+	if (!(await findAdminUserById(db, id))) {
+		return c.json({ error: 'not_found', message: 'No user with that id.' }, 404);
+	}
+
+	await db.update(schema.users).set({ deletedAt: null }).where(eq(schema.users.id, id));
+	await db.insert(schema.adminActions).values(
+		buildAdminAction({
+			actorId: actor.id,
+			action: 'restore_user',
+			targetType: 'user',
+			targetId: id,
+			detail: null,
+		}),
+	);
+	return c.json(await adminUserDetailPayload(c.env, db, id));
+});
+
+/**
+ * Permanent delete: irreversible. The audit row is written first so the record
+ * survives the account it names, then every row the user owns goes, through the
+ * same ordered map the account-deletion path uses. The client holds the button
+ * for five seconds before it gets here.
+ */
+admin.delete('/users/:id', requireAdmin, async (c) => {
+	const actor = c.get('user')!;
+	const id = c.req.param('id');
+	const db = c.get('db');
+	const target = await findAdminUserById(db, id);
+	if (!target) return c.json({ error: 'not_found', message: 'No user with that id.' }, 404);
+	const refusal = removalRefusal(
+		{ id: target.id, role: target.role, isRoot: isRootAdminEmail(c.env.ADMIN_EMAILS, target.email) },
+		actor.id,
+		'permanently delete',
+	);
+	if (refusal) return c.json({ error: 'cannot_delete', message: refusal }, 400);
+
+	await db.insert(schema.adminActions).values(
+		buildAdminAction({
+			actorId: actor.id,
+			action: 'delete_user',
+			targetType: 'user',
+			targetId: id,
+			detail: { email: target.email },
+		}),
+	);
+	const { failed } = await deleteUserAccount(db, id);
+	if (failed.length) console.error('admin_delete_incomplete', { tables: failed });
+	return c.json({ deleted: true, failed });
+});
+
+/**
+ * The admins: root admins from the ADMIN_EMAILS config, which may not have an
+ * account yet, plus the accounts whose stored role is admin.
+ */
+admin.get('/admins', requireAdmin, async (c) => {
+	const db = c.get('db');
+	const rootEmails = parseAdminEmails(c.env.ADMIN_EMAILS);
+	const rows = await db
+		.select({
+			id: schema.users.id,
+			email: schema.users.email,
+			invitedBy: schema.users.invitedBy,
+			invitedAt: schema.users.invitedAt,
+		})
+		.from(schema.users)
+		.where(eq(schema.users.role, 'admin'))
+		.orderBy(sql`lower(${schema.users.email})`);
+
+	const admins: {
+		id: string | null;
+		email: string;
+		isRoot: boolean;
+		invitedBy: string | null;
+		invitedAt: string | null;
+	}[] = rows.map((row) => ({
+		id: row.id,
+		email: row.email,
+		isRoot: rootEmails.has(row.email.toLowerCase()),
+		invitedBy: row.invitedBy,
+		invitedAt: toIsoTimestamp(row.invitedAt),
+	}));
+	const known = new Set(admins.map((a) => a.email.toLowerCase()));
+	for (const email of rootEmails) {
+		if (!known.has(email)) {
+			admins.push({ id: null, email, isRoot: true, invitedBy: null, invitedAt: null });
+		}
+	}
+	return c.json({ admins });
+});
+
+/**
+ * Invite an admin. Only an address that already has an account, so an invite is
+ * never left pending for someone who has not signed in.
+ */
+admin.post('/admins', requireAdmin, async (c) => {
+	const actor = c.get('user')!;
+	const db = c.get('db');
+	const body = (await c.req.json().catch(() => null)) as { email?: unknown } | null;
+	const email = normalizeEmail(typeof body?.email === 'string' ? body.email : null);
+	if (!email || !email.includes('@')) {
+		return c.json({ error: 'invalid_email', message: 'Enter an email address.' }, 400);
+	}
+	if (isRootAdminEmail(c.env.ADMIN_EMAILS, email)) {
+		return c.json({ error: 'already_admin', message: 'That address is already a root admin.' }, 400);
+	}
+	const rows = await db
+		.select({ id: schema.users.id, role: schema.users.role })
+		.from(schema.users)
+		.where(sql`lower(${schema.users.email}) = ${email}`)
+		.limit(1);
+	const user = rows[0];
+	if (!user) {
+		return c.json(
+			{ error: 'no_account', message: 'No account has that email address. They need to sign in first.' },
+			400,
+		);
+	}
+	if (user.role === 'admin') {
+		return c.json({ error: 'already_admin', message: 'That account is already an admin.' }, 400);
+	}
+
+	await db
+		.update(schema.users)
+		.set({ role: 'admin', invitedBy: actor.id, invitedAt: new Date() })
+		.where(eq(schema.users.id, user.id));
+	await db.insert(schema.adminActions).values(
+		buildAdminAction({
+			actorId: actor.id,
+			action: 'add_admin',
+			targetType: 'user',
+			targetId: user.id,
+			detail: { email },
+		}),
+	);
+	return c.json(await adminUserDetailPayload(c.env, db, user.id));
+});
+
+/** Remove an admin, back to a plain user. A root admin can never be removed. */
+admin.delete('/admins/:id', requireAdmin, async (c) => {
+	const actor = c.get('user')!;
+	const id = c.req.param('id');
+	const db = c.get('db');
+	const target = await findAdminUserById(db, id);
+	if (!target) return c.json({ error: 'not_found', message: 'No user with that id.' }, 404);
+	if (isRootAdminEmail(c.env.ADMIN_EMAILS, target.email)) {
+		return c.json({ error: 'cannot_remove', message: 'You cannot remove a root admin.' }, 400);
+	}
+	if (target.id === actor.id) {
+		return c.json({ error: 'cannot_remove', message: 'You cannot remove your own admin access.' }, 400);
+	}
+	if (target.role !== 'admin') {
+		return c.json({ error: 'not_admin', message: 'That account is not an admin.' }, 400);
+	}
+
+	await db
+		.update(schema.users)
+		.set({ role: 'user', invitedBy: null, invitedAt: null })
+		.where(eq(schema.users.id, id));
+	await db.insert(schema.adminActions).values(
+		buildAdminAction({
+			actorId: actor.id,
+			action: 'remove_admin',
+			targetType: 'user',
+			targetId: id,
+			detail: { email: target.email },
+		}),
+	);
+	return c.json({ removed: true });
 });
 
 export default admin;
