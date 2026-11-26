@@ -239,7 +239,7 @@
 	{#if mode === 'month'}
 		<div class="flex shrink-0 items-center gap-1">
 			<button type="button" onclick={() => stepMonth(-1)} aria-label="Previous month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">‹</button>
-			<button type="button" onclick={() => (monthOffset = 0)} class="tabular px-2 text-xs text-steel hover:text-ink">Today</button>
+			<button type="button" onclick={() => (monthOffset = 0)} class="today-btn relative tabular px-2 text-xs text-steel hover:text-ink">Today</button>
 			<button type="button" onclick={() => stepMonth(1)} aria-label="Next month" class="flex h-11 w-11 items-center justify-center rounded-md text-steel hover:bg-sunken hover:text-ink">›</button>
 		</div>
 	{/if}
@@ -364,6 +364,21 @@
 	}
 	.calendar-thumb {
 		transition: transform var(--dur-2) var(--ease-out);
+	}
+	/*
+	 * The Today label is a small pill between two 44px arrows, so on a phone its
+	 * own box is short of the touch minimum. A centred pseudo-element widens the
+	 * hit area to the same 44px without growing the label or the bar, the pattern
+	 * the info icon already uses.
+	 */
+	.today-btn::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: var(--tap-min);
+		height: var(--tap-min);
+		transform: translate(-50%, -50%);
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.calendar-view {
