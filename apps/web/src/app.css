@@ -172,12 +172,12 @@
 	--tabbar-h: 3.5rem;
 
 	/*
-	 * Badge accent. Amber pills mark a card's facts and read as badges against
-	 * any card wash (cool, ok, signal). Kept apart from the state colours above
-	 * so a badge never looks like a status.
+	 * Badge accent. Hot orange pills mark a card's facts and read as badges
+	 * against any card wash (cool, ok, signal). Kept apart from the state colours
+	 * above so a badge never looks like a status.
 	 */
-	--badge: #92400e;
-	--badge-wash: #faeccf;
+	--badge: #b23a0a;
+	--badge-wash: #ffe4c4;
 
 	/*
 	 * Motion. One named set, used everywhere, so timing stays consistent instead
@@ -242,8 +242,8 @@
 		--tint-strength: #202434;
 		--tint-mobility: #16302b;
 		--tint-crosstrain: #182734;
-		--badge: #f2b451;
-		--badge-wash: rgba(242, 180, 81, 0.18);
+		--badge: #fb923c;
+		--badge-wash: rgba(251, 146, 60, 0.18);
 	}
 }
 
@@ -279,8 +279,8 @@
 	--tint-strength: #e0e3f0;
 	--tint-mobility: #d8eae6;
 	--tint-crosstrain: #dae8f3;
-	--badge: #92400e;
-	--badge-wash: #faeccf;
+	--badge: #b23a0a;
+	--badge-wash: #ffe4c4;
 }
 
 :root[data-theme='dark'] {
@@ -314,8 +314,8 @@
 	--tint-strength: #202434;
 	--tint-mobility: #16302b;
 	--tint-crosstrain: #182734;
-	--badge: #f2b451;
-	--badge-wash: rgba(242, 180, 81, 0.18);
+	--badge: #fb923c;
+	--badge-wash: rgba(251, 146, 60, 0.18);
 }
 
 @theme inline {
