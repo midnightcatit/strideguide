@@ -18,7 +18,7 @@
 	import { TRAINING_PROGRESS, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
-	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
+	import InsightsCard from '$lib/components/InsightsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
@@ -146,6 +146,14 @@
 	// Skipped sessions stay on the card list, marked as skipped.
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
+	);
+	// The Insights card reads the day's planned sessions: ready once every one is
+	// logged or skipped, with the count still open shown while it is not.
+	const insightReady = $derived(
+		daySessions.length > 0 && daySessions.every((s) => loggedBySession.has(s.id) || isSkipped(s.id)),
+	);
+	const insightPending = $derived(
+		daySessions.filter((s) => !loggedBySession.has(s.id) && !isSkipped(s.id)).length,
 	);
 	const stalePlan = $derived(
 		weeks.length > 0 &&
@@ -551,7 +559,9 @@
 			<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
 		{/if}
 
-		<AdjustmentsCard />
+		{#if daySessions.length}
+			<InsightsCard date={selectedIso} ready={insightReady} pending={insightPending} />
+		{/if}
 
 		{#if summary.body}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{summary.body}</p>{/if}
 
