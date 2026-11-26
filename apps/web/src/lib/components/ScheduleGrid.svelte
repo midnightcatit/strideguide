@@ -10,15 +10,14 @@
 	 */
 	import {
 		DAY_LABELS,
-		GRID_END_MIN,
 		GRID_START_MIN,
-		ROWS,
 		STEP_MIN,
 		addBlock,
 		daySummary,
 		formatHourLabel,
 		formatTime,
 		formatWindow,
+		gridBounds,
 		minutesForRow,
 		minutesToTime,
 		removeBlockAt,
@@ -34,23 +33,29 @@
 		onChange,
 	}: { blocks: ScheduleBlock[]; onChange: (blocks: ScheduleBlock[]) => void } = $props();
 
-	// One cell is 16px tall, so the grid is a fixed 544px and the maths on a tap
-	// or a drag reads straight off the element's rectangle.
+	// One cell is 16px tall. The grid is the default 04:00 to 23:00 (38 rows, so
+	// 608px), widened to include any stored window outside that range so nothing
+	// is hidden. The maths on a tap or a drag reads straight off the rectangle.
 	const CELL_H = 16;
 	const DAYS = [0, 1, 2, 3, 4, 5, 6];
-	const ROW_INDEXES = Array.from({ length: ROWS }, (_, i) => i);
-	// Hour marks down the side, from the first hour to the one before the end, so
-	// the last label is never cut off at the very bottom.
-	const HOUR_MARKS = Array.from(
-		{ length: (GRID_END_MIN - 60 - GRID_START_MIN) / 60 + 1 },
-		(_, i) => GRID_START_MIN + i * 60,
+	const bounds = $derived(gridBounds(blocks));
+	const rowIndexes = $derived(Array.from({ length: bounds.rows }, (_, i) => i));
+	// Hour marks from the first hour to the one before the end, so the last label
+	// is never cut off at the very bottom.
+	const hourMarks = $derived(
+		Array.from(
+			{ length: (bounds.end - 60 - bounds.start) / 60 + 1 },
+			(_, i) => bounds.start + i * 60,
+		),
 	);
-	const SLOTS = Array.from(
-		{ length: (GRID_END_MIN - GRID_START_MIN) / STEP_MIN + 1 },
-		(_, i) => GRID_START_MIN + i * STEP_MIN,
+	const slots = $derived(
+		Array.from(
+			{ length: (bounds.end - bounds.start) / STEP_MIN + 1 },
+			(_, i) => bounds.start + i * STEP_MIN,
+		),
 	);
-	const START_SLOTS = SLOTS.slice(0, -1);
-	const END_SLOTS = SLOTS.slice(1);
+	const startSlots = $derived(slots.slice(0, -1));
+	const endSlots = $derived(slots.slice(1));
 
 	// Adding from the controls: day, start and end. A plain, keyboard-reachable
 	// path that does not need the grid at all.
@@ -93,7 +98,10 @@
 		const rect = el.getBoundingClientRect();
 		if (rect.width <= 0 || rect.height <= 0) return null;
 		const day = Math.min(6, Math.max(0, Math.floor((x - rect.left) / (rect.width / 7))));
-		const row = Math.min(ROWS - 1, Math.max(0, Math.floor((y - rect.top) / (rect.height / ROWS))));
+		const row = Math.min(
+			bounds.rows - 1,
+			Math.max(0, Math.floor((y - rect.top) / (rect.height / bounds.rows))),
+		);
 		return { day, row };
 	}
 
@@ -152,7 +160,11 @@
 		}
 		const cell = cellAt(e.clientX, e.clientY);
 		if (!cell || !startCell) return;
-		const w = windowForDrag(minutesForRow(startCell.row), minutesForRow(cell.row));
+		const w = windowForDrag(
+			minutesForRow(startCell.row, bounds.start),
+			minutesForRow(cell.row, bounds.start),
+			bounds,
+		);
 		preview = { day: startCell.day, start: w.start, end: w.end };
 	}
 
@@ -177,8 +189,12 @@
 			// hold that never moved, adds the default hour.
 			const dragged = wasArmed && cell.row !== startCell.row;
 			const w = dragged
-				? windowForDrag(minutesForRow(startCell.row), minutesForRow(cell.row))
-				: windowForTap(minutesForRow(startCell.row));
+				? windowForDrag(
+						minutesForRow(startCell.row, bounds.start),
+						minutesForRow(cell.row, bounds.start),
+						bounds,
+					)
+				: windowForTap(minutesForRow(startCell.row, bounds.start), bounds);
 			onChange(addBlock(blocks, startCell.day, w.start, w.end));
 		}
 		release(e.pointerId);
@@ -204,7 +220,7 @@
 
 	// Geometry for a block's place on the grid, in the same units the cells use.
 	function blockTop(start: number) {
-		return rowForMinutes(start) * CELL_H;
+		return rowForMinutes(start, bounds.start) * CELL_H;
 	}
 	function spanHeight(start: number, end: number) {
 		return ((end - start) / STEP_MIN) * CELL_H;
@@ -238,7 +254,7 @@
 					bind:value={startTime}
 					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
 				>
-					{#each START_SLOTS as m (m)}
+					{#each startSlots as m (m)}
 						<option value={minutesToTime(m)}>{formatTime(m)}</option>
 					{/each}
 				</select>
@@ -249,7 +265,7 @@
 					bind:value={endTime}
 					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
 				>
-					{#each END_SLOTS as m (m)}
+					{#each endSlots as m (m)}
 						<option value={minutesToTime(m)}>{formatTime(m)}</option>
 					{/each}
 				</select>
@@ -268,88 +284,104 @@
 	</div>
 
 	<div class="rounded-xl border border-hairline bg-paper p-2">
-		<div class="flex gap-1">
-			<div class="relative w-10 shrink-0" style="height: {ROWS * CELL_H}px" aria-hidden="true">
-				{#each HOUR_MARKS as h (h)}
-					<span
-						class="tabular absolute right-1 text-[10px] leading-none text-steel"
-						style="top: {((h - GRID_START_MIN) / STEP_MIN) * CELL_H}px"
-						>{formatHourLabel(h)}</span
-					>
-				{/each}
-			</div>
-			<div class="min-w-0 flex-1">
-				<div class="mb-1 grid" style="grid-template-columns: repeat(7, 1fr)" aria-hidden="true">
-					{#each DAY_LABELS as label, d (d)}
-						<span class="tabular text-center text-[10px] font-medium uppercase tracking-wide text-steel"
-							>{label.slice(0, 3)}</span
+		<div class="max-h-[60vh] overflow-y-auto overscroll-contain">
+			<div class="flex gap-1">
+				<div
+					class="relative w-10 shrink-0"
+					style="height: {bounds.rows * CELL_H}px"
+					aria-hidden="true"
+				>
+					{#each hourMarks as h (h)}
+						<span
+							class="tabular absolute right-1 text-[10px] leading-none text-steel"
+							style="top: {((h - bounds.start) / STEP_MIN) * CELL_H}px">{formatHourLabel(h)}</span
 						>
 					{/each}
 				</div>
-				<div
-					bind:this={layer}
-					class="relative touch-pan-y select-none rounded-md ring-1 ring-hairline"
-					style="height: {ROWS * CELL_H}px"
-					role="group"
-					aria-label="Weekly training windows. Drag or tap to add a free window; each saved window is a button you can activate to remove it."
-					onpointerdown={down}
-					onpointermove={move}
-					onpointerup={finish}
-					onpointercancel={cancel}
-					ontouchmove={onTouchMove}
-				>
+				<div class="min-w-0 flex-1">
 					<div
-						class="pointer-events-none grid h-full w-full"
-						style="grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat({ROWS}, {CELL_H}px); grid-auto-flow: column;"
+						class="sticky top-0 z-10 mb-1 grid bg-paper"
+						style="grid-template-columns: repeat(7, 1fr)"
 						aria-hidden="true"
 					>
-						{#each DAYS as d (d)}
-							{#each ROW_INDEXES as r (r)}
-								<div
-									class="border-b border-hairline {d > 0 ? 'border-l' : ''} {minutesForRow(r) % 60 === 0
-										? 'bg-sunken/40'
-										: ''}"
-								></div>
-							{/each}
+						{#each DAY_LABELS as label, d (d)}
+							<span
+								class="tabular text-center text-[10px] font-medium uppercase tracking-wide text-steel"
+								>{label.slice(0, 3)}</span
+							>
 						{/each}
 					</div>
-
-					{#if preview}
+					<div
+						bind:this={layer}
+						class="relative touch-pan-y select-none rounded-md ring-1 ring-hairline"
+						style="height: {bounds.rows * CELL_H}px"
+						role="group"
+						aria-label="Weekly training windows. Drag or tap to add a free window; each saved window is a button you can activate to remove it."
+						onpointerdown={down}
+						onpointermove={move}
+						onpointerup={finish}
+						onpointercancel={cancel}
+						ontouchmove={onTouchMove}
+					>
 						<div
-							class="pointer-events-none absolute rounded-md border border-dashed border-signal bg-signal-wash"
-							style="left: calc({colLeft(preview.day)}% + 2px); width: calc({COL_W}% - 4px); top: {blockTop(
-								preview.start,
-							)}px; height: {spanHeight(preview.start, preview.end)}px"
+							class="pointer-events-none grid h-full w-full"
+							style="grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat({bounds.rows}, {CELL_H}px); grid-auto-flow: column;"
 							aria-hidden="true"
-						></div>
-					{/if}
-
-					{#each blocks as block (block.day + '-' + block.start)}
-						{@const start = timeToMinutes(block.start)}
-						{@const end = timeToMinutes(block.end)}
-						{@const h = spanHeight(start, end)}
-						<button
-							type="button"
-							onclick={() => remove(block)}
-							aria-label={`Remove ${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
-							title={`${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
-							class="absolute overflow-hidden rounded-md border border-signal-ink bg-signal-wash px-1 text-left text-[10px] font-medium leading-tight text-signal-ink hover:bg-signal/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
-							style="left: calc({colLeft(block.day)}% + 2px); width: calc({COL_W}% - 4px); top: {blockTop(
-								start,
-							)}px; height: {h}px"
 						>
-							{#if h >= 32}
-								<span class="tabular">{formatTime(start)}</span>
-							{/if}
-						</button>
-					{/each}
+							{#each DAYS as d (d)}
+								{#each rowIndexes as r (r)}
+									<div
+										class="border-b border-hairline {d > 0 ? 'border-l' : ''} {minutesForRow(
+											r,
+											bounds.start,
+										) %
+											60 ===
+										0
+											? 'bg-sunken/40'
+											: ''}"
+									></div>
+								{/each}
+							{/each}
+						</div>
+
+						{#if preview}
+							<div
+								class="pointer-events-none absolute rounded-md border border-dashed border-signal bg-signal-wash"
+								style="left: calc({colLeft(preview.day)}% + 2px); width: calc({COL_W}% - 4px); top: {blockTop(
+									preview.start,
+								)}px; height: {spanHeight(preview.start, preview.end)}px"
+								aria-hidden="true"
+							></div>
+						{/if}
+
+						{#each blocks as block (block.day + '-' + block.start)}
+							{@const start = timeToMinutes(block.start)}
+							{@const end = timeToMinutes(block.end)}
+							{@const h = spanHeight(start, end)}
+							<button
+								type="button"
+								onclick={() => remove(block)}
+								aria-label={`Remove ${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
+								title={`${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
+								class="absolute overflow-hidden rounded-md border border-signal-ink bg-signal-wash px-1 text-left text-[10px] font-medium leading-tight text-signal-ink hover:bg-signal/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
+								style="left: calc({colLeft(block.day)}% + 2px); width: calc({COL_W}% - 4px); top: {blockTop(
+									start,
+								)}px; height: {h}px"
+							>
+								{#if h >= 32}
+									<span class="tabular">{formatTime(start)}</span>
+								{/if}
+							</button>
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>
 		<p class="mt-2 text-xs leading-relaxed text-steel">
 			Tap a half-hour to add an hour, or drag to add a longer window. On a phone, press and hold
 			first, then drag. Tap a window to remove it, or use the controls above. Every saved window is
-			also a button you can focus and activate.
+			also a button you can focus and activate. The grid runs from 4 in the morning to 11 at night,
+			and scrolls to reach the early and late rows.
 		</p>
 	</div>
 

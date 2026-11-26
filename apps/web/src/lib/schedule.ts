@@ -20,12 +20,16 @@ export const DAY_LABELS = [
 	'Sunday',
 ] as const;
 
-/** The day range the grid covers, from 05:00 to 22:00. */
-export const GRID_START_MIN = 5 * 60;
-export const GRID_END_MIN = 22 * 60;
+/**
+ * The default day range the grid covers, from 04:00 to 23:00, wide enough for
+ * the early starts runners actually use. A stored window that falls outside it
+ * is not moved: see `gridBounds`, which widens the drawn range to include it.
+ */
+export const GRID_START_MIN = 4 * 60;
+export const GRID_END_MIN = 23 * 60;
 /** Half-hour cells. */
 export const STEP_MIN = 30;
-/** Rows in the grid: 34 half-hour slots across the day range. */
+/** Rows in the default grid: 38 half-hour slots across the day range. */
 export const ROWS = (GRID_END_MIN - GRID_START_MIN) / STEP_MIN;
 /** A tap adds a window of this length; a drag adds the range it covers. */
 export const DEFAULT_WINDOW_MIN = 60;
@@ -34,6 +38,20 @@ export interface MinuteWindow {
 	start: number;
 	end: number;
 }
+
+/** The rows the grid draws: a start, an end and how many slots sit between them. */
+export interface GridBounds {
+	start: number;
+	end: number;
+	rows: number;
+}
+
+/** The default bounds, matching the constants above. */
+export const DEFAULT_GRID: GridBounds = {
+	start: GRID_START_MIN,
+	end: GRID_END_MIN,
+	rows: ROWS,
+};
 
 /** Minutes from midnight for a stored "HH:MM" time. */
 export function timeToMinutes(hhmm: string): number {
@@ -53,33 +71,56 @@ export function snapMinutes(min: number): number {
 	return Math.round(min / STEP_MIN) * STEP_MIN;
 }
 
-/** Keep minutes inside the grid's day range. */
-export function clampMinutes(min: number): number {
-	return Math.max(GRID_START_MIN, Math.min(GRID_END_MIN, min));
+/** Keep minutes inside a range, the default grid range unless given another. */
+export function clampMinutes(min: number, bounds: GridBounds = DEFAULT_GRID): number {
+	return Math.max(bounds.start, Math.min(bounds.end, min));
 }
 
-/** The grid row a time falls on. */
-export function rowForMinutes(min: number): number {
-	return Math.round((min - GRID_START_MIN) / STEP_MIN);
+/** The grid row a time falls on, measured from the grid's own start. */
+export function rowForMinutes(min: number, start: number = GRID_START_MIN): number {
+	return Math.round((min - start) / STEP_MIN);
 }
 
 /** The time a grid row starts at. */
-export function minutesForRow(row: number): number {
-	return GRID_START_MIN + row * STEP_MIN;
+export function minutesForRow(row: number, start: number = GRID_START_MIN): number {
+	return start + row * STEP_MIN;
 }
 
-/** The window a single tap adds: one hour, clamped to the day range. */
-export function windowForTap(startMin: number): MinuteWindow {
-	const start = snapMinutes(clampMinutes(startMin));
-	return { start, end: Math.min(GRID_END_MIN, start + DEFAULT_WINDOW_MIN) };
+/**
+ * The visible range of the grid. It is the default day range, widened to whole
+ * half-hour rows to include any stored window that falls outside it, so a window
+ * set somewhere else (a later feature, or the raw API) is drawn where it is
+ * rather than hidden. This never rewrites a stored value.
+ */
+export function gridBounds(blocks: ScheduleBlock[]): GridBounds {
+	let start = GRID_START_MIN;
+	let end = GRID_END_MIN;
+	for (const block of blocks) {
+		const { start: s, end: e } = blockMinutes(block);
+		if (s < start) start = s;
+		if (e > end) end = e;
+	}
+	start = Math.floor(start / STEP_MIN) * STEP_MIN;
+	end = Math.ceil(end / STEP_MIN) * STEP_MIN;
+	return { start, end, rows: (end - start) / STEP_MIN };
+}
+
+/** The window a single tap adds: one hour, bounded to the grid range. */
+export function windowForTap(startMin: number, bounds: GridBounds = DEFAULT_GRID): MinuteWindow {
+	const start = snapMinutes(clampMinutes(startMin, bounds));
+	return { start, end: Math.min(bounds.end, start + DEFAULT_WINDOW_MIN) };
 }
 
 /** The window a drag adds, covering both slots it touched, snapped and ordered. */
-export function windowForDrag(anchorMin: number, focusMin: number): MinuteWindow {
-	const lo = snapMinutes(clampMinutes(Math.min(anchorMin, focusMin)));
-	const hi = snapMinutes(clampMinutes(Math.max(anchorMin, focusMin))) + STEP_MIN;
-	const start = clampMinutes(lo);
-	const end = clampMinutes(Math.max(start + STEP_MIN, hi));
+export function windowForDrag(
+	anchorMin: number,
+	focusMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): MinuteWindow {
+	const lo = snapMinutes(clampMinutes(Math.min(anchorMin, focusMin), bounds));
+	const hi = snapMinutes(clampMinutes(Math.max(anchorMin, focusMin), bounds)) + STEP_MIN;
+	const start = clampMinutes(lo, bounds);
+	const end = clampMinutes(Math.max(start + STEP_MIN, hi), bounds);
 	return { start, end };
 }
 

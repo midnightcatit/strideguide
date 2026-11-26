@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
+	DEFAULT_GRID,
 	GRID_END_MIN,
 	GRID_START_MIN,
+	ROWS,
 	STEP_MIN,
 	addBlock,
 	blockAt,
 	daySummary,
 	formatTime,
 	formatWindow,
+	gridBounds,
 	minutesForRow,
 	minutesToTime,
 	removeBlockAt,
@@ -178,5 +181,47 @@ describe('day summary', () => {
 
 	it('is empty when nothing is blocked', () => {
 		expect(daySummary([])).toEqual([]);
+	});
+});
+
+describe('grid range and honest clamping', () => {
+	it('covers 04:00 to 23:00 in half-hour rows', () => {
+		expect(GRID_START_MIN).toBe(240);
+		expect(GRID_END_MIN).toBe(1380);
+		expect(ROWS).toBe(38);
+		expect(minutesForRow(0)).toBe(240);
+		expect(minutesForRow(ROWS - 1)).toBe(1350);
+	});
+
+	it('lets an early 04:30 start be selected', () => {
+		expect(rowForMinutes(270)).toBe(1);
+		expect(windowForTap(270)).toEqual({ start: 270, end: 330 });
+	});
+
+	it('widens the grid to include a stored window outside the default range', () => {
+		const stored: ScheduleBlock[] = [{ day: 0, start: '02:00', end: '02:30' }];
+		const wide = gridBounds(stored);
+		expect(wide.start).toBe(120);
+		// Inside the widened grid, 03:00 is drawn and selectable, not moved to 04:00.
+		expect(windowForTap(180, wide)).toEqual({ start: 180, end: 240 });
+	});
+
+	it('leaves a stored window exactly as it was when another is added', () => {
+		const stored: ScheduleBlock[] = [{ day: 0, start: '03:00', end: '03:30' }];
+		expect(addBlock(stored, 2, 360, 420)).toContainEqual({
+			day: 0,
+			start: '03:00',
+			end: '03:30',
+		});
+	});
+
+	it('widens the grid to include a late window as well', () => {
+		const stored: ScheduleBlock[] = [{ day: 6, start: '23:30', end: '23:59' }];
+		expect(gridBounds(stored).end).toBe(1440);
+	});
+
+	it('keeps the default range when every window is inside it', () => {
+		const inside: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:30' }];
+		expect(gridBounds(inside)).toEqual(DEFAULT_GRID);
 	});
 });
