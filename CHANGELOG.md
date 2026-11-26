@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- Guard every prose model path for the writing rules and the sanitizer (#268)
 - Show the model session why on every surface that shows a reason (#264)
 - Give sections one vertical rhythm and document the spacing scale (#261)
 - Recolour the calendar ramp and badges, and mark modality on calendar days (#259)
