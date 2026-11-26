@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- feat(plan): rotate the strength focus across the body each week (#285)
 - fix(web): show the update prompt reliably and re-check on foreground (#284)
 - fix(admin): stop the ops section overflowing on a phone (#283)
 - fix(system-map): drive the view from state, colour edges by kind (#282)
