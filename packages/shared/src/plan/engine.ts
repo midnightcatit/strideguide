@@ -332,28 +332,11 @@ function planTargets(
 	// still anchored by its long run and a heavy week spreads out around it.
 	const shareOfWeek = (km: number) => round1(clamp(km * longRunShare(km), 3, 38));
 
-	/**
-	 * Fill the easy weeks that follow the race. The first is the lightest, and none
-	 * is heavier than the heaviest week the build reached.
-	 */
-	const fillRecovery = (volumes: number[], longKm: number[]) => {
-		const reached = volumes[buildWeeks - 1] ?? volumes[0]!;
-		const cap = Math.max(...volumes.slice(0, buildWeeks));
-		let idx = 0;
-		phases.forEach((phase, w) => {
-			if (phase !== 'recovery') return;
-			volumes[w] = round1(clamp(reached * (0.3 + 0.15 * idx), 5, cap));
-			longKm[w] = 0;
-			idx += 1;
-		});
-	};
-
 	// The plain curve, which is also what a goal with no peak of its own keeps.
 	const seedVolumes = volumeCurve(input, phases);
 	if (peak === undefined || buildWeeks < 2) {
 		const volumes = [...seedVolumes];
-		const longKm = volumes.map((v) => shareOfWeek(v));
-		fillRecovery(volumes, longKm);
+		const longKm = volumes.map((v, w) => (phases[w] === 'recovery' ? 0 : shareOfWeek(v)));
 		return { volumes, longKm, warnings };
 	}
 
@@ -417,7 +400,11 @@ function planTargets(
 		);
 		taperIdx += 1;
 	});
-	fillRecovery(volumes, longKm);
+	// A recovery week carries no long run (its volume is set against the peak the
+	// build actually reached, in generatePlan).
+	phases.forEach((phase, w) => {
+		if (phase === 'recovery') longKm[w] = 0;
+	});
 
 	// A goal with no race is never short of itself: it has all the time there is.
 	const raceGoal = input.profile.longRun?.peakFractionOfRace !== undefined;
@@ -1219,6 +1206,23 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		else if (shaped && intent === 'hold') {
 			volume = Math.min(volumes[w - 1] ?? volume, volume);
 		}
+		if (isRecovery) {
+			// The easy weeks that follow the race come down from the peak the
+			// build actually reached, not the internal curve. When the prescribed
+			// weeks run lighter than the curve, the curve peak would make a
+			// recovery week heavier than any real week. The first is the lightest
+			// and none is heavier than the plan's own best week.
+			const buildPeak = Math.max(
+				5,
+				...weeks
+					.filter(
+						(wk) => wk.phase === 'base' || wk.phase === 'build' || wk.phase === 'peak',
+					)
+					.map((wk) => wk.targetVolumeKm),
+			);
+			const recoveryIdx = phases.slice(0, w).filter((p) => p === 'recovery').length;
+			volume = clamp(round1(buildPeak * (0.3 + 0.15 * recoveryIdx)), 5, buildPeak);
+		}
 		volume = clamp(round1(volume), 5, 160);
 		// Each week is seven days from the start day: week one runs from the chosen
 		// start date, and every later week follows it, so the stored dates roll with
@@ -1260,6 +1264,17 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const slotDays = pickHardDays(hardPool, qualitySlots, longDay);
 		const qualityDays = slotDays.slice(0, hardCount);
 		const softDays = slotDays.filter((d) => !qualityDays.includes(d));
+		// The long run is its own arc: the goal-aware target the plan worked out for
+		// this week, held inside a sane share of the week so a light week is never
+		// one long run and little else. A recovery week carries no long run. An eased
+		// week dips it too, the way a deload does, so easing a week lowers what it
+		// prescribes rather than leaving the long run at the plan's full arc.
+		const longEase = shaped && intent === 'ease' ? 0.9 : 1;
+		let longKm = isRecovery
+			? 0
+			: round1(
+					clamp(Math.min(longTargets[w]! * longEase, volume * LONG_RUN_SHARE_CEILING), 3, 38),
+				);
 		// A recovery week carries no long run, so the long-run day is not reserved:
 		// it can take an easy run, so the easy runs cover the whole week rather than
 		// leaving that day empty. Otherwise the long run, the quality slots and the
@@ -1271,24 +1286,39 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
 		// Strength gets its own days, never sharing with a run, and takes them before
-		// the remaining days become easy runs.
+		// the remaining days become easy runs. A week with a long run still needs an
+		// easy run to hold the other half of it: when the quality slots are the only
+		// other runs, the long run would be well over half of what the runner sees,
+		// so a strength day yields to an easy run instead.
 		const wantStrength = isRecovery ? 0 : Math.min(strengthLeft, runFree.length);
-		const strengthDays = runFree.slice(0, wantStrength);
-		const easyDays = [
+		let strengthDays = runFree.slice(0, wantStrength);
+		let easyDays = [
 			...softDays,
 			...(recoveryDay !== undefined ? [recoveryDay] : []),
 			...runFree.slice(wantStrength),
 		];
-		strengthLeft -= wantStrength;
+		const nonLongRuns =
+			qualityDays.length +
+			softDays.length +
+			(recoveryDay !== undefined ? 1 : 0) +
+			(runFree.length - wantStrength);
+		if (
+			longKm > 0 &&
+			nonLongRuns <= 1 &&
+			strengthDays.length >= 1 &&
+			(hasQuality || strengthDays.length >= 2)
+		) {
+			strengthDays = strengthDays.slice(0, -1);
+			easyDays = [
+				...softDays,
+				...(recoveryDay !== undefined ? [recoveryDay] : []),
+				...runFree.slice(strengthDays.length),
+			];
+		}
+		strengthLeft -= strengthDays.length;
 
 		const load = sportLoad(input);
 		const qualityShare = SESSION_SHAPE[input.profile.slug]?.quality ?? SESSION_SHAPE.default!.quality;
-		// The long run is its own arc: the goal-aware target the plan worked out for
-		// this week, held inside a sane share of the week so a light week is never
-		// one long run and little else. A recovery week carries no long run.
-		const longKm = isRecovery
-			? 0
-			: round1(clamp(Math.min(longTargets[w]!, volume * LONG_RUN_SHARE_CEILING), 3, 38));
 		// One quality day's whole distance, held under the long run so the long run
 		// is always the longest run and a light week is not one giant quality day.
 		const qualityRaw = clamp(volume * qualityShare, 1.6, 16);
@@ -1315,25 +1345,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			mediumLongDay !== undefined
 				? round1(clamp(volume * MEDIUM_LONG_SHARE, 8, Math.min(longKm - 0.5, 24)))
 				: 0;
-		// Easy runs take what is left, never as long as the long run (at most 80
-		// percent of it) and never a token jog: the shortest is a real recovery run
-		// of about 20 minutes, and the day after the long run is one of these
-		// (research/wave-6, section 2). The long run is always the longest run.
-		const leftover = Math.max(
-			0,
-			round1(volume - longKm - qualityKm * qualityDays.length - mediumLongKm),
-		);
 		// A recovery week has no long run, so its easy runs take the whole week.
+		// Otherwise an easy run may reach just under the long run, so a week with
+		// few other runs (a short week, or a cross-heavy one) can still hold the
+		// long run to half of what the runner sees. The long run stays the longest.
 		const easyCap = isRecovery
 			? Math.max(1, round1(volume))
-			: Math.max(1, round1(longKm * 0.8));
+			: Math.max(1, round1(longKm - 0.1));
 		const otherEasyDays = easyDays.filter((d) => d !== mediumLongDay);
-		const easyPer =
-			otherEasyDays.length && leftover > 0
-				? round1(
-						clamp(leftover / otherEasyDays.length, Math.min(MIN_EASY_KM, leftover), easyCap),
-					)
-				: 0;
 		// Quality bookends scale with the session, and the reps fill what is left.
 		const { wu: qWu, cd: qCd } = qualityWarmupCooldown(qualityKm);
 		const qualityWorkKm = Math.max(0.6, round1(qualityKm - qWu - qCd));
@@ -1514,6 +1533,24 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		});
 
+		// Easy runs take what is left, never a token jog: the shortest is a real
+		// recovery run of about MIN_EASY_KM, and the day after the long run is one
+		// of these (research/wave-6, section 2). Sizing from the quality work that
+		// was actually built, not its target, keeps the long run at or under half
+		// of the week the runner sees.
+		const qualitySum = round1(
+			sessions
+				.filter((s) => s.modality === 'running' && s.type !== 'long')
+				.reduce((sum, s) => sum + (s.prescription.targetDistanceKm ?? 0), 0),
+		);
+		const leftover = Math.max(0, round1(volume - longKm - qualitySum - mediumLongKm));
+		const easyPer =
+			otherEasyDays.length && leftover > 0
+				? round1(
+						clamp(leftover / otherEasyDays.length, Math.min(MIN_EASY_KM, easyCap), easyCap),
+					)
+				: 0;
+
 		// easy runs: the midweek medium-long run at higher volume, the short recovery
 		// run the day after the long run, and the rest as plain easy runs
 		easyDays.forEach((day) => {
@@ -1675,6 +1712,35 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					if (sessions[i]!.day === raceDay) sessions.splice(i, 1);
 				}
 				sessions.push(raceSession(raceDay, raceKm, goalPace, paces));
+			}
+		}
+
+		// The long run is held to half the week's curve, but the race can push a
+		// training session off its day, leaving the long run most of a lighter
+		// week. On that week the long run gives way to whatever runs are left, so
+		// it is never more than half of what the runner sees.
+		if (longKm > 0) {
+			const otherRunKm = round1(
+				sessions
+					.filter((s) => s.modality === 'running' && s.type !== 'long' && s.type !== 'race')
+					.reduce((sum, s) => sum + (s.prescription.targetDistanceKm ?? 0), 0),
+			);
+			if (otherRunKm + 0.1 < longKm) {
+				const longIdx = sessions.findIndex((s) => s.type === 'long');
+				// A run left under MIN_EASY_KM is a token jog, not a long run, so the
+				// week simply carries none.
+				if (longIdx >= 0 && otherRunKm >= MIN_EASY_KM) {
+					const long = sessions[longIdx]!;
+					long.prescription.targetDistanceKm = otherRunKm;
+					long.prescription.workout = singleRunWorkout('long', otherRunKm, paces);
+					long.durationMin = estDuration(otherRunKm, paces ? paces.easy[1] : easyPace + 15);
+					longKm = otherRunKm;
+				} else if (longIdx >= 0) {
+					sessions.splice(longIdx, 1);
+					longKm = 0;
+				} else {
+					longKm = otherRunKm;
+				}
 			}
 		}
 

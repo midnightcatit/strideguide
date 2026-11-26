@@ -1473,3 +1473,63 @@ describe('week structure (research/wave-6)', () => {
 		expect(peakShare(25)).toBeGreaterThan(peakShare(55));
 	});
 });
+
+describe('plan invariants on the weeks the runner sees (backtest regressions)', () => {
+	const build = (
+		slug: string,
+		baseline: Parameters<typeof generatePlan>[0]['baseline'],
+		days: number[],
+		targetDate?: string,
+	) =>
+		generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === slug)!,
+			baseline,
+			availableDays: days,
+			startDate: '2026-11-30',
+			targetDate,
+		});
+
+	// A low-volume 3-day plan used to size the long run from the week's curve,
+	// which the sessions never summed to, so the long run was over half of the
+	// lighter week the runner actually ran.
+	it('keeps the long run under half of the realised week on a light short plan', () => {
+		const p = build('marathon', { experience: 'beginner', weeklyKm: 18 }, [0, 2, 4]);
+		let sawLong = false;
+		for (const w of p.weeks) {
+			const long = w.sessions.find((s) => s.type === 'long');
+			if (!long) continue;
+			sawLong = true;
+			const km = long.prescription.targetDistanceKm ?? 0;
+			expect(km).toBeLessThanOrEqual(w.targetVolumeKm * 0.5 + 0.05);
+		}
+		expect(sawLong).toBe(true);
+	});
+
+	// Six cheap days spread a light week so thin that an easy run fell to a
+	// two-minute jog. The fix gives up a day instead of filling every one.
+	it('never schedules a token run on a light week spread over six days', () => {
+		const p = build('10k', { experience: 'intermediate', weeklyKm: 18 }, [0, 1, 2, 3, 4, 5]);
+		for (const w of p.weeks) {
+			for (const s of w.sessions.filter((x) => x.modality === 'running' && x.type !== 'race')) {
+				expect(s.durationMin).toBeGreaterThanOrEqual(15);
+			}
+		}
+	});
+
+	// The recovery weeks used to derive from the curve's peak, which ran far
+	// above what the peak week actually prescribed, so a recovery week could be
+	// heavier than any real week.
+	it('keeps the post-race recovery weeks under the peak the plan reached', () => {
+		const p = build('marathon', { experience: 'beginner', weeklyKm: 85 }, [0, 2, 4], '2027-04-12');
+		const peak = Math.max(
+			...p.weeks
+				.filter((w) => w.phase === 'base' || w.phase === 'build' || w.phase === 'peak')
+				.map((w) => w.targetVolumeKm),
+		);
+		const recovery = p.weeks.filter((w) => w.phase === 'recovery');
+		expect(recovery.length).toBeGreaterThan(0);
+		for (const w of recovery) {
+			expect(w.targetVolumeKm).toBeLessThanOrEqual(peak);
+		}
+	});
+});
