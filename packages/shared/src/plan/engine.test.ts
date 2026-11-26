@@ -1533,3 +1533,120 @@ describe('plan invariants on the weeks the runner sees (backtest regressions)', 
 		}
 	});
 });
+
+describe('a mid-week start opens with a shorter first week (progression)', () => {
+	const fiveK = GOAL_PROFILES.find((p) => p.slug === '5k')!;
+	const build = (startDate: string) =>
+		generatePlan({
+			profile: fiveK,
+			baseline: { experience: 'beginner', weeklyKm: 12 },
+			availableDays: [0, 2, 4, 6],
+			startDate,
+			targetDate: '2027-02-13',
+		});
+	// 2026-11-30 is a Monday (a whole first week); 2026-12-03 is a Thursday (four
+	// days left in the calendar week).
+	const monday = build('2026-11-30');
+	const thursday = build('2026-12-03');
+
+	it('pro-rates the first week to the days left in the starting week', () => {
+		// A Thursday start leaves four of the seven days, so the first week is
+		// clearly lighter than the same plan starting on Monday.
+		expect(thursday.weeks[0]!.targetVolumeKm).toBeLessThan(
+			monday.weeks[0]!.targetVolumeKm * 0.75,
+		);
+	});
+
+	it('resumes the normal ramp from the second week', () => {
+		// Week one was light because it was short, not because the runner is behind:
+		// the next whole week is the ramp the plan always had.
+		expect(thursday.weeks[1]!.targetVolumeKm).toBeCloseTo(
+			monday.weeks[1]!.targetVolumeKm,
+			0,
+		);
+		expect(thursday.weeks[1]!.targetVolumeKm).toBeGreaterThan(
+			thursday.weeks[0]!.targetVolumeKm,
+		);
+	});
+
+	it('keeps the short first week to real runs, never a token jog', () => {
+		const runs = thursday.weeks[0]!.sessions.filter((s) => s.modality === 'running');
+		expect(runs.length).toBeGreaterThanOrEqual(1);
+		for (const s of runs) expect(s.durationMin).toBeGreaterThanOrEqual(15);
+		// A four-day week fits two runs at a real length, and no more.
+		expect(runs.length).toBeLessThanOrEqual(3);
+	});
+});
+
+describe('the week floor follows the goal and the runner (minimums)', () => {
+	const shortBeginner = generatePlan({
+		profile: GOAL_PROFILES.find((p) => p.slug === '5k')!,
+		baseline: { experience: 'beginner', weeklyKm: 2 },
+		availableDays: [1, 3, 5],
+		startDate: '2026-12-03',
+		targetDate: '2027-02-13',
+	});
+
+	it('lets a beginner on a short goal open with a genuinely short week', () => {
+		// Under the old flat 5 km floor: a beginner with a tiny base is not forced
+		// into a week heavier than they have been running.
+		expect(shortBeginner.weeks[0]!.targetVolumeKm).toBeLessThan(5);
+	});
+
+	it('still gives the short week at least one real run', () => {
+		const runs = shortBeginner.weeks[0]!.sessions.filter((s) => s.modality === 'running');
+		expect(runs.length).toBeGreaterThanOrEqual(1);
+		for (const s of runs) expect(s.durationMin).toBeGreaterThanOrEqual(15);
+	});
+
+	it('keeps a real week floor for an experienced marathoner', () => {
+		const p = generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === 'marathon')!,
+			baseline: { experience: 'advanced' },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-03',
+			targetDate: '2027-05-01',
+		});
+		// The experienced marathon floor, well above a beginner's short-goal week.
+		for (const w of p.weeks) {
+			expect(w.targetVolumeKm).toBeGreaterThanOrEqual(9);
+		}
+	});
+});
+
+describe('the progression varies with the week, not one repeated length', () => {
+	it('spreads a high-volume week around a medium-long run', () => {
+		const p = generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === 'marathon')!,
+			baseline: { experience: 'intermediate', weeklyKm: 55, strengthDays: 1 },
+			availableDays: [0, 1, 2, 4, 5, 6],
+			startDate: '2026-11-30',
+			targetDate: '2027-05-01',
+		});
+		const mediumLong = p.weeks
+			.flatMap((w) => w.sessions)
+			.filter((s) => s.title === 'Medium-long run');
+		expect(mediumLong.length).toBeGreaterThan(0);
+		// It stays a real aerobic run, not a second long run.
+		for (const ml of mediumLong) {
+			expect(ml.prescription.targetDistanceKm!).toBeGreaterThanOrEqual(8);
+		}
+	});
+
+	it('does not pin every easy run of a light plan to one length', () => {
+		const p = generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === '5k')!,
+			baseline: { experience: 'beginner', weeklyKm: 12 },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-11-30',
+			targetDate: '2027-02-13',
+		});
+		const easy = p.weeks
+			.flatMap((w) => w.sessions)
+			.filter((s) => s.type === 'easy')
+			.map((s) => s.prescription.targetDistanceKm!);
+		// The owner's complaint was one easy length repeating week after week; a
+		// light plan that builds should take several distinct easy lengths.
+		expect(new Set(easy.map((x) => Math.round(x * 10) / 10)).size).toBeGreaterThan(3);
+	});
+});

@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- feat(plan): pro-rate week one for a mid-week start, goal-aware progression minimums (#280)
 - fix(calendar): readable text on the load ramp and a clearer mobility mark (#278)
 - fix(why): frame a mobility session's reason as mobility, not a run (#277)
 - fix(web): keep page action rows sticky and add an admin menu row (#275)
