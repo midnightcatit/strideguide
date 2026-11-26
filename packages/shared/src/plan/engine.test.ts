@@ -558,6 +558,69 @@ describe('generatePlan (model shaping)', () => {
 	});
 });
 
+describe('generatePlan (strength and mobility shaping)', () => {
+	// A flexibility gap of two, so the engine lays out two mobility sessions a
+	// week and the model can lean that either way.
+	const base = {
+		profile: marathon,
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-12-01',
+		targetDate: '2027-05-01',
+		baseline: {
+			experience: 'intermediate' as const,
+			flexibility: { current: 1, goal: 3 },
+		},
+	};
+
+	const strengthSets = (w: PlannedWeek) =>
+		w.sessions.find((s) => s.modality === 'strength')!.prescription.blocks![0]!.sets.length;
+	const mobilityCount = (w: PlannedWeek) =>
+		w.sessions.filter((s) => s.modality === 'mobility').length;
+	const runningNumbers = (w: PlannedWeek) =>
+		w.sessions
+			.filter((s) => s.modality === 'running')
+			.map((s) => `${s.day}:${s.type}:${s.prescription.targetDistanceKm}`)
+			.sort();
+
+	it('leans the strength sets by the model intent, within a sane band', () => {
+		const plain = generatePlan(base);
+		const built = generatePlan({ ...base, weekShapes: [{ strengthIntent: 'build' }] });
+		const eased = generatePlan({ ...base, weekShapes: [{ strengthIntent: 'ease' }] });
+		expect(strengthSets(plain.weeks[0]!)).toBe(3);
+		expect(strengthSets(built.weeks[0]!)).toBe(4);
+		expect(strengthSets(eased.weeks[0]!)).toBe(2);
+	});
+
+	it('leans the mobility frequency by the model intent, inside the week', () => {
+		const plain = generatePlan(base);
+		const built = generatePlan({ ...base, weekShapes: [{ mobilityIntent: 'build' }] });
+		const eased = generatePlan({ ...base, weekShapes: [{ mobilityIntent: 'ease' }] });
+		expect(mobilityCount(plain.weeks[0]!)).toBe(2);
+		expect(mobilityCount(built.weeks[0]!)).toBe(3);
+		expect(mobilityCount(eased.weeks[0]!)).toBe(1);
+	});
+
+	it('never changes a running session when strength or mobility is shaped', () => {
+		const plain = generatePlan(base);
+		const shaped = generatePlan({
+			...base,
+			weekShapes: [{ strengthIntent: 'build', mobilityIntent: 'build' }],
+		});
+		expect(runningNumbers(shaped.weeks[0]!)).toEqual(runningNumbers(plain.weeks[0]!));
+		expect(shaped.weeks[0]!.targetVolumeKm).toBe(plain.weeks[0]!.targetVolumeKm);
+	});
+
+	it('ignores a strength or mobility intent outside the closed set', () => {
+		const plain = generatePlan(base);
+		const shaped = generatePlan({
+			...base,
+			weekShapes: [{ strengthIntent: 'more' as never, mobilityIntent: 'x' as never }],
+		});
+		expect(strengthSets(shaped.weeks[0]!)).toBe(strengthSets(plain.weeks[0]!));
+		expect(mobilityCount(shaped.weeks[0]!)).toBe(mobilityCount(plain.weeks[0]!));
+	});
+});
+
 describe('progression (volume builds, sessions differentiate)', () => {
 	const levels = ['beginner', 'intermediate', 'advanced'] as const;
 	const slugs = ['marathon', 'half-marathon', '10k', '5k', 'whole-fitness'];

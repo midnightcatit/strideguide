@@ -930,6 +930,8 @@ plans.post(
 					weekNumber: w.weekNumber,
 					phase: w.phase,
 					volumeKm: w.targetVolumeKm,
+					strengthDays: w.sessions.filter((s) => s.modality === 'strength').length,
+					mobilityDays: w.sessions.filter((s) => s.modality === 'mobility').length,
 				})),
 			}),
 			reviewPlan(c.env, {
@@ -1550,6 +1552,8 @@ plans.post(
 				weekNumber: w.weekNumber,
 				phase: w.phase,
 				volumeKm: w.targetVolumeKm,
+				strengthDays: w.sessions.filter((s) => s.modality === 'strength').length,
+				mobilityDays: w.sessions.filter((s) => s.modality === 'mobility').length,
 			})),
 			weekOne: pattern,
 		});

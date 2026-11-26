@@ -21,7 +21,15 @@ import { WORKOUT_LIBRARY, type LibraryWorkout } from './library';
 import { mobilityPrescription } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import { placeSessions, scheduleWarnings, type UnplacedSession } from './schedule';
-import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
+import type {
+	PlannedSession,
+	PlannedWeek,
+	PlanDraft,
+	PlanInput,
+	StrengthIntent,
+	MobilityIntent,
+	TrainingPaces,
+} from './types';
 import { composeSessionWhy } from './why';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
 
@@ -1199,6 +1207,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// numbers stay deterministic: an intent only scales or holds the plan's own
 		// curve, never sets a distance, and a taper or recovery week is left alone.
 		const intent = input.weekShapes?.[w]?.volumeIntent;
+		// The model may lean the week's strength and mobility in the same bounded
+		// way. Each only nudges the engine's own plan for that modality: strength
+		// moves its sets by one notch and mobility its frequency by one session, and
+		// neither touches a running distance or the week's structure.
+		const strengthIntent = input.weekShapes?.[w]?.strengthIntent;
+		const mobilityIntent = input.weekShapes?.[w]?.mobilityIntent;
 		const shaped = phase !== 'taper' && !isRecovery;
 		let volume = volumes[w]!;
 		if (shaped && intent === 'ease') volume = volume * 0.9;
@@ -1552,7 +1566,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		// Strength on its own days, in the morning.
 		for (const day of strengthDays) {
-			sessions.push(strengthSession(day, 'AM', phase, input));
+			sessions.push(strengthSession(day, 'AM', phase, input, strengthIntent));
 		}
 
 		// Cross-training: when the user has it and the profile allows it, swap the
@@ -1616,8 +1630,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
 		const mobility = mobilityPrescription(flexGap, input.baseline);
 		if (mobility && phase !== 'taper') {
-			// The gap sets how often the runner stretches; a favorite mobility
-			// workout sets which routine, so the plan names the one they chose.
+			// The gap sets how often the runner stretches; the model may lean that
+			// frequency by one session either way, kept inside the week. A favorite
+			// mobility workout sets which routine, so the plan names the one they chose.
+			const perWeek = clamp(
+				mobility.perWeek + (mobilityIntent === 'build' ? 1 : mobilityIntent === 'ease' ? -1 : 0),
+				0,
+				7,
+			);
 			const routineId = favoriteWorkout(input, 'mobility')?.id ?? mobility.libraryId;
 			// Mobility is short, so it pairs with a day that already has a session,
 			// easing onto an easy or strength day first. A rest day is the fallback.
@@ -1631,7 +1651,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			const candidates = [2, 4, 1, 3, 0, 5, 6].sort((a, b) => rank(a) - rank(b));
 			let added = 0;
 			for (const d of candidates) {
-				if (added >= mobility.perWeek) break;
+				if (added >= perWeek) break;
 				const slot = sessions.some((s) => s.day === d) ? 'PM' : 'AM';
 				sessions.push(mobilitySession(d, routineId, slot));
 				added++;
@@ -1749,11 +1769,23 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	};
 }
 
+/**
+ * The sets a strength session runs, from the runner's level, nudged one notch by
+ * the model's week emphasis. The model only names an intent; the engine owns the
+ * count and keeps it in a sane band, so a shaped week never writes a number.
+ */
+function strengthSetCount(level: string, intent?: StrengthIntent): number {
+	const base = level === 'beginner' ? 2 : level === 'advanced' ? 4 : 3;
+	const delta = intent === 'build' ? 1 : intent === 'ease' ? -1 : 0;
+	return clamp(base + delta, 2, 5);
+}
+
 function strengthSession(
 	day: number,
 	slot: string,
 	phase: string,
 	input: PlanInput,
+	strengthIntent?: StrengthIntent,
 ): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
 	const level = input.baseline.experience ?? 'beginner';
@@ -1778,7 +1810,8 @@ function strengthSession(
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
 	// Level sets the volume: a beginner does fewer sets, an advanced runner more.
-	const setCount = level === 'beginner' ? 2 : level === 'advanced' ? 4 : 3;
+	// The model's week emphasis may lean it one notch up or down.
+	const setCount = strengthSetCount(level, strengthIntent);
 	const sets = circuit.map((m) => ({
 		machine: m.name,
 		sets: Array.from({ length: setCount }, () => ({ reps, weightKg: 0 })),
