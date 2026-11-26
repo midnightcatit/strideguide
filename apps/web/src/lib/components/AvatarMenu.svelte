@@ -8,10 +8,13 @@
 		name,
 		email,
 		seed,
+		isAdmin = false,
 	}: {
 		name?: string | null;
 		email?: string | null;
 		seed?: string;
+		/** True for an admin, so the menu carries the Admin row. */
+		isAdmin?: boolean;
 	} = $props();
 
 	// The circle is the initial when there is a name; otherwise a neutral person
@@ -117,6 +120,16 @@
 					<span>All settings</span>
 					<span class="text-steel" aria-hidden="true">›</span>
 				</a>
+				{#if isAdmin}
+					<a
+						href="/settings/admin"
+						onclick={() => (open = false)}
+						class="flex items-center justify-between gap-3 border-t border-hairline px-4 py-3 text-sm hover:bg-sunken"
+					>
+						<span>Admin</span>
+						<span class="text-steel" aria-hidden="true">›</span>
+					</a>
+				{/if}
 			</nav>
 		</div>
 	{/if}

@@ -33,6 +33,21 @@
 	let stopConfirm = $state(false);
 	let signOutConfirm = $state(false);
 
+	// Admin state for the avatar menu's Admin row. Checked once when a signed-in
+	// user is known; a non-admin gets isAdmin false and no row. The admin routes
+	// are guarded on the server, so this only decides whether to draw the link.
+	let isAdmin = $state(false);
+	let adminChecked = false;
+	async function checkAdmin() {
+		if (adminChecked) return;
+		adminChecked = true;
+		try {
+			isAdmin = (await api.adminMe()).isAdmin;
+		} catch {
+			// Signed out, or the check failed; leave the row hidden.
+		}
+	}
+
 	// Onboarding hides the nav: the plan is the point, and almost everything else
 	// depends on it. A sticky close with a confirmation takes you back instead.
 	const onboarding = $derived(page.url.pathname.startsWith('/onboarding'));
@@ -99,7 +114,10 @@
 		// settings failure. When auth resolves to a user, load the prefs.
 		const refreshSession = async () => {
 			await ensureAuth().catch(() => {});
-			if (auth.checked && auth.user) void loadPrefs();
+			if (auth.checked && auth.user) {
+				void loadPrefs();
+				void checkAdmin();
+			}
 		};
 		void refreshSession();
 
@@ -223,7 +241,7 @@
 						<span class="tabular text-xs text-signal-ink" title="{pending} log(s) waiting to sync" aria-hidden="true">⟳ {pending}</span>
 						<span class="sr-only" role="status" aria-live="polite">{pending} {pending === 1 ? 'log' : 'logs'} waiting to sync</span>
 					{/if}
-					<AvatarMenu name={avatarName} email={user?.email} seed={user?.id} />
+					<AvatarMenu name={avatarName} email={user?.email} seed={user?.id} {isAdmin} />
 				</div>
 			</div>
 		</header>
