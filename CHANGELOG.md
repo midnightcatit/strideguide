@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- Make the onboarding volume step say what the engine does (#272)
 - feat(grid): edge arrow strips for windows and a bounded, swipeable list (#270)
 - feat(admin): add the system map page behind the admin hub (#266)
 - Guard every prose model path for the writing rules and the sanitizer (#268)
