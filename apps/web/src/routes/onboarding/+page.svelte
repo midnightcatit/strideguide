@@ -291,7 +291,7 @@
 			out.push({
 				id: 'date',
 				title: 'When is your race?',
-				lede: 'We count backwards from race day to set the length of each block: a long base, a build, a short peak, then a taper, with easy recovery weeks after the race. A far-off date just means a longer base.',
+				lede: 'We count backwards from race day to set the length of each block: a long base, a build, a short peak, then a taper, with easy recovery weeks after the race. A far-off date makes every phase longer, not just the base.',
 				guide: [
 					'Most plans want 10 to 20 weeks. Under 8 weeks is a compressed build.',
 					'Unsure? Pick the date you are aiming for. You can rebuild later.',
@@ -321,8 +321,8 @@
 			},
 			{
 				id: 'volume',
-				title: 'Where should the plan start?',
-				lede: `The weekly distance the plan starts from, in ${distanceUnit()}. It builds up from there, so this is a starting point, not a limit.`,
+				title: 'How much do you run a week?',
+				lede: `Your distance in a normal week, in ${distanceUnit()}. Week one eases in a little below it to start gently, then the plan builds from there with lighter weeks along the way. This is a starting point, not a limit.`,
 				guide: [
 					'Use a recent week, not your biggest ever.',
 					'The plan builds gradually, around 10 percent a week, with a lighter week every fourth week.',
