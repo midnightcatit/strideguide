@@ -56,6 +56,7 @@ async function applyPrefs(): Promise<void> {
 		prefs.favoriteMachines = res.prefs.favoriteMachines;
 		prefs.favoriteWorkouts = res.prefs.favoriteWorkouts;
 		prefs.connectNudgeDismissed = res.prefs.connectNudgeDismissed;
+		prefs.schedule = res.prefs.schedule;
 		prefsState.loaded = true;
 		prefsState.failed = false;
 	} catch {
@@ -110,6 +111,16 @@ export async function setConnectNudgeDismissed(v: boolean): Promise<void> {
 	prefs.connectNudgeDismissed = v;
 	try {
 		await api.putSettings({ connectNudgeDismissed: v });
+	} catch {
+		// best-effort; ui already updated
+	}
+}
+
+/** The weekly windows the runner blocked out. An empty list clears them. */
+export async function setSchedule(schedule: Prefs['schedule']): Promise<void> {
+	prefs.schedule = schedule;
+	try {
+		await api.putSettings({ schedule });
 	} catch {
 		// best-effort; ui already updated
 	}

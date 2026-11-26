@@ -4,16 +4,17 @@
 	import { goto } from '$app/navigation';
 	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
 	import TimeInput from '$lib/components/TimeInput.svelte';
+	import ScheduleGrid from '$lib/components/ScheduleGrid.svelte';
 	import FavoritePicker from '$lib/components/FavoritePicker.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
 	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, type LibraryWorkout } from '@strideguide/shared/plan';
-	import { milesToKm } from '@strideguide/shared/units';
+	import { milesToKm, type ScheduleBlock } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
 	import { dragToDay } from '$lib/actions';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
-	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setUnits, setVitals } from '$lib/prefs.svelte';
+	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setSchedule, setUnits, setVitals } from '$lib/prefs.svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { reloadPlan } from '$lib/planStore.svelte';
 	import { DAY_INITIALS, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, type ClientSession, type CurrentPlan } from '$lib/plan';
@@ -35,6 +36,9 @@
 	let weeklyKm = $state('');
 	let buildPreference = $state<'ease-in' | 'steady' | 'ambitious'>('steady');
 	let days = $state<number[]>([0, 2, 4, 6]);
+	// The free windows the runner blocks out on those days, in local time. Plain
+	// prefs data, saved with the rest; the plan fits sessions inside them later.
+	let schedule = $state<ScheduleBlock[]>([]);
 	let notes = $state('');
 
 	// Personal details, asked first. The birth year drives the plan (see the
@@ -322,6 +326,16 @@
 					'Three or four days is enough to make progress.',
 					'Keep quality days apart, and put strength after an easy run or on a rest day.',
 					'Fewer days is fine. The plan scales to what you can do.',
+				],
+			},
+			{
+				id: 'schedule',
+				title: 'When can you train?',
+				lede: 'Block out the times you are usually free on your training days, so the plan can fit sessions into the hours you actually have. Tapping or dragging on the grid adds a free window, and tapping a saved window removes it. This step is optional: carry on without adding anything and the plan uses your chosen days alone.',
+				guide: [
+					'Add a window for each block of free time, for example 6:00 to 7:30 before work.',
+					'Keep windows to the days you pick. A day with no window stays open.',
+					'You can set these any time later in Settings, under Training.',
 				],
 			},
 			{
@@ -822,6 +836,9 @@
 			await setFavoriteMachines(favoriteMachines);
 			await setFavoriteWorkouts(favoriteWorkouts);
 
+			// Store the blocked-out windows, if the runner added any.
+			await setSchedule(schedule);
+
 			await Promise.race([
 				api.generatePlan(body),
 				new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 25000)),
@@ -1265,6 +1282,11 @@
 						{/each}
 					</div>
 					<p class="mt-3 text-sm text-steel">{days.length} {days.length === 1 ? 'day' : 'days'} a week.</p>
+				{:else if step.id === 'schedule'}
+					<ScheduleGrid blocks={schedule} onChange={(b) => (schedule = b)} />
+					<p class="mt-3 text-xs text-steel">
+						Optional. Carry on without adding anything if you would rather not block times yet.
+					</p>
 				{:else if step.id === 'equipment'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Your setup</p>
 					<p class="mt-1 text-xs text-steel">Pick the kind of strength work you want. This decides how a session is built.</p>
