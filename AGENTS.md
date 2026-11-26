@@ -124,6 +124,13 @@ attempts in a row abort the turn.
   open PRs, not by waiting for a push.
 - **The main session reviews and releases.** The main agent reviews every session PR, requests changes
   when warranted, merges to `main`, and verifies the auto-deploy. Sessions do not merge or deploy.
+- **Review means reading the code.** A green CI gate, a passing test count and the session's own
+  summary are evidence, not a review. The main session reads the changed code in every subagent PR
+  before merging and confirms three things: the change does what the brief asked, it does not quietly
+  weaken an existing test or assertion to pass, and any claim it makes about the research or data it
+  cites actually holds in the code. When a change cannot be verified by reading (a query that only
+  fails at runtime, a new provider that needs a live key), say so in the PR and either verify it
+  another way or leave it unmerged.
 - **The local config is per machine.** `.kilo/kilo.jsonc` is local and untracked (it holds
   credentials), so its settings and permissions apply to this machine only. The Agent Manager
   permission block was removed locally, not in git.
