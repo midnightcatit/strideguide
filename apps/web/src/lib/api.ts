@@ -286,25 +286,32 @@ export interface AdminOps {
 	rateLimits: { keys: number; totalCount: number; newestWindowStart: string | null };
 }
 
-/** One ease or hold the load model would have made, across accounts. */
+/** One load model row, across accounts. A row with no week means no change. */
 export interface AdminLoadShadowDecision {
 	planId: string;
 	email: string;
 	at: string | null;
 	mode: string | null;
-	weekNumber: number;
-	intent: string;
-	fromVolumeKm: number;
-	toVolumeKm: number;
-	reason: string;
+	weekNumber: number | null;
+	intent: string | null;
+	fromVolumeKm: number | null;
+	toVolumeKm: number | null;
+	reason: string | null;
 	fitness: number | null;
 	fatigue: number | null;
 	form: number | null;
 }
 
-/** The cross-user load-shadow view for the admin page. Metadata only. */
+/** The cross-user load view for the admin page. Metadata only. */
 export interface AdminLoadShadow {
-	summary: { plans: number; users: number; records: number; ease: number; hold: number };
+	summary: {
+		plans: number;
+		users: number;
+		records: number;
+		ease: number;
+		hold: number;
+		byMode: Record<string, number>;
+	};
 	decisions: AdminLoadShadowDecision[];
 }
 

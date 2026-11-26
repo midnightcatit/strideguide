@@ -369,12 +369,20 @@ describe('projectLoadShadow', () => {
 
 	it('flattens the stored shadow records and counts them', () => {
 		const view = projectLoadShadow([row(), row({ planId: 'p2', email: 'other@example.com' })], 100);
-		expect(view.summary).toEqual({ plans: 2, users: 2, records: 4, ease: 2, hold: 2 });
+		expect(view.summary).toEqual({
+			plans: 2,
+			users: 2,
+			records: 4,
+			ease: 2,
+			hold: 2,
+			byMode: { shadow: 2 },
+		});
 		expect(view.decisions).toHaveLength(4);
 		const first = view.decisions[0]!;
 		expect(first).toMatchObject({
 			planId: 'p1',
 			email: 'runner@example.com',
+			mode: 'shadow',
 			weekNumber: 6,
 			intent: 'ease',
 			fromVolumeKm: 54,
@@ -389,17 +397,55 @@ describe('projectLoadShadow', () => {
 		const view = projectLoadShadow([row()], 1);
 		expect(view.decisions).toHaveLength(1);
 		expect(view.summary.records).toBe(2);
+		expect(view.summary.plans).toBe(1);
 	});
 
-	it('skips a plan with no records, or a malformed shadow value', () => {
-		expect(projectLoadShadow([row({ shadow: '[]' })], 10).summary).toEqual({
-			plans: 0,
-			users: 0,
+	it('shows a plan with an empty shadow array as one no-change row', () => {
+		const view = projectLoadShadow([row({ shadow: '[]' })], 10);
+		expect(view.summary).toEqual({
+			plans: 1,
+			users: 1,
 			records: 0,
 			ease: 0,
 			hold: 0,
+			byMode: { shadow: 1 },
 		});
-		expect(projectLoadShadow([row({ shadow: 'not json' })], 10).decisions).toHaveLength(0);
-		expect(projectLoadShadow([row({ shadow: null })], 10).decisions).toHaveLength(0);
+		expect(view.decisions).toHaveLength(1);
+		expect(view.decisions[0]).toMatchObject({
+			planId: 'p1',
+			mode: 'shadow',
+			weekNumber: null,
+			intent: null,
+			fromVolumeKm: null,
+			toVolumeKm: null,
+			fitness: 14.2,
+			fatigue: 30.5,
+			form: -16.3,
+		});
+	});
+
+	it('shows a plan with a missing or malformed shadow value as one no-change row', () => {
+		for (const shadow of ['not json', null]) {
+			const view = projectLoadShadow([row({ shadow })], 10);
+			expect(view.summary.plans).toBe(1);
+			expect(view.decisions).toHaveLength(1);
+			expect(view.decisions[0]!.weekNumber).toBeNull();
+		}
+	});
+
+	it('counts plans by mode and keeps the mode on each row', () => {
+		const modes = ['off', 'shadow', 'advisory', 'apply'] as const;
+		const view = projectLoadShadow(
+			modes.map((mode, i) => row({ planId: `p${i}`, mode, shadow: '[]' })),
+			10,
+		);
+		expect(view.summary.byMode).toEqual({ off: 1, shadow: 1, advisory: 1, apply: 1 });
+		expect(view.decisions.map((d) => d.mode)).toEqual([...modes]);
+	});
+
+	it('keeps the mode on a row with shadow entries', () => {
+		const view = projectLoadShadow([row({ mode: 'apply' })], 10);
+		expect(view.decisions).toHaveLength(2);
+		expect(view.decisions.every((d) => d.mode === 'apply')).toBe(true);
 	});
 });
