@@ -1,7 +1,7 @@
 /** Client-side plan shapes as returned by the API, plus small display helpers. */
 
 import { findDrill, type Drill } from '@strideguide/shared/plan';
-import type { Modality } from '@strideguide/shared';
+import type { Modality, SessionWhy } from '@strideguide/shared';
 
 // The one shared modality set (running, walking, strength, mobility, recovery,
 // cross-train), so the client never drifts from what the API stores.
@@ -50,6 +50,8 @@ export interface ClientPrescription {
 	notes?: string;
 	/** Why this session has the amount it has. */
 	why?: string;
+	/** The composed reason, in parts: role, day and plan context. */
+	whyStructured?: SessionWhy;
 	workout?: ClientWorkout;
 	/** True when the user added this session from the library (removable). */
 	added?: boolean;

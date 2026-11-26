@@ -2,6 +2,8 @@ import type {
 	EquipmentPreference,
 	Intensity,
 	SessionArchetype,
+	SessionGoalContext,
+	SessionWeekContext,
 	StepBlock,
 	StructuredWorkout,
 	WorkoutStep,
@@ -20,6 +22,7 @@ import { mobilityPrescription } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import { placeSessions, scheduleWarnings, type UnplacedSession } from './schedule';
 import type { PlannedSession, PlannedWeek, PlanDraft, PlanInput, TrainingPaces } from './types';
+import { composeSessionWhy } from './why';
 import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromBaseline } from './vdot';
 
 /* ----------------------------- small helpers ----------------------------- */
@@ -1100,6 +1103,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	// here and deduped into one warning each before they reach meta.warnings.
 	const unplacedSessions: UnplacedSession[] = [];
 	let noWindowsOnTrainingDays = false;
+	// The biggest long run the build reaches, so a week can say where its long
+	// run sits on the plan's arc. The taper is left out of the peak.
+	const peakLongKm = Math.max(...longTargets.slice(0, Math.max(1, buildWeeks)));
+	let prevVolumeKm: number | undefined;
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
 		const isRecovery = phase === 'recovery';
@@ -1518,6 +1525,40 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			};
 		});
 
+		// Explain each session from what the plan actually decided. The composition
+		// is pure (see why.ts): it reads the phase and week focus, the goal and how
+		// far the race is, where the week sits on the long-run arc, the week's volume
+		// intent and the sessions on the days either side. It never changes a
+		// distance, a day or a start time.
+		const weekWhy: SessionWeekContext = {
+			weekNumber: w + 1,
+			totalWeeks,
+			phase,
+			focus: FOCUS[phase] ?? phase,
+			volumeKm: volume,
+			prevVolumeKm,
+			longKm,
+			peakLongKm,
+			longRunDips: w > 0 && longTargets[w]! < longTargets[w - 1]!,
+			volumeIntent: input.weekShapes?.[w]?.volumeIntent,
+		};
+		const goalWhy: SessionGoalContext | undefined = input.targetDate
+			? {
+					name: input.profile.name,
+					weeksToRace: Math.round(daysBetween(weekStart, input.targetDate) / 7),
+				}
+			: undefined;
+		const explained = withIntensity.map((s) => {
+			const whyStructured = composeSessionWhy({
+				session: s,
+				weekSessions: withIntensity,
+				week: weekWhy,
+				goal: goalWhy,
+			});
+			return whyStructured ? { ...s, prescription: { ...s.prescription, whyStructured } } : s;
+		});
+		prevVolumeKm = volume;
+
 		weeks.push({
 			weekNumber: w + 1,
 			phase,
@@ -1527,11 +1568,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			// The week's training distance, summed from the sessions as planned. The
 			// race is the goal, not training load, so it is left out of the number.
 			targetVolumeKm: round1(
-				withIntensity
+				explained
 					.filter((s) => s.modality === 'running' && s.type !== 'race')
 					.reduce((sum, s) => sum + (s.prescription.targetDistanceKm ?? 0), 0),
 			),
-			sessions: withIntensity.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
+			sessions: explained.sort((a, b) => a.day - b.day || a.slot.localeCompare(b.slot)),
 		});
 	}
 

@@ -211,6 +211,48 @@ export interface StrengthSet {
 	sets: { reps: number; weightKg: number; rpe?: number }[];
 }
 
+/**
+ * A session's composed reason, in distinct parts so the interface can show them
+ * separately. Every part is optional: a part with nothing true to say is left
+ * out rather than filled with a generic line. Built by plan/why.ts from data the
+ * engine already decided.
+ */
+export interface SessionWhy {
+	/** What the session is for in the week. */
+	role?: string;
+	/** Why it sits on this day, from the sessions around it. */
+	dayReason?: string;
+	/** How it fits the plan: phase, goal, the long-run arc and the week's shape. */
+	planContext?: string;
+}
+
+/** The week-level facts a session's reason is composed from. */
+export interface SessionWeekContext {
+	weekNumber: number;
+	totalWeeks: number;
+	phase: string;
+	focus?: string;
+	/** This week's running volume target, in km. Engine-internal; never printed. */
+	volumeKm: number;
+	/** Last week's running volume target, in km, when there is one. */
+	prevVolumeKm?: number;
+	/** This week's long-run target in km; 0 when the week has none. */
+	longKm: number;
+	/** The plan's biggest long run, in km. */
+	peakLongKm: number;
+	/** True when this week's long run steps back from last week's. */
+	longRunDips?: boolean;
+	/** The model's volume intent for this week, when it set one. */
+	volumeIntent?: 'ease' | 'hold' | 'build';
+}
+
+/** The goal facts a session's reason is composed from. */
+export interface SessionGoalContext {
+	name: string;
+	/** Whole weeks from this week's start to race day. 0 is race week. */
+	weeksToRace?: number;
+}
+
 export interface SessionPrescription {
 	summary: string;
 	/** Easy / steady / hard band (drives the intensity ladder in the UI). */
@@ -227,6 +269,8 @@ export interface SessionPrescription {
 	notes?: string;
 	/** Why this session has the amount it has (shown on the card). */
 	why?: string;
+	/** The composed reason, in parts: role, day and plan context. */
+	whyStructured?: SessionWhy;
 	/** Structured, guided step sequence (warm-up → set → rest → cool-down). */
 	workout?: StructuredWorkout;
 	/**

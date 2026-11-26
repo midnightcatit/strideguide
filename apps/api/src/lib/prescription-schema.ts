@@ -53,6 +53,13 @@ const workoutSchema = z.object({
 /** A local "HH:MM" time, 24-hour, as the engine sets a session from the schedule. */
 const clockSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 
+/** The composed session reason, in parts, as the engine builds it in plan/why.ts. */
+const sessionWhySchema = z.object({
+	role: z.string().max(600).optional(),
+	dayReason: z.string().max(600).optional(),
+	planContext: z.string().max(600).optional(),
+});
+
 export const prescriptionSchema = z.object({
 	summary: z.string().max(600).optional(),
 	intensity: z.enum(['easy', 'steady', 'hard']).optional(),
@@ -64,6 +71,7 @@ export const prescriptionSchema = z.object({
 	blocks: z.array(strengthSetSchema).max(100).optional(),
 	notes: z.string().max(2000).optional(),
 	why: z.string().max(2000).optional(),
+	whyStructured: sessionWhySchema.optional(),
 	workout: workoutSchema.optional(),
 	libraryId: z.string().max(60).optional(),
 	added: z.boolean().optional(),
