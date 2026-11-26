@@ -15,6 +15,8 @@ import {
 	minutesToTime,
 	removeBlockAt,
 	rowForMinutes,
+	shiftBlock,
+	shiftWindow,
 	snapMinutes,
 	timeToMinutes,
 	windowForDrag,
@@ -49,22 +51,27 @@ describe('grid time conversion', () => {
 	});
 });
 
-describe('snap to the half hour', () => {
+describe('snap to the quarter hour', () => {
 	it('leaves a slot time alone', () => {
 		expect(snapMinutes(300)).toBe(300);
-		expect(snapMinutes(330)).toBe(330);
+		expect(snapMinutes(315)).toBe(315);
 	});
 
-	it('rounds to the nearest half hour', () => {
-		expect(snapMinutes(314)).toBe(300);
-		expect(snapMinutes(315)).toBe(330);
-		expect(snapMinutes(317)).toBe(330);
+	it('rounds to the nearest quarter hour', () => {
+		expect(snapMinutes(307)).toBe(300);
+		expect(snapMinutes(308)).toBe(315);
+		expect(snapMinutes(322)).toBe(315);
+		expect(snapMinutes(323)).toBe(330);
 	});
 });
 
 describe('window from a tap or a drag', () => {
 	it('gives a tapped slot one hour', () => {
 		expect(windowForTap(360)).toEqual({ start: 360, end: 420 });
+	});
+
+	it('gives a tapped slot snapped to the quarter hour', () => {
+		expect(windowForTap(367)).toEqual({ start: 360, end: 420 });
 	});
 
 	it('keeps a tap on the last slot inside the day range', () => {
@@ -75,15 +82,15 @@ describe('window from a tap or a drag', () => {
 	});
 
 	it('covers both slots a drag touched', () => {
-		expect(windowForDrag(360, 450)).toEqual({ start: 360, end: 480 });
+		expect(windowForDrag(360, 450)).toEqual({ start: 360, end: 465 });
 	});
 
 	it('reads a drag backwards, so the start end does not matter', () => {
-		expect(windowForDrag(450, 360)).toEqual({ start: 360, end: 480 });
+		expect(windowForDrag(450, 360)).toEqual({ start: 360, end: 465 });
 	});
 
 	it('keeps a drag of one slot at one step', () => {
-		expect(windowForDrag(360, 360)).toEqual({ start: 360, end: 390 });
+		expect(windowForDrag(360, 360)).toEqual({ start: 360, end: 375 });
 	});
 });
 
@@ -152,6 +159,55 @@ describe('removing and finding a window', () => {
 	});
 });
 
+describe('moving a window (nudge and drag)', () => {
+	it('shifts a window later by one step and keeps its length', () => {
+		expect(shiftWindow(360, 420, STEP_MIN)).toEqual({ start: 375, end: 435 });
+	});
+
+	it('shifts a window earlier by one step', () => {
+		expect(shiftWindow(360, 420, -STEP_MIN)).toEqual({ start: 345, end: 405 });
+	});
+
+	it('clamps at the start of the day instead of rolling back a day', () => {
+		expect(shiftWindow(240, 300, -STEP_MIN)).toEqual({ start: 240, end: 300 });
+	});
+
+	it('clamps at the end of the day instead of rolling to the next day', () => {
+		expect(shiftWindow(1320, 1380, STEP_MIN)).toEqual({ start: 1320, end: 1380 });
+	});
+
+	it('applies only the room left when a large nudge would pass the end', () => {
+		expect(shiftWindow(1320, 1350, 45)).toEqual({ start: 1350, end: 1380 });
+	});
+
+	it('moves a stored block by one step', () => {
+		const blocks: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
+		expect(shiftBlock(blocks, 2, 360, STEP_MIN)).toEqual([
+			{ day: 2, start: '06:15', end: '07:15' },
+		]);
+	});
+
+	it('leaves a block at the day edge unchanged', () => {
+		const blocks: ScheduleBlock[] = [{ day: 2, start: '22:00', end: '23:00' }];
+		expect(shiftBlock(blocks, 2, 1320, STEP_MIN)).toBe(blocks);
+	});
+
+	it('merges with a neighbour a move lands on', () => {
+		const blocks: ScheduleBlock[] = [
+			{ day: 2, start: '06:00', end: '07:00' },
+			{ day: 2, start: '07:15', end: '08:00' },
+		];
+		expect(shiftBlock(blocks, 2, 360, STEP_MIN)).toEqual([
+			{ day: 2, start: '06:15', end: '08:00' },
+		]);
+	});
+
+	it('changes nothing when no block starts there', () => {
+		const blocks: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
+		expect(shiftBlock(blocks, 2, 900, STEP_MIN)).toBe(blocks);
+	});
+});
+
 describe('window formatting', () => {
 	it('writes a time of day as a 12-hour clock', () => {
 		expect(formatTime(360)).toBe('6:00 AM');
@@ -185,16 +241,16 @@ describe('day summary', () => {
 });
 
 describe('grid range and honest clamping', () => {
-	it('covers 04:00 to 23:00 in half-hour rows', () => {
+	it('covers 04:00 to 23:00 in quarter-hour rows', () => {
 		expect(GRID_START_MIN).toBe(240);
 		expect(GRID_END_MIN).toBe(1380);
-		expect(ROWS).toBe(38);
+		expect(ROWS).toBe(76);
 		expect(minutesForRow(0)).toBe(240);
-		expect(minutesForRow(ROWS - 1)).toBe(1350);
+		expect(minutesForRow(ROWS - 1)).toBe(1365);
 	});
 
 	it('lets an early 04:30 start be selected', () => {
-		expect(rowForMinutes(270)).toBe(1);
+		expect(rowForMinutes(270)).toBe(2);
 		expect(windowForTap(270)).toEqual({ start: 270, end: 330 });
 	});
 

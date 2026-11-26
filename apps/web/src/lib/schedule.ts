@@ -1,7 +1,7 @@
 /**
  * Pure helpers for the weekly training-window grid.
  *
- * The grid maps a half-hour cell to a weekday and a time of day, and back. All
+ * The grid maps a quarter-hour cell to a weekday and a time of day, and back. All
  * maths runs in minutes from midnight; a window is stored as a `ScheduleBlock`
  * with `"HH:MM"` local times (the prefs shape the plan engine will read). Every
  * function here is pure, so the snapping, merging and formatting are tested
@@ -27,9 +27,9 @@ export const DAY_LABELS = [
  */
 export const GRID_START_MIN = 4 * 60;
 export const GRID_END_MIN = 23 * 60;
-/** Half-hour cells. */
-export const STEP_MIN = 30;
-/** Rows in the default grid: 38 half-hour slots across the day range. */
+/** Quarter-hour cells. */
+export const STEP_MIN = 15;
+/** Rows in the default grid: 76 quarter-hour slots across the day range. */
 export const ROWS = (GRID_END_MIN - GRID_START_MIN) / STEP_MIN;
 /** A tap adds a window of this length; a drag adds the range it covers. */
 export const DEFAULT_WINDOW_MIN = 60;
@@ -66,7 +66,7 @@ export function minutesToTime(min: number): string {
 	return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-/** Snap minutes to the nearest half hour. */
+/** Snap minutes to the nearest quarter hour. */
 export function snapMinutes(min: number): number {
 	return Math.round(min / STEP_MIN) * STEP_MIN;
 }
@@ -88,9 +88,9 @@ export function minutesForRow(row: number, start: number = GRID_START_MIN): numb
 
 /**
  * The visible range of the grid. It is the default day range, widened to whole
- * half-hour rows to include any stored window that falls outside it, so a window
- * set somewhere else (a later feature, or the raw API) is drawn where it is
- * rather than hidden. This never rewrites a stored value.
+ * quarter-hour rows to include any stored window that falls outside it, so a
+ * window set somewhere else (a later feature, or the raw API) is drawn where it
+ * is rather than hidden. This never rewrites a stored value.
  */
 export function gridBounds(blocks: ScheduleBlock[]): GridBounds {
 	let start = GRID_START_MIN;
@@ -127,6 +127,47 @@ export function windowForDrag(
 /** A block's start and end in minutes. */
 export function blockMinutes(block: ScheduleBlock): MinuteWindow {
 	return { start: timeToMinutes(block.start), end: timeToMinutes(block.end) };
+}
+
+/**
+ * A window moved by `deltaMin`, keeping its length. The move is clamped to the
+ * grid range: a nudge that would push the window past either edge applies only
+ * as much as fits, and a window already at the edge does not move at all (it
+ * never rolls to the next day). The length is preserved, so a short window is
+ * never quietly stretched to reach the edge.
+ */
+export function shiftWindow(
+	startMin: number,
+	endMin: number,
+	deltaMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): MinuteWindow {
+	const duration = endMin - startMin;
+	if (duration <= 0) return { start: startMin, end: endMin };
+	const start = Math.max(bounds.start, Math.min(bounds.end - duration, startMin + deltaMin));
+	return { start, end: start + duration };
+}
+
+/**
+ * Move the block that starts at `startMin` on `day` by `deltaMin`. A move that
+ * lands on a neighbour merges into it, the same way adding a window does, so a
+ * day still never holds two blocks that meet. A move clamped back to the same
+ * place, or a day with no block at that start, changes nothing.
+ */
+export function shiftBlock(
+	blocks: ScheduleBlock[],
+	day: number,
+	startMin: number,
+	deltaMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): ScheduleBlock[] {
+	const block = blocks.find((b) => b.day === day && timeToMinutes(b.start) === startMin);
+	if (!block) return blocks;
+	const { start, end } = blockMinutes(block);
+	const moved = shiftWindow(start, end, deltaMin, bounds);
+	if (moved.start === start && moved.end === end) return blocks;
+	const others = blocks.filter((b) => b !== block);
+	return addBlock(others, day, moved.start, moved.end);
 }
 
 /** Blocks ordered by day, then start time. */
