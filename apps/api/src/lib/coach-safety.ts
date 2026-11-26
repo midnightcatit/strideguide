@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { decideChoice, type JevOptions } from './jev';
 
 /**
- * A typed safety read on a coach message, decided by Jev (a choice among three
- * risks with a calibrated confidence). It is deliberately narrow: it only
- * decides whether the message raises a health or safety concern the coach should
- * not answer alone. It never writes the reply, and it never blocks one unless it
- * is confident, so the coach still answers normally when the model is unsure or
- * unavailable.
+ * A typed safety read on a coach message, decided by Jev, TypeSafe's decisions
+ * model served by OpenRouter. It is a choice among three risks with a calibrated
+ * confidence. It is deliberately narrow: it only decides whether the message
+ * raises a health or safety concern the coach should not answer alone. It never
+ * writes the reply, and it never blocks one unless it is confident, so the coach
+ * still answers normally when the model is unsure or unavailable.
  */
 
 export const RISKS = ['none', 'caution', 'urgent'] as const;
@@ -37,7 +37,7 @@ export const SAFETY_REPLY =
  * the caller answers as usual.
  */
 export async function classifyRisk(
-	env: { TYPESAFE_API_KEY?: string },
+	env: { OPENROUTER_API_KEY?: string },
 	message: string,
 	opts: JevOptions = {},
 ): Promise<RiskAssessment | null> {
