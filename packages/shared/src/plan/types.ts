@@ -54,6 +54,20 @@ export type QualityKind = 'tempo' | 'hills' | 'interval' | 'race-pace';
 export type VolumeIntent = 'ease' | 'hold' | 'build';
 
 /**
+ * A bounded, per-week strength emphasis the model may choose. It only nudges the
+ * engine's own strength work, so the model never writes a set or a rep: the
+ * engine still decides the count.
+ */
+export type StrengthIntent = 'ease' | 'hold' | 'build';
+
+/**
+ * A bounded, per-week mobility emphasis the model may choose. It only nudges the
+ * engine's own mobility frequency, so the model never writes a number: the
+ * engine still decides how many sessions the week holds.
+ */
+export type MobilityIntent = 'ease' | 'hold' | 'build';
+
+/**
  * How many quality days a week should carry, as a typed decision. The engine
  * decides the actual sessions and their distances; this only sets the count.
  */
@@ -72,6 +86,10 @@ export interface WeekShape {
 	emphasis?: string;
 	/** Hold, ease or build this week's volume relative to the plan curve. */
 	volumeIntent?: VolumeIntent;
+	/** Hold, ease or build this week's strength emphasis relative to the plan. */
+	strengthIntent?: StrengthIntent;
+	/** Hold, ease or build this week's mobility frequency relative to the plan. */
+	mobilityIntent?: MobilityIntent;
 	/** How many hard quality days the week should carry. */
 	qualityDayCount?: QualityDayCount;
 	/** Whether the week's long run eases, holds or builds. */
