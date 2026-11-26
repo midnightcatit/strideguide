@@ -10,6 +10,28 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## Every prose model path is guarded for the writing rules and the sanitizer
+
+2026-11-26
+
+Decided: every path where a model writes text a person reads must put `WRITING_RULES`
+in the prompt it sends and run the reply through `sanitizeText` before it is stored
+or shown. A scan test finds each prose model call and fails when one is missing them.
+
+Why: the rules and the filter were in place on every current path (narration, the
+nightly note, the shaping pass, the coach, and the reason rephrase with its gate),
+but a new path could be added without them and nothing would say so. The scan reads
+the source, takes every file that calls the chat router `runAi`, and requires the
+rules to be interpolated into a prompt and the sanitizer to run, in the file or in a
+named builder it imports (`packages/shared/src/writing-guard.test.ts`).
+
+Rules out: a new prose path shipping without the writing rules or the sanitizer. It
+would miss a path that reaches a model without `runAi` (a direct provider fetch), one
+that builds its prompt through a namespace import, or one that imports any symbol
+from a module that carries the rules. See the test's own notes for the full limit.
+
+---
+
 ## The load model may ease or hold, never build, and an eased week dips its long run
 
 2026-11-26
