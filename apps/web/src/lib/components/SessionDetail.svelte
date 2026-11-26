@@ -178,8 +178,10 @@
 	});
 
 	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
-	/** The plan's composed reason, when the session carries one. */
-	const whyParts = $derived(p.whyStructured);
+	/** The plan's composed reason, preferring the model's rewording per part. */
+	const whyParts = $derived(
+		p.whyStructured ? { ...p.whyStructured, ...(p.whyText ?? {}) } : p.whyText,
+	);
 
 	/** One row per stage, so a repeated set reads once. */
 	interface Row {

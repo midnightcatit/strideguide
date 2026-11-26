@@ -31,6 +31,7 @@ import { DEFAULT_PREFS, ageFromBirthYear, type Prefs } from '@strideguide/shared
 import { schema } from '../db';
 import type { Db } from '../db';
 import { narrateAndStore, reviewPlan, templateWeekSummary } from '../lib/narration';
+import { rephraseAndStore, type StoredWhyInput } from '../lib/session-why';
 import { shapePlan } from '../lib/plan-shape';
 import { equipmentPrefsPatchSchema } from '../lib/prefs-schema';
 import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
@@ -917,6 +918,24 @@ plans.post(
 				})),
 			),
 		);
+
+		// Rewrite each session's reason with the model as a second pass, after the
+		// plan is saved, so onboarding never waits on it. Every line is gated before
+		// it is stored, and the deterministic whyStructured stays as the fallback.
+		const whyInputs: StoredWhyInput[] = weekRows.flatMap((w) =>
+			w.sessionRows.map((s) => ({
+				sessionId: s.id,
+				input: {
+					day: s.day,
+					title: s.title,
+					weekNumber: w.weekNumber,
+					phase: w.phase,
+					goalName: profile.name,
+					reason: s.prescription.whyStructured ?? {},
+				},
+			})),
+		);
+		c.executionCtx.waitUntil(rephraseAndStore(c.env, db, whyInputs));
 
 		return c.json({ planId, goalId, weeks: draft.weeks.length, usedAi }, 201);
 	},

@@ -277,6 +277,13 @@ export interface SessionPrescription {
 	changeNote?: string;
 	/** The composed reason, in parts: role, day and plan context. */
 	whyStructured?: SessionWhy;
+	/**
+	 * The model's rewording of `whyStructured`, written after the plan is saved
+	 * and kept separate so the deterministic reason stays as the fallback. A part
+	 * is present only when the model filled it and passed the writing gate, so it
+	 * is always safe to prefer it over the matching part of `whyStructured`.
+	 */
+	whyText?: SessionWhy;
 	/** Structured, guided step sequence (warm-up → set → rest → cool-down). */
 	workout?: StructuredWorkout;
 	/**

@@ -22,6 +22,7 @@ export * from './change';
 export * from './rebuild';
 export * from './engine';
 export * from './why';
+export * from './why-rephrase';
 export * from './library';
 export * from './library-extra';
 export * from './recommend';
