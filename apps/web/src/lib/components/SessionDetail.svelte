@@ -391,11 +391,11 @@
 				{:else if why?.summary}
 					{#if showWhyDetail}
 						<p class="mt-3 text-[15px] leading-relaxed text-steel">{why.summary}</p>
-						<button type="button" onclick={() => (showWhyDetail = false)} class="mt-2 text-sm text-signal-ink hover:underline">
+						<button type="button" onclick={() => (showWhyDetail = false)} class="tap-target mt-2 text-sm text-signal-ink hover:underline">
 							Show less
 						</button>
 					{:else}
-						<button type="button" onclick={() => (showWhyDetail = true)} class="mt-2 text-sm text-signal-ink hover:underline">
+						<button type="button" onclick={() => (showWhyDetail = true)} class="tap-target mt-2 text-sm text-signal-ink hover:underline">
 							Why, in detail
 						</button>
 					{/if}
@@ -408,7 +408,7 @@
 				<section aria-labelledby="your-notes">
 					<h2 id="your-notes" class="tabular text-xs uppercase tracking-widest text-steel">Your notes</h2>
 					<p class="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed">{savedNote}</p>
-					<button type="button" onclick={openNotes} class="mt-2 text-sm text-signal-ink hover:underline">
+					<button type="button" onclick={openNotes} class="tap-target mt-2 text-sm text-signal-ink hover:underline">
 						Edit note
 					</button>
 				</section>
@@ -453,7 +453,7 @@
 													type="button"
 													onclick={() => (openRow = openRow === `s${i}-${si}` ? null : `s${i}-${si}`)}
 													aria-expanded={openRow === `s${i}-${si}`}
-													class="flex w-full items-center justify-between gap-3 rounded-lg border border-hairline px-3 py-2 text-left hover:border-signal-ink hover:bg-sunken"
+													class="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-hairline px-3 py-2 text-left hover:border-signal-ink hover:bg-sunken"
 												>
 													<span class="truncate">{s.label}</span>
 													<span class="flex shrink-0 items-baseline gap-3">
@@ -480,7 +480,7 @@
 							type="button"
 							onclick={() => (showAllRows = !showAllRows)}
 							aria-expanded={showAllRows}
-							class="mt-2 text-sm text-signal-ink hover:underline"
+							class="tap-target mt-2 text-sm text-signal-ink hover:underline"
 						>
 							{showAllRows ? 'Show less' : `View more (${rows.length - 5} more)`}
 						</button>
@@ -513,7 +513,7 @@
 							type="button"
 							onclick={() => (showAllSources = !showAllSources)}
 							aria-expanded={showAllSources}
-							class="mt-2 text-xs text-signal-ink hover:underline"
+							class="tap-target mt-2 text-xs text-signal-ink hover:underline"
 						>
 							{showAllSources ? 'Show fewer sources' : `View all ${why.sources.length} sources`}
 						</button>
