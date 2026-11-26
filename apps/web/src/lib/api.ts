@@ -15,11 +15,37 @@ function isNetworkFailure(e: unknown): boolean {
 
 /** The windows the health drill-down can ask the API for. */
 export type HealthMetricWindow = 7 | 30 | 90;
-
 /** One day's value for a metric. */
 export interface HealthMetricPoint {
 	date: string;
 	value: number;
+}
+
+/**
+ * The load model's read-out: the current fitness, fatigue and form, plus what it
+ * would ease or hold in the weeks ahead. Descriptive only, never a prediction.
+ */
+export interface LoadReadPayload {
+	available: boolean;
+	mode: 'off' | 'shadow' | 'advisory' | 'apply';
+	readout: { fitness: number; fatigue: number; form: number; status: string } | null;
+	readiness: { score: number; factors: string[] };
+	weekIntents: {
+		weekNumber: number;
+		intent: 'ease' | 'hold';
+		reason: string;
+		note: string;
+		form: number;
+		targetFitness: number;
+	}[];
+	shadow: {
+		weekNumber: number;
+		fromVolumeKm: number;
+		toVolumeKm: number;
+		intent: string;
+		reason: string;
+	}[];
+	points: { date: string; fitness: number; fatigue: number; form: number }[];
 }
 
 /** One sampled value for a metric. */
@@ -510,6 +536,12 @@ export const api = {
 	/** Daily recovery context, when a connector has supplied any. */
 	recovery: () =>
 		req<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] }>('/recovery'),
+
+	/**
+	 * The fitness, fatigue and form the load model reads today, when the runner
+	 * has it switched on. Descriptive only, computed on read from their own logs.
+	 */
+	loadRead: () => req<LoadReadPayload>('/plans/load'),
 
 	/** Grouped daily metrics and point samples for the health card and drill-down charts. */
 	healthMetrics: (windowDays: HealthMetricWindow = 30) =>

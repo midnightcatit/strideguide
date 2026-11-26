@@ -1697,6 +1697,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			peakLongKm,
 			longRunDips: w > 0 && longTargets[w]! < longTargets[w - 1]!,
 			volumeIntent: input.weekShapes?.[w]?.volumeIntent,
+			loadNote: input.weekShapes?.[w]?.loadNote,
 		};
 		const goalWhy: SessionGoalContext | undefined = input.targetDate
 			? {

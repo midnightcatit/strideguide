@@ -8,6 +8,7 @@ import {
 	equipmentItemsSchema,
 	equipmentPreferenceSchema,
 	gymPresetSchema,
+	loadModelSchema,
 	machineItemsSchema,
 	scheduleSchema,
 } from '../lib/prefs-schema';
@@ -54,6 +55,7 @@ settings.put(
 			favoriteWorkouts: z.array(z.string().max(60)).max(60).optional(),
 			connectNudgeDismissed: z.boolean().optional(),
 			schedule: scheduleSchema.optional(),
+			loadModel: loadModelSchema.optional(),
 		}),
 	),
 	async (c) => {
