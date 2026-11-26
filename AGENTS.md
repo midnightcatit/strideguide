@@ -133,6 +133,11 @@ happens:
   different tool, or do the step by hand.
 - **Three invalid attempts in a row abort the turn.** The count does not reset between calls, so a
   retry loop can burn the whole turn. One repair is the budget.
+- **Read a large file in ranges.** For a file of a thousand lines or more, read it with `sed -n 'A,Bp'`
+  (or find the part you need with `grep`) rather than trusting a `read` offset, which can keep
+  returning the top of the file and truncating. Retrying it is wasted effort.
+- **If the same call returns the same truncated result twice, change mechanism.** This is the same
+  budget as the rejection rule above, not a new one.
 
 The old failure this guards against: a brief sent in the top-level `prompt` with `model` or `variant`
 on a task and no `tasks[].prompt`, which the tool rejects. `scripts/check-am-payload.mjs` checks that
