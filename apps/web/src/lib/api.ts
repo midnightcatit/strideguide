@@ -279,11 +279,25 @@ export interface AdminErrorRow {
 	method: string | null;
 }
 
+/** One rate-limit window: the key, the count used, its limit, and the window span. */
+export interface AdminRateLimitRow {
+	key: string;
+	used: number;
+	limit: number | null;
+	windowStart: string | null;
+	windowEnd: string | null;
+}
+
 /** Operational metadata for the admin view. No user content. */
 export interface AdminOps {
 	appErrors: { recentCount: number; items: AdminErrorRow[] };
 	clientErrors: { recentCount: number; items: AdminErrorRow[] };
-	rateLimits: { keys: number; totalCount: number; newestWindowStart: string | null };
+	rateLimits: {
+		keys: number;
+		totalCount: number;
+		newestWindowStart: string | null;
+		items: AdminRateLimitRow[];
+	};
 }
 
 /** One load model row, across accounts. A row with no week means no change. */

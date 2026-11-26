@@ -100,6 +100,74 @@ export function toIsoTimestamp(value: Date | number | null | undefined): string 
 }
 
 /**
+ * The fixed-window limit and window length for each rate-limit key prefix. The
+ * call sites in routes/ pass these same numbers to checkRateLimit, and a key is
+ * shaped `<prefix>:<id>`. The rate_limits table keeps only the window start and
+ * the count, so this is where the limit and the window length come from when the
+ * admin view renders how full each window is. A prefix not listed here still
+ * shows its count, with no limit or window end, so a new limiter degrades
+ * visibly rather than silently reading as unlimited.
+ */
+export const RATE_LIMIT_POLICIES: Record<string, { limit: number; windowSec: number }> = {
+	'auth-start:': { limit: 30, windowSec: 600 },
+	'auth-logout:': { limit: 30, windowSec: 60 },
+	'auth-me:': { limit: 120, windowSec: 60 },
+	'auth:': { limit: 30, windowSec: 600 },
+	'generate:': { limit: 20, windowSec: 3600 },
+	'adapt:': { limit: 30, windowSec: 3600 },
+	'preview:': { limit: 30, windowSec: 3600 },
+	'clienterr:': { limit: 60, windowSec: 3600 },
+	'ai:': { limit: 40, windowSec: 3600 },
+	'jev:': { limit: 40, windowSec: 3600 },
+};
+
+/** The limit and window length for a key, by its longest matching prefix. */
+export function rateLimitPolicyForKey(key: string): { limit: number; windowSec: number } | null {
+	let match: { limit: number; windowSec: number } | null = null;
+	let matchLen = 0;
+	for (const [prefix, policy] of Object.entries(RATE_LIMIT_POLICIES)) {
+		if (key.startsWith(prefix) && prefix.length > matchLen) {
+			match = policy;
+			matchLen = prefix.length;
+		}
+	}
+	return match;
+}
+
+/** One rate_limits row as the admin summary reads it. */
+export interface RateLimitAggregate {
+	key: string;
+	windowStart: number;
+	count: number;
+}
+
+/** One rate-limit window as the admin view shows it. */
+export interface AdminRateLimitEntry {
+	key: string;
+	used: number;
+	limit: number | null;
+	windowStart: string | null;
+	windowEnd: string | null;
+}
+
+/**
+ * Shape one rate_limits row for the admin view: the count used, the configured
+ * limit, and the window span, with the end derived from the start plus the
+ * window length. A key whose prefix has no configured policy keeps its count and
+ * start, with a null limit and end.
+ */
+export function projectRateLimit(row: RateLimitAggregate): AdminRateLimitEntry {
+	const policy = rateLimitPolicyForKey(row.key);
+	return {
+		key: row.key,
+		used: row.count,
+		limit: policy?.limit ?? null,
+		windowStart: toIsoTimestamp(row.windowStart),
+		windowEnd: policy ? toIsoTimestamp(row.windowStart + policy.windowSec) : null,
+	};
+}
+
+/**
  * Shape one aggregate into the metadata-only admin user row. Fields are picked
  * one by one and never spread, so a new column on any source table can never
  * ride along. This is the single place that decides what the admin user list may
