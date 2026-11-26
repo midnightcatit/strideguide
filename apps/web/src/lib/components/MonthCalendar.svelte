@@ -17,7 +17,7 @@
 	import MiniSessionCard from '$lib/components/MiniSessionCard.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
 	import ModalityMark from '$lib/components/ModalityMark.svelte';
-	import { LOAD_RAMP, TRAINING_PROGRESS } from '$lib/chartPalette';
+	import { LOAD_RAMP, TRAINING_PROGRESS, loadRampTextChoices } from '$lib/chartPalette';
 
 	// A stable order for a day's modalities in its accessible name, so the same
 	// mix always reads the same way. Strength and mobility also get a corner mark
@@ -101,6 +101,36 @@
 		if (load < 130) return 3;
 		return 4;
 	}
+
+	// The text colour for each ramp step, so the day number, the distance and the
+	// modality marks stay readable on every step instead of a fixed ink that
+	// washes out on the stronger fills. The step backgrounds are colour-mixes of
+	// the load slot into paper, so their lightness moves with the theme; the
+	// choice is computed from the live tokens rather than picked by eye. The
+	// fallback is ink everywhere, which is right for the light theme, so the
+	// server render and the first client paint agree; the effect settles the
+	// strong step on paper just after mount in dark mode.
+	const RAMP_TEXT_VAR = { ink: 'var(--ink)', paper: 'var(--paper)' } as const;
+	let rampText = $state<string[]>(LOAD_RAMP.map(() => RAMP_TEXT_VAR.ink));
+	onMount(() => {
+		const read = () => {
+			const style = getComputedStyle(document.documentElement);
+			rampText = loadRampTextChoices(
+				style.getPropertyValue('--chart-2'),
+				style.getPropertyValue('--paper'),
+				style.getPropertyValue('--ink'),
+			).map((choice) => RAMP_TEXT_VAR[choice]);
+		};
+		read();
+		const scheme = matchMedia('(prefers-color-scheme: dark)');
+		scheme.addEventListener('change', read);
+		const observer = new MutationObserver(read);
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+		return () => {
+			scheme.removeEventListener('change', read);
+			observer.disconnect();
+		};
+	});
 
 	const monthCells = $derived.by(() => {
 		const now = new Date();
@@ -230,18 +260,18 @@
 			<a
 				href={`/calendar/day/${cell.iso}`}
 				aria-label="{cell.iso}{cell.count ? `, ${cell.count} sessions` : ', rest'}{cell.modalities.length ? `, ${listWords(cell.modalities)}` : ''}{cell.km ? `, ${fmtDistance(cell.km)}` : ''}{cell.skipped ? ', a skipped session' : ''}"
-				style="animation-delay: {Math.min(i * 8, 260)}ms; background: {LOAD_RAMP[level]}"
+				style="animation-delay: {Math.min(i * 8, 260)}ms; background: {LOAD_RAMP[level]}; color: {rampText[level]}"
 				class="reveal relative flex aspect-square flex-col items-center justify-center rounded-md border transition-colors {cell.inMonth
 					? 'border-hairline'
 					: 'border-transparent opacity-40'}"
 			>
-				<span class="tabular text-xs {cell.skipped ? 'text-steel' : ''}">{cell.day}</span>
-				{#if cell.km}<span class="tabular text-[9px] text-steel">{fmtDistance(cell.km)}</span>{/if}
+				<span class="tabular text-xs">{cell.day}</span>
+				{#if cell.km}<span class="tabular text-[9px]">{fmtDistance(cell.km)}</span>{/if}
 				{#if cell.strength}
-					<span class="absolute left-1 top-1 text-ink" aria-hidden="true"><ModalityMark modality="strength" /></span>
+					<span class="absolute left-1 top-1" aria-hidden="true"><ModalityMark modality="strength" /></span>
 				{/if}
 				{#if cell.mobility}
-					<span class="absolute right-1 top-1 text-ink" aria-hidden="true"><ModalityMark modality="mobility" /></span>
+					<span class="absolute right-1 top-1" aria-hidden="true"><ModalityMark modality="mobility" /></span>
 				{/if}
 				{#if cell.done}
 					<span
@@ -269,7 +299,7 @@
 		<span>Skipped</span>
 		<InfoButton
 			term="Pressure"
-			definition="How much a day asks of you, from the length and intensity of its sessions. A stronger tint is a harder day. A dumbbell in the top left marks a strength session and a stretch arrow in the top right marks mobility. A green dot means it is done. A grey dot means it has a skipped session."
+			definition="How much a day asks of you, from the length and intensity of its sessions. A stronger tint is a harder day. A dumbbell in the top left marks a strength session and a stretching figure in the top right marks mobility. A green dot means it is done. A grey dot means it has a skipped session."
 		/>
 	</div>
 	</div>

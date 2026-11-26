@@ -1,10 +1,11 @@
 <script lang="ts">
 	/**
 	 * A tiny marker for a session's modality, sized for a calendar cell. Strength
-	 * is a solid dumbbell, mobility a solid extend arrow, so the two shapes read
-	 * apart at a glance even at a small size. The marker is presentational; the
-	 * cell's accessible name carries the meaning, so it is hidden from assistive
-	 * tech. Drawn inline to match SessionIcon's hand-authored style.
+	 * is a solid dumbbell and mobility a stretching figure, arms up and feet
+	 * apart, so the two shapes read apart at a glance even at a small size. The
+	 * marker is presentational; the cell's accessible name carries the meaning, so
+	 * it is hidden from assistive tech. Drawn inline to match SessionIcon's
+	 * hand-authored style.
 	 */
 	let { modality }: { modality: 'strength' | 'mobility' } = $props();
 </script>
@@ -15,8 +16,11 @@
 		<rect x="9.2" y="3.7" width="1.9" height="4.6" rx="0.7" />
 		<rect x="2.7" y="5.1" width="6.6" height="1.8" rx="0.9" />
 	{:else}
-		<rect x="5.1" y="2.3" width="1.8" height="7.4" rx="0.9" />
-		<path d="M6 1.1 8.4 3.6H3.6z" />
-		<path d="M6 10.9 3.6 8.4h4.8z" />
+		<g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+			<circle cx="6" cy="2.6" r="1.15" fill="currentColor" stroke="none" />
+			<path d="M6 4v4.2" />
+			<path d="M6 5.1 3.5 3M6 5.1 8.5 3" />
+			<path d="M6 8.2 4.4 11M6 8.2 7.6 11" />
+		</g>
 	{/if}
 </svg>
