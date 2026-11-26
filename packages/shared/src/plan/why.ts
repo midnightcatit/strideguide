@@ -1,5 +1,5 @@
 /**
- * Composing a session's reason from the plan's own data.
+ * Composing a session's reason, and a week's, from the plan's own data.
  *
  * A session should be able to say why it is this workout, why it sits on this
  * day, and how it fits the runner's plan and goal. Every sentence here follows
@@ -9,6 +9,10 @@
  * side, and the runner's saved windows when one set a start time. Nothing is
  * invented. A part with nothing true to say is left out, so the interface can
  * fall back to the plain one-line purpose instead.
+ *
+ * The week's own reason (composeWeekWhy) works the same way: what its phase is
+ * for, how its volume moves, where its long run sits on the arc, and what comes
+ * next, each said only when the plan carries the fact.
  *
  * The day reasoning is grounded in research/wave-6/plan-structure.md: hard
  * sessions want two or three easy days between them, the long run is the week's
@@ -317,4 +321,120 @@ export function composeSessionWhy(input: SessionWhyInput): SessionWhy | undefine
 	if (dayLine) out.dayReason = dayLine;
 	if (planLine) out.planContext = planLine;
 	return Object.keys(out).length ? out : undefined;
+}
+
+/* ------------------------------ week reason ------------------------------- */
+
+/**
+ * What each phase is for, in one plain sentence. The wording stays broad enough
+ * to be true for any profile that names the phase: whole-fitness, for instance,
+ * has base and build weeks but no hard sessions, so the build line names the
+ * climb, not the quality. Unit-free and beginner-readable on purpose.
+ */
+const PHASE_PURPOSE: Record<string, string> = {
+	base: 'Base weeks build your easy running, the aerobic foundation everything later rests on.',
+	build: 'Build weeks push on from the base.',
+	peak: 'Peak weeks sharpen you and rehearse your goal pace.',
+	taper: 'The taper cuts your volume so you arrive at the race fresh, with short efforts to keep your legs sharp.',
+	recovery: 'The weeks after the race stay easy, to let the effort settle in.',
+};
+
+/**
+ * The week-level facts a week's own reason is composed from. Beyond the phase,
+ * every field is optional, so a week with nothing true to say yields nothing.
+ * Distances are km and are never printed: the interface converts, and this text
+ * stays unit-free.
+ */
+export interface WeekWhyInput {
+	/** The week's phase: base, build, peak, taper or recovery. */
+	phase?: string;
+	/** This week's running volume target, in km. Engine-internal; never printed. */
+	volumeKm?: number;
+	/** Last week's running volume target, in km, when there is one. */
+	prevVolumeKm?: number;
+	/** The model's volume intent for this week, when it set one. */
+	volumeIntent?: 'ease' | 'hold' | 'build';
+	/** This week's long-run target in km; 0 or absent when the week has none. */
+	longKm?: number;
+	/** The plan's biggest long run, in km. */
+	peakLongKm?: number;
+	/** True when this week's long run steps back from last week's. */
+	longRunDips?: boolean;
+	/** The phase that follows this week, when the plan has a later week. */
+	nextPhase?: string;
+	/** True when this is the plan's last week. */
+	isLast?: boolean;
+}
+
+/** One plain sentence on what the week's phase is for. */
+function phasePurpose(phase?: string): string | undefined {
+	return phase ? PHASE_PURPOSE[phase] : undefined;
+}
+
+/** How the week's volume moves, said only when there is something to compare. */
+function volumeMoveText(input: WeekWhyInput): string | undefined {
+	const { phase, volumeKm, prevVolumeKm, volumeIntent } = input;
+	// A taper or recovery week's shape is its phase, already said above.
+	if (phase === 'taper' || phase === 'recovery') return undefined;
+	if (volumeIntent === 'build') return 'this week builds on the last one';
+	if (volumeIntent === 'ease') return 'this week eases the volume back';
+	if (volumeIntent === 'hold') return 'this week holds about the same volume as last week';
+	if (volumeKm === undefined || prevVolumeKm === undefined) return undefined;
+	if (volumeKm < prevVolumeKm - 0.05)
+		return 'this week is a deliberate stepback so you absorb the training';
+	if (volumeKm > prevVolumeKm + 0.05) return 'this week builds on the last one';
+	return 'this week holds about the same volume as last week';
+}
+
+/** Where the week's long run sits on the plan's arc. */
+function weekLongRunArcText(input: WeekWhyInput): string | undefined {
+	const { phase, longKm, peakLongKm, longRunDips } = input;
+	const long = longKm ?? 0;
+	const peak = peakLongKm ?? 0;
+	// A recovery week has no long run, and its phase line already says so.
+	if (phase === 'recovery') return undefined;
+	if (phase === 'taper') return 'the long run comes down with the taper';
+	if (long <= 0) return undefined;
+	if (peak > 0 && long >= peak - 0.05) return 'your longest run of the plan is this week';
+	if (longRunDips) return 'the long run eases back before building again';
+	if (peak > 0 && peak > long + 0.05) return 'the long run is building toward its peak';
+	return undefined;
+}
+
+/** What the plan moves to after this week. */
+function weekNextText(input: WeekWhyInput): string | undefined {
+	const { phase, nextPhase, isLast } = input;
+	if (nextPhase && nextPhase !== phase) return `the ${nextPhase} block starts next week`;
+	if (isLast) return 'this is the final week of the plan';
+	return undefined;
+}
+
+/** Capitalise the first letter and close the sentence with a full stop. */
+function asSentence(text: string): string {
+	const t = text.trim();
+	return t.charAt(0).toUpperCase() + t.slice(1) + (t.endsWith('.') ? '' : '.');
+}
+
+/**
+ * The reason a week is shaped as it is, for the plan overview: what its phase is
+ * for, how its volume moves, where its long run sits on the plan's arc, and what
+ * comes next. At most two sentences, so a week list stays readable, and unit-free
+ * so a mile reader sees the same wording as a kilometre reader. Every sentence
+ * follows from a fact the plan carries; a part with nothing true to say is left
+ * out, and a week with no true fact at all returns undefined. A turn in the plan
+ * (a new phase, the final week) is always kept, paired with the most telling of
+ * the week's own facts.
+ */
+export function composeWeekWhy(input: WeekWhyInput): string | undefined {
+	const sentences: string[] = [];
+	const purpose = phasePurpose(input.phase);
+	if (purpose) sentences.push(purpose);
+	const move = volumeMoveText(input);
+	const arc = weekLongRunArcText(input);
+	const next = weekNextText(input);
+	const clauses = next
+		? [arc ?? move, next].filter((c): c is string => !!c)
+		: [move, arc].filter((c): c is string => !!c).slice(0, 2);
+	if (clauses.length) sentences.push(asSentence(clauses.join(', and ')));
+	return sentences.length ? sentences.join(' ') : undefined;
 }

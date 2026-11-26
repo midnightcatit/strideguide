@@ -4,7 +4,8 @@
 	import { store, ensurePlan } from '$lib/planStore.svelte';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { metricOrigin } from '$lib/metrics';
-	import { formatIsoDay } from '$lib/plan';
+	import { formatIsoDay, type ClientWeek } from '$lib/plan';
+	import { composeWeekWhy } from '@strideguide/shared/plan';
 	import { today } from '$lib/today.svelte';
 	import { TRAINING_LOAD } from '$lib/chartPalette';
 	import Card from '$lib/components/Card.svelte';
@@ -18,8 +19,9 @@
 	/**
 	 * The plan overview: the whole race plan in one place. The ring shows where the
 	 * plan stands, the phase bar and its legend show how the block is shaped, the
-	 * race day is named, and every week is listed with its focus and volume. Opened
-	 * from the plan-progress card on the Progress page.
+	 * race day is named, and every week is listed with its focus, its own stored
+	 * summary, its reason and its volume. Opened from the plan-progress card on the
+	 * Progress page.
 	 */
 	onMount(() => void ensurePlan());
 
@@ -97,6 +99,42 @@
 		const f = (iso: string) => formatIsoDay(iso, { month: 'short', day: 'numeric' });
 		return `${f(start)} to ${f(end)}`;
 	}
+
+	// The week's own summary, when the plan stored one, minus a leading "Week N:"
+	// label so it does not repeat the heading right above it. The deterministic
+	// fallback always stores that label; an AI summary may not.
+	function weekSummary(w: ClientWeek): string | null {
+		const text = w.summaryText?.trim();
+		if (!text) return null;
+		return text.replace(/^Week\s+\d+\s*:\s*/i, '');
+	}
+
+	// Each week's reason, composed from the plan's own shape (see why.ts): what
+	// the phase is for, how its volume moves, where its long run sits on the arc,
+	// and what comes next. The long run's distance is read only to compare weeks,
+	// never printed: fmtDistance converts it for display.
+	const longRunKm = (w: ClientWeek): number =>
+		w.sessions.find((s) => s.type === 'long')?.prescription?.targetDistanceKm ?? 0;
+	const peakLongKm = $derived(Math.max(0, ...weeks.map(longRunKm)));
+	const weekWhys = $derived.by(() => {
+		const out = new Map<string, string>();
+		weeks.forEach((w, i) => {
+			const long = longRunKm(w);
+			const prev = i > 0 ? weeks[i - 1] : undefined;
+			const why = composeWeekWhy({
+				phase: w.phase ?? undefined,
+				volumeKm: w.targetVolumeKm ?? undefined,
+				prevVolumeKm: prev?.targetVolumeKm ?? undefined,
+				longKm: long,
+				peakLongKm,
+				longRunDips: !!prev && long > 0 && long < longRunKm(prev) - 0.05,
+				nextPhase: weeks[i + 1]?.phase ?? undefined,
+				isLast: i === weeks.length - 1,
+			});
+			if (why) out.set(w.id, why);
+		});
+		return out;
+	});
 </script>
 
 <MetricHeader title="Plan overview" {from} />
@@ -178,6 +216,12 @@
 							</p>
 							{#if w.focus}
 								<p class="mt-0.5 break-words text-sm text-steel">{w.focus}</p>
+							{/if}
+							{#if weekSummary(w)}
+								<p class="mt-0.5 break-words text-xs leading-relaxed text-steel">{weekSummary(w)}</p>
+							{/if}
+							{#if weekWhys.get(w.id)}
+								<p class="mt-1 break-words text-xs leading-relaxed text-steel">{weekWhys.get(w.id)}</p>
 							{/if}
 							<p class="tabular mt-0.5 text-xs text-steel">
 								{weekRange(w.startDate, w.endDate)}{#if w.phase} · {w.phase}{/if}

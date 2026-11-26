@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { composeSessionWhy, sessionRole } from './why';
+import { composeSessionWhy, composeWeekWhy, sessionRole } from './why';
 import type { PlannedSession } from './types';
 import type { SessionWeekContext } from '../types';
 
@@ -112,5 +112,89 @@ describe('composeSessionWhy', () => {
 		expect(why?.dayReason).toContain('08:00');
 		expect(why?.dayReason).toContain('window you saved');
 		expect(why?.planContext).toContain('Week 5 of 12');
+	});
+});
+
+describe('composeWeekWhy', () => {
+	it('a base week explains what the phase is for', () => {
+		const why = composeWeekWhy({
+			phase: 'base',
+			volumeKm: 30,
+			prevVolumeKm: 28,
+			longKm: 8,
+			peakLongKm: 19,
+		});
+		expect(why).toContain('Base weeks build your easy running');
+		// A base week with a long run still building says where that run sits.
+		expect(why).toContain('the long run is building toward its peak');
+	});
+
+	it('a peak week says what the phase sharpens', () => {
+		const why = composeWeekWhy({ phase: 'peak', longKm: 0 });
+		expect(why).toContain('Peak weeks sharpen you and rehearse your goal pace');
+	});
+
+	it('a taper week explains its shape, not a stepback', () => {
+		const why = composeWeekWhy({
+			phase: 'taper',
+			volumeKm: 20,
+			prevVolumeKm: 40,
+			longKm: 12,
+			peakLongKm: 19,
+		})!.toLowerCase();
+		expect(why).toContain('the taper cuts your volume');
+		expect(why).toContain('the long run comes down with the taper');
+		expect(why).not.toContain('stepback');
+	});
+
+	it('a stepback week explains the dip, not a climb', () => {
+		const why = composeWeekWhy({
+			phase: 'build',
+			volumeKm: 40,
+			prevVolumeKm: 46,
+			longKm: 15,
+			peakLongKm: 19,
+			longRunDips: true,
+		})!.toLowerCase();
+		expect(why).toContain('this week is a deliberate stepback');
+		expect(why).toContain('the long run eases back before building again');
+		expect(why).not.toContain('builds on the last one');
+	});
+
+	it('announces the next phase on the week before it turns', () => {
+		const why = composeWeekWhy({
+			phase: 'build',
+			volumeKm: 50,
+			prevVolumeKm: 46,
+			longKm: 18,
+			peakLongKm: 18,
+			nextPhase: 'taper',
+		})!.toLowerCase();
+		expect(why).toContain('your longest run of the plan is this week');
+		expect(why).toContain('the taper block starts next week');
+	});
+
+	it('names the final week of the plan', () => {
+		const why = composeWeekWhy({ phase: 'recovery', isLast: true })!.toLowerCase();
+		expect(why).toContain('the weeks after the race stay easy');
+		expect(why).toContain('this is the final week of the plan');
+	});
+
+	it('yields nothing invented when there is nothing true to say', () => {
+		expect(composeWeekWhy({})).toBeUndefined();
+		expect(composeWeekWhy({ phase: 'mystery' })).toBeUndefined();
+		// A first week with no week to compare against, no long run and no next.
+		expect(composeWeekWhy({ phase: 'mystery', longKm: 0, peakLongKm: 0 })).toBeUndefined();
+	});
+
+	it('never prints a distance', () => {
+		const why = composeWeekWhy({
+			phase: 'build',
+			volumeKm: 50,
+			prevVolumeKm: 40,
+			longKm: 18,
+			peakLongKm: 18,
+		});
+		expect(why).not.toMatch(/\d+\s*(km|mi|kilometres?|kilometers?|miles?)/i);
 	});
 });
