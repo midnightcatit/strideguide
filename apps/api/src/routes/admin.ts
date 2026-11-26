@@ -27,6 +27,7 @@ import {
 	parseAdminEmails,
 	projectAdminUser,
 	projectAdminUserDetail,
+	projectLoadShadow,
 	removalRefusal,
 	resolveAdminState,
 	toIsoTimestamp,
@@ -49,6 +50,9 @@ const admin = new Hono<AppBindings>();
 /** How far back the ops summary counts errors, and how many it lists per source. */
 const RECENT_WINDOW_SECONDS = 24 * 60 * 60;
 const RECENT_ITEMS = 10;
+
+/** How many plans with shadow records the load-shadow view reads in one pass. */
+const ADMIN_SHADOW_MAX_PLANS = 200;
 
 /** The signed-in user's own admin state, so the web can show or hide the entry.
  * Open to any signed-in user: it reports false rather than 403 for a non-admin. */
@@ -209,6 +213,37 @@ admin.get('/ops', requireAdmin, async (c) => {
 			newestWindowStart: toIsoTimestamp(summary?.newestWindowStart ?? null),
 		},
 	});
+});
+
+/**
+ * The load model's shadow records, across accounts, for deciding whether to turn
+ * `apply` on. Read straight out of each plan's `params.loadModel` with
+ * json_extract, so no new table. Metadata only: the plan, the week, the intent it
+ * would have used, and the modelled fitness, fatigue and form behind it. A plan
+ * only has a record when it was generated or adapted, so a runner who never
+ * rebuilds produces none.
+ */
+admin.get('/load-shadow', requireAdmin, async (c) => {
+	const db = c.get('db');
+	const limit = clampAdminLimit(c.req.query('limit'));
+	const rows = await db
+		.select({
+			planId: schema.plans.id,
+			email: schema.users.email,
+			mode: sql<string | null>`json_extract(${schema.plans.params}, '$.loadModel.mode')`,
+			fitness: sql<number | null>`json_extract(${schema.plans.params}, '$.loadModel.fitness')`,
+			fatigue: sql<number | null>`json_extract(${schema.plans.params}, '$.loadModel.fatigue')`,
+			form: sql<number | null>`json_extract(${schema.plans.params}, '$.loadModel.form')`,
+			at: sql<string | null>`json_extract(${schema.plans.params}, '$.loadModel.at')`,
+			shadow: sql<string | null>`json_extract(${schema.plans.params}, '$.loadModel.shadow')`,
+		})
+		.from(schema.plans)
+		.innerJoin(schema.userGoals, eq(schema.plans.userGoalId, schema.userGoals.id))
+		.innerJoin(schema.users, eq(schema.userGoals.userId, schema.users.id))
+		.where(sql`json_array_length(json_extract(${schema.plans.params}, '$.loadModel.shadow')) > 0`)
+		.orderBy(desc(sql`json_extract(${schema.plans.params}, '$.loadModel.at')`))
+		.limit(Math.min(limit, ADMIN_SHADOW_MAX_PLANS));
+	return c.json(projectLoadShadow(rows, limit));
 });
 
 /** The identity fields the detail and the disable rule need for one account. */

@@ -57,6 +57,7 @@ async function applyPrefs(): Promise<void> {
 		prefs.favoriteWorkouts = res.prefs.favoriteWorkouts;
 		prefs.connectNudgeDismissed = res.prefs.connectNudgeDismissed;
 		prefs.schedule = res.prefs.schedule;
+		prefs.loadModel = res.prefs.loadModel;
 		prefsState.loaded = true;
 		prefsState.failed = false;
 	} catch {
@@ -282,6 +283,22 @@ export async function setAutoAdvance(v: boolean): Promise<void> {
 		await api.putSettings({ autoAdvance: v });
 	} catch {
 		// best-effort
+	}
+}
+
+/**
+ * Set the load model's mode. Off and shadow change no plan; advisory shows what
+ * it would do; apply lets it ease or hold inside the engine's ceilings. Only the
+ * other load fields, if any, are kept.
+ */
+export async function setLoadModelMode(
+	mode: NonNullable<Prefs['loadModel']>['mode'],
+): Promise<void> {
+	prefs.loadModel = { ...(prefs.loadModel ?? {}), mode };
+	try {
+		await api.putSettings({ loadModel: prefs.loadModel });
+	} catch {
+		// best-effort; ui already updated
 	}
 }
 

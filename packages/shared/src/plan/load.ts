@@ -77,7 +77,11 @@ export interface LoadConfig {
 }
 
 export const LOAD_DEFAULTS: LoadConfig = {
-	mode: 'off',
+	// Shadow is the fleet-wide default: it changes no behaviour (it records what
+	// it would change and applies nothing), so every plan and adapt gathers data
+	// with the model on. The modes that change a plan, advisory and apply, are
+	// opt-in per user. A missing pref therefore still leaves the plan untouched.
+	mode: 'shadow',
 	tunables: { fitnessDays: 42, fatigueDays: 7 },
 	formFloor: -25,
 	easeMargin: 10,
@@ -109,7 +113,7 @@ export function resolveLoadConfig(prefs?: Partial<Prefs> | null): LoadConfig {
 			: undefined;
 	return {
 		...LOAD_DEFAULTS,
-		mode: MODES.includes(mode) ? mode : 'off',
+		mode: MODES.includes(mode) ? mode : LOAD_DEFAULTS.mode,
 		tunables: { fitnessDays, fatigueDays },
 		formFloor,
 	};

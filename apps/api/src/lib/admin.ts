@@ -381,3 +381,109 @@ export function projectAdminUserDetail(
 		})),
 	};
 }
+
+/**
+ * One plan row as the load-shadow query returns it, with the load model's read
+ * pulled out of `plans.params` by json_extract. The shadow array comes back as a
+ * JSON string, so it is parsed below.
+ */
+export interface LoadShadowPlanRow {
+	planId: string;
+	email: string;
+	mode: string | null;
+	fitness: number | null;
+	fatigue: number | null;
+	form: number | null;
+	at: string | null;
+	/** The `loadModel.shadow` array, as a JSON string from json_extract. */
+	shadow: string | null;
+}
+
+/** One ease or hold the model would have made, flattened for the admin table. */
+export interface LoadShadowDecision {
+	planId: string;
+	email: string;
+	at: string | null;
+	mode: string | null;
+	weekNumber: number;
+	intent: string;
+	fromVolumeKm: number;
+	toVolumeKm: number;
+	reason: string;
+	fitness: number | null;
+	fatigue: number | null;
+	form: number | null;
+}
+
+/** The cross-user shadow view: a summary and the recent decisions behind it. */
+export interface LoadShadowView {
+	summary: { plans: number; users: number; records: number; ease: number; hold: number };
+	decisions: LoadShadowDecision[];
+}
+
+function parseShadowArray(raw: string | null): unknown[] {
+	if (!raw) return [];
+	try {
+		const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+		return Array.isArray(parsed) ? parsed : [];
+	} catch {
+		return [];
+	}
+}
+
+function num(v: unknown): number | null {
+	return typeof v === 'number' && Number.isFinite(v) ? v : null;
+}
+
+/**
+ * Flatten the stored shadow records into one recent-decisions list, newest first
+ * (the rows arrive ordered by their read time), and count them across accounts.
+ * Metadata only: it names the plan, the week, the intent and the modelled
+ * numbers, and never any content from the runner's logs. `limit` caps the
+ * decisions returned, not the aggregate.
+ */
+export function projectLoadShadow(rows: LoadShadowPlanRow[], limit: number): LoadShadowView {
+	const decisions: LoadShadowDecision[] = [];
+	const users = new Set<string>();
+	let plansWithRecords = 0;
+	let ease = 0;
+	let hold = 0;
+	for (const row of rows) {
+		const entries = parseShadowArray(row.shadow);
+		if (entries.length === 0) continue;
+		plansWithRecords += 1;
+		users.add(row.email);
+		for (const entry of entries) {
+			if (!entry || typeof entry !== 'object') continue;
+			const e = entry as Record<string, unknown>;
+			const intent = typeof e.intent === 'string' ? e.intent : '';
+			if (intent === 'ease') ease += 1;
+			else if (intent === 'hold') hold += 1;
+			if (decisions.length >= limit) continue;
+			decisions.push({
+				planId: row.planId,
+				email: row.email,
+				at: row.at,
+				mode: row.mode,
+				weekNumber: typeof e.weekNumber === 'number' ? e.weekNumber : 0,
+				intent,
+				fromVolumeKm: num(e.fromVolumeKm) ?? 0,
+				toVolumeKm: num(e.toVolumeKm) ?? 0,
+				reason: typeof e.reason === 'string' ? e.reason : '',
+				fitness: row.fitness,
+				fatigue: row.fatigue,
+				form: row.form,
+			});
+		}
+	}
+	return {
+		summary: {
+			plans: plansWithRecords,
+			users: users.size,
+			records: ease + hold,
+			ease,
+			hold,
+		},
+		decisions,
+	};
+}

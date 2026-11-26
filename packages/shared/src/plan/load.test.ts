@@ -186,21 +186,25 @@ describe('readinessScore', () => {
 });
 
 describe('resolveLoadConfig', () => {
-	it('defaults to off with the conventional constants', () => {
+	it('defaults to shadow with the conventional constants, fleet-wide', () => {
 		const c = resolveLoadConfig(null);
-		expect(c.mode).toBe('off');
+		expect(c.mode).toBe('shadow');
 		expect(c.tunables).toEqual({ fitnessDays: 42, fatigueDays: 7 });
 		expect(c.formFloor).toBeUndefined();
 	});
 
-	it('reads a stored switch and tunables, and rejects a bad mode', () => {
+	it('honours an explicit off, and rejects a bad mode back to the default', () => {
+		expect(resolveLoadConfig({ loadModel: { mode: 'off' } }).mode).toBe('off');
+		expect(resolveLoadConfig({ loadModel: { mode: 'nonsense' as never } }).mode).toBe('shadow');
+	});
+
+	it('reads a stored switch and tunables', () => {
 		const c = resolveLoadConfig({
-			loadModel: { mode: 'shadow', fitnessDays: 30, fatigueDays: 5, formFloor: -20 },
+			loadModel: { mode: 'apply', fitnessDays: 30, fatigueDays: 5, formFloor: -20 },
 		});
-		expect(c.mode).toBe('shadow');
+		expect(c.mode).toBe('apply');
 		expect(c.tunables).toEqual({ fitnessDays: 30, fatigueDays: 5 });
 		expect(c.formFloor).toBe(-20);
-		expect(resolveLoadConfig({ loadModel: { mode: 'nonsense' as never } }).mode).toBe('off');
 	});
 });
 
@@ -374,6 +378,21 @@ describe('readLoad', () => {
 		expect(read.weekIntents[0]?.intent).toBe('ease');
 		expect(read.weekIntents[0]?.weekNumber).toBe(5);
 		expect(read.readiness.score).toBeLessThan(0.6);
+		// Readiness can only ever ease or hold, and the applied shape is an ease.
+		for (const w of read.weekIntents) expect(['ease', 'hold']).toContain(w.intent);
+		expect(loadWeekShapes(read).get(5)?.volumeIntent).toBe('ease');
+	});
+
+	it('when readiness is full and no floor is crossed, it eases nothing', () => {
+		// A perfectly ready runner with the floor disabled: the model has no reason
+		// to move a week, which is the proof readiness is not adding load of its own.
+		const read = readWith({
+			recovery: null,
+			config: { ...LOAD_DEFAULTS, mode: 'apply', formFloor: -1000 },
+		});
+		expect(read.readiness.score).toBe(1);
+		expect(read.weekIntents).toHaveLength(0);
+		expect(loadWeekShapes(read).size).toBe(0);
 	});
 
 	it('loggedDailyLoads scores an sRPE session on rpe, not pace', () => {

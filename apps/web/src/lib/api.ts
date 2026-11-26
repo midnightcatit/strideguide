@@ -286,6 +286,28 @@ export interface AdminOps {
 	rateLimits: { keys: number; totalCount: number; newestWindowStart: string | null };
 }
 
+/** One ease or hold the load model would have made, across accounts. */
+export interface AdminLoadShadowDecision {
+	planId: string;
+	email: string;
+	at: string | null;
+	mode: string | null;
+	weekNumber: number;
+	intent: string;
+	fromVolumeKm: number;
+	toVolumeKm: number;
+	reason: string;
+	fitness: number | null;
+	fatigue: number | null;
+	form: number | null;
+}
+
+/** The cross-user load-shadow view for the admin page. Metadata only. */
+export interface AdminLoadShadow {
+	summary: { plans: number; users: number; records: number; ease: number; hold: number };
+	decisions: AdminLoadShadowDecision[];
+}
+
 export interface GeneratePlanInput {
 	goalProfileSlug: string;
 	targetDate?: string;
@@ -566,6 +588,14 @@ export const api = {
 	},
 	/** One user's metadata-only detail. */
 	adminUser: (id: string) => req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`),
+
+	/** The load model's shadow records across accounts, for the admin page. */
+	adminLoadShadow: (query: { limit?: number } = {}) => {
+		const params = new URLSearchParams();
+		if (query.limit != null) params.set('limit', String(query.limit));
+		const qs = params.toString();
+		return req<AdminLoadShadow>(`/admin/load-shadow${qs ? `?${qs}` : ''}`);
+	},
 	/** Rebuild the user's plan from week one and return the refreshed detail. */
 	adminRebuildPlan: (id: string) =>
 		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/rebuild-plan`, { method: 'POST' }),

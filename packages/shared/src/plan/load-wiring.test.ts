@@ -3,7 +3,7 @@ import { GOAL_PROFILES } from '../goal-profiles';
 import { adaptPlan } from './adaptive';
 import { generatePlan } from './engine';
 import type { FitnessState } from './fitness';
-import { loadWeekShapes, type LoadRead } from './load';
+import { LOAD_DEFAULTS, loadWeekShapes, readLoad, type LoadRead } from './load';
 import type { QualityKind } from './types';
 
 /**
@@ -200,6 +200,61 @@ describe('load model never builds (the invariant)', () => {
 		});
 		result.weeks.forEach((w, i) => {
 			expect(w.targetVolumeKm).toBeCloseTo(existing.weeks[i]!.targetVolumeKm, 6);
+		});
+	});
+
+	it('a readiness-driven ease lowers the nearest week and never raises', () => {
+		const profile = PROFILES.find((p) => p.slug === '10k')!;
+		const baseInput = {
+			profile,
+			baseline: { experience: 'intermediate' as const },
+			availableDays: [0, 2, 4, 6],
+			startDate: '2026-12-01',
+			targetDate: '2027-05-01',
+		};
+		const existing = generatePlan(baseInput);
+		const today = existing.weeks[3]!.startDate;
+		const day = (n: number) =>
+			new Date(Date.parse(`${today}T00:00:00Z`) - n * 86400000).toISOString();
+		const logged = Array.from({ length: 8 }, (_, i) => ({
+			date: day((i % 4) + 1),
+			modality: 'running',
+			distanceKm: 8,
+			durationSec: 8 * 330,
+		}));
+		// A strained recovery read, with the form floor disabled, so the only thing
+		// that can move a week is readiness. It must ease and only ease.
+		const read = readLoad({
+			weeks: existing.weeks,
+			today,
+			logged,
+			thresholdPaceSecPerKm: 300,
+			experience: 'intermediate',
+			recovery: {
+				days: 7,
+				restingHrElevated: true,
+				hrvSuppressed: true,
+				shortSleep: true,
+				lowSpo2: false,
+				respiratoryRateElevated: false,
+				sleepTempElevated: false,
+				strained: true,
+			},
+			config: { ...LOAD_DEFAULTS, mode: 'apply', formFloor: -1000 },
+		});
+		expect(read.weekIntents[0]?.intent).toBe('ease');
+		for (const w of read.weekIntents) expect(['ease', 'hold']).toContain(w.intent);
+
+		const result = adaptPlan({
+			...baseInput,
+			existingWeeks: existing.weeks,
+			today,
+			fitness: { ...neutral },
+			allowedQuality: [...ALLOWED],
+			load: read,
+		});
+		result.weeks.forEach((w, i) => {
+			expect(w.targetVolumeKm).toBeLessThanOrEqual(existing.weeks[i]!.targetVolumeKm + 1e-9);
 		});
 	});
 });
