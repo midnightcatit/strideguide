@@ -180,7 +180,9 @@ export interface RebuildResult {
 	/**
 	 * Plain notes about the rebuild, e.g. that the approved week one was too heavy
 	 * to build from and the engine's own progression was used instead. Empty for a
-	 * normal rebuild. The route surfaces these in the plan output.
+	 * normal rebuild. Computed and returned here, but not shown yet: the preview
+	 * route reads only `weeks`, and no path carries a rebuild or engine warning to
+	 * a runner today, so surfacing these is a follow-up.
 	 */
 	warnings: string[];
 }
@@ -211,7 +213,8 @@ function weekOneIsRealistic(sessions: WeekOneSession[], referenceWeekOneKm: numb
  * The preview is a guide, not gospel: when the approved week one is unrealistic
  * for the goal and volume (three long runs in a week, say), its days are not
  * trusted and its added workouts are not repeated. The later weeks fall back to
- * the engine's own available days and progression, and a warning says so.
+ * the engine's own available days and progression, and a warning is returned
+ * (see `warnings`; it is not shown to the runner yet).
  */
 export function rebuildFromWeekOne(input: RebuildInput): RebuildResult {
 	const pattern = weekOnePattern(input.weekOne);

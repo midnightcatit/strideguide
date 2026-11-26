@@ -23,7 +23,10 @@ and the runner's experience (`weekFloorKm`): a beginner on a short goal may run 
 genuinely short week, an experienced marathoner keeps a real one, and the floor
 never drops below one real run. A week too light to hold a long run and a second
 run becomes a single short easy run rather than a token jog, and a long run is not
-repeated verbatim by a rebuild when the approved first week is unrealistic.
+repeated verbatim by a rebuild when the approved first week is unrealistic. The
+rebuild returns a plain warning for that fallback, but it is not shown to the
+runner yet (the preview route reads only the weeks, and no path carries a rebuild
+or engine warning to a runner today), so surfacing it is a follow-up.
 
 Why: a Thursday start used to pack a whole week into the days left in the real
 week, so week one read as a full week the runner could not fit. One flat floor
@@ -37,7 +40,8 @@ still holds, so the literal half-mile first run is below the fifteen-minute floo
 the repo enforces and a beginner's shortest week is one real short run instead.
 
 Rules out: a full first week on a mid-week start, a single flat weekly floor, and
-repeating an unrealistic approved first week on a preview rebuild. See
+repeating an unrealistic approved first week on a preview rebuild. It does not yet
+rule in a visible warning: the fallback note is returned, not shown. See
 `packages/shared/src/plan/engine.ts`, `rebuild.ts`, `engine.test.ts`,
 `rebuild.test.ts`.
 
