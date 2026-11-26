@@ -12,6 +12,7 @@ import explanations from './explanations';
 import goals from './goals';
 import health from './health';
 import healthMetrics from './health-metrics';
+import insights from './insights';
 import logs from './logs';
 import plans from './plans';
 import recovery from './recovery';
@@ -43,6 +44,7 @@ secured.route('/summaries', summaries);
 secured.route('/activities', activities);
 secured.route('/recovery', recovery);
 secured.route('/health-metrics', healthMetrics);
+secured.route('/insights', insights);
 secured.route('/me', account);
 secured.route('/admin', admin);
 

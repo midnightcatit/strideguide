@@ -437,6 +437,32 @@ export const summaries = sqliteTable(
 );
 
 /**
+ * A model-written read on one day's training, kept so opening the day again
+ * shows the same text instead of writing a new one. One row per user and date.
+ * `fingerprint` is a small hash of the day's logs at the moment it was written,
+ * so a day whose logs changed is offered a fresh read rather than the stale one.
+ */
+export const dayInsights = sqliteTable(
+	'day_insights',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		/** Civil day in the runner's timezone, formatted YYYY-MM-DD. */
+		date: text('date').notNull(),
+		/** The insight text, already through the writing sanitizer. */
+		body: text('body').notNull(),
+		/** A small hash of the day's logs, so a changed day regenerates. */
+		fingerprint: text('fingerprint').notNull(),
+		createdAt,
+	},
+	(t) => ({
+		userDateIdx: uniqueIndex('day_insights_user_date_idx').on(t.userId, t.date),
+	}),
+);
+
+/**
  * A linked external account. One row per user and provider. Tokens are stored
  * encrypted (AES-GCM), never in the clear; the crypto lives in the API, so the
  * columns hold base64 ciphertext.

@@ -75,6 +75,8 @@ export const ACCOUNT_DELETES: Record<string, AccountDeleteRunner> = {
 		db.delete(schema.activities).where(eq(schema.activities.userId, userId)),
 	logs: (db, userId) => db.delete(schema.logs).where(eq(schema.logs.userId, userId)),
 	summaries: (db, userId) => db.delete(schema.summaries).where(eq(schema.summaries.userId, userId)),
+	day_insights: (db, userId) =>
+		db.delete(schema.dayInsights).where(eq(schema.dayInsights.userId, userId)),
 	settings: (db, userId) => db.delete(schema.settings).where(eq(schema.settings.userId, userId)),
 	shares: (db, userId) =>
 		db

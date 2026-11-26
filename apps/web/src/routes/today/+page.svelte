@@ -18,7 +18,7 @@
 	import { TRAINING_PROGRESS, CHART_MUTED, CHART_EMPTY } from '$lib/chartPalette';
 	import SessionCard from '$lib/components/SessionCard.svelte';
 	import SessionCarousel from '$lib/components/SessionCarousel.svelte';
-	import AdjustmentsCard from '$lib/components/AdjustmentsCard.svelte';
+	import InsightsCard from '$lib/components/InsightsCard.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import WeekStrip from '$lib/components/WeekStrip.svelte';
@@ -146,6 +146,14 @@
 	// Skipped sessions stay on the card list, marked as skipped.
 	const loggedBySession = $derived(
 		new Map(store.logs.filter((l) => l.sessionId).map((l) => [l.sessionId as string, l])),
+	);
+	// The Insights card reads the day's planned sessions: ready once every one is
+	// logged or skipped, with the count still open shown while it is not.
+	const insightReady = $derived(
+		daySessions.length > 0 && daySessions.every((s) => loggedBySession.has(s.id) || isSkipped(s.id)),
+	);
+	const insightPending = $derived(
+		daySessions.filter((s) => !loggedBySession.has(s.id) && !isSkipped(s.id)).length,
 	);
 	const stalePlan = $derived(
 		weeks.length > 0 &&
@@ -443,16 +451,18 @@
 				Rest day
 			{/if}
 		</h1>
-		<!-- Space is always reserved, so the button appearing never shifts the page. -->
+		<!-- Space is always reserved, so the button appearing never shifts the page.
+		     The button itself is a 44px touch target; the inner span keeps the small
+		     pill the desktop page already shows, so the look does not change. -->
 		<div class="mt-2 flex h-8 items-center">
 			<button
 				type="button"
 				onclick={goToday}
-				class="rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal {isToday
-					? 'invisible'
-					: ''}"
+				class="inline-flex h-11 items-center {isToday ? 'invisible' : ''}"
 			>
-				Back to today
+				<span class="rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal">
+					Back to today
+				</span>
 			</button>
 		</div>
 	</header>
@@ -551,7 +561,9 @@
 			<p class="mt-2 text-xs text-steel">{outsidePlanNote}</p>
 		{/if}
 
-		<AdjustmentsCard />
+		{#if daySessions.length}
+			<InsightsCard date={selectedIso} ready={insightReady} pending={insightPending} />
+		{/if}
 
 		{#if summary.body}<p class="mt-5 rounded-lg bg-sunken p-3 text-sm">{summary.body}</p>{/if}
 
@@ -574,7 +586,9 @@
 				<hr class="my-6 border-hairline" />
 				<SectionHeader id="why" eyebrow="Why this workout" topGap={false} />
 				<p class="text-sm text-steel">{sessionWhyLine(daySessions[0].prescription) || daySessions[0].purpose || 'What this session trains, and why.'}</p>
-				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-2 text-sm text-signal-ink hover:underline">
+				<!-- The negative margins keep the flow where the short link sat; the
+				     44px min height is the touch target on a phone. -->
+				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-[-4px] -mb-3 inline-flex min-h-11 items-center text-sm text-signal-ink hover:underline">
 					Why this workout, and what's to come →
 				</button>
 			{/if}

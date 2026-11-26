@@ -69,6 +69,19 @@ export interface HealthMetricsPayload {
 	previous?: Record<string, number>;
 }
 
+/** One day's stored insight. `stale` is true when the day's logs have moved
+ * since it was written, so the card can offer a fresh read. */
+export interface DayInsight {
+	body: string;
+	createdAt: string;
+	stale: boolean;
+}
+
+/** The insight endpoint's answer: the stored read for a day, or null. */
+export interface DayInsightPayload {
+	insight: DayInsight | null;
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
 	let res: Response;
 	try {
@@ -579,6 +592,15 @@ export const api = {
 	/** Daily recovery context, when a connector has supplied any. */
 	recovery: () =>
 		req<{ available: boolean; signal: RecoverySignal | null; days: HealthDay[] }>('/recovery'),
+
+	/** The stored insight for a day, if one was written, and whether the day's
+	 * logs have moved since, so the card can offer to refresh it. */
+	dayInsight: (date: string) =>
+		req<DayInsightPayload>(`/insights?date=${encodeURIComponent(date)}`),
+	/** Write the day's insight on request. Returns the stored text when the logs
+	 * have not moved, so one generation covers the whole day's set. */
+	generateDayInsight: (date: string) =>
+		req<DayInsightPayload>('/insights', { method: 'POST', body: JSON.stringify({ date }) }),
 
 	/**
 	 * The fitness, fatigue and form the load model reads today, when the runner

@@ -10,6 +10,32 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## A day insight is grounded in the facts and stored once per day
+
+2026-11-26
+
+Decided: the Today page's insights card writes one short read per day, on request,
+from the day's logged planned sessions. Every figure in the reply must already
+appear in the facts the engine and the runner's own logs supplied; a reply that
+states any other number is dropped, the way a reworded reason is. The read is
+stored one row per user and date with a fingerprint of the day's logs, so a second
+visit shows the stored text and only a genuinely changed day is offered a fresh
+read. The card stays out of the way until every workout on the day is logged or
+skipped.
+
+Why: the card is model-written prose about real training, so it is held to the same
+bar as every other prose path (WRITING_RULES in the prompt, sanitizeText on the
+reply, and now a number gate). Storing it once per day keeps the text stable while
+the fingerprint keeps it honest when the logs move (`apps/api/src/lib/insights.ts`,
+`apps/api/src/routes/insights.ts`).
+
+Rules out: a model-authored number, a fresh model call on every visit, and
+generating before all of a day's workouts are settled. Out of scope for now:
+imported activities, which are dated by a UTC start time the server cannot place
+on the runner's civil day, so only planned sessions are read.
+
+---
+
 ## A mid-week start opens with a short week, and the week floor follows the goal and the runner
 
 2026-11-26
