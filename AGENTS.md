@@ -88,9 +88,9 @@ Add to that set deliberately, not broadly.
 ## Workflow
 
 - **Work in an isolated worktree, not the shared checkout.** Any task that changes files runs in its
-  own working tree: use `git worktree add` for a plain branch. Several
-  sessions may share one repo directory, so editing there risks colliding with another session's
-  uncommitted work. `git worktree list` shows what is checked out where.
+  own working tree. An Agent Manager session gets one automatically; for a plain branch, use
+  `git worktree add`. Several sessions may share one repo directory, so editing there risks colliding
+  with another session's uncommitted work. `git worktree list` shows what is checked out where.
 - **Stage only the files you changed.** Use `git add <path>` (or review `git status` first), never a
   blanket `git add -A` or `git commit -a`, so a stray change from a parallel session is never swept
   into your commit.
@@ -105,22 +105,28 @@ Add to that set deliberately, not broadly.
 
 ## Delegation (main session)
 
-In the main session, delegate independent, read-heavy or parallelizable work to the `task` tool rather
-than doing it serially. This project does not use Agent Manager: the `agent_manager` and
-`agent_manager_models` tools are denied in `.kilo/kilo.jsonc`, so those calls fail here. Use `task`.
+In the main session, delegate independent, read-heavy or parallelizable work with the Agent Manager,
+one session per task, each in its own worktree. The `task` tool is the fallback: if an Agent Manager
+call is rejected twice in a row, use `task` instead of retrying a third time, because three invalid
+attempts in a row abort the turn.
 
-- **Delegate with the `task` tool.** A subagent runs in this session's context and can post a note on
-  the board when it needs to report something back.
-- **Each delegated prompt starts with a pre-plan.** Tell the subagent to research and verify first,
+- **Start sessions with the Agent Manager.** Each task gets its own worktree and its own session.
+- **Start payload.** For a start request `action` is null, `mode` is `worktree`, `versions` is false,
+  and the brief goes in `tasks[].prompt`. The top-level `prompt` is only read for `action: "prompt"`.
+  A task that carries `model`, `variant`, `provider` or `agent` without its own `prompt` is rejected.
+- **Each delegated prompt starts with a pre-plan.** Tell the session to research and verify first,
   rework the plan when a better or more nuanced approach exists and say so, then implement, then open a
   PR. Give it the goal, the constraints, the relevant files, and the verification steps.
-- **Completion is a PR, not a message.** A subagent may not wake the coordinator, so a brief must not
-  rely on a completion message. Every brief ends by telling the subagent to open a PR against `main`
-  when it finishes or blocks, with a clear title and a one-line status in the body, and never to merge
-  or deploy. The coordinator finds finished work by checking open PRs, plus any board note a `task`
-  subagent posts, not by waiting for a push.
-- **The main session reviews and releases.** The main agent reviews every subagent PR, requests changes
-  when warranted, merges to `main`, and verifies the auto-deploy. Subagents do not merge or deploy.
+- **Completion is a PR, not a message.** An Agent Manager session cannot wake the coordinator, so a
+  brief must not rely on a completion message. Every brief ends by telling the session to open a PR
+  against `main` when it finishes or blocks, with a clear title and a one-line status in the body, and
+  never to merge or deploy. The coordinator finds finished work by checking the Agent Manager list and
+  open PRs, not by waiting for a push.
+- **The main session reviews and releases.** The main agent reviews every session PR, requests changes
+  when warranted, merges to `main`, and verifies the auto-deploy. Sessions do not merge or deploy.
+- **The local config is per machine.** `.kilo/kilo.jsonc` is local and untracked (it holds
+  credentials), so its settings and permissions apply to this machine only. The Agent Manager
+  permission block was removed locally, not in git.
 - Everything here still applies to delegated work: an isolated worktree, scoped `git add <path>`,
   additive migrations, no em dashes, tests in `packages/shared`.
 
@@ -138,6 +144,4 @@ happens:
 
 The old failure this guards against: a brief sent in the top-level `prompt` with `model` or `variant`
 on a task and no `tasks[].prompt`, which the tool rejects. `scripts/check-am-payload.mjs` checks that
-shape before a call (`pnpm check:am-payload payload.json`, or pipe a payload in as stdin). Agent
-Manager is denied in this project, so treat the script as a reference for what the failure looked
-like, not as a tool this project calls.
+shape before a call (`pnpm check:am-payload payload.json`, or pipe a payload in as stdin).
