@@ -121,18 +121,29 @@
 		};
 		void refreshSession();
 
+		let reg: ServiceWorkerRegistration | null = null;
+		const onVisible = () => {
+			if (document.visibilityState === 'visible' && reg) void reg.update().catch(() => {});
+		};
 		if ('serviceWorker' in navigator) {
 			const hadController = !!navigator.serviceWorker.controller;
+			// Attach the listener before registering. A new worker takes control the
+			// moment it activates, and the event is missed if the listener is added
+			// afterwards, which leaves the app on the old build with no prompt.
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				// Only prompt on an update, not on the first registration.
+				if (hadController) updateReady = true;
+			});
 			navigator.serviceWorker
 				.register('/service-worker.js', { updateViaCache: 'none' })
-				.then((reg) => {
-					void reg.update().catch(() => {});
-					navigator.serviceWorker.addEventListener('controllerchange', () => {
-						// Only prompt on an update, not on the first registration.
-						if (hadController) updateReady = true;
-					});
+				.then((r) => {
+					reg = r;
+					void r.update().catch(() => {});
 				})
 				.catch(() => {});
+			// Re-check when the app returns to the foreground, so an update that
+			// shipped while it was open is picked up without a cold start.
+			document.addEventListener('visibilitychange', onVisible);
 		}
 
 		const sync = async () => {
@@ -157,7 +168,10 @@
 		};
 		void sync();
 		window.addEventListener('online', onOnline);
-		return () => window.removeEventListener('online', onOnline);
+		return () => {
+			window.removeEventListener('online', onOnline);
+			document.removeEventListener('visibilitychange', onVisible);
+		};
 	});
 
 	// The root landing redirect lives in the root page, which runs on every visit
