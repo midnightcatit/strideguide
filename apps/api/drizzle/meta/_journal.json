@@ -148,6 +148,13 @@
       "when": 1795651499243,
       "tag": "0020_exotic_supreme_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1795655767186,
+      "tag": "0021_closed_power_pack",
+      "breakpoints": true
     }
   ]
 }

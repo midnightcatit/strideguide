@@ -6,9 +6,11 @@ import {
 	floorAdminOffset,
 	isRootAdminEmail,
 	normalizeAdminSearch,
+	normalizeEmail,
 	parseAdminEmails,
 	projectAdminUser,
 	projectAdminUserDetail,
+	removalRefusal,
 	type AdminUserAggregate,
 	type AdminUserDetailAggregate,
 } from './admin';
@@ -49,11 +51,35 @@ describe('isRootAdminEmail', () => {
 	});
 });
 
+describe('normalizeEmail', () => {
+	it('trims and lowercases, and treats a missing value as empty', () => {
+		expect(normalizeEmail('  Sam@Example.COM ')).toBe('sam@example.com');
+		expect(normalizeEmail(null)).toBe('');
+		expect(normalizeEmail(undefined)).toBe('');
+	});
+});
+
+describe('removalRefusal', () => {
+	it('refuses self, a root admin and another admin, in the verb asked for', () => {
+		expect(removalRefusal({ id: 'a', role: 'user', isRoot: false }, 'a', 'delete')).toBe(
+			'You cannot delete your own account.',
+		);
+		expect(
+			removalRefusal({ id: 'b', role: 'user', isRoot: true }, 'a', 'permanently delete'),
+		).toBe('You cannot permanently delete a root admin.');
+		expect(removalRefusal({ id: 'b', role: 'admin', isRoot: false }, 'a', 'disable')).toBe(
+			'You cannot disable another admin.',
+		);
+		expect(removalRefusal({ id: 'b', role: 'user', isRoot: false }, 'a', 'delete')).toBeNull();
+	});
+});
+
 /** The exact keys the admin user list is allowed to expose. */
 const ALLOWED_KEYS = [
 	'connectionCount',
 	'connectionStatus',
 	'createdAt',
+	'deleted',
 	'disabled',
 	'email',
 	'goalProfileSlug',
@@ -71,6 +97,7 @@ describe('projectAdminUser', () => {
 		createdAt: new Date('2026-01-02T03:04:05Z'),
 		role: 'user',
 		disabledAt: null,
+		deletedAt: null,
 		goalProfileSlug: 'half-marathon',
 		planCount: 3,
 		lastLogAt: 1767225845,
@@ -127,6 +154,7 @@ describe('projectAdminUser', () => {
 			createdAt: null,
 			role: 'user',
 			disabledAt: null,
+			deletedAt: null,
 			goalProfileSlug: null,
 			planCount: null,
 			lastLogAt: null,
@@ -240,6 +268,7 @@ describe('projectAdminUserDetail', () => {
 		createdAt: new Date('2026-01-02T03:04:05Z'),
 		role: 'user',
 		disabledAt: new Date('2026-02-03T04:05:06Z'),
+		deletedAt: null,
 		goals: [
 			{
 				slug: 'half-marathon',
@@ -283,6 +312,8 @@ describe('projectAdminUserDetail', () => {
 		'actions',
 		'connections',
 		'createdAt',
+		'deleted',
+		'deletedAt',
 		'disabled',
 		'disabledAt',
 		'email',

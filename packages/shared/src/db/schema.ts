@@ -48,6 +48,13 @@ export const users = sqliteTable(
 		 * one. Null means active.
 		 */
 		disabledAt: integer('disabled_at', { mode: 'timestamp' }),
+		/**
+		 * Soft-delete marker. A non-null value means the account is deleted: it is
+		 * blocked exactly like a disabled one, hidden from the admin list unless
+		 * deleted accounts are asked for, and restorable. Its rows stay until a
+		 * permanent delete removes them.
+		 */
+		deletedAt: integer('deleted_at', { mode: 'timestamp' }),
 		createdAt,
 	},
 	(t) => ({

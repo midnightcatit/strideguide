@@ -137,6 +137,7 @@ export interface AdminUser {
 	role: 'user' | 'admin';
 	isRoot: boolean;
 	disabled: boolean;
+	deleted: boolean;
 	goalProfileSlug: string | null;
 	planCount: number;
 	lastLogAt: string | null;
@@ -144,11 +145,23 @@ export interface AdminUser {
 	connectionStatus: 'connected' | 'error' | null;
 }
 
-/** A query for the admin user list: paging and an optional email search. */
+/** A query for the admin user list: paging, an optional email search, and
+ * whether soft-deleted accounts are included. */
 export interface AdminUsersQuery {
 	limit?: number;
 	offset?: number;
 	q?: string;
+	includeDeleted?: boolean;
+}
+
+/** One admin: a root admin from the server config, or an invited account. A
+ * root admin may have no account yet, so the id can be null. */
+export interface AdminListItem {
+	id: string | null;
+	email: string;
+	isRoot: boolean;
+	invitedBy: string | null;
+	invitedAt: string | null;
 }
 
 /** The paged admin user list. */
@@ -221,6 +234,8 @@ export interface AdminUserDetail {
 	isRoot: boolean;
 	disabled: boolean;
 	disabledAt: string | null;
+	deleted: boolean;
+	deletedAt: string | null;
 	goals: AdminUserGoal[];
 	plans: AdminUserPlan[];
 	logs: AdminUserLogSummary;
@@ -513,6 +528,7 @@ export const api = {
 		if (query.limit != null) params.set('limit', String(query.limit));
 		if (query.offset != null) params.set('offset', String(query.offset));
 		if (query.q) params.set('q', query.q);
+		if (query.includeDeleted) params.set('includeDeleted', '1');
 		const qs = params.toString();
 		return req<AdminUsersPage>(`/admin/users${qs ? `?${qs}` : ''}`);
 	},
@@ -530,6 +546,25 @@ export const api = {
 	/** Re-enable a disabled user. */
 	adminEnableUser: (id: string) =>
 		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/enable`, { method: 'POST' }),
+	/** Soft delete: hide and block the account, keeping every row. */
+	adminSoftDeleteUser: (id: string) =>
+		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/soft-delete`, { method: 'POST' }),
+	/** Undo a soft delete. */
+	adminRestoreUser: (id: string) =>
+		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/restore`, { method: 'POST' }),
+	/** Permanent delete. Irreversible, and refused for a root admin or self. */
+	adminDeleteUser: (id: string) =>
+		req<{ deleted: boolean; failed: string[] }>(`/admin/users/${encodeURIComponent(id)}`, {
+			method: 'DELETE',
+		}),
+	/** The admins: root admins from config, plus invited accounts. */
+	adminAdmins: () => req<{ admins: AdminListItem[] }>('/admin/admins'),
+	/** Give an existing account admin access. The address must already have one. */
+	adminInviteAdmin: (email: string) =>
+		req<AdminUserDetail>('/admin/admins', { method: 'POST', body: JSON.stringify({ email }) }),
+	/** Take admin access away. A root admin can never be removed. */
+	adminRemoveAdmin: (id: string) =>
+		req<{ removed: boolean }>(`/admin/admins/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 	/** Operational error counts and a rate-limiter summary. */
 	adminOps: () => req<AdminOps>('/admin/ops'),
 

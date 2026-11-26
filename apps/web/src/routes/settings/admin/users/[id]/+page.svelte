@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
+	import HoldToConfirm from '$lib/components/HoldToConfirm.svelte';
 	import { api, type AdminUserDetail } from '$lib/api';
 
 	const id = page.params.id ?? '';
@@ -10,8 +12,12 @@
 	let detail = $state<AdminUserDetail | null>(null);
 	let error = $state('');
 	let message = $state('');
-	let busy = $state<'rebuild' | 'sync' | 'disable' | 'enable' | null>(null);
-	let pendingAction = $state<'rebuild' | 'sync' | 'disable' | 'enable' | null>(null);
+	let busy = $state<'rebuild' | 'sync' | 'disable' | 'enable' | 'softDelete' | 'restore' | 'delete' | null>(
+		null,
+	);
+	let pendingAction = $state<'rebuild' | 'sync' | 'disable' | 'enable' | 'softDelete' | 'restore' | null>(
+		null,
+	);
 
 	async function load() {
 		try {
@@ -50,6 +56,18 @@
 			confirmLabel: 'Enable',
 			tone: 'default' as const,
 		},
+		softDelete: {
+			title: 'Delete this account?',
+			body: 'The account is hidden and blocked, and the user is signed out. Nothing is erased, and you can restore it later.',
+			confirmLabel: 'Delete',
+			tone: 'danger' as const,
+		},
+		restore: {
+			title: 'Restore this account?',
+			body: 'The account becomes visible and can be used again.',
+			confirmLabel: 'Restore',
+			tone: 'default' as const,
+		},
 	};
 
 	const confirm = $derived(pendingAction ? CONFIRM[pendingAction] : CONFIRM.rebuild);
@@ -65,11 +83,40 @@
 			if (action === 'rebuild') detail = await api.adminRebuildPlan(id);
 			else if (action === 'sync') detail = await api.adminSyncUser(id);
 			else if (action === 'disable') detail = await api.adminDisableUser(id);
-			else detail = await api.adminEnableUser(id);
-			message = `Done. ${action === 'disable' ? 'The account is disabled.' : action === 'enable' ? 'The account is enabled again.' : 'The action finished.'}`;
+			else if (action === 'enable') detail = await api.adminEnableUser(id);
+			else if (action === 'softDelete') detail = await api.adminSoftDeleteUser(id);
+			else detail = await api.adminRestoreUser(id);
+			message =
+				action === 'disable'
+					? 'Done. The account is disabled.'
+					: action === 'enable'
+						? 'Done. The account is enabled again.'
+						: action === 'softDelete'
+							? 'Done. The account is deleted and hidden. You can restore it.'
+							: action === 'restore'
+								? 'Done. The account is restored.'
+								: 'Done. The action finished.';
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'That action did not finish.';
 		} finally {
+			busy = null;
+		}
+	}
+
+	async function deletePermanently() {
+		busy = 'delete';
+		error = '';
+		message = '';
+		try {
+			const res = await api.adminDeleteUser(id);
+			if (res.failed.length) {
+				error = `The account is gone, but some rows could not be removed: ${res.failed.join(', ')}.`;
+				busy = null;
+				return;
+			}
+			await goto('/settings/admin');
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'That action did not finish.';
 			busy = null;
 		}
 	}
@@ -117,7 +164,10 @@
 			>
 				{roleLabel(detail)}
 			</span>
-			{#if detail.disabled}
+			{#if detail.deleted}
+				<span class="rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">Deleted</span>
+				<span class="text-steel">since {formatDate(detail.deletedAt)}</span>
+			{:else if detail.disabled}
 				<span class="rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">Disabled</span>
 				<span class="text-steel">since {formatDate(detail.disabledAt)}</span>
 			{:else}
@@ -126,6 +176,15 @@
 			<span class="text-steel">Joined {formatDate(detail.createdAt)}</span>
 		</div>
 	</header>
+
+	{#if detail.deleted}
+		<div class="mb-6 rounded-xl border border-danger/40 bg-danger/5 p-4">
+			<p class="text-sm text-danger">
+				This account is deleted and hidden. The user cannot sign in. Restore it below, or delete it
+				permanently.
+			</p>
+		</div>
+	{/if}
 
 	{#if detail.disabled}
 		<div class="mb-6 rounded-xl border border-danger/40 bg-danger/5 p-4">
@@ -192,7 +251,44 @@
 					</p>
 				{/if}
 			{/if}
+
+			{#if detail.deleted}
+				<button
+					type="button"
+					onclick={() => (pendingAction = 'restore')}
+					disabled={busy !== null}
+					class="rounded-md border border-hairline-strong px-4 py-2.5 text-sm hover:border-signal hover:text-signal-ink disabled:opacity-50"
+				>
+					{busy === 'restore' ? 'Restoring.' : 'Restore account'}
+				</button>
+			{:else}
+				<button
+					type="button"
+					onclick={() => (pendingAction = 'softDelete')}
+					disabled={busy !== null || detail.isRoot || detail.role === 'admin'}
+					title={detail.isRoot || detail.role === 'admin'
+						? 'Locked admins cannot be deleted.'
+						: undefined}
+					class="rounded-md border border-danger/50 px-4 py-2.5 text-sm text-danger hover:border-danger disabled:cursor-not-allowed disabled:opacity-40"
+				>
+					{busy === 'softDelete' ? 'Deleting.' : 'Delete account'}
+				</button>
+			{/if}
 		</div>
+
+		{#if !detail.isRoot && detail.role !== 'admin'}
+			<div class="mt-4 max-w-sm">
+				<HoldToConfirm
+					label="Hold for 5 seconds to delete permanently"
+					holdingLabel="Keep holding,"
+					disabled={busy !== null}
+					onconfirm={deletePermanently}
+				/>
+				<p class="mt-2 text-xs text-steel">
+					Permanent delete removes the account and everything it owns. This cannot be undone.
+				</p>
+			</div>
+		{/if}
 	</section>
 
 	<section class="mb-8">
