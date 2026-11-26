@@ -18,6 +18,10 @@ import {
 	minutesForRow,
 	minutesToTime,
 	removeBlockAt,
+	resizeBlockEnd,
+	resizeBlockStart,
+	resizeWindowEnd,
+	resizeWindowStart,
 	rowForMinutes,
 	shiftBlock,
 	shiftWindow,
@@ -261,6 +265,61 @@ describe('moving a window (nudge and drag)', () => {
 	it('changes nothing when no block starts there', () => {
 		const blocks: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
 		expect(shiftBlock(blocks, 2, 900, STEP_MIN)).toBe(blocks);
+	});
+});
+
+describe('resizing a window from one edge', () => {
+	it('moves the start and leaves the end exactly', () => {
+		expect(resizeWindowStart(360, 420, 330)).toEqual({ start: 330, end: 420 });
+		expect(resizeWindowStart(360, 420, 375)).toEqual({ start: 375, end: 420 });
+	});
+
+	it('snaps and clamps the new start to the day range', () => {
+		expect(resizeWindowStart(360, 420, 100)).toEqual({ start: GRID_START_MIN, end: 420 });
+	});
+
+	it('refuses to let the start cross the end, keeping one step', () => {
+		expect(resizeWindowStart(360, 420, 600)).toEqual({ start: 405, end: 420 });
+	});
+
+	it('moves the end and leaves the start exactly', () => {
+		expect(resizeWindowEnd(360, 420, 510)).toEqual({ start: 360, end: 510 });
+	});
+
+	it('refuses to let the end cross the start, keeping one step', () => {
+		expect(resizeWindowEnd(360, 420, 300)).toEqual({ start: 360, end: 375 });
+	});
+
+	it('clamps the end to the day range', () => {
+		expect(resizeWindowEnd(1320, 1350, 1500)).toEqual({ start: 1320, end: GRID_END_MIN });
+	});
+
+	it('resizes a stored block from the top edge', () => {
+		const blocks: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
+		expect(resizeBlockStart(blocks, 2, 360, 330)).toEqual([
+			{ day: 2, start: '05:30', end: '07:00' },
+		]);
+	});
+
+	it('resizes a stored block from the bottom edge', () => {
+		const blocks: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
+		expect(resizeBlockEnd(blocks, 2, 360, 480)).toEqual([{ day: 2, start: '06:00', end: '08:00' }]);
+	});
+
+	it('merges a resize that grows onto a neighbour', () => {
+		const blocks: ScheduleBlock[] = [
+			{ day: 2, start: '06:00', end: '07:00' },
+			{ day: 2, start: '05:00', end: '05:30' },
+		];
+		expect(resizeBlockStart(blocks, 2, 360, 300)).toEqual([
+			{ day: 2, start: '05:00', end: '07:00' },
+		]);
+	});
+
+	it('changes nothing when no block starts there', () => {
+		const blocks: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
+		expect(resizeBlockStart(blocks, 2, 900, 300)).toBe(blocks);
+		expect(resizeBlockEnd(blocks, 3, 360, 480)).toBe(blocks);
 	});
 });
 
