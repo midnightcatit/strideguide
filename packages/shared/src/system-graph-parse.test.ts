@@ -3,17 +3,20 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+	basename,
 	buildDataView,
 	buildGranularView,
 	buildRulesView,
 	buildSystemGraph,
 	buildWhyView,
 	computeFingerprint,
+	GITHUB_REPO_URL,
 	invariantTestNodes,
 	parseBoundaries,
 	parseDecisionLog,
 	parseInvariantTable,
 	parseSchema,
+	pullRequestLinks,
 	serializeGraph,
 	slugifyAnchor,
 	validateGraph,
@@ -121,7 +124,15 @@ describe('parseDecisionLog', () => {
 			expect(entry.why).not.toBe('');
 			expect(entry.rulesOut).not.toBe('');
 			expect(entry.href).toBe(`docs/decisions.md#${entry.anchor}`);
+			expect(Array.isArray(entry.pullRequests)).toBe(true);
 		}
+		// At least one real entry names a pull request, and it links to that PR.
+		const withPr = entries.find((entry) => entry.pullRequests.length > 0);
+		expect(withPr).toBeDefined();
+		expect(withPr?.pullRequests[0]?.href).toMatch(
+			new RegExp(`^${GITHUB_REPO_URL}/pull/\\d+$`),
+		);
+		expect(withPr?.pullRequests[0]?.kind).toBe('pr');
 	});
 
 	it('parses a small fixture into decided, why and rules out', () => {
@@ -136,7 +147,7 @@ describe('parseDecisionLog', () => {
 			'',
 			'Decided: we keep it simple. The code stays small.',
 			'',
-			'Why: a small system is easier to reason about.',
+			'Why: a small system is easier to reason about (PR #123).',
 			'',
 			'Rules out: a second code path.',
 			'',
@@ -158,6 +169,33 @@ describe('parseDecisionLog', () => {
 		expect(entries[0]?.anchor).toBe('keep-it-simple');
 		expect(entries[0]?.decided).toContain('we keep it simple');
 		expect(entries[0]?.rulesOut).toBe('a second code path.');
+		expect(entries[0]?.pullRequests).toEqual([
+			{ kind: 'pr', label: 'PR #123', href: `${GITHUB_REPO_URL}/pull/123` },
+		]);
+		expect(entries[1]?.pullRequests).toEqual([]);
+	});
+});
+
+describe('pullRequestLinks', () => {
+	it('reads PR #n and PR (#n), links each once, and ignores anything else', () => {
+		expect(pullRequestLinks('fixed by PR #248 and again in PR #248')).toEqual([
+			{ kind: 'pr', label: 'PR #248', href: `${GITHUB_REPO_URL}/pull/248` },
+		]);
+		expect(pullRequestLinks('the first rubric PR (#244) was closed')).toEqual([
+			{ kind: 'pr', label: 'PR #244', href: `${GITHUB_REPO_URL}/pull/244` },
+		]);
+		expect(pullRequestLinks('PR #238, PLAN.md section 12.1')).toEqual([
+			{ kind: 'pr', label: 'PR #238', href: `${GITHUB_REPO_URL}/pull/238` },
+		]);
+		expect(pullRequestLinks('no pull request here, issue #12 aside')).toEqual([]);
+	});
+});
+
+describe('basename', () => {
+	it('takes the last path segment and drops a fragment', () => {
+		expect(basename('packages/shared/src/plan/load.ts')).toBe('load.ts');
+		expect(basename('apps/web/src/routes')).toBe('routes');
+		expect(basename('packages/shared/src/plan/load.test.ts#keeps-a-thing')).toBe('load.test.ts');
 	});
 });
 
@@ -205,6 +243,30 @@ describe('the view builders', () => {
 			},
 		]);
 		expect(nodes.map((n) => n.kind).sort()).toEqual(['boundary', 'test']);
+		// The invariant points at the SYSTEM.md section, its test file and the test.
+		const invariant = nodes.find((n) => n.id === 'inv:one');
+		expect(invariant?.links).toEqual([
+			{ kind: 'doc', label: 'SYSTEM.md', href: 'SYSTEM.md#invariants' },
+			{
+				kind: 'test',
+				label: 'engine.test.ts',
+				href: 'packages/shared/src/plan/engine.test.ts',
+			},
+			{
+				kind: 'test',
+				label: 'keeps a thing',
+				href: 'packages/shared/src/plan/engine.test.ts#keeps-a-thing',
+			},
+		]);
+		// The test node points at its own test file.
+		const test = nodes.find((n) => n.id.startsWith('test:'));
+		expect(test?.links).toEqual([
+			{
+				kind: 'test',
+				label: 'engine.test.ts',
+				href: 'packages/shared/src/plan/engine.test.ts',
+			},
+		]);
 		expect(edges).toEqual([
 			{
 				from: 'inv:one',
@@ -231,6 +293,9 @@ describe('the view builders', () => {
 		expect(view.layout.direction).toBe('TB');
 		expect(view.nodes.filter((n) => n.kind === 'boundary')).toHaveLength(2);
 		expect(view.nodes.filter((n) => n.kind === 'test')).toHaveLength(1);
+		expect(view.nodes.find((n) => n.id === 'boundary:one')?.links).toEqual([
+			{ kind: 'doc', label: 'SYSTEM.md', href: 'SYSTEM.md#boundaries-everyone-must-hold' },
+		]);
 		expect(view.edges).toHaveLength(1);
 	});
 
@@ -245,9 +310,20 @@ describe('the view builders', () => {
 				rulesOut: 'The other.',
 				anchor: 'one',
 				href: 'docs/decisions.md#one',
+				pullRequests: [
+					{ kind: 'pr', label: 'PR #42', href: `${GITHUB_REPO_URL}/pull/42` },
+				],
 			},
 		]);
 		expect(view.id).toBe('why');
+		expect(view.nodes.find((n) => n.id === 'decision:log')?.links).toEqual([
+			{ kind: 'doc', label: 'decisions.md', href: 'docs/decisions.md' },
+		]);
+		// A why node links to its decision-log anchor and the pull request it names.
+		expect(view.nodes.find((n) => n.id === 'decision:one')?.links).toEqual([
+			{ kind: 'decision', label: 'One', href: 'docs/decisions.md#one' },
+			{ kind: 'pr', label: 'PR #42', href: `${GITHUB_REPO_URL}/pull/42` },
+		]);
 		expect(view.edges).toEqual([{ from: 'decision:log', to: 'decision:one', label: '2026-01-01' }]);
 	});
 
@@ -269,6 +345,9 @@ describe('the view builders', () => {
 		expect(view.layout.direction).toBe('LR');
 		expect(view.nodes.find((n) => n.id === 'table:ai_jobs')?.label).toBe('AI jobs');
 		expect(view.nodes.find((n) => n.id === 'table:ai_jobs')?.note).toBe('Content and AI');
+		expect(view.nodes.find((n) => n.id === 'table:ai_jobs')?.links).toEqual([
+			{ kind: 'code', label: 'schema.ts', href: 'packages/shared/src/db/schema.ts' },
+		]);
 		expect(view.edges).toEqual([{ from: 'table:ai_jobs', to: 'table:users', label: 'user_id' }]);
 	});
 
@@ -299,6 +378,11 @@ describe('the view builders', () => {
 		);
 		expect(view.id).toBe('granular');
 		expect(view.nodes.filter((n) => n.kind === 'module')).toHaveLength(1);
+		// A module node links to its code and each test that guards it.
+		expect(view.nodes.find((n) => n.id === 'module:load')?.links).toEqual([
+			{ kind: 'code', label: 'load.ts', href: 'packages/shared/src/plan/load.ts' },
+			{ kind: 'test', label: 'load.test.ts', href: 'packages/shared/src/plan/load.test.ts' },
+		]);
 		expect(view.edges).toContainEqual({
 			from: 'module:load',
 			to: 'test:packages/shared/src/plan/load.test.ts#keeps-a-thing',
@@ -342,6 +426,11 @@ describe('the merge', () => {
 					'test',
 					'trigger',
 				]).toContain(node.kind);
+				for (const link of node.links ?? []) {
+					expect(['code', 'test', 'decision', 'pr', 'doc']).toContain(link.kind);
+					expect(link.label).not.toBe('');
+					expect(link.href).not.toBe('');
+				}
 			}
 		}
 		expect(validateGraph(graph)).toEqual([]);

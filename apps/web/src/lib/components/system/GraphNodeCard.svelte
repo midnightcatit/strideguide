@@ -41,7 +41,13 @@
 	const active = $derived(focus.activeId === id);
 	const neighbor = $derived(!active && focus.activeId !== null && focus.isNeighbor(id));
 	const dimmed = $derived(focus.focusedId !== null && focus.focusedId !== id);
-	const label = $derived(`${node.label}, ${node.kind}${node.note ? `. ${node.note}` : ''}`);
+	// The card stays small, so it only hints at how many links the node has; the
+	// detail panel and the list row carry the labelled chips themselves.
+	const linkCount = $derived(node.links?.length ?? 0);
+	const linkWord = $derived(`${linkCount} link${linkCount === 1 ? '' : 's'}`);
+	const label = $derived(
+		`${node.label}, ${node.kind}${node.note ? `. ${node.note}` : ''}${linkCount ? `. ${linkWord}` : ''}`,
+	);
 </script>
 
 <div class="sg-node" style={kindVars(node.kind)} data-kind={node.kind}>
@@ -58,7 +64,14 @@
 	>
 		<span class="rail" aria-hidden="true"></span>
 		<span class="content">
-			<span class="chip">{node.kind}</span>
+			<span class="top">
+				<span class="chip">{node.kind}</span>
+				{#if linkCount}
+					<span class="links-hint" title={linkWord}>
+						<span class="dot" aria-hidden="true"></span>{linkCount}
+					</span>
+				{/if}
+			</span>
 			<span class="label">{node.label}</span>
 			{#if node.note}<span class="note">{node.note}</span>{/if}
 		</span>
@@ -115,8 +128,13 @@
 		padding: 8px 10px;
 	}
 
+	.top {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
 	.chip {
-		align-self: flex-start;
 		padding: 1px 7px;
 		border-radius: 999px;
 		background: var(--g-chip-bg);
@@ -126,6 +144,24 @@
 		letter-spacing: 0.06em;
 		line-height: 1.5;
 		text-transform: uppercase;
+	}
+
+	.links-hint {
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		color: var(--g-note);
+		font-family: var(--font-data);
+		font-size: 10px;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+	}
+
+	.dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 999px;
+		background: var(--g-rail);
 	}
 
 	.label {

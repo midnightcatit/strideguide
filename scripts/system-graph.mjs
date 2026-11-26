@@ -74,8 +74,9 @@ for (const view of graph.views) {
 
 const sample = graph.views.find((v) => v.id === 'granular');
 if (sample) {
-	const withHref = sample.nodes.filter((n) => n.href).slice(0, 2);
-	for (const node of withHref) {
-		console.log(`  sample: [${node.kind}] ${node.label} -> ${node.href}`);
+	const withLinks = sample.nodes.filter((n) => n.links?.length).slice(0, 2);
+	for (const node of withLinks) {
+		const links = (node.links ?? []).map((l) => `${l.kind}:${l.href}`).join(', ');
+		console.log(`  sample: [${node.kind}] ${node.label} -> ${links}`);
 	}
 }

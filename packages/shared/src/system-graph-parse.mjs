@@ -16,21 +16,44 @@
 import { createHash } from 'node:crypto';
 
 /** Bumped when the parsed shape or the merged view shape changes on purpose. */
-export const GRAPH_SCHEMA_VERSION = 1;
+export const GRAPH_SCHEMA_VERSION = 2;
 
 /** The exact five-column header SYSTEM.md's invariants table must carry, in order. */
 const INVARIANT_HEADER = ['id', 'invariant', 'enforced by', 'test file', 'kind'];
 
+/** The repository, so a decision entry's pull request links resolve. */
+export const GITHUB_REPO_URL = 'https://github.com/midnightcatit/strideguide';
+
+/** SYSTEM.md's two sections the map links into: the boundaries and the invariants. */
+const SYSTEM_MD_BOUNDARIES = 'SYSTEM.md#boundaries-everyone-must-hold';
+const SYSTEM_MD_INVARIANTS = 'SYSTEM.md#invariants';
+
+/** The file every data-view table node points at. */
+const SCHEMA_FILE = 'packages/shared/src/db/schema.ts';
+
+/**
+ * The last segment of a path, for a link label. A fragment is dropped, so a
+ * file link shortened to its name never repeats the file itself.
+ * @param {string} path
+ * @returns {string}
+ */
+export function basename(path) {
+	const withoutFragment = path.split('#')[0] ?? path;
+	const parts = withoutFragment.split('/').filter((part) => part.length > 0);
+	return parts[parts.length - 1] ?? path;
+}
+
 /**
  * @typedef {{ id: string, invariant: string, enforcedBy: string, testFile: string, kind: string }} InvariantRow
  * @typedef {{ id: string, title: string, body: string }} BoundaryBullet
- * @typedef {{ id: string, title: string, date: string, decided: string, why: string, rulesOut: string, anchor: string, href: string }} DecisionEntry
+ * @typedef {{ id: string, title: string, date: string, decided: string, why: string, rulesOut: string, anchor: string, href: string, pullRequests: GraphLink[] }} DecisionEntry
  * @typedef {{ name: string, varName: string }} SchemaTable
  * @typedef {{ from: string, to: string, column: string | null }} SchemaRef
  * @typedef {{ tables: SchemaTable[], refs: SchemaRef[] }} SchemaGraph
  * @typedef {{ id: string, label: string, kind?: string, computes: string, mayDecide: string, href: string, guardedBy?: string[] }} ModuleEntry
  * @typedef {{ label?: string, group?: string }} TableOverride
- * @typedef {{ id: string, label: string, kind: string, note?: string, href?: string }} GraphNode
+ * @typedef {{ kind: 'code' | 'test' | 'decision' | 'pr' | 'doc', label: string, href: string }} GraphLink
+ * @typedef {{ id: string, label: string, kind: string, note?: string, links?: GraphLink[] }} GraphNode
  * @typedef {{ from: string, to: string, label?: string }} GraphEdge
  * @typedef {{ id: string, title: string, lede: string, layout: { engine: string, algorithm: string, direction: string, edgeRouting: string }, nodes: GraphNode[], edges: GraphEdge[] }} GraphView
  * @typedef {{ version: number, pipeline: GraphView, paths: GraphView, modules: ModuleEntry[], tableOverrides?: Record<string, TableOverride> }} AuthoredGraph
@@ -160,6 +183,34 @@ export function parseBoundaries(md) {
 /* --------------------------- docs/decisions.md parser --------------------------- */
 
 /**
+ * Every pull request a decision entry names, as one link each. The log writes them
+ * as "PR #248" or "PR (#244)", so both forms are read, and a number named twice in
+ * one entry is linked once.
+ * @param {string} text
+ * @returns {GraphLink[]}
+ */
+export function pullRequestLinks(text) {
+	/** @type {Set<string>} */
+	const seen = new Set();
+	/** @type {GraphLink[]} */
+	const links = [];
+	const re = /\bPR\s*\(?#(\d+)\)?/g;
+	/** @type {RegExpExecArray | null} */
+	let m;
+	while ((m = re.exec(text)) !== null) {
+		const number = m[1] ?? '';
+		if (number === '' || seen.has(number)) continue;
+		seen.add(number);
+		links.push({
+			kind: 'pr',
+			label: `PR #${number}`,
+			href: `${GITHUB_REPO_URL}/pull/${number}`,
+		});
+	}
+	return links;
+}
+
+/**
  * Parse the decision log. Each "## " section is an entry: a title, a date line,
  * then the Decided, Why and Rules out paragraphs.
  * @param {string} md
@@ -202,6 +253,7 @@ export function parseDecisionLog(md) {
 			rulesOut: field('Rules out'),
 			anchor,
 			href: `docs/decisions.md#${anchor}`,
+			pullRequests: pullRequestLinks(raw),
 		});
 	}
 	return out;
@@ -310,14 +362,22 @@ export function invariantTestNodes(invariants) {
 			label: row.invariant,
 			kind: 'boundary',
 			note: `Enforced by: ${row.enforcedBy} (${row.kind}).`,
-			href: row.testFile,
+			links: [
+				{ kind: 'doc', label: 'SYSTEM.md', href: SYSTEM_MD_INVARIANTS },
+				{ kind: 'test', label: basename(row.testFile), href: row.testFile },
+				{
+					kind: 'test',
+					label: row.enforcedBy,
+					href: `${row.testFile}#${slugifyAnchor(row.enforcedBy)}`,
+				},
+			],
 		});
 		nodes.push({
 			id: tId,
 			label: row.enforcedBy,
 			kind: 'test',
 			note: `Guards the invariant "${row.id}".`,
-			href: row.testFile,
+			links: [{ kind: 'test', label: basename(row.testFile), href: row.testFile }],
 		});
 		edges.push({ from: `inv:${row.id}`, to: tId, label: 'enforced by' });
 	}
@@ -338,7 +398,7 @@ export function buildRulesView(parsed) {
 			label: b.title,
 			kind: 'boundary',
 			note: b.body || undefined,
-			href: 'SYSTEM.md#boundaries-everyone-must-hold',
+			links: [{ kind: 'doc', label: 'SYSTEM.md', href: SYSTEM_MD_BOUNDARIES }],
 		}),
 	);
 	const { nodes, edges } = invariantTestNodes(parsed.invariants);
@@ -366,7 +426,7 @@ export function buildWhyView(entries) {
 			label: 'Decision log',
 			kind: 'module',
 			note: 'Every settled decision and its why, newest first.',
-			href: 'docs/decisions.md',
+			links: [{ kind: 'doc', label: 'decisions.md', href: 'docs/decisions.md' }],
 		},
 	];
 	/** @type {GraphEdge[]} */
@@ -378,7 +438,7 @@ export function buildWhyView(entries) {
 			label: e.title,
 			kind: 'decision',
 			note,
-			href: e.href,
+			links: [{ kind: 'decision', label: e.title, href: e.href }, ...e.pullRequests],
 		});
 		edges.push({ from: 'decision:log', to: e.id, label: e.date });
 	}
@@ -409,7 +469,7 @@ export function buildDataView(schema, overrides) {
 			label: override?.label ?? humanizeTable(t.name),
 			kind: 'data',
 			note: override?.group,
-			href: 'packages/shared/src/db/schema.ts',
+			links: [{ kind: 'code', label: 'schema.ts', href: SCHEMA_FILE }],
 		};
 	});
 	/** @type {GraphEdge[]} */
@@ -442,7 +502,13 @@ export function buildGranularView(parsed, modules) {
 			label: m.label,
 			kind: m.kind ?? 'module',
 			note: `Computes: ${m.computes} May decide: ${m.mayDecide}`,
-			href: m.href,
+			links: [
+				{ kind: 'code', label: basename(m.href), href: m.href },
+				...(m.guardedBy ?? []).map(
+					/** @returns {GraphLink} */
+					(testFile) => ({ kind: 'test', label: basename(testFile), href: testFile }),
+				),
+			],
 		}),
 	);
 	/** @type {GraphEdge[]} */
@@ -452,7 +518,8 @@ export function buildGranularView(parsed, modules) {
 		const guarded = new Set(m.guardedBy ?? []);
 		if (!guarded.size) continue;
 		for (const t of testNodes) {
-			if (t.href && guarded.has(t.href)) {
+			const guardedFile = t.links?.find((link) => link.kind === 'test')?.href;
+			if (guardedFile && guarded.has(guardedFile)) {
 				moduleEdges.push({ from: `module:${m.id}`, to: t.id, label: 'guarded by' });
 			}
 		}

@@ -22,14 +22,33 @@
 export type NodeKind =
 	'stage' | 'module' | 'boundary' | 'decision' | 'data' | 'route' | 'test' | 'trigger';
 
+/**
+ * What one link of a node points at, so the page can label and open it. `code` is
+ * the file the node computes in, `test` the test that guards it, `decision` the
+ * decision-log entry, `pr` the pull request behind it, and `doc` anything else:
+ * a source with no better kind is a `doc`, never a guess.
+ */
+export type GraphLinkKind = 'code' | 'test' | 'decision' | 'pr' | 'doc';
+
+export interface GraphLink {
+	kind: GraphLinkKind;
+	/** A short, shortened target: a file name, a test name, or a PR number. */
+	label: string;
+	href: string;
+}
+
 export interface GraphNode {
 	id: string;
 	label: string;
 	kind: NodeKind;
 	/** A short plain sentence shown when the node is opened. Never a distance or a unit. */
 	note?: string;
-	/** Where the node's own source lives, so the granular detail is clickable. */
-	href?: string;
+	/**
+	 * Everywhere the node points: its code, its test, its decision entry, its pull
+	 * request. One node genuinely points at more than one place. A node with no real
+	 * target carries none rather than a placeholder.
+	 */
+	links?: GraphLink[];
 }
 
 export interface GraphEdge {
@@ -94,6 +113,8 @@ export interface DecisionEntry {
 	/** The GitHub heading anchor the entry links to. */
 	anchor: string;
 	href: string;
+	/** The pull requests the entry names, one link each. */
+	pullRequests: GraphLink[];
 }
 
 /** One Drizzle table, with the local variable it is bound to. */
