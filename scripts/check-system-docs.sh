@@ -39,6 +39,13 @@ guard_paths=(
   "packages/shared/src/plan/why.ts"
   "packages/shared/src/plan/why-rephrase.ts"
   "apps/api/src/lib/session-why.ts"
+  # The system map's graph. The authored graph carries what the map claims about
+  # the system, so a change to it can move the claims; system-graph.ts holds the
+  # graph types and the parsers over the authored data. The generated output is
+  # derived from the authored graph and the canvas and page only present it, so
+  # none of those three is listed here.
+  "docs/system/graph.json"
+  "packages/shared/src/system-graph.ts"
 )
 # Whole directories that count. Drizzle migrations are a separate file per
 # change, so match the directory rather than each migration.

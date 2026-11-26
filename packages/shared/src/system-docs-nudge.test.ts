@@ -61,6 +61,19 @@ describe('the system-doc nudge guards the rule-carrying paths', () => {
 		}
 	});
 
+	it('trips on the system graph paths', () => {
+		for (const path of ['docs/system/graph.json', 'packages/shared/src/system-graph.ts']) {
+			const res = runNudge([path]);
+			expect(res.status, `${path} should trip the nudge`).toBe(1);
+			expect(res.stderr).toContain(path);
+		}
+	});
+
+	it('passes a change to the generated graph output, which is derived', () => {
+		const res = runNudge(['docs/system/graph.generated.json']);
+		expect(res.status).toBe(0);
+	});
+
 	it('passes when a guarded path is changed together with SYSTEM.md', () => {
 		const res = runNudge(['apps/api/src/lib/session-why.ts', 'SYSTEM.md']);
 		expect(res.status).toBe(0);
