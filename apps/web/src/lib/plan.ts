@@ -44,6 +44,8 @@ export interface ClientPrescription {
 	targetPaceSecPerKm?: [number, number];
 	targetZone?: string;
 	targetRpe?: [number, number];
+	/** A local start time ("HH:MM") set from the runner's blocked-out windows. */
+	timeStart?: string;
 	blocks?: { machine: string; sets: { reps: number; weightKg: number }[] }[];
 	notes?: string;
 	/** Why this session has the amount it has. */

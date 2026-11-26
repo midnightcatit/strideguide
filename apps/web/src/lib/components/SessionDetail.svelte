@@ -339,6 +339,9 @@
 				</p>
 			{/if}
 			<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-steel">
+				{#if p.timeStart}
+					<span class="tabular">Starts {p.timeStart}</span>
+				{/if}
 				<IntensityLadder intensity={p.intensity} />
 				{#if p.targetZone}
 					<span class="flex items-center gap-1">
