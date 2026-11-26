@@ -1,0 +1,40 @@
+name: System Doc Nudge
+
+# A pull request that changes a rule-carrying part of the system should also
+# update the system map (SYSTEM.md) or record a decision (docs/decisions.md).
+# Docs rot when keeping them current is left to discipline, so this makes it a
+# check. The rule, the label waiver and the bootstrap allowance all live in
+# scripts/check-system-docs.sh; this workflow only gathers the changed paths.
+on:
+  pull_request:
+    # labeled/unlabeled so adding or removing the waiver label re-runs the
+    # check; synchronize so new commits are re-checked.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+# Only reads the repository; nothing here needs write access.
+permissions:
+  contents: read
+
+jobs:
+  system-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history so the pull request base commit is present to diff against.
+          fetch-depth: 0
+
+      - name: Collect changed paths
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # Three-dot diff: the files this branch changed, not everything main moved on.
+          git diff --name-only "$BASE...$HEAD" > /tmp/changed.txt
+          cat /tmp/changed.txt
+
+      - name: Check for a rule change without a system-doc update
+        env:
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: bash scripts/check-system-docs.sh < /tmp/changed.txt

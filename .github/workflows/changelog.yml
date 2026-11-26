@@ -1,0 +1,103 @@
+name: Changelog
+
+# Records merged pull request titles in CHANGELOG.md, newest first, under the
+# day they landed. This writes a commit straight to main, so it runs only when
+# main takes a direct commit: the guard step below skips itself, with a notice,
+# the moment main is protected. See the pull request that added this for the
+# check behind that decision.
+on:
+  push:
+    branches: [main]
+
+# The repository default is a read-only token; this job needs to push the
+# changelog commit, so it asks for write on contents (and read on pull requests,
+# for the commit-to-pull-request lookup below).
+permissions:
+  contents: write
+  pull-requests: read
+
+# Never run two changelog writers at once.
+concurrency:
+  group: changelog
+  cancel-in-progress: false
+
+jobs:
+  changelog:
+    # Loop guard, belt and suspenders: a push made with GITHUB_TOKEN does not
+    # trigger workflows by default, and this skips the bot's own commits anyway.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to record
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+
+          # Loop guard: if the only thing this push changed is the changelog
+          # itself, there is nothing new to record.
+          changed="$(git diff --name-only "$BEFORE" "$AFTER")"
+          if [ -z "$changed" ] || [ "$changed" = "CHANGELOG.md" ]; then
+            echo "Skipping: the only change is CHANGELOG.md."
+            echo "write=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Only write when main takes a direct commit. If protection is ever
+          # turned on, leave the changelog to the pull request instead of
+          # fighting it. A failed lookup counts as protected, so we fail safe.
+          protected="$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.protected' 2>/dev/null || echo true)"
+          if [ "$protected" = "true" ]; then
+            echo "::notice::main is protected, so the changelog is left to the pull request."
+            echo "write=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Merged pull request titles for the commits in this push, one row per
+          # pull request, then deduplicated by number.
+          : > /tmp/titles.tsv
+          for sha in $(git rev-list "$BEFORE..$AFTER"); do
+            gh api "repos/$GITHUB_REPOSITORY/commits/$sha/pulls" \
+              --jq '.[] | select(.merged_at != null) | "\(.number)\t\(.title)"' \
+              >> /tmp/titles.tsv 2>/dev/null || true
+          done
+          sort -t"$(printf '\t')" -u -k1,1 /tmp/titles.tsv -o /tmp/titles.tsv
+
+          if [ ! -s /tmp/titles.tsv ]; then
+            echo "Skipping: no merged pull request found in this push."
+            echo "write=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "write=true" >> "$GITHUB_OUTPUT"
+
+      - name: Append to CHANGELOG.md
+        if: steps.decide.outputs.write == 'true'
+        run: |
+          set -euo pipefail
+
+          # "number<TAB>title" rows become "- title (#number)" entries.
+          : > /tmp/entries.txt
+          while IFS="$(printf '\t')" read -r num title; do
+            [ -n "$num" ] || continue
+            printf -- '- %s (#%s)\n' "$title" "$num" >> /tmp/entries.txt
+          done < /tmp/titles.tsv
+
+          bash scripts/update-changelog.sh CHANGELOG.md < /tmp/entries.txt > /tmp/CHANGELOG.new
+          mv /tmp/CHANGELOG.new CHANGELOG.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "No changelog change to commit."
+            exit 0
+          fi
+          git commit -m "chore(changelog): record merged pull requests"
+          git push origin HEAD:main
