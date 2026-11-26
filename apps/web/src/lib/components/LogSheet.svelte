@@ -341,14 +341,24 @@
 	{/if}
 	<p class="sr-only" role="status" aria-live="polite">{saving ? 'Saving session' : ''}</p>
 
-	<button
-		type="button"
-		onclick={save}
-		disabled={saving}
-		aria-busy={saving}
-		class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+	<!-- As a page the primary button rides the bottom of the viewport, clearing
+	     the phone tab bar and the home indicator, so it stays reachable without
+	     scrolling a long form to its end. As a sheet it stays at the foot of the
+	     scroll, where the sheet's own frame already holds it. -->
+	<div
+		class={asPage
+			? 'sticky z-20 -mx-4 -mb-4 mt-4 border-t border-hairline bg-paper px-4 py-3 bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] sm:bottom-0'
+			: 'mt-4'}
 	>
-		{saving ? 'Saving…' : isReflection ? 'Save' : 'Save session'}
-	</button>
+		<button
+			type="button"
+			onclick={save}
+			disabled={saving}
+			aria-busy={saving}
+			class="w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+		>
+			{saving ? 'Saving…' : isReflection ? 'Save' : 'Save session'}
+		</button>
+	</div>
 	</div>
 </div>

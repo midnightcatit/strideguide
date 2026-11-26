@@ -525,9 +525,15 @@
 	</div>
 
 	{#if !readOnly}
+		<!-- As a page the action row rides the bottom of the viewport, clearing
+		     the phone tab bar and the home indicator, so Restart and Edit details
+		     are always in reach. The overlay keeps its row at the foot of the card,
+		     inside the fixed frame, with safe-area padding for the home bar. -->
 		<footer
-			class="border-t border-hairline py-3 {asPage ? '' : 'px-4'}"
-			style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))"
+			class="border-t border-hairline bg-paper py-3 {asPage
+				? 'sticky z-30 bottom-[calc(3.5rem_+_env(safe-area-inset-bottom))] sm:bottom-0'
+				: 'px-4'}"
+			style={asPage ? undefined : 'padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))'}
 		>
 			<div class={asPage ? `${col} flex gap-2` : 'mx-auto flex max-w-2xl gap-2'}>
 				{#if onStart && workout}
