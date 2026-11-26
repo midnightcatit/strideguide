@@ -143,9 +143,13 @@
 		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
 		return '';
 	});
-	// One clause for the card, from the plan's own reason, falling back to the
-	// static amount note when the session carries no structured reason.
-	const whyLine = $derived(p.whyStructured?.role ?? p.whyStructured?.dayReason ?? p.why ?? '');
+	// One clause for the card, from the plan's own reason (the model's rewording
+	// where it passed the gate), falling back to the static amount note when the
+	// session carries no structured reason.
+	const whyMerged = $derived(
+		p.whyStructured ? { ...p.whyStructured, ...(p.whyText ?? {}) } : p.whyText,
+	);
+	const whyLine = $derived(whyMerged?.role ?? whyMerged?.dayReason ?? p.why ?? '');
 </script>
 
 <article

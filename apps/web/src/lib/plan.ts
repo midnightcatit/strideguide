@@ -54,6 +54,8 @@ export interface ClientPrescription {
 	changeNote?: string;
 	/** The composed reason, in parts: role, day and plan context. */
 	whyStructured?: SessionWhy;
+	/** The model's rewording of whyStructured, when it passed the writing gate. */
+	whyText?: SessionWhy;
 	workout?: ClientWorkout;
 	/** True when the user added this session from the library (removable). */
 	added?: boolean;

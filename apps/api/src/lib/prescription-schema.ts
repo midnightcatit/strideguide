@@ -72,6 +72,7 @@ export const prescriptionSchema = z.object({
 	notes: z.string().max(2000).optional(),
 	why: z.string().max(2000).optional(),
 	whyStructured: sessionWhySchema.optional(),
+	whyText: sessionWhySchema.optional(),
 	workout: workoutSchema.optional(),
 	libraryId: z.string().max(60).optional(),
 	added: z.boolean().optional(),
