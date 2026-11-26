@@ -232,7 +232,7 @@
 
 	<!-- The ring leads the page: where the plan stands, at a glance, and opens
 	     the full plan with its phases and every week. -->
-	<section aria-labelledby="p-plan" class="mb-7">
+	<section aria-labelledby="p-plan">
 		<SectionHeader
 			id="p-plan"
 			eyebrow="Plan progress"
@@ -271,7 +271,7 @@
 	</section>
 
 	<!-- The metric pages. Each card opens its full page. -->
-	<section aria-labelledby="p-pages" class="mb-7">
+	<section aria-labelledby="p-pages">
 		<SectionHeader id="p-pages" eyebrow="Metric pages" />
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			<WeekPreviewCard
@@ -289,9 +289,9 @@
 
 	{#if health?.available && (Object.keys(health.metrics).length || Object.keys(health.samples).length)}
 		<!-- The single health entry point. The full numbers live on the health page. -->
-		<section aria-labelledby="p-health" class="mb-7">
-			<div class="flex items-baseline justify-between gap-3">
-				<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" />
+		<section aria-labelledby="p-health">
+			<div class="mt-7 flex items-baseline justify-between gap-3">
+				<SectionHeader id="p-health" eyebrow="Health" meta="Last 30 days" topGap={false} />
 				<a href="/progress/health?from=/progress" class="shrink-0 text-xs font-medium text-signal-ink hover:underline">See all →</a>
 			</div>
 			<Card>
@@ -306,14 +306,14 @@
 	{/if}
 
 	{#if !hasLogs}
-		<Card>
+		<Card class="mt-7">
 			<p class="font-display text-lg font-medium">Nothing logged yet</p>
 			<p class="mt-1 text-sm text-steel">Your progress shows up here once you log a session. Start with today's.</p>
 			<a href="/today" class="mt-4 inline-block rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Go to today</a>
 		</Card>
 	{:else}
 		{#if fitness.samples > 0}
-			<section aria-labelledby="p-fitness" class="mb-7">
+			<section aria-labelledby="p-fitness">
 				<SectionHeader id="p-fitness" eyebrow="Your fitness" meta="{fitness.samples} logged" />
 				<Card>
 					<ul class="space-y-1 text-sm">
@@ -341,7 +341,7 @@
 			</section>
 		{/if}
 
-		<section aria-labelledby="p-intensity" class="mb-7">
+		<section aria-labelledby="p-intensity">
 			<SectionHeader id="p-intensity" eyebrow="Completed intensity" meta="{metrics.intensity.completed} done" />
 			<Card tone="sunken">
 				{#if metrics.intensity.completed === 0}
@@ -363,7 +363,7 @@
 			</Card>
 		</section>
 
-		<section aria-labelledby="p-pace" class="mb-7">
+		<section aria-labelledby="p-pace">
 			<SectionHeader id="p-pace" eyebrow="Pace trend" />
 			{#if pacePoints.length < 3}
 				<Card tone="sunken">
@@ -385,7 +385,7 @@
 			{/if}
 		</section>
 
-		<section aria-labelledby="p-pb" class="mb-7">
+		<section aria-labelledby="p-pb">
 			<SectionHeader id="p-pb" eyebrow="Personal bests" />
 			<Card>
 				<ul class="divide-y divide-hairline text-sm">
@@ -407,7 +407,7 @@
 	{/if}
 
 	{#if summary.body}
-		<section aria-labelledby="p-coach-note" class="mb-7">
+		<section aria-labelledby="p-coach-note">
 			<SectionHeader id="p-coach-note" eyebrow="Coach note" />
 			<Card tone="sunken">
 				<p class="text-sm">{summary.body}</p>
@@ -415,7 +415,7 @@
 		</section>
 	{/if}
 
-	<section aria-labelledby="p-recent" class="mb-7">
+	<section aria-labelledby="p-recent">
 		<SectionHeader id="p-recent" eyebrow="Recent activity" />
 		<Card tone="sunken" class="max-w-2xl">
 			{#if recentLogs.length}
@@ -439,7 +439,7 @@
 		</Card>
 	</section>
 
-	<div class="mb-7">
+	<div class="mt-7">
 		<CalendarPreviewCard />
 	</div>
 

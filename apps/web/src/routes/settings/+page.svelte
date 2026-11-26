@@ -171,7 +171,7 @@
 	}
 </script>
 
-<header class="mb-5">
+<header class="mb-7">
 	<p class="tabular text-xs uppercase tracking-widest text-steel">Settings</p>
 	<h1 class="font-display mt-1 text-2xl font-bold">
 		{prefs.name ? `${prefs.name}'s settings` : 'Settings'}
@@ -196,7 +196,7 @@
 	{/each}
 </nav>
 
-<div class="mt-6">
+<div class="mt-7">
 	<button
 		type="button"
 		onclick={() => (confirmSignOut = true)}

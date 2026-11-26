@@ -90,7 +90,7 @@
 		</p>
 	</Card>
 {:else}
-	<header class="mb-4">
+	<header class="mb-7">
 		<p class="tabular text-xs uppercase tracking-widest text-steel">Imported workout</p>
 		<h1 class="font-display mt-1 text-2xl font-bold">{activityTitle(activity)}</h1>
 		{#if dateLabel}<p class="tabular mt-1 text-xs text-steel">{dateLabel}</p>{/if}
@@ -98,17 +98,15 @@
 
 	<ActivityCard activity={activity} eyebrow={timeLabel} />
 
-	<div class="mt-6">
-		<SectionHeader id="activity-stats" eyebrow="All the details" />
-		<Card frame class="mt-2">
-			<dl class="divide-y divide-hairline">
-				{#each stats as stat (stat.label)}
-					<div class="flex items-baseline justify-between gap-3 py-2.5">
-						<dt class="text-sm text-steel">{stat.label}</dt>
-						<dd class="tabular text-sm font-medium">{stat.value}</dd>
-					</div>
-				{/each}
-			</dl>
-		</Card>
-	</div>
+	<SectionHeader id="activity-stats" eyebrow="All the details" />
+	<Card frame class="mt-2">
+		<dl class="divide-y divide-hairline">
+			{#each stats as stat (stat.label)}
+				<div class="flex items-baseline justify-between gap-3 py-2.5">
+					<dt class="text-sm text-steel">{stat.label}</dt>
+					<dd class="tabular text-sm font-medium">{stat.value}</dd>
+				</div>
+			{/each}
+		</dl>
+	</Card>
 {/if}

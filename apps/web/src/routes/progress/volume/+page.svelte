@@ -8,6 +8,7 @@
 	import { volumeComparisons } from '@strideguide/shared/comparisons';
 	import Card from '$lib/components/Card.svelte';
 	import MetricHeader from '$lib/components/MetricHeader.svelte';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 	import BarsCard from '$lib/components/charts/BarsCard.svelte';
 	import PlanError from '$lib/components/PlanError.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
@@ -54,8 +55,8 @@
 		</div>
 	</Card>
 
-	<section aria-labelledby="v-weeks" class="mt-6">
-		<h2 id="v-weeks" class="tabular mb-2 text-xs uppercase tracking-widest text-steel">Last 12 weeks</h2>
+	<section aria-labelledby="v-weeks">
+		<SectionHeader id="v-weeks" eyebrow="Last 12 weeks" />
 		<BarsCard
 			title="Weekly distance"
 			value={fmtDistance(weeklyTotal)}
@@ -69,8 +70,8 @@
 	</section>
 
 	{#if comparisons.length}
-		<section aria-labelledby="v-compare" class="mt-6">
-			<h2 id="v-compare" class="tabular mb-2 text-xs uppercase tracking-widest text-steel">All time, in other units</h2>
+		<section aria-labelledby="v-compare">
+			<SectionHeader id="v-compare" eyebrow="All time, in other units" />
 			<Card>
 				<ul class="space-y-1.5 text-sm">
 					{#each comparisons as c (c.id)}
