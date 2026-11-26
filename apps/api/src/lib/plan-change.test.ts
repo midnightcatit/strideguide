@@ -34,7 +34,7 @@ it('runs the three typed questions and returns decisions, shapes and reasons', a
 		return null;
 	});
 
-	const outcome = await buildPlanChange({ TYPESAFE_API_KEY: 'k' }, ctx);
+	const outcome = await buildPlanChange({ OPENROUTER_API_KEY: 'k' }, ctx);
 	expect(outcome).not.toBeNull();
 	expect(outcome!.decisions.weeks[0]).toMatchObject({
 		weekNumber: 3,
@@ -52,7 +52,7 @@ it('runs the three typed questions and returns decisions, shapes and reasons', a
 
 it('falls back to null when no answer is usable, so the deterministic adapt stands', async () => {
 	mocked.mockResolvedValue(null);
-	expect(await buildPlanChange({ TYPESAFE_API_KEY: 'k' }, ctx)).toBeNull();
+	expect(await buildPlanChange({ OPENROUTER_API_KEY: 'k' }, ctx)).toBeNull();
 });
 
 it('keeps the parts of a week that answered and drops the ones that did not', async () => {
@@ -61,7 +61,7 @@ it('keeps the parts of a week that answered and drops the ones that did not', as
 		return null;
 	});
 
-	const outcome = await buildPlanChange({ TYPESAFE_API_KEY: 'k' }, ctx);
+	const outcome = await buildPlanChange({ OPENROUTER_API_KEY: 'k' }, ctx);
 	expect(outcome!.decisions.weeks[0]?.volumeIntent?.value).toBe('hold');
 	expect(outcome!.decisions.weeks[0]?.qualityDayCount).toBeUndefined();
 	expect(outcome!.shapes.get(3)).toEqual({ volumeIntent: 'hold' });
@@ -69,6 +69,6 @@ it('keeps the parts of a week that answered and drops the ones that did not', as
 
 it('does nothing when there are no affected weeks', async () => {
 	mocked.mockResolvedValue({ value: 'ease', confidence: 0.8 });
-	expect(await buildPlanChange({ TYPESAFE_API_KEY: 'k' }, { ...ctx, affectedWeekNumbers: [] })).toBeNull();
+	expect(await buildPlanChange({ OPENROUTER_API_KEY: 'k' }, { ...ctx, affectedWeekNumbers: [] })).toBeNull();
 	expect(mocked).not.toHaveBeenCalled();
 });
