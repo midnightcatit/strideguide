@@ -45,6 +45,7 @@ You are a running coach rewording the notes on a training plan's sessions. Each 
 - Never introduce a number, a distance, a unit, or a pace that is not already in the line.
 - Never give medical advice, and never mention injury, pain or illness.
 - Keep each line about as long as the original, one plain sentence.
+- Give every line new wording. Never hand a line back exactly as it was given, but never change what it says.
 
 Reply with ONLY a JSON array, one object per session, in the same order. Each object carries the same keys as the lines given for that session (role, dayReason, planContext), each a plain string, and omits a key for a line that was not given.`;
 
@@ -206,44 +207,93 @@ function overlap(original: string, candidate: string): number {
 	return shared / want.size;
 }
 
+/** Why the gate would not keep a rephrased line. Named so a failure can be read. */
+export type WhyRejectReason = 'empty' | 'too_long' | 'ratio' | 'number' | 'overlap';
+
+/** The gate's verdict on one line: the cleaned text, or the rule that rejected it. */
+export interface WhyLineVerdict {
+	text?: string;
+	rejectedBy?: WhyRejectReason;
+}
+
+/**
+ * Clean one rephrased line and judge it on its own: non-empty after sanitizing,
+ * within the length bound, carrying no number the original did not have, and
+ * still close enough in content. Returns the cleaned line, or the rule that
+ * rejected it, so a caller can keep the deterministic line and say why.
+ */
+export function gateReasonDetail(original: string, candidate: string): WhyLineVerdict {
+	const text = sanitizeText(candidate);
+	if (!text) return { rejectedBy: 'empty' };
+	if (text.length > MAX_LEN) return { rejectedBy: 'too_long' };
+	const ratio = text.length / Math.max(1, original.length);
+	if (ratio < MIN_RATIO || ratio > MAX_RATIO) return { rejectedBy: 'ratio' };
+	const allowed = numberSet(original);
+	for (const n of numberSet(text)) if (!allowed.has(n)) return { rejectedBy: 'number' };
+	if (overlap(original, text) < MIN_OVERLAP) return { rejectedBy: 'overlap' };
+	return { text };
+}
+
 /**
  * Clean one rephrased line and accept it only when it is a fair rewrite of the
- * original: non-empty after sanitizing, within the length bound, carrying no
- * number the original did not have, and still close enough in content. Returns
- * the cleaned line, or undefined so the caller keeps the deterministic one.
+ * original. Returns the cleaned line, or undefined so the caller keeps the
+ * deterministic one.
  */
 export function gateReason(original: string, candidate: string): string | undefined {
-	const text = sanitizeText(candidate);
-	if (!text || text.length > MAX_LEN) return undefined;
-	const ratio = text.length / Math.max(1, original.length);
-	if (ratio < MIN_RATIO || ratio > MAX_RATIO) return undefined;
-	const allowed = numberSet(original);
-	for (const n of numberSet(text)) if (!allowed.has(n)) return undefined;
-	if (overlap(original, text) < MIN_OVERLAP) return undefined;
-	return text;
+	return gateReasonDetail(original, candidate).text;
+}
+
+/** The gate's verdict on a whole reason, with why each line was not kept. */
+export interface WhyGateOutcome {
+	/** The accepted lines, present only when at least one line changed. */
+	why?: SessionWhy;
+	/** Lines whose rewrite broke a rule, named by the rule. */
+	rejected: { field: WhyField; reason: WhyRejectReason }[];
+	/** Lines the model returned unchanged, so there was nothing to store. */
+	unchanged: number;
 }
 
 /**
  * Gate a whole reworded reason against the deterministic one. Only a line the
  * deterministic reason already had is considered, so the model can never add a
- * part that was not there. Returns the accepted lines, or undefined when nothing
- * changed, so the caller stores no `whyText` and the fallback stands.
+ * part that was not there. Reports the accepted lines, and for the rest whether
+ * a rule rejected the line or it simply came back unchanged.
+ */
+export function gateWhyDetail(
+	deterministic: SessionWhy,
+	candidate: Partial<SessionWhy>,
+): WhyGateOutcome {
+	const out: SessionWhy = {};
+	let changed = false;
+	let unchanged = 0;
+	const rejected: { field: WhyField; reason: WhyRejectReason }[] = [];
+	for (const field of WHY_FIELDS) {
+		const original = deterministic[field];
+		const proposed = candidate[field];
+		if (!original || !proposed) continue;
+		const verdict = gateReasonDetail(original, proposed);
+		if (verdict.text) {
+			if (verdict.text !== original) {
+				out[field] = verdict.text;
+				changed = true;
+			} else {
+				unchanged++;
+			}
+		} else if (verdict.rejectedBy) {
+			rejected.push({ field, reason: verdict.rejectedBy });
+		}
+	}
+	return { ...(changed ? { why: out } : {}), rejected, unchanged };
+}
+
+/**
+ * Gate a whole reworded reason against the deterministic one. Returns the
+ * accepted lines, or undefined when nothing changed, so the caller stores no
+ * `whyText` and the fallback stands.
  */
 export function gateWhy(
 	deterministic: SessionWhy,
 	candidate: Partial<SessionWhy>,
 ): SessionWhy | undefined {
-	const out: SessionWhy = {};
-	let changed = false;
-	for (const field of WHY_FIELDS) {
-		const original = deterministic[field];
-		const proposed = candidate[field];
-		if (!original || !proposed) continue;
-		const gated = gateReason(original, proposed);
-		if (gated && gated !== original) {
-			out[field] = gated;
-			changed = true;
-		}
-	}
-	return changed ? out : undefined;
+	return gateWhyDetail(deterministic, candidate).why;
 }

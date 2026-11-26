@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { gateReason, gateWhy, parseWhyRephraseReply } from './why-rephrase';
+import {
+	gateReason,
+	gateReasonDetail,
+	gateWhy,
+	gateWhyDetail,
+	parseWhyRephraseReply,
+} from './why-rephrase';
 
 describe('gateReason', () => {
 	it('accepts a faithful reword of the same line', () => {
@@ -66,6 +72,53 @@ describe('gateWhy', () => {
 	it('returns undefined when nothing changed', () => {
 		const deterministic = { dayReason: 'The day before is kept easy.' };
 		expect(gateWhy(deterministic, { dayReason: 'The day before is kept easy.' })).toBeUndefined();
+	});
+});
+
+describe('gateReasonDetail', () => {
+	it('names the rule that rejected a line', () => {
+		expect(gateReasonDetail('This is an easy run.', '🙂🙂')).toEqual({ rejectedBy: 'empty' });
+		expect(gateReasonDetail('This is an easy run.', 'This is.')).toEqual({ rejectedBy: 'ratio' });
+		expect(
+			gateReasonDetail('There are 2 easy days between this and your next hard session.', 'There are 3 easy days between your hard sessions.'),
+		).toEqual({ rejectedBy: 'number' });
+		expect(
+			gateReasonDetail("The long run is the week's anchor.", 'Recovery matters after a hard block.'),
+		).toEqual({ rejectedBy: 'overlap' });
+	});
+
+	it('returns the cleaned line and no rule when it passes', () => {
+		const verdict = gateReasonDetail('This is an easy run.', 'This is an easy run, go steady.');
+		expect(verdict.rejectedBy).toBeUndefined();
+		expect(verdict.text).toBe('This is an easy run, go steady.');
+	});
+});
+
+describe('gateWhyDetail', () => {
+	it('counts a line the model handed back unchanged', () => {
+		const deterministic = { role: 'This is an easy run.' };
+		const out = gateWhyDetail(deterministic, { role: 'This is an easy run.' });
+		expect(out.why).toBeUndefined();
+		expect(out.rejected).toEqual([]);
+		expect(out.unchanged).toBe(1);
+	});
+
+	it('names the field and rule for a rejected line', () => {
+		const deterministic = { role: "This is the week's hard session." };
+		const out = gateWhyDetail(deterministic, { role: 'There are 3 hard sessions this week.' });
+		expect(out.why).toBeUndefined();
+		expect(out.rejected).toEqual([{ field: 'role', reason: 'number' }]);
+	});
+
+	it('keeps the accepted lines and reports the rest', () => {
+		const deterministic = { role: 'This is an easy run.', dayReason: 'The day before is kept easy.' };
+		const out = gateWhyDetail(deterministic, {
+			role: 'This is an easy run, go steady.',
+			dayReason: 'The day before is kept easy.',
+		});
+		expect(out.why?.role).toBe('This is an easy run, go steady.');
+		expect(out.why?.dayReason).toBeUndefined();
+		expect(out.unchanged).toBe(1);
 	});
 });
 

@@ -1055,7 +1055,9 @@ plans.post(
 				},
 			})),
 		);
-		c.executionCtx.waitUntil(rephraseAndStore(c.env, db, whyInputs));
+		c.executionCtx.waitUntil(
+			rephraseAndStore(c.env, db, whyInputs, { userId: user.id, path: c.req.path }),
+		);
 
 		return c.json({ planId, goalId, weeks: draft.weeks.length, usedAi }, 201);
 	},
