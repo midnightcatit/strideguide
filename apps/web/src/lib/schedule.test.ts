@@ -6,8 +6,12 @@ import {
 	ROWS,
 	STEP_MIN,
 	addBlock,
+	addBulk,
 	blockAt,
+	bulkDayCount,
+	bulkDays,
 	daySummary,
+	describeBulk,
 	formatTime,
 	formatWindow,
 	gridBounds,
@@ -156,6 +160,58 @@ describe('removing and finding a window', () => {
 
 	it('changes nothing when a tap misses every block', () => {
 		expect(removeBlockAt(blocks, 2, 480)).toEqual(blocks);
+	});
+});
+
+describe('bulk add across a day range', () => {
+	it('adds the same window on every day in the range', () => {
+		const week = addBulk([], 0, 6, 300, 1320);
+		expect(week).toHaveLength(7);
+		expect(week[0]).toEqual({ day: 0, start: '05:00', end: '22:00' });
+		expect(week[6]).toEqual({ day: 6, start: '05:00', end: '22:00' });
+	});
+
+	it('covers a partial range, inclusive of both ends', () => {
+		expect(addBulk([], 1, 3, 300, 330)).toEqual([
+			{ day: 1, start: '05:00', end: '05:30' },
+			{ day: 2, start: '05:00', end: '05:30' },
+			{ day: 3, start: '05:00', end: '05:30' },
+		]);
+	});
+
+	it('reads the range in either order', () => {
+		expect(addBulk([], 3, 0, 300, 330)).toEqual(addBulk([], 0, 3, 300, 330));
+	});
+
+	it('merges into a window already on a day in the range', () => {
+		const existing: ScheduleBlock[] = [{ day: 2, start: '06:00', end: '07:00' }];
+		expect(addBulk(existing, 2, 2, 360, 480)).toEqual([{ day: 2, start: '06:00', end: '08:00' }]);
+	});
+
+	it('leaves a day outside the range alone', () => {
+		const existing: ScheduleBlock[] = [{ day: 5, start: '06:00', end: '07:00' }];
+		expect(addBulk(existing, 0, 2, 300, 330)).toContainEqual({
+			day: 5,
+			start: '06:00',
+			end: '07:00',
+		});
+	});
+
+	it('counts the days in a range, inclusive', () => {
+		expect(bulkDayCount(0, 6)).toBe(7);
+		expect(bulkDayCount(2, 2)).toBe(1);
+		expect(bulkDayCount(6, 0)).toBe(7);
+	});
+
+	it('clamps a range to the weekdays', () => {
+		expect(bulkDays(-3, 9)).toEqual({ lo: 0, hi: 6 });
+	});
+
+	it('names what a bulk add will do before it does it', () => {
+		expect(describeBulk(0, 6, 300, 1320)).toBe(
+			'7 windows, 5:00 AM to 10:00 PM, on Monday to Sunday.',
+		);
+		expect(describeBulk(2, 2, 300, 1320)).toBe('1 window, 5:00 AM to 10:00 PM, on Wednesday.');
 	});
 });
 
