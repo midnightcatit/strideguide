@@ -183,11 +183,20 @@
 	const whyParts = $derived(mergeSessionWhy(p));
 
 	/** One row per stage, so a repeated set reads once. */
+	interface RunInfo {
+		distance: string | null;
+		pace: string | null;
+		time: string | null;
+		zone: string | null;
+		rpe: string | null;
+	}
+
 	interface Row {
 		label: string;
 		target: string;
 		repeat?: number;
-		sub?: { label: string; target: string }[];
+		run?: RunInfo | null;
+		sub?: { label: string; target: string; run?: RunInfo | null }[];
 	}
 
 	const rows = $derived.by<Row[]>(() => {
@@ -198,24 +207,24 @@
 				out.push({
 					label: block.label ?? 'Drills',
 					target: `${block.steps.length} drills`,
-					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s) })),
+					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
 				});
 			} else if ((block.repeat ?? 1) > 1) {
 				out.push({
 					label: block.label ?? 'Set',
 					target: `× ${block.repeat}`,
 					repeat: block.repeat,
-					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s) })),
+					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
 				});
 			} else if (block.steps.length > 1) {
 				out.push({
 					label: block.label ?? 'Block',
 					target: `${block.steps.length} steps`,
-					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s) })),
+					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
 				});
 			} else {
 				const s = block.steps[0];
-				if (s) out.push({ label: s.label, target: stepTarget(s) });
+				if (s) out.push({ label: s.label, target: stepTarget(s), run: runInfoFor(s) });
 			}
 		}
 		return out;
@@ -241,14 +250,40 @@
 	}
 
 	function stepTarget(step: ClientStep): string {
-		if (step.durationSec != null) return formatClock(step.durationSec);
-		if (step.sets && step.reps) return `${step.sets} × ${step.reps}`;
 		if (step.distanceM != null) {
 			const d = fmtStepDistance(step.distanceM);
 			const pace = fmtPaceBand(step.targetPaceSecPerKm);
-			return pace ? `${d} @ ${pace}` : d;
+			const compact = pace ? pace.replace(/\s+\/[a-z]+$/i, '') : '';
+			return compact ? `${d} @ ${compact}` : d;
 		}
+		if (step.sets && step.reps) return `${step.sets} × ${step.reps}`;
+		if (step.durationSec != null) return formatClock(step.durationSec);
 		return '';
+	}
+
+	/** The run facts for a step that carries a distance or a pace target. */
+	function runInfoFor(step: ClientStep): RunInfo | null {
+		if (step.distanceM == null && step.targetPaceSecPerKm == null) return null;
+		const zone = step.targetZone ?? (step.kind === 'work' ? p.targetZone : undefined) ?? null;
+		const rpe = step.targetRpe ?? (step.kind === 'work' ? p.targetRpe : undefined);
+		return {
+			distance: step.distanceM != null ? fmtStepDistance(step.distanceM) : null,
+			pace: fmtPaceBand(step.targetPaceSecPerKm),
+			time: step.durationSec != null ? formatClock(step.durationSec) : null,
+			zone,
+			rpe: rpe ? `${rpe[0]} to ${rpe[1]}` : null,
+		};
+	}
+
+	/** The run facts in the order a runner reads them. */
+	function runFacts(run: RunInfo): { label: string; value: string }[] {
+		const facts: { label: string; value: string }[] = [];
+		if (run.distance) facts.push({ label: 'Distance', value: run.distance });
+		if (run.pace) facts.push({ label: 'Pace', value: run.pace });
+		if (run.time) facts.push({ label: 'Time', value: run.time });
+		if (run.zone) facts.push({ label: 'Target zone', value: run.zone });
+		if (run.rpe) facts.push({ label: 'Target RPE', value: run.rpe });
+		return facts;
 	}
 </script>
 
@@ -419,6 +454,19 @@
 				<hr class="my-6 border-hairline" />
 				<section aria-labelledby="to-come">
 					<h2 id="to-come" class="tabular text-xs uppercase tracking-widest text-steel">What's to come</h2>
+					{#snippet runPanel(run: RunInfo, info: string)}
+						<div class="expand-body sg-enter-up">
+							<dl class="grid grid-cols-2 gap-x-4 gap-y-2">
+								{#each runFacts(run) as fact (fact.label)}
+									<div>
+										<dt class="text-xs text-steel">{fact.label}</dt>
+										<dd class="tabular mt-0.5 text-sm">{fact.value}</dd>
+									</div>
+								{/each}
+							</dl>
+							<p class="mt-3 text-xs leading-relaxed text-steel">{info}</p>
+						</div>
+					{/snippet}
 					<ol class="mt-2 space-y-1.5">
 						{#each visibleRows as row, i (i)}
 							{@const info = rowInfo(row.label)}
@@ -439,6 +487,8 @@
 								{#if openRow === `r${i}`}
 									{#if detail}
 										<div class="mt-1"><ExerciseDetail {...detail} /></div>
+									{:else if row.run}
+										{@render runPanel(row.run, info)}
 									{:else}
 										<p class="expand-body sg-enter-up text-xs leading-relaxed text-steel">{info}</p>
 									{/if}
@@ -464,6 +514,8 @@
 												{#if openRow === `s${i}-${si}`}
 													{#if sdetail}
 														<div class="mt-1"><ExerciseDetail {...sdetail} /></div>
+													{:else if s.run}
+														{@render runPanel(s.run, sinfo)}
 													{:else}
 														<p class="expand-body sg-enter-up leading-relaxed">{sinfo}</p>
 													{/if}
