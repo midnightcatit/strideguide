@@ -1050,6 +1050,7 @@ plans.post(
 					title: s.title,
 					weekNumber: w.weekNumber,
 					phase: w.phase,
+					modality: s.modality,
 					goalName: profile.name,
 					reason: s.prescription.whyStructured ?? {},
 				},

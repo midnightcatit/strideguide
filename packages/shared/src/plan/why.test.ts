@@ -113,6 +113,34 @@ describe('composeSessionWhy', () => {
 		expect(why?.dayReason).toContain('window you saved');
 		expect(why?.planContext).toContain('Week 5 of 12');
 	});
+
+	it('a mobility-only day is about the mobility work, not a run', () => {
+		const mobility = session({
+			type: 'mobility',
+			day: 4,
+			modality: 'mobility',
+			title: 'Hips and glutes, 20 minutes',
+		});
+		const why = composeSessionWhy({ session: mobility, weekSessions: [mobility] });
+		expect(why?.role).toContain('hips and glutes');
+		expect(why?.dayReason).toContain('hips and glutes');
+		// Neither line leans on a run the session does not have.
+		expect(`${why?.role} ${why?.dayReason}`).not.toMatch(/\brun\b/i);
+	});
+
+	it('a mobility day paired with a run still names the run it shares with', () => {
+		const easy = session({ type: 'easy', day: 2 });
+		const mobility = session({
+			type: 'mobility',
+			day: 2,
+			slot: 'PM',
+			modality: 'mobility',
+			title: 'Hamstrings and calves, 20 minutes',
+		});
+		const why = composeSessionWhy({ session: mobility, weekSessions: [easy, mobility] });
+		expect(why?.role).toContain('hamstrings and calves');
+		expect(why?.dayReason).toBe('It pairs with the easy run you already have that day.');
+	});
 });
 
 describe('composeWeekWhy', () => {
