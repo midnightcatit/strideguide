@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- Replace "niggle" with plainer wording in every user-facing string (#274)
 - docs(agents): add a read-in-ranges rule for large files (#273)
 - feat(system-graph): give each node its own links, not one (#271)
 - Make the onboarding volume step say what the engine does (#272)
