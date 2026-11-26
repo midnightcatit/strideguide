@@ -192,8 +192,11 @@
 			<p class="mt-3 text-xs text-steel">No machines match that search.</p>
 		{:else}
 			<!-- Grouped by muscle, so a machine always shows under the body part a
-			     runner would look for. Every machine appears under All. -->
-			<div class="scroll-modern mt-3 max-h-64 space-y-3 overflow-y-auto overflow-x-hidden">
+			     runner would look for. Every machine appears under All. On a phone
+			     the list runs with the page instead of scrolling inside its own box,
+			     so a row is never trapped behind the sticky save bar; a wider screen
+			     keeps the capped, self-scrolling list. -->
+			<div class="scroll-modern mt-3 space-y-3 overflow-y-auto overflow-x-hidden sm:max-h-64">
 				{#each shownMachineGroups as group (group.group)}
 					<div>
 						<h4 class="px-1 text-xs font-medium text-steel">{group.group}</h4>
@@ -211,7 +214,7 @@
 									>
 										<span class="min-w-0">
 											<span class="block truncate">{m.name}</span>
-											<span class="mt-0.5 block truncate text-xs text-steel">{m.muscles.join(', ')}</span>
+											<span class="mt-0.5 line-clamp-2 text-xs text-steel sm:line-clamp-1">{m.muscles.join(', ')}</span>
 										</span>
 										{#if picked}
 											<span class="shrink-0 text-signal-ink" aria-hidden="true">✓</span>
@@ -294,7 +297,9 @@
 		{#if shownWorkouts.length === 0}
 			<p class="mt-3 text-xs text-steel">No workouts match that search.</p>
 		{:else}
-			<ul class="scroll-modern mt-3 grid max-h-80 gap-2 overflow-y-auto overflow-x-hidden">
+			<!-- Same as the machine list: flows with the page on a phone, capped on
+			     a wider screen. -->
+			<ul class="scroll-modern mt-3 grid gap-2 overflow-y-auto overflow-x-hidden sm:max-h-80">
 				{#each shownWorkouts as w (w.id)}
 					{@const picked = favoriteWorkouts.includes(w.id)}
 					<li>
