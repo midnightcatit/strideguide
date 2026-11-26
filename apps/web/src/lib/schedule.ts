@@ -170,6 +170,80 @@ export function shiftBlock(
 	return addBlock(others, day, moved.start, moved.end);
 }
 
+/**
+ * The window with its start moved to `targetMin`, the end untouched. The new
+ * start is snapped and clamped to the day range, and never crosses the end: a
+ * window always keeps at least one step. Growing upward and shrinking from the
+ * top are the same move, so dragging the top edge changes only the start.
+ */
+export function resizeWindowStart(
+	startMin: number,
+	endMin: number,
+	targetMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): MinuteWindow {
+	const start = clampMinutes(snapMinutes(targetMin), bounds);
+	return { start: Math.min(start, endMin - STEP_MIN), end: endMin };
+}
+
+/**
+ * The window with its end moved to `targetMin`, the start untouched. The new end
+ * is snapped and clamped to the day range, and never crosses the start: a window
+ * always keeps at least one step. Dragging the bottom edge changes only the end.
+ */
+export function resizeWindowEnd(
+	startMin: number,
+	endMin: number,
+	targetMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): MinuteWindow {
+	const end = clampMinutes(snapMinutes(targetMin), bounds);
+	return { start: startMin, end: Math.max(end, startMin + STEP_MIN) };
+}
+
+/**
+ * Resize the block that starts at `startMin` on `day` from its top edge to
+ * `targetMin`. The end stays exactly where it was. A resize that grows onto a
+ * neighbour merges into it, the same way a move or an add does, so a day still
+ * never holds two blocks that meet.
+ */
+export function resizeBlockStart(
+	blocks: ScheduleBlock[],
+	day: number,
+	startMin: number,
+	targetMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): ScheduleBlock[] {
+	const block = blocks.find((b) => b.day === day && timeToMinutes(b.start) === startMin);
+	if (!block) return blocks;
+	const { start, end } = blockMinutes(block);
+	const resized = resizeWindowStart(start, end, targetMin, bounds);
+	if (resized.start === start) return blocks;
+	const others = blocks.filter((b) => b !== block);
+	return addBlock(others, day, resized.start, resized.end);
+}
+
+/**
+ * Resize the block that starts at `startMin` on `day` from its bottom edge to
+ * `targetMin`. The start stays exactly where it was. A resize that grows onto a
+ * neighbour merges into it.
+ */
+export function resizeBlockEnd(
+	blocks: ScheduleBlock[],
+	day: number,
+	startMin: number,
+	targetMin: number,
+	bounds: GridBounds = DEFAULT_GRID,
+): ScheduleBlock[] {
+	const block = blocks.find((b) => b.day === day && timeToMinutes(b.start) === startMin);
+	if (!block) return blocks;
+	const { start, end } = blockMinutes(block);
+	const resized = resizeWindowEnd(start, end, targetMin, bounds);
+	if (resized.end === end) return blocks;
+	const others = blocks.filter((b) => b !== block);
+	return addBlock(others, day, resized.start, resized.end);
+}
+
 /** Blocks ordered by day, then start time. */
 export function sortBlocks(blocks: ScheduleBlock[]): ScheduleBlock[] {
 	return [...blocks].sort(

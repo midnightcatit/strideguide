@@ -2,21 +2,31 @@
 	/**
 	 * A weekly training-window grid: seven day columns, quarter-hour rows.
 	 *
-	 * Pointer: tap a slot to add an hour, drag to add a longer window, and tap a
-	 * saved window's body to remove it. Each saved window also has a handle: its
-	 * arrows nudge the window fifteen minutes earlier or later, and a press and
-	 * drag on the handle moves it up and down the day. Keyboard: the "Add a
-	 * window" and "Add a window to several days" controls below add windows with a
-	 * day range and two times, every saved window's body is a real button you can
-	 * focus and activate to remove it, and the handle's arrows are real buttons
-	 * whose arrow keys nudge the window. So nothing here is drag-only.
+	 * Pointer: tap an empty slot to add a window, drag across empty slots to add a
+	 * longer one, and tap a saved window's body to remove it. Each saved window has
+	 * an arrow strip along its top and bottom edge: tap the top strip to move the
+	 * window fifteen minutes earlier, tap the bottom strip to move it later, both
+	 * with the same clamping and merge onto a neighbour as before. Drag the body to
+	 * move the whole window to any slot; drag the top strip to change only the
+	 * start, so the window widens or shrinks upward with the end fixed; drag the
+	 * bottom strip to change only the end, with the start fixed. A resize never
+	 * crosses the other edge.
 	 *
-	 * The day columns hold a fixed minimum width and the grid scrolls sideways,
-	 * so a phone shows a comfortable column and the whole week stays reachable.
+	 * Keyboard: a real button per window body removes it, the two arrow strips are
+	 * real buttons that nudge the window earlier or later, and the arrow keys move a
+	 * focused window. On a strip, holding Shift with the arrow keys changes that
+	 * edge: the top strip sets the start, the bottom strip sets the end. So nothing
+	 * here is drag-only.
+	 *
+	 * The day columns hold a fixed minimum width and the grid scrolls sideways, so
+	 * a phone shows a comfortable column and the whole week stays reachable. The
+	 * saved windows are listed below it in a bounded, scrollable box; a row can be
+	 * swiped left or right to remove it, and its remove button works without a
+	 * swipe for keyboard and screen readers.
 	 *
 	 * An optional `activeDays` list dims the columns of days the runner has not
-	 * picked. It is a cue only: every column stays editable, so the touch,
-	 * keyboard and bulk-add paths are exactly as before.
+	 * picked. It is a cue only: every column stays editable, so the touch, keyboard
+	 * and bulk-add paths are exactly as before.
 	 */
 	import {
 		DAY_LABELS,
@@ -25,7 +35,6 @@
 		addBlock,
 		addBulk,
 		blockMinutes,
-		daySummary,
 		describeBulk,
 		formatHourLabel,
 		formatTime,
@@ -34,9 +43,14 @@
 		minutesForRow,
 		minutesToTime,
 		removeBlockAt,
+		resizeBlockEnd,
+		resizeBlockStart,
+		resizeWindowEnd,
+		resizeWindowStart,
 		rowForMinutes,
 		shiftBlock,
 		shiftWindow,
+		sortBlocks,
 		timeToMinutes,
 		windowForDrag,
 		windowForTap,
@@ -69,14 +83,17 @@
 	// than a phone, so the grid scrolls sideways instead of squeezing the days
 	// below a comfortable width; on a wider screen the columns grow to fill it.
 	const DAY_W = 60;
-	// A block shorter than this still draws tall enough for its handle and a
-	// tappable body. A quarter-hour block is one cell (16px) tall, which the
-	// handle alone would cover.
-	const MIN_BLOCK_H = 34;
-	// The move handle's height, tall enough for the two arrow targets and an easy
-	// grab, with the arrows drawn inside it. Kept under MIN_BLOCK_H so a tappable
-	// body is always left below it.
-	const HANDLE_H = 20;
+	// The top and bottom arrow strips, in CSS pixels. Each spans the block's full
+	// inner width, so on a phone it is a wide bar rather than a small glyph. The
+	// two strips plus a tappable body have to fit the shortest block, which is why
+	// MIN_BLOCK_H allows for two strips and a body of the same height again.
+	const STRIP_H = 20;
+	// A block shorter than this still draws tall enough for both arrow strips and a
+	// tappable body below and above them.
+	const MIN_BLOCK_H = 60;
+	// A window must be dragged at least this far sideways before a row swipe takes
+	// over, so a vertical scroll of the list is never read as a swipe.
+	const SWIPE_REMOVE_PX = 80;
 	const DAYS = [0, 1, 2, 3, 4, 5, 6];
 	const bounds = $derived(gridBounds(blocks));
 	const rowIndexes = $derived(Array.from({ length: bounds.rows }, (_, i) => i));
@@ -97,16 +114,9 @@
 	const startSlots = $derived(slots.slice(0, -1));
 	const endSlots = $derived(slots.slice(1));
 
-	// Adding from the controls: day, start and end. A plain, keyboard-reachable
-	// path that does not need the grid at all.
-	let dayKey = $state('0');
-	let startTime = $state(minutesToTime(GRID_START_MIN + 60));
-	let endTime = $state(minutesToTime(GRID_START_MIN + 120));
-	let message = $state('');
-
 	// The bulk path: the same window on every day from one weekday to another, so
-	// a whole week or a working stretch takes one go. Kept beside the single-day
-	// path rather than replacing it.
+	// a whole week, a working stretch or a single day takes one go. A single day is
+	// just a range of one, which is why this is the only add control here.
 	let bulkFromDay = $state('0');
 	let bulkToDay = $state('6');
 	let bulkStartTime = $state(minutesToTime(GRID_START_MIN + 60));
@@ -122,17 +132,6 @@
 		return describeBulk(Number(bulkFromDay), Number(bulkToDay), start, end);
 	});
 
-	function addFromForm() {
-		const start = timeToMinutes(startTime);
-		const end = timeToMinutes(endTime);
-		if (!(end > start)) {
-			message = 'Pick an end time after the start time.';
-			return;
-		}
-		onChange(addBlock(blocks, Number(dayKey), start, end));
-		message = '';
-	}
-
 	function addBulkFromForm() {
 		const start = timeToMinutes(bulkStartTime);
 		const end = timeToMinutes(bulkEndTime);
@@ -144,8 +143,42 @@
 		bulkMessage = '';
 	}
 
-	function remove(block: ScheduleBlock) {
+	// Removing a saved window, with one undo for an accidental swipe or tap. The
+	// previous list is kept and offered back for a few seconds, then dropped. The
+	// undo line sits with the list but outside its scroll box, next to Clear all.
+	let undoBlocks = $state<ScheduleBlock[] | null>(null);
+	let undoLabel = $state('');
+	let undoTimer: ReturnType<typeof setTimeout> | undefined;
+
+	function clearUndo() {
+		if (undoTimer) {
+			clearTimeout(undoTimer);
+			undoTimer = undefined;
+		}
+		undoBlocks = null;
+		undoLabel = '';
+	}
+
+	function removeWindow(block: ScheduleBlock) {
+		const label = `${DAY_LABELS[block.day]} ${formatWindow(
+			timeToMinutes(block.start),
+			timeToMinutes(block.end),
+		)}`;
+		const before = blocks;
 		onChange(removeBlockAt(blocks, block.day, timeToMinutes(block.start)));
+		clearUndo();
+		undoBlocks = before;
+		undoLabel = label;
+		undoTimer = setTimeout(() => {
+			undoTimer = undefined;
+			undoBlocks = null;
+			undoLabel = '';
+		}, 6000);
+	}
+
+	function undoRemove() {
+		if (undoBlocks) onChange(undoBlocks);
+		clearUndo();
 	}
 
 	// Move the block that starts at the given time by `delta` minutes, the same
@@ -302,102 +335,147 @@
 		if (armed) e.preventDefault();
 	}
 
-	// The move handle on a saved window. The block sets `touch-action: none`, so a
-	// press on the handle never scrolls the page or the grid, and the drag can arm
-	// at once with no press-and-hold wait. A tap that never moves nudges the
-	// window one step earlier; a drag moves it up and down the day, shown live
-	// while it runs and committed on release. Edges clamp at the day range; a
-	// window never rolls into the next day.
-	let movePid: number | null = null;
-	let moveHandle: HTMLElement | null = null;
-	let moveBlock: ScheduleBlock | null = null;
-	let moveGrabRow = 0;
-	let moveStartY = 0;
-	let moveDragged = false;
-	let moving = $state<{ day: number; start: number; window: MinuteWindow } | null>(null);
+	// A saved window's three zones: the top arrow strip, the body and the bottom
+	// arrow strip. Each is a real button. A press starts a possible drag; a tap
+	// that never moves runs the button's click. `kind` decides what a drag does:
+	// "start" moves only the start, "end" moves only the end, "move" moves the
+	// whole window. The block sets `touch-action: none`, so a press never scrolls
+	// the page or the grid and the drag arms at once with no press-and-hold.
+	type DragKind = 'start' | 'end' | 'move';
+	let dragPid: number | null = null;
+	let dragEl: HTMLElement | null = null;
+	let dragBlock: ScheduleBlock | null = null;
+	let dragKind: DragKind = 'move';
+	let dragGrabRow = 0;
+	let dragStartY = 0;
+	let dragMoved = false;
+	// Set when a drag commits, so the click the browser fires on release does not
+	// also nudge or remove. Reset on the next press and after one swallowed click.
+	let swallowClick = false;
+	let dragging = $state<{ day: number; start: number; window: MinuteWindow } | null>(null);
 
-	function armMove(id: number) {
+	function startDrag(e: PointerEvent, block: ScheduleBlock, key: string, kind: DragKind) {
+		if (e.pointerType === 'mouse' && e.button !== 0) return;
+		if (dragPid !== null) return;
+		e.stopPropagation();
+		const rect = layer?.getBoundingClientRect();
+		if (!rect) return;
+		dragPid = e.pointerId;
+		dragEl = e.currentTarget as HTMLElement;
+		dragBlock = block;
+		dragKind = kind;
+		dragStartY = e.clientY;
+		dragGrabRow = Math.round((e.clientY - rect.top) / CELL_H);
+		dragMoved = false;
+		swallowClick = false;
+		dragging = null;
+		activeKey = key;
 		try {
-			moveHandle?.setPointerCapture(id);
+			dragEl.setPointerCapture(e.pointerId);
 		} catch {
 			// capture is a nicety; the drag works without it
 		}
 	}
 
-	function releaseMove(id: number) {
+	function dragMove(e: PointerEvent) {
+		if (dragPid === null || e.pointerId !== dragPid || !dragBlock) return;
+		e.stopPropagation();
+		const rect = layer?.getBoundingClientRect();
+		if (!rect) return;
+		if (!dragMoved) {
+			if (Math.abs(e.clientY - dragStartY) <= 8) return;
+			dragMoved = true;
+		}
+		const { start, end } = blockMinutes(dragBlock);
+		const row = Math.round((e.clientY - rect.top) / CELL_H);
+		const delta = (row - dragGrabRow) * STEP_MIN;
+		const w =
+			dragKind === 'start'
+				? resizeWindowStart(start, end, start + delta, bounds)
+				: dragKind === 'end'
+					? resizeWindowEnd(start, end, end + delta, bounds)
+					: shiftWindow(start, end, delta, bounds);
+		dragging = { day: dragBlock.day, start, window: w };
+	}
+
+	function dragUp(e: PointerEvent) {
+		if (dragPid === null || e.pointerId !== dragPid || !dragBlock) return;
+		e.stopPropagation();
+		const block = dragBlock;
+		const live = dragging;
+		if (dragMoved && live) {
+			if (dragKind === 'start') {
+				onChange(resizeBlockStart(blocks, block.day, live.start, live.window.start, bounds));
+			} else if (dragKind === 'end') {
+				onChange(resizeBlockEnd(blocks, block.day, live.start, live.window.end, bounds));
+			} else {
+				onChange(shiftBlock(blocks, block.day, live.start, live.window.start - live.start, bounds));
+			}
+			swallowClick = true;
+		}
+		releaseDrag(e.pointerId);
+		resetDrag();
+	}
+
+	function dragCancel(e: PointerEvent) {
+		if (dragPid === null || e.pointerId !== dragPid) return;
+		releaseDrag(e.pointerId);
+		resetDrag();
+	}
+
+	function releaseDrag(id: number) {
 		try {
-			moveHandle?.releasePointerCapture(id);
+			dragEl?.releasePointerCapture(id);
 		} catch {
 			// already released
 		}
 	}
 
-	function resetMove() {
-		movePid = null;
-		moveHandle = null;
-		moveBlock = null;
-		moveDragged = false;
-		moving = null;
+	function resetDrag() {
+		dragPid = null;
+		dragEl = null;
+		dragBlock = null;
+		dragMoved = false;
+		dragging = null;
 		activeKey = null;
 	}
 
-	function handleDown(e: PointerEvent, block: ScheduleBlock, key: string) {
-		if (e.pointerType === 'mouse' && e.button !== 0) return;
-		if (movePid !== null) return;
-		e.stopPropagation();
-		const rect = layer?.getBoundingClientRect();
-		if (!rect) return;
-		movePid = e.pointerId;
-		moveHandle = e.currentTarget as HTMLElement;
-		moveBlock = block;
-		moveStartY = e.clientY;
-		moveGrabRow = Math.round((e.clientY - rect.top) / CELL_H);
-		moveDragged = false;
-		moving = null;
-		activeKey = key;
-		armMove(e.pointerId);
-	}
-
-	function handleMove(e: PointerEvent) {
-		if (movePid === null || e.pointerId !== movePid || !moveBlock) return;
-		e.stopPropagation();
-		const rect = layer?.getBoundingClientRect();
-		if (!rect) return;
-		if (Math.abs(e.clientY - moveStartY) > 8) moveDragged = true;
-		const { start, end } = blockMinutes(moveBlock);
-		const row = Math.round((e.clientY - rect.top) / CELL_H);
-		const w = shiftWindow(start, end, (row - moveGrabRow) * STEP_MIN, bounds);
-		moving = { day: moveBlock.day, start, window: w };
-	}
-
-	function handleUp(e: PointerEvent) {
-		if (movePid === null || e.pointerId !== movePid || !moveBlock) return;
-		e.stopPropagation();
-		const block = moveBlock;
-		const preview = moving;
-		if (moveDragged && preview) {
-			onChange(
-				shiftBlock(blocks, block.day, preview.start, preview.window.start - preview.start, bounds),
-			);
-		} else {
-			nudge(block, -STEP_MIN);
+	function tapStrip(block: ScheduleBlock, delta: number) {
+		if (swallowClick) {
+			swallowClick = false;
+			return;
 		}
-		releaseMove(e.pointerId);
-		resetMove();
+		nudge(block, delta);
 	}
 
-	function handleCancel(e: PointerEvent) {
-		if (movePid === null || e.pointerId !== movePid) return;
-		releaseMove(e.pointerId);
-		resetMove();
+	function tapBody(block: ScheduleBlock) {
+		if (swallowClick) {
+			swallowClick = false;
+			return;
+		}
+		removeWindow(block);
 	}
 
-	// Arrow keys on a focused control move the window one step, up for earlier and
-	// down for later. The arrows and the body all bubble here, so either works.
-	function onBlockKey(e: KeyboardEvent, block: ScheduleBlock) {
-		if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+	// Keyboard on a focused control. The arrow keys move the window one step,
+	// earlier or later. On the top strip, Shift with the arrow keys changes only
+	// the start; on the bottom strip, only the end. Both clamp to the day range
+	// and keep at least one step, exactly as a drag does.
+	function onBlockKey(e: KeyboardEvent, block: ScheduleBlock, kind: DragKind) {
+		const delta = e.key === 'ArrowUp' ? -STEP_MIN : e.key === 'ArrowDown' ? STEP_MIN : null;
+		if (delta === null) return;
 		e.preventDefault();
-		nudge(block, e.key === 'ArrowUp' ? -STEP_MIN : STEP_MIN);
+		const blockStart = timeToMinutes(block.start);
+		if (e.shiftKey && kind === 'start') {
+			onChange(resizeBlockStart(blocks, block.day, blockStart, blockStart + delta, bounds));
+			return;
+		}
+		if (e.shiftKey && kind === 'end') {
+			onChange(
+				resizeBlockEnd(blocks, block.day, blockStart, timeToMinutes(block.end) + delta, bounds),
+			);
+			return;
+		}
+		nudge(block, delta);
 	}
 
 	// Geometry for a block's place on the grid, in the same units the cells use.
@@ -412,63 +490,87 @@
 	}
 	const COL_W = 100 / 7;
 
-	const summary = $derived(daySummary(blocks));
+	// One row per saved window, in weekday then time order, so the list is the
+	// windows themselves and a swipe removes exactly one.
+	const windowRows = $derived(
+		sortBlocks(blocks).map((b) => {
+			const { start, end } = blockMinutes(b);
+			return {
+				key: `${b.day}-${b.start}`,
+				block: b,
+				label: `${DAY_LABELS[b.day]} ${formatWindow(start, end)}`,
+				time: formatWindow(start, end),
+				dayLabel: DAY_LABELS[b.day] ?? `Day ${b.day}`,
+			};
+		}),
+	);
+
+	// A row swipe, the way iOS does it: drag sideways to reveal the remove action,
+	// and once past the threshold let go to remove. A shorter swipe snaps back and
+	// changes nothing. The remove button beside it keeps a non-swipe path.
+	let swipePid: number | null = null;
+	let swipeKey = $state<string | null>(null);
+	let swipeStartX = 0;
+	let swipeStartY = 0;
+	let swipeActive = false;
+	let swipeDx = $state(0);
+
+	function swipeDown(e: PointerEvent, key: string) {
+		if (e.pointerType === 'mouse' && e.button !== 0) return;
+		if (swipePid !== null) return;
+		swipePid = e.pointerId;
+		swipeKey = key;
+		swipeStartX = e.clientX;
+		swipeStartY = e.clientY;
+		swipeActive = false;
+		swipeDx = 0;
+		try {
+			(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+		} catch {
+			// capture is a nicety; the swipe works without it
+		}
+	}
+
+	function swipeMove(e: PointerEvent) {
+		if (swipePid === null || e.pointerId !== swipePid) return;
+		const dx = e.clientX - swipeStartX;
+		const dy = e.clientY - swipeStartY;
+		if (!swipeActive) {
+			// Only take over once the gesture is clearly sideways, so a vertical
+			// scroll of the list is never stolen.
+			if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) swipeActive = true;
+			else return;
+		}
+		e.preventDefault();
+		swipeDx = dx;
+	}
+
+	function resetSwipe() {
+		swipePid = null;
+		swipeKey = null;
+		swipeActive = false;
+		swipeDx = 0;
+	}
+
+	function swipeUp(e: PointerEvent, block: ScheduleBlock) {
+		if (swipePid === null || e.pointerId !== swipePid) return;
+		const remove = swipeActive && Math.abs(swipeDx) >= SWIPE_REMOVE_PX;
+		resetSwipe();
+		if (remove) removeWindow(block);
+	}
+
+	function swipeCancel(e: PointerEvent) {
+		if (swipePid === null || e.pointerId !== swipePid) return;
+		resetSwipe();
+	}
 </script>
 
 <div class="grid min-w-0 gap-3">
 	<div class="min-w-0 rounded-xl border border-hairline bg-sunken/60 p-3">
-		<p class="text-xs font-medium">Add a window</p>
-		<div class="mt-2 flex flex-wrap items-end gap-2">
-			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wide text-steel">Day</span>
-				<select
-					bind:value={dayKey}
-					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
-				>
-					{#each DAY_LABELS as label, d (d)}
-						<option value={String(d)}>{label}</option>
-					{/each}
-				</select>
-			</label>
-			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wide text-steel">From</span>
-				<select
-					bind:value={startTime}
-					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
-				>
-					{#each startSlots as m (m)}
-						<option value={minutesToTime(m)}>{formatTime(m)}</option>
-					{/each}
-				</select>
-			</label>
-			<label class="flex flex-col gap-1">
-				<span class="text-[10px] uppercase tracking-wide text-steel">To</span>
-				<select
-					bind:value={endTime}
-					class="tabular rounded-lg border border-hairline bg-paper px-2 py-2 text-sm"
-				>
-					{#each endSlots as m (m)}
-						<option value={minutesToTime(m)}>{formatTime(m)}</option>
-					{/each}
-				</select>
-			</label>
-			<button
-				type="button"
-				onclick={addFromForm}
-				class="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper hover:opacity-90"
-			>
-				Add
-			</button>
-		</div>
-		{#if message}
-			<p class="mt-2 text-xs text-warn">{message}</p>
-		{/if}
-	</div>
-
-	<div class="min-w-0 rounded-xl border border-hairline bg-sunken/60 p-3">
 		<p class="text-xs font-medium">Add a window to several days</p>
 		<p class="mt-1 text-xs text-steel">
-			Adds the same window on every day in the range, from the first day to the last one.
+			Adds the same window on every day in the range, from the first day to the last. The range can
+			be a single day.
 		</p>
 		<div class="mt-2 flex flex-wrap items-end gap-2">
 			<label class="flex flex-col gap-1">
@@ -567,7 +669,7 @@
 							class="relative touch-manipulation select-none rounded-md ring-1 ring-hairline"
 							style="height: {bounds.rows * CELL_H}px"
 							role="group"
-							aria-label="Weekly training windows. Tap or drag an empty slot to add a window. Each saved window's body removes it, its arrows move it fifteen minutes earlier or later, and you can drag its handle to move it further."
+							aria-label="Weekly training windows. Tap an empty slot to add a window, or tap a saved window's body to remove it. Tap an arrow at a window's edge to move it fifteen minutes, drag the body to move it, or drag an edge to change that end."
 							onpointerdown={down}
 							onpointermove={move}
 							onpointerup={finish}
@@ -606,13 +708,14 @@
 							{#each blocks as block (block.day + '-' + block.start)}
 								{@const start = timeToMinutes(block.start)}
 								{@const end = timeToMinutes(block.end)}
-								{@const h = spanHeight(start, end)}
-								{@const rh = Math.max(h, MIN_BLOCK_H)}
 								{@const key = block.day + '-' + block.start}
-								{@const isMoving =
-									moving !== null && moving.day === block.day && moving.start === start}
-								{@const win = isMoving && moving ? moving.window : { start, end }}
-								{@const lifted = activeKey === key || isMoving}
+								{@const isDragging =
+									dragging !== null && dragging.day === block.day && dragging.start === start}
+								{@const win = isDragging && dragging ? dragging.window : { start, end }}
+								{@const h = spanHeight(win.start, win.end)}
+								{@const rh = Math.max(h, MIN_BLOCK_H)}
+								{@const strip = Math.min(STRIP_H, Math.floor(rh / 3))}
+								{@const lifted = activeKey === key || isDragging}
 								{@const label = `${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
 								<div
 									data-block
@@ -627,84 +730,80 @@
 									)}px; height: {rh}px"
 									role="group"
 									aria-label={label}
-									onpointerup={() => (activeKey = null)}
-									onpointercancel={() => (activeKey = null)}
 								>
 									<button
 										type="button"
-										onpointerdown={() => (activeKey = key)}
-										onpointerleave={() => {
-											// Leaving the body ends a body press; a handle drag is
-											// kept, so its own capture clears the lift.
-											if (movePid === null) activeKey = null;
-										}}
-										onclick={() => remove(block)}
-										onkeydown={(e) => onBlockKey(e, block)}
+										onpointerdown={(e) => startDrag(e, block, key, 'start')}
+										onpointermove={dragMove}
+										onpointerup={dragUp}
+										onpointercancel={dragCancel}
+										onclick={() => tapStrip(block, -STEP_MIN)}
+										onkeydown={(e) => onBlockKey(e, block, 'start')}
+										aria-label={`Move ${label} fifteen minutes earlier. Hold Shift and use the arrow keys to change the start.`}
+										class="absolute inset-x-0 top-0 z-10 flex items-center justify-center rounded-t-[5px] bg-signal/20 text-signal-ink hover:bg-signal/35 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-signal-ink {lifted
+											? 'md:cursor-grabbing'
+											: 'md:cursor-grab'}"
+										style="height: {strip}px"
+									>
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2.5"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											class="h-3 w-3"
+											aria-hidden="true"
+										>
+											<path d="M6 15l6-6 6 6" />
+										</svg>
+									</button>
+									<button
+										type="button"
+										onpointerdown={(e) => startDrag(e, block, key, 'move')}
+										onpointermove={dragMove}
+										onpointerup={dragUp}
+										onpointercancel={dragCancel}
+										onclick={() => tapBody(block)}
+										onkeydown={(e) => onBlockKey(e, block, 'move')}
 										aria-label={`Remove ${label}`}
 										title={label}
-										class="absolute inset-0 w-full text-left hover:bg-signal/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
+										class="absolute inset-x-0 z-0 w-full text-left hover:bg-signal/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink {lifted
+											? 'md:cursor-grabbing'
+											: 'md:cursor-grab'}"
+										style="top: {strip}px; bottom: {strip}px"
 									>
-										{#if rh >= 32}
-											<span class="tabular block px-1" style="padding-top: {HANDLE_H}px"
-												>{formatTime(win.start)}</span
-											>
+										{#if rh - strip * 2 >= 16}
+											<span class="tabular block truncate px-1">{formatTime(win.start)}</span>
 										{/if}
 									</button>
-									<div
-										class="absolute inset-x-0 top-0 flex items-center justify-between px-0.5 transition-colors {lifted
-											? 'bg-signal/35'
-											: 'bg-signal/15'} {lifted ? 'md:cursor-grabbing' : 'md:cursor-grab'}"
-										style="height: {Math.min(HANDLE_H, rh)}px"
-										role="group"
-										aria-label={`Move ${label}`}
-										onpointerdown={(e) => handleDown(e, block, key)}
-										onpointermove={handleMove}
-										onpointerup={handleUp}
-										onpointercancel={handleCancel}
+									<button
+										type="button"
+										onpointerdown={(e) => startDrag(e, block, key, 'end')}
+										onpointermove={dragMove}
+										onpointerup={dragUp}
+										onpointercancel={dragCancel}
+										onclick={() => tapStrip(block, STEP_MIN)}
+										onkeydown={(e) => onBlockKey(e, block, 'end')}
+										aria-label={`Move ${label} fifteen minutes later. Hold Shift and use the arrow keys to change the end.`}
+										class="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center rounded-b-[5px] bg-signal/20 text-signal-ink hover:bg-signal/35 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-signal-ink {lifted
+											? 'md:cursor-grabbing'
+											: 'md:cursor-grab'}"
+										style="height: {strip}px"
 									>
-										<button
-											type="button"
-											onpointerdown={(e) => e.stopPropagation()}
-											onclick={() => nudge(block, -STEP_MIN)}
-											onkeydown={(e) => onBlockKey(e, block)}
-											aria-label={`Move ${label} fifteen minutes earlier`}
-											class="flex h-full w-4 items-center justify-center rounded-sm text-signal-ink hover:bg-signal/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2.5"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											class="h-3 w-3"
+											aria-hidden="true"
 										>
-											<svg
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2.5"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												class="h-3 w-3"
-												aria-hidden="true"
-											>
-												<path d="M6 15l6-6 6 6" />
-											</svg>
-										</button>
-										<button
-											type="button"
-											onpointerdown={(e) => e.stopPropagation()}
-											onclick={() => nudge(block, STEP_MIN)}
-											onkeydown={(e) => onBlockKey(e, block)}
-											aria-label={`Move ${label} fifteen minutes later`}
-											class="flex h-full w-4 items-center justify-center rounded-sm text-signal-ink hover:bg-signal/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
-										>
-											<svg
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="2.5"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												class="h-3 w-3"
-												aria-hidden="true"
-											>
-												<path d="M6 9l6 6 6-6" />
-											</svg>
-										</button>
-									</div>
+											<path d="M6 9l6 6 6-6" />
+										</svg>
+									</button>
 								</div>
 							{/each}
 						</div>
@@ -713,36 +812,87 @@
 			</div>
 		</div>
 		<p class="mt-2 text-xs leading-relaxed text-steel">
-			Tap an empty slot to add an hour, or drag across slots to add a longer window. On a phone,
-			press and hold an empty slot, then drag. Tap a window's body to remove it. The arrows at the
-			top of a window move it fifteen minutes earlier or later, and you can drag the middle of the
-			handle to slide it further. Every window is a button you can focus, and its arrows take the
-			arrow keys. Skipping this is fine: with no windows, the plan treats any day and any time as
-			available. The grid runs from 4 in the morning to 11 at night, and scrolls sideways to reach
-			every day and up and down to reach the early and late rows.
+			Tap an empty slot to add a window, or tap a window's body to remove it. Tap an arrow at a
+			window's edge to move the window fifteen minutes, drag the body to move it, and drag an edge
+			to change that end. Keyboard: the arrow keys move a focused window, and Shift with the arrow
+			keys on an edge changes that edge. Skipping this is fine: with no windows, the plan treats
+			any day and any time as available.
 		</p>
 	</div>
 
-	{#if summary.length}
+	{#if windowRows.length}
 		<div class="min-w-0 rounded-xl border border-hairline bg-paper p-3">
 			<div class="flex items-baseline justify-between gap-2">
 				<p class="tabular text-xs uppercase tracking-widest text-steel">Your windows</p>
 				<button
 					type="button"
-					onclick={() => onChange([])}
+					onclick={() => {
+						clearUndo();
+						onChange([]);
+					}}
 					class="text-xs text-steel hover:text-danger"
 				>
 					Clear all
 				</button>
 			</div>
-			<ul class="mt-2 grid gap-1 text-sm">
-				{#each summary as d (d.day)}
-					<li class="flex justify-between gap-3">
-						<span class="min-w-0">{d.label}</span>
-						<span class="tabular min-w-0 text-right text-steel">{d.windows}</span>
+			<ul class="window-scroll scroll-modern mt-2 grid gap-1">
+				{#each windowRows as row (row.key)}
+					<li class="relative overflow-hidden rounded-md border border-hairline">
+						<div
+							class="absolute inset-0 flex items-center justify-center bg-danger text-xs font-medium text-paper"
+							aria-hidden="true"
+						>
+							Remove
+						</div>
+						<div
+							class="relative flex touch-pan-y items-center gap-2 bg-paper py-2 pl-3 pr-1 text-sm {swipeKey ===
+							row.key
+								? ''
+								: 'transition-transform duration-150'}"
+							style="transform: translateX({swipeKey === row.key ? swipeDx : 0}px)"
+							role="group"
+							aria-label={`${row.label}. Swipe left or right to remove.`}
+							onpointerdown={(e) => swipeDown(e, row.key)}
+							onpointermove={swipeMove}
+							onpointerup={(e) => swipeUp(e, row.block)}
+							onpointercancel={swipeCancel}
+						>
+							<span class="min-w-0 flex-1 truncate">{row.label}</span>
+							<button
+								type="button"
+								onpointerdown={(e) => e.stopPropagation()}
+								onclick={() => removeWindow(row.block)}
+								aria-label={`Remove ${row.label}`}
+								class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-steel hover:bg-danger/10 hover:text-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal-ink"
+							>
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="h-4 w-4"
+									aria-hidden="true"
+								>
+									<path d="M18 6L6 18M6 6l12 12" />
+								</svg>
+							</button>
+						</div>
 					</li>
 				{/each}
 			</ul>
+			{#if undoBlocks}
+				<div
+					class="mt-2 flex items-center justify-between gap-2 rounded-md bg-sunken/70 px-3 py-2 text-xs"
+					aria-live="polite"
+				>
+					<span class="min-w-0 truncate text-steel">Removed {undoLabel}.</span>
+					<button type="button" onclick={undoRemove} class="shrink-0 font-medium text-signal-ink">
+						Undo
+					</button>
+				</div>
+			{/if}
 		</div>
 	{:else}
 		<p class="text-xs leading-relaxed text-steel">
@@ -761,5 +911,17 @@
 	.grid-scroll {
 		max-height: 60vh;
 		max-height: 60dvh;
+	}
+
+	/*
+	 * The windows list is bounded too, so it never grows without bound. About
+	 * seven rows show before it scrolls inside; on a short screen the cap follows
+	 * the viewport instead. Clear all and the undo line sit outside this box.
+	 */
+	.window-scroll {
+		max-height: 17.5rem;
+		max-height: min(17.5rem, 42dvh);
+		overflow-y: auto;
+		overscroll-behavior: contain;
 	}
 </style>
