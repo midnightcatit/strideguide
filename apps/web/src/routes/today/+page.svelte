@@ -451,16 +451,18 @@
 				Rest day
 			{/if}
 		</h1>
-		<!-- Space is always reserved, so the button appearing never shifts the page. -->
+		<!-- Space is always reserved, so the button appearing never shifts the page.
+		     The button itself is a 44px touch target; the inner span keeps the small
+		     pill the desktop page already shows, so the look does not change. -->
 		<div class="mt-2 flex h-8 items-center">
 			<button
 				type="button"
 				onclick={goToday}
-				class="rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal {isToday
-					? 'invisible'
-					: ''}"
+				class="inline-flex h-11 items-center {isToday ? 'invisible' : ''}"
 			>
-				Back to today
+				<span class="rounded-md border border-hairline px-2.5 py-1 text-xs text-signal-ink hover:border-signal">
+					Back to today
+				</span>
 			</button>
 		</div>
 	</header>
@@ -584,7 +586,9 @@
 				<hr class="my-6 border-hairline" />
 				<SectionHeader id="why" eyebrow="Why this workout" topGap={false} />
 				<p class="text-sm text-steel">{sessionWhyLine(daySessions[0].prescription) || daySessions[0].purpose || 'What this session trains, and why.'}</p>
-				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-2 text-sm text-signal-ink hover:underline">
+				<!-- The negative margins keep the flow where the short link sat; the
+				     44px min height is the touch target on a phone. -->
+				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-[-4px] -mb-3 inline-flex min-h-11 items-center text-sm text-signal-ink hover:underline">
 					Why this workout, and what's to come →
 				</button>
 			{/if}
