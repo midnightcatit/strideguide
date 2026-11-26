@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- fix(admin): stop the ops section overflowing on a phone (#283)
 - fix(system-map): drive the view from state, colour edges by kind (#282)
 - fix(web): phone text truncation, 44px heatmap cells, favorites list clearance (#281)
 - feat(today): day insights card replaces suggested adjustments (#279)
