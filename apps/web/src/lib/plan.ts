@@ -220,6 +220,32 @@ export function weekdayIndexFromIso(iso: string): number {
 	return (new Date(`${iso}T00:00:00Z`).getUTCDay() + 6) % 7;
 }
 
+/**
+ * The column an ISO date sits in for the runner's week, 0 for the week's first
+ * day. The calendar view groups and labels by this, Monday by default and
+ * Sunday when the runner set that. It reads the date only: a session's own
+ * date still comes from its plan week's start plus its day offset, so the plan
+ * is untouched.
+ */
+export function weekColumn(iso: string, weekStart: 0 | 1): number {
+	const firstWeekday = weekStart === 1 ? 6 : 0;
+	return (weekdayIndexFromIso(iso) - firstWeekday + 7) % 7;
+}
+
+/** The calendar column headers for the runner's week, first day first. */
+export function weekDayInitials(weekStart: 0 | 1): string[] {
+	return weekStart === 1 ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : [...DAY_INITIALS];
+}
+
+/**
+ * The first cell of a month grid: the runner's week start on or before the
+ * first of the month. `month` is 0-based, to match `Date.UTC`.
+ */
+export function monthGridStartIso(year: number, month: number, weekStart: 0 | 1): string {
+	const firstIso = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
+	return addDaysIso(firstIso, -weekColumn(firstIso, weekStart));
+}
+
 export function formatDuration(min?: number | null): string | null {
 	if (min == null) return null;
 	const m = Math.floor(min);

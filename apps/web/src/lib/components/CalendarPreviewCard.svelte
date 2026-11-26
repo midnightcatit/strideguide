@@ -3,7 +3,8 @@
 	import { store } from '$lib/planStore.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { TRAINING_PROGRESS } from '$lib/chartPalette';
-	import { type ClientSession, DAY_INITIALS, addDaysIso } from '$lib/plan';
+	import { type ClientSession, addDaysIso, monthGridStartIso, weekDayInitials } from '$lib/plan';
+	import { prefs } from '$lib/prefs.svelte';
 	import { today } from '$lib/today.svelte';
 
 	/**
@@ -12,6 +13,9 @@
 	 * shared plan store, so it always matches the calendar tab.
 	 */
 	const todayIso = $derived(today.iso);
+	// The preview mirrors the calendar tab, so it groups and labels by the
+	// runner's own week start too.
+	const weekInitials = $derived(weekDayInitials(prefs.weekStart));
 	const weeks = $derived(store.plan?.weeks ?? []);
 	const loggedIds = $derived(
 		new Set(store.logs.filter((l) => l.sessionId).map((l) => l.sessionId as string)),
@@ -34,8 +38,7 @@
 		const y = now.getFullYear();
 		const m = now.getMonth();
 		const first = new Date(Date.UTC(y, m, 1));
-		const firstDow = (first.getUTCDay() + 6) % 7;
-		const start = new Date(Date.UTC(y, m, 1 - firstDow));
+		const start = new Date(`${monthGridStartIso(y, m, prefs.weekStart)}T00:00:00Z`);
 		const cells: {
 			key: string;
 			day: number;
@@ -104,7 +107,7 @@
 			</div>
 			<div class="w-full sm:max-w-[17rem]">
 				<div class="grid grid-cols-7 gap-1">
-					{#each DAY_INITIALS as d, i (i)}
+					{#each weekInitials as d, i (i)}
 						<span class="tabular py-0.5 text-center text-[10px] uppercase tracking-wide text-steel">{d}</span>
 					{/each}
 					{#each month.cells as c (c.key)}

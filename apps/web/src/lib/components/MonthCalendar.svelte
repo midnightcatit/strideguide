@@ -2,9 +2,15 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { fmtDistance } from '$lib/prefs.svelte';
+	import { fmtDistance, prefs } from '$lib/prefs.svelte';
 	import { store, ensurePlan } from '$lib/planStore.svelte';
-	import { type ClientSession, DAY_INITIALS, addDaysIso, formatIsoDay } from '$lib/plan';
+	import {
+		type ClientSession,
+		addDaysIso,
+		formatIsoDay,
+		monthGridStartIso,
+		weekDayInitials,
+	} from '$lib/plan';
 	import { today } from '$lib/today.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import { sessionHref } from '$lib/sessionNav';
@@ -13,6 +19,11 @@
 	import { LOAD_RAMP, TRAINING_PROGRESS } from '$lib/chartPalette';
 
 	const todayIso = $derived(today.iso);
+
+	// The calendar groups and labels by the runner's own week start, Monday by
+	// default and Sunday when they set that. The plan's weeks are untouched:
+	// each session still sits on its plan week's start plus its day offset.
+	const weekInitials = $derived(weekDayInitials(prefs.weekStart));
 
 	let monthOffset = $state(0);
 	const MODE_KEY = 'sg:calendarMode';
@@ -78,8 +89,9 @@
 		const first = new Date(Date.UTC(now.getFullYear(), now.getMonth() + monthOffset, 1));
 		const y = first.getUTCFullYear();
 		const m = first.getUTCMonth();
-		const firstDow = (first.getUTCDay() + 6) % 7; // Monday = 0
-		const start = new Date(Date.UTC(y, m, 1 - firstDow));
+		// Back the grid up to the runner's week start, so the first column is
+		// their first day and a Sunday-start runner gets Sunday-first rows.
+		const start = new Date(`${monthGridStartIso(y, m, prefs.weekStart)}T00:00:00Z`);
 		const cells: {
 			iso: string;
 			day: number;
@@ -185,7 +197,7 @@
 {#if mode === 'month'}
 	<div class="mx-auto mt-4 max-w-md">
 	<div class="grid grid-cols-7 gap-1">
-		{#each DAY_INITIALS as initial, i (i)}
+		{#each weekInitials as initial, i (i)}
 			<span class="tabular py-1 text-center text-[10px] uppercase tracking-wide text-steel">{initial}</span>
 		{/each}
 		{#each monthCells as cell, i (cell.iso)}
