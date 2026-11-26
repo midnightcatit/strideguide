@@ -63,7 +63,10 @@ records.
   week start) live in the `settings.prefs` JSON, not in new columns or branches.
 - **Writing is a boundary too.** Every user-facing string follows the human-writing rules (no em
   dashes, no AI tells, mono for data), including any prompt that produces visible text. See
-  [AGENTS.md](./AGENTS.md) and the `human-writing` skill.
+  [AGENTS.md](./AGENTS.md) and the `human-writing` skill. Every prose model path carries
+  `WRITING_RULES` in the prompt it sends and runs the reply through `sanitizeText` before it is
+  stored or shown; the guard in `packages/shared/src/writing-guard.test.ts` finds the prose call
+  sites and fails when one is missing them.
 
 ## Invariants
 
@@ -97,3 +100,4 @@ this table and fails if a listed test is gone, skipped, or turned into an expect
 | why-no-invented-numbers | A reworded reason never adds a number the deterministic reason did not have | rejects a line that adds a number the reason did not have | packages/shared/src/plan/why-rephrase.test.ts | hard |
 | session-why-no-invented-numbers | A session why line never adds a number the reason did not have | drops a line that adds a number the reason did not have | apps/api/src/lib/session-why.test.ts | hard |
 | coach-no-diagnosis | The coach redirects only on a confident, non-none health risk, never diagnosing | redirects only when a non-none risk is confident | apps/api/src/lib/coach-safety.test.ts | hard |
+| writing-rules-in-prompts | Every prose model path carries the writing rules in its prompt and runs the reply through the sanitizer | fails a prose path whose prompt omits the writing rules or the sanitizer | packages/shared/src/writing-guard.test.ts | hard |
