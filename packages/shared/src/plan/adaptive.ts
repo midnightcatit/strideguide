@@ -62,11 +62,17 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 	// profile allows it. Everything else stays the engine's own choice.
 	const liked = allowedQuality.filter((k) => fitness.likedTypes.includes(k));
 	const weekShapes: (WeekShape | undefined)[] = existingWeeks.map((w, i) => {
-		if (!isFuture[i] || !liked.length) return undefined;
-		const dislikedHere = w.sessions.some(
-			(s) => s.modality === 'running' && fitness.dislikedTypes.includes(s.type),
-		);
-		return dislikedHere ? { qualityKind: liked[0] } : undefined;
+		if (!isFuture[i]) return undefined;
+		const dislikedHere =
+			liked.length > 0 &&
+			w.sessions.some((s) => s.modality === 'running' && fitness.dislikedTypes.includes(s.type));
+		const deterministic: WeekShape | undefined = dislikedHere ? { qualityKind: liked[0] } : undefined;
+		// The AI pipeline's decisions, when it made any, layer on top of the
+		// deterministic swap: it may set the volume intent, the quality count or
+		// the long-run delta, while the feedback swap keeps its quality kind.
+		const provided = input.weekShapes?.[i];
+		const merged = { ...deterministic, ...provided };
+		return Object.keys(merged).length ? merged : undefined;
 	});
 
 	const fresh = generatePlan({ ...seeded, weekShapes });

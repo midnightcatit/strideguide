@@ -269,6 +269,12 @@ export interface SessionPrescription {
 	notes?: string;
 	/** Why this session has the amount it has (shown on the card). */
 	why?: string;
+	/**
+	 * A short note on why this session changed in the last plan adapt, from the
+	 * AI pipeline's reasons. Grounded in the runner's history; absent when there
+	 * is nothing true to say.
+	 */
+	changeNote?: string;
 	/** The composed reason, in parts: role, day and plan context. */
 	whyStructured?: SessionWhy;
 	/** Structured, guided step sequence (warm-up → set → rest → cool-down). */

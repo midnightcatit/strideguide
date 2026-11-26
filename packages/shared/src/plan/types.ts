@@ -53,6 +53,18 @@ export type QualityKind = 'tempo' | 'hills' | 'interval' | 'race-pace';
  */
 export type VolumeIntent = 'ease' | 'hold' | 'build';
 
+/**
+ * How many quality days a week should carry, as a typed decision. The engine
+ * decides the actual sessions and their distances; this only sets the count.
+ */
+export type QualityDayCount = 0 | 1 | 2;
+
+/**
+ * Whether a week's long run eases, holds or builds relative to the plan curve.
+ * The engine still decides the distance; this only leans it.
+ */
+export type LongRunDelta = 'ease' | 'hold' | 'build';
+
 /** Per-week choices the model can make; the engine validates every one. */
 export interface WeekShape {
 	qualityKind?: QualityKind;
@@ -60,6 +72,10 @@ export interface WeekShape {
 	emphasis?: string;
 	/** Hold, ease or build this week's volume relative to the plan curve. */
 	volumeIntent?: VolumeIntent;
+	/** How many hard quality days the week should carry. */
+	qualityDayCount?: QualityDayCount;
+	/** Whether the week's long run eases, holds or builds. */
+	longRunDelta?: LongRunDelta;
 }
 
 export interface PlanInput {

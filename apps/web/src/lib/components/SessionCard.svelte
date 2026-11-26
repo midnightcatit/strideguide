@@ -220,6 +220,10 @@
 			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-steel">{whyLine}</p>
 		{/if}
 
+		{#if p.changeNote}
+			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-signal-ink">{p.changeNote}</p>
+		{/if}
+
 		<hr class="my-3 border-hairline" />
 
 		<div class="mt-auto flex items-center gap-2 pt-3">

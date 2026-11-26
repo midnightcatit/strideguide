@@ -50,6 +50,8 @@ export interface ClientPrescription {
 	notes?: string;
 	/** Why this session has the amount it has. */
 	why?: string;
+	/** Why this session changed in the last adapt, from the pipeline's reasons. */
+	changeNote?: string;
 	/** The composed reason, in parts: role, day and plan context. */
 	whyStructured?: SessionWhy;
 	workout?: ClientWorkout;
