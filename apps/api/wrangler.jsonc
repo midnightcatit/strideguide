@@ -24,9 +24,7 @@
     "WEB_ORIGIN": "https://run.midnightcatit.com",
     // Root admins, comma separated and matched case-insensitively. Root admins
     // are always admin and cannot be demoted or removed through the admin UI.
-    // This is the production owner's address, the assumed root admin; add more
-    // by separating with commas, and change it here if the owner changes.
-    "ADMIN_EMAILS": "samuelagyen@gmail.com"
+    "ADMIN_EMAILS": "samuelagyen@gmail.com,midnightcatit@gmail.com"
   },
   "triggers": {
     "crons": ["0 7 * * *", "0 8 * * 1"]
