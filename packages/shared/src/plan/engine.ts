@@ -58,6 +58,17 @@ function weekdayIndex(iso: string): number {
 	return (isoToDate(iso).getUTCDay() + 6) % 7;
 }
 
+/**
+ * The share of the first calendar week (Monday to Sunday) that is left from the
+ * start day. A plan that starts mid-week opens with a genuinely short week
+ * instead of packing a whole week's load into the days remaining in the week the
+ * runner started in: a Monday start is a whole week (1), a Thursday start leaves
+ * four days (4/7), and a Sunday start leaves one (1/7).
+ */
+function firstWeekFraction(startWeekday: number): number {
+	return (7 - startWeekday) / 7;
+}
+
 /** One-line, research-informed purpose per session archetype. */
 const PURPOSE: Record<SessionArchetype, string> = {
 	easy: 'Aerobic base: builds capillaries and mitochondria so faster running feels easier. You should feel conversational throughout.',
@@ -197,6 +208,30 @@ function baseWeeklyKm(input: PlanInput): number {
 	return suggestedWeeklyKm(input.baseline.experience, input.profile.slug, input.baseline.age);
 }
 
+/**
+ * The smallest weekly running volume a plan may prescribe, from the goal and the
+ * runner's experience rather than one flat number. A beginner on a short goal may
+ * run a genuinely short week; a longer goal or a more experienced runner keeps a
+ * real training week, so the floor rises with both. It never falls below
+ * MIN_RUN_KM, so the week can always hold at least one real run rather than a
+ * token jog, which the hard plan invariant forbids.
+ */
+function weekFloorKm(input: PlanInput): number {
+	// Short goals need less of a week to be worth doing; a marathon needs a
+	// genuine aerobic base even on its lightest week.
+	const byGoal: Record<string, number> = {
+		marathon: 6,
+		'half-marathon': 5,
+		'10k': 4,
+		'5k': 3,
+		'whole-fitness': 3,
+	};
+	const byExperience: Record<string, number> = { beginner: 0.6, intermediate: 1, advanced: 1.5 };
+	const goal = byGoal[input.profile.slug] ?? 4;
+	const level = byExperience[input.baseline.experience ?? 'beginner'] ?? 1;
+	return Math.max(MIN_RUN_KM, round1(goal * level));
+}
+
 /** Default weekly reduction when a taper rule does not step volume down. */
 const DEFAULT_TAPER_STEP = -0.2;
 /** The lowest share of peak a taper week may fall to, so the last week is still real training. */
@@ -253,6 +288,12 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 	// this catch-up, so a gentle ease-in plan can still lift a week to hold the goal.
 	const arcCeiling = WEEKLY_STEP_CEILING * ageBuildFactor(input.baseline.age);
 	const out: number[] = [];
+	// A plan that starts mid-week opens with a genuinely short week: week one's
+	// volume is pro-rated by the days left in the calendar week the runner started
+	// in, so a Thursday start is a 4/7 week rather than a full one crammed into the
+	// days remaining. Every later week is whole, so the ramp resumes from there.
+	const weekOneFactor = firstWeekFraction(weekdayIndex(input.startDate));
+	const floorKm = weekFloorKm(input);
 	let prev = base;
 	let peak = base;
 	const withinPhase = new Map<string, number>();
@@ -262,6 +303,7 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 		const idx = withinPhase.get(phase) ?? 0;
 		withinPhase.set(phase, idx + 1);
 		const isDeload = Boolean(rule.deload) && (idx + 1) % 4 === 0;
+		const isPartialFirstWeek = w === 0 && weekOneFactor < 1;
 		let vol: number;
 		if (w === 0) {
 			// Ease in: the first week starts below the runner's current volume and
@@ -277,19 +319,30 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 			vol = prev * (1 + step);
 		}
 		// Grow a week that is too light to hold the long run the plan is building
-		// to. Never on a deload or taper week, and never past the safety ceiling.
-		// The catch-up is eased for older runners the same way their build rate is,
-		// so age still shows at the peak rather than being erased by the ceiling.
+		// to. Never on a deload or taper week and never past the safety ceiling. A
+		// short first week is left light on purpose, but the normal curve it opens
+		// is unchanged, so a mid-week start does not drag the whole ramp down. The
+		// catch-up is eased for older runners the same way their build rate is, so
+		// age still shows at the peak rather than being erased by the ceiling.
 		const floor = longFloorKm?.[w];
-		if (floor !== undefined && floor > 0 && !isDeload && phase !== 'taper' && phase !== 'recovery') {
+		if (
+			floor !== undefined &&
+			floor > 0 &&
+			!isPartialFirstWeek &&
+			!isDeload &&
+			phase !== 'taper' &&
+			phase !== 'recovery'
+		) {
 			const need = floor / LONG_RUN_SHARE_CEILING;
 			const ceiling = w === 0 ? need : prev * (1 + arcCeiling);
 			vol = Math.max(vol, Math.min(need, Math.max(ceiling, vol)));
 		}
-		vol = clamp(round1(vol), 5, 160);
-		if (phase !== 'taper') peak = Math.max(peak, vol);
-		out.push(vol);
-		prev = vol;
+		const normal = clamp(round1(vol), floorKm, 160);
+		// The first week of a mid-week start is delivered short, but `prev` chains
+		// on the normal curve, so the ramp resumes at its intended level next week.
+		out.push(isPartialFirstWeek ? clamp(round1(vol * weekOneFactor), floorKm, 160) : normal);
+		if (phase !== 'taper') peak = Math.max(peak, normal);
+		prev = normal;
 	}
 	return out;
 }
@@ -331,12 +384,23 @@ function planTargets(
 	// The long run's share of the week falls as volume rises, so a light week is
 	// still anchored by its long run and a heavy week spreads out around it.
 	const shareOfWeek = (km: number) => round1(clamp(km * longRunShare(km), 3, 38));
+	// The plan's first week may be pro-rated for a mid-week start. The long-run arc
+	// is anchored on the runner's own base, not on that deliberately short week, so
+	// a Thursday start does not drag the whole long-run arc down with it. Only the
+	// delivered first week is short; the arc it builds toward is unchanged.
+	const weekOneFactor = firstWeekFraction(weekdayIndex(input.startDate));
+	const normalWeekOne = (v: number) => (weekOneFactor > 0 ? v / weekOneFactor : v);
 
 	// The plain curve, which is also what a goal with no peak of its own keeps.
 	const seedVolumes = volumeCurve(input, phases);
 	if (peak === undefined || buildWeeks < 2) {
 		const volumes = [...seedVolumes];
 		const longKm = volumes.map((v, w) => (phases[w] === 'recovery' ? 0 : shareOfWeek(v)));
+		// A short first week can only hold so much long run: keep it inside half of
+		// the week the runner actually sees, even if that is under the usual floor.
+		if (weekOneFactor < 1 && volumes[0] !== undefined && phases[0] !== 'recovery') {
+			longKm[0] = round1(Math.min(longKm[0]!, volumes[0]! * LONG_RUN_SHARE_CEILING));
+		}
 		return { volumes, longKm, warnings };
 	}
 
@@ -344,13 +408,14 @@ function planTargets(
 	// goal's peak at the last week before the taper, dipping on deload weeks and
 	// never jumping over the weekly ceiling.
 	const rampEnd = buildWeeks - 1;
-	const start = shareOfWeek(seedVolumes[0]!);
+	const start = shareOfWeek(normalWeekOne(seedVolumes[0]!));
 	const reachable = round1(Math.min(peak, start * Math.pow(1 + WEEKLY_STEP_CEILING, rampEnd)));
 	const ratio = Math.pow(reachable / start, 1 / rampEnd);
 	const arc = seedVolumes.map((v) => shareOfWeek(v));
 	let prev = start;
 	for (let w = 0; w < buildWeeks; w++) {
-		const dip = w > 0 && seedVolumes[w]! < seedVolumes[w - 1]!;
+		const dip =
+			w > 0 && normalWeekOne(seedVolumes[w]!) < normalWeekOne(seedVolumes[w - 1]!);
 		let want = start * Math.pow(ratio, w);
 		if (dip) want *= 0.85;
 		if (w > 0) want = Math.min(want, prev * (1 + WEEKLY_STEP_CEILING));
@@ -379,6 +444,12 @@ function planTargets(
 			),
 		),
 	);
+
+	// The short first week is held inside half of what the runner sees, even when
+	// that puts it under the usual long-run floor, so no single run dominates it.
+	if (weekOneFactor < 1 && volumes[0] !== undefined && phases[0] !== 'recovery') {
+		longKm[0] = round1(Math.min(longKm[0]!, volumes[0]! * LONG_RUN_SHARE_CEILING));
+	}
 
 	// A taper week brings the long run down with the week, instead of holding the
 	// peak flat into race week.
@@ -663,12 +734,14 @@ const SESSION_SHAPE: Record<string, { quality: number }> = {
  * percent. So the share falls as the week grows. The ceiling itself stays
  * LONG_RUN_SHARE_CEILING below; this only sets the share a week starts from and
  * the floor it is held above, so at low volume the long run dominates as the
- * sources show and at high volume the week spreads out around it.
+ * sources show and at high volume the week spreads out around it. The fall is a
+ * smoothstep between the anchors, so the share moves gently with the week rather
+ * than kinking at one volume, and both anchors sit inside the researched band.
  */
-const LONG_SHARE_LOW_VOLUME_KM = 25;
-const LONG_SHARE_HIGH_VOLUME_KM = 75;
+const LONG_SHARE_LOW_VOLUME_KM = 20;
+const LONG_SHARE_HIGH_VOLUME_KM = 90;
 const LONG_SHARE_AT_LOW_VOLUME = 0.45;
-const LONG_SHARE_AT_HIGH_VOLUME = 0.27;
+const LONG_SHARE_AT_HIGH_VOLUME = 0.28;
 
 function longRunShare(volumeKm: number): number {
 	const t = clamp(
@@ -677,21 +750,33 @@ function longRunShare(volumeKm: number): number {
 		0,
 		1,
 	);
-	return LONG_SHARE_AT_LOW_VOLUME + t * (LONG_SHARE_AT_HIGH_VOLUME - LONG_SHARE_AT_LOW_VOLUME);
+	// Smoothstep: zero slope at each end, so the share does not jump as a week
+	// crosses an anchor and the delivered long run moves smoothly week to week.
+	const eased = t * t * (3 - 2 * t);
+	return LONG_SHARE_AT_LOW_VOLUME + eased * (LONG_SHARE_AT_HIGH_VOLUME - LONG_SHARE_AT_LOW_VOLUME);
 }
 
 /**
  * Weekly volume (km) at which a midweek medium-long run earns its place.
- * Pfitzinger and Douglas (Advanced Marathoning) pair the long run with a medium-
- * long run of about 11 to 15 miles once weekly volume is in the 55-mile region,
- * so no single day carries the whole week (research/wave-6, sections 4 and 5,
- * item 6). Below this the week is better left as one long run plus easy days.
+ * Pfitzinger and Douglas (Advanced Marathoning) pair the long run with a
+ * medium-long run of about 11 to 15 miles once weekly volume is high enough that
+ * no single day should carry the week (research/wave-6, sections 4 and 5, item
+ * 6). Below this the week is better left as one long run plus easy days. The
+ * threshold is coaching convention, not a measured point, so it is set where a
+ * medium-long run is a real aerobic session rather than a second long run.
  */
-const MEDIUM_LONG_MIN_VOLUME_KM = 70;
+const MEDIUM_LONG_MIN_VOLUME_KM = 60;
 /** The medium-long run's share of the week, kept clearly under the long run. */
 const MEDIUM_LONG_SHARE = 0.2;
 /** The shortest an easy or recovery run may be, so no token jog is ever planned. */
 const MIN_EASY_KM = 3.5;
+/**
+ * The shortest a delivered run may be in a short week. A week too light to give
+ * every planned run at least this much drops a day rather than shrinking a run
+ * below a real length, which is why a genuinely short week opens with fewer,
+ * real runs rather than the token jog the hard plan invariant forbids.
+ */
+const MIN_RUN_KM = 3;
 const MEDIUM_LONG_TITLE = 'Medium-long run';
 
 /**
@@ -1087,6 +1172,13 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	// the end, so the same weekday lands on the same real weekday in every week
 	// whatever day the plan starts on.
 	const toOffset = (weekday: number) => (weekday - startWeekday + 7) % 7;
+	// A mid-week start opens with a genuinely short week, pro-rated to the days
+	// left in the calendar week the runner started in. The engine's week one still
+	// spans seven days from the start date, but its target and its sessions are
+	// scaled to the part of the starting week that is actually left, so a Thursday
+	// start does not cram a full week into four days.
+	const weekOneFactor = firstWeekFraction(startWeekday);
+	const weekFloor = weekFloorKm(input);
 
 	// The race date drives the length: the final week's last day lands on or after
 	// it, so the last week always covers race day. Without a race the profile's
@@ -1190,6 +1282,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
 		const isRecovery = phase === 'recovery';
+		// The first week is partial only when the plan starts after Monday: its
+		// target is pro-rated, and it drops runs rather than shrinking them below a
+		// real length, so a short week is one or two real runs, never a token jog.
+		const isPartialFirstWeek = w === 0 && weekOneFactor < 1;
 		// The model may hold or ease a single week (a coach-like microcycle). The
 		// numbers stay deterministic: an intent only scales or holds the plan's own
 		// curve, never sets a distance, and a taper or recovery week is left alone.
@@ -1223,7 +1319,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			const recoveryIdx = phases.slice(0, w).filter((p) => p === 'recovery').length;
 			volume = clamp(round1(buildPeak * (0.3 + 0.15 * recoveryIdx)), 5, buildPeak);
 		}
-		volume = clamp(round1(volume), 5, 160);
+		volume = clamp(round1(volume), weekFloor, 160);
 		// Each week is seven days from the start day: week one runs from the chosen
 		// start date, and every later week follows it, so the stored dates roll with
 		// the start day rather than snapping to a Monday.
@@ -1245,6 +1341,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// (research/wave-6, section 1 and the constants list).
 		const experience = input.baseline.experience ?? 'beginner';
 		const qualityCap = hasQuality ? (experience === 'beginner' ? 1 : 2) : 0;
+		// A genuinely short week (fewer than two real runs fit in it) is easy
+		// running: a quality session or a long run would be most of the week on its
+		// own, so neither is worth prescribing. The taper keeps its intensity, so it
+		// is left out of this.
+		const easyOnlyWeek = !isRecovery && phase !== 'taper' && volume < MIN_RUN_KM * 2;
 		// The day after the long run is the recovery day. When the long run sits on
 		// the week's last day and the first run day follows it directly, that first
 		// day is kept off the hard work (research/wave-6, sections 2 and 3: the day
@@ -1254,9 +1355,8 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// between them and staying off the recovery day.
 		const hardPool = rest.filter((d) => d !== recoveryDay);
 		const qualitySlots = Math.min(qualityCap, hardCapacity(hardPool.length));
-		const hardCount = isRecovery
-			? 0
-			: w === 0
+		const hardCount =
+			isRecovery || w === 0 || easyOnlyWeek
 				? 0
 				: phase === 'base' || phase === 'taper'
 					? Math.min(1, qualitySlots)
@@ -1270,10 +1370,18 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// week dips it too, the way a deload does, so easing a week lowers what it
 		// prescribes rather than leaving the long run at the plan's full arc.
 		const longEase = shaped && intent === 'ease' ? 0.9 : 1;
+		// A short first week may hold a long run under the usual floor, since half
+		// of a genuinely short week can be under the standard minimum length. Every
+		// other week keeps the floor.
+		const longMinKm = isPartialFirstWeek ? 0 : 3;
 		let longKm = isRecovery
 			? 0
 			: round1(
-					clamp(Math.min(longTargets[w]! * longEase, volume * LONG_RUN_SHARE_CEILING), 3, 38),
+					clamp(
+						Math.min(longTargets[w]! * longEase, volume * LONG_RUN_SHARE_CEILING),
+						longMinKm,
+						38,
+					),
 				);
 		// A recovery week carries no long run, so the long-run day is not reserved:
 		// it can take an easy run, so the easy runs cover the whole week rather than
@@ -1317,6 +1425,31 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		}
 		strengthLeft -= strengthDays.length;
 
+		// A week too light to give every planned run a real length drops an easy day
+		// rather than shrinking a run into a token jog, which the hard plan
+		// invariant forbids. This is what lets a genuinely short week (the pro-rated
+		// first week of a mid-week start, or a very light plan) open with one or two
+		// real runs. When fewer than two real runs fit, the week becomes a single
+		// short easy run of its own volume, so no session is most of a week that is
+		// barely a week and nothing collapses into a token jog.
+		let skipLongRun = easyOnlyWeek;
+		if (easyOnlyWeek) {
+			easyDays = [longDay];
+			longKm = 0;
+		} else if (!isRecovery) {
+			const maxRuns = Math.max(1, Math.floor(volume / MIN_RUN_KM));
+			const plannedRuns = (longKm > 0 ? 1 : 0) + qualityDays.length + easyDays.length;
+			if (plannedRuns > maxRuns) {
+				const keepEasy = Math.max(0, maxRuns - (longKm > 0 ? 1 : 0) - qualityDays.length);
+				easyDays = easyDays.slice(0, keepEasy);
+			}
+			if (qualityDays.length === 0 && easyDays.length === 0) {
+				easyDays = [longDay];
+				skipLongRun = true;
+				longKm = 0;
+			}
+		}
+
 		const load = sportLoad(input);
 		const qualityShare = SESSION_SHAPE[input.profile.slug]?.quality ?? SESSION_SHAPE.default!.quality;
 		// One quality day's whole distance, held under the long run so the long run
@@ -1331,9 +1464,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			: undefined;
 		// At higher volume a midweek medium-long run spreads the aerobic work so no
 		// single day carries the week. Pfitzinger and Douglas pair it with the long
-		// run once weekly volume is around 55 miles (research/wave-6, sections 4 and
-		// 5, item 6); below that the week is one long run plus easy days, and the day
-		// after the long run is kept light.
+		// run once weekly volume is high enough that the week should not be one big
+		// day and easy leftovers (research/wave-6, sections 4 and 5, item 6; the
+		// threshold is MEDIUM_LONG_MIN_VOLUME_KM); below that the week stays one long
+		// run plus easy days, and the day after the long run is kept light.
 		const mediumLongCandidates = easyDays.filter(
 			(d) => d !== recoveryDay && d !== longDay - 1 && d !== longDay,
 		);
@@ -1349,9 +1483,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// Otherwise an easy run may reach just under the long run, so a week with
 		// few other runs (a short week, or a cross-heavy one) can still hold the
 		// long run to half of what the runner sees. The long run stays the longest.
-		const easyCap = isRecovery
-			? Math.max(1, round1(volume))
-			: Math.max(1, round1(longKm - 0.1));
+		// A short first week with no long run lets its single easy run take the whole
+		// (small) week, so the run is real rather than a token jog.
+		const easyCap =
+			isRecovery || skipLongRun
+				? Math.max(1, round1(volume))
+				: Math.max(1, round1(longKm - 0.1));
 		const otherEasyDays = easyDays.filter((d) => d !== mediumLongDay);
 		// Quality bookends scale with the session, and the reps fill what is left.
 		const { wu: qWu, cd: qCd } = qualityWarmupCooldown(qualityKm);
@@ -1360,7 +1497,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const sessions: PlannedSession[] = [];
 
 		// long run
-		if (!isRecovery) {
+		if (!isRecovery && !skipLongRun) {
 			sessions.push({
 				day: longDay,
 				slot: 'AM',
