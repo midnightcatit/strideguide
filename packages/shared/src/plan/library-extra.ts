@@ -519,7 +519,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		intensity: 'steady',
 		summary: 'Run in the deep end of a pool with a float belt, copying the running action.',
 		purpose:
-			'The closest running substitute with no ground impact, useful if you are carrying a niggle but want to keep the engine. Set effort by feel, since pool heart rate runs a little lower.',
+			'The closest running substitute with no ground impact, useful if you have a sore spot but want to keep the engine. Set effort by feel, since pool heart rate runs a little lower.',
 		targetRpe: [4, 7],
 		workout: wk([
 			block([
