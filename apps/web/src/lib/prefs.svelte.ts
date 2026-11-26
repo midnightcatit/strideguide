@@ -1,4 +1,5 @@
 import {
+	clampCountdownSec,
 	DEFAULT_PREFS,
 	formatDistance,
 	formatPace,
@@ -42,6 +43,7 @@ async function applyPrefs(): Promise<void> {
 		prefs.birthYear = res.prefs.birthYear;
 		prefs.eventName = res.prefs.eventName;
 		prefs.autoAdvance = res.prefs.autoAdvance;
+		prefs.countdownEnabled = res.prefs.countdownEnabled;
 		prefs.countdownSec = res.prefs.countdownSec;
 		prefs.heightCm = res.prefs.heightCm;
 		prefs.weightKg = res.prefs.weightKg;
@@ -266,11 +268,21 @@ export async function setHealthGoals(goals: {
 	}
 }
 
-/** Seconds to count down before a step starts. */
+/** Seconds to count down before a step starts, held to 3 to 10 seconds. */
 export async function setCountdownSec(v: number): Promise<void> {
-	prefs.countdownSec = Math.max(0, Math.min(15, Math.round(v)));
+	prefs.countdownSec = clampCountdownSec(v);
 	try {
 		await api.putSettings({ countdownSec: prefs.countdownSec });
+	} catch {
+		// best-effort
+	}
+}
+
+/** Turn the pre-step countdown in the workout player on or off. */
+export async function setCountdownEnabled(v: boolean): Promise<void> {
+	prefs.countdownEnabled = v;
+	try {
+		await api.putSettings({ countdownEnabled: v });
 	} catch {
 		// best-effort
 	}

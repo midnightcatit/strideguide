@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { formatClock } from '@strideguide/shared/units';
+	import { countdownEnabledFor, countdownSeconds, formatClock } from '@strideguide/shared/units';
 	import { goto } from '$app/navigation';
 	import { findDrill, findMove, mediaForMove } from '@strideguide/shared/plan';
 	import { onMount, onDestroy } from 'svelte';
 	import type { ClientSession, ClientStep } from '$lib/plan';
-	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance } from '$lib/prefs.svelte';
+	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance, setCountdownEnabled } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
 	import FormSheet from '$lib/components/FormSheet.svelte';
 	import ConfirmSheet from '$lib/components/ConfirmSheet.svelte';
@@ -47,7 +47,7 @@
 		sets?: number;
 	}
 
-	const countdownFrom = () => prefs.countdownSec ?? 5;
+	const countdownFrom = () => countdownSeconds(prefs);
 
 	const workout = $derived(session.prescription?.workout);
 	const expanded = $derived.by(() => {
@@ -111,6 +111,7 @@
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
 	const resting = $derived(restLeft > 0);
+	const countdownOn = $derived(countdownEnabledFor(prefs));
 
 	function save() {
 		if (instances.length) setProgress(session.id, { idx, elapsed });
@@ -126,6 +127,9 @@
 		finished = false;
 		running = false;
 		countdown = countdownFrom();
+		// With the countdown off there is nothing to wait for, so a timed step
+		// starts straight away instead of sitting on its Start button.
+		if (countdown <= 0) startStep();
 		save();
 	}
 
@@ -167,6 +171,10 @@
 	function toggleAuto() {
 		autoNext = !autoNext;
 		void setAutoAdvance(autoNext);
+	}
+
+	function toggleCountdown() {
+		void setCountdownEnabled(!countdownEnabledFor(prefs));
 	}
 
 	function jump(i: number) {
@@ -286,6 +294,7 @@
 	class={asPage
 		? 'overflow-y-auto bg-paper outline-none'
 		: 'overlay-fade fixed inset-0 z-50 overflow-y-auto bg-paper outline-none'}
+	style={asPage ? 'padding-bottom: env(safe-area-inset-bottom)' : undefined}
 	role={asPage ? undefined : 'dialog'}
 	aria-modal={asPage ? undefined : 'true'}
 	aria-labelledby={asPage ? undefined : titleId}
@@ -293,8 +302,8 @@
 	tabindex="-1"
 	use:modal={{ onClose: close, enabled: !asPage }}
 >
-	<div class="mx-auto max-w-2xl px-4 pb-24">
-		<div class="sticky {asPage ? 'top-16' : 'top-0'} z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5">
+	<div class="mx-auto max-w-2xl px-4 {asPage ? 'pb-10' : 'pb-24'}">
+		<div class="sticky top-0 z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5" style={asPage ? 'padding-top: calc(env(safe-area-inset-top) + 1.25rem)' : undefined}>
 		<div class="flex items-center justify-between">
 			<button type="button" onclick={close} class="-ml-2 flex h-11 items-center px-2 text-sm text-steel hover:text-ink">‹ Back</button>
 			<div class="flex items-center gap-1">
@@ -303,8 +312,8 @@
 			</div>
 		</div>
 		<h1 id={titleId} class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>
-		<div class="mt-1 flex items-center justify-between gap-3">
-			<p class="tabular text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
+		<p class="tabular mt-1 text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
+		<div class="mt-2 flex flex-wrap items-center gap-2">
 			<button
 				type="button"
 				role="switch"
@@ -314,6 +323,16 @@
 			>
 				<span class="h-2 w-2 rounded-full {autoNext ? 'bg-ok' : 'bg-hairline'}" aria-hidden="true"></span>
 				Auto next {autoNext ? 'on' : 'off'}
+			</button>
+			<button
+				type="button"
+				role="switch"
+				aria-checked={countdownOn}
+				onclick={toggleCountdown}
+				class="flex items-center gap-1.5 rounded-full border border-hairline px-2.5 py-1 text-[11px] text-steel hover:border-steel hover:text-ink"
+			>
+				<span class="h-2 w-2 rounded-full {countdownOn ? 'bg-ok' : 'bg-hairline'}" aria-hidden="true"></span>
+				Countdown {countdownOn ? `${countdownSeconds(prefs)}s` : 'off'}
 			</button>
 		</div>
 		</div>
@@ -480,7 +499,7 @@
 			</ul>
 		</details>
 		<p class="mt-4 text-xs text-steel">
-			Each step starts after a short countdown. With auto next on, steps move on by themselves; with it off, you tap Go to next. Your place is saved, so you can leave and come back. Form cues are guidance, not medical advice.
+			With the countdown on, each step waits a few seconds before it starts; with it off, it starts straight away. With auto next on, steps move on by themselves; with it off, you tap Go to next. Your place is saved, so you can leave and come back. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 

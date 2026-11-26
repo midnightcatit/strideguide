@@ -42,7 +42,9 @@ export interface Prefs {
 	activeZoneGoalMin?: number;
 	/** In the workout player, move to the next step automatically. */
 	autoAdvance?: boolean;
-	/** Seconds to count down before a step starts, 0 to 15. */
+	/** Whether the player counts down before each step starts. On by default. */
+	countdownEnabled?: boolean;
+	/** Seconds to count down before a step starts, 3 to 10. */
 	countdownSec?: number;
 	/** What the runner trains strength with. Drives the circuit the engine builds. */
 	equipment?: EquipmentPreference;
@@ -80,6 +82,41 @@ export interface Prefs {
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };
+
+/** The shortest and longest countdown the player accepts, in seconds. */
+export const COUNTDOWN_MIN_SEC = 3;
+export const COUNTDOWN_MAX_SEC = 10;
+/** The countdown used when the pref is unset. */
+export const DEFAULT_COUNTDOWN_SEC = 5;
+
+/** Clamp a countdown length to the supported 3 to 10 seconds. */
+export function clampCountdownSec(v: number): number {
+	return Math.max(COUNTDOWN_MIN_SEC, Math.min(COUNTDOWN_MAX_SEC, Math.round(v)));
+}
+
+/**
+ * The effective countdown on/off for a runner. Off when the pref says so, and
+ * also when the pref was never set but the length is 0, which is how "off" was
+ * stored before the explicit switch existed. The one place the legacy rule lives,
+ * so the player and the settings page cannot drift.
+ */
+export function countdownEnabledFor(
+	prefs: Pick<Prefs, 'countdownEnabled' | 'countdownSec'>,
+): boolean {
+	if (prefs.countdownEnabled === false) return false;
+	if (prefs.countdownEnabled === undefined && prefs.countdownSec === 0) return false;
+	return true;
+}
+
+/**
+ * Seconds to count down before a step starts: 0 when the countdown is off, else
+ * the pref clamped to 3 to 10 seconds. One place decides this, so the player and
+ * the settings stepper agree.
+ */
+export function countdownSeconds(prefs: Pick<Prefs, 'countdownEnabled' | 'countdownSec'>): number {
+	if (!countdownEnabledFor(prefs)) return 0;
+	return clampCountdownSec(prefs.countdownSec ?? DEFAULT_COUNTDOWN_SEC);
+}
 
 /** Age in whole years from a birth year, or undefined if it is not set. */
 export function ageFromBirthYear(
