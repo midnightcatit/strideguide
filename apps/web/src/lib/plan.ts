@@ -238,6 +238,16 @@ export function weekColumn(iso: string, weekStart: 0 | 1): number {
 	return (weekdayIndexFromIso(iso) - firstWeekday + 7) % 7;
 }
 
+/**
+ * The first day of the runner's week on or before an ISO date: the column-zero
+ * day the calendar groups by. Monday by default and Sunday when the runner set
+ * that. The month grid and the Today strip both start their rows here, so the
+ * two views can never disagree on where a week begins.
+ */
+export function startOfWeekIso(iso: string, weekStart: 0 | 1): string {
+	return addDaysIso(iso, -weekColumn(iso, weekStart));
+}
+
 /** The calendar column headers for the runner's week, first day first. */
 export function weekDayInitials(weekStart: 0 | 1): string[] {
 	return weekStart === 1 ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : [...DAY_INITIALS];
@@ -249,7 +259,7 @@ export function weekDayInitials(weekStart: 0 | 1): string[] {
  */
 export function monthGridStartIso(year: number, month: number, weekStart: 0 | 1): string {
 	const firstIso = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
-	return addDaysIso(firstIso, -weekColumn(firstIso, weekStart));
+	return startOfWeekIso(firstIso, weekStart);
 }
 
 export function formatDuration(min?: number | null): string | null {

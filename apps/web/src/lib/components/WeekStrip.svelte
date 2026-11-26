@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { type ClientWeek, DAY_INITIALS, DAY_NAMES, addDaysIso, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientSession, type ClientWeek, DAY_INITIALS, DAY_NAMES, weekdayIndexFromIso } from '$lib/plan';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { weekSwipe } from '$lib/actions';
 	import { isSkipped } from '$lib/skipped.svelte';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 
 	let {
 		week,
 		weekKey,
-		weekStart,
+		days,
 		selectedDay,
 		todayIndex,
 		todayInWeek = false,
@@ -20,9 +22,10 @@
 		// Changes on every week step, even between two weeks outside the plan, so
 		// the strip always replays its slide. A plain day tap keeps it stable.
 		weekKey: string;
-		// The first day shown, so the columns label the real weekdays even when the
-		// plan's week does not begin on a Monday.
-		weekStart: string;
+		// The seven days of the shown calendar week, first day first, each with the
+		// sessions whose date falls on it. A calendar week can span two plan weeks,
+		// so a column's sessions are gathered by date, not by plan-week day.
+		days: { iso: string; sessions: ClientSession[] }[];
 		selectedDay: number;
 		todayIndex: number;
 		todayInWeek?: boolean;
@@ -32,13 +35,15 @@
 		weekDir?: number;
 	} = $props();
 
-	/** The weekday (0 = Monday) shown in a column, read from its real date. */
+	/** The weekday (0 = Monday) shown in a column, read from its own date. */
 	function weekdayAt(day: number): number {
-		return weekStart ? weekdayIndexFromIso(addDaysIso(weekStart, day)) : day;
+		return weekdayIndexFromIso(days[day].iso);
 	}
-
+	function sessionsOn(day: number): ClientSession[] {
+		return days[day]?.sessions ?? [];
+	}
 	function level(day: number): number {
-		const ds = week?.sessions.filter((s) => s.day === day) ?? [];
+		const ds = sessionsOn(day);
 		if (!ds.length) return 0;
 		return Math.max(
 			...ds.map((s) =>
@@ -47,16 +52,25 @@
 		);
 	}
 	function logged(day: number): boolean {
-		return (week?.sessions ?? []).some((s) => s.day === day && loggedBySession.has(s.id));
+		return sessionsOn(day).some((s) => loggedBySession.has(s.id));
 	}
 	function skipped(day: number): boolean {
-		return (week?.sessions ?? []).some((s) => s.day === day && isSkipped(s.id));
+		return sessionsOn(day).some((s) => isSkipped(s.id));
 	}
 	function distance(day: number): number {
-		return (week?.sessions ?? [])
-			.filter((s) => s.day === day && s.modality === 'running')
+		return sessionsOn(day)
+			.filter((s) => s.modality === 'running')
 			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0);
 	}
+
+	// A week step slides the outgoing week out and the incoming one in along the
+	// swipe direction, so the change reads as a deliberate move. The letters ride
+	// with the grid rather than animating on their own. Reduced motion drops it to
+	// an instant swap.
+	const reduceMotion =
+		typeof window !== 'undefined' &&
+		window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const weekMotion = { duration: reduceMotion ? 0 : 340, easing: cubicOut };
 </script>
 
 <!-- Week control: the arrows move a whole week at a time. They only show on a
@@ -84,11 +98,15 @@
 	</div>
 {/if}
 
+<!-- A week step keys the whole grid on the calendar week. Both copies overlap in
+     one grid cell, so the outgoing week can leave as the incoming one arrives
+     without the page jumping. -->
+<div class="grid" role="group" aria-label="Days of the week">
 {#key weekKey}
 	<div
-		class="grid grid-cols-7 gap-1 {weekDir >= 0 ? 'sg-enter-week-right' : 'sg-enter-week-left'}"
-		role="group"
-		aria-label="Days of the week"
+		class="col-start-1 row-start-1 grid grid-cols-7 gap-1"
+		in:fly={{ x: weekDir >= 0 ? 52 : -52, ...weekMotion }}
+		out:fly={{ x: weekDir >= 0 ? -52 : 52, ...weekMotion }}
 		use:weekSwipe={onWeekStep}
 	>
 	{#each [0, 1, 2, 3, 4, 5, 6] as day (day)}
@@ -139,3 +157,4 @@
 	{/each}
 	</div>
 {/key}
+</div>
