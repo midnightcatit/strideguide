@@ -16,6 +16,7 @@
     "lint": "pnpm -r lint",
     "format": "prettier --write .",
     "check:am-payload": "node scripts/check-am-payload.mjs",
+    "system:graph": "node scripts/system-graph.mjs",
     "db:generate": "pnpm --filter @strideguide/api db:generate",
     "db:migrate:local": "pnpm --filter @strideguide/api db:migrate:local",
     "db:migrate:remote": "pnpm --filter @strideguide/api db:migrate:remote",
