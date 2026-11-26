@@ -1,0 +1,2198 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-26T16:00:27.212Z",
+  "fingerprint": "f98ada2d11c0a5f9",
+  "views": [
+    {
+      "id": "pipeline",
+      "title": "The pipeline",
+      "lede": "How a plan is built, shaped, explained, read for load and adapted, and where the numbers come from.",
+      "layout": {
+        "engine": "elk",
+        "algorithm": "layered",
+        "direction": "TB",
+        "edgeRouting": "POLYLINE"
+      },
+      "nodes": [
+        {
+          "id": "goal",
+          "label": "Goal and baseline",
+          "kind": "data",
+          "note": "The goal profile, target date, baseline (recent time, weekly volume, experience, age), available days, kit and schedule.",
+          "href": "packages/shared/src/goal-profiles.ts"
+        },
+        {
+          "id": "onboarding",
+          "label": "Onboarding",
+          "kind": "stage",
+          "note": "Collects the goal and baseline and posts the plan request.",
+          "href": "apps/web/src/routes/onboarding"
+        },
+        {
+          "id": "engine",
+          "label": "Engine generation",
+          "kind": "module",
+          "note": "Deterministic: the phase arc, the weekly volume and long-run curve, VDOT paces, and every session. It computes every number.",
+          "href": "packages/shared/src/plan/engine.ts"
+        },
+        {
+          "id": "shape",
+          "label": "AI shaping pass",
+          "kind": "module",
+          "note": "Reads the engine's plan and chooses typed intents only. An answer outside the set is dropped.",
+          "href": "apps/api/src/lib/plan-shape.ts"
+        },
+        {
+          "id": "store",
+          "label": "Stored plan",
+          "kind": "data",
+          "note": "The goal, plan, weeks and sessions written to D1.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "reason",
+          "label": "Reason pass",
+          "kind": "module",
+          "note": "Rewords each session's reason after the plan is saved, in the background, and keeps the deterministic reason as the fallback.",
+          "href": "apps/api/src/lib/session-why.ts"
+        },
+        {
+          "id": "load",
+          "label": "Load model",
+          "kind": "module",
+          "note": "Reads the plan and the runner's logs in shadow, and can only ease or hold a future week.",
+          "href": "packages/shared/src/plan/load.ts"
+        },
+        {
+          "id": "adapt",
+          "label": "Adapt",
+          "kind": "module",
+          "note": "Rebuilds only the weeks that have not started, seeded with real recent volume and feedback.",
+          "href": "packages/shared/src/plan/adapt.ts"
+        },
+        {
+          "id": "ui",
+          "label": "UI surfaces",
+          "kind": "stage",
+          "note": "Today, Week, Coach and Progress render the stored plan and convert units at the edge.",
+          "href": "apps/web/src/routes"
+        }
+      ],
+      "edges": [
+        {
+          "from": "goal",
+          "to": "onboarding",
+          "label": "goal profile, target date, baseline"
+        },
+        {
+          "from": "onboarding",
+          "to": "engine",
+          "label": "POST /api/plans/generate"
+        },
+        {
+          "from": "engine",
+          "to": "shape",
+          "label": "the engine's plan and prefs"
+        },
+        {
+          "from": "shape",
+          "to": "engine",
+          "label": "typed intents, applied inside the engine's bounds"
+        },
+        {
+          "from": "engine",
+          "to": "store",
+          "label": "writes goal, plan, weeks and sessions"
+        },
+        {
+          "from": "store",
+          "to": "reason",
+          "label": "rewords reasons after the save"
+        },
+        {
+          "from": "engine",
+          "to": "load",
+          "label": "plan and logs, in shadow"
+        },
+        {
+          "from": "shape",
+          "to": "adapt",
+          "label": "AI shapes"
+        },
+        {
+          "from": "load",
+          "to": "adapt",
+          "label": "the load read"
+        },
+        {
+          "from": "adapt",
+          "to": "store",
+          "label": "rewrites the weeks ahead"
+        },
+        {
+          "from": "store",
+          "to": "ui",
+          "label": "renders the stored plan"
+        }
+      ]
+    },
+    {
+      "id": "paths",
+      "title": "Every path a plan takes",
+      "lede": "Each trigger, the decision points it crosses, and the tables it writes.",
+      "layout": {
+        "engine": "elk",
+        "algorithm": "layered",
+        "direction": "LR",
+        "edgeRouting": "POLYLINE"
+      },
+      "nodes": [
+        {
+          "id": "trig:create",
+          "label": "Create a plan",
+          "kind": "trigger",
+          "note": "Onboarding submit, and the admin rebuild on a user's behalf.",
+          "href": "apps/api/src/routes/plans.ts"
+        },
+        {
+          "id": "trig:preview",
+          "label": "Preview a plan",
+          "kind": "trigger",
+          "note": "A dry run on the same engine that stores nothing.",
+          "href": "apps/api/src/routes/plans.ts"
+        },
+        {
+          "id": "trig:rebuild",
+          "label": "Rebuild later weeks",
+          "kind": "trigger",
+          "note": "The runner approves an edited first week and asks for the rest to match it.",
+          "href": "packages/shared/src/plan/rebuild.ts"
+        },
+        {
+          "id": "trig:adapt",
+          "label": "Adapt the plan",
+          "kind": "trigger",
+          "note": "The runner asks to bring the plan in line with their recent training.",
+          "href": "apps/api/src/routes/plans.ts"
+        },
+        {
+          "id": "trig:goal",
+          "label": "Change the goal",
+          "kind": "trigger",
+          "note": "A new goal profile or target date is saved.",
+          "href": "apps/api/src/routes/goals.ts"
+        },
+        {
+          "id": "trig:log",
+          "label": "Log a run or mark a session",
+          "kind": "trigger",
+          "note": "A finished session is logged, or a session is marked started or skipped.",
+          "href": "apps/api/src/routes/logs.ts"
+        },
+        {
+          "id": "trig:sync",
+          "label": "Connection sync",
+          "kind": "trigger",
+          "note": "The cron pulls new activity and daily health from a linked account.",
+          "href": "apps/api/src/lib/sync.ts"
+        },
+        {
+          "id": "trig:webhook",
+          "label": "Provider push",
+          "kind": "trigger",
+          "note": "The provider tells us something changed and the webhook only asks for a sync.",
+          "href": "apps/api/src/routes/webhooks.ts"
+        },
+        {
+          "id": "trig:cron",
+          "label": "Nightly and weekly cron",
+          "kind": "trigger",
+          "note": "0 7 daily and 0 8 on Monday. Writes the coach note and runs the connection syncs.",
+          "href": "apps/api/src/cron.ts"
+        },
+        {
+          "id": "dec:shape",
+          "label": "Answer in the closed set?",
+          "kind": "decision",
+          "note": "A quality kind and a volume, strength and mobility intent of ease, hold or build. An out-of-set answer is dropped.",
+          "href": "apps/api/src/lib/plan-shape.ts"
+        },
+        {
+          "id": "dec:load",
+          "label": "Load model mode?",
+          "kind": "decision",
+          "note": "shadow records and changes nothing. advisory and apply are opt-in per runner, and off turns it off.",
+          "href": "packages/shared/src/plan/load.ts"
+        },
+        {
+          "id": "dec:neverbuild",
+          "label": "Does a lower intent win?",
+          "kind": "decision",
+          "note": "Load may ease or hold, never build. A stricter intent beats an AI build, never the other way.",
+          "href": "packages/shared/src/plan/load.ts"
+        },
+        {
+          "id": "dec:match",
+          "label": "Does an activity match a session?",
+          "kind": "decision",
+          "note": "Proposed until the runner confirms or rejects it, kept so it is not proposed again.",
+          "href": "packages/shared/src/plan/match.ts"
+        },
+        {
+          "id": "bound:numbers",
+          "label": "Engine computes every number",
+          "kind": "boundary",
+          "note": "A model never writes a distance, a pace or a count.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "bound:ease",
+          "label": "Load may ease or hold, never build",
+          "kind": "boundary",
+          "note": "No path raises a week above the engine's own curve.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "data:user_goals",
+          "label": "user_goals",
+          "kind": "data",
+          "note": "The chosen goal profile per runner, with the target date and baseline.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:plans",
+          "label": "plans",
+          "kind": "data",
+          "note": "One row per generated plan, with its params and status.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:plan_weeks",
+          "label": "plan_weeks",
+          "kind": "data",
+          "note": "Each week's phase, focus and dates.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:sessions_plan",
+          "label": "sessions_plan",
+          "kind": "data",
+          "note": "Each prescribed session, with its prescription and reason.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:logs",
+          "label": "logs",
+          "kind": "data",
+          "note": "A runner's logged session, with its stats and feedback.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:activities",
+          "label": "activities",
+          "kind": "data",
+          "note": "An activity pulled from a connector, with its match state.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:session_states",
+          "label": "session_states",
+          "kind": "data",
+          "note": "Per-session started or skipped state, kept on the server.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:connections",
+          "label": "connections",
+          "kind": "data",
+          "note": "A linked account, its encrypted tokens and its sync watermark.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "data:summaries",
+          "label": "summaries",
+          "kind": "data",
+          "note": "A cron-generated coach note, nightly or weekly.",
+          "href": "packages/shared/src/db/schema.ts"
+        }
+      ],
+      "edges": [
+        {
+          "from": "trig:goal",
+          "to": "data:user_goals",
+          "label": "stores the goal"
+        },
+        {
+          "from": "trig:goal",
+          "to": "dec:shape",
+          "label": "rebuilds from the change forward"
+        },
+        {
+          "from": "trig:create",
+          "to": "dec:shape",
+          "label": "runs the shaping pass"
+        },
+        {
+          "from": "trig:create",
+          "to": "data:plans",
+          "label": "writes the deterministic plan"
+        },
+        {
+          "from": "trig:create",
+          "to": "data:sessions_plan",
+          "label": "writes every session"
+        },
+        {
+          "from": "trig:create",
+          "to": "dec:load",
+          "label": "in shadow, records only"
+        },
+        {
+          "from": "trig:preview",
+          "to": "dec:shape",
+          "label": "shapes, stores nothing"
+        },
+        {
+          "from": "dec:shape",
+          "to": "bound:numbers",
+          "label": "kept intents only"
+        },
+        {
+          "from": "dec:shape",
+          "to": "data:plans",
+          "label": "applies the kept intents"
+        },
+        {
+          "from": "trig:rebuild",
+          "to": "data:plan_weeks",
+          "label": "rewrites weeks ahead"
+        },
+        {
+          "from": "trig:rebuild",
+          "to": "data:sessions_plan",
+          "label": "rewrites sessions ahead"
+        },
+        {
+          "from": "trig:adapt",
+          "to": "dec:shape",
+          "label": "AI shapes the weeks ahead"
+        },
+        {
+          "from": "trig:adapt",
+          "to": "dec:load",
+          "label": "reads the load"
+        },
+        {
+          "from": "dec:load",
+          "to": "dec:neverbuild",
+          "label": "mode apply only"
+        },
+        {
+          "from": "dec:neverbuild",
+          "to": "bound:ease",
+          "label": "never raises a week"
+        },
+        {
+          "from": "dec:neverbuild",
+          "to": "data:plan_weeks",
+          "label": "writes the eased weeks"
+        },
+        {
+          "from": "trig:log",
+          "to": "data:logs",
+          "label": "stores the run"
+        },
+        {
+          "from": "trig:log",
+          "to": "data:session_states",
+          "label": "marks started or skipped"
+        },
+        {
+          "from": "trig:sync",
+          "to": "dec:match",
+          "label": "new activities"
+        },
+        {
+          "from": "dec:match",
+          "to": "data:activities",
+          "label": "writes the activity and match state"
+        },
+        {
+          "from": "dec:match",
+          "to": "data:sessions_plan",
+          "label": "confirms the matched session"
+        },
+        {
+          "from": "trig:webhook",
+          "to": "data:connections",
+          "label": "sets syncRequestedAt"
+        },
+        {
+          "from": "trig:cron",
+          "to": "data:summaries",
+          "label": "writes the nightly or weekly note"
+        },
+        {
+          "from": "trig:cron",
+          "to": "trig:sync",
+          "label": "runs the syncs"
+        }
+      ]
+    },
+    {
+      "id": "rules",
+      "title": "Rules and boundaries",
+      "lede": "The boundaries everyone must hold, and every invariant with the test that keeps it true.",
+      "layout": {
+        "engine": "elk",
+        "algorithm": "layered",
+        "direction": "TB",
+        "edgeRouting": "POLYLINE"
+      },
+      "nodes": [
+        {
+          "id": "boundary:units-are-presentation-and-the-engine-is-unit-free",
+          "label": "Units are presentation and the engine is unit-free",
+          "kind": "boundary",
+          "note": "The engine computes in km and seconds per km; km/mi conversion and pace display happen at the edge from user settings. A stored prescription is metric.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:the-engine-computes-every-number",
+          "label": "The engine computes every number",
+          "kind": "boundary",
+          "note": "A model never writes a distance, a pace or a count. The AI chooses typed intents only, and an out-of-set answer is dropped.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:the-load-model-may-ease-or-hold-and-never-build",
+          "label": "The load model may ease or hold and never build",
+          "kind": "boundary",
+          "note": "No path may raise a week above the engine's own curve.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:the-roughly-ten-percent-weekly-ceiling-holds",
+          "label": "The roughly ten percent weekly ceiling holds",
+          "kind": "boundary",
+          "note": "No positive step exceeds it; the two-week progression ceiling is about thirty percent.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:a-weeks-prescribed-total-must-not-exceed-the-weeks-own-target",
+          "label": "A week's prescribed total must not exceed the week's own target",
+          "kind": "boundary",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:no-acwr-threshold",
+          "label": "No ACWR threshold",
+          "kind": "boundary",
+          "note": "Load is read as a trend; there is no ratio to cross.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:no-medical-diagnosis",
+          "label": "No medical diagnosis",
+          "kind": "boundary",
+          "note": "A health risk is redirected, never diagnosed (`coach-safety`).",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:prefer-data-over-code",
+          "label": "Prefer data over code",
+          "kind": "boundary",
+          "note": "A new goal or machine is data, not new logic. User preferences (units, week start) live in the `settings.prefs` JSON, not in new columns or branches.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "boundary:writing-is-a-boundary-too",
+          "label": "Writing is a boundary too",
+          "kind": "boundary",
+          "note": "Every user-facing string follows the human-writing rules (no em dashes, no AI tells, mono for data), including any prompt that produces visible text. See [AGENTS.md](./AGENTS.md) and the `human-writing` skill.",
+          "href": "SYSTEM.md#boundaries-everyone-must-hold"
+        },
+        {
+          "id": "inv:backtest-matrix",
+          "label": "The backtest runs the full realistic matrix (every goal, level, volume, day set, target and schedule combination)",
+          "kind": "boundary",
+          "note": "Enforced by: covers the full realistic matrix (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#covers-the-full-realistic-matrix",
+          "label": "covers the full realistic matrix",
+          "kind": "test",
+          "note": "Guards the invariant \"backtest-matrix\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:weekly-progression-ceiling",
+          "label": "No build week rises more than about thirty percent over the week two before it",
+          "kind": "boundary",
+          "note": "Enforced by: keeps every build week under the two-week progression ceiling (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-every-build-week-under-the-two-week-progression-ceiling",
+          "label": "keeps every build week under the two-week progression ceiling",
+          "kind": "test",
+          "note": "Guards the invariant \"weekly-progression-ceiling\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:long-run-share-ceiling",
+          "label": "The long run is at most half the week it is delivered in",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the long run under half the week (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-half-the-week",
+          "label": "keeps the long run under half the week",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-share-ceiling\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:long-run-absolute-ceiling",
+          "label": "The long run never passes the goal's own maximum",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the long run under the goal ceiling (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-the-goal-ceiling",
+          "label": "keeps the long run under the goal ceiling",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-absolute-ceiling\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:quality-count-cap",
+          "label": "A week carries at most two hard sessions, one for a beginner, none in recovery",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the hard-session count within the cap (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-hard-session-count-within-the-cap",
+          "label": "keeps the hard-session count within the cap",
+          "kind": "test",
+          "note": "Guards the invariant \"quality-count-cap\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:hard-session-spacing",
+          "label": "Two hard sessions keep at least two easy days between them",
+          "kind": "boundary",
+          "note": "Enforced by: leaves at least two easy days between hard sessions (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#leaves-at-least-two-easy-days-between-hard-sessions",
+          "label": "leaves at least two easy days between hard sessions",
+          "kind": "test",
+          "note": "Guards the invariant \"hard-session-spacing\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:rest-days",
+          "label": "Every week keeps at least one true rest day, two for a beginner",
+          "kind": "boundary",
+          "note": "Enforced by: never schedules a zero-rest week (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-zero-rest-week",
+          "label": "never schedules a zero-rest week",
+          "kind": "test",
+          "note": "Guards the invariant \"rest-days\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:no-token-run",
+          "label": "No running session is under fifteen minutes",
+          "kind": "boundary",
+          "note": "Enforced by: never schedules a token run (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-token-run",
+          "label": "never schedules a token run",
+          "kind": "test",
+          "note": "Guards the invariant \"no-token-run\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:taper-reduction",
+          "label": "Volume falls off the peak across the taper and never rises within it",
+          "kind": "boundary",
+          "note": "Enforced by: tapers the volume down off the peak (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#tapers-the-volume-down-off-the-peak",
+          "label": "tapers the volume down off the peak",
+          "kind": "test",
+          "note": "Guards the invariant \"taper-reduction\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:post-race-recovery-weeks",
+          "label": "Post-race recovery weeks carry easy running only and are not heavier than the build peak",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the post-race recovery weeks easy and under the peak (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-post-race-recovery-weeks-easy-and-under-the-peak",
+          "label": "keeps the post-race recovery weeks easy and under the peak",
+          "kind": "test",
+          "note": "Guards the invariant \"post-race-recovery-weeks\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:phase-shape",
+          "label": "A race plan runs base, build, peak and taper, and lands the race in a taper week",
+          "kind": "boundary",
+          "note": "Enforced by: holds the phase shape and lands the race in the taper (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#holds-the-phase-shape-and-lands-the-race-in-the-taper",
+          "label": "holds the phase shape and lands the race in the taper",
+          "kind": "test",
+          "note": "Guards the invariant \"phase-shape\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:load-model-never-builds",
+          "label": "The load model may ease or hold a week, never raise it above the engine's curve",
+          "kind": "boundary",
+          "note": "Enforced by: a stricter load intent beats an AI build intent, never the other way (hard).",
+          "href": "packages/shared/src/plan/load-wiring.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/load-wiring.test.ts#a-stricter-load-intent-beats-an-ai-build-intent-never-the-other-way",
+          "label": "a stricter load intent beats an AI build intent, never the other way",
+          "kind": "test",
+          "note": "Guards the invariant \"load-model-never-builds\".",
+          "href": "packages/shared/src/plan/load-wiring.test.ts"
+        },
+        {
+          "id": "inv:load-model-never-raises",
+          "label": "Folding the load read onto the engine shapes only ever lowers a week",
+          "kind": "boundary",
+          "note": "Enforced by: lowers an AI build to the model ease, and never raises a week (hard).",
+          "href": "packages/shared/src/plan/load.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/load.test.ts#lowers-an-ai-build-to-the-model-ease-and-never-raises-a-week",
+          "label": "lowers an AI build to the model ease, and never raises a week",
+          "kind": "test",
+          "note": "Guards the invariant \"load-model-never-raises\".",
+          "href": "packages/shared/src/plan/load.test.ts"
+        },
+        {
+          "id": "inv:long-run-ten-percent-step",
+          "label": "The long run builds without a step over the roughly ten percent weekly ceiling",
+          "kind": "boundary",
+          "note": "Enforced by: still holds the roughly ten percent weekly ceiling on the long run (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#still-holds-the-roughly-ten-percent-weekly-ceiling-on-the-long-run",
+          "label": "still holds the roughly ten percent weekly ceiling on the long run",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-ten-percent-step\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:long-run-goal-cap",
+          "label": "The long run never passes the goal peak",
+          "kind": "boundary",
+          "note": "Enforced by: never lets the long run pass the goal peak, even on a huge week (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#never-lets-the-long-run-pass-the-goal-peak-even-on-a-huge-week",
+          "label": "never lets the long run pass the goal peak, even on a huge week",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-goal-cap\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:taper-not-heavier-than-peak",
+          "label": "A taper week is never heavier than the peak",
+          "kind": "boundary",
+          "note": "Enforced by: never lets a taper week be heavier than the peak (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#never-lets-a-taper-week-be-heavier-than-the-peak",
+          "label": "never lets a taper week be heavier than the peak",
+          "kind": "test",
+          "note": "Guards the invariant \"taper-not-heavier-than-peak\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:recovery-under-reached-peak",
+          "label": "Post-race recovery weeks stay under the peak the plan actually reached",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the post-race recovery weeks under the peak the plan reached (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#keeps-the-post-race-recovery-weeks-under-the-peak-the-plan-reached",
+          "label": "keeps the post-race recovery weeks under the peak the plan reached",
+          "kind": "test",
+          "note": "Guards the invariant \"recovery-under-reached-peak\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:long-run-share-realised-week",
+          "label": "The long run is under half of the realised week on a light short plan",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the long run under half of the realised week on a light short plan (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#keeps-the-long-run-under-half-of-the-realised-week-on-a-light-short-plan",
+          "label": "keeps the long run under half of the realised week on a light short plan",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-share-realised-week\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:no-token-run-light-week",
+          "label": "No token run on a light week spread over six days",
+          "kind": "boundary",
+          "note": "Enforced by: never schedules a token run on a light week spread over six days (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#never-schedules-a-token-run-on-a-light-week-spread-over-six-days",
+          "label": "never schedules a token run on a light week spread over six days",
+          "kind": "test",
+          "note": "Guards the invariant \"no-token-run-light-week\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:long-run-share-falls-with-volume",
+          "label": "The long run takes a bigger share of a light week than a heavy one",
+          "kind": "boundary",
+          "note": "Enforced by: gives the long run a bigger share of a light week than a heavy one (soft).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#gives-the-long-run-a-bigger-share-of-a-light-week-than-a-heavy-one",
+          "label": "gives the long run a bigger share of a light week than a heavy one",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-share-falls-with-volume\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:ai-typed-intents-closed-set",
+          "label": "The model's answer is kept only when it names a choice in the closed set",
+          "kind": "boundary",
+          "note": "Enforced by: drops an answer outside the closed set (hard).",
+          "href": "packages/shared/src/plan/change.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/change.test.ts#drops-an-answer-outside-the-closed-set",
+          "label": "drops an answer outside the closed set",
+          "kind": "test",
+          "note": "Guards the invariant \"ai-typed-intents-closed-set\".",
+          "href": "packages/shared/src/plan/change.test.ts"
+        },
+        {
+          "id": "inv:ai-modality-intents-closed-set",
+          "label": "A strength or mobility intent outside the closed set is dropped, the rest kept",
+          "kind": "boundary",
+          "note": "Enforced by: drops a strength or mobility intent outside the closed set and keeps the rest (hard).",
+          "href": "apps/api/src/lib/plan-shape.test.ts"
+        },
+        {
+          "id": "test:apps/api/src/lib/plan-shape.test.ts#drops-a-strength-or-mobility-intent-outside-the-closed-set-and-keeps-the-rest",
+          "label": "drops a strength or mobility intent outside the closed set and keeps the rest",
+          "kind": "test",
+          "note": "Guards the invariant \"ai-modality-intents-closed-set\".",
+          "href": "apps/api/src/lib/plan-shape.test.ts"
+        },
+        {
+          "id": "inv:why-no-invented-numbers",
+          "label": "A reworded reason never adds a number the deterministic reason did not have",
+          "kind": "boundary",
+          "note": "Enforced by: rejects a line that adds a number the reason did not have (hard).",
+          "href": "packages/shared/src/plan/why-rephrase.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/why-rephrase.test.ts#rejects-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "rejects a line that adds a number the reason did not have",
+          "kind": "test",
+          "note": "Guards the invariant \"why-no-invented-numbers\".",
+          "href": "packages/shared/src/plan/why-rephrase.test.ts"
+        },
+        {
+          "id": "inv:session-why-no-invented-numbers",
+          "label": "A session why line never adds a number the reason did not have",
+          "kind": "boundary",
+          "note": "Enforced by: drops a line that adds a number the reason did not have (hard).",
+          "href": "apps/api/src/lib/session-why.test.ts"
+        },
+        {
+          "id": "test:apps/api/src/lib/session-why.test.ts#drops-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "drops a line that adds a number the reason did not have",
+          "kind": "test",
+          "note": "Guards the invariant \"session-why-no-invented-numbers\".",
+          "href": "apps/api/src/lib/session-why.test.ts"
+        },
+        {
+          "id": "inv:coach-no-diagnosis",
+          "label": "The coach redirects only on a confident, non-none health risk, never diagnosing",
+          "kind": "boundary",
+          "note": "Enforced by: redirects only when a non-none risk is confident (hard).",
+          "href": "apps/api/src/lib/coach-safety.test.ts"
+        },
+        {
+          "id": "test:apps/api/src/lib/coach-safety.test.ts#redirects-only-when-a-non-none-risk-is-confident",
+          "label": "redirects only when a non-none risk is confident",
+          "kind": "test",
+          "note": "Guards the invariant \"coach-no-diagnosis\".",
+          "href": "apps/api/src/lib/coach-safety.test.ts"
+        }
+      ],
+      "edges": [
+        {
+          "from": "inv:backtest-matrix",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#covers-the-full-realistic-matrix",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:weekly-progression-ceiling",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-every-build-week-under-the-two-week-progression-ceiling",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-share-ceiling",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-half-the-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-absolute-ceiling",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-the-goal-ceiling",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:quality-count-cap",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-hard-session-count-within-the-cap",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:hard-session-spacing",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#leaves-at-least-two-easy-days-between-hard-sessions",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:rest-days",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-zero-rest-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:no-token-run",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-token-run",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:taper-reduction",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#tapers-the-volume-down-off-the-peak",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:post-race-recovery-weeks",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-post-race-recovery-weeks-easy-and-under-the-peak",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:phase-shape",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#holds-the-phase-shape-and-lands-the-race-in-the-taper",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:load-model-never-builds",
+          "to": "test:packages/shared/src/plan/load-wiring.test.ts#a-stricter-load-intent-beats-an-ai-build-intent-never-the-other-way",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:load-model-never-raises",
+          "to": "test:packages/shared/src/plan/load.test.ts#lowers-an-ai-build-to-the-model-ease-and-never-raises-a-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-ten-percent-step",
+          "to": "test:packages/shared/src/plan/engine.test.ts#still-holds-the-roughly-ten-percent-weekly-ceiling-on-the-long-run",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-goal-cap",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-lets-the-long-run-pass-the-goal-peak-even-on-a-huge-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:taper-not-heavier-than-peak",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-lets-a-taper-week-be-heavier-than-the-peak",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:recovery-under-reached-peak",
+          "to": "test:packages/shared/src/plan/engine.test.ts#keeps-the-post-race-recovery-weeks-under-the-peak-the-plan-reached",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-share-realised-week",
+          "to": "test:packages/shared/src/plan/engine.test.ts#keeps-the-long-run-under-half-of-the-realised-week-on-a-light-short-plan",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:no-token-run-light-week",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-schedules-a-token-run-on-a-light-week-spread-over-six-days",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-share-falls-with-volume",
+          "to": "test:packages/shared/src/plan/engine.test.ts#gives-the-long-run-a-bigger-share-of-a-light-week-than-a-heavy-one",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:ai-typed-intents-closed-set",
+          "to": "test:packages/shared/src/plan/change.test.ts#drops-an-answer-outside-the-closed-set",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:ai-modality-intents-closed-set",
+          "to": "test:apps/api/src/lib/plan-shape.test.ts#drops-a-strength-or-mobility-intent-outside-the-closed-set-and-keeps-the-rest",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:why-no-invented-numbers",
+          "to": "test:packages/shared/src/plan/why-rephrase.test.ts#rejects-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:session-why-no-invented-numbers",
+          "to": "test:apps/api/src/lib/session-why.test.ts#drops-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:coach-no-diagnosis",
+          "to": "test:apps/api/src/lib/coach-safety.test.ts#redirects-only-when-a-non-none-risk-is-confident",
+          "label": "enforced by"
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "title": "Why things are this way",
+      "lede": "Each settled decision from the decision log, linked to its entry and its why.",
+      "layout": {
+        "engine": "elk",
+        "algorithm": "layered",
+        "direction": "TB",
+        "edgeRouting": "POLYLINE"
+      },
+      "nodes": [
+        {
+          "id": "decision:log",
+          "label": "Decision log",
+          "kind": "module",
+          "note": "Every settled decision and its why, newest first.",
+          "href": "docs/decisions.md"
+        },
+        {
+          "id": "decision:the-load-model-may-ease-or-hold-never-build-and-an-eased-week-dips-its-long-run",
+          "label": "The load model may ease or hold, never build, and an eased week dips its long run",
+          "kind": "decision",
+          "note": "2026-11-26. the fitness and fatigue load model can only lower a future week's volume intent to `ease` or `hold`. It never sets `build`, never writes a distance or pace, and an eased week also dips its long run, the way a deload does.",
+          "href": "docs/decisions.md#the-load-model-may-ease-or-hold-never-build-and-an-eased-week-dips-its-long-run"
+        },
+        {
+          "id": "decision:the-ten-percent-weekly-ceiling-stays-and-a-week-never-exceeds-its-own-target",
+          "label": "The ten percent weekly ceiling stays, and a week never exceeds its own target",
+          "kind": "decision",
+          "note": "2026-11-26. the engine's roughly ten percent weekly step ceiling stays the load-bearing safety bound. The load model works inside it: its maximum ease is ten percent (`LOAD_DEFAULTS.maxEase`), and the applied plan's week never carries more prescribed volume than the engine's own target for that week.",
+          "href": "docs/decisions.md#the-ten-percent-weekly-ceiling-stays-and-a-week-never-exceeds-its-own-target"
+        },
+        {
+          "id": "decision:the-plan-quality-backtest-asserts-the-invariants-hard-not-as-expected-failures",
+          "label": "The plan-quality backtest asserts the invariants hard, not as expected failures",
+          "kind": "decision",
+          "note": "2026-11-26. a backtest that records known engine bugs as expected failures is not merged. The plan-quality backtest generates the full goal matrix and asserts every hard invariant as a plain assertion, with no allowances, so a regression fails CI.",
+          "href": "docs/decisions.md#the-plan-quality-backtest-asserts-the-invariants-hard-not-as-expected-failures"
+        },
+        {
+          "id": "decision:the-load-model-defaults-to-shadow-and-changing-a-plan-is-opt-in",
+          "label": "The load model defaults to shadow, and changing a plan is opt-in",
+          "kind": "decision",
+          "note": "2026-11-26. every plan and adapt runs the load model in `shadow`, which records what it would change and applies nothing. The two modes that change a plan, `advisory` and `apply`, are opt-in per runner. `off` turns it off.",
+          "href": "docs/decisions.md#the-load-model-defaults-to-shadow-and-changing-a-plan-is-opt-in"
+        },
+        {
+          "id": "decision:the-ai-picks-typed-intents-the-engine-computes-every-number",
+          "label": "The AI picks typed intents; the engine computes every number",
+          "kind": "decision",
+          "note": "2026-11-25. every path that changes a plan goes through one pipeline. A model returns typed, confidence-scored decisions (volume intent, quality-day count, long-run delta), each an enum from a closed set, and the engine turns those into every distance and pace. A missing or out-of-set answer is dropped and the deterministic plan stands.",
+          "href": "docs/decisions.md#the-ai-picks-typed-intents-the-engine-computes-every-number"
+        },
+        {
+          "id": "decision:jev-runs-through-openrouter-with-no-separate-typesafe-key",
+          "label": "Jev runs through OpenRouter, with no separate TypeSafe key",
+          "kind": "decision",
+          "note": "2026-11-25. the Jev decisions model (the coach safety classifier and the plan-change pipeline) is served through OpenRouter's decisions API on the existing `OPENROUTER_API_KEY`. Model id `typesafe/jev-1.14`, with `~typesafe/jev-latest` as the rolling alias. No `TYPESAFE_API_KEY`.",
+          "href": "docs/decisions.md#jev-runs-through-openrouter-with-no-separate-typesafe-key"
+        },
+        {
+          "id": "decision:the-main-session-reads-a-subagents-diff-before-merging",
+          "label": "The main session reads a subagent's diff before merging",
+          "kind": "decision",
+          "note": "2026-11-25. the main session reads the changed code in every subagent PR before merging, and confirms three things: the change does what the brief asked, it does not weaken an existing test or assertion to pass, and any claim it makes about the research or data it cites actually holds in the code. A green CI gate is evidence, not a review.",
+          "href": "docs/decisions.md#the-main-session-reads-a-subagents-diff-before-merging"
+        },
+        {
+          "id": "decision:units-are-presentation-the-engine-is-unit-free",
+          "label": "Units are presentation; the engine is unit-free",
+          "kind": "decision",
+          "note": "2026-11-22. the engine computes in metric (km, seconds per km) and stores metric. Km and mile conversion and pace display happen at the edge, driven by the runner's settings. Units are never baked into the engine or the stored prescriptions.",
+          "href": "docs/decisions.md#units-are-presentation-the-engine-is-unit-free"
+        }
+      ],
+      "edges": [
+        {
+          "from": "decision:log",
+          "to": "decision:the-load-model-may-ease-or-hold-never-build-and-an-eased-week-dips-its-long-run",
+          "label": "2026-11-26"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-ten-percent-weekly-ceiling-stays-and-a-week-never-exceeds-its-own-target",
+          "label": "2026-11-26"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-plan-quality-backtest-asserts-the-invariants-hard-not-as-expected-failures",
+          "label": "2026-11-26"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-load-model-defaults-to-shadow-and-changing-a-plan-is-opt-in",
+          "label": "2026-11-26"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-ai-picks-typed-intents-the-engine-computes-every-number",
+          "label": "2026-11-25"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:jev-runs-through-openrouter-with-no-separate-typesafe-key",
+          "label": "2026-11-25"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-main-session-reads-a-subagents-diff-before-merging",
+          "label": "2026-11-25"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:units-are-presentation-the-engine-is-unit-free",
+          "label": "2026-11-22"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "title": "The data model",
+      "lede": "Each stored table, and every foreign key drawn from the table that holds it to the table it names.",
+      "layout": {
+        "engine": "elk",
+        "algorithm": "layered",
+        "direction": "LR",
+        "edgeRouting": "POLYLINE"
+      },
+      "nodes": [
+        {
+          "id": "table:users",
+          "label": "Users",
+          "kind": "data",
+          "note": "Accounts",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:auth_sessions",
+          "label": "Auth sessions",
+          "kind": "data",
+          "note": "Accounts",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:goal_profiles",
+          "label": "Goal Profiles",
+          "kind": "data",
+          "note": "Goals and plans",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:user_goals",
+          "label": "Runner goals",
+          "kind": "data",
+          "note": "Goals and plans",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:plans",
+          "label": "Plans",
+          "kind": "data",
+          "note": "Goals and plans",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:plan_weeks",
+          "label": "Plan Weeks",
+          "kind": "data",
+          "note": "Goals and plans",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:sessions_plan",
+          "label": "Planned sessions",
+          "kind": "data",
+          "note": "Goals and plans",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:session_states",
+          "label": "Session States",
+          "kind": "data",
+          "note": "Goals and plans",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:exercises",
+          "label": "Exercises",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:logs",
+          "label": "Logged sessions",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:research_sources",
+          "label": "Research Sources",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:explanations",
+          "label": "Explanations",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:ai_jobs",
+          "label": "AI jobs",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:ai_cache",
+          "label": "AI cache",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:shares",
+          "label": "Shares",
+          "kind": "data",
+          "note": "Social",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:nutrition_logs",
+          "label": "Nutrition Logs",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:sleep_logs",
+          "label": "Sleep Logs",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:recovery_logs",
+          "label": "Recovery Logs",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:knowledge_base_versions",
+          "label": "Knowledge base versions",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:settings",
+          "label": "Settings",
+          "kind": "data",
+          "note": "Accounts",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:rate_limits",
+          "label": "Rate limits",
+          "kind": "data",
+          "note": "Operations",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:summaries",
+          "label": "Coach summaries",
+          "kind": "data",
+          "note": "Content and AI",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:connections",
+          "label": "Connections",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:activities",
+          "label": "Activities",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:health_daily",
+          "label": "Daily health",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:health_metrics",
+          "label": "Daily health metrics",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:health_samples",
+          "label": "Health samples",
+          "kind": "data",
+          "note": "Activity and health",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:app_errors",
+          "label": "API errors",
+          "kind": "data",
+          "note": "Operations",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:client_errors",
+          "label": "Client errors",
+          "kind": "data",
+          "note": "Operations",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "table:admin_actions",
+          "label": "Admin actions",
+          "kind": "data",
+          "note": "Operations",
+          "href": "packages/shared/src/db/schema.ts"
+        }
+      ],
+      "edges": [
+        {
+          "from": "table:auth_sessions",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:user_goals",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:plans",
+          "to": "table:user_goals",
+          "label": "user_goal_id"
+        },
+        {
+          "from": "table:plan_weeks",
+          "to": "table:plans",
+          "label": "plan_id"
+        },
+        {
+          "from": "table:sessions_plan",
+          "to": "table:plan_weeks",
+          "label": "plan_week_id"
+        },
+        {
+          "from": "table:session_states",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:logs",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:shares",
+          "to": "table:users",
+          "label": "owner_user_id"
+        },
+        {
+          "from": "table:shares",
+          "to": "table:users",
+          "label": "viewer_user_id"
+        },
+        {
+          "from": "table:nutrition_logs",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:sleep_logs",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:recovery_logs",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:settings",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:summaries",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:connections",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:activities",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:activities",
+          "to": "table:sessions_plan",
+          "label": "session_id"
+        },
+        {
+          "from": "table:health_daily",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:health_metrics",
+          "to": "table:users",
+          "label": "user_id"
+        },
+        {
+          "from": "table:health_samples",
+          "to": "table:users",
+          "label": "user_id"
+        }
+      ]
+    },
+    {
+      "id": "granular",
+      "title": "Module by module",
+      "lede": "Each module, what it computes and may decide, wired to the invariants and tests that hold it.",
+      "layout": {
+        "engine": "elk",
+        "algorithm": "layered",
+        "direction": "LR",
+        "edgeRouting": "POLYLINE"
+      },
+      "nodes": [
+        {
+          "id": "module:engine",
+          "label": "Plan engine",
+          "kind": "module",
+          "note": "Computes: The phase arc, the weekly volume and long-run curve, VDOT paces, and every session's distance, pace and count. May decide: The phase shape and every number. Nothing here is model-authored.",
+          "href": "packages/shared/src/plan/engine.ts"
+        },
+        {
+          "id": "module:load",
+          "label": "Load model",
+          "kind": "module",
+          "note": "Computes: Fitness, fatigue and form curves from the plan and the runner's logs, and a readiness score. May decide: To ease or hold a future week. Never to build, and never a number.",
+          "href": "packages/shared/src/plan/load.ts"
+        },
+        {
+          "id": "module:change",
+          "label": "Plan-change pipeline",
+          "kind": "module",
+          "note": "Computes: The typed, confidence-scored decisions (volume intent, quality-day count, long-run delta) and the mapping onto a week's shape. May decide: Which weeks change and by which typed intent. An out-of-set answer is dropped.",
+          "href": "packages/shared/src/plan/change.ts"
+        },
+        {
+          "id": "module:shape",
+          "label": "AI shaping pass",
+          "kind": "module",
+          "note": "Computes: One bounded request per plan that asks the model for a quality kind and volume, strength and mobility intents. May decide: Nothing on its own. Every answer is validated, and the deterministic plan stands when it fails.",
+          "href": "apps/api/src/lib/plan-shape.ts"
+        },
+        {
+          "id": "module:why",
+          "label": "Session reason composer",
+          "kind": "module",
+          "note": "Computes: Each session's and week's reason from the plan's own decisions, with no invented numbers. May decide: Which true sentences to include. A fact the plan does not carry is left out.",
+          "href": "packages/shared/src/plan/why.ts"
+        },
+        {
+          "id": "module:why-rephrase",
+          "label": "Reason rephrase gate",
+          "kind": "module",
+          "note": "Computes: A gate that keeps a reworded reason only when it adds no number the deterministic reason did not have. May decide: Whether a reworded line is kept or dropped.",
+          "href": "packages/shared/src/plan/why-rephrase.ts"
+        },
+        {
+          "id": "module:session-why",
+          "label": "Session reason pass",
+          "kind": "module",
+          "note": "Computes: The batched model call that rewords session reasons after a plan is saved, and the store step. May decide: Nothing about the plan. It replaces a reason's text only when the gate keeps it.",
+          "href": "apps/api/src/lib/session-why.ts"
+        },
+        {
+          "id": "module:adapt",
+          "label": "Adapt",
+          "kind": "module",
+          "note": "Computes: Rebuilds only the weeks that have not started, seeded with real recent volume and feedback. May decide: The shape of the future weeks, inside the engine's own bounds.",
+          "href": "packages/shared/src/plan/adapt.ts"
+        },
+        {
+          "id": "module:rebuild",
+          "label": "Week-one rebuild",
+          "kind": "module",
+          "note": "Computes: The rest of the plan from the runner's approved first week: its days, session types and added workouts. May decide: The pattern the later weeks follow. Week one itself is never touched here.",
+          "href": "packages/shared/src/plan/rebuild.ts"
+        },
+        {
+          "id": "module:schedule",
+          "label": "Schedule placing",
+          "kind": "module",
+          "note": "Computes: Each session's start time inside the runner's saved windows, moving a session only when its own day cannot hold it. May decide: Only a day and a start time. No distance, volume or training maths.",
+          "href": "packages/shared/src/plan/schedule.ts"
+        },
+        {
+          "id": "module:vdot",
+          "label": "VDOT paces",
+          "kind": "module",
+          "note": "Computes: Training paces from a race time or an effective VDOT. May decide: Nothing. It is pure maths.",
+          "href": "packages/shared/src/plan/vdot.ts"
+        },
+        {
+          "id": "module:recommend",
+          "label": "Onboarding suggestions",
+          "kind": "module",
+          "note": "Computes: Recommended onboarding values, each with a plain reason. May decide: Nothing. It suggests a starting point.",
+          "href": "packages/shared/src/plan/recommend.ts"
+        },
+        {
+          "id": "module:coach-safety",
+          "label": "Coach safety classifier",
+          "kind": "module",
+          "note": "Computes: A typed risk read (none, caution, urgent) with a confidence, for a coach message. May decide: Whether to redirect on a confident, non-none risk. It never diagnoses.",
+          "href": "apps/api/src/lib/coach-safety.ts"
+        },
+        {
+          "id": "module:ai",
+          "label": "Model router",
+          "kind": "module",
+          "note": "Computes: Time-boxed model calls: Cloudflare Workers AI first, OpenRouter on error or timeout. May decide: Nothing. Callers decide, and every path degrades on failure.",
+          "href": "apps/api/src/lib/ai.ts"
+        },
+        {
+          "id": "module:sync",
+          "label": "Connection sync",
+          "kind": "module",
+          "note": "Computes: Pulls new activities and daily health from a linked account and matches activities to planned sessions. May decide: Which activity matches which session, proposed until the runner confirms.",
+          "href": "apps/api/src/lib/sync.ts"
+        },
+        {
+          "id": "module:connections",
+          "label": "Connection security",
+          "kind": "module",
+          "note": "Computes: Encrypted token storage and the signed OAuth state. May decide: Nothing. It stores and refreshes tokens.",
+          "href": "apps/api/src/lib/connections.ts"
+        },
+        {
+          "id": "module:cron",
+          "label": "Cron handlers",
+          "kind": "module",
+          "note": "Computes: The nightly and weekly coach note, and the connection syncs. May decide: When the note and the syncs run.",
+          "href": "apps/api/src/cron.ts"
+        },
+        {
+          "id": "module:routes-plans",
+          "label": "Plan routes",
+          "kind": "module",
+          "note": "Computes: Thin Hono handlers for generate, preview, adapt, rebuild, load and session state. May decide: It validates input and calls the pure logic. It holds no plan maths.",
+          "href": "apps/api/src/routes/plans.ts"
+        },
+        {
+          "id": "module:admin",
+          "label": "Admin surface",
+          "kind": "module",
+          "note": "Computes: Reads metadata only: users, plans, the load model's shadow records, and app errors. May decide: Admin state and the audit trail. It never changes a plan's numbers.",
+          "href": "apps/api/src/routes/admin.ts"
+        },
+        {
+          "id": "module:schema",
+          "label": "Data model",
+          "kind": "module",
+          "note": "Computes: The Drizzle tables, indexes and references. May decide: Nothing. It is the shape of what is stored.",
+          "href": "packages/shared/src/db/schema.ts"
+        },
+        {
+          "id": "inv:backtest-matrix",
+          "label": "The backtest runs the full realistic matrix (every goal, level, volume, day set, target and schedule combination)",
+          "kind": "boundary",
+          "note": "Enforced by: covers the full realistic matrix (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#covers-the-full-realistic-matrix",
+          "label": "covers the full realistic matrix",
+          "kind": "test",
+          "note": "Guards the invariant \"backtest-matrix\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:weekly-progression-ceiling",
+          "label": "No build week rises more than about thirty percent over the week two before it",
+          "kind": "boundary",
+          "note": "Enforced by: keeps every build week under the two-week progression ceiling (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-every-build-week-under-the-two-week-progression-ceiling",
+          "label": "keeps every build week under the two-week progression ceiling",
+          "kind": "test",
+          "note": "Guards the invariant \"weekly-progression-ceiling\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:long-run-share-ceiling",
+          "label": "The long run is at most half the week it is delivered in",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the long run under half the week (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-half-the-week",
+          "label": "keeps the long run under half the week",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-share-ceiling\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:long-run-absolute-ceiling",
+          "label": "The long run never passes the goal's own maximum",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the long run under the goal ceiling (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-the-goal-ceiling",
+          "label": "keeps the long run under the goal ceiling",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-absolute-ceiling\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:quality-count-cap",
+          "label": "A week carries at most two hard sessions, one for a beginner, none in recovery",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the hard-session count within the cap (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-hard-session-count-within-the-cap",
+          "label": "keeps the hard-session count within the cap",
+          "kind": "test",
+          "note": "Guards the invariant \"quality-count-cap\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:hard-session-spacing",
+          "label": "Two hard sessions keep at least two easy days between them",
+          "kind": "boundary",
+          "note": "Enforced by: leaves at least two easy days between hard sessions (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#leaves-at-least-two-easy-days-between-hard-sessions",
+          "label": "leaves at least two easy days between hard sessions",
+          "kind": "test",
+          "note": "Guards the invariant \"hard-session-spacing\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:rest-days",
+          "label": "Every week keeps at least one true rest day, two for a beginner",
+          "kind": "boundary",
+          "note": "Enforced by: never schedules a zero-rest week (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-zero-rest-week",
+          "label": "never schedules a zero-rest week",
+          "kind": "test",
+          "note": "Guards the invariant \"rest-days\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:no-token-run",
+          "label": "No running session is under fifteen minutes",
+          "kind": "boundary",
+          "note": "Enforced by: never schedules a token run (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-token-run",
+          "label": "never schedules a token run",
+          "kind": "test",
+          "note": "Guards the invariant \"no-token-run\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:taper-reduction",
+          "label": "Volume falls off the peak across the taper and never rises within it",
+          "kind": "boundary",
+          "note": "Enforced by: tapers the volume down off the peak (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#tapers-the-volume-down-off-the-peak",
+          "label": "tapers the volume down off the peak",
+          "kind": "test",
+          "note": "Guards the invariant \"taper-reduction\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:post-race-recovery-weeks",
+          "label": "Post-race recovery weeks carry easy running only and are not heavier than the build peak",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the post-race recovery weeks easy and under the peak (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-post-race-recovery-weeks-easy-and-under-the-peak",
+          "label": "keeps the post-race recovery weeks easy and under the peak",
+          "kind": "test",
+          "note": "Guards the invariant \"post-race-recovery-weeks\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:phase-shape",
+          "label": "A race plan runs base, build, peak and taper, and lands the race in a taper week",
+          "kind": "boundary",
+          "note": "Enforced by: holds the phase shape and lands the race in the taper (hard).",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/plan-quality.test.ts#holds-the-phase-shape-and-lands-the-race-in-the-taper",
+          "label": "holds the phase shape and lands the race in the taper",
+          "kind": "test",
+          "note": "Guards the invariant \"phase-shape\".",
+          "href": "packages/shared/src/plan/plan-quality.test.ts"
+        },
+        {
+          "id": "inv:load-model-never-builds",
+          "label": "The load model may ease or hold a week, never raise it above the engine's curve",
+          "kind": "boundary",
+          "note": "Enforced by: a stricter load intent beats an AI build intent, never the other way (hard).",
+          "href": "packages/shared/src/plan/load-wiring.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/load-wiring.test.ts#a-stricter-load-intent-beats-an-ai-build-intent-never-the-other-way",
+          "label": "a stricter load intent beats an AI build intent, never the other way",
+          "kind": "test",
+          "note": "Guards the invariant \"load-model-never-builds\".",
+          "href": "packages/shared/src/plan/load-wiring.test.ts"
+        },
+        {
+          "id": "inv:load-model-never-raises",
+          "label": "Folding the load read onto the engine shapes only ever lowers a week",
+          "kind": "boundary",
+          "note": "Enforced by: lowers an AI build to the model ease, and never raises a week (hard).",
+          "href": "packages/shared/src/plan/load.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/load.test.ts#lowers-an-ai-build-to-the-model-ease-and-never-raises-a-week",
+          "label": "lowers an AI build to the model ease, and never raises a week",
+          "kind": "test",
+          "note": "Guards the invariant \"load-model-never-raises\".",
+          "href": "packages/shared/src/plan/load.test.ts"
+        },
+        {
+          "id": "inv:long-run-ten-percent-step",
+          "label": "The long run builds without a step over the roughly ten percent weekly ceiling",
+          "kind": "boundary",
+          "note": "Enforced by: still holds the roughly ten percent weekly ceiling on the long run (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#still-holds-the-roughly-ten-percent-weekly-ceiling-on-the-long-run",
+          "label": "still holds the roughly ten percent weekly ceiling on the long run",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-ten-percent-step\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:long-run-goal-cap",
+          "label": "The long run never passes the goal peak",
+          "kind": "boundary",
+          "note": "Enforced by: never lets the long run pass the goal peak, even on a huge week (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#never-lets-the-long-run-pass-the-goal-peak-even-on-a-huge-week",
+          "label": "never lets the long run pass the goal peak, even on a huge week",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-goal-cap\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:taper-not-heavier-than-peak",
+          "label": "A taper week is never heavier than the peak",
+          "kind": "boundary",
+          "note": "Enforced by: never lets a taper week be heavier than the peak (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#never-lets-a-taper-week-be-heavier-than-the-peak",
+          "label": "never lets a taper week be heavier than the peak",
+          "kind": "test",
+          "note": "Guards the invariant \"taper-not-heavier-than-peak\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:recovery-under-reached-peak",
+          "label": "Post-race recovery weeks stay under the peak the plan actually reached",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the post-race recovery weeks under the peak the plan reached (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#keeps-the-post-race-recovery-weeks-under-the-peak-the-plan-reached",
+          "label": "keeps the post-race recovery weeks under the peak the plan reached",
+          "kind": "test",
+          "note": "Guards the invariant \"recovery-under-reached-peak\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:long-run-share-realised-week",
+          "label": "The long run is under half of the realised week on a light short plan",
+          "kind": "boundary",
+          "note": "Enforced by: keeps the long run under half of the realised week on a light short plan (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#keeps-the-long-run-under-half-of-the-realised-week-on-a-light-short-plan",
+          "label": "keeps the long run under half of the realised week on a light short plan",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-share-realised-week\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:no-token-run-light-week",
+          "label": "No token run on a light week spread over six days",
+          "kind": "boundary",
+          "note": "Enforced by: never schedules a token run on a light week spread over six days (hard).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#never-schedules-a-token-run-on-a-light-week-spread-over-six-days",
+          "label": "never schedules a token run on a light week spread over six days",
+          "kind": "test",
+          "note": "Guards the invariant \"no-token-run-light-week\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:long-run-share-falls-with-volume",
+          "label": "The long run takes a bigger share of a light week than a heavy one",
+          "kind": "boundary",
+          "note": "Enforced by: gives the long run a bigger share of a light week than a heavy one (soft).",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/engine.test.ts#gives-the-long-run-a-bigger-share-of-a-light-week-than-a-heavy-one",
+          "label": "gives the long run a bigger share of a light week than a heavy one",
+          "kind": "test",
+          "note": "Guards the invariant \"long-run-share-falls-with-volume\".",
+          "href": "packages/shared/src/plan/engine.test.ts"
+        },
+        {
+          "id": "inv:ai-typed-intents-closed-set",
+          "label": "The model's answer is kept only when it names a choice in the closed set",
+          "kind": "boundary",
+          "note": "Enforced by: drops an answer outside the closed set (hard).",
+          "href": "packages/shared/src/plan/change.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/change.test.ts#drops-an-answer-outside-the-closed-set",
+          "label": "drops an answer outside the closed set",
+          "kind": "test",
+          "note": "Guards the invariant \"ai-typed-intents-closed-set\".",
+          "href": "packages/shared/src/plan/change.test.ts"
+        },
+        {
+          "id": "inv:ai-modality-intents-closed-set",
+          "label": "A strength or mobility intent outside the closed set is dropped, the rest kept",
+          "kind": "boundary",
+          "note": "Enforced by: drops a strength or mobility intent outside the closed set and keeps the rest (hard).",
+          "href": "apps/api/src/lib/plan-shape.test.ts"
+        },
+        {
+          "id": "test:apps/api/src/lib/plan-shape.test.ts#drops-a-strength-or-mobility-intent-outside-the-closed-set-and-keeps-the-rest",
+          "label": "drops a strength or mobility intent outside the closed set and keeps the rest",
+          "kind": "test",
+          "note": "Guards the invariant \"ai-modality-intents-closed-set\".",
+          "href": "apps/api/src/lib/plan-shape.test.ts"
+        },
+        {
+          "id": "inv:why-no-invented-numbers",
+          "label": "A reworded reason never adds a number the deterministic reason did not have",
+          "kind": "boundary",
+          "note": "Enforced by: rejects a line that adds a number the reason did not have (hard).",
+          "href": "packages/shared/src/plan/why-rephrase.test.ts"
+        },
+        {
+          "id": "test:packages/shared/src/plan/why-rephrase.test.ts#rejects-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "rejects a line that adds a number the reason did not have",
+          "kind": "test",
+          "note": "Guards the invariant \"why-no-invented-numbers\".",
+          "href": "packages/shared/src/plan/why-rephrase.test.ts"
+        },
+        {
+          "id": "inv:session-why-no-invented-numbers",
+          "label": "A session why line never adds a number the reason did not have",
+          "kind": "boundary",
+          "note": "Enforced by: drops a line that adds a number the reason did not have (hard).",
+          "href": "apps/api/src/lib/session-why.test.ts"
+        },
+        {
+          "id": "test:apps/api/src/lib/session-why.test.ts#drops-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "drops a line that adds a number the reason did not have",
+          "kind": "test",
+          "note": "Guards the invariant \"session-why-no-invented-numbers\".",
+          "href": "apps/api/src/lib/session-why.test.ts"
+        },
+        {
+          "id": "inv:coach-no-diagnosis",
+          "label": "The coach redirects only on a confident, non-none health risk, never diagnosing",
+          "kind": "boundary",
+          "note": "Enforced by: redirects only when a non-none risk is confident (hard).",
+          "href": "apps/api/src/lib/coach-safety.test.ts"
+        },
+        {
+          "id": "test:apps/api/src/lib/coach-safety.test.ts#redirects-only-when-a-non-none-risk-is-confident",
+          "label": "redirects only when a non-none risk is confident",
+          "kind": "test",
+          "note": "Guards the invariant \"coach-no-diagnosis\".",
+          "href": "apps/api/src/lib/coach-safety.test.ts"
+        }
+      ],
+      "edges": [
+        {
+          "from": "inv:backtest-matrix",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#covers-the-full-realistic-matrix",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:weekly-progression-ceiling",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-every-build-week-under-the-two-week-progression-ceiling",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-share-ceiling",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-half-the-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-absolute-ceiling",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-the-goal-ceiling",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:quality-count-cap",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-hard-session-count-within-the-cap",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:hard-session-spacing",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#leaves-at-least-two-easy-days-between-hard-sessions",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:rest-days",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-zero-rest-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:no-token-run",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-token-run",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:taper-reduction",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#tapers-the-volume-down-off-the-peak",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:post-race-recovery-weeks",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-post-race-recovery-weeks-easy-and-under-the-peak",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:phase-shape",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#holds-the-phase-shape-and-lands-the-race-in-the-taper",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:load-model-never-builds",
+          "to": "test:packages/shared/src/plan/load-wiring.test.ts#a-stricter-load-intent-beats-an-ai-build-intent-never-the-other-way",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:load-model-never-raises",
+          "to": "test:packages/shared/src/plan/load.test.ts#lowers-an-ai-build-to-the-model-ease-and-never-raises-a-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-ten-percent-step",
+          "to": "test:packages/shared/src/plan/engine.test.ts#still-holds-the-roughly-ten-percent-weekly-ceiling-on-the-long-run",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-goal-cap",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-lets-the-long-run-pass-the-goal-peak-even-on-a-huge-week",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:taper-not-heavier-than-peak",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-lets-a-taper-week-be-heavier-than-the-peak",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:recovery-under-reached-peak",
+          "to": "test:packages/shared/src/plan/engine.test.ts#keeps-the-post-race-recovery-weeks-under-the-peak-the-plan-reached",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-share-realised-week",
+          "to": "test:packages/shared/src/plan/engine.test.ts#keeps-the-long-run-under-half-of-the-realised-week-on-a-light-short-plan",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:no-token-run-light-week",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-schedules-a-token-run-on-a-light-week-spread-over-six-days",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:long-run-share-falls-with-volume",
+          "to": "test:packages/shared/src/plan/engine.test.ts#gives-the-long-run-a-bigger-share-of-a-light-week-than-a-heavy-one",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:ai-typed-intents-closed-set",
+          "to": "test:packages/shared/src/plan/change.test.ts#drops-an-answer-outside-the-closed-set",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:ai-modality-intents-closed-set",
+          "to": "test:apps/api/src/lib/plan-shape.test.ts#drops-a-strength-or-mobility-intent-outside-the-closed-set-and-keeps-the-rest",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:why-no-invented-numbers",
+          "to": "test:packages/shared/src/plan/why-rephrase.test.ts#rejects-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:session-why-no-invented-numbers",
+          "to": "test:apps/api/src/lib/session-why.test.ts#drops-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "enforced by"
+        },
+        {
+          "from": "inv:coach-no-diagnosis",
+          "to": "test:apps/api/src/lib/coach-safety.test.ts#redirects-only-when-a-non-none-risk-is-confident",
+          "label": "enforced by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#covers-the-full-realistic-matrix",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-every-build-week-under-the-two-week-progression-ceiling",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-half-the-week",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-long-run-under-the-goal-ceiling",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-hard-session-count-within-the-cap",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#leaves-at-least-two-easy-days-between-hard-sessions",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-zero-rest-week",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#never-schedules-a-token-run",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#tapers-the-volume-down-off-the-peak",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#keeps-the-post-race-recovery-weeks-easy-and-under-the-peak",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/plan-quality.test.ts#holds-the-phase-shape-and-lands-the-race-in-the-taper",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#still-holds-the-roughly-ten-percent-weekly-ceiling-on-the-long-run",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-lets-the-long-run-pass-the-goal-peak-even-on-a-huge-week",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-lets-a-taper-week-be-heavier-than-the-peak",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#keeps-the-post-race-recovery-weeks-under-the-peak-the-plan-reached",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#keeps-the-long-run-under-half-of-the-realised-week-on-a-light-short-plan",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#never-schedules-a-token-run-on-a-light-week-spread-over-six-days",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:engine",
+          "to": "test:packages/shared/src/plan/engine.test.ts#gives-the-long-run-a-bigger-share-of-a-light-week-than-a-heavy-one",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:load",
+          "to": "test:packages/shared/src/plan/load-wiring.test.ts#a-stricter-load-intent-beats-an-ai-build-intent-never-the-other-way",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:load",
+          "to": "test:packages/shared/src/plan/load.test.ts#lowers-an-ai-build-to-the-model-ease-and-never-raises-a-week",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:change",
+          "to": "test:packages/shared/src/plan/change.test.ts#drops-an-answer-outside-the-closed-set",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:shape",
+          "to": "test:apps/api/src/lib/plan-shape.test.ts#drops-a-strength-or-mobility-intent-outside-the-closed-set-and-keeps-the-rest",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:why",
+          "to": "test:packages/shared/src/plan/why-rephrase.test.ts#rejects-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:why-rephrase",
+          "to": "test:packages/shared/src/plan/why-rephrase.test.ts#rejects-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:session-why",
+          "to": "test:apps/api/src/lib/session-why.test.ts#drops-a-line-that-adds-a-number-the-reason-did-not-have",
+          "label": "guarded by"
+        },
+        {
+          "from": "module:coach-safety",
+          "to": "test:apps/api/src/lib/coach-safety.test.ts#redirects-only-when-a-non-none-risk-is-confident",
+          "label": "guarded by"
+        }
+      ]
+    }
+  ]
+}

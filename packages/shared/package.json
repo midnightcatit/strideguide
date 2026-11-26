@@ -15,7 +15,8 @@
 		"./units": "./src/units.ts",
 		"./analytics": "./src/analytics.ts",
 		"./comparisons": "./src/comparisons.ts",
-		"./writing": "./src/writing.ts"
+		"./writing": "./src/writing.ts",
+		"./system-graph": "./src/system-graph.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
