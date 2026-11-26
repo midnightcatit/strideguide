@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	buildWhyRephrasePrompt,
 	gateReason,
 	gateReasonDetail,
 	gateWhy,
@@ -119,6 +120,24 @@ describe('gateWhyDetail', () => {
 		expect(out.why?.role).toBe('This is an easy run, go steady.');
 		expect(out.why?.dayReason).toBeUndefined();
 		expect(out.unchanged).toBe(1);
+	});
+});
+
+describe('buildWhyRephrasePrompt', () => {
+	it('carries the modality and forbids a running frame on a session with no run', () => {
+		const { system, user } = buildWhyRephrasePrompt([
+			{
+				day: 4,
+				title: 'Hips and glutes, 20 minutes',
+				weekNumber: 3,
+				phase: 'build',
+				modality: 'mobility',
+				reason: { role: 'This is mobility work for your hips and glutes.' },
+			},
+		]);
+		expect(system).toContain('A session is only a run when its modality is running.');
+		expect(system).not.toContain('keep your stride healthy');
+		expect(user).toContain('"modality":"mobility"');
 	});
 });
 

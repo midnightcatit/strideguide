@@ -57,9 +57,12 @@
 			e.stopPropagation();
 			toggleInfo(id);
 		}}
-		class="info-btn pointer-events-auto relative z-20 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-hairline-strong text-[10px] font-medium leading-none text-steel hover:border-signal hover:text-signal-ink"
+		class="group tap-target pointer-events-auto relative z-20 -mx-3 -my-3 shrink-0 rounded-full text-steel"
 	>
-		i
+		<span
+			class="flex h-4 w-4 items-center justify-center rounded-full border border-hairline-strong text-[10px] font-medium leading-none group-hover:border-signal group-hover:text-signal-ink"
+			aria-hidden="true"
+		>i</span>
 	</button>
 </span>
 
@@ -90,21 +93,6 @@
 {/if}
 
 <style>
-	/*
-	 * The icon is deliberately small in text, so its hit area is widened to the
-	 * 44px minimum without changing the layout. The pseudo-element is centred on
-	 * the button and takes no space in the flow.
-	 */
-	.info-btn::after {
-		content: '';
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		width: var(--tap-min);
-		height: var(--tap-min);
-		transform: translate(-50%, -50%);
-	}
-
 	/*
 	 * A short fade as the card opens, on the shared motion tokens. It only fades
 	 * opacity, so it never fights the placement the action works out, and it is

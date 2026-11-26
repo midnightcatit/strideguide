@@ -36,6 +36,32 @@ on the runner's civil day, so only planned sessions are read.
 
 ---
 
+## A session whose modality has no run is not framed as one
+
+2026-11-26
+
+Decided: a mobility session's reason is about the mobility work, not a run. The
+deterministic composer names the area the session's own title carries ("Hips and
+glutes", "Hamstrings and calves") in its role line and, when the session is alone
+on its day, in its day line; it keeps the "pairs with the run you already have
+that day" line only when a run or strength session really shares the day. The
+rephrase prompt now carries each session's modality with a rule that a strength,
+mobility, walking or recovery session is not a run, so the model does not force a
+running frame on a line that has none.
+
+Why: the owner reported that mobility-only whys always read as if a run were
+attached, and the role line ("keep your stride healthy") plus a rephrase prompt
+blind to the modality were why (session-ses_dec5, owner report). The area comes
+from the plan's own title, so nothing is invented, and the number invariant is
+untouched: the gate still rejects a reworded line that adds a number the
+deterministic reason did not have (`packages/shared/src/plan/why.ts`,
+`packages/shared/src/plan/why-rephrase.ts`).
+
+Rules out: describing a mobility, strength, walking or recovery line as a run,
+and naming a focus area the plan did not name.
+
+---
+
 ## A system-map node carries several links, not one
 
 2026-11-26

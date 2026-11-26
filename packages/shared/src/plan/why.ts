@@ -95,7 +95,30 @@ export interface SessionWhyInput {
 
 /* ------------------------------- role line -------------------------------- */
 
-function roleText(role: SessionRole, weekSessions?: PlannedSession[]): string | undefined {
+/**
+ * The area a mobility session works, read from its own title. The focused
+ * routines name their area ("Hips and glutes", "Hamstrings and calves"), so a
+ * mobility session can say what it works on without leaning on a run. The
+ * general routine names no area, so this returns undefined and the caller keeps
+ * a plain line. Nothing is invented: the area is the one the plan already names.
+ */
+const MOBILITY_AREAS = [
+	'hips and glutes',
+	'hamstrings and calves',
+	'ankles and feet',
+	'upper back and shoulders',
+];
+
+function mobilityArea(session: PlannedSession): string | undefined {
+	const title = session.title.toLowerCase();
+	return MOBILITY_AREAS.find((area) => title.startsWith(area));
+}
+
+function roleText(
+	role: SessionRole,
+	session: PlannedSession,
+	weekSessions?: PlannedSession[],
+): string | undefined {
 	switch (role) {
 		case 'long':
 			return "This is the week's anchor run, the longest run of the week.";
@@ -109,8 +132,12 @@ function roleText(role: SessionRole, weekSessions?: PlannedSession[]): string | 
 			return 'This is an easy day to help you recover.';
 		case 'strength':
 			return 'This is strength work that supports your running.';
-		case 'mobility':
-			return 'This is mobility work to keep your stride healthy.';
+		case 'mobility': {
+			const area = mobilityArea(session);
+			return area
+				? `This is mobility work for your ${area}.`
+				: 'This is mobility work to keep you moving well.';
+		}
 		case 'cross':
 			return 'This is low-impact work that spares your running legs.';
 		case 'race':
@@ -200,8 +227,14 @@ function mobilityDayReason(
 ): string | undefined {
 	const sameDay = rolesOnDay(sessions, session.day, session).filter((r) => r !== 'mobility');
 	const other = sameDay[0];
+	// Paired with a run or a strength session, the day line says so, which is true
+	// whenever one really sits on the same day. On its own day there is no run to
+	// name, so the line says what the mobility work is for instead.
 	if (other) return `It pairs with the ${ROLE_NOUN[other]} you already have that day.`;
-	return 'It sits on a day with no other session.';
+	const area = mobilityArea(session);
+	return area
+		? `It sits on its own day, focused on your ${area}.`
+		: 'It sits on a day with no other session.';
 }
 
 function dayReasonFor(
@@ -307,7 +340,7 @@ function planContext(
  */
 export function composeSessionWhy(input: SessionWhyInput): SessionWhy | undefined {
 	const role = sessionRole(input.session.type);
-	const roleLine = roleText(role, input.weekSessions);
+	const roleLine = roleText(role, input.session, input.weekSessions);
 	const dayBase = dayReasonFor(role, input.session, input.weekSessions);
 	// A saved window sets a start time, so say the session sits in it. The detail
 	// view shows the time itself; here it belongs to why the day works.
