@@ -12,6 +12,7 @@
 	import { milesToKm, type ScheduleBlock } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
+	import { modal } from '$lib/actions';
 	import { dragToDay } from '$lib/actions';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setSchedule, setUnits, setVitals } from '$lib/prefs.svelte';
@@ -148,6 +149,21 @@
 	let dir = $state<1 | -1>(1);
 	let submitting = $state(false);
 	let generating = $state(false);
+	// A stable id, so the build overlay can be labelled for assistive tech.
+	const generatingTitleId = `generating-title-${crypto.randomUUID()}`;
+
+	// While the plan builds, the page behind the overlay is not just covered: it
+	// cannot be scrolled, and the modal action holds focus inside the overlay, so
+	// nothing behind it can be reached with a keyboard or a screen reader.
+	$effect(() => {
+		if (!generating) return;
+		const root = document.documentElement;
+		const previous = root.style.overflow;
+		root.style.overflow = 'hidden';
+		return () => {
+			root.style.overflow = previous;
+		};
+	});
 	let stage = $state(0);
 	let stageTimer: ReturnType<typeof setInterval> | undefined;
 	const STAGES = [
@@ -1523,11 +1539,19 @@
 {/if}
 
 {#if generating}
-	<div class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-paper/95 px-6 text-center backdrop-blur">
-		<span class="breathe h-3 w-3 rounded-full bg-signal-ink" aria-hidden="true"></span>
-		<div role="status" aria-live="polite">
-			<p class="font-display text-lg font-medium">{STAGES[stage]}…</p>
-			<p class="mt-1 text-sm text-steel">This usually takes a few seconds.</p>
+	<div
+		class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-paper/95 px-6 text-center backdrop-blur"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby={generatingTitleId}
+		use:modal={() => {}}
+	>
+		<div data-modal-panel tabindex="-1" class="flex flex-col items-center gap-4 outline-none">
+			<span class="breathe h-3 w-3 rounded-full bg-signal-ink" aria-hidden="true"></span>
+			<div role="status" aria-live="polite">
+				<p id={generatingTitleId} class="font-display text-lg font-medium">{STAGES[stage]}…</p>
+				<p class="mt-1 text-sm text-steel">This usually takes a few seconds.</p>
+			</div>
 		</div>
 	</div>
 {/if}
