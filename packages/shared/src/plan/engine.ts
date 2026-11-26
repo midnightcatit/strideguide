@@ -1252,10 +1252,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const softDays = slotDays.filter((d) => !qualityDays.includes(d));
 		// The long run is its own arc: the goal-aware target the plan worked out for
 		// this week, held inside a sane share of the week so a light week is never
-		// one long run and little else. A recovery week carries no long run.
+		// one long run and little else. A recovery week carries no long run. An eased
+		// week dips it too, the way a deload does, so easing a week lowers what it
+		// prescribes rather than leaving the long run at the plan's full arc.
+		const longEase = shaped && intent === 'ease' ? 0.9 : 1;
 		let longKm = isRecovery
 			? 0
-			: round1(clamp(Math.min(longTargets[w]!, volume * LONG_RUN_SHARE_CEILING), 3, 38));
+			: round1(
+					clamp(Math.min(longTargets[w]! * longEase, volume * LONG_RUN_SHARE_CEILING), 3, 38),
+				);
 		// A recovery week carries no long run, so the long-run day is not reserved:
 		// it can take an easy run, so the easy runs cover the whole week rather than
 		// leaving that day empty. Otherwise the long run, the quality slots and the
