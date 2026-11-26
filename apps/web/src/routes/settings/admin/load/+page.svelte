@@ -4,11 +4,11 @@
 	import { api, type AdminLoadShadow } from '$lib/api';
 
 	/**
-	 * The load model's shadow records, across accounts. It exists to decide whether
-	 * to turn `apply` on: it shows what the model would have eased or held, and the
-	 * fitness, fatigue and form behind each one. Metadata only, and a plan only has
-	 * a record when it was generated or adapted, so an account that never rebuilds
-	 * shows nothing new here.
+	 * The load model's records, across accounts. It shows what the model would
+	 * have eased or held in shadow and advisory modes, and what it did in apply
+	 * mode, with the fitness, fatigue and form behind each read. Metadata only,
+	 * and a plan only has a record when it was generated or adapted, so an account
+	 * that never rebuilds shows nothing new here.
 	 */
 	let loading = $state(true);
 	let isAdmin = $state(false);
@@ -29,6 +29,11 @@
 
 	const round = (v: number | null) => (v == null ? 'n/a' : String(Math.round(v)));
 
+	const weekLabel = (week: number | null) => (week == null ? 'No change' : `Week ${week}`);
+
+	const volumeLabel = (from: number | null, to: number | null) =>
+		from == null || to == null ? 'none' : `${Math.round(from)} to ${Math.round(to)}`;
+
 	onMount(async () => {
 		try {
 			const me = await api.adminMe();
@@ -36,14 +41,14 @@
 			if (!isAdmin) return;
 			view = await api.adminLoadShadow({ limit: 100 });
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Could not load the shadow records.';
+			error = e instanceof Error ? e.message : 'Could not load the model records.';
 		} finally {
 			loading = false;
 		}
 	});
 </script>
 
-<SettingsHeader title="Load shadow" />
+<SettingsHeader title="Load model" />
 
 {#if loading}
 	<p class="text-sm text-steel">Loading.</p>
@@ -58,12 +63,12 @@
 		<p class="mb-2 text-sm">
 			<a href="/settings/admin" class="text-signal-ink hover:underline">Back to admin</a>
 		</p>
-		<h2 class="font-display mb-1 text-lg font-semibold">What the model would change</h2>
+		<h2 class="font-display mb-1 text-lg font-semibold">Load model decisions</h2>
 		<p class="mb-4 text-sm leading-relaxed text-steel">
-			Each row is a week the load model would have eased or held had it been switched to apply. It
-			is recorded while the model runs in shadow, which changes no plan. The mode shown is the
-			mode that produced the record. A plan only has a record when it was generated or adapted, so
-			an account that never rebuilds adds nothing new here.
+			Each row is a week the load model eased or held, or would have eased or held, depending on
+			the mode that produced the record. Shadow and advisory change no plan; apply does. A row
+			with no week means the model ran and found nothing to change. A plan only has a record when
+			it was generated or adapted, so an account that never rebuilds adds nothing new here.
 		</p>
 
 		{#if view}
@@ -82,22 +87,32 @@
 				</div>
 				<div class="rounded-lg border border-hairline bg-paper p-3">
 					<p class="tabular text-lg font-semibold">{view.summary.ease}</p>
-					<p class="text-xs text-steel">Would ease</p>
+					<p class="text-xs text-steel">Ease</p>
 				</div>
 				<div class="rounded-lg border border-hairline bg-paper p-3">
 					<p class="tabular text-lg font-semibold">{view.summary.hold}</p>
-					<p class="text-xs text-steel">Would hold</p>
+					<p class="text-xs text-steel">Hold</p>
 				</div>
 			</div>
+
+			{#if Object.keys(view.summary.byMode).length > 0}
+				<p class="mb-4 text-sm text-steel">
+					Plans by mode:
+					{Object.entries(view.summary.byMode)
+						.map(([mode, count]) => `${mode} ${count}`)
+						.join(', ')}.
+				</p>
+			{/if}
 
 			<div class="overflow-x-auto rounded-xl border border-hairline">
 				<table class="w-full min-w-[52rem] border-collapse text-sm">
 					<thead>
 						<tr class="border-b border-hairline text-left text-xs uppercase tracking-wider text-steel">
 							<th scope="col" class="px-3 py-2 font-medium">When</th>
+							<th scope="col" class="px-3 py-2 font-medium">Mode</th>
 							<th scope="col" class="px-3 py-2 font-medium">Account</th>
 							<th scope="col" class="px-3 py-2 font-medium">Week</th>
-							<th scope="col" class="px-3 py-2 font-medium">Would</th>
+							<th scope="col" class="px-3 py-2 font-medium">Intent</th>
 							<th scope="col" class="px-3 py-2 font-medium">Volume (km)</th>
 							<th scope="col" class="px-3 py-2 font-medium">Fitness</th>
 							<th scope="col" class="px-3 py-2 font-medium">Fatigue</th>
@@ -108,11 +123,12 @@
 						{#each view.decisions as d, i (i)}
 							<tr class="border-b border-hairline last:border-b-0">
 								<td class="px-3 py-2 text-steel">{formatTime(d.at)}</td>
+								<td class="px-3 py-2 text-steel">{d.mode ?? 'unknown'}</td>
 								<td class="px-3 py-2 text-ink">{d.email}</td>
-								<td class="tabular px-3 py-2 text-steel">Week {d.weekNumber}</td>
-								<td class="px-3 py-2 text-steel">{d.intent}</td>
+								<td class="tabular px-3 py-2 text-steel">{weekLabel(d.weekNumber)}</td>
+								<td class="px-3 py-2 text-steel">{d.intent ?? 'none'}</td>
 								<td class="tabular px-3 py-2 text-steel">
-									{Math.round(d.fromVolumeKm)} to {Math.round(d.toVolumeKm)}
+									{volumeLabel(d.fromVolumeKm, d.toVolumeKm)}
 								</td>
 								<td class="tabular px-3 py-2 text-steel">{round(d.fitness)}</td>
 								<td class="tabular px-3 py-2 text-steel">{round(d.fatigue)}</td>
@@ -120,8 +136,8 @@
 							</tr>
 						{:else}
 							<tr>
-								<td colspan="8" class="px-3 py-4 text-sm text-steel">
-									No shadow records yet. They appear once plans are generated or adapted with
+								<td colspan="9" class="px-3 py-4 text-sm text-steel">
+									No load records yet. They appear once plans are generated or adapted with
 									the model on.
 								</td>
 							</tr>

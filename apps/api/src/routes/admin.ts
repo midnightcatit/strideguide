@@ -51,7 +51,7 @@ const admin = new Hono<AppBindings>();
 const RECENT_WINDOW_SECONDS = 24 * 60 * 60;
 const RECENT_ITEMS = 10;
 
-/** How many plans with shadow records the load-shadow view reads in one pass. */
+/** How many plans with load records the load view reads in one pass. */
 const ADMIN_SHADOW_MAX_PLANS = 200;
 
 /** The signed-in user's own admin state, so the web can show or hide the entry.
@@ -216,12 +216,11 @@ admin.get('/ops', requireAdmin, async (c) => {
 });
 
 /**
- * The load model's shadow records, across accounts, for deciding whether to turn
- * `apply` on. Read straight out of each plan's `params.loadModel` with
- * json_extract, so no new table. Metadata only: the plan, the week, the intent it
- * would have used, and the modelled fitness, fatigue and form behind it. A plan
- * only has a record when it was generated or adapted, so a runner who never
- * rebuilds produces none.
+ * The load model's records, across accounts, in every mode. Read straight out of
+ * each plan's `params.loadModel` with json_extract, so no new table. Metadata
+ * only: the plan, the week, the intent it used or would have used, and the
+ * modelled fitness, fatigue and form behind it. A plan only has a record when it
+ * was generated or adapted, so a runner who never rebuilds produces none.
  */
 admin.get('/load-shadow', requireAdmin, async (c) => {
 	const db = c.get('db');
@@ -240,7 +239,7 @@ admin.get('/load-shadow', requireAdmin, async (c) => {
 		.from(schema.plans)
 		.innerJoin(schema.userGoals, eq(schema.plans.userGoalId, schema.userGoals.id))
 		.innerJoin(schema.users, eq(schema.userGoals.userId, schema.users.id))
-		.where(sql`json_array_length(json_extract(${schema.plans.params}, '$.loadModel.shadow')) > 0`)
+		.where(sql`json_extract(${schema.plans.params}, '$.loadModel') IS NOT NULL`)
 		.orderBy(desc(sql`json_extract(${schema.plans.params}, '$.loadModel.at')`))
 		.limit(Math.min(limit, ADMIN_SHADOW_MAX_PLANS));
 	return c.json(projectLoadShadow(rows, limit));

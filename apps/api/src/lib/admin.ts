@@ -405,19 +405,26 @@ export interface LoadShadowDecision {
 	email: string;
 	at: string | null;
 	mode: string | null;
-	weekNumber: number;
-	intent: string;
-	fromVolumeKm: number;
-	toVolumeKm: number;
-	reason: string;
+	weekNumber: number | null;
+	intent: string | null;
+	fromVolumeKm: number | null;
+	toVolumeKm: number | null;
+	reason: string | null;
 	fitness: number | null;
 	fatigue: number | null;
 	form: number | null;
 }
 
-/** The cross-user shadow view: a summary and the recent decisions behind it. */
+/** The cross-user load view: a summary and the recent decisions behind it. */
 export interface LoadShadowView {
-	summary: { plans: number; users: number; records: number; ease: number; hold: number };
+	summary: {
+		plans: number;
+		users: number;
+		records: number;
+		ease: number;
+		hold: number;
+		byMode: Record<string, number>;
+	};
 	decisions: LoadShadowDecision[];
 }
 
@@ -436,27 +443,51 @@ function num(v: unknown): number | null {
 }
 
 /**
- * Flatten the stored shadow records into one recent-decisions list, newest first
- * (the rows arrive ordered by their read time), and count them across accounts.
+ * Flatten the stored load records into table rows, newest first (the rows arrive
+ * ordered by their read time), and count them across accounts. A plan with
+ * shadow entries gets one row per entry. A plan whose record has no shadow
+ * entries, because the model found nothing to change or ran in a mode that did
+ * not record a change, gets one row with no week, so the read is still visible.
  * Metadata only: it names the plan, the week, the intent and the modelled
- * numbers, and never any content from the runner's logs. `limit` caps the
- * decisions returned, not the aggregate.
+ * numbers, and never any content from the runner's logs. `limit` caps the rows
+ * returned, not the aggregate.
  */
 export function projectLoadShadow(rows: LoadShadowPlanRow[], limit: number): LoadShadowView {
 	const decisions: LoadShadowDecision[] = [];
 	const users = new Set<string>();
-	let plansWithRecords = 0;
+	const byMode: Record<string, number> = {};
+	let plans = 0;
 	let ease = 0;
 	let hold = 0;
 	for (const row of rows) {
-		const entries = parseShadowArray(row.shadow);
-		if (entries.length === 0) continue;
-		plansWithRecords += 1;
+		plans += 1;
 		users.add(row.email);
+		const mode = row.mode ?? 'unknown';
+		byMode[mode] = (byMode[mode] ?? 0) + 1;
+		const entries = parseShadowArray(row.shadow);
+		if (entries.length === 0) {
+			if (decisions.length < limit) {
+				decisions.push({
+					planId: row.planId,
+					email: row.email,
+					at: row.at,
+					mode: row.mode,
+					weekNumber: null,
+					intent: null,
+					fromVolumeKm: null,
+					toVolumeKm: null,
+					reason: null,
+					fitness: row.fitness,
+					fatigue: row.fatigue,
+					form: row.form,
+				});
+			}
+			continue;
+		}
 		for (const entry of entries) {
 			if (!entry || typeof entry !== 'object') continue;
 			const e = entry as Record<string, unknown>;
-			const intent = typeof e.intent === 'string' ? e.intent : '';
+			const intent = typeof e.intent === 'string' ? e.intent : null;
 			if (intent === 'ease') ease += 1;
 			else if (intent === 'hold') hold += 1;
 			if (decisions.length >= limit) continue;
@@ -465,11 +496,11 @@ export function projectLoadShadow(rows: LoadShadowPlanRow[], limit: number): Loa
 				email: row.email,
 				at: row.at,
 				mode: row.mode,
-				weekNumber: typeof e.weekNumber === 'number' ? e.weekNumber : 0,
+				weekNumber: typeof e.weekNumber === 'number' ? e.weekNumber : null,
 				intent,
-				fromVolumeKm: num(e.fromVolumeKm) ?? 0,
-				toVolumeKm: num(e.toVolumeKm) ?? 0,
-				reason: typeof e.reason === 'string' ? e.reason : '',
+				fromVolumeKm: num(e.fromVolumeKm),
+				toVolumeKm: num(e.toVolumeKm),
+				reason: typeof e.reason === 'string' ? e.reason : null,
 				fitness: row.fitness,
 				fatigue: row.fatigue,
 				form: row.form,
@@ -477,13 +508,7 @@ export function projectLoadShadow(rows: LoadShadowPlanRow[], limit: number): Loa
 		}
 	}
 	return {
-		summary: {
-			plans: plansWithRecords,
-			users: users.size,
-			records: ease + hold,
-			ease,
-			hold,
-		},
+		summary: { plans, users: users.size, records: ease + hold, ease, hold, byMode },
 		decisions,
 	};
 }
