@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-26
+- fix(web): keep page action rows sticky and add an admin menu row (#275)
 - fix(admin): stop 320px overflow, bound error lists, show rate-limit stats (#276)
 - Replace "niggle" with plainer wording in every user-facing string (#274)
 - docs(agents): add a read-in-ranges rule for large files (#273)
