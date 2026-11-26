@@ -9,7 +9,7 @@
 	import { summary, ensureSummary } from '$lib/summaryStore.svelte';
 	import { store, ensurePlan, mergeLogs, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
-	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, startOfWeekIso, weekColumn, weekdayIndexFromIso } from '$lib/plan';
 	import { today } from '$lib/today.svelte';
 	import { isSkipped, unskipSession } from '$lib/skipped.svelte';
 	import { clearStarted, markStarted } from '$lib/started.svelte';
@@ -92,20 +92,23 @@
 		return undefined;
 	});
 	const selWeek = $derived(sel?.week);
-	// The start of the week the selected day sits in. Inside the plan it is the
-	// plan week's own start; outside the plan it is the Monday of that calendar
-	// week, so the strip still shows seven days and a day tap still works.
-	const weekStartIso = $derived(
-		selWeek?.startDate ?? addDaysIso(selectedIso, -weekdayIndexFromIso(selectedIso)),
-	);
-	// Day offsets within the week on screen, so the strip's columns line up with
-	// the plan week whether or not it begins on a Monday.
-	const selDay = $derived(sel?.day ?? dayIndexInWeek(weekStartIso, todayIso));
-	const todayOffset = $derived(dayIndexInWeek(weekStartIso, todayIso));
+	// The strip shows the calendar week the selected day sits in, grouped by the
+	// runner's own week start (Monday by default, Sunday when they set that), so
+	// it reads as the week they are living in. A calendar week can span two plan
+	// weeks; the sessions on each column are gathered by date below.
+	const weekStartIso = $derived(startOfWeekIso(selectedIso, prefs.weekStart));
+	const todayWeekStartIso = $derived(startOfWeekIso(todayIso, prefs.weekStart));
+	// The plan-week day offset of the selected day, for the day panel. The plan
+	// week is untouched: a session's day is still its offset from the plan week's
+	// own start.
+	const selDay = $derived(sel?.day ?? 0);
+	// Today's column in the runner's week order, so the ring lands on today when
+	// it is in the week on screen (guarded by todayInWeek below).
+	const todayOffset = $derived(weekColumn(todayIso, prefs.weekStart));
 	// The strip's highlighted column is where the shown date sits in the week on
 	// screen, read from the date itself. That way a swipe or a tap to a day
 	// outside the plan still moves the indicator to the day actually selected.
-	const stripSelectedDay = $derived(dayIndexInWeek(weekStartIso, selectedIso));
+	const stripSelectedDay = $derived(weekColumn(selectedIso, prefs.weekStart));
 	// The weekday of the date actually shown, taken from the date itself, so the
 	// label is right even on a day outside the plan's weeks, where there is no
 	// session day to read it from.
@@ -113,6 +116,31 @@
 	// The strip's slide key: stable while you stay in one week, and a fresh value
 	// on every week step, including steps into weeks that are outside the plan.
 	const weekKey = $derived(weekStartIso);
+	// Every session keyed by the date it falls on, so a calendar week that spans
+	// two plan weeks still finds each session on its real day. A session's date
+	// is its plan week's start plus its day offset, exactly as the calendar
+	// builds it.
+	const sessionsByDate = $derived.by(() => {
+		const map = new Map<string, ClientSession[]>();
+		for (const w of weeks) {
+			if (!w.startDate) continue;
+			for (const s of w.sessions) {
+				const key = addDaysIso(w.startDate, s.day);
+				const list = map.get(key);
+				if (list) list.push(s);
+				else map.set(key, [s]);
+			}
+		}
+		return map;
+	});
+	// The seven columns of the week on screen, first day first in the runner's
+	// order, each with its date and the sessions on that date.
+	const stripDays = $derived(
+		[0, 1, 2, 3, 4, 5, 6].map((i) => {
+			const iso = addDaysIso(weekStartIso, i);
+			return { iso, sessions: sessionsByDate.get(iso) ?? [] };
+		}),
+	);
 	const daySessions = $derived(selWeek ? selWeek.sessions.filter((s) => s.day === selDay) : []);
 	// Skipped sessions stay on the card list, marked as skipped.
 	const loggedBySession = $derived(
@@ -147,12 +175,9 @@
 	);
 	const planCap = $derived(selWeek?.targetVolumeKm ?? weekKm);
 	const dayMinutes = $derived(daySessions.reduce((m, s) => m + (s.durationMin ?? 0), 0));
-	const todayInWeek = $derived(
-		!!selWeek?.startDate &&
-			!!selWeek?.endDate &&
-			todayIso >= selWeek.startDate &&
-			todayIso <= selWeek.endDate,
-	);
+	// Today is in the week on screen when it shares the selected day's calendar
+	// week, whatever the plan week does.
+	const todayInWeek = $derived(weekStartIso === todayWeekStartIso);
 	// The API only accepts days inside the plan, so the add button says why when
 	// the selected day is not one of them, instead of failing on tap.
 	const planStart = $derived(weeks[0]?.startDate ?? null);
@@ -226,26 +251,17 @@
 		return formatIsoDay(iso, { weekday: 'short', day: 'numeric', month: 'short' });
 	}
 
-	// The first day of the runner's own week: Monday, or Sunday when they set it
-	// that way. A week step lands here, so it always lands on a week boundary
-	// instead of a week from whatever day happened to be selected.
-	function startOfRunnerWeek(iso: string): string {
-		const back =
-			prefs.weekStart === 1 ? (weekdayIndexFromIso(iso) + 1) % 7 : weekdayIndexFromIso(iso);
-		return addDaysIso(iso, -back);
-	}
-
 	// A week step moves the whole window onto the first day of the next (or
-	// previous) week. Stepping into the week that holds today lands on today
-	// itself, so the runner is not sent to a Monday when today is what they want.
-	// The week arrows and the strip's swipe and horizontal wheel all land here, so
-	// the strip and the day panel slide together. Tapping a day still moves a
-	// single day.
+	// previous) week, land on the runner's own week boundary either way. Stepping
+	// into the week that holds today lands on today itself, so the runner is not
+	// sent to the week's first day when today is what they want. The week arrows
+	// and the strip's swipe and horizontal wheel all land here, so the strip and
+	// the day panel slide together. Tapping a day still moves a single day.
 	function stepWeek(n: number) {
 		changeKind = 'week';
 		dayDir = n >= 0 ? 1 : -1;
-		const target = addDaysIso(startOfRunnerWeek(selectedIso), n * 7);
-		selectedIso = target === startOfRunnerWeek(todayIso) ? todayIso : target;
+		const target = addDaysIso(startOfWeekIso(selectedIso, prefs.weekStart), n * 7);
+		selectedIso = target === startOfWeekIso(todayIso, prefs.weekStart) ? todayIso : target;
 	}
 
 	function sessionDate(s: ClientSession): string | undefined {
@@ -445,7 +461,7 @@
 		<WeekStrip
 			week={selWeek}
 			{weekKey}
-			weekStart={weekStartIso}
+			days={stripDays}
 			selectedDay={stripSelectedDay}
 			todayIndex={todayOffset}
 			{todayInWeek}

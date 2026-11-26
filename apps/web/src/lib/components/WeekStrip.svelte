@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type ClientWeek, DAY_INITIALS, DAY_NAMES, addDaysIso, weekdayIndexFromIso } from '$lib/plan';
+	import { type ClientSession, type ClientWeek, DAY_INITIALS, DAY_NAMES, weekdayIndexFromIso } from '$lib/plan';
 	import { fmtDistance } from '$lib/prefs.svelte';
 	import { weekSwipe } from '$lib/actions';
 	import { isSkipped } from '$lib/skipped.svelte';
@@ -7,7 +7,7 @@
 	let {
 		week,
 		weekKey,
-		weekStart,
+		days,
 		selectedDay,
 		todayIndex,
 		todayInWeek = false,
@@ -20,9 +20,10 @@
 		// Changes on every week step, even between two weeks outside the plan, so
 		// the strip always replays its slide. A plain day tap keeps it stable.
 		weekKey: string;
-		// The first day shown, so the columns label the real weekdays even when the
-		// plan's week does not begin on a Monday.
-		weekStart: string;
+		// The seven days of the shown calendar week, first day first, each with the
+		// sessions whose date falls on it. A calendar week can span two plan weeks,
+		// so a column's sessions are gathered by date, not by plan-week day.
+		days: { iso: string; sessions: ClientSession[] }[];
 		selectedDay: number;
 		todayIndex: number;
 		todayInWeek?: boolean;
@@ -32,13 +33,15 @@
 		weekDir?: number;
 	} = $props();
 
-	/** The weekday (0 = Monday) shown in a column, read from its real date. */
+	/** The weekday (0 = Monday) shown in a column, read from its own date. */
 	function weekdayAt(day: number): number {
-		return weekStart ? weekdayIndexFromIso(addDaysIso(weekStart, day)) : day;
+		return weekdayIndexFromIso(days[day].iso);
 	}
-
+	function sessionsOn(day: number): ClientSession[] {
+		return days[day]?.sessions ?? [];
+	}
 	function level(day: number): number {
-		const ds = week?.sessions.filter((s) => s.day === day) ?? [];
+		const ds = sessionsOn(day);
 		if (!ds.length) return 0;
 		return Math.max(
 			...ds.map((s) =>
@@ -47,14 +50,14 @@
 		);
 	}
 	function logged(day: number): boolean {
-		return (week?.sessions ?? []).some((s) => s.day === day && loggedBySession.has(s.id));
+		return sessionsOn(day).some((s) => loggedBySession.has(s.id));
 	}
 	function skipped(day: number): boolean {
-		return (week?.sessions ?? []).some((s) => s.day === day && isSkipped(s.id));
+		return sessionsOn(day).some((s) => isSkipped(s.id));
 	}
 	function distance(day: number): number {
-		return (week?.sessions ?? [])
-			.filter((s) => s.day === day && s.modality === 'running')
+		return sessionsOn(day)
+			.filter((s) => s.modality === 'running')
 			.reduce((sum, s) => sum + (s.prescription?.targetDistanceKm ?? 0), 0);
 	}
 </script>
