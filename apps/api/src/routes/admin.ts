@@ -429,6 +429,7 @@ async function rebuildUserPlanFromWeekOne(
 		machines: resolveMachines(prefs),
 		favoriteMachines: prefs.favoriteMachines,
 		favoriteWorkouts: prefs.favoriteWorkouts,
+		schedule: prefs.schedule,
 	};
 
 	const { weeks: rebuilt } = rebuildFromWeekOne({ existingWeeks, weekOne, plan: planInput });

@@ -1,4 +1,5 @@
 import type { Baseline, Modality, SessionArchetype, SessionPrescription } from '../types';
+import type { ScheduleBlock } from '../units';
 
 /** A single prescribed session within a week. */
 export interface PlannedSession {
@@ -78,6 +79,13 @@ export interface PlanInput {
 	baseline: Baseline;
 	/** Available training days, 0 = Monday … 6 = Sunday. */
 	availableDays: number[];
+	/**
+	 * The runner's blocked-out free windows (settings.prefs.schedule), in local
+	 * time (0 = Monday). Optional: with none the engine places sessions on the
+	 * chosen days alone, exactly as it did before windows existed. When present,
+	 * each session is given a start time inside a window that can hold it.
+	 */
+	schedule?: ScheduleBlock[];
 	/** ISO date, yyyy-mm-dd. */
 	startDate: string;
 	/** ISO date, yyyy-mm-dd. Optional (profiles like whole-fitness may not race). */
