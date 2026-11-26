@@ -8,6 +8,7 @@
 	import DrillList from '$lib/components/DrillList.svelte';
 	import { modal } from '$lib/actions';
 	import { sheetOverlay, sheetPanel } from '$lib/motion';
+	import { sessionWhyLine } from '$lib/sessionWhy';
 
 	/**
 	 * The Preview sheet: a bottom sheet that opens from the drill-down card. A
@@ -33,7 +34,12 @@
 	const dist = $derived(p.targetDistanceKm ?? workout?.totalDistanceKm);
 	const band = $derived(fmtPaceBand(p.targetPaceSecPerKm));
 	const minutes = $derived(session.durationMin ?? workout?.estimatedDurationMin);
-	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
+	// The reason to show: the shared reason first, then the static one-liner for
+	// the session type. The onboarding preview runs before a plan is stored, so it
+	// has no model wording yet and falls through to the static line.
+	const lead = $derived(
+		sessionWhyLine(p) || SHORT_WHY[session.type as keyof typeof SHORT_WHY] || session.purpose || '',
+	);
 	const hasMoves = $derived(machines.length > 0);
 	const moveHeading = $derived(session.type === 'machine-circuit' ? 'The machines' : 'The moves');
 	const drills = $derived(sessionDrills(workout));

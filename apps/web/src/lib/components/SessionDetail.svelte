@@ -10,6 +10,7 @@
 	import ExerciseDetail from '$lib/components/ExerciseDetail.svelte';
 	import PreviewSheet from '$lib/components/PreviewSheet.svelte';
 	import NotesSheet from '$lib/components/NotesSheet.svelte';
+	import { mergeSessionWhy } from '$lib/sessionWhy';
 	import { isStarted } from '$lib/started.svelte';
 	import { store } from '$lib/planStore.svelte';
 	import { prefs } from '$lib/prefs.svelte';
@@ -179,9 +180,7 @@
 
 	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
 	/** The plan's composed reason, preferring the model's rewording per part. */
-	const whyParts = $derived(
-		p.whyStructured ? { ...p.whyStructured, ...(p.whyText ?? {}) } : p.whyText,
-	);
+	const whyParts = $derived(mergeSessionWhy(p));
 
 	/** One row per stage, so a repeated set reads once. */
 	interface Row {

@@ -31,6 +31,7 @@
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
+	import { sessionWhyLine } from '$lib/sessionWhy';
 
 	/**
 	 * One card in the day's scroll. Planned sessions and imported activities sit
@@ -572,7 +573,7 @@
 			{#if daySessions[0]}
 				<hr class="my-6 border-hairline" />
 				<SectionHeader id="why" eyebrow="Why this workout" topGap={false} />
-				<p class="text-sm text-steel">{daySessions[0].purpose ?? 'What this session trains, and why.'}</p>
+				<p class="text-sm text-steel">{sessionWhyLine(daySessions[0].prescription) || daySessions[0].purpose || 'What this session trains, and why.'}</p>
 				<button type="button" onclick={() => goto(sessionHref(daySessions[0]!.id, from))} class="mt-2 text-sm text-signal-ink hover:underline">
 					Why this workout, and what's to come →
 				</button>

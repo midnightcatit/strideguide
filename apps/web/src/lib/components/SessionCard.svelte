@@ -6,6 +6,7 @@
 	import { isStarted } from '$lib/started.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
+	import { sessionWhyLine } from '$lib/sessionWhy';
 
 	let {
 		session,
@@ -143,13 +144,9 @@
 		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
 		return '';
 	});
-	// One clause for the card, from the plan's own reason (the model's rewording
-	// where it passed the gate), falling back to the static amount note when the
-	// session carries no structured reason.
-	const whyMerged = $derived(
-		p.whyStructured ? { ...p.whyStructured, ...(p.whyText ?? {}) } : p.whyText,
-	);
-	const whyLine = $derived(whyMerged?.role ?? whyMerged?.dayReason ?? p.why ?? '');
+	// One clause for the card, from the shared reason: the plan's own reason with
+	// the model's rewording where it passed the gate, the static amount note last.
+	const whyLine = $derived(sessionWhyLine(p));
 </script>
 
 <article
