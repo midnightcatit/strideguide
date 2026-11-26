@@ -30,7 +30,7 @@
 	import type { GraphNode, GraphNodeData, GraphView } from './types';
 	import { GRAPH_FOCUS, type GraphFocus } from './focus';
 	import { graphTheme } from './graphTheme.svelte';
-	import { graphVars, xyflowVars } from './palette';
+	import { edgeKindColor, graphVars, xyflowVars } from './palette';
 	import {
 		createLayoutRunner,
 		provisionalPositions,
@@ -122,21 +122,27 @@
 	);
 
 	const edges = $derived<Edge[]>(
-		view.edges.map((edge, i) => ({
-			id: `${edge.from}->${edge.to}:${i}`,
-			source: edge.from,
-			target: edge.to,
-			type: 'smoothstep',
-			animated: !reduced,
-			markerEnd: MarkerType.ArrowClosed,
-			label: edge.label,
-			labelStyle: 'font-family: var(--font-data); font-size: 10px;',
-			style: focus.isEdgeDimmed(edge.from, edge.to)
-				? 'opacity:0.16'
-				: focus.isEdgeActive(edge.from, edge.to)
-					? 'stroke-width:2.25'
-					: '',
-		})),
+		view.edges.map((edge, i) => {
+			const color = edgeKindColor(theme.current, edge.kind);
+			const active = focus.isEdgeActive(edge.from, edge.to);
+			return {
+				id: `${edge.from}->${edge.to}:${i}`,
+				source: edge.from,
+				target: edge.to,
+				type: 'smoothstep',
+				animated: !reduced,
+				markerEnd: { type: MarkerType.ArrowClosed, color },
+				// The label is the long condition, so it shows only on the edge you
+				// are on, not on every edge at once.
+				label: active ? edge.label : undefined,
+				labelStyle: 'font-family: var(--font-data); font-size: 10px;',
+				style: focus.isEdgeDimmed(edge.from, edge.to)
+					? `opacity:0.16; stroke:${color}`
+					: active
+						? `stroke:${color}; stroke-width:2.25`
+						: `stroke:${color}`,
+			};
+		}),
 	);
 
 	async function handleMeasured(target: GraphView, sizes: LayoutNode[]) {

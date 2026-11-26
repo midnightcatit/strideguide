@@ -51,9 +51,19 @@ export interface GraphNode {
 	links?: GraphLink[];
 }
 
+/**
+ * What an edge stands for, so the canvas can colour it and the legend can name
+ * it. `flow` is an authored pipeline or path step, `enforced` an invariant to the
+ * test that holds it, `guarded` a module to its guarding test, `decision` the log
+ * to one entry, and `foreign-key` one table to the table it names.
+ */
+export type EdgeKind = 'flow' | 'enforced' | 'guarded' | 'decision' | 'foreign-key';
+
 export interface GraphEdge {
 	from: string;
 	to: string;
+	/** What the edge stands for: colour and the legend key off it. */
+	kind: EdgeKind;
 	/** A short label for the edge: the trigger or the condition it stands for. */
 	label?: string;
 }

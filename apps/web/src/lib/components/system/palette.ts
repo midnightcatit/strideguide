@@ -37,7 +37,7 @@
  * non-text). The rail test in palette.test.ts recomputes these and fails if a
  * later tweak drops one below its floor.
  */
-import { NODE_KINDS, type GraphNodeKind } from './types';
+import { EDGE_KINDS, NODE_KINDS, type GraphEdgeKind, type GraphNodeKind } from './types';
 
 export type GraphTheme = 'light' | 'dark';
 
@@ -57,6 +57,8 @@ export interface GraphPalette {
 	hairline: string;
 	edge: string;
 	edgeLabelInk: string;
+	/** One stroke colour per edge kind, so an edge reads by what it stands for. */
+	edgeKinds: Record<GraphEdgeKind, string>;
 	pattern: string;
 	focusRing: string;
 	minimapNode: string;
@@ -72,6 +74,15 @@ export const GRAPH_PALETTE: Record<GraphTheme, GraphPalette> = {
 		hairline: '#E4E8EE',
 		edge: '#6E7787',
 		edgeLabelInk: '#3A414D',
+		// Each edge kind borrows the accent of the thing it points at, so the
+		// diagram reads by meaning rather than one grey for every line.
+		edgeKinds: {
+			flow: '#6E7787',
+			enforced: '#A45A72',
+			guarded: '#3F7E74',
+			decision: '#6C5CA8',
+			'foreign-key': '#3C6FA6',
+		},
 		pattern: '#C9D0DC',
 		focusRing: '#4C5B8A',
 		minimapNode: '#C9D0DC',
@@ -94,6 +105,13 @@ export const GRAPH_PALETTE: Record<GraphTheme, GraphPalette> = {
 		hairline: '#2A303A',
 		edge: '#8A93A2',
 		edgeLabelInk: '#D7DCE4',
+		edgeKinds: {
+			flow: '#8A93A2',
+			enforced: '#E0A0B6',
+			guarded: '#7FC3B7',
+			decision: '#B3A6E6',
+			'foreign-key': '#8FB6E0',
+		},
 		pattern: '#2E3642',
 		focusRing: '#B3C0EC',
 		minimapNode: '#39424F',
@@ -136,6 +154,7 @@ export function graphVars(theme: GraphTheme): string {
 		lines.push(`--g-${kind}-chip-bg:${c.chipBg}`);
 		lines.push(`--g-${kind}-chip-ink:${c.chipInk}`);
 	}
+	for (const kind of EDGE_KINDS) lines.push(`--g-edge-${kind}:${p.edgeKinds[kind]}`);
 	return lines.join(';');
 }
 
@@ -171,4 +190,9 @@ export function kindVars(kind: GraphNodeKind): string {
 		`--g-chip-bg:var(--g-${kind}-chip-bg)`,
 		`--g-chip-ink:var(--g-${kind}-chip-ink)`,
 	].join(';');
+}
+
+/** The stroke colour for one edge kind in a theme, for the canvas and the legend. */
+export function edgeKindColor(theme: GraphTheme, kind: GraphEdgeKind): string {
+	return GRAPH_PALETTE[theme].edgeKinds[kind] ?? GRAPH_PALETTE[theme].edge;
 }

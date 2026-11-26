@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { replaceState } from '$app/navigation';
-	import { page } from '$app/state';
 	import { modal } from '$lib/actions';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import SettingsHeader from '$lib/components/SettingsHeader.svelte';
 	import { api } from '$lib/api';
-	import type { GraphView } from '@strideguide/shared/system-graph';
+	import type { EdgeKind, GraphView } from '@strideguide/shared/system-graph';
+	import type { GraphNodeKind } from '$lib/components/system/types';
+	import { edgeKindColor, GRAPH_PALETTE } from '$lib/components/system/palette';
+	import { graphTheme } from '$lib/components/system/graphTheme.svelte';
 	import graphJson from '$lib/system-graph.generated.json';
 
 	/**
@@ -42,27 +44,40 @@
 	let diagramOpen = $state(false);
 
 	// The URL carries the view and the node, so a link like
-	// `#view=paths&node=load-ease` reopens the same spot. The hash is the single
-	// source of truth: a tab click or a node click rewrites it, and the page
-	// reads it back, which also covers Back and a pasted link.
-	const hashParams = $derived(new URLSearchParams(page.url.hash.replace(/^#/, '')));
+	// `#view=paths&node=load-ease` reopens the same spot. The selected view and
+	// node are held in state and the hash is written for the deep link; a real
+	// hash navigation (Back, Forward, a pasted link) is read back through the
+	// `hashchange` listener. Reading `page.url.hash` back after the shallow
+	// `replaceState` does not re-run a derive, so the state is the source of truth
+	// and the hash follows it, not the other way around.
 	const firstViewId = views[0]?.id ?? '';
-	const requestedView = $derived(hashParams.get('view'));
-	const viewId = $derived(
-		requestedView && views.some((v) => v.id === requestedView) ? requestedView : firstViewId,
-	);
+	let viewId = $state<string>(firstViewId);
+	let focusedId = $state<string | null>(null);
 	const currentView = $derived(views.find((v) => v.id === viewId) ?? views[0]);
-	const requestedNode = $derived(hashParams.get('node'));
-	const focusedId = $derived(
-		requestedNode && currentView?.nodes.some((n) => n.id === requestedNode) ? requestedNode : null,
-	);
 	const focusedNode = $derived(currentView?.nodes.find((n) => n.id === focusedId) ?? null);
 
+	function readHash(): { view: string | null; node: string | null } {
+		if (typeof window === 'undefined') return { view: null, node: null };
+		const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+		return { view: params.get('view'), node: params.get('node') };
+	}
+
+	function syncFromHash() {
+		const { view, node } = readHash();
+		const nextView = view && views.some((v) => v.id === view) ? view : firstViewId;
+		viewId = nextView;
+		const target = views.find((v) => v.id === nextView);
+		focusedId = node && target?.nodes.some((n) => n.id === node) ? node : null;
+	}
+
 	function setHash(nextView: string, nextNode: string | null) {
+		const target = views.find((v) => v.id === nextView);
+		viewId = nextView;
+		focusedId = nextNode && target?.nodes.some((n) => n.id === nextNode) ? nextNode : null;
 		const params = new URLSearchParams();
 		params.set('view', nextView);
 		if (nextNode) params.set('node', nextNode);
-		const url = new URL(page.url);
+		const url = new URL(window.location.href);
 		url.hash = params.toString();
 		replaceState(url, {});
 	}
@@ -107,14 +122,18 @@
 		() => (diagramOpen = false),
 	);
 
+	const theme = graphTheme();
 	const nodeKinds = $derived([...new Set((currentView?.nodes ?? []).map((n) => n.kind))]);
-	const edgeLabels = $derived([
-		...new Set(
-			(currentView?.edges ?? [])
-				.map((e) => e.label)
-				.filter((label): label is string => typeof label === 'string' && label !== ''),
-		),
-	]);
+	const edgeKinds = $derived([...new Set((currentView?.edges ?? []).map((e) => e.kind))]);
+
+	/** The legend swatches read the diagram's own palette, so the key and the
+	 * canvas name the same colour. */
+	function nodeSwatch(kind: string): string {
+		return GRAPH_PALETTE[theme.current].kinds[kind as GraphNodeKind]?.rail ?? GRAPH_PALETTE[theme.current].note;
+	}
+	function edgeSwatch(kind: string): string {
+		return edgeKindColor(theme.current, kind as EdgeKind);
+	}
 
 	const nodeGroups = $derived.by(() => {
 		const groups: { kind: string; nodes: GraphNode[] }[] = [];
@@ -134,14 +153,6 @@
 		return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 	}
 
-	/** A steady swatch per kind, drawn from the chart palette so the legend and
-	 * the diagram name the same things. */
-	function kindSwatch(kind: string): string {
-		let hash = 0;
-		for (const ch of kind) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
-		return `var(--chart-${(hash % 8) + 1})`;
-	}
-
 	const isExternal = (href: string) => /^https?:\/\//i.test(href);
 
 	function formatGenerated(iso: string): string {
@@ -155,6 +166,13 @@
 			minute: '2-digit',
 		});
 	}
+
+	onMount(() => {
+		syncFromHash();
+		const onHash = () => syncFromHash();
+		window.addEventListener('hashchange', onHash);
+		return () => window.removeEventListener('hashchange', onHash);
+	});
 
 	onMount(async () => {
 		try {
@@ -281,7 +299,7 @@
 								<li class="flex items-center gap-2 text-sm">
 									<span
 										class="inline-block h-3 w-3 shrink-0 rounded-full"
-										style="background: {kindSwatch(kind)}"
+										style="background: {nodeSwatch(kind)}"
 									></span>
 									{humanize(kind)}
 								</li>
@@ -292,18 +310,21 @@
 					{/if}
 				</div>
 				<div>
-					<p class="mb-2 text-xs uppercase tracking-wider text-steel">Edge labels</p>
-					{#if edgeLabels.length}
+					<p class="mb-2 text-xs uppercase tracking-wider text-steel">Edge kinds</p>
+					{#if edgeKinds.length}
 						<ul class="flex flex-wrap gap-x-4 gap-y-2">
-							{#each edgeLabels as label (label)}
+							{#each edgeKinds as kind (kind)}
 								<li class="flex items-center gap-2 text-sm">
-									<span class="inline-block h-px w-5 shrink-0 bg-hairline-strong"></span>
-									{label}
+									<span
+										class="inline-block h-0.5 w-5 shrink-0 rounded-full"
+										style="background: {edgeSwatch(kind)}"
+									></span>
+									{humanize(kind)}
 								</li>
 							{/each}
 						</ul>
 					{:else}
-						<p class="text-sm text-steel">This view has no labelled edges.</p>
+						<p class="text-sm text-steel">This view has no edges.</p>
 					{/if}
 				</div>
 			</div>
@@ -311,10 +332,10 @@
 			{#if Canvas}
 				<button
 					type="button"
-					class="mb-4 w-full rounded-lg border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink lg:hidden"
+					class="mb-4 w-full rounded-lg border border-hairline-strong px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
 					onclick={() => (diagramOpen = true)}
 				>
-					View diagram
+					Open the map full screen
 				</button>
 			{/if}
 
@@ -341,39 +362,41 @@
 						</div>
 					{/if}
 
-					{#each nodeGroups as group (group.kind)}
-						<section class="mb-5">
-							<h4 class="mb-2 text-xs uppercase tracking-wider text-steel">
-								{humanize(group.kind)}
-							</h4>
-							<ul class="grid gap-2">
-								{#each group.nodes as node (node.id)}
-									<li
-										class="rounded-lg border bg-paper p-3 {focusedId === node.id
-											? 'border-signal'
-											: 'border-hairline'}"
-									>
-										<button
-											type="button"
-											class="block w-full text-left"
-											aria-pressed={focusedId === node.id}
-											onclick={() => focusNode(node.id)}
+					<div class="max-h-[40rem] overflow-y-auto pr-1">
+						{#each nodeGroups as group (group.kind)}
+							<section class="mb-5">
+								<h4 class="mb-2 text-xs uppercase tracking-wider text-steel">
+									{humanize(group.kind)}
+								</h4>
+								<ul class="grid gap-2">
+									{#each group.nodes as node (node.id)}
+										<li
+											class="rounded-lg border bg-paper p-3 {focusedId === node.id
+												? 'border-signal'
+												: 'border-hairline'}"
 										>
-											<span class="block font-medium text-ink">{node.label}</span>
-											{#if node.note}
-												<span class="mt-1 block text-sm leading-relaxed text-steel">
-													{node.note}
-												</span>
+											<button
+												type="button"
+												class="block w-full text-left"
+												aria-pressed={focusedId === node.id}
+												onclick={() => focusNode(node.id)}
+											>
+												<span class="block font-medium text-ink">{node.label}</span>
+												{#if node.note}
+													<span class="mt-1 block text-sm leading-relaxed text-steel">
+														{node.note}
+													</span>
+												{/if}
+											</button>
+											{#if node.links?.length}
+												{@render linkChips(node.links)}
 											{/if}
-										</button>
-										{#if node.links?.length}
-											{@render linkChips(node.links)}
-										{/if}
-									</li>
-								{/each}
-							</ul>
-						</section>
-					{/each}
+										</li>
+									{/each}
+								</ul>
+							</section>
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>

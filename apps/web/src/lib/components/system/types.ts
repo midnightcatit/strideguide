@@ -49,9 +49,22 @@ export interface GraphNode {
 /** The data Svelte Flow carries on each node object. */
 export type GraphNodeData = { node: GraphNode };
 
+/** What an edge stands for. Mirrors the shared contract. */
+export type GraphEdgeKind = 'flow' | 'enforced' | 'guarded' | 'decision' | 'foreign-key';
+
+/** Every edge kind, in a stable order, for the palette and the legend. */
+export const EDGE_KINDS: readonly GraphEdgeKind[] = [
+	'flow',
+	'enforced',
+	'guarded',
+	'decision',
+	'foreign-key',
+] as const;
+
 export interface GraphEdge {
 	from: string;
 	to: string;
+	kind: GraphEdgeKind;
 	label?: string;
 }
 
