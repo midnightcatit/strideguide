@@ -26,7 +26,7 @@ it('maps a choice answer to a typed risk with its confidence', async () => {
 			}),
 		),
 	);
-	expect(await classifyRisk({ TYPESAFE_API_KEY: 'k' }, 'my shin aches after runs')).toEqual({
+	expect(await classifyRisk({ OPENROUTER_API_KEY: 'k' }, 'my shin aches after runs')).toEqual({
 		risk: 'caution',
 		confidence: 0.72,
 	});
@@ -41,7 +41,7 @@ it('returns null without a key, so the coach answers as usual', async () => {
 
 it('returns null when the answer is unusable', async () => {
 	vi.stubGlobal('fetch', vi.fn(async () => ok({ answers: {} })));
-	expect(await classifyRisk({ TYPESAFE_API_KEY: 'k' }, 'x')).toBeNull();
+	expect(await classifyRisk({ OPENROUTER_API_KEY: 'k' }, 'x')).toBeNull();
 });
 
 it('redirects only when a non-none risk is confident', () => {

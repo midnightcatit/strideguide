@@ -45,11 +45,12 @@ export interface PlanChangeOutcome {
 	reasons: WeekChangeReason[];
 }
 
-/** The env the pipeline needs: the optional TypeSafe key. */
-type JevEnv = { TYPESAFE_API_KEY?: string };
+/** The env the pipeline needs: the optional OpenRouter key. */
+type JevEnv = { OPENROUTER_API_KEY?: string };
 
 function volumeQuestion(weekNumber: number): JevChoiceQuestion<VolumeIntent> {
 	return {
+		type: 'choice',
 		id: `volume_intent_w${weekNumber}`,
 		instructions:
 			'Given the runner history and the plan so far, should this week running volume ease, hold, or build relative to the plan curve? Ease or hold when sessions were missed, adherence was low, or effort has been rising. Build only when the runner kept to plan and effort is steady.',
@@ -60,6 +61,7 @@ function volumeQuestion(weekNumber: number): JevChoiceQuestion<VolumeIntent> {
 
 function qualityQuestion(weekNumber: number): JevChoiceQuestion<QualityCountOption> {
 	return {
+		type: 'choice',
 		id: `quality_count_w${weekNumber}`,
 		instructions:
 			'How many hard quality days should this week carry, from the runner history and the phase? Drop to none after a run of hard sessions or a rough patch. Two only when the runner is handling the load well and the phase supports it.',
@@ -70,6 +72,7 @@ function qualityQuestion(weekNumber: number): JevChoiceQuestion<QualityCountOpti
 
 function longRunQuestion(weekNumber: number): JevChoiceQuestion<LongRunDelta> {
 	return {
+		type: 'choice',
 		id: `long_run_delta_w${weekNumber}`,
 		instructions:
 			'Should this week long run ease, hold, or build relative to the plan? Ease it with the week when the runner is behind or carrying fatigue, hold it in a steady block, and build it only when the runner has kept to plan.',

@@ -451,14 +451,13 @@ build, revise rather than keep.
 | `GOOGLE_CLIENT_SECRET` | `apps/api/.dev.vars` | `wrangler secret put GOOGLE_CLIENT_SECRET` | **high** |
 | `SESSION_SECRET` | `apps/api/.dev.vars` | `wrangler secret put SESSION_SECRET` | **high** |
 | `OPENROUTER_API_KEY` | `apps/api/.dev.vars` | `wrangler secret put OPENROUTER_API_KEY` | **high** |
-| `TYPESAFE_API_KEY` | `apps/api/.dev.vars` | `wrangler secret put TYPESAFE_API_KEY` | **high** (optional) |
 
-`TYPESAFE_API_KEY` is the TypeSafe AI key for the Jev typed-decision model, used by the coach
-safety classifier. It is optional: with it unset the classifier is skipped and the coach answers
-normally, so the app runs unchanged without it. Get a key at <https://console.typesafe.ai/keys>.
+`OPENROUTER_API_KEY` also serves Jev, the decisions model used by the coach safety classifier. Its
+model id is `typesafe/jev-1.14`; the `~typesafe/jev-latest` alias tracks the newest release. No
+separate TypeSafe key is needed.
 
 **Local setup (step by step):**
-1. I create a committed template `apps/api/.dev.vars.example` listing the five names with empty values.
+1. I create a committed template `apps/api/.dev.vars.example` listing the four names with empty values.
 2. Copy it: `cp apps/api/.dev.vars.example apps/api/.dev.vars`.
 3. Open `apps/api/.dev.vars` **in your editor** and paste each value after its `=`. Do not paste these
    into chat. The file is in `.gitignore` and must never be committed.
@@ -467,7 +466,7 @@ normally, so the app runs unchanged without it. Get a key at <https://console.ty
 **Production setup (step by step):**
 1. `cd apps/api`
 2. `wrangler secret put GOOGLE_CLIENT_ID` — paste when prompted. Repeat for
-   `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`, `OPENROUTER_API_KEY`, `TYPESAFE_API_KEY`.
+   `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`, `OPENROUTER_API_KEY`.
 3. Alternative: Cloudflare dashboard → Workers & Pages → the API Worker → Settings → Variables → Secrets.
 4. Verify: `wrangler secret list` (shows names only, never values).
 5. Generate `SESSION_SECRET` yourself: `openssl rand -base64 32` (run it locally; keep the output off-chat).
