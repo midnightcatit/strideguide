@@ -4,6 +4,11 @@ GOOGLE_CLIENT_SECRET=""
 SESSION_SECRET=""
 OPENROUTER_API_KEY=""
 
+# TypeSafe AI key for the Jev typed-decision model, used by the coach safety
+# classifier. Leave unset to run without it: the classifier is skipped and the
+# coach answers normally. Get a key from https://console.typesafe.ai/keys.
+# TYPESAFE_API_KEY=""
+
 # Health connectors. Leave unset to run with the connector off (it shows as not
 # configured). Google Health falls back to the Google sign-in client above when its
 # own values are empty.

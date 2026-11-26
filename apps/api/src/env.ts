@@ -25,6 +25,12 @@ export interface Env {
 	GOOGLE_CLIENT_SECRET: string;
 	SESSION_SECRET: string;
 	OPENROUTER_API_KEY: string;
+	/**
+	 * TypeSafe AI key for the Jev typed-decision model (the coach safety
+	 * classifier). Optional: when it is unset the classifier is skipped and the
+	 * coach answers normally, so the app runs unchanged without it.
+	 */
+	TYPESAFE_API_KEY?: string;
 
 	// Health connector secrets. All optional: when the client id and secret are
 	// unset the provider shows as not configured and stays inert.

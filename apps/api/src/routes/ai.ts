@@ -6,6 +6,7 @@ import { explanationRefFor } from '@strideguide/shared/plan';
 import { DEFAULT_PREFS, formatDistance, type Units } from '@strideguide/shared/units';
 import { schema } from '../db';
 import { runAi } from '../lib/ai';
+import { classifyRisk, SAFETY_REPLY, shouldRedirect } from '../lib/coach-safety';
 import { sanitizeText, WRITING_RULES } from '@strideguide/shared/writing';
 import { checkRateLimit } from '../lib/rate-limit';
 import type { AppBindings } from '../types';
@@ -30,6 +31,24 @@ ai.post(
 		const db = c.get('db');
 		const lines: string[] = [];
 		const today = new Date().toISOString().slice(0, 10);
+
+		// A typed safety read on the message, decided by Jev. Best-effort and
+		// bounded: no key, a timeout or an invalid answer returns null, so the
+		// coach answers as usual. Only a confident risk read replaces the reply,
+		// and it is a plain line that points to a professional, not a diagnosis.
+		const risk = await classifyRisk(c.env, c.req.valid('json').message, {
+			rateLimit: { db: c.env.DB, key: `jev:${user.id}`, limit: 40, windowSec: 3600 },
+		});
+		if (shouldRedirect(risk)) {
+			await db.insert(schema.aiJobs).values({
+				id: crypto.randomUUID(),
+				type: 'coach_chat',
+				status: 'ok',
+				modelUsed: 'safety-classifier',
+				latencyMs: 0,
+			});
+			return c.json({ reply: SAFETY_REPLY, model: 'safety-classifier', provider: 'typesafe' });
+		}
 
 		// The coach speaks in the runner's own units, so the context below is
 		// formatted the same way the app shows it.
