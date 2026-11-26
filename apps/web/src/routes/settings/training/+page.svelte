@@ -24,6 +24,7 @@
 	import { GYM_PRESETS, PF_MACHINES, EXTRA_MACHINES } from '@strideguide/shared/plan';
 	import {
 		clampCountdownSec,
+		countdownEnabledFor,
 		DEFAULT_COUNTDOWN_SEC,
 		COUNTDOWN_MAX_SEC,
 		COUNTDOWN_MIN_SEC,
@@ -53,7 +54,7 @@
 		return {
 			units: prefs.units,
 			weekStart: prefs.weekStart,
-			countdownEnabled: prefs.countdownEnabled ?? true,
+			countdownEnabled: countdownEnabledFor(prefs),
 			countdownSec: clampCountdownSec(prefs.countdownSec ?? DEFAULT_COUNTDOWN_SEC),
 			autoAdvance: prefs.autoAdvance ?? true,
 			equipment: prefs.equipment,

@@ -95,12 +95,26 @@ export function clampCountdownSec(v: number): number {
 }
 
 /**
+ * The effective countdown on/off for a runner. Off when the pref says so, and
+ * also when the pref was never set but the length is 0, which is how "off" was
+ * stored before the explicit switch existed. The one place the legacy rule lives,
+ * so the player and the settings page cannot drift.
+ */
+export function countdownEnabledFor(
+	prefs: Pick<Prefs, 'countdownEnabled' | 'countdownSec'>,
+): boolean {
+	if (prefs.countdownEnabled === false) return false;
+	if (prefs.countdownEnabled === undefined && prefs.countdownSec === 0) return false;
+	return true;
+}
+
+/**
  * Seconds to count down before a step starts: 0 when the countdown is off, else
  * the pref clamped to 3 to 10 seconds. One place decides this, so the player and
  * the settings stepper agree.
  */
 export function countdownSeconds(prefs: Pick<Prefs, 'countdownEnabled' | 'countdownSec'>): number {
-	if (prefs.countdownEnabled === false) return 0;
+	if (!countdownEnabledFor(prefs)) return 0;
 	return clampCountdownSec(prefs.countdownSec ?? DEFAULT_COUNTDOWN_SEC);
 }
 

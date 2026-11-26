@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { countdownSeconds, formatClock } from '@strideguide/shared/units';
+	import { countdownEnabledFor, countdownSeconds, formatClock } from '@strideguide/shared/units';
 	import { goto } from '$app/navigation';
 	import { findDrill, findMove, mediaForMove } from '@strideguide/shared/plan';
 	import { onMount, onDestroy } from 'svelte';
@@ -111,7 +111,7 @@
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
 	const resting = $derived(restLeft > 0);
-	const countdownOn = $derived(prefs.countdownEnabled ?? true);
+	const countdownOn = $derived(countdownEnabledFor(prefs));
 
 	function save() {
 		if (instances.length) setProgress(session.id, { idx, elapsed });
@@ -174,7 +174,7 @@
 	}
 
 	function toggleCountdown() {
-		void setCountdownEnabled(!(prefs.countdownEnabled ?? true));
+		void setCountdownEnabled(!countdownEnabledFor(prefs));
 	}
 
 	function jump(i: number) {
@@ -302,7 +302,7 @@
 	tabindex="-1"
 	use:modal={{ onClose: close, enabled: !asPage }}
 >
-	<div class="mx-auto max-w-2xl px-4 pb-24">
+	<div class="mx-auto max-w-2xl px-4 {asPage ? 'pb-10' : 'pb-24'}">
 		<div class="sticky top-0 z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5" style={asPage ? 'padding-top: calc(env(safe-area-inset-top) + 1.25rem)' : undefined}>
 		<div class="flex items-center justify-between">
 			<button type="button" onclick={close} class="-ml-2 flex h-11 items-center px-2 text-sm text-steel hover:text-ink">‹ Back</button>

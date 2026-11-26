@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	clampCountdownSec,
 	convertPace,
+	countdownEnabledFor,
 	countdownSeconds,
 	formatDistance,
 	formatPace,
@@ -63,6 +64,19 @@ describe('countdownSeconds', () => {
 		expect(countdownSeconds({ countdownEnabled: true, countdownSec: 7 })).toBe(7);
 		expect(countdownSeconds({ countdownEnabled: true, countdownSec: 15 })).toBe(10);
 		expect(countdownSeconds({ countdownEnabled: true })).toBe(5);
+	});
+
+	it('treats a legacy stored 0 as off, with no enabled flag', () => {
+		expect(countdownSeconds({ countdownSec: 0 })).toBe(0);
+	});
+});
+
+describe('countdownEnabledFor', () => {
+	it('reads a legacy stored 0 as off and an explicit false as off', () => {
+		expect(countdownEnabledFor({ countdownSec: 0 })).toBe(false);
+		expect(countdownEnabledFor({ countdownEnabled: false })).toBe(false);
+		expect(countdownEnabledFor({ countdownSec: 7 })).toBe(true);
+		expect(countdownEnabledFor({})).toBe(true);
 	});
 });
 
