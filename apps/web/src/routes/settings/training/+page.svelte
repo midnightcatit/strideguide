@@ -4,6 +4,7 @@
 	import SettingsSaveBar from '$lib/components/SettingsSaveBar.svelte';
 	import SettingsDraftGuard from '$lib/components/SettingsDraftGuard.svelte';
 	import Switch from '$lib/components/Switch.svelte';
+	import ScheduleGrid from '$lib/components/ScheduleGrid.svelte';
 	import { api } from '$lib/api';
 	import { today } from '$lib/today.svelte';
 	import {
@@ -14,6 +15,7 @@
 		setEquipmentItems,
 		setGymPreset,
 		setMachineItems,
+		setSchedule,
 		setUnits,
 		setWeekStart,
 	} from '$lib/prefs.svelte';
@@ -34,6 +36,7 @@
 		equipmentItems: NonNullable<Prefs['equipmentItems']>;
 		gymPreset: Prefs['gymPreset'];
 		machineItems: NonNullable<Prefs['machineItems']>;
+		schedule: NonNullable<Prefs['schedule']>;
 	};
 	function readPrefs(): Draft {
 		return {
@@ -45,13 +48,22 @@
 			equipmentItems: prefs.equipmentItems ?? [],
 			gymPreset: prefs.gymPreset,
 			machineItems: prefs.machineItems ?? [],
+			schedule: prefs.schedule ?? [],
 		};
 	}
 	function clone(d: Draft): Draft {
-		return { ...d, equipmentItems: [...d.equipmentItems], machineItems: [...d.machineItems] };
+		return {
+			...d,
+			equipmentItems: [...d.equipmentItems],
+			machineItems: [...d.machineItems],
+			schedule: d.schedule.map((b) => ({ ...b })),
+		};
 	}
 	function sameItems(a: string[], b: string[]): boolean {
 		return [...a].sort().join() === [...b].sort().join();
+	}
+	function sameSchedule(a: Draft['schedule'], b: Draft['schedule']): boolean {
+		return JSON.stringify(a) === JSON.stringify(b);
 	}
 	function same(a: Draft, b: Draft): boolean {
 		return (
@@ -62,7 +74,8 @@
 			a.equipment === b.equipment &&
 			a.gymPreset === b.gymPreset &&
 			sameItems(a.equipmentItems, b.equipmentItems) &&
-			sameItems(a.machineItems, b.machineItems)
+			sameItems(a.machineItems, b.machineItems) &&
+			sameSchedule(a.schedule, b.schedule)
 		);
 	}
 
@@ -133,6 +146,9 @@
 			await setEquipmentItems(next.equipmentItems);
 			await setGymPreset(next.gymPreset);
 			await setMachineItems(next.machineItems);
+			// The windows are prefs only; they do not change the built weeks, so they
+			// are saved on their own rather than through the plan rebuild below.
+			await setSchedule(next.schedule);
 			const res = await api.adaptPlan({
 				equipment: next.equipment,
 				equipmentItems: next.equipmentItems,
@@ -322,6 +338,17 @@
 			</details>
 		{/if}
 		{#if message}<p class="mt-2 text-xs text-signal-ink">{message}</p>{/if}
+	</div>
+
+	<div class="border-t border-hairline pt-6">
+		<h2 class="tabular text-xs uppercase tracking-widest text-steel">Training windows</h2>
+		<p class="mt-2 text-xs text-steel">
+			The times you are usually free on each day. The plan can fit sessions inside these windows.
+			Tap or drag on the grid to add a window, or use the controls, and tap a window to remove it.
+		</p>
+		<div class="mt-3">
+			<ScheduleGrid blocks={draft.schedule} onChange={(b) => (draft.schedule = b)} />
+		</div>
 	</div>
 
 	<div class="border-t border-hairline pt-6">

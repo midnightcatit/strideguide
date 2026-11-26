@@ -9,6 +9,7 @@ import {
 	equipmentPreferenceSchema,
 	gymPresetSchema,
 	machineItemsSchema,
+	scheduleSchema,
 } from '../lib/prefs-schema';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
@@ -52,6 +53,7 @@ settings.put(
 			favoriteMachines: z.array(z.string().max(60)).max(60).optional(),
 			favoriteWorkouts: z.array(z.string().max(60)).max(60).optional(),
 			connectNudgeDismissed: z.boolean().optional(),
+			schedule: scheduleSchema.optional(),
 		}),
 	),
 	async (c) => {

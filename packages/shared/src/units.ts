@@ -7,6 +7,17 @@ export type Units = 'metric' | 'imperial';
 
 import type { EquipmentItem, EquipmentPreference } from './types';
 
+/**
+ * One free window on a weekday: the day (0 = Monday, the app's convention) and
+ * the local start and end times as "HH:MM". The plan engine reads these to place
+ * sessions inside the runner's available hours. Local times, so no zone is stored.
+ */
+export interface ScheduleBlock {
+	day: number;
+	start: string;
+	end: string;
+}
+
 export interface Prefs {
 	units: Units;
 	/** 0 = Monday, 1 = Sunday. */
@@ -47,6 +58,12 @@ export interface Prefs {
 	favoriteWorkouts?: string[];
 	/** True once the runner dismisses the Connect Google Health nudge, so it stays gone. */
 	connectNudgeDismissed?: boolean;
+	/**
+	 * The free windows the runner blocked out per weekday, in local time. Optional:
+	 * a runner who skips the onboarding step has none, and the plan uses the chosen
+	 * days alone. The plan engine places sessions inside these windows when present.
+	 */
+	schedule?: ScheduleBlock[];
 }
 
 export const DEFAULT_PREFS: Prefs = { units: 'imperial', weekStart: 0 };
