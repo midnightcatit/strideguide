@@ -143,6 +143,9 @@
 		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
 		return '';
 	});
+	// One clause for the card, from the plan's own reason, falling back to the
+	// static amount note when the session carries no structured reason.
+	const whyLine = $derived(p.whyStructured?.role ?? p.whyStructured?.dayReason ?? p.why ?? '');
 </script>
 
 <article
@@ -213,8 +216,8 @@
 			{/each}
 		</div>
 
-		{#if p.why}
-			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-steel">{p.why}</p>
+		{#if whyLine}
+			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-steel">{whyLine}</p>
 		{/if}
 
 		<hr class="my-3 border-hairline" />

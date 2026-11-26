@@ -178,6 +178,8 @@
 	});
 
 	const lead = $derived(SHORT_WHY[session.type as keyof typeof SHORT_WHY] ?? session.purpose ?? '');
+	/** The plan's composed reason, when the session carries one. */
+	const whyParts = $derived(p.whyStructured);
 
 	/** One row per stage, so a repeated set reads once. */
 	interface Row {
@@ -367,11 +369,17 @@
 				<p class="mt-3 rounded-lg bg-signal-wash p-3 text-sm leading-relaxed text-signal-ink">{p.why}</p>
 			{/if}
 
-			<!-- Why this workout: one summed-up narrative -->
+			<!-- Why this session: the plan's own reasoning, or the static one-liner -->
 			<section class="mt-6" aria-labelledby="why">
-				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this workout</h2>
+				<h2 id="why" class="tabular text-xs uppercase tracking-widest text-steel">Why this session</h2>
 				{#if personal}<p class="mt-2 text-[15px] leading-relaxed text-signal-ink">{personal}</p>{/if}
-				{#if lead}<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>{/if}
+				{#if whyParts}
+					{#if whyParts.role}<p class="mt-2 text-[15px] leading-relaxed">{whyParts.role}</p>{/if}
+					{#if whyParts.dayReason}<p class="mt-2 text-[15px] leading-relaxed text-steel">{whyParts.dayReason}</p>{/if}
+					{#if whyParts.planContext}<p class="mt-2 text-[15px] leading-relaxed text-steel">{whyParts.planContext}</p>{/if}
+				{:else if lead}
+					<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>
+				{/if}
 				{#if loading}
 					<p class="mt-3 text-sm text-steel">Loading the reasoning…</p>
 				{:else if failed}

@@ -20,6 +20,7 @@ export * from './fitness';
 export * from './adaptive';
 export * from './rebuild';
 export * from './engine';
+export * from './why';
 export * from './library';
 export * from './library-extra';
 export * from './recommend';
