@@ -649,7 +649,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		summary:
 			'A sustained ride at an effort you can hold with short sentences, breathing deep but controlled.',
 		purpose:
-			'Carries real aerobic work while you cut running impact, and stands in for a steady run when a niggle calls for a lighter day on the legs.',
+			'Carries real aerobic work while you cut running impact, and stands in for a steady run when soreness calls for a lighter day on the legs.',
 		targetRpe: [5, 7],
 		workout: wk([
 			block([step('warmup', 'Easy spin', 10 * MIN, 'Light resistance, build to a comfortable effort.')]),
@@ -1001,7 +1001,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		summary:
 			'A steady ride on a recumbent bike, seated back with the legs out front, easy enough to talk the whole way.',
 		purpose:
-			'Low-impact aerobic work that spares the legs from running impact while the heart and lungs still work. Good on a recovery day or when a niggle needs a break from pounding.',
+			'Low-impact aerobic work that spares the legs from running impact while the heart and lungs still work. Good on a recovery day or when soreness needs a break from pounding.',
 		targetRpe: [3, 5],
 		workout: wk([
 			block([step('warmup', 'Easy spin', 5 * MIN, 'Start light and let the legs wake up.')]),

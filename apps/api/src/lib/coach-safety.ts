@@ -51,7 +51,7 @@ export async function classifyRisk(
 			options: {
 				none: 'A training question or remark with no health or safety concern.',
 				caution:
-					'A health or safety concern the runner raises, such as pain, a niggle, injury or illness, that is not an emergency.',
+					'A health or safety concern the runner raises, such as pain, soreness, injury or illness, that is not an emergency.',
 				urgent:
 					'A clear health or safety concern that needs a medical professional now, such as chest pain, fainting, or an injury that stops training.',
 			},

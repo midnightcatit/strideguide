@@ -89,7 +89,7 @@
 					✕
 				</button>
 			</div>
-			<p class="mt-1 text-sm text-steel">Anything you want to remember about this session: how it felt, what to change next time, a niggle to watch.</p>
+			<p class="mt-1 text-sm text-steel">Anything you want to remember about this session: how it felt, what to change next time, any sore spots.</p>
 			<textarea
 				bind:value={draft}
 				rows="8"

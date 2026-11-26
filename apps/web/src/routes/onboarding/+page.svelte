@@ -412,7 +412,7 @@
 			},
 			{
 				id: 'niggles',
-				title: 'Anything niggling or sore?',
+				title: 'Anything sore or tight?',
 				lede: 'Tell us what to be careful with and we keep it in mind when the plan is built. This is not medical advice.',
 				guide: [
 					'For example: a cranky Achilles, a knee that aches on downhills, a tight hamstring.',
@@ -1504,7 +1504,7 @@
 						rows="3"
 						maxlength="400"
 						placeholder="For example: a cranky Achilles, a knee that aches on downhills…"
-						aria-label="Niggles or injuries"
+						aria-label="Soreness or injury"
 						class="w-full rounded-xl border border-hairline bg-paper px-4 py-3 text-sm leading-relaxed"
 					></textarea>
 				{:else if step.id === 'notes'}
