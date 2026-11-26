@@ -3,6 +3,7 @@ import { GOAL_PROFILES } from '../goal-profiles';
 import { generatePlan } from './engine';
 import { findMove } from './catalog';
 import { WORKOUT_LIBRARY } from './library';
+import type { PlannedWeek } from './types';
 
 const marathon = GOAL_PROFILES.find((p) => p.slug === 'marathon')!;
 const wholeFitness = GOAL_PROFILES.find((p) => p.slug === 'whole-fitness')!;
@@ -127,10 +128,13 @@ describe('generatePlan (whole-fitness, no race)', () => {
 });
 
 describe('handle intensity + race-pace', () => {
+	// Six days, so the week can hold two quality sessions two easy days apart and
+	// the goal-pace rehearsal has its own day. A four-day week holds one quality
+	// session plus the long run (see the week-structure tests).
 	const half = generatePlan({
 		profile: GOAL_PROFILES.find((p) => p.slug === 'half-marathon')!,
 		baseline: { recentTimes: { '10k': '45:00' }, experience: 'intermediate' },
-		availableDays: [0, 2, 4, 6],
+		availableDays: [0, 1, 2, 4, 5, 6],
 		startDate: '2026-12-01',
 		targetDate: '2027-03-01',
 	});
@@ -1288,5 +1292,121 @@ describe("plan engine uses the runner's schedule", () => {
 		const long = plan.weeks[0]!.sessions.find((s) => s.type === 'long')!;
 		expect(long).toBeTruthy();
 		expect(long.prescription.timeStart).toBeUndefined();
+	});
+});
+
+describe('week structure (research/wave-6)', () => {
+	const HARD = ['tempo', 'interval', 'hills', 'race-pace', 'threshold', 'strides', 'fartlek'];
+	const plan = (
+		slug: string,
+		baseline: Parameters<typeof generatePlan>[0]['baseline'],
+		days: number[],
+	) =>
+		generatePlan({
+			profile: GOAL_PROFILES.find((p) => p.slug === slug)!,
+			baseline,
+			availableDays: days,
+			startDate: '2026-11-30',
+			targetDate: '2027-05-02',
+		});
+	/** A calendar day with no run, no strength and no sport is a true rest day. */
+	const restDays = (w: PlannedWeek) =>
+		[0, 1, 2, 3, 4, 5, 6].filter(
+			(d) => !w.sessions.some((s) => s.day === d && s.modality !== 'mobility'),
+		);
+
+	it('never schedules a zero-rest week, even when every day is offered', () => {
+		for (const slug of ['marathon', 'half-marathon', '5k']) {
+			const p = plan(slug, { experience: 'intermediate' }, [0, 1, 2, 3, 4, 5, 6]);
+			for (const w of p.weeks) expect(restDays(w).length).toBeGreaterThanOrEqual(1);
+		}
+	});
+
+	it('gives a beginner at least two rest days a week', () => {
+		const p = plan('half-marathon', { experience: 'beginner' }, [0, 1, 2, 3, 4, 5, 6]);
+		for (const w of p.weeks) expect(restDays(w).length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('keeps a beginner to at most one hard session a week', () => {
+		const p = plan('5k', { experience: 'beginner' }, [0, 1, 2, 3, 4, 5, 6]);
+		for (const w of p.weeks) {
+			expect(w.sessions.filter((s) => HARD.includes(s.type)).length).toBeLessThanOrEqual(1);
+		}
+	});
+
+	it('separates two hard sessions by at least two easy days, off the long run', () => {
+		const p = plan('marathon', { experience: 'intermediate' }, [0, 1, 2, 4, 5, 6]);
+		let sawTwo = false;
+		for (const w of p.weeks.filter((x) => x.phase !== 'recovery')) {
+			const hard = w.sessions
+				.filter((s) => HARD.includes(s.type))
+				.map((s) => s.day)
+				.sort((a, b) => a - b);
+			const long = w.sessions.find((s) => s.type === 'long');
+			for (let i = 1; i < hard.length; i++) {
+				// Two whole days between hard sessions, so at least two easy days
+				// unless another session takes one of them.
+				expect(hard[i]! - hard[i - 1]!).toBeGreaterThanOrEqual(3);
+				sawTwo = true;
+			}
+			if (long) expect(hard).not.toContain(long.day);
+		}
+		expect(sawTwo).toBe(true);
+	});
+
+	it('keeps the day after the long run off the hard work', () => {
+		const p = plan('marathon', { experience: 'intermediate' }, [0, 1, 2, 4, 5, 6]);
+		for (const w of p.weeks.filter((x) => x.phase !== 'recovery')) {
+			const long = w.sessions.find((s) => s.type === 'long');
+			if (!long || long.day !== 6) continue;
+			for (const s of w.sessions.filter((x) => x.day === 0)) {
+				expect(HARD.includes(s.type)).toBe(false);
+			}
+		}
+	});
+
+	it('adds a midweek medium-long run only at higher volume', () => {
+		const hasMediumLong = (p: ReturnType<typeof generatePlan>) =>
+			p.weeks.flatMap((w) => w.sessions).some((s) => s.title === 'Medium-long run');
+		const low = plan('marathon', { experience: 'intermediate', weeklyKm: 20 }, [0, 1, 2, 4, 5, 6]);
+		const high = plan(
+			'marathon',
+			{ experience: 'intermediate', weeklyKm: 55, strengthDays: 1 },
+			[0, 1, 2, 4, 5, 6],
+		);
+		expect(hasMediumLong(low)).toBe(false);
+		expect(hasMediumLong(high)).toBe(true);
+		// The medium-long run stays under the long run on its own day pairing.
+		for (const w of high.weeks) {
+			const ml = w.sessions.find((s) => s.title === 'Medium-long run');
+			const long = w.sessions.find((s) => s.type === 'long');
+			if (ml && long) {
+				expect(ml.prescription.targetDistanceKm!).toBeLessThan(
+					long.prescription.targetDistanceKm!,
+				);
+			}
+		}
+	});
+
+	it('never plans a token jog: every easy run is a real length', () => {
+		for (const slug of ['marathon', 'half-marathon', '5k', 'whole-fitness']) {
+			for (const experience of ['beginner', 'intermediate'] as const) {
+				const p = plan(slug, { experience }, [0, 2, 4, 6]);
+				for (const s of p.weeks.flatMap((w) => w.sessions)) {
+					if (s.type === 'easy') expect(s.durationMin).toBeGreaterThanOrEqual(15);
+				}
+			}
+		}
+	});
+
+	it('gives the long run a bigger share of a light week than a heavy one', () => {
+		const peakShare = (weeklyKm: number) => {
+			const p = plan('marathon', { experience: 'intermediate', weeklyKm }, [0, 1, 2, 4, 5, 6]);
+			const build = p.weeks.filter((w) => w.phase !== 'taper' && w.phase !== 'recovery');
+			const heaviest = build.reduce((a, b) => (b.targetVolumeKm > a.targetVolumeKm ? b : a));
+			const long = heaviest.sessions.find((s) => s.type === 'long');
+			return long ? long.prescription.targetDistanceKm! / heaviest.targetVolumeKm : 0;
+		};
+		expect(peakShare(25)).toBeGreaterThan(peakShare(55));
 	});
 });
