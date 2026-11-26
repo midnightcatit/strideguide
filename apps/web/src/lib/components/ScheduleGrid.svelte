@@ -13,6 +13,10 @@
 	 *
 	 * The day columns hold a fixed minimum width and the grid scrolls sideways,
 	 * so a phone shows a comfortable column and the whole week stays reachable.
+	 *
+	 * An optional `activeDays` list dims the columns of days the runner has not
+	 * picked. It is a cue only: every column stays editable, so the touch,
+	 * keyboard and bulk-add paths are exactly as before.
 	 */
 	import {
 		DAY_LABELS,
@@ -43,7 +47,18 @@
 	let {
 		blocks,
 		onChange,
-	}: { blocks: ScheduleBlock[]; onChange: (blocks: ScheduleBlock[]) => void } = $props();
+		activeDays = null,
+	}: {
+		blocks: ScheduleBlock[];
+		onChange: (blocks: ScheduleBlock[]) => void;
+		// The days the runner can train, when the caller knows them (onboarding).
+		// Only a visual cue: those day columns stay fully editable, so this never
+		// changes the touch, keyboard or bulk-add behaviour here. Omitted, every
+		// column reads the same, which is what Settings does.
+		activeDays?: number[] | null;
+	} = $props();
+
+	const activeSet = $derived(activeDays ? new Set(activeDays) : null);
 
 	// One cell is 16px tall, so a quarter-hour block is one cell and an hour block
 	// is four. The grid is the default 04:00 to 23:00 (76 rows, so 1216px),
@@ -524,7 +539,10 @@
 					<div class="grid flex-1" style="grid-template-columns: repeat(7, 1fr)">
 						{#each DAY_LABELS as label, d (d)}
 							<span
-								class="tabular text-center text-[10px] font-medium uppercase tracking-wide text-steel"
+								class="tabular text-center text-[10px] font-medium uppercase tracking-wide {activeSet &&
+								!activeSet.has(d)
+									? 'text-steel/40'
+									: 'text-steel'}"
 								>{label.slice(0, 3)}</span
 							>
 						{/each}
@@ -564,14 +582,12 @@
 								{#each DAYS as d (d)}
 									{#each rowIndexes as r (r)}
 										<div
-											class="border-b border-hairline {d > 0 ? 'border-l' : ''} {minutesForRow(
-												r,
-												bounds.start,
-											) %
-												60 ===
-											0
-												? 'bg-sunken/40'
-												: ''}"
+											class="border-b border-hairline {d > 0 ? 'border-l' : ''} {activeSet &&
+											!activeSet.has(d)
+												? 'bg-sunken/60'
+												: minutesForRow(r, bounds.start) % 60 === 0
+													? 'bg-sunken/40'
+													: ''}"
 										></div>
 									{/each}
 								{/each}
@@ -600,7 +616,10 @@
 								{@const label = `${DAY_LABELS[block.day]} ${formatWindow(start, end)}`}
 								<div
 									data-block
-									class="absolute touch-none overflow-hidden rounded-md border border-signal-ink bg-signal-wash text-[10px] font-medium leading-tight text-signal-ink transition-[box-shadow,transform] duration-150 {lifted
+									class="absolute touch-none overflow-hidden rounded-md border border-signal-ink bg-signal-wash text-[10px] font-medium leading-tight text-signal-ink transition-[box-shadow,transform] duration-150 {activeSet &&
+									!activeSet.has(block.day)
+										? 'opacity-50'
+										: ''} {lifted
 										? 'z-30 origin-top scale-[1.03] shadow-lg outline outline-2 outline-offset-1 outline-signal-ink'
 										: ''}"
 									style="left: calc({colLeft(block.day)}% + 2px); width: calc({COL_W}% - 4px); top: {blockTop(

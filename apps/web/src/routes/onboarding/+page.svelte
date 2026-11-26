@@ -342,22 +342,13 @@
 			},
 			{
 				id: 'days',
-				title: 'Which days can you train?',
-				lede: 'The plan puts its long run on your last chosen day and spreads the harder sessions and strength work around it.',
-				guide: [
-					'Three or four days is enough to make progress.',
-					'Keep quality days apart, and put strength after an easy run or on a rest day.',
-					'Fewer days is fine. The plan scales to what you can do.',
-				],
-			},
-			{
-				id: 'schedule',
 				title: 'When can you train?',
-				lede: 'Block out the times you are usually free on your training days, so the plan can fit sessions into the hours you actually have. Tapping or dragging on the grid adds a free window, and tapping a saved window removes it. This step is optional: skip it and any day and any time is available, so the plan is not tied to particular hours.',
+				lede: 'Pick the days you can train, then block the hours you are usually free on those days, so the plan fits sessions into the time you actually have. The plan puts its long run on your last chosen day and spreads the harder sessions and strength work around it.',
 				guide: [
-					'Add a window for each block of free time, for example 6:00 to 7:30 before work.',
-					'Keep windows to the days you pick. A day with no window stays open at any time.',
-					'You can set these any time later in Settings, under Training.',
+					'Three or four days is enough to make progress. Fewer is fine: the plan scales to what you can do.',
+					'Block out each stretch of free time on those days, for example 6:00 to 7:30 before work.',
+					'The windows are optional. A training day with no window is treated as any time, and a day you leave unpicked is not used.',
+					'You can change both any time later in Settings, under Training.',
 				],
 			},
 			{
@@ -1318,26 +1309,37 @@
 					</div>
 					<p class="mt-3 rounded-lg bg-sunken p-3 text-sm leading-relaxed text-steel">{recBuild.reason}</p>
 				{:else if step.id === 'days'}
-					<div class="flex justify-between gap-1">
-						{#each DAY_INITIALS as initial, d (d)}
-							<button
-								type="button"
-								aria-pressed={days.includes(d)}
-								onclick={() => toggleDay(d)}
-								class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {days.includes(d)
-									? 'bg-ink font-bold text-paper'
-									: 'border border-hairline text-steel hover:border-steel'}"
-							>
-								{initial}
-							</button>
-						{/each}
+					<div class="rounded-xl border border-hairline bg-paper p-4">
+						<p class="tabular text-xs uppercase tracking-widest text-steel">Days you can train</p>
+						<div class="mt-2 flex justify-between gap-1">
+							{#each DAY_INITIALS as initial, d (d)}
+								<button
+									type="button"
+									aria-pressed={days.includes(d)}
+									onclick={() => toggleDay(d)}
+									class="tabular flex h-12 flex-1 items-center justify-center rounded-lg text-sm transition-colors {days.includes(d)
+										? 'bg-ink font-bold text-paper'
+										: 'border border-hairline text-steel hover:border-steel'}"
+								>
+									{initial}
+								</button>
+							{/each}
+						</div>
+						<p class="mt-2 text-sm text-steel">{days.length} {days.length === 1 ? 'day' : 'days'} a week.</p>
+
+						<div class="mt-4 border-t border-hairline pt-4">
+							<p class="tabular text-xs uppercase tracking-widest text-steel">Hours you are usually free</p>
+							<p class="mt-1 text-xs leading-relaxed text-steel">
+								Then block the hours you are usually free on those days, so the plan can fit sessions
+								into the time you actually have. Days you have not picked are dimmed, and a training
+								day with no window is treated as any time. This part is optional: skip it and any
+								time on a training day is open.
+							</p>
+							<div class="mt-3">
+								<ScheduleGrid blocks={schedule} onChange={(b) => (schedule = b)} activeDays={days} />
+							</div>
+						</div>
 					</div>
-					<p class="mt-3 text-sm text-steel">{days.length} {days.length === 1 ? 'day' : 'days'} a week.</p>
-				{:else if step.id === 'schedule'}
-					<ScheduleGrid blocks={schedule} onChange={(b) => (schedule = b)} />
-					<p class="mt-3 text-xs text-steel">
-						Optional. Skip it and any day and any time is available.
-					</p>
 				{:else if step.id === 'equipment'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Your setup</p>
 					<p class="mt-1 text-xs text-steel">Pick the kind of strength work you want. This decides how a session is built.</p>
