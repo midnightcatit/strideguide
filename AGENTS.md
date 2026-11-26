@@ -3,11 +3,10 @@
 Guidance for AI agents (and humans) working in this repo. Keep changes small, verified, and
 consistent with what's here.
 
-## What this is
-
-Stride Guide — a goal-tailored running + strength training PWA on Cloudflare (Hono Worker + D1 on the
-API side, SvelteKit PWA on the web side, a pure shared package in between). Full plan in
-[PLAN.md](./PLAN.md); dev/deploy flow in [README.md](./README.md).
+**Read first.** Before you change the engine, the schema, the AI or the writing rules, read
+[SYSTEM.md](./SYSTEM.md) (the system as it is now, and its boundaries) and
+[docs/decisions.md](./docs/decisions.md) (the settled choices and their why). Intentions live in
+[PLAN.md](./PLAN.md); the dev/deploy flow is in [README.md](./README.md).
 
 ## Commands
 
@@ -70,20 +69,6 @@ number.
 
 Core paths currently covered: the plan engine and VDOT paces (`packages/shared/src/plan/*.test.ts`).
 Add to that set deliberately, not broadly.
-
-## Architecture conventions
-
-- `packages/shared` is the pure domain: types, goal profiles, the plan engine, VDOT, the machine
-  catalog, design tokens, and the Drizzle schema. Browser code imports it via
-  `@strideguide/shared/plan` (which excludes the DB); **never** import `drizzle` into `apps/web`.
-- `apps/api`: Hono on Workers. Routes stay thin; logic lives in `src/lib`.
-- `apps/web`: SvelteKit PWA — presentation only.
-- **Units are presentation.** The engine computes in metric (km, seconds-per-km). Conversions
-  (km ↔ mi, pace display) happen at the edge, driven by user settings. Never bake units into the
-  engine or the stored prescriptions.
-- **Prefer data over code.** Goal profiles and the machine catalog are data — adding a new goal or
-  machine should not require new logic. User preferences (units, week start, …) belong in the
-  `settings.prefs` JSON, not new columns or branches.
 
 ## Workflow
 
