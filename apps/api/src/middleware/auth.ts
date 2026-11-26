@@ -3,6 +3,7 @@ import { getCookie } from 'hono/cookie';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '../db';
 import { secureCookies, sessionCookieName, sha256Hex, verifySession } from '../lib/session';
+import { isAccountDisabled } from '../lib/auth';
 import { resolveAdminState } from '../lib/admin';
 import type { AppBindings } from '../types';
 
@@ -33,6 +34,18 @@ export const requireAuth = createMiddleware<AppBindings>(async (c, next) => {
 		.limit(1);
 	const session = rows[0];
 	if (!session || session.revokedAt || session.expiresAt.getTime() <= Date.now()) {
+		return c.json({ error: 'unauthorized' }, 401);
+	}
+
+	// A soft-disabled account is refused even with a valid session, so disabling a
+	// user takes effect immediately across every device. Deleting their sessions on
+	// disable makes this rare, but the check is the boundary, not the cleanup.
+	const userRows = await db
+		.select({ disabledAt: schema.users.disabledAt })
+		.from(schema.users)
+		.where(eq(schema.users.id, payload.uid))
+		.limit(1);
+	if (isAccountDisabled(userRows[0])) {
 		return c.json({ error: 'unauthorized' }, 401);
 	}
 

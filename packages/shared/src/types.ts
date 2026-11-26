@@ -201,6 +201,8 @@ export interface PlanParams {
 	adaptedAt?: string;
 	/** ISO time of the last week-one preview rebuild. */
 	previewedAt?: string;
+	/** ISO time of the last admin-triggered rebuild from week one. */
+	rebuiltAt?: string;
 }
 
 export interface StrengthSet {

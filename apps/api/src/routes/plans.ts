@@ -36,7 +36,7 @@ import type { AppBindings } from '../types';
 
 const plans = new Hono<AppBindings>();
 
-function chunk<T>(items: T[], size: number): T[][] {
+export function chunk<T>(items: T[], size: number): T[][] {
 	const out: T[][] = [];
 	for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
 	return out;
@@ -66,14 +66,14 @@ interface DesiredSessionRow {
 }
 
 /** A stored week and the session identities the reconcile matches on. */
-interface StoredWeek {
+export interface StoredWeek {
 	id: string;
 	weekNumber: number;
 	sessions: { id: string; day: number; slot: string | null; type: string }[];
 }
 
 /** A rebuilt week to store, with its sessions. */
-interface DesiredWeek {
+export interface DesiredWeek {
 	weekNumber: number;
 	phase: string;
 	focus: string;
@@ -106,7 +106,7 @@ function sessionValues(session: DesiredSessionRow, planWeekId: string) {
  * runner's own note on a session is never overwritten, since the rebuild does
  * not carry notes.
  */
-async function replaceWeeks(
+export async function replaceWeeks(
 	db: Db,
 	planId: string,
 	stored: StoredWeek[],
@@ -173,7 +173,7 @@ async function replaceWeeks(
 }
 
 /** The runner's app preferences, with defaults merged. */
-async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
+export async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
 	const rows = await db
 		.select()
 		.from(schema.settings)
@@ -201,7 +201,7 @@ async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promi
 }
 
 /** The machines to build a circuit from: an explicit override, else the gym preset. */
-function resolveMachines(prefs: Prefs): string[] | undefined {
+export function resolveMachines(prefs: Prefs): string[] | undefined {
 	if (prefs.machineItems?.length) return prefs.machineItems;
 	return machinesForPreset(prefs.gymPreset);
 }
@@ -315,7 +315,7 @@ function dayIndex(weekStart: string, iso: string): number {
 }
 
 /** The user's current plan plus its weeks, or null. */
-async function currentPlanWithWeeks(db: AppBindings['Variables']['db'], userId: string) {
+export async function currentPlanWithWeeks(db: AppBindings['Variables']['db'], userId: string) {
 	const goal = (
 		await db
 			.select()

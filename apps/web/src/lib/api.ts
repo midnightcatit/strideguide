@@ -136,11 +136,97 @@ export interface AdminUser {
 	createdAt: string | null;
 	role: 'user' | 'admin';
 	isRoot: boolean;
+	disabled: boolean;
 	goalProfileSlug: string | null;
 	planCount: number;
 	lastLogAt: string | null;
 	connectionCount: number;
 	connectionStatus: 'connected' | 'error' | null;
+}
+
+/** A query for the admin user list: paging and an optional email search. */
+export interface AdminUsersQuery {
+	limit?: number;
+	offset?: number;
+	q?: string;
+}
+
+/** The paged admin user list. */
+export interface AdminUsersPage {
+	users: AdminUser[];
+	total: number;
+	limit: number;
+	offset: number;
+}
+
+/** One goal of an admin user detail. */
+export interface AdminUserGoal {
+	slug: string;
+	targetDate: string | null;
+	status: string;
+	createdAt: string | null;
+}
+
+/** One plan of an admin user detail. */
+export interface AdminUserPlan {
+	version: number;
+	generatedAt: string | null;
+	weekCount: number;
+	status: string;
+}
+
+/** A user's logs, as a count and a date range only. */
+export interface AdminUserLogSummary {
+	count: number;
+	earliest: string | null;
+	latest: string | null;
+}
+
+/** One connection of an admin user detail. */
+export interface AdminUserConnection {
+	provider: string;
+	status: string;
+	lastSyncedAt: string | null;
+	lastError: string | null;
+}
+
+/** Health metric coverage: rows and a date span, never a value. */
+export interface AdminMetricCoverage {
+	metric: string;
+	rows: number;
+	firstDate: string | null;
+	lastDate: string | null;
+}
+
+/** One audit row that targets the user. */
+export interface AdminAuditRow {
+	id: string;
+	actorId: string;
+	action: string;
+	targetType: string;
+	targetId: string | null;
+	detail: unknown;
+	createdAt: string | null;
+}
+
+/**
+ * One user's metadata-only admin detail. No health values, log contents, notes,
+ * RPE, run stats or routes.
+ */
+export interface AdminUserDetail {
+	id: string;
+	email: string;
+	createdAt: string | null;
+	role: 'user' | 'admin';
+	isRoot: boolean;
+	disabled: boolean;
+	disabledAt: string | null;
+	goals: AdminUserGoal[];
+	plans: AdminUserPlan[];
+	logs: AdminUserLogSummary;
+	connections: AdminUserConnection[];
+	healthCoverage: AdminMetricCoverage[];
+	actions: AdminAuditRow[];
 }
 
 /** One recent error row, as the admin ops summary shows it. */
@@ -421,8 +507,29 @@ export const api = {
 	/** The signed-in user's admin state, checked once so Settings can show its
 	 * admin entry. The admin routes themselves are guarded server-side. */
 	adminMe: () => req<AdminMe>('/admin/me'),
-	/** Metadata-only user list for the admin page. */
-	adminUsers: () => req<{ users: AdminUser[] }>('/admin/users'),
+	/** Paged, searchable metadata-only user list for the admin page. */
+	adminUsers: (query: AdminUsersQuery = {}) => {
+		const params = new URLSearchParams();
+		if (query.limit != null) params.set('limit', String(query.limit));
+		if (query.offset != null) params.set('offset', String(query.offset));
+		if (query.q) params.set('q', query.q);
+		const qs = params.toString();
+		return req<AdminUsersPage>(`/admin/users${qs ? `?${qs}` : ''}`);
+	},
+	/** One user's metadata-only detail. */
+	adminUser: (id: string) => req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}`),
+	/** Rebuild the user's plan from week one and return the refreshed detail. */
+	adminRebuildPlan: (id: string) =>
+		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/rebuild-plan`, { method: 'POST' }),
+	/** Sync the user's connections and return the refreshed detail. */
+	adminSyncUser: (id: string) =>
+		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/sync`, { method: 'POST' }),
+	/** Soft-disable the user (refused for a root admin, an admin, or self). */
+	adminDisableUser: (id: string) =>
+		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/disable`, { method: 'POST' }),
+	/** Re-enable a disabled user. */
+	adminEnableUser: (id: string) =>
+		req<AdminUserDetail>(`/admin/users/${encodeURIComponent(id)}/enable`, { method: 'POST' }),
 	/** Operational error counts and a rate-limiter summary. */
 	adminOps: () => req<AdminOps>('/admin/ops'),
 

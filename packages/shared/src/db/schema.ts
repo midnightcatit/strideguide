@@ -41,6 +41,13 @@ export const users = sqliteTable(
 		/** Who invited this user, and when. Reserved for a later invite phase. */
 		invitedBy: text('invited_by'),
 		invitedAt: integer('invited_at', { mode: 'timestamp' }),
+		/**
+		 * Soft-disable marker. A non-null value means the account is disabled: it
+		 * cannot sign in and its sessions are refused. Memory is kept so a later
+		 * enable or a permanent delete can tell a disabled account from an active
+		 * one. Null means active.
+		 */
+		disabledAt: integer('disabled_at', { mode: 'timestamp' }),
 		createdAt,
 	},
 	(t) => ({

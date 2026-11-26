@@ -101,5 +101,14 @@ export function breadcrumbFor(pathname: string, from?: string | null): Crumb[] {
 		}
 		return crumbs;
 	}
+	// A user detail under Settings > Admin reads Settings > Admin > User, so the
+	// raw id folds into the final crumb instead of showing as its own segment.
+	if (parts[0] === 'settings' && parts[1] === 'admin' && parts[2] === 'users' && parts[3]) {
+		return [
+			{ label: 'Settings', href: '/settings' },
+			{ label: 'Admin', href: '/settings/admin' },
+			{ label: 'User', href: `/settings/admin/users/${parts[3]}` },
+		];
+	}
 	return trailFor(pathname);
 }
