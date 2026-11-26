@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { VDOT_MAX, VDOT_MIN, pacesFromVdot, vdotFromRace } from '@strideguide/shared/plan';
@@ -147,6 +148,9 @@
 
 	let stepIndex = $state(0);
 	let dir = $state<1 | -1>(1);
+	// The current step's heading, so each move can send focus to the top of the
+	// new question instead of leaving it part way down the old one.
+	let stepHeading = $state<HTMLElement | null>(null);
 	let submitting = $state(false);
 	let generating = $state(false);
 	// A stable id, so the build overlay can be labelled for assistive tech. The
@@ -349,10 +353,10 @@
 			{
 				id: 'schedule',
 				title: 'When can you train?',
-				lede: 'Block out the times you are usually free on your training days, so the plan can fit sessions into the hours you actually have. Tapping or dragging on the grid adds a free window, and tapping a saved window removes it. This step is optional: carry on without adding anything and the plan uses your chosen days alone.',
+				lede: 'Block out the times you are usually free on your training days, so the plan can fit sessions into the hours you actually have. Tapping or dragging on the grid adds a free window, and tapping a saved window removes it. This step is optional: skip it and any day and any time is available, so the plan is not tied to particular hours.',
 				guide: [
 					'Add a window for each block of free time, for example 6:00 to 7:30 before work.',
-					'Keep windows to the days you pick. A day with no window stays open.',
+					'Keep windows to the days you pick. A day with no window stays open at any time.',
 					'You can set these any time later in Settings, under Training.',
 				],
 			},
@@ -777,15 +781,44 @@
 		return true;
 	}
 
+	// Steps swap inside a {#key} block, so the shell keeps the scroll position the
+	// last step left and the new question opens part way down. On Continue and
+	// Back we move focus to the new step's heading and bring its top into view.
+	// The scroll target is found by walking up from the heading to whichever
+	// ancestor actually scrolls, rather than assumed to be window; under reduced
+	// motion the move is a jump instead of a glide.
+	async function landStepAtTop() {
+		await tick();
+		const heading = stepHeading;
+		if (!heading) return;
+		// Focus the heading without letting the browser jump to it, so a keyboard
+		// or screen reader user starts at the top of the new question.
+		heading.focus({ preventScroll: true });
+		const behavior: ScrollBehavior = prefersReducedMotion.current ? 'auto' : 'smooth';
+		let node = heading.parentElement;
+		while (node) {
+			const overflowY = getComputedStyle(node).overflowY;
+			if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight) {
+				node.scrollTo({ top: 0, behavior });
+				return;
+			}
+			node = node.parentElement;
+		}
+		// No inner scroller carries the flow today, so the document scrolls.
+		window.scrollTo({ top: 0, behavior });
+	}
+
 	function next() {
 		if (!validate()) return;
 		dir = 1;
 		stepIndex = Math.min(steps.length - 1, stepIndex + 1);
+		void landStepAtTop();
 	}
 	function back() {
 		error = null;
 		dir = -1;
 		stepIndex = Math.max(0, stepIndex - 1);
+		void landStepAtTop();
 	}
 
 	async function submit() {
@@ -1061,7 +1094,7 @@
 
 	{#key step.id}
 		<div class={dir === 1 ? 'sg-enter-right' : 'sg-enter-left'}>
-			<h1 class="font-display mt-6 text-2xl font-bold">{step.title}</h1>
+			<h1 bind:this={stepHeading} tabindex="-1" class="font-display mt-6 text-2xl font-bold outline-none">{step.title}</h1>
 			<p class="mt-2 text-sm leading-relaxed text-steel">{step.lede}</p>
 
 			<div class="mt-5">
@@ -1303,7 +1336,7 @@
 				{:else if step.id === 'schedule'}
 					<ScheduleGrid blocks={schedule} onChange={(b) => (schedule = b)} />
 					<p class="mt-3 text-xs text-steel">
-						Optional. Carry on without adding anything if you would rather not block times yet.
+						Optional. Skip it and any day and any time is available.
 					</p>
 				{:else if step.id === 'equipment'}
 					<p class="tabular text-xs uppercase tracking-widest text-steel">Your setup</p>
