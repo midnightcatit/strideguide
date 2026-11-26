@@ -54,7 +54,7 @@ export function basename(path) {
  * @typedef {{ label?: string, group?: string }} TableOverride
  * @typedef {{ kind: 'code' | 'test' | 'decision' | 'pr' | 'doc', label: string, href: string }} GraphLink
  * @typedef {{ id: string, label: string, kind: string, note?: string, links?: GraphLink[] }} GraphNode
- * @typedef {{ from: string, to: string, label?: string }} GraphEdge
+ * @typedef {{ from: string, to: string, kind: string, label?: string }} GraphEdge
  * @typedef {{ id: string, title: string, lede: string, layout: { engine: string, algorithm: string, direction: string, edgeRouting: string }, nodes: GraphNode[], edges: GraphEdge[] }} GraphView
  * @typedef {{ version: number, pipeline: GraphView, paths: GraphView, modules: ModuleEntry[], tableOverrides?: Record<string, TableOverride> }} AuthoredGraph
  * @typedef {{ version: number, generatedAt: string, fingerprint: string, views: GraphView[] }} SystemGraph
@@ -379,7 +379,7 @@ export function invariantTestNodes(invariants) {
 			note: `Guards the invariant "${row.id}".`,
 			links: [{ kind: 'test', label: basename(row.testFile), href: row.testFile }],
 		});
-		edges.push({ from: `inv:${row.id}`, to: tId, label: 'enforced by' });
+		edges.push({ from: `inv:${row.id}`, to: tId, kind: 'enforced', label: 'enforced by' });
 	}
 	return { nodes, edges };
 }
@@ -440,7 +440,7 @@ export function buildWhyView(entries) {
 			note,
 			links: [{ kind: 'decision', label: e.title, href: e.href }, ...e.pullRequests],
 		});
-		edges.push({ from: 'decision:log', to: e.id, label: e.date });
+		edges.push({ from: 'decision:log', to: e.id, kind: 'decision', label: e.date });
 	}
 	return {
 		id: 'why',
@@ -475,7 +475,12 @@ export function buildDataView(schema, overrides) {
 	/** @type {GraphEdge[]} */
 	const edges = schema.refs
 		.filter((r) => tableIds.has(`table:${r.from}`) && tableIds.has(`table:${r.to}`))
-		.map((r) => ({ from: `table:${r.from}`, to: `table:${r.to}`, label: r.column ?? undefined }));
+		.map((r) => ({
+			from: `table:${r.from}`,
+			to: `table:${r.to}`,
+			kind: 'foreign-key',
+			label: r.column ?? undefined,
+		}));
 	return {
 		id: 'data',
 		title: 'The data model',
@@ -520,7 +525,7 @@ export function buildGranularView(parsed, modules) {
 		for (const t of testNodes) {
 			const guardedFile = t.links?.find((link) => link.kind === 'test')?.href;
 			if (guardedFile && guarded.has(guardedFile)) {
-				moduleEdges.push({ from: `module:${m.id}`, to: t.id, label: 'guarded by' });
+				moduleEdges.push({ from: `module:${m.id}`, to: t.id, kind: 'guarded', label: 'guarded by' });
 			}
 		}
 	}
@@ -557,6 +562,16 @@ export function computeFingerprint(input) {
 }
 
 /**
+ * The authored pipeline and path views are hand-kept and carry no edge kind, so
+ * every authored edge is a pipeline `flow`. The generated views set their own.
+ * @param {GraphView} view
+ * @returns {GraphView}
+ */
+function withFlowEdges(view) {
+	return { ...view, edges: view.edges.map((edge) => ({ ...edge, kind: edge.kind ?? 'flow' })) };
+}
+
+/**
  * Build the whole graph from the authored views and the parsed sources. The
  * generatedAt is kept from an existing graph when the fingerprint is unchanged,
  * so running the generator twice on the same inputs leaves the file byte for
@@ -581,8 +596,8 @@ export function buildSystemGraph(input) {
 		generatedAt,
 		fingerprint,
 		views: [
-			authored.pipeline,
-			authored.paths,
+			withFlowEdges(authored.pipeline),
+			withFlowEdges(authored.paths),
 			buildRulesView(parsed),
 			buildWhyView(parseDecisionLog(sources.decisionsMd)),
 			buildDataView(schema, authored.tableOverrides),
@@ -620,6 +635,7 @@ export function validateGraph(graph) {
 		for (const edge of view.edges) {
 			if (!ids.has(edge.from)) errors.push(`[${view.id}] edge from missing node: ${edge.from}`);
 			if (!ids.has(edge.to)) errors.push(`[${view.id}] edge to missing node: ${edge.to}`);
+			if (!edge.kind) errors.push(`[${view.id}] edge has no kind: ${edge.from} -> ${edge.to}`);
 		}
 	}
 	return errors;

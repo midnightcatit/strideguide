@@ -10,6 +10,48 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## The system map's selected view is component state, not a derive of the hash
+
+2026-11-26
+
+Decided: the admin system map holds the selected view and node in component state,
+seeds them from the URL hash on mount, writes the hash with `replaceState` for the
+deep link, and reads the hash back through a `hashchange` listener. It no longer
+derives the view from `page.url.hash`.
+
+Why: `replaceState` updates the address bar but does not re-run a derive on
+`page.url.hash`, so a tab click left the panel on the first view while a real hash
+navigation still worked. The state is now the source of truth and the hash follows
+it (`apps/web/src/routes/settings/admin/system/+page.svelte`,
+`apps/web/src/lib/overlayHistory.svelte.ts`).
+
+Rules out: deriving the rendered view from `page.url.hash` after a shallow-routing
+write.
+
+---
+
+## A system-map edge carries a kind, and its long label shows only on the edge you are on
+
+2026-11-26
+
+Decided: every edge in the system map has a `kind` (flow, enforced, guarded,
+decision, foreign-key), the canvas strokes it and the legend names it by that kind,
+and the long condition label is drawn only on the edge under the pointer or focus
+instead of on every edge at once. The authored pipeline and path views stay
+hand-kept without a kind and the parser fills `flow`; the generated views set their
+own. `validateGraph` now fails an edge with no kind.
+
+Why: the owner found the edge labels clashing and taking space, and expected the
+edges colour-coded like the node kinds. One grey line with a long label on each
+edge read as noise. Each edge kind borrows the accent of the thing it points at, so
+the diagram reads by meaning (`packages/shared/src/system-graph.ts`,
+`packages/shared/src/system-graph-parse.mjs`,
+`apps/web/src/lib/components/system/palette.ts`).
+
+Rules out: an edge with no kind, and a label on every edge at once.
+
+---
+
 ## A day insight is grounded in the facts and stored once per day
 
 2026-11-26

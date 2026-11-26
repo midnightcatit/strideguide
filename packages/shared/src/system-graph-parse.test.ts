@@ -271,6 +271,7 @@ describe('the view builders', () => {
 			{
 				from: 'inv:one',
 				to: 'test:packages/shared/src/plan/engine.test.ts#keeps-a-thing',
+				kind: 'enforced',
 				label: 'enforced by',
 			},
 		]);
@@ -324,7 +325,9 @@ describe('the view builders', () => {
 			{ kind: 'decision', label: 'One', href: 'docs/decisions.md#one' },
 			{ kind: 'pr', label: 'PR #42', href: `${GITHUB_REPO_URL}/pull/42` },
 		]);
-		expect(view.edges).toEqual([{ from: 'decision:log', to: 'decision:one', label: '2026-01-01' }]);
+		expect(view.edges).toEqual([
+			{ from: 'decision:log', to: 'decision:one', kind: 'decision', label: '2026-01-01' },
+		]);
 	});
 
 	it('uses the table override for a terse table and drops references to unknown tables', () => {
@@ -348,7 +351,9 @@ describe('the view builders', () => {
 		expect(view.nodes.find((n) => n.id === 'table:ai_jobs')?.links).toEqual([
 			{ kind: 'code', label: 'schema.ts', href: 'packages/shared/src/db/schema.ts' },
 		]);
-		expect(view.edges).toEqual([{ from: 'table:ai_jobs', to: 'table:users', label: 'user_id' }]);
+		expect(view.edges).toEqual([
+			{ from: 'table:ai_jobs', to: 'table:users', kind: 'foreign-key', label: 'user_id' },
+		]);
 	});
 
 	it('links a module to the tests that guard it in the granular view', () => {
@@ -386,6 +391,7 @@ describe('the view builders', () => {
 		expect(view.edges).toContainEqual({
 			from: 'module:load',
 			to: 'test:packages/shared/src/plan/load.test.ts#keeps-a-thing',
+			kind: 'guarded',
 			label: 'guarded by',
 		});
 	});
@@ -431,6 +437,9 @@ describe('the merge', () => {
 					expect(link.label).not.toBe('');
 					expect(link.href).not.toBe('');
 				}
+			}
+			for (const edge of view.edges) {
+				expect(['flow', 'enforced', 'guarded', 'decision', 'foreign-key']).toContain(edge.kind);
 			}
 		}
 		expect(validateGraph(graph)).toEqual([]);
