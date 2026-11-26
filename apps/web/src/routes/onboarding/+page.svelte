@@ -149,14 +149,16 @@
 	let dir = $state<1 | -1>(1);
 	let submitting = $state(false);
 	let generating = $state(false);
-	// A stable id, so the build overlay can be labelled for assistive tech.
-	const generatingTitleId = `generating-title-${crypto.randomUUID()}`;
+	// A stable id, so the build overlay can be labelled for assistive tech. The
+	// same overlay covers both long waits: the first build and the preview rebuild.
+	const buildTitleId = `build-title-${crypto.randomUUID()}`;
 
-	// While the plan builds, the page behind the overlay is not just covered: it
-	// cannot be scrolled, and the modal action holds focus inside the overlay, so
-	// nothing behind it can be reached with a keyboard or a screen reader.
+	// While the plan builds or the preview rebuilds, the page behind the overlay is
+	// not just covered: it cannot be scrolled, and the modal action holds focus
+	// inside the overlay, so nothing behind it can be reached with a keyboard or a
+	// screen reader.
 	$effect(() => {
-		if (!generating) return;
+		if (!generating && !rebuilding) return;
 		const root = document.documentElement;
 		const previous = root.style.overflow;
 		root.style.overflow = 'hidden';
@@ -1538,18 +1540,20 @@
 	</section>
 {/if}
 
-{#if generating}
+{#if generating || rebuilding}
 	<div
 		class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-paper/95 px-6 text-center backdrop-blur"
 		role="dialog"
 		aria-modal="true"
-		aria-labelledby={generatingTitleId}
+		aria-labelledby={buildTitleId}
 		use:modal={() => {}}
 	>
 		<div data-modal-panel tabindex="-1" class="flex flex-col items-center gap-4 outline-none">
 			<span class="breathe h-3 w-3 rounded-full bg-signal-ink" aria-hidden="true"></span>
 			<div role="status" aria-live="polite">
-				<p id={generatingTitleId} class="font-display text-lg font-medium">{STAGES[stage]}…</p>
+				<p id={buildTitleId} class="font-display text-lg font-medium">
+					{generating ? `${STAGES[stage]}…` : 'Building the rest of your plan…'}
+				</p>
 				<p class="mt-1 text-sm text-steel">This usually takes a few seconds.</p>
 			</div>
 		</div>
