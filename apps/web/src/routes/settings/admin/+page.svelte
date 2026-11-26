@@ -237,7 +237,7 @@
 
 	{#if ops}
 		<section class="grid gap-6">
-			<div>
+			<div class="min-w-0">
 				<h2 class="font-display mb-1 text-lg font-semibold">Errors in the last 24 hours</h2>
 				<p class="mb-4 text-sm text-steel">
 					{ops.appErrors.recentCount} API errors and {ops.clientErrors.recentCount} client errors.
@@ -293,7 +293,7 @@
 				</div>
 			</div>
 
-			<div>
+			<div class="min-w-0">
 				<h2 class="font-display mb-1 text-lg font-semibold">Rate limits</h2>
 				<p class="text-sm leading-relaxed text-steel">
 					{ops.rateLimits.keys} keys tracked, {ops.rateLimits.totalCount} requests counted in the
@@ -304,7 +304,7 @@
 				</p>
 
 				{#if ops.rateLimits.items.length}
-					<div class="mt-3 overflow-x-auto rounded-xl border border-hairline">
+					<div class="mt-3 max-h-96 overflow-x-auto overflow-y-auto rounded-xl border border-hairline">
 						<table class="w-full min-w-[32rem] border-collapse text-sm">
 							<thead>
 								<tr
