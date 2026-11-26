@@ -17,6 +17,8 @@ export interface AdaptWeek {
 	weekNumber: number;
 	startDate?: string | null;
 	endDate?: string | null;
+	/** The week's phase (base, build, peak, taper, recovery), when known. */
+	phase?: string | null;
 	targetVolumeKm?: number | null;
 	sessions: AdaptSession[];
 }

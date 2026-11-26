@@ -6,13 +6,18 @@ import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
 	adaptPlan,
+	deriveHistory,
 	fitnessState,
 	machinesForPreset,
 	rebuildFromWeekOne,
+	summarizePreviousWeeks,
+	weekChangeNote,
 	weekOnePattern,
 } from '@strideguide/shared/plan';
 import { compareDaySessions } from '../lib/session-order';
 import { reconcileSessions } from '../lib/plan-reconcile';
+import { buildPlanChange, MAX_AI_WEEKS } from '../lib/plan-change';
+import type { AdaptLog, AdaptWeek, PlanChangeContext } from '@strideguide/shared/plan';
 import type {
 	Baseline,
 	Modality,
@@ -1042,6 +1047,58 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 		profile.sessionTypes.includes(k as SessionArchetype),
 	);
 
+	// The one plan-change pipeline. Every path that changes a plan goes through
+	// it: it is handed the goal, the previous plan configuration, the runner's
+	// history and the intent, and returns typed, confidence-scored decisions
+	// (the week's volume intent, the quality-day count, the long-run delta) plus
+	// a grounded reason per decision. Best-effort: with no key, or on any
+	// failure, it returns null and the deterministic adapt below stands exactly
+	// as it is today.
+	const adaptWeeks: AdaptWeek[] = weeks.map((w) => ({
+		weekNumber: w.weekNumber,
+		startDate: w.startDate,
+		endDate: w.endDate,
+		phase: w.phase,
+		sessions: sessions
+			.filter((s) => s.planWeekId === w.id)
+			.map((s) => ({
+				id: s.id,
+				day: s.day,
+				modality: s.modality,
+				type: s.type,
+				prescription: (s.prescription ?? {}) as { targetDistanceKm?: number },
+			})),
+	}));
+	const adaptLogs: AdaptLog[] = fitLogs.map((l) => ({
+		sessionId: l.sessionId,
+		runStats: (l.runStats ?? undefined) as { distanceKm?: number; durationSec?: number } | undefined,
+		rpe: l.rpe,
+		createdAt: l.startedAt instanceof Date ? l.startedAt.toISOString() : null,
+	}));
+	const changeContext: PlanChangeContext = {
+		intent: 'adapt',
+		goal: {
+			slug: profile.slug,
+			name: profile.name,
+			...(goal.targetDate
+				? {
+						weeksToRace: Math.round(
+							(Date.parse(`${goal.targetDate}T00:00:00Z`) - Date.parse(`${todayIso}T00:00:00Z`)) /
+								86400000 /
+								7,
+						),
+					}
+				: {}),
+		},
+		previous: summarizePreviousWeeks(adaptWeeks),
+		history: deriveHistory(adaptLogs, adaptWeeks, fitness, todayIso),
+		affectedWeekNumbers: existingWeeks
+			.filter((w) => w.startDate > todayIso)
+			.map((w) => w.weekNumber)
+			.slice(0, MAX_AI_WEEKS),
+	};
+	const change = await buildPlanChange(c.env, changeContext);
+
 	const result = adaptPlan({
 		profile,
 		baseline,
@@ -1059,6 +1116,9 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 		favoriteMachines: prefs.favoriteMachines,
 		favoriteWorkouts: prefs.favoriteWorkouts,
 		schedule: prefs.schedule,
+		// The pipeline's decisions, when it made any. Absent means the engine
+		// keeps its own curve for every week ahead, exactly as today.
+		weekShapes: change ? existingWeeks.map((w) => change.shapes.get(w.weekNumber)) : undefined,
 	} as unknown as Parameters<typeof adaptPlan>[0]);
 
 	if (result.changedFromWeek == null) {
@@ -1069,6 +1129,12 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 	// untouched. Sessions that keep their day, slot and type keep their ids, so
 	// the runner's logs, session states and matched activities stay attached.
 	const changed = result.weeks.filter((w) => w.weekNumber >= result.changedFromWeek!);
+	// The pipeline's reasons, one note per changed week, folded onto each session
+	// so the workout card can show why this week changed. Absent without the
+	// pipeline, so a deterministic adapt adds no note.
+	const noteByWeek = change
+		? new Map(change.reasons.map((r) => [r.weekNumber, weekChangeNote(r)]))
+		: undefined;
 	const stored: StoredWeek[] = weeks.map((w) => ({
 		id: w.id,
 		weekNumber: w.weekNumber,
@@ -1076,31 +1142,40 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 			.filter((s) => s.planWeekId === w.id)
 			.map((s) => ({ id: s.id, day: s.day, slot: s.slot, type: s.type })),
 	}));
-	const desired: DesiredWeek[] = changed.map((w) => ({
-		weekNumber: w.weekNumber,
-		phase: w.phase,
-		focus: w.focus,
-		summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
-		startDate: w.startDate,
-		endDate: w.endDate,
-		sessions: w.sessions.map((s) => ({
-			day: s.day,
-			slot: s.slot,
-			modality: s.modality,
-			type: s.type,
-			title: s.title,
-			purpose: s.purpose,
-			prescription: s.prescription,
-			durationMin: s.durationMin,
-		})),
-	}));
+	const desired: DesiredWeek[] = changed.map((w) => {
+		const note = noteByWeek?.get(w.weekNumber);
+		return {
+			weekNumber: w.weekNumber,
+			phase: w.phase,
+			focus: w.focus,
+			summaryText: templateWeekSummary(w.weekNumber, w.phase, w.targetVolumeKm),
+			startDate: w.startDate,
+			endDate: w.endDate,
+			sessions: w.sessions.map((s) => ({
+				day: s.day,
+				slot: s.slot,
+				modality: s.modality,
+				type: s.type,
+				title: s.title,
+				purpose: s.purpose,
+				prescription: note ? { ...s.prescription, changeNote: note } : s.prescription,
+				durationMin: s.durationMin,
+			})),
+		};
+	});
 	await replaceWeeks(db, plan.id, stored, desired);
 
 	await db
 		.update(schema.plans)
 		.set({
 			generatedAt: new Date(),
-			params: { ...(plan.params ?? {}), adaptedAt: new Date().toISOString() },
+			params: {
+				...(plan.params ?? {}),
+				adaptedAt: new Date().toISOString(),
+				...(change
+					? { adaptedWithAi: true, changeReasons: change.reasons, changeDecisions: change.decisions }
+					: {}),
+			},
 		})
 		.where(eq(schema.plans.id, plan.id));
 

@@ -380,6 +380,9 @@
 				{:else if lead}
 					<p class="mt-2 text-[15px] leading-relaxed">{lead}</p>
 				{/if}
+				{#if p.changeNote}
+					<p class="mt-2 text-[15px] leading-relaxed text-signal-ink">{p.changeNote}</p>
+				{/if}
 				{#if loading}
 					<p class="mt-3 text-sm text-steel">Loading the reasoning…</p>
 				{:else if failed}

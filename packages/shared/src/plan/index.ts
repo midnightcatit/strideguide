@@ -18,6 +18,7 @@ export * from './recovery';
 export * from './adapt';
 export * from './fitness';
 export * from './adaptive';
+export * from './change';
 export * from './rebuild';
 export * from './engine';
 export * from './why';
