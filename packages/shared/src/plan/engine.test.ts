@@ -655,13 +655,17 @@ describe('progression (volume builds, sessions differentiate)', () => {
 		}
 	});
 
-	it('keeps the ease-in week among the lightest, never the heaviest', () => {
+	it('keeps the ease-in week out of the heaviest weeks', () => {
 		const p = forLevel('marathon', 'intermediate');
 		const build = p.weeks
 			.filter((w) => !['taper', 'recovery'].includes(w.phase))
 			.map((w) => w.targetVolumeKm);
-		const lightest = Math.min(...build.slice(1));
-		expect(p.weeks[0]!.targetVolumeKm).toBeLessThanOrEqual(lightest * 1.05);
+		const peak = Math.max(...build);
+		const week1 = p.weeks[0]!.targetVolumeKm;
+		// Week one eases in, so it is never the heaviest week and sits well below
+		// the peak. A later stepback week is allowed to be lighter still.
+		expect(week1).toBeLessThan(peak);
+		expect(week1).toBeLessThanOrEqual(peak * 0.85);
 	});
 
 	it('starts an advanced runner higher than a beginner, same plan', () => {
@@ -888,6 +892,41 @@ describe('week anchoring when the plan starts on a non-Monday', () => {
 		expect(monday.weeks[0]!.startDate).toBe('2026-11-30');
 		// Week one is whole, so its Tuesday session is still there.
 		expect(monday.weeks[0]!.sessions.some((s) => s.day === 1)).toBe(true);
+	});
+});
+
+describe('ramp shape (step pattern with stepbacks)', () => {
+	// A half-marathon beginner easing in. The ramp should build for about three
+	// weeks and then take a lighter one, in base as well as build, rather than
+	// climbing in a straight line.
+	const plan = generatePlan({
+		profile: GOAL_PROFILES.find((p) => p.slug === 'half-marathon')!,
+		baseline: { experience: 'beginner', weeklyKm: 30, buildPreference: 'ease-in' },
+		availableDays: [0, 2, 4, 6],
+		startDate: '2026-11-30',
+		targetDate: '2027-04-25',
+	});
+
+	it('takes a stepback week inside the base phase', () => {
+		const base = plan.weeks.filter((w) => w.phase === 'base');
+		expect(base.length).toBeGreaterThanOrEqual(4);
+		const droppedToLighter = base.some(
+			(w, i) => i > 0 && w.targetVolumeKm < base[i - 1]!.targetVolumeKm,
+		);
+		expect(droppedToLighter).toBe(true);
+	});
+
+	it('still holds the roughly ten percent weekly ceiling on the long run', () => {
+		for (let i = 1; i < plan.weeks.length; i++) {
+			const prev = plan.weeks[i - 1]!;
+			const cur = plan.weeks[i]!;
+			if (prev.phase === 'taper' || cur.phase === 'recovery') continue;
+			const prevLong = prev.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm;
+			const curLong = cur.sessions.find((s) => s.type === 'long')?.prescription.targetDistanceKm;
+			if (prevLong != null && curLong != null) {
+				expect(curLong).toBeLessThanOrEqual(prevLong * 1.1 + 0.35);
+			}
+		}
 	});
 });
 

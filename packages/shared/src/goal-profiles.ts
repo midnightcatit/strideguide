@@ -12,7 +12,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 			'The full marathon. Long aerobic build with threshold work, a progressive long run, and a 2–3 week taper.',
 		modalityMix: { running: 0.8, strength: 0.14, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
-			{ phase: 'base', weeks: 8, volumeStep: 0.1, deload: false },
+			{ phase: 'base', weeks: 8, volumeStep: 0.1, deload: true },
 			{ phase: 'build', weeks: 8, volumeStep: 0.08, deload: true },
 			{ phase: 'peak', weeks: 4, volumeStep: 0.04, deload: false },
 			{ phase: 'taper', weeks: 3, volumeStep: -0.25, deload: false },
@@ -37,7 +37,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 			'The half marathon. Faster threshold work, longer quality sessions, and a shorter taper than the marathon.',
 		modalityMix: { running: 0.78, strength: 0.16, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
-			{ phase: 'base', weeks: 6, volumeStep: 0.1, deload: false },
+			{ phase: 'base', weeks: 6, volumeStep: 0.1, deload: true },
 			{ phase: 'build', weeks: 6, volumeStep: 0.08, deload: true },
 			{ phase: 'peak', weeks: 3, volumeStep: 0.05, deload: false },
 			{ phase: 'taper', weeks: 2, volumeStep: -0.3, deload: false },
@@ -60,7 +60,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		description: 'The 10K. VO2max intervals plus sustained threshold work, with strength to support speed.',
 		modalityMix: { running: 0.74, strength: 0.2, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
-			{ phase: 'base', weeks: 4, volumeStep: 0.1, deload: false },
+			{ phase: 'base', weeks: 4, volumeStep: 0.1, deload: true },
 			{ phase: 'build', weeks: 5, volumeStep: 0.08, deload: true },
 			{ phase: 'peak', weeks: 2, volumeStep: 0.03, deload: false },
 			{ phase: 'taper', weeks: 2, volumeStep: -0.3, deload: false },
@@ -82,7 +82,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 		description: 'The 5K. Speed-biased: short VO2max intervals, strides, and hill work.',
 		modalityMix: { running: 0.7, strength: 0.24, mobility: 0.04, recovery: 0.02 },
 		progressionRules: [
-			{ phase: 'base', weeks: 3, volumeStep: 0.1, deload: false },
+			{ phase: 'base', weeks: 3, volumeStep: 0.1, deload: true },
 			{ phase: 'build', weeks: 4, volumeStep: 0.07, deload: true },
 			{ phase: 'peak', weeks: 2, volumeStep: 0.03, deload: false },
 			{ phase: 'taper', weeks: 2, volumeStep: -0.35, deload: false },
@@ -105,7 +105,7 @@ export const GOAL_PROFILES: GoalProfileData[] = [
 			'General health: balanced cardio and full-body strength, no race date required, sustainable year-round.',
 		modalityMix: { running: 0.45, strength: 0.4, mobility: 0.1, recovery: 0.05 },
 		progressionRules: [
-			{ phase: 'base', weeks: 8, volumeStep: 0.05, deload: false },
+			{ phase: 'base', weeks: 8, volumeStep: 0.05, deload: true },
 			{ phase: 'build', weeks: 8, volumeStep: 0.05, deload: true },
 		],
 		successMetrics: [

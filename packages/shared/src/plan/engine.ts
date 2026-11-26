@@ -143,7 +143,7 @@ const FOCUS: Record<string, string> = {
  * proportional, so the same shape scales to any plan length.
  */
 const DEFAULT_PROGRESSION: PlanInput['profile']['progressionRules'] = [
-	{ phase: 'base', weeks: 6, volumeStep: 0.08, deload: false },
+	{ phase: 'base', weeks: 6, volumeStep: 0.08, deload: true },
 	{ phase: 'build', weeks: 6, volumeStep: 0.08, deload: true },
 	{ phase: 'peak', weeks: 3, volumeStep: 0.04, deload: false },
 	{ phase: 'taper', weeks: 2, volumeStep: -0.25, deload: false },
@@ -219,10 +219,12 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 	// Level sets how fast the plan builds. Beginners build more gently, advanced
 	// runners a little faster. The self-assessed build preference leans the whole
 	// curve one way or the other. No positive step may exceed the ~10 percent
-	// weekly ceiling that keeps injury risk down, and deload weeks still step back.
+	// weekly ceiling that keeps injury risk down, and a stepback week still steps
+	// down in base as well as build, so the shape is build three weeks, take a
+	// lighter one, rather than a straight climb.
 	const LEVEL_STEP: Record<string, number> = { beginner: 0.85, intermediate: 1, advanced: 1.15 };
 	const BUILD: Record<string, { step: number; start: number }> = {
-		'ease-in': { step: 0.8, start: 0.85 },
+		'ease-in': { step: 0.8, start: 0.7 },
 		steady: { step: 1, start: 0.9 },
 		ambitious: { step: 1.2, start: 0.95 },
 	};
@@ -234,6 +236,10 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 		build.step *
 		ageBuildFactor(input.baseline.age);
 	const startFactor = build.start;
+	// The most a week may grow to hold its long run, eased for older runners the
+	// same way their build rate is. Level and preference shape the normal ramp, not
+	// this catch-up, so a gentle ease-in plan can still lift a week to hold the goal.
+	const arcCeiling = WEEKLY_STEP_CEILING * ageBuildFactor(input.baseline.age);
 	const out: number[] = [];
 	let prev = base;
 	let peak = base;
@@ -253,17 +259,19 @@ function volumeCurve(input: PlanInput, phases: string[], longFloorKm?: number[])
 		} else if (phase === 'taper') {
 			vol = peak * taperFraction(rule.volumeStep, idx);
 		} else if (isDeload) {
-			vol = prev * 0.7;
+			vol = prev * STEPBACK_FACTOR;
 		} else {
-			const step = Math.min(Math.max(0, rule.volumeStep * levelStep), 0.1);
+			const step = Math.min(Math.max(0, rule.volumeStep * levelStep), WEEKLY_STEP_CEILING);
 			vol = prev * (1 + step);
 		}
 		// Grow a week that is too light to hold the long run the plan is building
-		// to. Never on a deload or taper week, and never past the ceiling above.
+		// to. Never on a deload or taper week, and never past the safety ceiling.
+		// The catch-up is eased for older runners the same way their build rate is,
+		// so age still shows at the peak rather than being erased by the ceiling.
 		const floor = longFloorKm?.[w];
 		if (floor !== undefined && floor > 0 && !isDeload && phase !== 'taper' && phase !== 'recovery') {
 			const need = floor / LONG_RUN_SHARE_CEILING;
-			const ceiling = w === 0 ? need : prev * (1 + WEEKLY_STEP_CEILING);
+			const ceiling = w === 0 ? need : prev * (1 + arcCeiling);
 			vol = Math.max(vol, Math.min(need, Math.max(ceiling, vol)));
 		}
 		vol = clamp(round1(vol), 5, 160);
@@ -634,6 +642,14 @@ const LONG_RUN_SHARE_CEILING = 0.5;
 
 /** The most the long run, or the week that carries it, may grow in one step. */
 const WEEKLY_STEP_CEILING = 0.1;
+
+/**
+ * How far a stepback week drops from the week before. The ramp builds for about
+ * three weeks, then takes a lighter one, in base as well as build. It is a
+ * stepback, not a collapse: a gentle drop that a next week can climb back from
+ * keeps the plan moving forward while giving the body an easier week.
+ */
+const STEPBACK_FACTOR = 0.9;
 
 /**
  * Session shape by goal: the long run's share of the week before the goal's own
