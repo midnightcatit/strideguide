@@ -28,3 +28,4 @@ export * from './library';
 export * from './library-extra';
 export * from './recommend';
 export * from './rest';
+export * from './preview-categories';
