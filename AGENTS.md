@@ -88,6 +88,25 @@ Add to that set deliberately, not broadly.
   Cloudflare (`wrangler secret put`). The only GitHub secret is `CLOUDFLARE_API_TOKEN`.
 - Keep PRs small and single-purpose; write commit messages that say what changed and why.
 
+## CodeRabbit review
+
+Every PR gets a CodeRabbit review. Before merging, wait for it and clear every addressable artifact,
+not just the blocking ones.
+
+- **Wait for the review, do not merge on the CI gate alone.** After opening a PR, schedule a wakeup
+  (`cron_create` or `schedule_wakeup`) and check back when CodeRabbit has posted. Do not block the
+  turn or poll in a loop. The review is asynchronous and can take a few minutes.
+- **Read the review yourself.** The CodeRabbit check, its summary and its "no issues" line are
+  evidence, not a review. Open the review comments and read them.
+- **Resolve every addressable artifact.** Nitpicks, outside-diff comments, inline comments and review
+  summaries all count. If a comment is valid, fix it. If it is not valid, reply with the reason and
+  resolve the thread. Do not leave an addressable comment open.
+- **Merge only when the review is complete and clean.** The CodeRabbit check should be green and every
+  addressable comment resolved, and the CI gate should pass. If CodeRabbit is still reviewing, wait for
+  the next wakeup.
+- **This applies to delegated work too.** A subagent's PR is not ready to merge until the same review
+  pass is done.
+
 ## Delegation (main session)
 
 In the main session, delegate independent, read-heavy or parallelizable work with the Agent Manager,
