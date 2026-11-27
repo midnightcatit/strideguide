@@ -210,9 +210,11 @@
 	});
 
 	// Timed step countdown -> auto-complete. A rest card ticks by itself, so it
-	// keeps running even where it was resumed without a Start press.
+	// keeps running even where it was resumed without a Start press. It stops the
+	// moment the player leaves the step: a workout that ends on a rest card would
+	// otherwise keep completing and saving every second behind the finish screen.
 	$effect(() => {
-		if ((!running && !isRestCard) || !timed || countdown > 0) return;
+		if ((!running && !isRestCard) || !timed || countdown > 0 || finished || awaitingNext) return;
 		const step = instances[idx]?.step;
 		if (step?.durationSec == null) return;
 		const t = setInterval(() => {
