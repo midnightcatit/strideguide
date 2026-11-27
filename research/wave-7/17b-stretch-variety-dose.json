@@ -1,0 +1,212 @@
+{
+  "workstream": "mobility",
+  "subtopic": "What drives range-of-motion gains: dose, specificity, progression and variety",
+  "generated_at": "2026-11-27T02:45:00Z",
+  "claims": [
+    {
+      "topic": "Dose-response: total weekly stretch time is the driver",
+      "claim": "Long-term range-of-motion gains are driven by cumulative stretch time per muscle, not by any single session variable. Improvements plateau at about 4 minutes of stretching per session and about 10 minutes per week per muscle; beyond that, more stretching adds nothing measurable. For a runner, roughly 10 minutes per week spread over two to four short sessions is a complete dose for each target muscle.",
+      "evidence": "Systematic review, meta-analysis and multivariate meta-regression of 189 studies (6,654 adults): chronic static stretching produced a large flexibility effect (Hedges' g = 0.96, 95% CI 0.84-1.09) and gains were maximised at a cumulative volume of 4 minutes per session and 10 minutes per week, with no additional benefit beyond those points. Neither stretching intensity, weekly session frequency nor intervention length moderated the effect.",
+      "confidence": "high",
+      "citation": {
+        "title": "Optimising the Dose of Static Stretching to Improve Flexibility: A Systematic Review, Meta-analysis and Multivariate Meta-regression",
+        "authors": "Ingram LA, Tomkinson GR, d'Unienville NMA, Gower B, Gleadhill S, Boyle T, Bennett H",
+        "year": 2025,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-024-02143-9",
+        "retrieved_at": "2026-11-27T02:05:00Z"
+      }
+    },
+    {
+      "topic": "Frequency: when matters less than whether",
+      "claim": "Once a muscle gets its weekly total, how the minutes are distributed barely matters: two to three sessions per week and daily practice both work, and stretching on some days rather than every day is acceptable. Consistency across weeks is the real frequency variable; the gains need several weeks to appear and are lost when the programme stops.",
+      "evidence": "The dose meta-regression found weekly session frequency and intervention length did not moderate flexibility gains, and the chronic-effects meta-analysis of 77 studies likewise found volume, intensity and frequency were not significant moderators of range-of-motion yield, with the overall chronic effect at -1.002 (95% CI -1.165 to -0.840). The expert panel's chronic-ROM recipe (2-3 sets daily of 30-120 seconds per muscle) is a consistency prescription, not a frequency finding.",
+      "confidence": "high",
+      "citation": {
+        "title": "Chronic effects of stretching on range of motion with consideration of potential moderating variables: A systematic review with meta-analysis",
+        "authors": "Konrad A, Alizadeh S, Daneshjoo A, Anvar SH, Graham A, Zahiri A, Goudini R, Edwards C, Scharf C, Behm DG",
+        "year": 2024,
+        "venue": "Journal of Sport and Health Science",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1016/j.jshs.2023.06.002",
+        "retrieved_at": "2026-11-27T02:06:00Z"
+      }
+    },
+    {
+      "topic": "Hold duration and sets per stretch",
+      "claim": "Prescribe 2 to 3 sets of 30 to 45 seconds per stretch, with 60 seconds as a comfortable ceiling for tight runners who tolerate it. Thirty seconds captures most of the gain: doubling the hold from 30 to 60 seconds added nothing in the classic dose trials, and holds past about 60 seconds are the ones that cost power if done before hard running.",
+      "evidence": "Randomised trials in adults with limited hamstring flexibility: 30-second holds 5 days per week for 6 weeks matched 60-second holds, and 15-second holds were inferior (Bandy 1994); adding stretches per day or extending holds to 60 seconds added no flexibility (Bandy 1997). The expert consensus recommends 2-3 sets daily of 30-120 seconds per muscle for chronic ROM, notes gains have been reported with as little as 5 seconds, and that some muscles may need longer. The 30-45 second prescription follows wave-5/14a and stays inside the panel's band.",
+      "confidence": "high",
+      "citation": {
+        "title": "The effect of time on static stretch on the flexibility of the hamstring muscles",
+        "authors": "Bandy WD, Irion JM",
+        "year": 1994,
+        "venue": "Physical Therapy",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1093/ptj/74.9.845",
+        "retrieved_at": "2026-11-27T02:07:00Z"
+      }
+    },
+    {
+      "topic": "Technique: static or PNF for the goal of range",
+      "claim": "For building range over weeks, static stretching or PNF is the tool, not dynamic or ballistic work. Dynamic stretching keeps its place in the warm-up, where it helps performance, but it is not the flexibility builder.",
+      "evidence": "The chronic-effects meta-analysis found PNF and static stretching produced greater ROM gains than ballistic/dynamic stretching (technique effect p = 0.01), and the expert consensus reached 95% agreement to use static or PNF over dynamic stretching when the goal is long-term flexibility. Static and PNF did not differ from each other, so the choice is preference.",
+      "confidence": "high",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-27T02:08:00Z"
+      }
+    },
+    {
+      "topic": "Intensity: mild discomfort is enough",
+      "claim": "Stretch to the point of mild discomfort, not pain or maximal tolerance. Within the normal programme dose, low-intensity and high-intensity stretching produce similar range gains, so comfort and repeatability win; save harder holds for a specific reason and never before hard running.",
+      "evidence": "The dose meta-regression found stretching intensity did not moderate flexibility gains, and the consensus statement reports no significant difference between high- and low-intensity stretching in the recent meta-analyses, leaving intensity to preference for chronic ROM. One documented exception: contralateral crossover effects appeared only with high-intensity protocols (see specificity claims), which does not change the default for the stretched muscle itself.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Optimising the Dose of Static Stretching to Improve Flexibility: A Systematic Review, Meta-analysis and Multivariate Meta-regression",
+        "authors": "Ingram LA, Tomkinson GR, d'Unienville NMA, Gower B, Gleadhill S, Boyle T, Bennett H",
+        "year": 2025,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-024-02143-9",
+        "retrieved_at": "2026-11-27T02:05:00Z"
+      }
+    },
+    {
+      "topic": "What actually changes: stretch tolerance first",
+      "claim": "Most of the ROM gain from a weeks-long stretching programme is a nervous-system change (increased stretch tolerance), not a lengthening of muscle or tendon, so range can rise quickly and also needs continued practice to hold. Programme for tolerance: consistent, comfortable, repeated exposure to end range.",
+      "evidence": "Meta-analysis of 26 longitudinal stretching studies: over 3-8 weeks, stretching produced trivial changes in muscle architecture, muscle stiffness and tendon stiffness, with adaptations occurring mostly at a sensory level (increased extensibility and tolerance to greater tensile force). The acute-effects systematic review likewise attributes ROM changes to reduced stiffness or improved stretch tolerance via neural mechanisms.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Can chronic stretching change the muscle-tendon mechanical properties? A review",
+        "authors": "Freitas SR, Mendes B, Le Sant G, Andrade RJ, Nordez A, Milanovic Z",
+        "year": 2018,
+        "venue": "Scandinavian Journal of Medicine & Science in Sports",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1111/sms.12957",
+        "retrieved_at": "2026-11-27T02:09:00Z"
+      }
+    },
+    {
+      "topic": "Specificity: target the runner's limited range",
+      "claim": "Range-of-motion gains are joint- and position-specific and mostly limb-specific: stretching one area does not meaningfully build range in another, so the programme should spend its budget on the runner's stated tight areas, and areas without a limitation need little or no stretching. Chasing range everywhere wastes the dose budget and pushes toward the flexibility extremes where injury rates are not lower.",
+      "evidence": "The dose meta-regression found greater gains in adults with poor baseline flexibility than in average-flexibility adults (p = 0.01), so tight areas are where the dose pays. Contralateral evidence is small and inconsistent: acute unilateral plantar-flexor stretching improved ROM in the stretched limb (6.5%) and slightly in the contralateral limb (5.35%), a 4-week unilateral trial produced crossover ROM gains only at high intensity, and a recent hamstring trial found no significant contralateral effect at all. The consensus statement agrees alternatives (full-ROM resistance training with eccentric focus, foam rolling) build ROM comparably, which covers maintenance of already-adequate areas.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Cross-education effect of 4-week high- or low-intensity static stretching intervention programs on passive properties of plantar flexors",
+        "authors": "Nakamura M, Yoshida R, Sato S, Yahata K, Murakami Y, Kasahara K, Fukaya T, Takeuchi K, Nunes JP, Konrad A",
+        "year": 2022,
+        "venue": "Journal of Biomechanics",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1016/j.jbiomech.2022.110958",
+        "retrieved_at": "2026-11-27T02:10:00Z"
+      }
+    },
+    {
+      "topic": "Variety: no direct evidence it changes ROM",
+      "claim": "No trial has compared rotating different stretches against repeating one fixed routine for range-of-motion outcomes, in runners or anyone else. What the neighbouring strength literature shows is that variety helps when it is systematic (different movements covering different regions and joint angles) and can hurt when it is random churn; variety's clearest value in practice is adherence and coverage, not a bigger ROM effect per muscle.",
+      "evidence": "A systematic review of exercise variation in resistance training (eight studies) concluded systematic variation enhances regional hypertrophy and dynamic strength while excessive, random variation may compromise gains, and a randomised trial found varied exercises produced hypertrophy in all quadriceps heads where a constant-exercise programme left two heads untrained. Neither finding extends to stretching: no stretching-variety trial was found in Europe PMC, PubMed-indexed reviews or the consensus statement, so any variety rule for stretch routines is built on this indirect analogue and is flagged accordingly.",
+      "confidence": "low",
+      "citation": {
+        "title": "Does Varying Resistance Exercises Promote Superior Muscle Hypertrophy and Strength Gains? A Systematic Review",
+        "authors": "Kassiano W, Nunes JP, Costa B, Ribeiro AS, Schoenfeld BJ, Cyrino ES",
+        "year": 2022,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000004258",
+        "retrieved_at": "2026-11-27T02:11:00Z"
+      }
+    },
+    {
+      "topic": "Composing routines: anchor plus roaming set",
+      "claim": "Compose each mobility session as an anchor plus a roaming set: the anchor repeats the same two or three stretches for the runner's stated tight areas at every session (each getting 2 sets of 30-45 seconds, three to five times per week, about 10 minutes per week per target muscle), and one roaming stretch rotates through other common runner areas across the week for coverage and interest. Never let rotation shorten the anchor's dose, and never count variety as extra dose on a target muscle.",
+      "evidence": "Built from three verified findings: the 10-minutes-per-week-per-muscle plateau (Ingram 2025), the consistency-over-configuration finding (Konrad 2024), and the strength-literature result that systematic, region-covering variation adds value while random churn does not (Kassiano 2022; Fonseca 2014). The specific anchor-plus-roaming shape is a design encoding of those findings, not a tested protocol, and no stretching trial has compared it against a fixed routine.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Changes in exercises are more effective than in loading schemes to improve muscle strength",
+        "authors": "Fonseca RM, Roschel H, Tricoli V, de Souza EO, Wilson JM, Laurentino GC, Aihara AY, de Souza Leão AR, Ugrinowitsch C",
+        "year": 2014,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000000539",
+        "retrieved_at": "2026-11-27T02:12:00Z"
+      }
+    },
+    {
+      "topic": "Progression: yes, within the dose budget",
+      "claim": "A stretch programme can be progressive, but the progression lives inside the weekly budget rather than in endlessly more time: start with one set of 30 seconds per stretch and progress by adding a second and third set, deepening end range as tolerance rises, or lengthening holds within the 30-120 second band. Pushing intensity to the pain limit is not a progression tool; it adds no ROM and carries the pre-run power cost.",
+      "evidence": "The consensus statement's chronic-ROM recipe (2-3 sets of 30-120 seconds daily per muscle) frames progression as set count and hold length inside a stable structure, and reports ROM gains with holds as short as 5 seconds while typical recommendations sit at 30-60 seconds. The dose meta-regression caps useful volume at 4 minutes per session and 10 minutes per week, so adding minutes past that point is not progression. Intensity did not moderate gains, and the acute-effects review ties performance deficits to longer holds at higher intensity.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-27T02:08:00Z"
+      }
+    },
+    {
+      "topic": "Placement relative to running",
+      "claim": "Keep long or intense holds out of the pre-run window: before hard running only short holds (about 30 seconds per muscle) or dynamic work, and move static and PNF work to after the run or to rest days, where it builds range without the acute cost.",
+      "evidence": "The consensus statement recommends against prolonged (over 60 seconds per muscle) static stretching before maximal or explosive efforts, with no such effect for shorter durations; wave-3/8c and wave-5/14a already carry the performance-deficit evidence (about 3-4% for strength and power tasks with long holds). Chronic stretching separated from performance keeps building ROM with no acute penalty.",
+      "confidence": "high",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-27T02:08:00Z"
+      }
+    },
+    {
+      "topic": "Alternatives that build range too",
+      "claim": "Range of motion is not stretch-exclusive: full-range resistance training with an eccentric emphasis and foam rolling both build ROM to a similar degree, and both are things the plan already schedules. This means a runner's strength sessions and rolling contribute to flexibility, and the stretch programme only needs to cover what those leave out.",
+      "evidence": "The consensus statement reports full-ROM resistance training enhances ROM to at least a similar degree (especially with an eccentric-phase focus) and that foam rolling produces comparably large ROM increases, citing Alizadeh et al. and the static-stretch-versus-foam-rolling meta-analysis already carried in wave-5/14a.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Practical recommendations on stretching exercise: A Delphi consensus statement of international research experts",
+        "authors": "Warneke K, Thomas E, Blazevich AJ, Afonso J, Behm DG, et al.",
+        "year": 2025,
+        "venue": "Journal of Sport and Health Science",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1016/j.jshs.2025.101067",
+        "retrieved_at": "2026-11-27T02:08:00Z"
+      }
+    },
+    {
+      "topic": "Expectation setting: what stretching is not",
+      "claim": "Stretching is not injury prevention and does not speed recovery, so the mobility programme should be framed and scheduled for range and comfort, not sold as protection. For hamstring injury prevention the proven tool is eccentric strength work, not stretching.",
+      "evidence": "The consensus statement found no consensus that stretch training serves as an all-encompassing injury-prevention strategy or acutely enhances post-exercise recovery. The Cochrane review found stretching before or after exercise produces no clinically meaningful reduction in muscle soreness, and wave-1/3a and wave-3/8a carry the null injury-prevention evidence alongside the eccentric-hamstring findings.",
+      "confidence": "high",
+      "citation": {
+        "title": "Stretching to prevent or reduce muscle soreness after exercise",
+        "authors": "Herbert RD, de Noronha M, Kamper SJ",
+        "year": 2011,
+        "venue": "Cochrane Database of Systematic Reviews",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1002/14651858.CD004577.pub3",
+        "retrieved_at": "2026-11-27T02:13:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "What drives range-of-motion gains is mostly consistency plus total weekly stretch time per muscle, not the fine print of the routine. A large chronic effect is available (about g = 0.96) and it plateaus at about 4 minutes per session and 10 minutes per week per target muscle; hold 2 to 3 sets of 30 to 45 seconds per stretch (60 seconds a comfortable ceiling), stretch to mild discomfort, use static or PNF rather than dynamic for the flexibility goal, and place it after running or on rest days. Frequency and technique choices matter less than showing up over weeks, because the adaptation is chiefly increased stretch tolerance, not tissue lengthening. Gains are joint- and mostly limb-specific, so the programme should anchor its dose on the runner's stated tight areas, where the returns are largest, and treat already-adequate areas lightly. Variety has never been tested head-to-head against a repeated routine for ROM; the strength analogue says variety helps when systematic (coverage of regions) and hurts when random, so compose routines as a fixed anchor on the tight areas plus one rotating roaming stretch for coverage and adherence, never at the anchor's expense. Progression lives inside the dose budget: add sets, deepen end range or lengthen holds within the 30 to 120 second band rather than adding minutes past the plateau.",
+  "unverified": [
+    "No trial has compared rotating different stretches versus repeating one fixed routine on range-of-motion outcomes, in runners or any population; the anchor-plus-roaming composition is an evidence-informed design, not a tested protocol.",
+    "Whether variety improves adherence to stretching programmes specifically: the adherence-variety literature sits in resistance training and general exercise, and no stretching-specific adherence trial was found.",
+    "Runner-specific dose trials: the 10-minutes-per-week plateau comes from general adult populations; no trial has dose-tested stretching in runners as a group.",
+    "How to split the weekly stretch budget across several target areas (equal shares versus weighting the tightest area) is untested; the equal-or-weighted choice is design judgement.",
+    "Whether PNF offers runners any practical edge over static stretching beyond equal ROM gains: no head-to-head trial in runners exists (carried over from wave-5/14a).",
+    "The optimal hold within the 30 to 120 second band for a given muscle: some muscles may need longer than others per the consensus statement, but no per-muscle prescription exists."
+  ],
+  "notes": "Research-only synthesis; no application code or architecture decisions. Engine implication: the mobility session builder should take the runner's stated tight areas as the anchor set (fixed, repeated every mobility session at 2 sets x 30-45 seconds) and treat variety as a coverage and adherence device: one rotating stretch per session from the wider library, changed by session index, without ever reducing the anchor's dose. Weekly budget per target muscle caps at about 10 minutes; past that, extra stretching buys nothing and the engine should not scale mobility volume up the way it scales running volume. Progression for mobility is set count and end-range depth inside the fixed budget, not more minutes. Timing rule stays: long or intense holds never immediately before hard running. This file extends wave-3/8a and 8c and wave-5/14a to 14d, which remain authoritative for the acute performance effects, the warm-up role of dynamic work, foam rolling and yoga; all citations here were re-verified against Europe PMC metadata on 2026-11-27, and the variety gap is stated plainly rather than papered over."
+}

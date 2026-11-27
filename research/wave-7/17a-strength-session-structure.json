@@ -1,0 +1,226 @@
+{
+  "workstream": "Strength for runners",
+  "subtopic": "Session structure: full-body versus splits, emphasis, placement and phase",
+  "generated_at": "2026-11-27T02:30:00Z",
+  "claims": [
+    {
+      "topic": "Full-body sessions versus splits",
+      "claim": "With only 2 to 3 weekly strength sessions, every session should be a full-body session rather than a body-part split day (leg day, chest/back push-pull). A split at this frequency leaves each muscle trained about once a week, below the twice-weekly per-muscle exposure the frequency literature supports, and successful runner programs were not split based.",
+      "evidence": "The systematic review of strength training in runners reports that effective programs were built around 2-4 lower-body exercises plus accessories in 2-3 full-body weekly sessions, with no split-body routines among them. Meta-analytic frequency evidence shows training a muscle twice a week beats once a week for hypertrophy on a volume-equated basis, and the 2021 total-body versus split-routine trial in trained men found total body at least as good for maximal strength (greater improvement in one isokinetic bench measure) while the split was only better for vastus lateralis thickness. No split-versus-full-body trial exists in runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-27T01:55:00Z"
+      }
+    },
+    {
+      "topic": "Per-muscle training frequency",
+      "claim": "Each major muscle group should be trained about twice per week. Volume, not frequency itself, drives strength gains, so the practical rule is: hit each muscle about twice a week and let total weekly volume, not the number of session visits, do the work.",
+      "evidence": "Meta-analysis of ten studies: on a volume-equated basis, training each muscle group twice a week produced superior hypertrophy to once a week (effect size 0.49 versus 0.30), with no clear added benefit shown for three times. The strength-frequency meta-analysis of 22 studies found frequency mattered for strength gains (0.74 to 1.08 for 1 to 4+ sessions) but the effect disappeared when volume was equated (p = 0.421), and the 2019 update confirmed no meaningful frequency effect for hypertrophy when volume is equated.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Resistance Training Frequency on Measures of Muscle Hypertrophy: A Systematic Review and Meta-Analysis",
+        "authors": "Schoenfeld BJ, Ogborn D, Krieger JW",
+        "year": 2016,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-016-0543-8",
+        "retrieved_at": "2026-11-27T01:56:00Z"
+      }
+    },
+    {
+      "topic": "What 2 to 3 sessions means for per-muscle dose",
+      "claim": "Two or three full-body sessions per week deliver the target twice-weekly per-muscle exposure for every area at once. Two sessions is the default that already meets the dose; a third session adds exposure and lets weekly volume rise without lengthening single sessions, but it should stay full-body rather than becoming an isolated arm or chest day.",
+      "evidence": "Derived from the frequency meta-analyses (twice-weekly per-muscle exposure is the dose that beats once weekly; frequency per se adds nothing at matched volume) combined with the runner program structure (2-3 full-body sessions, 2-4 lower-body exercises plus 1-2 accessories each). At two sessions each muscle is touched twice; a legs-only or upper-only day in a 2 to 3 session week drops most muscles to one exposure, which the frequency data rate as the inferior dose.",
+      "confidence": "medium",
+      "citation": {
+        "title": "How many times per week should a muscle be trained to maximize muscle hypertrophy? A systematic review and meta-analysis of studies examining the effects of resistance training frequency",
+        "authors": "Schoenfeld BJ, Grgic J, Krieger J",
+        "year": 2019,
+        "venue": "Journal of Sports Sciences",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2018.1555906",
+        "retrieved_at": "2026-11-27T01:56:00Z"
+      }
+    },
+    {
+      "topic": "True split threshold",
+      "claim": "A true split (legs, upper push, upper pull on different days) is only justified at four or more weekly strength sessions, where a body-part rotation can still give each muscle two weekly exposures. At the runner's realistic ceiling of two to three sessions, the engine should encode full-body sessions with an emphasis, never an isolated body-part day.",
+      "evidence": "Arithmetic consequence of the frequency evidence: a split spread over two or three sessions gives each muscle at most one weekly exposure, which the hypertrophy meta-analysis ranks below two exposures. In the one head-to-head trial, the split's only advantage (regional quadriceps thickness) is not a runner's goal, while total body matched or beat it for maximal strength, the runner's target quality. No runner-specific split trial exists, so this threshold is an inference from general-population evidence and is flagged accordingly.",
+      "confidence": "medium",
+      "citation": {
+        "title": "A Comparison Between Total Body and Split Routine Resistance Training Programs in Trained Men",
+        "authors": "Bartolomei S, Nigro F, Malagoli Lanzoni I, Masina F, Di Michele R, Hoffman JR",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000003573",
+        "retrieved_at": "2026-11-27T01:57:00Z"
+      }
+    },
+    {
+      "topic": "Session shape: the lean, not the split",
+      "claim": "Encode session variety as a lean within a full-body session: every session keeps its core lower-body patterns (a squat or leg-press pattern, a hip hinge, knee flexion, calf work) plus one or two upper-body or core accessories, and the session's focus adds one extra exercise or set for that area rather than replacing coverage. With two sessions both lean legs and hips; with three, two lean legs and hips and one leans upper body and core.",
+      "evidence": "Composition of successful runner programs: 2-4 lower-body exercises plus 1-2 core or upper-body accessories per session, all muscle groups trained each visit. The frequency and split evidence above rules out isolating a body part to its own day at this session count. This claim encodes program-composition evidence into a rule and is therefore medium confidence by construction: no trial compared full-body-with-lean against split routines in runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-27T01:55:00Z"
+      }
+    },
+    {
+      "topic": "Lower-body emphasis should dominate",
+      "claim": "Lower-body work should carry about two thirds or more of the session's working sets, with the remainder split between upper-body accessories and core. Lower-body emphasis dominates because maximal lower-limb force shows the largest performance transfer, and running loads the legs, not the bench.",
+      "evidence": "Meta-analysis of 28 studies in endurance athletes: maximal-force training produced the largest gains (effect size 0.99 for maximal force) and strength training improved performance and energy cost of locomotion, with effects independent of athlete level. The runner program review shows every successful program anchored on 2-4 lower-body exercises against 1-2 accessories, which is a 2:1 to 4:2 set ratio. The two-thirds figure is a derived encoding of that composition, not a tested optimum, and no trial compared lower-body emphasis ratios in runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Strength Training for Middle- and Long-Distance Performance: A Meta-Analysis",
+        "authors": "Berryman N, Mujika I, Arvisais D, Roubeix M, Binet C, Bosquet L",
+        "year": 2018,
+        "venue": "International Journal of Sports Physiology and Performance",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1123/ijspp.2017-0032",
+        "retrieved_at": "2026-11-27T01:58:00Z"
+      }
+    },
+    {
+      "topic": "Where upper-body work belongs",
+      "claim": "Upper-body work is a small accessory dose: one or two exercises, one to two times per week, for muscular balance and gym adherence, always programmed after the lower-body prescription is complete, and it is the first thing to cut when a session is short. There is no runner-specific evidence that upper-body training improves running performance, so the engine should never trade a lower-body pattern for an upper-body one.",
+      "evidence": "The ACSM position stand orders multi-joint before single-joint and large before small muscle groups, and the runner review found no trial testing seated row, shoulder press, biceps curl or triceps extension for running outcomes. The concurrent-training meta-analysis links endurance frequency and duration to blunted strength gains, so every added set carries an interference cost that upper-body accessories do not repay for running.",
+      "confidence": "low",
+      "citation": {
+        "title": "American College of Sports Medicine position stand. Progression models in resistance training for healthy adults",
+        "authors": "American College of Sports Medicine",
+        "year": 2009,
+        "venue": "Medicine & Science in Sports & Exercise",
+        "type": "position-stand",
+        "doi_or_url": "https://doi.org/10.1249/MSS.0b013e3181915670",
+        "retrieved_at": "2026-11-27T01:59:00Z"
+      }
+    },
+    {
+      "topic": "Interference implications for structure",
+      "claim": "Structure sessions to limit interference: full-body sessions of moderate volume, on days separated from key runs by at least 24 hours or at least 3 hours after a hard run, strength before any same-session running, and never stack a heavy lower-body session onto high-volume running blocks. Expect some blunting of strength and explosive gains; that is an accepted cost of concurrent training, not a reason to chase splits.",
+      "evidence": "Meta-analysis of 21 studies: concurrent running (unlike cycling) blunted hypertrophy and strength, with higher endurance frequency and duration worsening it. A 21-week controlled trial at only two strength days per week showed maximal strength gains fully preserved under concurrent endurance work but rate-of-force development gains blunted even at that low frequency, which is why volume, not session type, is the lever. Within a combined day, strength-before-endurance order preserved lower-body 1RM better (pooled +3.96 kg) with no cost to VO2max, and the runner review recommends over 3 hours after hard running and 24 hours before key sessions.",
+      "confidence": "high",
+      "citation": {
+        "title": "The physiological effects of concurrent strength and endurance training sequence: A systematic review and meta-analysis",
+        "authors": "Murlasits Z, Kneffel Z, Thalib L",
+        "year": 2018,
+        "venue": "Journal of Sports Sciences",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1080/02640414.2017.1364405",
+        "retrieved_at": "2026-11-27T02:00:00Z"
+      }
+    },
+    {
+      "topic": "Plyometric and heavy lower-body placement",
+      "claim": "Keep heavy lower-body work as the spine of every full-body session, and give plyometrics an explicit slot rather than an afterthought: explosive work (jumps, hops, skips) goes early in the session while the nervous system is fresh, before the heavy lifts, and it belongs mostly in the base and build phases where its economy gains are banked. Combine rather than choose: combined heavy-plus-explosive programs show the largest economy effects.",
+      "evidence": "Meta-analysis of 22 studies: heavy resistance training improved running economy (g = -0.32) while plyometric training alone did not (g = -0.13), and longer programs (10-14 weeks) beat short ones. The 2024 economy meta-analysis found plyometrics improved economy at speeds up to 12 km/h and high-load training at higher speeds, with combined methods producing the largest effects. A 9-week trial replacing 32% of running volume with explosive-strength training improved 5-km time, economy and muscle power in well-trained runners without changing VO2max. Placement of plyometrics before heavy lifting within a session is standard practice for potentiation but has not been tested against the reverse order in runners, so the within-session order is coaching practice flagged in unverified.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Heavy Resistance Training Versus Plyometric Training for Improving Running Economy and Running Time Trial Performance: A Systematic Review and Meta-analysis",
+        "authors": "Eihara Y, Takao K, Sugiyama T, Maeo S, Terada M, Kanehisa H, Isaka T",
+        "year": 2022,
+        "venue": "Sports Medicine - Open",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1186/s40798-022-00511-1",
+        "retrieved_at": "2026-11-27T02:01:00Z"
+      }
+    },
+    {
+      "topic": "Explosive work can displace running, not add to it",
+      "claim": "In time-poor weeks, explosive and plyometric work can replace a slice of easy running volume rather than stacking on top of it, which keeps total load flat while adding the neuromuscular stimulus.",
+      "evidence": "The Paavolainen trial and its cross-country-skiing successor both replaced 27-32% of endurance volume with explosive-strength training at equal total training time and improved race performance and economy without losses in aerobic capacity; the running trial improved 5-km time via economy and muscle power.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Explosive-strength training improves 5-km running time by improving running economy and muscle power",
+        "authors": "Paavolainen L, Häkkinen K, Hämäläinen I, Nummela A, Rusko H",
+        "year": 1999,
+        "venue": "Journal of Applied Physiology",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1152/jappl.1999.86.5.1527",
+        "retrieved_at": "2026-11-27T02:02:00Z"
+      }
+    },
+    {
+      "topic": "Phase-dependent emphasis: base",
+      "claim": "Base phase: two to three full-body sessions per week, progressive loads toward at least one heavy lift (about 90% 1RM or 1-2 reps in reserve when tolerated), the heaviest weekly strength volume of the plan, and plyometrics introduced once basic strength and landing control are established.",
+      "evidence": "The runner review's periodization evidence: preparatory-phase programs ran 2-3 sessions per week and heavier loading produced the larger economy effects; successful interventions lasted at least 6 weeks and longer (10-14 weeks) programs produced larger economy gains than 6-8-week programs.",
+      "confidence": "high",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-27T01:55:00Z"
+      }
+    },
+    {
+      "topic": "Phase-dependent emphasis: peak and taper",
+      "claim": "Build and peak phases: cut to one or two full-body sessions per week, hold load but drop sets (a maintenance dose), and keep the plyometric slot because explosive work is the strength quality most linked to fast running. Taper: keep one short session early in the taper with volume cut and intensity kept, then nothing heavy in the final days. Dropping strength entirely for six weeks reverses the gains.",
+      "evidence": "A 40-week intervention reduced strength from 2 sessions per week in the preparatory phase to 1 session in-season and maintained strength and physiological gains; excluding strength after a successful block produced detraining within 6 weeks. In strength athletes, a low-volume step taper after an overreach week improved maximal strength and favored muscle adaptations, supporting volume-down, intensity-held tapers. The runner-specific final-week prescription has no RCT and sits in unverified.",
+      "confidence": "medium",
+      "citation": {
+        "title": "Effects of Strength Training on the Physiological Determinants of Middle- and Long-Distance Running Performance: A Systematic Review",
+        "authors": "Blagrove RC, Howatson G, Hayes PR",
+        "year": 2018,
+        "venue": "Sports Medicine",
+        "type": "systematic-review",
+        "doi_or_url": "https://doi.org/10.1007/s40279-017-0835-7",
+        "retrieved_at": "2026-11-27T01:55:00Z"
+      }
+    },
+    {
+      "topic": "Minimum dose and beginner on-ramp",
+      "claim": "Beginners can start with one to two sets per exercise and still make real strength progress, because even a single set of 6-12 repetitions at about 70-85% 1RM two to three times per week produces significant 1RM gains in trained men, though suboptimal ones. Ramp toward the 2-6 set range used in the successful runner programs rather than starting there.",
+      "evidence": "Systematic review and meta-analysis of the minimum effective dose for 1RM strength: all six included studies showed one set performed one to three times per week was sufficient for significant gains (pooled +12.09 kg overall 1RM; +17.48 kg squat), across 8-12 weeks at high effort. This justifies a low-set on-ramp while the full 2-6 set range remains the target for trained runners.",
+      "confidence": "medium",
+      "citation": {
+        "title": "The Minimum Effective Training Dose Required to Increase 1RM Strength in Resistance-Trained Men: A Systematic Review and Meta-Analysis",
+        "authors": "Androulakis-Korakakis P, Fisher JP, Steele J",
+        "year": 2020,
+        "venue": "Sports Medicine",
+        "type": "meta-analysis",
+        "doi_or_url": "https://doi.org/10.1007/s40279-019-01236-0",
+        "retrieved_at": "2026-11-27T02:03:00Z"
+      }
+    },
+    {
+      "topic": "What the split evidence does not cover",
+      "claim": "No study has compared split versus full-body strength structure in runners, and none has compared full-body-with-emphasis against isolated focus days. The structural recommendation above is built from frequency meta-analyses, program composition in runner trials, and one general-population split trial, so treat it as the best-supported encoding rather than a runner-specific tested result.",
+      "evidence": "Searches across Europe PMC and the sources cited in this file found no runner-specific trial of session structure beyond the frequency, volume and scheduling variables covered in wave-1/3a and 3b. The 2021 split trial is in resistance-trained men without endurance training, so its external validity to concurrent runners is limited.",
+      "confidence": "low",
+      "citation": {
+        "title": "A Comparison Between Total Body and Split Routine Resistance Training Programs in Trained Men",
+        "authors": "Bartolomei S, Nigro F, Malagoli Lanzoni I, Masina F, Di Michele R, Hoffman JR",
+        "year": 2021,
+        "venue": "Journal of Strength and Conditioning Research",
+        "type": "rct",
+        "doi_or_url": "https://doi.org/10.1519/JSC.0000000000003573",
+        "retrieved_at": "2026-11-27T01:57:00Z"
+      }
+    }
+  ],
+  "summary_tier_a": "Structure the runner's two to three weekly strength sessions as full-body sessions with an emphasis, not as body-part splits. Every session keeps the core lower-body patterns (squat or leg press, hip hinge, knee flexion, calf) plus one or two upper or core accessories; about two thirds or more of working sets are lower-body, because maximal lower-limb force shows the biggest performance transfer and no runner-specific evidence says upper-body training improves running. The lean works like this: with two sessions, both lean legs and hips; with three, two lean legs and one leans upper body and core, and the focus adds one exercise or set rather than replacing coverage. Each muscle group gets about twice-weekly exposure, which the frequency meta-analyses support, and frequency itself adds nothing once volume is matched, so total weekly volume is the lever. A true split (legs, push, pull days) is only justified at four or more sessions per week, which is above the runner's realistic ceiling. Place sessions at least 24 hours from key runs or at least 3 hours after hard runs, strength before any same-session running, keep plyometrics early in the session and mostly in base and build phases, and let explosive work displace easy running in time-poor weeks. Phase arc: 2 to 3 heavy full-body sessions in base, 1 to 2 maintenance sessions with intensity kept and sets cut through peak, one short session early in taper and nothing heavy in the final days.",
+  "unverified": [
+    "No trial has compared split versus full-body strength structure, or full-body-with-emphasis versus isolated focus days, in runners; the structure recommendation is an inference from frequency meta-analyses, program composition in runner trials, and one general-population split trial.",
+    "The within-session order of plyometrics before heavy lifting is standard coaching practice for potentiation; no runner trial has tested it against the reverse order.",
+    "The exact final-days-of-taper strength prescription in runners: no RCT establishes whether to keep a light session, stop entirely, or maintain normal sessions in race week; the volume-down, intensity-held taper is extrapolated from strength athletes and the 1-session in-season maintenance study.",
+    "The two-thirds lower-body set share is a derived encoding of successful program composition (2-4 lower-body exercises against 1-2 accessories); no trial compared emphasis ratios in runners.",
+    "Whether upper-body strength training improves running performance or reduces running injury: no runner-specific trial exists; upper-body work is justified only as an accessory for balance and adherence."
+  ],
+  "notes": "Research-only synthesis; no application code or architecture decisions. Engine implication and a revision of the 2026-11-26 decision 'The week rotates the strength focus across the body': the focus list (legs and hips, upper push, upper pull, core and stability) is fine as an emphasis vocabulary, but the session layout it produces (isolated legs day, upper push day, upper pull day at three sessions per week) leaves each muscle at about one weekly exposure, below the twice-weekly dose the frequency meta-analyses support. Recommended encoding: full-body every session with a lean; two sessions both lean legs and hips; three sessions give two leg-lean sessions and one upper-plus-core-lean session; a true split would require four or more weekly sessions, out of scope for this product. Retention rule: never let an upper-body accessory displace a lower-body pattern; if a session is short, cut the accessory first. All citations in this file were re-verified against Europe PMC metadata on 2026-11-27, except the direct split-versus-full-body gap which is stated as such. Wave-1/3a and 3b remain authoritative for frequency counts, loads, sets and exercise selection; this file adds only structure, emphasis and placement on top of them."
+}
