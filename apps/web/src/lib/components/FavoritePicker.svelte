@@ -424,7 +424,7 @@
 							type="button"
 							aria-pressed={picked}
 							onclick={() => toggleWorkout(w.id)}
-							class="no-press flex min-h-11 flex-1 items-center gap-3 rounded-lg px-1 text-left"
+							class="no-press flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-lg px-1 text-left"
 						>
 							{#if ref.imagePath}
 								<img
