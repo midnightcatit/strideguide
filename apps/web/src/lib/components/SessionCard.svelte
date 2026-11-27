@@ -7,6 +7,7 @@
 	import { isSkipped } from '$lib/skipped.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import { sessionWhyLine } from '$lib/sessionWhy';
+	import { strengthPills } from '$lib/sessionPills';
 
 	let {
 		session,
@@ -106,7 +107,6 @@
 		}
 	});
 	const machines = $derived(p.blocks ?? []);
-	const reps = $derived(machines[0]?.sets?.[0]?.reps ?? 0);
 	// Facts that fit, as pills, so the card reads at a glance.
 	const pills = $derived.by(() => {
 		const out: { text: string }[] = [];
@@ -114,8 +114,7 @@
 		// than the bare morning or evening slot, so it takes that pill's place.
 		out.push({ text: p.timeStart ?? (session.slot === 'PM' ? 'Evening' : 'Morning') });
 		if (isStrength) {
-			if (machines.length) out.push({ text: `${machines.length} moves` });
-			if (reps) out.push({ text: `3 × ${reps}` });
+			for (const text of strengthPills(p.blocks)) out.push({ text });
 			return out;
 		}
 		const scheme = repSchemeLabel(session);
