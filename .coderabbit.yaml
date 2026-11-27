@@ -42,7 +42,9 @@ reviews:
     drafts: false
     base_branches:
       - main
-    auto_pause_after_reviewed_commits: 5
+    # 0 disables auto-pause. A branch with several quick commits still gets
+    # reviewed; pausing hid the review instead of finishing it.
+    auto_pause_after_reviewed_commits: 0
 
   # Auto approvals stay off on purpose. AGENTS.md requires a human read of every
   # PR before merge; an auto-approval would bypass that gate.

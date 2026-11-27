@@ -108,6 +108,29 @@ stretch list now varies per session by construction.
 
 ---
 
+## The CodeRabbit review is advisory, not a merge gate
+
+2026-11-27
+
+Decided: a PR merges on a green CI gate. The CodeRabbit review still runs and its findings are still
+handled, but nothing waits on the review cycle. A comment carrying a suggested diff is applied
+verbatim when it holds up; every other finding goes to `backlog/` with the reason and a permalink,
+and the thread is resolved pointing at the entry. The one exception is a release blocker (a security
+hole, data loss, a broken build or auth path), which is fixed before merge whatever the tag says.
+`reviews.auto_review.auto_pause_after_reviewed_commits` is 0, so a branch with several quick commits
+still gets reviewed instead of having its review paused (AGENTS.md "CodeRabbit review").
+
+Why: the wait dominated the work. A paused or slow review held merges for tens of minutes at a time,
+and the findings it produced were mostly handled by taking its own suggested diff or deferring them,
+neither of which needs the review to finish first. Auto-pause, on by default at five reviewed
+commits, was the specific cause of reviews stalling on busy branches; the config now turns it off.
+
+Rules out: scheduling wakeups to wait on a review, merging with an unresolved thread that has no
+backlog entry, and hand-writing fixes for findings that were never applied. The review stays useful
+as advice; it just does not gate.
+
+---
+
 ## CodeRabbit findings are applied by suggestion or backlogged, not hand-fixed
 
 2026-11-27

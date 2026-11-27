@@ -90,32 +90,27 @@ Add to that set deliberately, not broadly.
 
 ## CodeRabbit review
 
-Every PR gets a CodeRabbit review. Before merging, wait for it and clear every addressable artifact,
-not just the blocking ones.
+CodeRabbit reviews every PR, but the review is advisory, not a gate. Waiting on the review cycle
+costs more time than it catches, so the flow is: take a verbatim fix when one is offered, backlog
+everything else, and merge on the CI gate.
 
-- **Wait for the review, do not merge on the CI gate alone.** After opening a PR, schedule a wakeup
-  (`cron_create` or `schedule_wakeup`) and check back when CodeRabbit has posted. Do not block the
-  turn or poll in a loop. The review is asynchronous and can take a few minutes.
-- **Read the review yourself.** The CodeRabbit check, its summary and its "no issues" line are
-  evidence, not a review. Open the review comments and read them.
-- **Do not hand-fix findings in a loop.** CodeRabbit is the fixer where it can be. When a comment
-  carries a suggested fix that makes sense, take it verbatim and continue: read the diff, and if it
-  holds up, apply it exactly as written, let the gate confirm, and move on. No rework, no extra fix
-  rounds waiting on the reviewer's blessing. Hand the comment to CodeRabbit's fix when the comment
-  offers one and no diff is present. A suggestion that does not hold up is treated like any other
-  finding: backlogged or reworked deliberately, not clicked through.
-- **Backlog what we do not apply.** A finding with no suggestion, a fix that needs a design call, or
-  one deliberately out of scope goes to `backlog/` (see backlog/README.md): one file per finding
-  with the finding, the reason, and the source link. Resolve the thread with a reply that points at
-  the backlog entry. Nothing addressable stays open without a backlog entry. Backlog is for
-  non-blocking findings only: a release-blocking one (a security hole, data loss, a broken build or
-  auth path) is fixed before merge, whatever the review's tag says. When the review tags nothing,
-  judge blocking by what would happen if the code shipped as is.
-- **Merge only when the review is complete and cleared.** The CodeRabbit check should be green, every
-  comment resolved either applied or backlogged, and the CI gate should pass. If CodeRabbit is still
-  reviewing, wait for the next wakeup.
-- **This applies to delegated work too.** A subagent's PR is not ready to merge until the same review
-  pass is done.
+- **Take a verbatim fix when one is offered.** When a comment carries a suggested diff and reading it
+  holds up, apply it exactly as written and move on. No rework, no extra fix rounds.
+- **Backlog everything else.** A finding with no suggestion, one that needs a design call, or one
+  that is out of scope goes to `backlog/` (see backlog/README.md): one file per finding with the
+  finding, the reason, and a permalink to the thread. Resolve the thread with a reply pointing at the
+  entry. Do not hand-write a fix for these, and do not wait for another review pass.
+- **Merge on the CI gate.** A green gate with every thread resolved (applied or backlogged) is the
+  bar. A pending, skipped or paused review does not hold a merge; do not schedule wakeups to wait on
+  one.
+- **One exception: release blockers.** A finding that would ship a security hole, data loss, or a
+  broken build or auth path is fixed before merge, whatever the review's tag says. When the review
+  tags nothing, judge blocking by what would happen if the code shipped as is.
+- **CodeRabbit auto-pause is off.** `.coderabbit.yaml` sets
+  `reviews.auto_review.auto_pause_after_reviewed_commits: 0`, so a branch with many commits still
+  gets reviewed. If a review is paused anyway, resume it with `@coderabbitai review` and carry on
+  rather than waiting for it.
+- **This applies to delegated work too.** A subagent's PR is held to the same bar.
 
 ## Delegation (main session)
 
