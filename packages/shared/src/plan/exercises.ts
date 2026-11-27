@@ -237,7 +237,7 @@ export const FREEWEIGHT_MOVES: MachineExercise[] = [
 	{
 		name: 'Single-leg dumbbell calf raise',
 		muscles: ['gastrocnemius', 'soleus', 'foot intrinsics'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'dumbbells',
 		why: 'Targets the plantar flexors whose strength and Achilles tendon stiffness track with better running economy, done one leg at a time to match running.',
 		feel: 'The calf working hard as you rise onto the ball of the foot, with a stretch at the bottom.',
@@ -255,7 +255,7 @@ export const FREEWEIGHT_MOVES: MachineExercise[] = [
 	{
 		name: 'Nordic hamstring curl',
 		muscles: ['hamstrings', 'gluteus maximus'],
-		pattern: 'posterior-chain',
+		pattern: 'knee-flexion',
 		equipment: 'dumbbells',
 		why: 'A high-eccentric hamstring exercise shown to cut hamstring injury rates, training the muscle at short to mid lengths to complement the hip-hinge work.',
 		feel: 'A strong, controlled pull in the back of the thighs as you resist the fall forward.',
@@ -745,7 +745,7 @@ export const BAND_HOME_MOVES: MachineExercise[] = [
 	{
 		name: 'Single-leg calf raise off a step',
 		muscles: ['gastrocnemius', 'soleus', 'foot stabilisers'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'home',
 		why: 'Strong calves and Achilles tendons support the stiffness that relates to better running economy.',
 		feel: 'A deep stretch at the bottom of the calf and a strong lift through the ball of the foot.',
@@ -900,7 +900,7 @@ export const BODYWEIGHT_PROGRESSIONS: MachineExercise[] = [
 	{
 		name: 'Double-leg calf raise',
 		muscles: ['gastrocnemius', 'soleus'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'bodyweight',
 		level: 'beginner',
 		why: 'Builds the calf and Achilles capacity that absorbs every foot strike, the base calf rung.',
@@ -919,7 +919,7 @@ export const BODYWEIGHT_PROGRESSIONS: MachineExercise[] = [
 	{
 		name: 'Single-leg calf raise',
 		muscles: ['gastrocnemius', 'soleus'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'bodyweight',
 		level: 'intermediate',
 		why: 'Loads one calf at full bodyweight, matching the single-leg push of running.',
@@ -938,7 +938,7 @@ export const BODYWEIGHT_PROGRESSIONS: MachineExercise[] = [
 	{
 		name: 'Eccentric heel drop',
 		muscles: ['gastrocnemius', 'soleus', 'Achilles tendon'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'bodyweight',
 		level: 'intermediate',
 		why: 'The heavily loaded lowering phase used in Achilles loading programs, a proven option for calf and tendon strength.',
@@ -957,7 +957,7 @@ export const BODYWEIGHT_PROGRESSIONS: MachineExercise[] = [
 	{
 		name: 'Bent-knee soleus raise',
 		muscles: ['soleus', 'Achilles tendon'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'bodyweight',
 		level: 'intermediate',
 		why: 'The bent knee shifts load to the soleus, the calf that works most in running, and to the deeper part of the Achilles.',

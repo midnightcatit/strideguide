@@ -2,11 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { GOAL_PROFILES } from '../goal-profiles';
 import { generatePlan } from './engine';
 import { findMove } from './catalog';
+import type { MovePattern } from './machines';
 import { WORKOUT_LIBRARY } from './library';
-import type { PlannedWeek } from './types';
+import type { PlannedSession, PlannedWeek } from './types';
 
 const marathon = GOAL_PROFILES.find((p) => p.slug === 'marathon')!;
 const wholeFitness = GOAL_PROFILES.find((p) => p.slug === 'whole-fitness')!;
+
+/** The lower-body spine every strength session keeps (research/wave-7/17a). */
+const SPINE: MovePattern[] = ['squat', 'hinge', 'knee-flexion', 'calf'];
+const coversSpine = (s: PlannedSession) => {
+	const patterns = new Set((s.prescription.blocks ?? []).map((b) => findMove(b.machine)?.pattern));
+	return SPINE.every((p) => patterns.has(p));
+};
 
 const isoToDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
 const addDays = (iso: string, n: number) => {
@@ -209,29 +217,32 @@ describe('generatePlan (preferences)', () => {
 	it('labels a strength session from the moves it contains, not the mode', () => {
 		// A machines-mode circuit whose kit has no machines fills with bodyweight, so
 		// the card must not read as a machine circuit over a bodyweight move. The kit
-		// is the top-level PlanInput.equipment, as the API passes it.
+		// is the top-level PlanInput.equipment, as the API passes it. Seven available
+		// days fit two strength sessions, so the first day carries the legs lean.
 		const bodyweightOnly = generatePlan({
 			...base,
+			availableDays: [0, 1, 2, 3, 4, 5, 6],
 			equipment: ['bands'],
 			baseline: { experience: 'intermediate', equipment: 'machines' },
 		});
 		const bw = bodyweightOnly.weeks
 			.flatMap((w) => w.sessions)
 			.find((s) => s.modality === 'strength')!;
-		expect(bw.title).toBe('Strength');
+		expect(bw.title).toBe('Leg day');
 		expect(bw.type).toBe('full-body-strength');
 		expect(bw.prescription.summary).toContain('moves');
 
-		// A genuine all-machine circuit keeps the machine-circuit archetype, but the
-		// label is still the neutral "Strength".
+		// A genuine all-machine circuit keeps the machine-circuit archetype, and the
+		// leaned day keeps its plain title either way.
 		const machineOnly = generatePlan({
 			...base,
+			availableDays: [0, 1, 2, 3, 4, 5, 6],
 			baseline: { experience: 'intermediate', equipment: 'machines' },
 		});
 		const mc = machineOnly.weeks
 			.flatMap((w) => w.sessions)
 			.find((s) => s.modality === 'strength')!;
-		expect(mc.title).toBe('Strength');
+		expect(mc.title).toBe('Leg day');
 		expect(mc.type).toBe('machine-circuit');
 		expect(mc.prescription.summary).toContain('machines');
 	});
@@ -287,7 +298,7 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks[0]!.sessions.filter((s) => s.modality === 'strength').length).toBe(1);
 	});
 
-	it('rotates the strength focus across the week so the days are not identical', () => {
+	it('leans both strength days of a two-day week on legs, keeping the lower-body spine', () => {
 		const p = generatePlan({
 			...base,
 			availableDays: [0, 1, 2, 3, 4, 5, 6],
@@ -295,13 +306,101 @@ describe('generatePlan (preferences)', () => {
 		});
 		const strength = p.weeks[0]!.sessions.filter((s) => s.modality === 'strength');
 		expect(strength.length).toBe(2);
-		// The two strength days name different focuses and draw different circuits,
-		// so the week is not the same session twice.
-		expect(new Set(strength.map((s) => s.prescription.why ?? '')).size).toBe(2);
+		for (const s of strength) {
+			// Both days lean legs and hips in plain words and keep the spine: a
+			// squat or leg-press pattern, a hip hinge, knee flexion and calf work.
+			expect(s.title).toBe('Leg day');
+			expect(s.prescription.why).toMatch(/legs and hips/i);
+			expect(coversSpine(s)).toBe(true);
+		}
+		// The two days still draw different circuits, so the week is not the same
+		// session twice: the first accessory alternates push and pull.
 		const circuits = strength.map((s) =>
 			(s.prescription.blocks ?? []).map((b) => b.machine).join('|'),
 		);
 		expect(new Set(circuits).size).toBe(2);
+	});
+
+	it('leans two of three strength days on legs and one on upper body and core', () => {
+		// No Monday, so the week keeps no recovery day and three run-free days fit
+		// three strength sessions (an intermediate Monday-start week fits two).
+		const p = generatePlan({
+			...base,
+			availableDays: [1, 2, 3, 4, 5, 6],
+			baseline: { experience: 'intermediate', strengthDays: 3 },
+		});
+		const strength = p.weeks[0]!.sessions.filter((s) => s.modality === 'strength');
+		expect(strength.map((s) => s.title)).toEqual(['Leg day', 'Leg day', 'Upper body day']);
+		for (const s of strength) {
+			expect(coversSpine(s)).toBe(true);
+			// Plain body-part words only: no upper push or upper pull jargon.
+			expect(s.prescription.why ?? '').toMatch(/legs and hips|upper body and core/i);
+			expect(s.prescription.why ?? '').not.toMatch(/upper push|upper pull|push day|pull day/);
+		}
+		// The upper-lean day still keeps the legs in the lead: the spine is four of
+		// the six moves, with the core and push accessories after it.
+		const upper = strength[2]!;
+		const patterns = (upper.prescription.blocks ?? []).map((b) => findMove(b.machine)?.pattern);
+		expect(patterns).toEqual([...SPINE, 'core', 'push']);
+	});
+
+	it('cuts an upper-body accessory before a lower-body pattern when the session is short', () => {
+		// A heavy sport week trims the circuit to four moves; the spine sits first
+		// in every sequence, so the trim takes the accessories and keeps the leg
+		// patterns. The neutral title keeps the day honest about having no lean.
+		const p = generatePlan({
+			...base,
+			crossLoad: { sessions: 3, minutes: 0, highEffort: 0 },
+			baseline: { experience: 'intermediate' },
+		});
+		const strength = p.weeks[0]!.sessions.filter((s) => s.modality === 'strength');
+		expect(strength.length).toBeGreaterThan(0);
+		for (const s of strength) {
+			const patterns = (s.prescription.blocks ?? []).map((b) => findMove(b.machine)?.pattern);
+			expect(patterns).toEqual(SPINE);
+			expect(s.title).toBe('Strength');
+		}
+	});
+
+	it('arcs strength across the phases: full in base, maintenance through peak, one short session early in the taper, none in the final days', () => {
+		// No Monday, so the week keeps no recovery day and three run-free days fit
+		// three strength sessions, which makes the whole arc visible. The two-day
+		// plan shows the set cut.
+		const p = generatePlan({
+			...base,
+			availableDays: [1, 2, 3, 4, 5, 6],
+			baseline: { experience: 'intermediate', strengthDays: 3 },
+		});
+		const two = generatePlan({
+			...base,
+			availableDays: [1, 2, 3, 4, 5, 6],
+			baseline: { experience: 'intermediate', strengthDays: 2 },
+		});
+		const strengthCount = (w: PlannedWeek) =>
+			w.sessions.filter((s) => s.modality === 'strength').length;
+		const setsIn = (w: PlannedWeek) =>
+			w.sessions.find((s) => s.modality === 'strength')!.prescription.blocks![0]!.sets.length;
+		// Base carries the full requested count and the full set dose.
+		const baseWeeks = p.weeks.filter((w) => w.phase === 'base');
+		expect(baseWeeks.length).toBeGreaterThan(0);
+		for (const w of baseWeeks) expect(strengthCount(w)).toBe(3);
+		// Build and peak hold a maintenance dose: at most two sessions, a set cut,
+		// with the load kept.
+		const midWeeks = p.weeks.filter((w) => w.phase === 'build' || w.phase === 'peak');
+		expect(midWeeks.length).toBeGreaterThan(0);
+		for (const w of midWeeks) expect(strengthCount(w)).toBe(2);
+		// The first taper week carries one short session; the final days carry none.
+		const taperWeeks = p.weeks.filter((w) => w.phase === 'taper');
+		expect(taperWeeks.length).toBeGreaterThanOrEqual(2);
+		expect(strengthCount(taperWeeks[0]!)).toBe(1);
+		for (const w of taperWeeks.slice(1)) expect(strengthCount(w)).toBe(0);
+		// Intensity kept, volume cut: the maintenance and taper sessions run fewer
+		// sets than base.
+		const twoBase = two.weeks.find((w) => w.phase === 'base')!;
+		const twoMid = two.weeks.find((w) => w.phase === 'build')!;
+		const twoTaper = two.weeks.find((w) => w.phase === 'taper')!;
+		expect(setsIn(twoMid)).toBeLessThan(setsIn(twoBase));
+		expect(setsIn(twoTaper)).toBeLessThan(setsIn(twoBase));
 	});
 
 	it('puts a rest card after each strength set, none in the warm-up or cool-down', () => {

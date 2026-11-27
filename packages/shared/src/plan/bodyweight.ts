@@ -90,7 +90,7 @@ export const BODYWEIGHT_MOVES: MachineExercise[] = [
 	{
 		name: 'Calf raise',
 		muscles: ['calves', 'Achilles'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		why: 'Calves and Achilles take the load of every step, and are where many runners get sore.',
 		feel: 'Calves, with a stretch at the bottom.',
 		form: [
@@ -241,7 +241,7 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 	{
 		name: 'Dumbbell calf raise',
 		muscles: ['calves', 'Achilles'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		why: 'Loads the calves and Achilles that take every step.',
 		feel: 'Calves, with a stretch at the bottom.',
 		form: [

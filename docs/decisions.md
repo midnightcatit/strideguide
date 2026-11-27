@@ -10,6 +10,59 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## Strength sessions are full-body with a lean, not split days
+
+2026-11-27
+
+Decided: every generated strength session keeps a lower-body spine in a fixed
+priority order (a squat or leg-press pattern, a hip hinge, knee flexion, calf
+work), followed by the lean's extra move for its area and then one or two
+upper-body or core accessories. The day's focus adds to this spine rather than
+replacing it. With two weekly strength sessions both lean legs and hips (their
+first accessory alternating push and pull across the week); with three, two lean
+legs and hips and one leans upper body and core; a single scheduled strength day
+stays full-body with no lean. An upper-body accessory never displaces a
+lower-body pattern: the spine leads every sequence, so a short session (a heavy
+sport week trims the circuit to four moves) loses accessories before it loses
+leg patterns. A chosen heuristic keeps about two thirds or more of the working
+sets in the lower body, stated as a heuristic in the session's why. Lean days
+carry plain titles ("Leg day", "Upper body day") and whys in plain body-part
+words, with no "upper push" or "upper pull" jargon, and each why keeps the day
+honest about still training the whole body. The phase arc follows the research
+too: the full requested count in base, at most two maintenance sessions through
+a race build and peak with a set cut and the load kept, one short session in the
+first taper week, and none in the final days before the race. When a phase asks
+for fewer sessions, the dropped strength day goes quiet (a rest day) instead of
+becoming more running, so the week's running days stay the same from the first
+week to the last. This supersedes "The week rotates the strength focus across
+the body" (2026-11-26): its focus vocabulary survives as the lean, but the
+layout it produced (a legs day, an upper push day, an upper pull day)
+concentrated most muscles into about one weekly exposure at the runner's two to
+three sessions. Its rule-out lines (the same circuit every day, a bodybuilding
+split that ignores running) still hold.
+
+Why: research/wave-7/17a-strength-session-structure.json. The runner review
+(Blagrove et al, 2018) reports 2 to 3 weekly strength sessions with a lower-limb
+focus, and no runner trial compares splits with full-body structure; a
+14-study meta-analysis (Ramos-Campo et al, 2024) found split and full-body
+equivalent once weekly volume is equated, so full-body is a practical choice at
+this session count, not a verdict against splits. Lower-body emphasis
+dominates because maximal lower-limb force shows the largest performance
+transfer (Berryman et al, 2018) and no runner-specific evidence says
+upper-body training improves running, so upper-body work is a small accessory
+dose and the first thing cut. The two-thirds set share is a chosen heuristic,
+not a figure derived from the trials, and the why says so by keeping it a plain
+claim about the session's shape. The maintenance and taper arc matches the
+same file: cut to one or two sessions through build and peak with the load
+kept, one short session early in the taper, nothing heavy in the final days.
+
+Rules out: isolated leg, upper push or upper pull days at two to three weekly
+sessions; an upper-body accessory taking a lower-body pattern's slot; heavy
+strength in the final days before the race; and jargon like "upper push" in
+user-facing text.
+
+---
+
 ## CodeRabbit findings are applied by suggestion or backlogged, not hand-fixed
 
 2026-11-27
