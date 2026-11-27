@@ -14,7 +14,7 @@ new moves).
 
 | File | Area | Claims | Headline |
 | --- | --- | --- | --- |
-| 17a-strength-session-structure.json | Strength: session structure | 14 | Full-body sessions with a lean, never isolated body-part days at 2 to 3 sessions per week; a true split needs 4 or more weekly sessions |
+| 17a-strength-session-structure.json | Strength: session structure | 14 | Full-body sessions with a lean, never isolated body-part days at 2 to 3 sessions per week; a two-way upper/lower split can work at 4 sessions, a three-way rotation needs about 6 |
 | 17b-stretch-variety-dose.json | Mobility: stretch dosing and variety | 13 | Consistency plus about 10 minutes per week per target muscle drives ROM; variety is untested for ROM and serves coverage and adherence, so anchor routines on the runner's tight areas |
 
 Each file also carries `summary_tier_a`, an `unverified` list, and `notes`. Both extend
@@ -24,27 +24,29 @@ exercise selection, warm-up roles and the stretch library itself.
 
 ## What 17a settles (and revises)
 
-- **Full-body with a lean, not a split.** Frequency meta-analyses support about twice-weekly
-  per-muscle exposure, and frequency itself adds nothing once volume is matched, so the lever
-  is weekly volume. At two to three sessions, every session keeps the core lower-body
-  patterns (squat or leg press, hip hinge, knee flexion, calf) plus one or two upper or core
-  accessories, and the session's focus adds one exercise or set rather than replacing
-  coverage. Two sessions both lean legs and hips; three give two leg-lean sessions and one
-  upper-plus-core-lean session.
-- **A true split only at 4 or more weekly sessions.** Below that, body-part days leave each
-  muscle at one weekly exposure, the dose the frequency data rate as inferior. The one
-  head-to-head trial (trained men) found total body at least as good for maximal strength,
-  the runner's target quality; the split's only edge was regional quadriceps thickness.
-- **Lower-body emphasis dominates.** About two thirds or more of working sets, anchored on
-  the composition of successful runner programs (2 to 4 lower-body exercises against 1 to 2
-  accessories) and the largest effect for maximal-force training in the endurance
-  meta-analysis. Upper-body work is a small accessory dose, programmed last and cut first;
-  no runner-specific evidence it improves running.
+- **Full-body with a lean, not a split.** The frequency meta-analyses show frequency does
+  not change the outcome once weekly volume is matched, so twice-weekly exposure is a
+  practical default and weekly volume is the lever. At two to three sessions, every session
+  keeps the core lower-body patterns (squat or leg press, hip hinge, knee flexion, calf)
+  plus one or two upper or core accessories, and the session's focus adds one exercise or
+  set rather than replacing coverage. This full-body-with-lean shape is a proposed synthesis,
+  not a structure the runner review reports. Two sessions both lean legs and hips; three
+  give two leg-lean sessions and one upper-plus-core-lean session.
+- **Split thresholds depend on split type.** A two-way upper/lower split can give each muscle
+  two weekly exposures at four sessions, while a legs/push/pull rotation needs about six;
+  both are above the runner's realistic ceiling of two to three sessions. The one head-to-head
+  trial (trained men) found total body at least as good for maximal strength, the runner's
+  target quality; the split's only edge was regional quadriceps thickness.
+- **Lower-body emphasis dominates.** About two thirds or more of working sets, a chosen
+  heuristic rather than a figure derived from exercise counts (exercise counts do not map
+  directly onto set ratios), supported by the largest effect for maximal-force training in
+  the endurance meta-analysis. Upper-body work is a small accessory dose, programmed last and
+  cut first; no runner-specific evidence it improves running.
 - **Interference is managed by volume and placement, not session type.** Keep sessions at
-  least 24 hours from key runs or 3 hours after hard runs, strength before any same-session
-  running, and accept that running blunts some strength and explosive gains. Plyometrics
-  go early in the session and mostly in base and build; explosive work can displace easy
-  running rather than stack on it.
+  least 3 hours after a hard run and at least 24 hours before a key run (both when both
+  apply), strength before any same-session running, and accept that running blunts some
+  strength and explosive gains. Plyometrics go early in the session and mostly in base and
+  build; explosive work can displace easy running rather than stack on it.
 - **Phase arc.** Base: 2 to 3 heavy full-body sessions, plyometrics added once landing
   control is there. Build and peak: 1 to 2 sessions, load kept, sets cut. Taper: one short
   session early, nothing heavy in the final days (flagged, no runner-specific RCT).
@@ -56,12 +58,14 @@ lean, for the per-muscle dose reasons above.
 
 ## What 17b settles
 
-- **Dose is total weekly stretch time per muscle, plateauing at about 10 minutes per week**
-  (4 minutes per session), from a 189-study meta-regression. Weekly frequency, hold
-  duration pattern and intervention length did not moderate gains, so when the minutes
-  happen matters far less than whether they happen every week.
-- **Prescription: 2 to 3 sets of 30 to 45 seconds per stretch**, static or PNF rather than
-  dynamic for the flexibility goal, at mild discomfort, after running or on rest days.
+- **Dose is total weekly stretch time per muscle: the acute effect is maximised at about 4
+  minutes per session and the chronic effect at about 10 minutes per week**, from a 189-study
+  meta-regression. Lower weekly doses still produce gains; more than the plateau adds nothing.
+  Weekly frequency, hold duration pattern and intervention length did not moderate gains, so
+  when the minutes happen matters far less than whether they happen every week.
+- **Prescription: 2 to 3 sets of 30 to 45 seconds per stretch**, preferring static or PNF over
+  dynamic (dynamic still builds range, just less), at mild discomfort, after running or on
+  rest days.
 - **The mechanism is mostly stretch tolerance**, not tissue lengthening, over the first
   8 weeks, so range rises fast and needs continued practice to hold.
 - **Specificity rules composition**: gains are joint- and mostly limb-specific and tight
