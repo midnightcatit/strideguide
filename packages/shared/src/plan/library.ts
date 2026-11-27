@@ -11,6 +11,7 @@ import type { Modality, StructuredWorkout } from '../types';
 import { block, MIN, step, wk } from './library-helpers';
 import { EXTRA_WORKOUTS } from './library-extra';
 import { PLUS_WORKOUTS } from './library-plus';
+import { NAMED_WORKOUTS } from './library-recipes';
 import { mobilityRoutine, mobilityWorkout } from './mobility';
 import { FOCUS_AREA_TITLE, focusRoutine, type StretchFocus } from './mobility-plan';
 
@@ -1126,4 +1127,5 @@ export const WORKOUT_LIBRARY: LibraryWorkout[] = [
 	...BUILD_MOBILITY,
 	...EXTRA_WORKOUTS,
 	...PLUS_WORKOUTS,
+	...NAMED_WORKOUTS,
 ];
