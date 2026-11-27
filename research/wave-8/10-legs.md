@@ -457,23 +457,24 @@ adductor magnus also extends the hip, more so as the hip flexes past about 40 to
 ## B. Knee extension (pattern `knee-extension`)
 
 Open-chain knee extension is the least running-specific leg mode, but it is the cleanest way to load
-the quadriceps without balance demand, and the reverse Nordic reaches the rectus femoris through the
-hip, which the squat and the leg extension do not [S11][S13][S15].
+the quadriceps without balance demand, and the reverse Nordic loads the rectus femoris, which
+crosses both the hip and the knee, with the hip extended [S11][S13][S15].
 
 ### `reverse-nordic` (Reverse nordic): take
 
 - Trains: the quadriceps, especially the rectus femoris, eccentrically, since the rectus femoris
   crosses the hip and the knee [S11][S13][S15]. Pattern `knee-extension`. Equipment: none (a band or
   support to assist). Level: advanced.
-- Runner relevance: the clean way to load the rectus femoris, which is hard to reach with a squat or
-  a leg extension, and it does so with far less knee compression than a sissy squat. Wrong tool for
-  a runner who has not built basic eccentric knee control.
+- Runner relevance: the clean way to load the rectus femoris, which crosses both the hip and the
+  knee [S13], in a hip-extended position. Wrong tool for a runner who has not built basic eccentric
+  knee control.
 - Cues: kneel tall, keep the hips extended (no sitting back), lower the torso back as one line,
   catch on the way down or with a band; progress by slowing the lowering.
 - Mistakes: the hips drifting back, which unloads the quads; dropping instead of lowering; no
   support while learning the range.
-- Recommendation: **take**. The one entry here that reaches the rectus femoris safely, and it pairs
-  with the existing Nordic curl on the posterior side. Confidence high.
+- Recommendation: **take**. The one entry here that trains the rectus femoris through the hip as
+  well as the knee, and it pairs with the existing Nordic curl on the posterior side. Confidence
+  high.
 
 ### `assisted-reverse-nordic` (Assisted reverse nordic): take
 
@@ -492,22 +493,25 @@ hip, which the squat and the leg extension do not [S11][S13][S15].
 - Trains: the quadriceps with a strong knee-flexion bias and the rectus femoris [S11][S13]. Pattern
   `knee-extension`. Equipment: none (a support to learn). Level: advanced.
 - Runner relevance: a hard bodyweight quad isolation. Wrong tool for most runners: it drives the knee
-  into deep flexion under load, which loads the patellofemoral joint hard, and the reverse Nordic
-  and the leg extension reach the quads with less joint stress.
+  into deep flexion under load, and the knee-load review [S5] finds retropatellar compression peaks
+  around 90 degrees, so by that depth-load relationship (an inference, since the review compares
+  squat depths, not these two moves) the sissy squat is treated here as the higher patellofemoral
+  load than the reverse Nordic.
 - Cues: hips forward, knees travel over the toes, stay tall, control the descent, use a support
   until the range is earned.
 - Mistakes: dropping into the bottom (the patellar load spikes); the hips drifting back into a half
   squat; no support while learning.
 - Recommendation: **prune**. The reverse Nordic and the leg extension cover the quadriceps without
-  the deep patellofemoral load; see the unverified list for the VMO claim often attached to it.
-  Confidence medium.
+  the deep-flexion load the sissy squat carries (the same depth-load inference from [S5]); see the
+  unverified list for the VMO claim often attached to it. Confidence medium.
 
 ### `half-sissy-squat` (Half sissy squat): prune
 
 - Trains: the quadriceps through a partial knee-flexion range, the gentler entry to the sissy family
   [S11]. Pattern `knee-extension`. Equipment: none. Level: beginner.
 - Runner relevance: a partial sissy squat. Wrong tool as its own entry: it is the entry rung of a
-  pruned family, and the reverse Nordic entry rung covers the same need with less joint stress.
+  pruned family, and the assisted reverse Nordic covers the same need with less deep-flexion load
+  (the same depth-load inference from [S5]).
 - Cues: as the sissy squat, to a partial depth, hips forward, control the range.
 - Mistakes: driving past the earned range; the hips drifting back; no support.
 - Recommendation: **prune**. A rung of the pruned sissy family; the assisted reverse Nordic is the
@@ -525,16 +529,18 @@ hip, which the squat and the leg extension do not [S11][S13][S15].
 
 ### `lying-leg-extension` (Lying leg extension): take
 
-- Trains: the quadriceps in isolation, lying, with bodyweight [S11]. Pattern `knee-extension`.
-  Equipment: none. Level: beginner.
-- Runner relevance: a home open-chain quad option for a runner with no gym and no band, and an early
-  rung before the machine. Wrong tool once easy: bodyweight alone runs out of load fast, so it
-  becomes a high-rep finisher.
-- Cues: lie on the side, straighten the top knee fully under control, squeeze at the top, lower
-  slowly, keep the hip still.
-- Mistakes: swinging the leg; partial range; arching the back to help.
-- Recommendation: **take**. Fills the home gap in the knee-extension pattern; label it beginner and
-  scale by slow tempo and range. Confidence high.
+- Trains: the quadriceps in isolation, lying, loaded with a band or an ankle weight [S11]. Pattern
+  `knee-extension`. Equipment: a band or an ankle weight. Level: beginner.
+- Runner relevance: a home open-chain quad option for a runner with a band or an ankle weight but no
+  machine, and an early rung before the machine. Wrong tool in its unloaded form: with the leg moving
+  roughly horizontally, gravity gives almost no resistance, so the plain bodyweight version trains
+  range, not strength.
+- Cues: lie on the side with the top leg supported, anchor a band behind the knee or add an ankle
+  weight, straighten the knee fully against the resistance, squeeze at the top, lower slowly.
+- Mistakes: swinging the leg; doing the movement with no added resistance so it only moves the joint;
+  partial range; arching the back to help.
+- Recommendation: **take**, but prescribe it loaded (a band or an ankle weight); treat the plain
+  side-lying bodyweight version as a range drill, not a strength entry. Confidence high.
 
 ### `single-leg-leg-extension` (Single-leg leg extension): take
 
@@ -552,12 +558,12 @@ hip, which the squat and the leg extension do not [S11][S13][S15].
 ### `tibialis-raise` (Tibialis raise): take
 
 - Trains: the tibialis anterior (ankle dorsiflexion and inversion), a shin and ankle muscle, not a
-  quadriceps one [S19]. Pattern `knee-extension` (the taxonomy's mapping). Equipment: a wall (or
-  none). Level: beginner.
+  quadriceps one [S19]. Pattern `calf` (the ankle family; the taxonomy mapped it to `knee-extension`,
+  which is wrong). Equipment: a wall (or a band). Level: beginner.
 - Runner relevance: the tibialis anterior controls foot clearance and the landing, so loading it
-  supports the shin and the foot in running. Wrong tool as a quad move: the taxonomy files it under
-  the knee-extension pattern, but the muscle is the shin, so it shares the lower-leg role with the
-  calf work in the posterior partition.
+  supports the shin and the foot in running. It belongs with the ankle and calf work, not the
+  quadriceps, so it shares the lower-leg role with the posterior partition and sits in the legs
+  table only because the taxonomy listed it here.
 - Cues: heels down, lift the forefoot and toes against the wall or a band, control the return, keep
   the knees soft.
 - Mistakes: lifting the whole foot (that is ankle work, not tibialis); rushing; range so small it
@@ -567,8 +573,8 @@ hip, which the squat and the leg extension do not [S11][S13][S15].
 
 ### `kettlebell-tibialis-raise` (Kettlebell tibialis raise): prune
 
-- Trains: the tibialis anterior under a kettlebell load [S19]. Pattern `knee-extension`. Equipment:
-  a bench and a kettlebell. Level: beginner.
+- Trains: the tibialis anterior under a kettlebell load [S19]. Pattern `calf` (ankle family).
+  Equipment: a bench and a kettlebell. Level: beginner.
 - Runner relevance: the loaded version of the tibialis raise. Wrong tool as its own entry: it is the
   tibialis raise with a load, so one tibialis entry is enough.
 - Cues: as the tibialis raise, with the kettlebell hooked over the forefoot, control the range.
@@ -787,12 +793,20 @@ them, with a cross-reference so the boundary is clear.
   `wide-horse-stance`, `sitting-pike-compression`, `one-leg-sitting-pike-compression`,
   `sitting-straddle-compression`, `pike-compression-flutter-kicks`.
 - Pattern note: the taxonomy rides the adduction and hip-flexion moves on `core` and the quad
-  isolation on `knee-extension`. The `muscles` field carries `adductors`, `hip flexors` or
+  isolation on `knee-extension`. The two tibialis raises are remapped here to `calf` (they are ankle
+  dorsiflexion, not quadriceps work). The `muscles` field carries `adductors`, `hip flexors` or
   `tibialis anterior`; adding `adductor` and `hip-flexion` enum values to `MovePattern` is a data
   change in `machines.ts` if the writer wants them searchable as their own patterns.
 
 ## Known corrections for the consolidator
 
+- The taxonomy maps the tibialis raises (`tibialis-raise`, `kettlebell-tibialis-raise`) to the
+  `knee-extension` pattern. That is wrong: the muscle is the tibialis anterior, an ankle dorsiflexor
+  [S19], so this file remaps both to `calf` (or an ankle family if the enum gains one).
+- The taxonomy lists `lying-leg-extension` with `none (bodyweight)` equipment. That is not enough to
+  load the movement: with the leg moving roughly horizontally, gravity supplies almost no resistance,
+  so the entry here prescribes a band or an ankle weight and treats the plain bodyweight version as a
+  range drill.
 - The taxonomy's upper-body skip table maps Calistree's `hip-adduction-machine` (e1bp) to our
   `Ab crunch machine`, which is wrong: our catalog holds `Hip adduction machine` as its own entry
   (`our-existing-names.txt`), and the machine is an adductor move, not a crunch. The legs table
