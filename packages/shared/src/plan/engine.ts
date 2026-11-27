@@ -20,6 +20,7 @@ import {
 import { WORKOUT_LIBRARY, type LibraryWorkout } from './library';
 import { mobilityPrescription } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
+import { PLYO_REST_CARD_NOTE, REST_CARD_NOTE, strengthRestForMove } from './rest';
 import { placeSessions, scheduleWarnings, type UnplacedSession } from './schedule';
 import type {
 	PlannedSession,
@@ -1041,33 +1042,64 @@ function hillsWorkout(
 	});
 }
 
+/** A controlled strength set runs about four seconds a rep plus a little setup,
+ * which the length estimate uses for the work itself. */
+function setWorkSec(reps: number): number {
+	return Math.round(reps * 4 + 10);
+}
+
+/**
+ * The guided sequence for a strength session: the warm-up drills, then each
+ * move's sets with an explicit rest card after every set, then the cool-down.
+ * The rest after a move's final set serves as the pause before the next move,
+ * so there is no separate transition card, and the final set of the final move
+ * runs straight into the cool-down, which is rest-free. The length estimate is
+ * the sum of its parts: work plus rest, never shrunk to fit a time budget.
+ */
 function strengthWorkout(
 	circuit: MachineExercise[],
 	reps: number,
 	sets: number,
+	level: string,
+	phase: string,
 ): StructuredWorkout {
-	const blocks: StepBlock[] = [
-		drillBlock('Warm-up', WARMUP_DRILLS, 'warmup'),
-		{
-			repeat: 1,
-			label: 'Circuit',
-			steps: circuit.map<WorkoutStep>((m) => ({
+	const warmup = drillBlock('Warm-up', WARMUP_DRILLS, 'warmup');
+	const cooldown = drillBlock('Cool-down', COOLDOWN_STRETCHES, 'cooldown');
+	const steps: WorkoutStep[] = [];
+	let restTotal = 0;
+	circuit.forEach((m, mi) => {
+		const rest = strengthRestForMove(m.pattern, level, phase);
+		const lastMove = mi === circuit.length - 1;
+		for (let k = 0; k < sets; k++) {
+			steps.push({
 				kind: 'work',
 				label: m.name,
 				machine: m.name,
-				sets,
+				sets: 1,
 				reps,
-				restSec: 75,
 				targetRpe: [7, 8],
 				note:
 					m.pattern === 'plyometric'
 						? `Explosive: stop the set when your speed drops. ${m.muscles.join(', ')}.`
-						: `Rest ~60–90s between sets. ${m.muscles.join(', ')}.`,
-			})),
-		},
-		drillBlock('Cool-down', COOLDOWN_STRETCHES, 'cooldown'),
-	];
-	return { blocks, estimatedDurationMin: 50 };
+						: `Feel it in the ${m.muscles.join(', ')}.`,
+			});
+			if (!(k === sets - 1 && lastMove)) {
+				steps.push({
+					kind: 'rest',
+					label: 'Rest',
+					durationSec: rest,
+					note: m.pattern === 'plyometric' ? PLYO_REST_CARD_NOTE : REST_CARD_NOTE,
+				});
+				restTotal += rest;
+			}
+		}
+	});
+	const drillSec = (b: StepBlock) => b.steps.reduce((s, x) => s + (x.durationSec ?? 0), 0);
+	const totalSec = drillSec(warmup) + circuit.length * sets * setWorkSec(reps) + restTotal + drillSec(cooldown);
+	return {
+		blocks: [warmup, { repeat: 1, label: 'Circuit', steps }, cooldown],
+		estimatedDurationMin: Math.round(totalSec / 60),
+	};
 }
 
 /* ------------------------------- engine ---------------------------------- */
@@ -2039,6 +2071,7 @@ function strengthSession(
 		: focus
 			? `Today leans on ${focus.label}. The week spreads strength across the body, so each strength day covers a different area.`
 			: undefined;
+	const workout = strengthWorkout(circuit, reps, setCount, level, phase);
 	return {
 		day,
 		slot,
@@ -2052,9 +2085,11 @@ function strengthSession(
 			targetRpe: [7, 8],
 			notes: copy.load,
 			why,
-			workout: strengthWorkout(circuit, reps, setCount),
+			workout,
 		},
-		durationMin: input.baseline.sessionMinutes ?? 45,
+		// The reserved time is the session's real length, work plus rest, so the
+		// schedule and the length shown both account for the rest cards.
+		durationMin: workout.estimatedDurationMin ?? input.baseline.sessionMinutes ?? 45,
 	};
 }
 

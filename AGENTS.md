@@ -107,7 +107,10 @@ not just the blocking ones.
 - **Backlog what we do not apply.** A finding with no suggestion, a fix that needs a design call, or
   one deliberately out of scope goes to `backlog/` (see backlog/README.md): one file per finding
   with the finding, the reason, and the source link. Resolve the thread with a reply that points at
-  the backlog entry. Nothing addressable stays open without a backlog entry.
+  the backlog entry. Nothing addressable stays open without a backlog entry. Backlog is for
+  non-blocking findings only: a release-blocking one (a security hole, data loss, a broken build or
+  auth path) is fixed before merge, whatever the review's tag says. When the review tags nothing,
+  judge blocking by what would happen if the code shipped as is.
 - **Merge only when the review is complete and cleared.** The CodeRabbit check should be green, every
   comment resolved either applied or backlogged, and the CI gate should pass. If CodeRabbit is still
   reviewing, wait for the next wakeup.

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 	import { formatClock } from '@strideguide/shared/units';
-	import { SHORT_WHY, findDrill, findMove, mediaForMove, type MachineExercise } from '@strideguide/shared/plan';
+	import { SHORT_WHY, findDrill, findMove, mediaForMove, withRestCards, type MachineExercise } from '@strideguide/shared/plan';
 	import { api } from '$lib/api';
-	import type { ClientBlock, ClientLog, ClientSession, ClientStep } from '$lib/plan';
+	import { collapseRests, type ClientBlock, type ClientLog, type ClientSession, type ClientStep } from '$lib/plan';
 	import { fmtDistance, fmtPaceBand, fmtStepDistance, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import InfoButton from '$lib/components/InfoButton.svelte';
@@ -48,7 +48,8 @@
 	} = $props();
 
 	const p = $derived(session.prescription ?? {});
-	const workout = $derived(p.workout);
+	/** The workout with rest cards explicit, so one shape reaches every view. */
+	const workout = $derived(withRestCards(p.workout));
 	const band = $derived(fmtPaceBand(p.targetPaceSecPerKm));
 	const dist = $derived(p.targetDistanceKm ?? workout?.totalDistanceKm);
 	const minutes = $derived(session.durationMin ?? workout?.estimatedDurationMin);
@@ -203,6 +204,9 @@
 		const out: Row[] = [];
 		for (const block of (workout?.blocks ?? []) as ClientBlock[]) {
 			const drill = block.steps.every((s) => s.kind === 'warmup' || s.kind === 'cooldown');
+			// Rest cards stay out of the list: they are part of the player's flow,
+			// and consecutive sets of a move merge back into one row.
+			const work = collapseRests(block.steps as ClientStep[]);
 			if (drill && block.steps.length > 1) {
 				out.push({
 					label: block.label ?? 'Drills',
@@ -214,16 +218,16 @@
 					label: block.label ?? 'Set',
 					target: `× ${block.repeat}`,
 					repeat: block.repeat,
-					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
+					sub: work.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
 				});
-			} else if (block.steps.length > 1) {
+			} else if (work.length > 1) {
 				out.push({
 					label: block.label ?? 'Block',
-					target: `${block.steps.length} steps`,
-					sub: block.steps.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
+					target: `${work.length} moves`,
+					sub: work.map((s) => ({ label: s.label, target: stepTarget(s), run: runInfoFor(s) })),
 				});
 			} else {
-				const s = block.steps[0];
+				const s = work[0];
 				if (s) out.push({ label: s.label, target: stepTarget(s), run: runInfoFor(s) });
 			}
 		}

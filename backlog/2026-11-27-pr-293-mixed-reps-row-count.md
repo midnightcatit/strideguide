@@ -1,6 +1,7 @@
 # The detail list counts prescription rows, not moves
 
-From CodeRabbit on PR #293 (thread PRRT_kwDOV3qHEs68oHla).
+From CodeRabbit on PR #293 (thread
+[PRRT_kwDOV3qHEs68oHla](https://github.com/midnightcatit/strideguide/pull/293#discussion_r4715188513)).
 
 **Finding.** After the equal-reps merge condition landed, one move with sets
 of 10 and 8 reps produces two rows in `collapseRests`. `SessionDetail` uses

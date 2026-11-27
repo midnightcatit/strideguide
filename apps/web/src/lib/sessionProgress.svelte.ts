@@ -8,6 +8,10 @@ import { createSessionStateStore } from './sessionState.svelte';
 export interface Progress {
 	idx: number;
 	elapsed: number;
+	/** The instance count when this was saved. A saved place is only trusted when
+	 * the count still matches, so a workout whose layout changed (rest cards
+	 * inserted, say) never resumes on the wrong step. Older saves have none. */
+	steps?: number;
 }
 
 const store = createSessionStateStore<Progress>({
@@ -22,7 +26,14 @@ export function hydrateProgress(entries: { sessionId: string; progress: string |
 		try {
 			const p = JSON.parse(e.progress) as Partial<Progress>;
 			if (typeof p.idx === 'number') {
-				out.push({ id: e.sessionId, value: { idx: p.idx, elapsed: p.elapsed ?? 0 } });
+				out.push({
+					id: e.sessionId,
+					value: {
+						idx: p.idx,
+						elapsed: p.elapsed ?? 0,
+						steps: typeof p.steps === 'number' ? p.steps : undefined,
+					},
+				});
 			}
 		} catch {
 			// ignore a bad row
