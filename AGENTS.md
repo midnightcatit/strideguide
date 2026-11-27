@@ -98,12 +98,17 @@ not just the blocking ones.
   turn or poll in a loop. The review is asynchronous and can take a few minutes.
 - **Read the review yourself.** The CodeRabbit check, its summary and its "no issues" line are
   evidence, not a review. Open the review comments and read them.
-- **Resolve every addressable artifact.** Nitpicks, outside-diff comments, inline comments and review
-  summaries all count. If a comment is valid, fix it. If it is not valid, reply with the reason and
-  resolve the thread. Do not leave an addressable comment open.
-- **Merge only when the review is complete and clean.** The CodeRabbit check should be green and every
-  addressable comment resolved, and the CI gate should pass. If CodeRabbit is still reviewing, wait for
-  the next wakeup.
+- **Do not hand-fix findings in a loop.** CodeRabbit is the fixer where it can be: apply a comment's
+  suggested diff verbatim (its suggestion action), or hand the comment to CodeRabbit's fix when the
+  comment offers one. Verify the suggested diff first (read it, run the gate): the button applies
+  what the comment proposes, right or wrong.
+- **Backlog what we do not apply.** A finding with no suggestion, a fix that needs a design call, or
+  one deliberately out of scope goes to `backlog/` (see backlog/README.md): one file per finding
+  with the finding, the reason, and the source link. Resolve the thread with a reply that points at
+  the backlog entry. Nothing addressable stays open without a backlog entry.
+- **Merge only when the review is complete and cleared.** The CodeRabbit check should be green, every
+  comment resolved either applied or backlogged, and the CI gate should pass. If CodeRabbit is still
+  reviewing, wait for the next wakeup.
 - **This applies to delegated work too.** A subagent's PR is not ready to merge until the same review
   pass is done.
 

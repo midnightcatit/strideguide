@@ -10,6 +10,32 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## CodeRabbit findings are applied by suggestion or backlogged, not hand-fixed
+
+2026-11-27
+
+Decided: review findings are cleared in two ways, and the main session stops
+rewriting code in a loop for them. A comment that carries a suggested diff is
+applied verbatim (its suggestion action) after the diff is read and the gate
+passes; a comment CodeRabbit can fix itself is handed to it; and a finding we
+do not apply is recorded in `backlog/` with the reason and the source link.
+Threads resolve against one of those two outcomes, and a PR merges with the
+review green and no comment left open (AGENTS.md "CodeRabbit review",
+backlog/README.md).
+
+Why: three review rounds on the rest-card PR (#293) produced hand-written
+fixes for every comment, which is slow, drifts the code away from what the
+reviewer looked at, and spends session budget on prose-level findings. The
+suggested diff is what the reviewer expects to see applied, and the backlog
+keeps a genuine deferral visible instead of resolved by silence.
+
+Rules out: merging with an open review thread, silently dismissing a finding,
+and endless fix re-reviews over the same lines. The review is still read on its
+own: a suggestion is applied only after the diff is verified, so a wrong
+suggestion is backlogged or reworked rather than clicked through.
+
+---
+
 ## Plan warnings reach the runner
 
 2026-11-27
