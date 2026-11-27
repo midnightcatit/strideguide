@@ -25,7 +25,7 @@
 			type="button"
 			aria-pressed={value === o.key}
 			onclick={() => (value = o.key)}
-			class="flex min-h-11 items-center rounded-full border px-3 text-xs {value === o.key
+			class="flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 text-xs {value === o.key
 				? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
 				: 'border-hairline text-steel hover:border-steel'}"
 		>

@@ -29,6 +29,13 @@
 		{ key: 'all', label: 'All parts' },
 		...bodyParts.map((part) => ({ key: part, label: BODY_PART_LABELS[part] })),
 	]);
+
+	// Keep the stored part honest. If the bound value is not among the chips,
+	// which happens when the category swaps to one with no body parts, fall back
+	// to 'all' so the parent cannot filter on a part the list no longer shows.
+	$effect(() => {
+		if (bodyPart !== 'all' && !bodyParts.includes(bodyPart)) bodyPart = 'all';
+	});
 </script>
 
 <div class="space-y-1.5">
