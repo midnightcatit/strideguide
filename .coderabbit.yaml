@@ -1,0 +1,135 @@
+# CodeRabbit configuration for StrideGuide.
+#
+# Settings only. Review instructions and pre-merge checks live in .coderabbit/
+# as Markdown documents, scoped to the paths they govern. The repo's own docs
+# (AGENTS.md, SYSTEM.md, docs/decisions.md) are the source of truth and are
+# loaded as code guidelines below.
+
+language: en-US
+
+tone_instructions: |
+  Write like a person. No em dashes. No hype, no filler, no generic transitions.
+  Be specific and plain. Say what is wrong and where. Do not restate the diff.
+
+reviews:
+  # assertive fits because AGENTS.md carries the rules the review should enforce.
+  profile: assertive
+
+  high_level_summary: true
+  high_level_summary_instructions: |
+    One short paragraph on what changed and why. Call out anything that touches
+    the plan engine, the D1 schema, the AI layer or the writing rules. Skip the
+    file-by-file list.
+  review_status: true
+  review_progress: true
+  fail_commit_status: false
+  collapse_walkthrough: true
+  sequence_diagrams: true
+  changed_files_summary: true
+  estimate_code_review_effort: true
+  assess_linked_issues: true
+  suggested_labels: true
+  auto_apply_labels: false
+  suggested_reviewers: true
+  auto_assign_reviewers: false
+
+  # No fun output. This is a working repo.
+  poem: false
+  in_progress_fortune: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+    auto_pause_after_reviewed_commits: 5
+
+  # Auto approvals stay off on purpose. AGENTS.md requires a human read of every
+  # PR before merge; an auto-approval would bypass that gate.
+  auto_approvals:
+    enabled: false
+
+  # Review everything. Docs and tests are part of the change, not noise.
+  path_filters: []
+
+  merge_risk_instructions: |
+    High risk: schema migrations in apps/api/drizzle, auth and session code,
+    anything that changes generated coach text or prompts, and workflow changes
+    that touch deploy or secrets.
+    Low risk: docs, comments, tests that only add coverage, and copy changes that
+    do not touch logic.
+
+  security_risk_instructions: |
+    The API is a Cloudflare Worker with a D1 database. The web app is public.
+    Per-user data is isolated by user id in D1 queries; a query that drops the
+    user id is a high-risk finding. Secrets live in Cloudflare via wrangler and
+    must never appear in the repo. The only GitHub secret is CLOUDFLARE_API_TOKEN.
+
+  finishing_touches:
+    unit_tests:
+      enabled: true
+
+  pre_merge_checks:
+    title:
+      mode: warning
+      requirements: |
+        Say what changed and why. A prefix like feat, fix, docs or chore is fine.
+        Do not use an em dash.
+    description:
+      mode: warning
+    override_requested_reviewers_only: false
+
+  tools:
+    gitleaks:
+      enabled: true
+    markdownlint:
+      enabled: true
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    # Language linters that do not apply to this repo.
+    ast-grep:
+      enabled: false
+    languagetool:
+      enabled: false
+    ruff:
+      enabled: false
+    phpstan:
+      enabled: false
+    phpmd:
+      enabled: false
+    golangci-lint:
+      enabled: false
+    swiftlint:
+      enabled: false
+    detekt:
+      enabled: false
+    clippy:
+      enabled: false
+    sqlfluff:
+      enabled: false
+    hadolint:
+      enabled: false
+
+chat:
+  auto_reply: true
+  allow_non_org_members: true
+
+knowledge_base:
+  automatic_linking_mode: disabled
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - AGENTS.md
+      - SYSTEM.md
+      - docs/decisions.md
+      - docs/design-spacing.md
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  pull_requests:
+    scope: auto
