@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import type { D1Database } from '@cloudflare/workers-types';
 import { asc, and, desc, eq, gte, inArray, isNotNull, isNull, or } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
@@ -47,6 +48,7 @@ import { narrateAndStore, reviewPlan, templateWeekSummary } from '../lib/narrati
 import { rephraseAndStore, type StoredWhyInput } from '../lib/session-why';
 import { shapePlan } from '../lib/plan-shape';
 import { equipmentPrefsPatchSchema } from '../lib/prefs-schema';
+import { changeStoredPrefs, d1PrefsStore, type PrefsChange } from '../lib/prefs-store';
 import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
 import { syncGoalProfiles } from '../lib/goal-profiles';
 import { prescriptionSchema } from '../lib/prescription-schema';
@@ -202,22 +204,16 @@ export async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
 	return { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}) };
 }
 
-/** Merge a partial prefs patch into the runner's settings. */
-async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promise<void> {
-	const rows = await db
-		.select()
-		.from(schema.settings)
-		.where(eq(schema.settings.userId, userId))
-		.limit(1);
-	const merged = { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}), ...patch };
-	if (rows[0]) {
-		await db
-			.update(schema.settings)
-			.set({ prefs: merged })
-			.where(eq(schema.settings.userId, userId));
-	} else {
-		await db.insert(schema.settings).values({ userId, prefs: merged });
-	}
+/** Merge a partial prefs patch into the runner's settings, guarded so a prefs write landing at the same time (a workout save, say) is never clobbered. */
+async function upsertPrefs(
+	db: D1Database,
+	userId: string,
+	patch: Partial<Prefs>,
+): Promise<PrefsChange> {
+	return changeStoredPrefs(d1PrefsStore(db), userId, (prefs) => ({
+		ok: true,
+		prefs: { ...prefs, ...patch },
+	}));
 }
 
 /** The machines to build a circuit from: an explicit override, else the gym preset. */
@@ -1168,7 +1164,12 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 	if (body.equipmentItems !== undefined) patch.equipmentItems = body.equipmentItems;
 	if (body.gymPreset !== undefined) patch.gymPreset = body.gymPreset;
 	if (body.machineItems !== undefined) patch.machineItems = body.machineItems;
-	if (Object.keys(patch).length) await upsertPrefs(db, user.id, patch);
+	if (Object.keys(patch).length) {
+		const saved = await upsertPrefs(c.env.DB, user.id, patch);
+		if (saved.kind === 'conflict') {
+			return c.json({ error: 'Another change was saving at the same time. Try again.' }, 409);
+		}
+	}
 	const prefs = await loadPrefs(db, user.id);
 
 	const found = await currentPlanWithWeeks(db, user.id);

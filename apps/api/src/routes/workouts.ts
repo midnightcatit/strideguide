@@ -1,16 +1,15 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { eq } from 'drizzle-orm';
-import { validateCustomWorkout } from '@strideguide/shared';
+import { validateCustomWorkout, type CustomWorkout } from '@strideguide/shared';
 import {
-	changeStoredWorkouts,
 	createCustomWorkout,
 	customWorkoutDraftSchema,
-	d1PrefsStore,
 	deleteCustomWorkout,
 	readCustomWorkouts,
 	updateCustomWorkout,
 } from '../lib/custom-workouts';
+import { changeStoredPrefs, d1PrefsStore } from '../lib/prefs-store';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -54,12 +53,15 @@ workouts.post(
 		// stores the same workout rather than a new one.
 		const id = crypto.randomUUID();
 		const now = new Date().toISOString();
-		const outcome = await changeStoredWorkouts(d1PrefsStore(c.env.DB), user.id, (prefs) =>
-			createCustomWorkout(prefs, draft, id, now),
-		);
+		let saved: CustomWorkout | undefined;
+		const outcome = await changeStoredPrefs(d1PrefsStore(c.env.DB), user.id, (prefs) => {
+			const result = createCustomWorkout(prefs, draft, id, now);
+			saved = result.ok ? result.workout : undefined;
+			return result;
+		});
 		if (outcome.kind === 'refused') return c.json({ error: outcome.error }, 400);
 		if (outcome.kind === 'conflict') return c.json(CONFLICT, 409);
-		return c.json({ workout: outcome.workout }, 201);
+		return c.json({ workout: saved }, 201);
 	},
 );
 
@@ -75,19 +77,22 @@ workouts.put(
 		const problems = validateCustomWorkout(draft);
 		if (problems.length) return c.json({ error: problems[0], problems }, 400);
 		const now = new Date().toISOString();
-		const outcome = await changeStoredWorkouts(d1PrefsStore(c.env.DB), user.id, (prefs) =>
-			updateCustomWorkout(prefs, id, draft, now),
-		);
+		let saved: CustomWorkout | undefined;
+		const outcome = await changeStoredPrefs(d1PrefsStore(c.env.DB), user.id, (prefs) => {
+			const result = updateCustomWorkout(prefs, id, draft, now);
+			saved = result.ok ? result.workout : undefined;
+			return result;
+		});
 		if (outcome.kind === 'refused') return c.json({ error: outcome.error }, 404);
 		if (outcome.kind === 'conflict') return c.json(CONFLICT, 409);
-		return c.json({ workout: outcome.workout });
+		return c.json({ workout: saved });
 	},
 );
 
 workouts.delete('/:id', async (c) => {
 	const user = c.get('user')!;
 	const id = c.req.param('id');
-	const outcome = await changeStoredWorkouts(d1PrefsStore(c.env.DB), user.id, (prefs) =>
+	const outcome = await changeStoredPrefs(d1PrefsStore(c.env.DB), user.id, (prefs) =>
 		deleteCustomWorkout(prefs, id),
 	);
 	if (outcome.kind === 'refused') return c.json({ error: outcome.error }, 404);
