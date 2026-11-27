@@ -7,10 +7,15 @@ import {
 	type CustomWorkoutItem,
 } from './workouts';
 import { circuitSize } from './plan/catalog';
+import { withRestCards } from './plan/rest';
 import {
 	addItem,
 	catalogForSection,
 	cleanDraft,
+	CUSTOM_STRENGTH_REST_SEC,
+	customWorkoutArchetype,
+	customWorkoutNotes,
+	customWorkoutToStructured,
 	defaultItemFor,
 	filterCatalog,
 	imageForName,
@@ -165,5 +170,89 @@ describe('workout composer helpers', () => {
 		expect(cleaned.name).toBe('Leg day');
 		expect(cleaned.sections.main.note).toBeUndefined();
 		expect(cleaned.sections.main.items[0]!.note).toBe('go slow');
+	});
+});
+
+describe('custom workout to guided steps', () => {
+	it('lays a composed strength workout out as warm-up, main work and cool-down', () => {
+		const draft: CustomWorkoutDraft = {
+			name: 'Leg day',
+			category: 'strength',
+			sections: {
+				warmup: { items: [{ kind: 'mobility', ref: 'Hip circles' }] },
+				main: { items: [{ kind: 'strength', ref: 'Leg press', sets: 3, reps: 10 }] },
+				cooldown: { items: [{ kind: 'mobility', ref: "Child's pose" }] },
+			},
+		};
+		const workout = customWorkoutToStructured(draft);
+		expect(workout.blocks.map((b) => b.label)).toEqual(['Warm-up', 'Main work', 'Cool-down']);
+		expect(workout.blocks[0]!.steps[0]).toMatchObject({ kind: 'warmup', label: 'Hip circles' });
+		expect(workout.blocks[2]!.steps[0]).toMatchObject({ kind: 'cooldown', label: "Child's pose" });
+
+		// A strength move keeps its sets and takes a rest between them, so the
+		// player expands it into a rest card after each set.
+		expect(workout.blocks[1]!.steps).toHaveLength(1);
+		expect(workout.blocks[1]!.steps[0]).toMatchObject({
+			kind: 'work',
+			machine: 'Leg press',
+			sets: 3,
+			reps: 10,
+			restSec: CUSTOM_STRENGTH_REST_SEC,
+		});
+
+		const withRests = withRestCards(workout)!;
+		const main = withRests.blocks[1]!.steps;
+		expect(main.filter((s) => s.kind === 'work')).toHaveLength(3);
+		expect(main.filter((s) => s.kind === 'rest')).toHaveLength(2);
+	});
+
+	it('keeps a mobility hold as rounds without adding a rest card', () => {
+		const draft: CustomWorkoutDraft = {
+			name: 'Mobility routine',
+			category: 'mobility',
+			sections: {
+				warmup: { items: [{ kind: 'mobility', ref: 'Hip circles' }] },
+				main: { items: [{ kind: 'mobility', ref: 'Glute stretch', durationSec: 45, sets: 2 }] },
+				cooldown: { items: [{ kind: 'mobility', ref: "Child's pose" }] },
+			},
+		};
+		const workout = customWorkoutToStructured(draft);
+		expect(workout.blocks[1]!.steps[0]).toMatchObject({ kind: 'work', sets: 2, durationSec: 45 });
+		expect(workout.blocks[1]!.steps[0]!.restSec).toBeUndefined();
+
+		const withRests = withRestCards(workout)!;
+		const main = withRests.blocks[1]!.steps;
+		expect(main.filter((s) => s.kind === 'rest')).toHaveLength(0);
+		expect(main.filter((s) => s.kind === 'work')).toHaveLength(2);
+	});
+
+	it('maps a custom workout to a session archetype from its category and main run', () => {
+		const run: CustomWorkoutDraft = {
+			name: 'Tempo run',
+			category: 'running',
+			sections: {
+				warmup: { items: [{ kind: 'mobility', ref: 'Hip circles' }] },
+				main: { items: [{ kind: 'run', ref: 'tempo', durationSec: 1800 }] },
+				cooldown: { items: [{ kind: 'run', ref: 'easy' }] },
+			},
+		};
+		expect(customWorkoutArchetype(run)).toBe('tempo');
+		expect(customWorkoutToStructured(run).blocks[1]!.steps[0]).toMatchObject({
+			kind: 'work',
+			label: 'Tempo run',
+			durationSec: 1800,
+		});
+		expect(customWorkoutArchetype(presetDraft('strength'))).toBe('machine-circuit');
+		expect(customWorkoutArchetype(presetDraft('mobility'))).toBe('mobility');
+		expect(customWorkoutArchetype(presetDraft('recovery'))).toBe('recovery');
+	});
+
+	it('joins the runner section notes, dropping empty ones', () => {
+		const draft = presetDraft('strength', { sessionMinutes: 45 });
+		expect(customWorkoutNotes(draft)).toBeUndefined();
+		draft.sections.main.note = '  go slow  ';
+		draft.sections.warmup.note = '   ';
+		draft.sections.cooldown.note = 'Breathe out.';
+		expect(customWorkoutNotes(draft)).toBe('go slow\nBreathe out.');
 	});
 });

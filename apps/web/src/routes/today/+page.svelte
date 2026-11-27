@@ -3,11 +3,12 @@
 	import { page } from '$app/state';
 	import { goto, beforeNavigate } from '$app/navigation';
 	import { getGoalProfile } from '@strideguide/shared/profiles';
+	import type { ComposerContext, CustomWorkout } from '@strideguide/shared';
 	import { api } from '$lib/api';
 	import { fmtDistance, prefs, sessionLabel } from '$lib/prefs.svelte';
 	import { auth, ensureAuth } from '$lib/auth.svelte';
 	import { summary, ensureSummary } from '$lib/summaryStore.svelte';
-	import { store, ensurePlan, mergeLogs, upsertLog } from '$lib/planStore.svelte';
+	import { store, ensurePlan, mergeLogs, reloadPlan, upsertLog } from '$lib/planStore.svelte';
 	import { readView, saveView } from '$lib/viewState';
 	import { type ClientActivity, type ClientLog, type ClientSession, DAY_NAMES, addDaysIso, dayIndexInWeek, formatIsoDay, localIso, startOfWeekIso, weekColumn, weekdayIndexFromIso } from '$lib/plan';
 	import { today } from '$lib/today.svelte';
@@ -31,6 +32,7 @@
 	import LogSheet from '$lib/components/LogSheet.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import ConnectNudge from '$lib/components/ConnectNudge.svelte';
+	import WorkoutComposer from '$lib/components/WorkoutComposer.svelte';
 	import { sessionWhyLine } from '$lib/sessionWhy';
 
 	/**
@@ -63,6 +65,20 @@
 		tone?: 'default' | 'danger';
 		action: () => void;
 	} | null>(null);
+	// The composer sheet, and the error from adding the workout it saved.
+	let composerOpen = $state(false);
+	let addError = $state<string | null>(null);
+
+	// The runner's own context, so the composer's preset fits their session and
+	// kit the way the plan engine sizes its own strength sessions.
+	const baseline = $derived<Record<string, unknown>>(store.plan?.goal?.baseline ?? {});
+	const composerContext = $derived<ComposerContext>({
+		sessionMinutes: typeof baseline.sessionMinutes === 'number' ? baseline.sessionMinutes : undefined,
+		equipment: prefs.equipment,
+		equipmentItems: prefs.equipmentItems,
+		level: typeof baseline.experience === 'string' ? baseline.experience : undefined,
+		favoriteMachines: prefs.favoriteMachines,
+	});
 
 	const todayIso = $derived(today.iso);
 	// The day the panel opens on, captured once: a later midnight rollover moves
@@ -358,6 +374,19 @@
 		milestoneSheet = null;
 	}
 
+	// The composer saved the workout to the profile; put it on the day the runner
+	// opened it from, then bring the new session into view.
+	async function addSavedWorkout(workout: CustomWorkout) {
+		addError = null;
+		try {
+			const res = await api.addSavedWorkout(selectedIso, workout.id);
+			await reloadPlan();
+			revealId = res.session.id;
+		} catch (e) {
+			addError = e instanceof Error ? e.message : 'Could not add the workout. Try again.';
+		}
+	}
+
 	function selectDay(day: number) {
 		const iso = addDaysIso(weekStartIso, day);
 		changeKind = 'day';
@@ -545,7 +574,8 @@
 			disabled={!dayInPlan || !editable}
 			onclick={() => {
 				if (!dayInPlan || !editable) return;
-				void goto(`/today/add/${selectedIso}`);
+				addError = null;
+				composerOpen = true;
 			}}
 			class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-3 text-sm {dayInPlan && editable
 				? 'border-hairline-strong text-signal-ink hover:border-signal'
@@ -553,6 +583,9 @@
 		>
 			＋ Add a workout
 		</button>
+		{#if addError}
+			<p role="alert" class="mt-2 text-sm text-danger">{addError}</p>
+		{/if}
 		{#if !editable}
 			<p class="mt-2 text-xs text-steel">
 				This day is more than 30 days old, so it is read-only history. You can look back, but not change it.
@@ -658,3 +691,11 @@
 		onSaved={saveMilestoneLog}
 	/>
 {/if}
+
+<WorkoutComposer
+	open={composerOpen}
+	category="strength"
+	context={composerContext}
+	onSaved={addSavedWorkout}
+	onClose={() => (composerOpen = false)}
+/>

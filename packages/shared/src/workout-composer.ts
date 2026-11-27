@@ -5,9 +5,18 @@
  * one shape, and a saved workout always matches what the engine can run.
  */
 
-import type { EquipmentItem, EquipmentPreference } from './types';
+import type {
+	EquipmentItem,
+	EquipmentPreference,
+	SessionArchetype,
+	StepBlock,
+	StepKind,
+	StructuredWorkout,
+	WorkoutStep,
+} from './types';
 import {
 	CUSTOM_WORKOUT_CATEGORIES,
+	CUSTOM_WORKOUT_SECTION_IDS,
 	RUN_ARCHETYPES,
 	sectionKinds,
 	type CustomMobilityItem,
@@ -517,4 +526,147 @@ export function cleanDraft(draft: CustomWorkoutDraft): CustomWorkoutDraft {
 			cooldown: cleanSection(draft.sections.cooldown),
 		},
 	};
+}
+
+/** The rest a runner-built strength circuit takes between sets, in seconds. The
+ * player's withRestCards turns a work step's sets into explicit rest cards from
+ * this, so a composed circuit runs like the engine's own strength sessions. */
+export const CUSTOM_STRENGTH_REST_SEC = 75;
+
+/** A run step's plain label from its archetype. */
+function runLabel(ref: string): string {
+	return RUN_ARCHETYPE_LABELS[ref as RunArchetype] ?? ref;
+}
+
+/**
+ * The guided steps for one bookend (warm-up or cool-down) item. A drill with
+ * rounds becomes one step per round, the way the engine's drill blocks build,
+ * since the player only expands a work step's own sets.
+ */
+function bookendSteps(item: CustomWorkoutItem, kind: StepKind): WorkoutStep[] {
+	if (item.kind === 'run') {
+		const rounds = item.sets && item.sets > 1 ? item.sets : 1;
+		return Array.from({ length: rounds }, () => ({
+			kind,
+			label: runLabel(item.ref),
+			...(item.distanceKm ? { distanceM: Math.round(item.distanceKm * 1000) } : {}),
+			...(item.durationSec ? { durationSec: item.durationSec } : {}),
+			...(item.note ? { note: item.note } : {}),
+		}));
+	}
+	const drill = item.kind === 'mobility' ? findDrill(item.ref) : undefined;
+	const durationSec = item.kind === 'mobility' ? item.durationSec ?? drill?.durationSec : undefined;
+	const rounds = item.sets && item.sets > 1 ? item.sets : 1;
+	return Array.from({ length: rounds }, () => ({
+		kind,
+		label: item.ref,
+		...(durationSec ? { durationSec } : {}),
+		targetRpe: kind === 'warmup' ? ([2, 3] as [number, number]) : ([1, 2] as [number, number]),
+		...(item.note ? { note: item.note } : {}),
+	}));
+}
+
+/**
+ * The guided steps for one main-work item. A strength move keeps its sets and
+ * reps and takes a rest between sets, so the player expands it into a rest card
+ * after each set. A mobility hold or a run step keeps its rounds as sets, which
+ * the player expands without a rest card.
+ */
+function mainSteps(item: CustomWorkoutItem): WorkoutStep[] {
+	const rounds = item.sets && item.sets > 1 ? item.sets : undefined;
+	if (item.kind === 'strength') {
+		const step: WorkoutStep = {
+			kind: 'work',
+			label: item.ref,
+			machine: item.ref,
+			targetRpe: [7, 8],
+			...(item.reps ? { reps: item.reps } : {}),
+			...(item.durationSec ? { durationSec: item.durationSec } : {}),
+			...(item.note ? { note: item.note } : {}),
+		};
+		if (rounds) {
+			step.sets = rounds;
+			step.restSec = CUSTOM_STRENGTH_REST_SEC;
+		}
+		return [step];
+	}
+	if (item.kind === 'mobility') {
+		const durationSec = item.durationSec ?? findDrill(item.ref)?.durationSec;
+		return [
+			{
+				kind: 'work',
+				label: item.ref,
+				...(durationSec ? { durationSec } : {}),
+				targetRpe: [1, 2],
+				...(rounds ? { sets: rounds } : {}),
+				...(item.note ? { note: item.note } : {}),
+			},
+		];
+	}
+	return [
+		{
+			kind: 'work',
+			label: runLabel(item.ref),
+			targetRpe: [4, 6],
+			...(item.distanceKm ? { distanceM: Math.round(item.distanceKm * 1000) } : {}),
+			...(item.durationSec ? { durationSec: item.durationSec } : {}),
+			...(rounds ? { sets: rounds } : {}),
+			...(item.note ? { note: item.note } : {}),
+		},
+	];
+}
+
+/** The seconds one step takes, work plus the rest between its own sets. */
+function stepSeconds(step: WorkoutStep): number {
+	const sets = step.sets && step.sets > 1 ? step.sets : 1;
+	const work = step.durationSec ?? (step.reps ? step.reps * 4 + 10 : 0);
+	const rest = step.restSec && sets > 1 ? (sets - 1) * step.restSec : 0;
+	return sets * work + rest;
+}
+
+/**
+ * Turn a runner-built workout into the guided sequence the player runs: a
+ * warm-up block, the main work, then a cool-down, each drawn from the section's
+ * own items. This is the piece that lets a composed workout become a session,
+ * since a stored custom workout is sections of items, not steps. Pure, so the
+ * API and the onboarding preview build the same workout the same way.
+ */
+export function customWorkoutToStructured(custom: CustomWorkoutDraft): StructuredWorkout {
+	const blocks: StepBlock[] = [];
+	const warmup = custom.sections.warmup.items.flatMap((i) => bookendSteps(i, 'warmup'));
+	if (warmup.length) blocks.push({ repeat: 1, label: 'Warm-up', steps: warmup });
+	const main = custom.sections.main.items.flatMap(mainSteps);
+	if (main.length) blocks.push({ repeat: 1, label: 'Main work', steps: main });
+	const cooldown = custom.sections.cooldown.items.flatMap((i) => bookendSteps(i, 'cooldown'));
+	if (cooldown.length) blocks.push({ repeat: 1, label: 'Cool-down', steps: cooldown });
+	const totalSec = blocks.reduce(
+		(sum, b) => sum + b.steps.reduce((s, step) => s + stepSeconds(step), 0),
+		0,
+	);
+	return { blocks, estimatedDurationMin: Math.max(1, Math.round(totalSec / 60)) };
+}
+
+/**
+ * The session archetype a custom workout carries, from its category and main
+ * work: a run names its own kind, the rest name their modality.
+ */
+export function customWorkoutArchetype(custom: CustomWorkoutDraft): SessionArchetype {
+	if (custom.category === 'running') {
+		const run = custom.sections.main.items.find((i) => i.kind === 'run');
+		if (run && (RUN_ARCHETYPES as readonly string[]).includes(run.ref)) {
+			return run.ref as SessionArchetype;
+		}
+		return 'easy';
+	}
+	if (custom.category === 'strength') return 'machine-circuit';
+	if (custom.category === 'mobility') return 'mobility';
+	return 'recovery';
+}
+
+/** The runner's section notes in one line, or undefined when there are none. */
+export function customWorkoutNotes(custom: CustomWorkoutDraft): string | undefined {
+	const parts = CUSTOM_WORKOUT_SECTION_IDS.map((id) => custom.sections[id].note?.trim()).filter(
+		(n): n is string => Boolean(n),
+	);
+	return parts.length ? parts.join('\n') : undefined;
 }

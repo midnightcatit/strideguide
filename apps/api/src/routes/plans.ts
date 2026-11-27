@@ -3,7 +3,13 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { D1Database } from '@cloudflare/workers-types';
 import { asc, and, desc, eq, gte, inArray, isNotNull, isNull, or } from 'drizzle-orm';
-import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
+import {
+	GOAL_PROFILES,
+	customWorkoutArchetype,
+	customWorkoutNotes,
+	customWorkoutToStructured,
+	generatePlan,
+} from '@strideguide/shared';
 import {
 	WORKOUT_LIBRARY,
 	adaptPlan,
@@ -49,6 +55,7 @@ import { rephraseAndStore, type StoredWhyInput } from '../lib/session-why';
 import { shapePlan } from '../lib/plan-shape';
 import { equipmentPrefsPatchSchema } from '../lib/prefs-schema';
 import { changeStoredPrefs, d1PrefsStore, type PrefsChange } from '../lib/prefs-store';
+import { readCustomWorkouts } from '../lib/custom-workouts';
 import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
 import { syncGoalProfiles } from '../lib/goal-profiles';
 import { prescriptionSchema } from '../lib/prescription-schema';
@@ -615,15 +622,18 @@ plans.post(
 				date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 				workoutId: z.string().min(1).max(60).optional(),
 				custom: customWorkoutSchema.optional(),
+				/** A workout the runner built in the composer, stored on their profile. */
+				customWorkoutId: z.string().min(1).max(60).optional(),
 			})
-			.refine((b) => (!!b.workoutId ? 1 : 0) + (!!b.custom ? 1 : 0) === 1, {
-				message: 'Send a workoutId or a custom workout.',
-			}),
+			.refine(
+				(b) => (!!b.workoutId ? 1 : 0) + (!!b.custom ? 1 : 0) + (!!b.customWorkoutId ? 1 : 0) === 1,
+				{ message: 'Send a workoutId, a custom workout, or a stored custom workout.' },
+			),
 	),
 	async (c) => {
 		const user = c.get('user')!;
 		const db = c.get('db');
-		const { date, workoutId, custom } = c.req.valid('json');
+		const { date, workoutId, custom, customWorkoutId } = c.req.valid('json');
 
 		if (custom) {
 			if (custom.modality === 'strength' && !custom.blocks?.length) {
@@ -632,7 +642,7 @@ plans.post(
 			if (custom.modality === 'running' && custom.distanceKm == null) {
 				return c.json({ error: 'A run needs a distance.' }, 400);
 			}
-		} else {
+		} else if (!customWorkoutId) {
 			const workout = WORKOUT_LIBRARY.find((w) => w.id === workoutId);
 			if (!workout) return c.json({ error: 'Unknown workout.' }, 400);
 		}
@@ -648,7 +658,34 @@ plans.post(
 		}
 
 		let session: typeof schema.sessionsPlan.$inferInsert;
-		if (custom) {
+		if (customWorkoutId) {
+			const prefs = await loadPrefs(db, user.id);
+			const workout = readCustomWorkouts(prefs).find((w) => w.id === customWorkoutId);
+			if (!workout) return c.json({ error: 'Unknown workout.' }, 400);
+			// A stored custom workout is sections of items, not steps, so it is
+			// turned into the guided sequence the player runs here.
+			const structured = customWorkoutToStructured(workout);
+			const notes = customWorkoutNotes(workout);
+			session = {
+				id: crypto.randomUUID(),
+				planWeekId: week.id,
+				day: dayIndex(week.startDate, date),
+				slot: 'AM',
+				modality: workout.category,
+				type: customWorkoutArchetype(workout),
+				title: workout.name,
+				purpose: 'You added this one yourself.',
+				prescription: {
+					summary: 'A workout you built yourself.',
+					intensity: workout.category === 'strength' ? 'steady' : 'easy',
+					workout: structured,
+					added: true,
+					custom: true,
+					...(notes ? { notes } : {}),
+				},
+				durationMin: structured.estimatedDurationMin ?? 45,
+			};
+		} else if (custom) {
 			session = {
 				id: crypto.randomUUID(),
 				planWeekId: week.id,
