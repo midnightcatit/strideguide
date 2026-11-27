@@ -1,8 +1,10 @@
 # Generated strength sessions can land under the runner's time preference
 
-Found while reviewing PR #293, where the session length estimate became an
-honest sum of work plus rest (`packages/shared/src/plan/engine.ts`,
-`strengthSession` and `strengthWorkout`).
+Found during the coordinator's review of PR #293, where the session length
+estimate became an honest sum of work plus rest. No review thread exists for
+it (it was raised in review chat, not on the PR), so the source is the code
+itself: `packages/shared/src/plan/engine.ts`, `strengthSession` and
+`strengthWorkout`.
 
 **Finding.** The circuit is sized from the runner's `sessionMinutes`
 preference, but the new estimate counts only what the drills and sets actually
