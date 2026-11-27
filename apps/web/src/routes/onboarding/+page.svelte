@@ -647,9 +647,15 @@
 		week.sessions = week.sessions.filter((x) => x.id !== s.id);
 	}
 	// The tile's popover: a tap explains the category, never the workout itself.
-	// Focus the tile first, so the focus trap the card runs hands focus back here
-	// when it closes.
+	// A second tap on the same tile closes it, the way the info buttons toggle, so
+	// the card is never left open with focus parked on the tile outside it. The
+	// tile takes focus before the first open, so the focus trap hands focus back
+	// here when the card closes.
 	function openPreviewInfo(s: ClientSession, el: HTMLElement) {
+		if (previewInfo?.id === s.id) {
+			previewInfo = null;
+			return;
+		}
 		el.focus();
 		previewInfo = { id: s.id, anchor: el };
 	}
@@ -1057,7 +1063,14 @@
 									class="flex touch-manipulation select-none items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm"
 									use:dragToDay={{ onDropDay: (day) => moveSession(s, day) }}
 								>
-									<button type="button" onclick={(e) => openPreviewInfo(s, e.currentTarget)} class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink" title="Tap for what it is, drag to move">
+									<button
+										type="button"
+										onclick={(e) => openPreviewInfo(s, e.currentTarget)}
+										aria-expanded={previewInfo?.id === s.id}
+										aria-controls={previewInfo?.id === s.id ? 'preview-info-card' : undefined}
+										class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink"
+										title="Tap for what it is, drag to move"
+									>
 										{PREVIEW_CATEGORY_LABEL[previewCategory(s)]}
 									</button>
 									<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-danger">✕</button>
@@ -1101,6 +1114,7 @@
 			{#if previewInfo && previewInfoSession}
 				{@const category = previewCategory(previewInfoSession)}
 				<div
+					id="preview-info-card"
 					role="dialog"
 					aria-labelledby="preview-info-title"
 					tabindex="-1"
