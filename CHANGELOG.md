@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-27
+- fix(web): player nav, one finish control, full-screen map (#289)
 - chore(review): add CodeRabbit config and review documents (#288)
 
 ## 2026-11-26
