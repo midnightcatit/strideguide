@@ -329,7 +329,7 @@ export function collapseRests(steps: ClientStep[]): ClientStep[] {
 					j++;
 					continue;
 				}
-				if (t.kind !== 'work' || (t.machine ?? t.label) !== key || (t.sets ?? 0) > 1) break;
+				if (t.kind !== 'work' || (t.machine ?? t.label) !== key || (t.sets ?? 0) > 1 || t.reps !== s.reps) break;
 				count++;
 				j++;
 			}
