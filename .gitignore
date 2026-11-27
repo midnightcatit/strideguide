@@ -22,3 +22,6 @@ session-*.md
 .kilo/kilo.jsonc
 .kilo/kilo.json
 .kilo/agent-manager.json
+
+# Raw scraped pages: evidence kept out of the repo (bulk third-party content).
+research/wave-8/raw/pages/
