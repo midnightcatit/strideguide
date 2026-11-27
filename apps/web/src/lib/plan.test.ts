@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { addDaysIso, monthGridStartIso, startOfWeekIso, weekColumn, weekDayInitials } from './plan';
+import {
+	addDaysIso,
+	collapseRests,
+	expandSteps,
+	monthGridStartIso,
+	startOfWeekIso,
+	weekColumn,
+	weekDayInitials,
+	type ClientStep,
+} from './plan';
 
 describe('calendar week grouping', () => {
 	it('places a Wednesday-started plan in the Monday-start calendar week', () => {
@@ -89,5 +98,81 @@ describe('today week strip follows the runner week', () => {
 		}
 		// Sunday the 11th is before this Monday-start week, so it is not in it.
 		expect(byColumn).toEqual({ 2: ['b'], 3: ['c'], 5: ['d'] });
+	});
+});
+
+describe('strength set expansion', () => {
+	const work = (machine: string): ClientStep => ({ kind: 'work', label: machine, machine, sets: 1, reps: 10 });
+	const rest = (sec: number): ClientStep => ({ kind: 'rest', label: 'Rest', durationSec: sec });
+
+	it('numbers work sets across the rest cards between them', () => {
+		const slots = expandSteps([
+			work('Leg press'),
+			rest(75),
+			work('Leg press'),
+			rest(75),
+			work('Leg press'),
+		]);
+		// The rest cards are their own slots and take no set number, so the work
+		// sets read 1/3, 2/3, 3/3 and each rest announces the right next set.
+		expect(slots.map((s) => [s.step.kind, s.setNo, s.totalSets])).toEqual([
+			['work', 1, 3],
+			['rest', undefined, undefined],
+			['work', 2, 3],
+			['rest', undefined, undefined],
+			['work', 3, 3],
+		]);
+	});
+
+	it('multiplies a single work step that carries its own set count', () => {
+		const slots = expandSteps([{ kind: 'work', label: 'Plank', machine: 'Plank', sets: 3, reps: 8 }]);
+		expect(slots.map((s) => [s.setNo, s.totalSets])).toEqual([
+			[1, 3],
+			[2, 3],
+			[3, 3],
+		]);
+	});
+
+	it('leaves single sets of different moves unnumbered', () => {
+		const slots = expandSteps([work('Leg press'), rest(75), work('Seated row')]);
+		expect(slots.map((s) => s.setNo)).toEqual([undefined, undefined, undefined]);
+	});
+});
+
+describe('collapseRests', () => {
+	const work = (machine: string): ClientStep => ({ kind: 'work', label: machine, machine, sets: 1, reps: 10 });
+	const rest = (): ClientStep => ({ kind: 'rest', label: 'Rest', durationSec: 75 });
+
+	it('merges every set of a move into one row, across the rest cards', () => {
+		const rows = collapseRests([
+			work('Leg press'),
+			rest(),
+			work('Leg press'),
+			rest(),
+			work('Leg press'),
+		]);
+		expect(rows).toHaveLength(1);
+		expect(rows[0]!.label).toBe('Leg press');
+		expect(rows[0]!.sets).toBe(3);
+	});
+
+	it('keeps different moves as separate rows and drops the rest cards', () => {
+		const rows = collapseRests([
+			work('Leg press'),
+			rest(),
+			work('Leg press'),
+			rest(),
+			work('Seated row'),
+		]);
+		expect(rows.map((r) => [r.label, r.sets])).toEqual([
+			['Leg press', 2],
+			['Seated row', 1],
+		]);
+	});
+
+	it('passes a single step that carries its own set count through', () => {
+		const rows = collapseRests([{ kind: 'work', label: 'Plank', machine: 'Plank', sets: 3, reps: 8 }]);
+		expect(rows).toHaveLength(1);
+		expect(rows[0]!.sets).toBe(3);
 	});
 });

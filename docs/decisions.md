@@ -10,6 +10,47 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## Rest between strength sets is a band, and rest is an explicit card
+
+2026-11-27
+
+Decided: the engine gives every strength move its rest from a phase band instead
+of a flat 75 seconds: 45 to 60 seconds in base, 75 to 90 in build, 90 to 120 in
+peak, with the runner's level nudging inside the band (a beginner at the short
+end, an advanced runner at the long end), snapped to five seconds. A plyometric
+move always takes at least 90 seconds so every contact stays sharp. A taper
+week keeps the build band and the post-race recovery weeks rest like the base.
+The rest is now an explicit step in the guided sequence (`kind: 'rest'`): one
+card after each set, where the card after a move's final set is the pause
+before the next move, and the final set of the final move runs straight into
+the cool-down, which stays rest-free. The player's implicit rest machinery is
+gone: the "Rest now" button and the countdown it armed are replaced by the rest
+card, which ticks by itself, can be extended 30 seconds at a time, and can only
+be skipped behind a confirmation that names what skipping costs. The session's
+length estimate is the sum of its parts (drills, work at about four seconds a
+rep plus setup, and rest) instead of a flat 50 minutes. The detail page's
+"What's to come" list stays work-focused, one row per move, with rest cards
+visible only in the player's flow.
+
+Why: the ACSM position stand on progression models (Med Sci Sports Exerc,
+2009;41(3):687-708) recommends two to three minutes between sets of heavy core
+lifts and one to two minutes for assistance work, and a review of
+time-efficient training (Iversen et al, 2021) advises one to two minutes for
+untrained lifters and at least two minutes for trained ones. This app
+prescribes strength at RPE 7 to 8 on purpose, so the bands sit at the short end
+of that evidence. The flat 75 seconds paid the same rest for a 10-rep base
+session and a 6-rep heavy one, and the rest lived outside the sequence, where
+the runner could not see it coming or skip it knowingly
+(`packages/shared/src/plan/rest.ts`, `engine.ts`,
+`apps/web/src/lib/components/SessionPlayer.svelte`).
+
+Rules out: one flat rest for every phase and level, an implicit rest that
+starts whenever a set is marked done, and shrinking the work to fit a time
+budget. Stored sessions that predate the change get rest cards at load time
+(`withRestCards`), so no migration is needed.
+
+---
+
 ## Plan warnings reach the runner
 
 2026-11-27
