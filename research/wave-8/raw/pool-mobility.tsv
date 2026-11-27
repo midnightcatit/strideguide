@@ -1,0 +1,545 @@
+id	name	alt_name	our_level	tier	equipment	pattern	have	primary_muscles
+e1fn	Banded sitting pike fold	Seated compression with band	beginner	bands	long resistance band	core		abs, core and neck
+e1fy	Pilates	Pilates class, Mat Pilates, Reformer Pilates	beginner	bodyweight	none	core		abs, core and glutes
+w00i	Plow raise		intermediate	bodyweight	none	core		abs, core and quadriceps
+e0zw	Roll up	Lying to forward fold	beginner	bodyweight	none	core		abs, core and quadriceps
+w00k	Rolling compression		intermediate	bodyweight	none	push		abs, core and quadriceps
+e0fh	Band overhead triceps extension	Banded triceps press	beginner	bands	long resistance band	push		triceps, chest and back
+e0iz	Dolphin pushup		beginner	bodyweight	none	push		triceps
+e143	Dumbbell overhead triceps extension		beginner	dumbbells	dumbbell	push		triceps, chest and back
+e1bh	Fallen triangle split		intermediate	bodyweight	none	core		triceps, back and chest
+e00e	Forearm stand	Pincha Mayurasana, Feathered Peacock Pose	intermediate	bodyweight	none	core		triceps, back and shoulders
+e1fg	Forearm stand scorpion	Pincha scorpion, Scorpion pose, Vrschikasana	advanced	bodyweight	none	core		triceps, back and shoulders
+e0jm	Halo		beginner	dumbbells	kettlebell	core		triceps, back and shoulders
+e142	Plate overhead triceps extension		beginner	dumbbells	weight plate	push		triceps, chest and back
+w00f	Pullup 360	Pullup to skin-the-cat	intermediate	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e144	Single dumbbell overhead triceps extension		beginner	dumbbells	dumbbell	push		triceps, chest and back
+e0vx	Wall forearm stand		beginner	bodyweight	free wall	core		triceps, back and shoulders
+e151	Weighted hair brush	Overhead shoulder rotation	beginner	dumbbells	dumbbell	core		triceps, rotator cuff and biceps
+e1fs	Banded wall shoulder flexion	Wall slide with band, Banded straight-arm wall slide	beginner	bands	free wall and long resistance band	core		back and shoulders
+e0i0	Bridge pushup	Head bridge, Half bridge	intermediate	bodyweight	none	hinge		back, shoulders and core
+e0fu	Dolphin Pose	Ardha Pincha Mayurasana	beginner	bodyweight	none	core		back and shoulders
+e1bc	Dolphin kicks	Three-legged dolphin extensions	beginner	bodyweight	none	core		back, shoulders and glutes
+e0iy	Dolphin rock		beginner	bodyweight	none	core		back and shoulders
+e02g	Elbow bridge	Dwi Pada Viparita Dandasana, Upward Facing Two-Foot Staff Pose	intermediate	bodyweight	none	hinge		back, shoulders and core
+e0hy	Feet-elevated bridge	Decline bridge	intermediate	bodyweight	plyo box or chair	hinge		back, shoulders and core
+e0za	Floor I hold		beginner	bodyweight	none	core		back and shoulders
+e0z9	Floor I raise		beginner	bodyweight	none	core		back and shoulders
+e0zg	Floor W hold		beginner	bodyweight	none	core		back
+e0zf	Floor W raise		beginner	bodyweight	none	core		back
+e0zc	Floor Y hold		beginner	bodyweight	none	core		back, rotator cuff and shoulders
+e0zb	Floor Y raise		beginner	bodyweight	none	core		back, rotator cuff and shoulders
+w01i	Flow IYTW	Floor LYTW, Arch up, Prone YTW	beginner	bodyweight	none	core		back, shoulders and rotator cuff
+e0i3	Forearm bridge	Dwi Pada Viparita Dandasana, Upward Facing Two-Foot Staff Pose	intermediate	bodyweight	none	hinge		back, shoulders and core
+w02b	Front kick-through to one-legged dog		beginner	bodyweight	none	core		back and chest
+e1g0	Gymnastics	Artistic gymnastics	intermediate	bodyweight	none	core		back, chest and core
+e00x	Hanging active splits		beginner	bodyweight	rings or pullup bar	pull		back, chest and core
+e0hx	High bridge rotation	Bridge side entrance	intermediate	bodyweight	none	hinge		back, shoulders and core
+e0s7	Incline bridge	Angled bridge	intermediate	bodyweight	plyo box or chair	hinge		back, shoulders and core
+e10a	One-leg dolphin hold		beginner	bodyweight	none	core		back and shoulders
+e0gj	Rocking table	Table top thrust	beginner	bodyweight	none	core		back, core and rotator cuff
+e0xi	Square forearm supine plank		beginner	bodyweight	none	core		back, rotator cuff and shoulders
+e11l	Stability ball IYT		beginner	dumbbells	stability ball and kettlebell	core		back and shoulders
+e02u	Straight-arm hang	Passive hang, Dead hang	beginner	bodyweight	rings or pullup bar	pull		back, chest and forearms
+e0c9	Table top	Ardha purvottanasana, Reverse Table Top Pose	beginner	bodyweight	none	core		back and core
+e003	Table top cross toe touch		intermediate	bodyweight	none	core		back, core and quadriceps
+e0ca	Table top jumps		beginner	bodyweight	none	plyometric		back and core
+e0gz	Table top reach back	Crab reach	beginner	bodyweight	none	core		back and core
+e0g6	Table top reach up		beginner	bodyweight	none	core		back and core
+w01m	Table top to supported L-sit		beginner	bodyweight	none	core		back, core and chest
+e0ys	Wall bridge raise		intermediate	bodyweight	free wall	hinge		back, shoulders and core
+e100	Wall slide	Wall angel, Scapula wall slides	beginner	bodyweight	free wall	core		back, shoulders and rotator cuff
+w01o	Half burpee		beginner	bodyweight	none	cardio		legs, quadriceps and abs
+e05y	Jumping trunk twists	Jump hip rotation	beginner	bodyweight	none	plyometric		legs
+e16l	Plie squat with tip toes		beginner	bodyweight	none	squat		legs, quadriceps and glutes
+e0yp	Tibialis raise	Tibial raise	beginner	bodyweight	free wall	knee-extension		legs
+e10i	Dumbbell pullover	Weight pullover	beginner	dumbbells	bench and dumbbell	core		chest and back
+e12e	Shoulder band dislocate	Shoulder band warmup, Yuri's shoulder dislocate, Yuri shoulder band	beginner	bands	long resistance band	core		chest, back and shoulders
+e11c	Stability ball weight pullover		beginner	dumbbells	stability ball and dumbbell	core		chest and back
+w01h	Weighted cocoon		beginner	dumbbells	weight plate	core		chest, back and abs
+e16f	Assisted hip airplane	Assisted runners hang	beginner	bodyweight	free wall	core		legs, glutes and core
+e0y9	Front leg swing		beginner	bodyweight	none	plyometric		legs
+e0fr	Half moon pose	Ardha Chandrasana	intermediate	bodyweight	none	core		legs
+e182	Heel sit	Kiza	beginner	bodyweight	none	core		legs
+e170	Hip airplane	Runners hang	intermediate	bodyweight	none	core		legs, glutes and core
+w00u	One-leg hold		intermediate	bodyweight	none	core		legs, core and quadriceps
+e0ya	Side leg swing		beginner	bodyweight	none	plyometric		legs
+e0au	Standing ankle circles		beginner	bodyweight	none	calf		legs
+e1bd	Standing figure-4 tree		beginner	bodyweight	none	core		legs
+e0w4	Standing front leg toe hold		beginner	bodyweight	none	core		legs
+e0w5	Standing side leg toe hold	Utthita Hasta Padangustasana B, Extended Hand To Big Toe Pose	beginner	bodyweight	none	core		legs
+e0wa	Supported half moon pose		beginner	bodyweight	yoga block	core		legs
+e0fo	Tree pose	Vrksasana	beginner	bodyweight	none	core		legs
+e08k	Knee palm raise	Palm pulses, Wrist pushup	beginner	bodyweight	none	core		forearms
+e08j	Knee wrist pushup	Kneeling wrist extension	beginner	bodyweight	none	push		forearms, shoulders and chest
+e068	Kneeling wrists stretches		beginner	bodyweight	none	core		forearms
+e08o	Palm raise pushup		beginner	bodyweight	none	push		forearms, shoulders and chest
+w00z	Quick wrists warmup		beginner	bodyweight	none	core		forearms
+e095	Rocking fists	Radial-ulnar deviation	beginner	bodyweight	none	core		forearms
+e09e	Spear pushup	Straight palm raise pushup	intermediate	bodyweight	none	push		forearms, shoulders and chest
+w010	Thorough wrists warmup		intermediate	bodyweight	none	core		forearms, shoulders and chest
+e08r	Wrist pushup		intermediate	bodyweight	none	push		forearms, shoulders and chest
+e0i9	Active 90-90		beginner	bodyweight	none	core		
+e0jg	Archer squat floor slap	Pubu Lunbi, Slap the floor while in half squat stance	intermediate	bodyweight	none	hinge		glutes, hamstrings and quadriceps
+e0y5	Assisted back scale		beginner	bodyweight	none	core		glutes, hamstrings and legs
+e0er	Back scale	Drinking bird	beginner	bodyweight	none	core		glutes, hamstrings and legs
+e12g	Banded side leg raise	Banded lateral leg raise	beginner	bands	short resistance band	core		glutes and legs
+w022	Basic Squats plus calves		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0it	Bow stance	Gong Bu	beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e0q6	Butterfly squat		advanced	bodyweight	none	squat		glutes
+e02o	Close squat	Narrow squat, Close-leg deep squat, Narrow stance squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0q7	Corkscrew squat		intermediate	bodyweight	none	squat		glutes
+e0iu	Crouching stance	Pu Bu, Half squat stance	beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e11n	Cyclist squat		beginner	bodyweight	slant board	squat		glutes, hamstrings and quadriceps
+e1f2	Dancer pose	Natarajasana, Lord of the dance pose	beginner	bodyweight	none	core		core and quadriceps
+w012	Deck squat		beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e02y	Deep archer squat	Cossack squat, Lateral lunge	intermediate	bodyweight	none	hinge		glutes and hamstrings
+e031	Deep squat	Full squat, Asian squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0xp	Deep squat hold	Asian resting squat, Low squat hold, Yogi squat, Primal squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0o0	Diagonal stretch		intermediate	bodyweight	none	core		core and quadriceps
+e0l6	Diamond frog		beginner	bodyweight	none	core		glutes and core
+e1aj	Dumbbell deck squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e1b4	Dumbbell deck squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+w024	Extended deck squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e03m	Fire hydrant	Peeing dog, Quadruped hip abduction	beginner	bodyweight	none	posterior-chain		glutes
+e0ax	Front scale	Standing front leg lift, Utthita Hasta Padangustasana C, Extended Hand To Big Toe Pose, Front leg raise	beginner	bodyweight	none	core		core, quadriceps and legs
+e0h2	Good morning		beginner	dumbbells	barbell	hinge		glutes, hamstrings and core
+e19p	Hip hike	Hip hitch	beginner	bodyweight	step platform	core		glutes and legs
+e0is	Horse stance	Ma Bu	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e005	Jumping wide squat	Jumping sumo squat	beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0k2	Kettlebell deck squat		beginner	dumbbells	kettlebell	squat		glutes, hamstrings and quadriceps
+e0zr	Lateral leg raise	Side leg raise, Standing hip abduction	beginner	bodyweight	none	core		glutes and legs
+e0e3	Low side-to-side squat	Horse stance cossack squat, Lateral low squat	intermediate	bodyweight	none	squat		glutes and hamstrings
+e1g1	Martial arts	Judo, Jiu-jitsu, Karate, Taekwondo, Wrestling	intermediate	bodyweight	none	core		glutes and hamstrings
+e1a8	One leg halfway up		beginner	bodyweight	none	core		core, quadriceps and legs
+e1a7	One leg knee up		beginner	bodyweight	none	core		core, quadriceps and legs
+e0a9	One-leg sitting pike compression		beginner	bodyweight	none	push		core, quadriceps and abs
+e0xn	Partial front split		intermediate	bodyweight	none	core		core, quadriceps and glutes
+e0q5	Pigeon squat	Squat with one leg crossed over	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0zp	Pike compression flutter kicks		beginner	bodyweight	none	push		core, quadriceps and abs
+e17r	Prying squat	Bottom of squat rock	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e10c	Reverse clamshell		beginner	bands	short resistance band	core		glutes
+e0pk	Seated good morning		beginner	dumbbells	bench and barbell	hinge		glutes, hamstrings and core
+e0xz	Shiko		beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e0sq	Side-Staggered Squat	Bent-leg archer squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0an	Sitting pike compression	Sitting leg lifts, Sitting leg raises	beginner	bodyweight	none	push		core, quadriceps and abs
+e0e8	Sitting piriformis leg raise		beginner	bodyweight	none	core		core and quadriceps
+e0x1	Sitting piriformis leg raise hold		beginner	bodyweight	none	core		core and quadriceps
+e0ap	Sitting straddle compression	Straddle leg lift, Straddle leg raises	beginner	bodyweight	none	push		core, quadriceps and abs
+e1fo	Sliding front split	Slider front split, Active sliding split	intermediate	bodyweight	slider or towel	core		glutes, hamstrings and core
+e11j	Stability ball wall squat		beginner	bodyweight	stability ball and free wall	squat		glutes and hamstrings
+e16v	Standing front split		beginner	bodyweight	none	core		glutes and hamstrings
+e17s	Standing hip axial rotation		beginner	bodyweight	none	core		glutes, core and legs
+e16m	Standing side leg lift	Standing hip abduction, Standing fire hydrant	intermediate	bodyweight	none	core		glutes
+e00u	Straight leg fire hydrant	Peeing dog, Quadruped hip abduction	beginner	bodyweight	none	posterior-chain		glutes
+e0ft	Warrior 3	Virabhadrasana 3	beginner	bodyweight	none	core		glutes, hamstrings and legs
+e148	Weighted deep lunge		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e1b0	Weighted wall straddle stretch		intermediate	dumbbells	free wall and kettlebell	core		glutes and hip adductors
+e004	Wide squat	Sumo squat, Plie squat, Horse stance squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0zu	Wide squat good morning	Standing bent-legs good morning, Horse stance hinge	beginner	bodyweight	none	hinge		glutes, hamstrings and quadriceps
+e16n	Lying hip adduction	Side-lying leg lifts	beginner	bodyweight	none	core		hip adductors
+e0wm	Partial middle split		intermediate	bodyweight	none	core		hip adductors
+e1fu	Sliding side split	Slider middle split, Slider adductor slide	intermediate	bodyweight	slider or towel	core		hip adductors
+e0yb	Wide horse stance		beginner	bodyweight	none	squat		hip adductors, glutes and hamstrings
+e0tf	Assisted wrestler bridge		beginner	bodyweight	none	hinge		neck
+e0zo	Front neck half circle		beginner	bodyweight	none	core		
+e0i4	Neck bridge		beginner	bodyweight	none	hinge		neck, core and glutes
+e0tw	Neck circle		beginner	bodyweight	none	core		neck
+e0tu	Neck flexion and extension	Yes-yes	beginner	bodyweight	none	core		neck
+e0tt	Neck lateral flexion	Maybe-maybe	beginner	bodyweight	none	core		neck
+e0tx	Neck packing		beginner	bodyweight	none	core		neck
+e0ty	Neck retraction		beginner	bodyweight	none	core		neck
+e0tz	Neck retraction and extension		beginner	bodyweight	none	core		neck
+e0tv	Neck rotation	No-no	beginner	bodyweight	none	core		neck
+w00j	Neck warmup		beginner	bodyweight	none	core		neck
+e0u0	Prone neck retraction		beginner	bodyweight	bench	core		neck
+e0u1	Prone neck retraction and extension		beginner	bodyweight	bench	core		neck
+e0u2	Sidelying neck rotation		beginner	bodyweight	none	core		neck
+e0uk	Thread the needle pose	Parsva Balasana	beginner	bodyweight	none	core		core, chest and shoulders
+e0kb	Weight windmill		beginner	dumbbells	kettlebell or dumbbell	hinge		core
+e0uy	Block-support side angle		beginner	bodyweight	yoga block	core		quadriceps, glutes and hamstrings
+e0uz	Elbow-support side angle		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0ux	Extended side angle pose	Utthita Parsvakonasana	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+w01g	Lunge tap and open	World's greatest stretch	intermediate	bodyweight	none	squat		quadriceps, glutes and hamstrings
+e1bf	Revolved chair pose	Parivrtta Utkatasana	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0v1	Revolved side angle hand inside		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0v3	Revolved side angle pose	Parivritta Parsvakonasana	intermediate	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0v2	Revolved side angle prayer hands		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+w00m	Sun salutation B	Surya Namaskara B	intermediate	bodyweight	none	core		quadriceps, glutes and hamstrings
+w00t	Sun salutation B simplified		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0fs	Warrior 1	Virabhadrasana 1	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0fm	Warrior 2	Virabhadrasana 2	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e14g	Band-assisted rings dip		intermediate	bands	rings and long resistance band	push		shoulders and chest
+w001	Bear rotation to reach		intermediate	bodyweight	none	core		neck, back and chest
+e026	Bear walk		beginner	bodyweight	none	core		neck and triceps
+e10j	Bent-legs bench dip	Triceps dip, Chair dip, Box dip	beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e19h	Block-assisted Lotus L-sit		beginner	bodyweight	yoga block	core		rotator cuff, back and shoulders
+e0ql	Bottom dip hold		intermediate	bodyweight	dip station	push		shoulders and chest
+e02e	Candle pose	Shoulder stand, Candlestick	beginner	bodyweight	none	core		rotator cuff, back and shoulders
+e034	Dip		intermediate	bodyweight	dip station	push		shoulders and chest
+e12j	Dip eccentric	Negative dip	beginner	bodyweight	dip station	push		shoulders and chest
+e10k	Elevated bench dip	Feet-elevated triceps dip	beginner	bodyweight	plyo box or chair	squat		shoulders, chest and triceps
+e0ze	Floor T hold	Ground rear delt fly	beginner	bodyweight	none	core		rotator cuff, shoulders and back
+e0zd	Floor T raise	Ground rear delt fly	beginner	bodyweight	none	core		rotator cuff, shoulders and back
+e0x6	Frog walk		beginner	bodyweight	none	core		core, quadriceps and abs
+e03x	German hang		beginner	bodyweight	rings or pullup bar	pull		shoulders and chest
+w01f	Hand release pushup		beginner	bodyweight	none	push		
+e04v	Hanging prone plank	Inverted plank	beginner	bodyweight	rings or dip station	pull		
+e08z	Internally rotated pushup		beginner	bodyweight	none	push		shoulders, chest and triceps
+e14d	Jackknife rings dip	Feet-elevated rings dip	intermediate	bodyweight	rings and plyo box	push		shoulders, chest and triceps
+e06n	Long supine plank		intermediate	bodyweight	none	core		shoulders, chest and biceps
+e06o	Long table top		beginner	bodyweight	none	core		shoulders, chest and back
+e18w	Lotus L-sit	Kukkutasana progression	intermediate	bodyweight	none	core		rotator cuff, back and shoulders
+e19g	Lotus V-sit	Lifted scale pose, Utpluthih, Tolasana	advanced	bodyweight	none	core		rotator cuff, back and shoulders
+e18v	Rooster Pose	Kukkutasana, Cockerel Pose	advanced	bodyweight	none	core		back and chest
+e0qm	Rotating dip	90-degrees dip	advanced	bodyweight	dip station	push		shoulders and chest
+e16k	Scarecrow arms		beginner	bodyweight	none	pull		rotator cuff and back
+e0d9	Sitting shoulder inlocates		beginner	bodyweight	none	core		rotator cuff, shoulders and back
+e0zh	Straight-legs bench dip	Triceps dip, Chair dip, Box dip	beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+w00l	Sun salutation A	Surya Namaskara A	intermediate	bodyweight	none	core		shoulders, chest and triceps
+e12k	Weighted dip		intermediate	bodyweight	dip station and weight belt	push		shoulders and chest
+e14f	Weighted rings dip		advanced	bodyweight	rings and weight belt	push		shoulders, chest and triceps
+e1fx	Yoga	Yoga class, Yoga session	beginner	bodyweight	none	core		back and shoulders
+e018	Arch body twist	Alternating bring back	beginner	bodyweight	none	hinge		
+w00q	Beginner forward fold		beginner	bodyweight	none	core		core
+e02a	Bridge	Urdhva Dhanurasana, Wheel pose	intermediate	bodyweight	none	hinge		core, back and shoulders
+e0s9	Bridge raise	Full bridge	intermediate	bodyweight	none	hinge		core, back and shoulders
+e04z	Cobra pose	Bhujangasana	beginner	bodyweight	none	core		core
+e1b8	Elevated bridge kick-over		advanced	bodyweight	none	hinge		core, back and shoulders
+e0sa	Head tap bridge		advanced	bodyweight	none	hinge		core, back and shoulders
+e00i	Jefferson curl		beginner	dumbbells	plyo box and kettlebell	pull		core and glutes
+e0un	Knee-support half forward bend	Straight back standing pike on knees	beginner	bodyweight	none	core		core
+e0v7	Lotus fish pose	Matsyasana	intermediate	bodyweight	none	core		core and neck
+e0sc	One-arm bridge		advanced	bodyweight	none	hinge		core, back and shoulders
+e0sd	One-leg bridge		intermediate	bodyweight	none	hinge		core, back and shoulders
+e019	Reverse penguin	Belly penguin, Prone penguin	beginner	bodyweight	none	core		core
+e05a	Sphinx pose leg flutters		beginner	bodyweight	none	core		
+w00s	Sun salutation A simplified		beginner	bodyweight	none	core		core and abs
+e0c3	Supine plank	Purvottanasana, Upward Plank Pose, Straight bridge hold, Reverse plank	beginner	bodyweight	none	core		core and back
+e0s5	Supine plank raise	Straight bridge	beginner	bodyweight	none	core		core and back
+e0s6	Wall bridge pushup		beginner	bodyweight	free wall	hinge		core, back and shoulders
+e0hz	Wall bridge rotation	Wall bridge side entrance	beginner	bodyweight	free wall	hinge		core, back and shoulders
+e0sb	Wall walk bridge		intermediate	bodyweight	free wall	hinge		core, back and shoulders
+e15l	Zercher deadlift		beginner	dumbbells	barbell	hinge		core, glutes and hamstrings
+e00v	90-90	Modified pigeon	beginner	bodyweight	none	core		
+w01l	90-90 to hurdle		advanced	bodyweight	none	hinge		
+e0bz	Active pigeon	Pigeon rock	beginner	bodyweight	none	core		
+e01b	Active thoracic spine extension		intermediate	bodyweight	foam roller	core		
+w00o	Advanced forward fold		intermediate	bodyweight	none	core		
+e0uv	Ankle-support revolved triangle		beginner	bodyweight	none	calf		
+e0us	Ankle-support triangle		beginner	bodyweight	none	calf		
+e0y2	Arm crossover	Horizontal shoulder adduction abduction, Horizontal arms inside outside	beginner	bodyweight	none	core		
+e0y3	Arm flexion extension		beginner	bodyweight	none	core		
+e0kd	Arm screw stretch		beginner	bodyweight	none	core		
+e0j5	Armpit foam roll		beginner	bodyweight	foam roller	core		
+e0a8	Arms circles		beginner	bodyweight	none	core		
+e0on	Arms egg beater	Fast elbow circles	beginner	bodyweight	none	core		
+e0no	Assisted QL stretch		beginner	bodyweight	none	core		
+e0y6	Assisted front leg swing		beginner	bodyweight	none	plyometric		
+e0y7	Assisted side leg swing		beginner	bodyweight	none	plyometric		
+e0nn	Assisted sitting straddle stretch		beginner	bodyweight	none	core		
+e0j4	Back foam roll		beginner	bodyweight	foam roller	core		
+e0yn	Back hands pressed together		beginner	bodyweight	none	push		
+e0i2	Ball bridge		beginner	bodyweight	stability ball	hinge		
+e0w7	Bent-leg pigeon		beginner	bodyweight	none	core		
+e0up	Bent-legs forward fold to ankles		beginner	bodyweight	none	core		
+e0uq	Bent-legs forward fold to ground		beginner	bodyweight	none	core		
+w01v	Bent-legs transition Double Toe Hold	Bent-legs transition Both Big Toe Pose, Ubhaya Padangusthasana progression	advanced	bodyweight	none	core		
+e188	Block-assisted Half Bound Lotus Standing Forward Bend	Block-assisted Ardha Baddha Padmottanasana	beginner	bodyweight	yoga block	plyometric		
+e18d	Block-assisted sitting pike fold on heel	Block-assisted Head-to-Knee Forward Bend, Elevated Janu Sirsasana B	beginner	bodyweight	none	core		
+e0ve	Block-support camel pose		beginner	bodyweight	none	core		
+e0w8	Block-support pigeon		beginner	bodyweight	none	core		
+e0uw	Block-support revolved triangle		beginner	bodyweight	yoga block	core		
+e0ut	Block-support triangle		beginner	bodyweight	yoga block	core		
+e19c	Bound Lotus Pose	Baddha Padmasana	advanced	bodyweight	none	plyometric		
+e0ws	Bound cross-leg spinal twist	Full twist	intermediate	bodyweight	none	plyometric		
+e19d	Bound lotus bow	Yoga mudra	advanced	bodyweight	none	plyometric		
+e0fv	Bow Pose	Dhanurasana, Bow hold	beginner	bodyweight	none	core		
+e0u9	Butcher's block stretch		beginner	bodyweight	plyo box or chair and staff	core		
+e0xh	Butt balancing one-leg out		beginner	bodyweight	none	core		
+e0xg	Butt balancing one-leg up		intermediate	bodyweight	none	core		
+e0xe	Butt balancing pike fold	Butt balancing pike stretch, Ubhaya Padangusthasana, Both Big Toe Pose	intermediate	bodyweight	none	core		
+e0xf	Butt balancing straddle fold	Butt balancing straddle stretch, Merudandasana, Upavistha konasana B, Spinal Column Pose	intermediate	bodyweight	none	core		
+e0fw	Camel pose	Ustrasana, Camel hold	beginner	bodyweight	none	core		
+e10e	Camel rotations	Dynamic camel	beginner	bodyweight	none	core		
+e0sn	Candle pose squat	Shoulder stand squat	beginner	bodyweight	none	squat		
+e0nm	Child pose	Balasana	beginner	bodyweight	none	core		
+e0vq	Cross-leg spinal twist	Ardha Matsyendrasana, Half Lord of the Fishes Pose, Seated Twist Pose	intermediate	bodyweight	none	core		
+e19f	Cross-legged bow with arms behind	Yoga mudra progression	beginner	bodyweight	none	core		
+e19e	Cross-legged sit with arms behind	Baddha Padmasana progression	beginner	bodyweight	none	core		
+e19a	Crossed legs support candle pose		beginner	bodyweight	none	core		
+w00r	Deep forward fold		intermediate	bodyweight	none	core		
+e17u	Deep squat internal rotation	Internal knee drop, Knee tap squat	beginner	bodyweight	none	squat		
+w01u	Double Toe Hold	Both Big Toe Pose, Ubhaya Padangusthasana	advanced	bodyweight	none	core		
+e197	Ear Pressure Pose	Karnapidasana	intermediate	bodyweight	none	push		
+e0v5	Easy seat	Sukhasana	beginner	bodyweight	none	core		
+e03a	Elbow circles		beginner	bodyweight	none	core		
+e0vo	Elbow half cross-leg spinal twist		beginner	bodyweight	none	core		
+e0vv	Elbow sitting half lotus revolved spinal twist		beginner	bodyweight	none	core		
+e0yi	Elephant walk palms down		beginner	bodyweight	none	core		
+e0yj	Elephant walk toes hold		beginner	bodyweight	none	core		
+e18a	Elevated One Leg Folded Forward Bend	Block-assisted Triang Mukha Eka Pada Paschimottanasana, Trianga Mukaikapada Paschimottanasana 	beginner	bodyweight	none	squat		
+e1fe	Elevated pigeon forward fold	Box pigeon fold, Elevated sleeping pigeon	beginner	bodyweight	plyo box or chair	squat		
+e1ff	Elevated upright pigeon	Box pigeon stretch, Standing pigeon on a box	beginner	bodyweight	plyo box or chair	squat		
+e19b	Embryo Pose In Shoulder Stand	Pindasana in Sarvangasana	advanced	bodyweight	none	core		
+e18s	Embryo in the Womb Pose	Garbha pindasana	intermediate	bodyweight	none	core		
+e18u	Embryo in the Womb Pose holding the feet	Garbha pindasana progression	beginner	bodyweight	none	core		
+e18t	Embryo in the Womb Pose wrapping the legs	Garbha pindasana progression	intermediate	bodyweight	none	core		
+e178	Equestrian	Ashwa Sanchalanasana	beginner	bodyweight	none	core		
+e0yo	Fingertips pressed together		beginner	bodyweight	none	push		
+e0uu	Fingertips revolved triangle		beginner	bodyweight	none	core		
+e1fz	Flexibility	Stretching, Stretching session, Mobility session	beginner	bodyweight	none	core		
+e17i	Flipped wrist squeeze	Fist with wrist flexion	beginner	bodyweight	none	core		
+e0k0	Flying butterfly	Farfallina	beginner	bodyweight	none	push		
+e0q3	Foot-elevated vertical frog	Foot-elevated cossack hold	intermediate	bodyweight	none	calf		
+e1fb	Frog pelvic tilts	Frog pose pelvic tilts	beginner	bodyweight	none	core		
+e03q	Frog stretch	Mandukasana	beginner	bodyweight	none	core		
+e186	Half Bound Lotus Standing Forward Bend	Ardha Baddha Padmottanasana, Ardha Baddha Padma Uttanasana	advanced	bodyweight	none	plyometric		
+e18o	Half Tortoise pose	Kurmasana progression	intermediate	bodyweight	none	core		
+e192	Half Upward Facing Intense Stretch Pose	Urdvha Mukha Paschimottanasana progression	advanced	bodyweight	none	core		
+e0vn	Half cross-leg spinal twist		beginner	bodyweight	none	core		
+e175	Half kneeling hip opener		beginner	bodyweight	none	core		
+e0xl	Half lotus		beginner	bodyweight	none	core		
+e17p	Half-kneeling rock	Adductor rock back	beginner	bodyweight	none	core		
+e198	Hand-support Ear Pressure Pose	Karnapidasana progression	intermediate	bodyweight	none	push		
+e172	Happy baby	Anada Balasana	beginner	bodyweight	none	core		
+e0l1	Hip swivels	Supported 90-90 switch, 90-90 hip switch	beginner	bodyweight	none	core		
+e0vd	Hip-support camel pose		beginner	bodyweight	none	core		
+e056	Hips circles		beginner	bodyweight	none	core		
+e0yl	Hold hands behind the back	Cow face pose (arms only), Gomukhasana (arms only)	beginner	bodyweight	none	core		
+e17c	Hurdler stretch		intermediate	bodyweight	none	hinge		
+e0yc	Inside kick	Inward crescent kick	beginner	bodyweight	none	core		
+w00p	Intermediate forward fold		beginner	bodyweight	none	core		
+e0k7	Inverted grip shoulder dislocates		beginner	bodyweight	staff	pull		
+e15j	Kettlebell pancake	Pancake good morning	advanced	dumbbells	kettlebell	core		
+e0l0	Kneeling lunge arms up		beginner	bodyweight	none	squat		
+e0ky	Kneeling lunge forearm down reach up		beginner	bodyweight	none	squat		
+e0kw	Kneeling lunge forearms down		beginner	bodyweight	none	squat		
+e0kv	Kneeling lunge hands down		beginner	bodyweight	none	squat		
+e16w	Kneeling lunge side bend	Low lunge with side bend	beginner	bodyweight	none	squat		
+e0kx	Kneeling revolved side angle	Kneeling lunge hand down reach up	beginner	bodyweight	none	core		
+e0v0	Kneeling revolved side angle prayer hands		beginner	bodyweight	none	core		
+e0z8	Knees to chest pose	Apanasana, Wind-relieving pose	beginner	bodyweight	none	core		
+e0xk	Lotus	Padmasana	intermediate	bodyweight	none	core		
+e0zv	Lunge elbow tap		beginner	bodyweight	none	squat		
+e173	Lying butterfly stretch	Reclined bound angle pose, Supta Baddha Konasana	beginner	bodyweight	none	push		
+e16s	Lying leg circle		beginner	bodyweight	none	core		
+e06r	Lying pec stretch	Lying chest stretch	beginner	bodyweight	none	core		
+e0e6	Lying piriformis stretch	Figure-of-4	beginner	bodyweight	none	core		
+e06u	Lying rear delt stretch		beginner	bodyweight	none	pull		
+e09u	Lying shoulder dislocates		beginner	bodyweight	staff or strap	core		
+e06y	Matrix	Full body circle	beginner	bodyweight	none	core		
+e1fc	Middle split pelvic tilts	Straddle pelvic tilts	beginner	bodyweight	none	core		
+e0nu	Middle split walk	Standing straddle walk	beginner	bodyweight	none	core		
+w01x	Moon salutation A	Chandra Namaskara A	beginner	bodyweight	none	core		
+w01y	Moon salutation B	Chandra Namaskara B	beginner	bodyweight	none	core		
+e16r	Neck side bend with arm overhead		beginner	bodyweight	none	push		
+e072	Neck warmup (old)		beginner	bodyweight	none	core		
+e189	One Leg Folded Forward Bend	Triang Mukha Eka Pada Paschimottanasana, Trianga Mukaikapada Paschimottanasana 	intermediate	bodyweight	none	core		
+e0xs	One-leg forward bend	Janu Sirsasana A	beginner	bodyweight	none	core		
+e0ku	Opening 90-90		beginner	bodyweight	none	core		
+e0ym	Opposite palms pressed together		beginner	bodyweight	none	push		
+e0ej	Ostrich walk		beginner	bodyweight	none	core		
+e0yd	Outside kick	Outward crescent kick	beginner	bodyweight	none	core		
+e0i1	Palm blocked bridge		beginner	bodyweight	none	hinge		
+e094	Palm stretch fingers back	Fingers stretch	beginner	bodyweight	none	core		
+e0xu	Palms down fingers forward elbows rotations	Front facing elbow rotations	beginner	bodyweight	none	core		
+e0xt	Palms down fingers forward wrists circles		beginner	bodyweight	none	core		
+e0xx	Palms down fingers to the sides side-to-side	Side-to-side wrist stretch	beginner	bodyweight	none	core		
+e0xv	Palms raised side-to-side	Side-to-side palm rotations	beginner	bodyweight	none	core		
+e0xw	Palms up fingers back elbows rotations	Rear facing elbow rotations	beginner	bodyweight	none	core		
+e0xy	Palms up fingers to the sides side-to-side		beginner	bodyweight	none	core		
+e02c	Pancake	Wide-Angle Seated Forward Bend, Upavistha Konasana	advanced	bodyweight	none	core		
+e1ft	Pigeon cobra	Cobra with knee forward, Upright pigeon backbend	beginner	bodyweight	none	core		
+e10f	Pigeon good morning		intermediate	bodyweight	none	hinge		
+e15i	Plate pancake	Pancake good morning, Weighted sitting straddle good morning	advanced	dumbbells	weight plate	core		
+e0s1	Plow pose	Plough pose, Halasana	beginner	bodyweight	none	core		
+e0u8	Prayer stretch		beginner	bodyweight	plyo box or chair	core		
+e0by	Prone hollow body arm flexion bounces		beginner	bodyweight	staff or strap	plyometric		
+e0bx	Prone hollow body wrist extension		beginner	bodyweight	staff or strap	core		
+e0w1	Pyramid Pose	Parsvottanasana	intermediate	bodyweight	none	core		
+e0w2	Pyramid pose hold elbows		beginner	bodyweight	none	core		
+e0kg	QL straddle stretch		beginner	bodyweight	none	core		
+e183	Quadruped rock back		beginner	bodyweight	none	core		
+e0vf	Raised ankles camel pose		beginner	bodyweight	none	core		
+e18z	Reclining Hand-to-Big-Toe Pose	Supta Padangusthasana	intermediate	bodyweight	strap	core		
+e0fx	Revolved triangle pose	Parivritta Trikonasana	intermediate	bodyweight	none	core		
+e0ht	Rocking frog		beginner	bodyweight	none	core		
+w00d	Seal rock to tuck	Upward dog to child pose	beginner	bodyweight	none	core		
+e185	Seated forward bend pull behind the feet	Paschimottanasana C	intermediate	bodyweight	none	core		
+e10d	Seated side stretch	Seated trunk lateral flexion	beginner	bodyweight	none	core		
+e1fj	Seated side stretch with leg hold	Seated one-leg side bend	beginner	bodyweight	none	core		
+e0xr	Seated twist		beginner	bodyweight	none	core		
+e0ik	Seiza	Hero pose, Virasana	beginner	bodyweight	none	core		
+e09t	Seiza shoulder dislocates		beginner	bodyweight	staff or strap	core		
+e0il	Seiza side twist		beginner	bodyweight	none	core		
+e0uo	Shin-support half forward bend	Straight back standing pike on shins	beginner	bodyweight	none	knee-flexion		
+e0j3	Shoulder dislocates	Stick dislocates, Shoulder pass-through	beginner	bodyweight	staff or strap	core		
+e16u	Side bending pose	Urdhva Hastasana Ardha Chandrasana	beginner	bodyweight	none	core		
+e0vc	Side bow pose	Parsva Dhanurasana	beginner	bodyweight	none	core		
+e0j6	Side foam roll		beginner	bodyweight	foam roller	core		
+e0p9	Side standing straddle stretch		beginner	bodyweight	none	core		
+e0xm	Side upward dog	Lateral chest opening	beginner	bodyweight	none	core		
+e040	Single leg good morning	Good morning stretch	beginner	bodyweight	none	hinge		
+e0am	Sitting ankle circles		beginner	bodyweight	none	calf		
+e0d8	Sitting arms extension	Sitting hands behind, Seated biceps stretch	beginner	bodyweight	none	core		
+e0vm	Sitting bound half lotus fold	Marichyasana B, Pose dedicated to the sage Marichi B	intermediate	bodyweight	none	plyometric		
+e0vh	Sitting bound half lotus forward fold	Ardha baddha padma paschimottasana	intermediate	bodyweight	none	plyometric		
+e0vw	Sitting bound half lotus revolved spinal twist	Marichyasana D, Pose dedicated to the sage Marichi D	intermediate	bodyweight	none	plyometric		
+e0vj	Sitting bound one-leg forward fold	Marichyasana A, Pose dedicated to the sage Marichi A	intermediate	bodyweight	none	plyometric		
+e0vt	Sitting bound revolved spinal twist	Marichyasana C, Pose dedicated to the sage Marichi C	intermediate	bodyweight	none	plyometric		
+e0ao	Sitting forward fold	Seated forward fold, Paschimottanasana, Seated pike fold, Sitting pike stretch	beginner	bodyweight	none	core		
+e0vl	Sitting half lotus fold		beginner	bodyweight	none	core		
+e0vg	Sitting half lotus forward fold		beginner	bodyweight	none	core		
+e0vi	Sitting one-leg forward fold		beginner	bodyweight	none	core		
+e18e	Sitting pike fold on foot	Head-to-Knee Forward Bend, Janu Sirsasana C	advanced	bodyweight	none	calf		
+e18f	Sitting pike fold on foot with partial rotation	Head-to-Knee Forward Bend, Janu Sirsasana C progression	intermediate	bodyweight	none	calf		
+e18c	Sitting pike fold on heel	Head-to-Knee Forward Bend, Janu Sirsasana B	beginner	bodyweight	none	core		
+e18b	Sitting pike fold with bent leg	Head-to-Knee Forward Bend, Janu Sirsasana A	beginner	bodyweight	none	core		
+e0pf	Sitting pike hands push		beginner	bodyweight	none	core		
+e0wc	Sitting pike pull feet	Paschimottanasana B	beginner	bodyweight	none	core		
+e0pg	Sitting pike toe pull	Paschimottanasana A	beginner	bodyweight	none	core		
+e0e7	Sitting piriformis stretch		beginner	bodyweight	none	core		
+e0vr	Sitting revolved spinal twist		beginner	bodyweight	none	core		
+e0pe	Sitting straddle forearms down		intermediate	bodyweight	none	core		
+e0pc	Sitting straddle hands push		beginner	bodyweight	none	core		
+e0nr	Sitting straddle rotating bounces	Pancake rotating bounces	beginner	bodyweight	none	plyometric		
+e0aq	Sitting straddle stretch		beginner	bodyweight	none	core		
+e0nt	Sitting straddle sweep	Pancake sweep	beginner	bodyweight	none	core		
+e0pd	Sitting straddle toe pull	Sitting straddle leg hold	beginner	bodyweight	none	core		
+e0ns	Sitting straddle walk	Pancake walk	beginner	bodyweight	none	core		
+e18q	Sleeping tortoise pose with hands bound	Supta Kurmasana progression	intermediate	bodyweight	none	plyometric		
+e18r	Sleeping tortoise pose without bound	Supta Kurmasana progression	beginner	bodyweight	none	plyometric		
+e035	Sphinx pose	Baby cobra	beginner	bodyweight	none	core		
+e09f	Spiral elbow spear	Elbow spear	beginner	bodyweight	staff	core		
+e0o4	Squat elbow tap		beginner	bodyweight	none	squat		
+e0o3	Squat head to floor		intermediate	bodyweight	none	squat		
+e0o2	Squat reach	Squat sky reach, Deep squat upper body twist	beginner	bodyweight	none	squat		
+w00e	Squat tap and reach		intermediate	bodyweight	none	squat		
+e17v	Squat to 90-90		intermediate	bodyweight	none	squat		
+e0bg	Staff plow		beginner	bodyweight	staff or strap	core		
+e0v4	Staff pose	Dandasana	beginner	bodyweight	none	core		
+e16j	Standing chest stretch		beginner	bodyweight	none	core		
+e0ur	Standing forward fold feet over hands	Padahastasana, Hand to foot pose	intermediate	bodyweight	none	core		
+e0wd	Standing front leg pull	Utthita Hasta Padangustasana A, Extended Hand To Big Toe Pose	intermediate	bodyweight	none	core		
+e0um	Standing half forward bend	Ardha Uttanasana, Straight back standing pike on the ground	beginner	bodyweight	none	core		
+e0b0	Standing horizontal shoulder rotations		beginner	bodyweight	none	core		
+e0b1	Standing pike on ankles	Standing pike stretch, Standing forward fold on ankles	beginner	bodyweight	none	core		
+e0i5	Standing pike on the ground	Standing pike stand, Standing pike stretch hands flat, Standing Forward Bend, Uttanasana, Standing forward fold	beginner	bodyweight	none	core		
+e0pb	Standing pike toe pull	Padangusthasana, Big toe pose	beginner	bodyweight	none	core		
+e0dd	Standing rear delt stretch	Shoulder crossbody stretch	beginner	bodyweight	none	pull		
+e0w3	Standing reverse prayer		beginner	bodyweight	none	core		
+e0b3	Standing shoulder circles- arms by the sides	Standing shoulder rolls, Shoulder blade CARs	beginner	bodyweight	none	core		
+e0b4	Standing shoulder elevation and depression- arms by the sides	Scapular elevation and depression	beginner	bodyweight	none	push		
+e0b5	Standing shoulder retraction and protraction- arms by the sides	Scapular retraction and protraction	beginner	bodyweight	none	core		
+e0b6	Standing side bend arms up		beginner	bodyweight	none	core		
+e0vz	Standing straddle hands on hips	Prasarita Padottanasana B	beginner	bodyweight	none	core		
+e0vy	Standing straddle head to ground	Prasarita Padottanasana A	intermediate	bodyweight	none	core		
+e0w0	Standing straddle plow	Prasarita Padottanasana C	beginner	bodyweight	none	core		
+e0b7	Standing straddle stretch		beginner	bodyweight	none	core		
+e0p7	Standing straddle stretch with straight back	Standing straight-legs good morning	beginner	bodyweight	none	core		
+e0p8	Standing straddle toe pull	Prasarita Padottanasana D, Straddle leg hold	beginner	bodyweight	none	core		
+e0yk	Standing triceps stretch	Triceps behind the head stretch, Overhead triceps stretch	beginner	bodyweight	none	core		
+e0b9	Standing wrists together stretches		beginner	bodyweight	none	core		
+w01a	Standing wrists warmup		beginner	bodyweight	none	core		
+e0pa	Straight back standing pike on hips	Standing pike stretch with straight back	beginner	bodyweight	none	core		
+e0vs	Strap-assisted revolved spinal twist		beginner	bodyweight	strap	core		
+e0ua	Supine pike fold	Supine pike stretch	beginner	bodyweight	none	core		
+e18y	Supine straddle pike fold	Reclining Angle Yoga Pose, Supta Konasana	beginner	bodyweight	none	core		
+e0s8	Supported bridge		beginner	bodyweight	chair	hinge		
+e0c8	Supported candle pose	Shoulder stand, Salamba Sarvangasana	beginner	bodyweight	none	core		
+e0vp	Supported cross-leg spinal twist		beginner	bodyweight	none	core		
+e0vk	Supported half lotus		beginner	bodyweight	none	core		
+e0z2	Supported partial front split		beginner	bodyweight	none	core		
+e0xj	Supported partial middle split		beginner	bodyweight	none	core		
+e0vu	Supported sitting half lotus revolved spinal twist		beginner	bodyweight	none	core		
+e0o1	Supported squat hip rotation		beginner	bodyweight	none	squat		
+e0hr	Supported vertical frog		beginner	bodyweight	none	core		
+e0wj	Toe stretch		beginner	bodyweight	none	core		
+e18n	Tortoise pose	Kurmasana	advanced	bodyweight	none	core		
+e0cd	Touch sky and earth		beginner	bodyweight	none	core		
+e187	Towel-assisted Half Bound Lotus Standing Forward Bend	Towel-assisted Ardha Baddha Padmottanasana	intermediate	bodyweight	towel	plyometric		
+e190	Towel-assisted Reclining Hand-to-Big-Toe Pose	Supta Padangusthasana progression	intermediate	bodyweight	strap	core		
+e0fn	Triangle pose	Utthita Trikonasana	beginner	bodyweight	none	core		
+e0y0	Trunk rotation		beginner	bodyweight	none	core		
+e0y1	Trunk rotation arm swing		beginner	bodyweight	none	plyometric		
+e0sm	Tuck candle pose		beginner	bodyweight	none	core		
+e191	Upward Facing Intense Stretch Pose	Urdvha Mukha Paschimottanasana	advanced	bodyweight	none	core		
+e199	Upward Lotus Pose	Urdhva Padmasana	intermediate	bodyweight	none	core		
+e0ul	Upward Salute	Urdhva Hastasana, Standing arms up palms together	beginner	bodyweight	none	core		
+e0cw	Upward dog	Urdhva Mukha Svanasana	beginner	bodyweight	none	core		
+e0hs	Vertical frog	Cossack hold	beginner	bodyweight	none	core		
+e09y	Wall hollow body arms raise		beginner	bodyweight	staff or strap	core		
+e169	Wall one-arm shoulder flexion stretch	Wall one-arm lat stretch	beginner	bodyweight	free wall	core		
+e0da	Wall pec stretch	Biceps stretch, Wall chest stretch	beginner	bodyweight	free wall	core		
+e0kh	Wall pike stretch		intermediate	bodyweight	free wall	core		
+e101	Wall pullover	Wall shoulder flexion	beginner	bodyweight	free wall	core		
+e168	Wall shoulder flexion stretch	Wall lat stretch	beginner	bodyweight	free wall	core		
+e102	Wall straddle stretch		beginner	bodyweight	free wall	core		
+e0dp	Windmill		beginner	bodyweight	none	hinge		
+e08s	Wrist flexors stretch external rotation	Wrist flexors stretch fingers back, Rear facing wrist stretch palms down	beginner	bodyweight	none	core		
+e08w	Wrist flexors stretch internal rotation		beginner	bodyweight	none	core		
+e08u	Wrist flexors stretch neutral	Wrist flexors stretch fingers forward, Forward facing wrist stretch	beginner	bodyweight	none	core		
+e0dq	Wrists separated circles		beginner	bodyweight	none	core		
+e0dr	Wrists together circles		beginner	bodyweight	none	core		
+w02h	Downward dog to figure-4 table top	Figure-4 flip, Downward dog figure-4 to reverse table top	beginner	bodyweight	none	core	name-fuzzy:downward dog	back, core and rotator cuff
+e001	Butt kicks		beginner	bodyweight	none	cardio	name-exact	legs
+e105	One-leg wall push calf raise	One-leg FHL calf raise	beginner	bodyweight	free wall	calf	name-fuzzy:calf raise	legs
+e104	Wall push calf raise	FHL calf raise, Flexor Hallucis Longus calf raise	beginner	bodyweight	free wall	calf	name-fuzzy:calf raise	legs
+e0b2	Standing quad stretch		beginner	bodyweight	none	core	name-fuzzy:quad stretch	legs
+e0sv	Assisted deep lunge	Assisted deep split squat, Assisted ATG squat	beginner	bodyweight	plyo box or chair	squat	alt-fuzzy:split squat	glutes, hamstrings and quadriceps
+e0yx	Assisted diagonal stretch	Assisted split sissy squat	beginner	bodyweight	none	core	alt-fuzzy:split squat	core and quadriceps
+e0su	Assisted incline lunge	Assisted Leg Press Lunges, Assisted incline split squat	beginner	bodyweight	plyo box or chair	squat	alt-fuzzy:leg press	glutes, hamstrings and quadriceps
+e17d	Assisted standing hip circles	Wall-assisted hip rotations	beginner	bodyweight	free wall	core	name-fuzzy:hip circles	core, quadriceps and glutes
+e0q1	Deep lunge	ATG lunge, Deep split squat, Ass-to-grass lunge, Ass-to-grass split squat	beginner	bodyweight	none	squat	alt-fuzzy:split squat	glutes, hamstrings and quadriceps
+e11o	Goblet cyclist squat		beginner	dumbbells	slant board and kettlebell	squat	name-fuzzy:goblet squat	glutes and hamstrings
+e0jq	Goblet squat		beginner	dumbbells	kettlebell or dumbbell	squat	name-fuzzy:kettlebell goblet squat	glutes, hamstrings and quadriceps
+w008	Goblet squat press		beginner	dumbbells	kettlebell or dumbbell	squat	name-fuzzy:goblet squat	glutes, hamstrings and quadriceps
+e0sp	Incline lunge	Front foot elevated ATG Lunge, Front foot elevated split squat, Leg Press Lunge, Incline ATG lunge, Incline split squat	beginner	bodyweight	plyo box	squat	alt-fuzzy:split squat	glutes and hamstrings
+e0q2	Kneeling lunge lifts	Kneeling lunge pulses, Low lunge back leg extension, Low lunge knee lifts	beginner	bodyweight	none	squat	alt-fuzzy:leg extension	glutes, hamstrings and quadriceps
+e0kf	Prying goblet squat		beginner	dumbbells	kettlebell	squat	name-fuzzy:goblet squat	glutes, hamstrings and quadriceps
+w01k	Squat fold	Squat to hamstring stretch, Pike to squat	beginner	bodyweight	none	squat	alt-fuzzy:hamstring stretch	glutes, hamstrings and quadriceps
+e16p	Standing hip circles	Hip rotations	beginner	bodyweight	none	core	name-fuzzy:hip circles	glutes, core and quadriceps
+e0st	Wall lunge	Wall Press Lunges, Wall leg press, Wall split squat	beginner	bodyweight	free wall	squat	alt-fuzzy:leg press	glutes, hamstrings and quadriceps
+e167	Banded half-kneeling thoracic rotation		beginner	bands	free wall and long resistance band	core	name-fuzzy:thoracic rotation	core
+e0ke	Kneeling thread the needle	Parsva Balasana, Reach back, Quadruped thoracic rotation	beginner	bodyweight	none	core	alt-fuzzy:thoracic rotation	core, chest and shoulders
+e15v	Decline downward dog one-leg squat		intermediate	bodyweight	plyo box or chair	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e15u	Decline downward dog squat		beginner	bodyweight	plyo box or chair	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e17k	Downward dog one-leg squat	Bodyweight one-leg extension	intermediate	bodyweight	none	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e17j	Downward dog squat	Bodyweight leg extension	beginner	bodyweight	none	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e1ao	Erg Rowing	Rowing, Rowing machine	beginner	machines	rowing machine	pull	alt-exact	quadriceps, glutes and hamstrings
+e01p	Assisted dip		beginner	bands	dip station and long resistance band	push	name-fuzzy:assisted pull up dip	shoulders and chest
+w029	Deep push-up press burpee		intermediate	dumbbells	parallettes and dumbbell	cardio	name-fuzzy:push up	shoulders and chest
+e0xb	Assisted supine one-leg fold	Supine hamstring stretch, Supta Padangusthasana, Reclining Hand to Big Toe Pose	beginner	bodyweight	strap	core	alt-fuzzy:supine hamstring stretch with strap	
+e1fp	Banded supine leg extensions	Split prep stretch, Supine knee-to-chest leg extension	beginner	bands	long resistance band or short resistance band	knee-extension	alt-fuzzy:leg extension	
+e02d	Butterfly stretch	Bound Ankle Pose, Baddha Konasana	beginner	bodyweight	none	push	name-fuzzy:seated butterfly adductor stretch	
+e0ii	Cat Cow		beginner	bodyweight	none	core	name-exact	
+e16o	Cat cow circle	Spinal roll	beginner	bodyweight	none	core	name-fuzzy:cat cow	
+e037	Downward dog	Adho Mukha Svanasana	beginner	bodyweight	none	core	name-exact	
+e0zy	Downward dog foot pedal	Walk the dog	beginner	bodyweight	none	calf	name-fuzzy:downward dog	
+w028	Downward dog to Upward dog	Dogs	beginner	bodyweight	none	core	name-fuzzy:downward dog	
+e0xq	Extended puppy pose	Uttana Shishosana, Shoulder stretch	beginner	bodyweight	none	core	alt-fuzzy:sleeper shoulder internal rotation stretch	
+w01j	Hamstring rock	Dynamic hip flexor and hamstring stretch	beginner	bodyweight	none	core	alt-fuzzy:hamstring stretch	
+e0yz	Knee to wall		beginner	bodyweight	free wall	core	name-fuzzy:knee to wall ankle rock	
+e0q4	Kneeling forward fold	Kneeling pike stretch, Kneeling hamstring stretch	beginner	bodyweight	none	core	alt-fuzzy:hamstring stretch	
+e17t	Kneeling hamstring stretch	Half front split, Ardha Hanumanasana	beginner	bodyweight	none	core	name-fuzzy:hamstring stretch	
+e0kz	Kneeling lunge chest up	Hip flexor stretch	beginner	bodyweight	none	squat	alt-fuzzy:kneeling hip flexor stretch	
+e067	Kneeling quad stretch	Kneeling lunge foot hold	beginner	bodyweight	none	core	name-fuzzy:quad stretch	
+w02e	Low lunge to pyramid	Lizard & leg extension	intermediate	bodyweight	none	squat	alt-fuzzy:leg extension	
+e06t	Lying quad stretch		beginner	bodyweight	none	core	name-fuzzy:quad stretch	
+e10b	Lying trunk twist	Supine thoracic rotation, Lumbar spine torsion, Supine spinal twist post	beginner	bodyweight	none	core	alt-fuzzy:thoracic rotation	
+e17g	One-leg cat-cow	Tiger Pose, Vyaghrasana	beginner	bodyweight	none	core	name-fuzzy:cat cow	
+e0w6	One-leg downward dog	Eka Pada Adho Mukha Svanasana	beginner	bodyweight	none	core	name-fuzzy:downward dog	
+e0aa	Opposite arm circles		beginner	bodyweight	none	core	name-fuzzy:arm circles	
+e0c1	Pigeon pose	Eka Pada Rajakapotasana	intermediate	bodyweight	none	core	name-fuzzy:pigeon pose figure 4 hip stretch	
+e0im	Seiza jump to squat	Kneeling jump	beginner	bodyweight	none	plyometric	name-fuzzy:jump squat	
+e0zx	Side child pose	Lat stretch	beginner	bodyweight	none	core	alt-fuzzy:kneeling lat stretch	
+e16q	Standing cat cow		beginner	bodyweight	none	core	name-fuzzy:cat cow	
+e0u5	Supine hip flexor stretch		beginner	bodyweight	plyo box or chair	core	name-fuzzy:hip flexor stretch	
+e0x0	Supine one-leg fold	Supine hamstring stretch, Supta Padangusthasana, Reclining Hand to Big Toe Pose	intermediate	bodyweight	none	core	alt-fuzzy:supine hamstring stretch with strap	
+e0jh	Twisting arm circles	Lunbi	beginner	bodyweight	none	core	name-fuzzy:arm circles	
+e0yr	Wall push calf stretch		beginner	bodyweight	free wall	calf	name-fuzzy:calf stretch	
+e0yq	Wall push one-leg calf stretch		beginner	bodyweight	free wall	calf	name-fuzzy:calf stretch	
+e0yy	Wall quad stretch	Couch stretch	intermediate	bodyweight	free wall	core	name-fuzzy:quad stretch	
+e1fm	Weighted elevated one-leg pike stretch	Box hamstring stretch with weight	beginner	dumbbells	plyo box or chair and kettlebell or dumbbell	squat	alt-fuzzy:hamstring stretch	
+e0f7	Wobble board calf stretch		beginner	bodyweight	wobble balance board	calf	name-fuzzy:calf stretch	

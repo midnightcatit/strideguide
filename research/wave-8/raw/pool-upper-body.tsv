@@ -1,0 +1,369 @@
+id	name	alt_name	our_level	tier	equipment	pattern	have	primary_muscles
+e0ov	Fingertip straddle lalanne pushup		advanced	bodyweight	none	push		abs, core and chest
+e04r	Hanging knees to chest	Hanging knee raises, Straight-arm hang to tuck straight-arm hang	beginner	bodyweight	rings or pullup bar	pull		abs, core and quadriceps
+e0uc	Lalanne pushup	Superman pushup, Extreme pushup	advanced	bodyweight	none	push		abs, core and chest
+e17q	Plank hip dips		beginner	bodyweight	none	push		
+e0fi	Plank row		beginner	bands	long resistance band	pull		abs, core and back
+e0ka	Sit and press		beginner	dumbbells	kettlebell or dumbbell	push		abs, core and back
+e0ub	Straddle lalanne pushup		advanced	bodyweight	none	push		abs, core and chest
+e12n	Band one-arm biceps curl		beginner	bands	long resistance band	pull		biceps and forearms
+e0fh	Band overhead triceps extension	Banded triceps press	beginner	bands	long resistance band	push		triceps, chest and back
+e14p	Band-assisted pullup		beginner	bands	rings or pullup bar and long resistance band	pull		biceps, forearms and back
+e021	Band-assisted rings pullup		beginner	bands	rings or pullup bar and long resistance band	pull		biceps, forearms and back
+e023	Bar muscle-up	Sentry pullup	advanced	bodyweight	pullup bar	pull		triceps, back and biceps
+e0jz	Barbell biceps curl		beginner	dumbbells	barbell	pull		biceps and forearms
+e0qh	Behind-the-neck pullup		intermediate	bodyweight	pullup bar	pull		biceps, forearms and back
+e1ed	Cable biceps curl	Cable curl	beginner	machines	cable machine or double cable machine	pull		biceps and forearms
+e1eb	Cable biceps curl single arm	Bayesian curl single arm, Bayesian curl	beginner	machines	cable machine or double cable machine	pull		biceps and forearms
+e1ej	Cable overhead triceps extension		beginner	machines	cable machine or double cable machine	push		triceps, chest and back
+e0e0	Cable press-down	Triceps pushdown, Triceps pressdown, Triceps extension, Cable pushdown	beginner	machines	cable machine or double cable machine	push		triceps
+e0hw	Chinup	Supinated grip pullup, Chin up	intermediate	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e0qg	Close grip pullup	Close pullup, Narrow pullup	intermediate	bodyweight	pullup bar	pull		biceps, forearms and back
+e0u3	Commando pullup		intermediate	bodyweight	pullup bar	pull		biceps, forearms and back
+e158	Concentration curl		beginner	dumbbells	bench and dumbbell	pull		biceps and forearms
+e0l7	Cross arm pushup	Jury Chechi pushup, Arms out close grip pushup	intermediate	bodyweight	none	push		triceps
+e15h	Crossbody hammer curl		beginner	dumbbells	dumbbell	pull		
+e0iz	Dolphin pushup		beginner	bodyweight	none	push		triceps
+e134	Double dumbbell biceps curl		beginner	dumbbells	dumbbell	pull		biceps and forearms
+e10t	Double dumbbell hammer curl		beginner	dumbbells	dumbbell	pull		biceps and forearms
+e135	Dumbbell alternate hammer curl		beginner	dumbbells	dumbbell	pull		biceps and forearms
+e143	Dumbbell overhead triceps extension		beginner	dumbbells	dumbbell	push		triceps, chest and back
+e0sz	Elbow-grab one-arm pullup	Advanced assisted one-hand pullup	advanced	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e0sx	Half pullup		intermediate	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e15a	Incline biceps curl	Dumbbell seated incline double biceps curl	beginner	dumbbells	bench and dumbbell	pull		biceps and forearms
+e11y	Inverted straddle	Hanging straddle inversion	beginner	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e062	Kipping muscle-up		intermediate	bodyweight	pullup bar	pull		triceps, back and biceps
+e06m	Long sphinx pushup	Triceps extension	beginner	bodyweight	none	push		
+e0hv	Neutral grip pullup		intermediate	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e142	Plate overhead triceps extension		beginner	dumbbells	weight plate	push		triceps, chest and back
+e1ey	Preacher bench EZ bar curl	Scott bench EZ bar curl, EZ bar preacher curl, Preacher curl	beginner	machines	preacher bench and barbell	pull		biceps and forearms
+e1ew	Preacher bench biceps curl	Scott bench biceps curl, Supported dumbbells curl, Dumbbell preacher curl	beginner	machines	preacher bench and dumbbell	pull		biceps and forearms
+e1ex	Preacher bench biceps curl single arm	Scott bench single arm curl, Supported dumbbell curl single arm, Single arm dumbbell preacher curl	beginner	machines	preacher bench and dumbbell	pull		biceps and forearms
+e1ez	Preacher bench incline biceps curl	Scott bench incline biceps curl	beginner	machines	preacher bench and dumbbell	pull		biceps and forearms
+w00f	Pullup 360	Pullup to skin-the-cat	intermediate	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e12i	Pullup eccentric	Negative pullup	beginner	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e0qj	Russian dip	Tiger bend dip	advanced	bodyweight	dip station or parallel bars	push		triceps, shoulders and chest
+e1ct	Seated dip machine	Machine triceps dip, Triceps press machine, Machine dip, Seated triceps press	beginner	machines	seated dip machine	push		triceps, shoulders and chest
+e0ou	Short Lalanne pushup		intermediate	bodyweight	none	push		triceps, abs and core
+e0dz	Single dumbbell biceps curl		beginner	dumbbells	dumbbell	pull		biceps and forearms
+e144	Single dumbbell overhead triceps extension		beginner	dumbbells	dumbbell	push		triceps, chest and back
+e137	Single kettlebell hammer curl	Horns hammer curl	beginner	dumbbells	kettlebell	pull		biceps and forearms
+e0as	Sphinx pushup	Triceps extension, Forearm pushup	intermediate	bodyweight	none	push		triceps
+e127	Strap-assisted one-arm chinup		advanced	bodyweight	rings or pullup bar and strap	pull		biceps, forearms and back
+e0t0	Strap-assisted one-arm pullup		advanced	bodyweight	rings or pullup bar and strap	pull		biceps, forearms and back
+e055	Tiger bend pushup	Hinge pushup, Russian pushup	beginner	bodyweight	none	push		triceps
+e136	Two-handed kettlebell hammer curl		beginner	dumbbells	kettlebell	pull		biceps and forearms
+e0yt	Wall triceps pushup	Wall skull crusher	beginner	bodyweight	free wall	push		triceps, chest and back
+e1ai	Weighted chinup		intermediate	bodyweight	rings and weight vest	pull		biceps and forearms
+e12l	Weighted pullup		intermediate	bodyweight	rings and weight vest	pull		biceps and forearms
+e0dm	Wide muscle-up		advanced	bodyweight	pullup bar	pull		triceps, back and chest
+e0sy	Wrist-grab one-arm pullup	Grip-assisted one-arm pullup, Uneven pullup, Assisted one-hand pullup	intermediate	bodyweight	rings or pullup bar	pull		biceps, forearms and back
+e15g	Zottman curl		beginner	dumbbells	dumbbell	pull		biceps and forearms
+e117	90 degrees hang hold	Bent-arm hang, Isometric half-way pull-up	intermediate	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e01a	Active hang	Bar hang	beginner	bodyweight	rings or pullup bar	pull		back, chest and forearms
+e0t2	Advanced hanging knee raise	Half-layout hanging knee raise, Hanging bent leg raise	beginner	bodyweight	rings or pullup bar	pull		back, chest and core
+e14y	Alternating Arnold press		beginner	dumbbells	dumbbell	push		back, shoulders and triceps
+e14x	Arnold press		beginner	dumbbells	dumbbell	push		back, shoulders and triceps
+e126	Band-assisted partial one-arm chinup		advanced	bands	rings or pullup bar and long resistance band	pull		back, biceps and forearms
+e15y	Banded behind-the-neck pulldown	Band overhead row	beginner	bands	long resistance band	pull		back, chest and triceps
+e0qo	Belly-to-bar pullup	Explosive pullup	advanced	bodyweight	pullup bar	pull		back, biceps and forearms
+e0cc	Bent-arm hang	Top of pullup hold, Chin-up hold	beginner	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e1fa	Box T-handstand	Box one-leg L-handstand	beginner	bodyweight	plyo box or chair	push		back, shoulders and neck
+e1g8	Butterfly stroke	Butterfly swimming	intermediate	bodyweight	swimming pool	push		back, chest and core
+e1eq	Cable face pull	Cable facepull, Face pull	beginner	machines	cable machine or double cable machine	pull		back, rotator cuff and biceps
+e02f	Chair handstand		advanced	bodyweight	chair	push		back, shoulders and triceps
+e0dt	Chest-to-bar pullup	C2B pullup, Explosive pullup	intermediate	bodyweight	pullup bar	pull		back, biceps and forearms
+e02k	Chest-to-wall handstand		beginner	bodyweight	free wall	push		back, shoulders and neck
+e0tn	Climbing towel hang	Uneven Towel hang	intermediate	bodyweight	rings or pullup bar and towel	pull		back, chest and forearms
+e1a6	Crow pose tiptoe		beginner	bodyweight	none	pull		back, shoulders and triceps
+e1a5	Crow pose tiptoe on block		beginner	bodyweight	yoga block	pull		back, shoulders and triceps
+e1b9	Crow pose with head support		beginner	bodyweight	yoga block	pull		back, shoulders and triceps
+e0po	Decline deep pike pushup	Elevated deep pike pushup	intermediate	bodyweight	plyo box or chair and parallettes	push		back, shoulders and triceps
+e02w	Decline pike pushup	Elevated pike headstand pushup, Box pushup, Elevated pike pushup, Supported headstand pushup	intermediate	bodyweight	plyo box or chair	push		back, shoulders and triceps
+e0og	Dip circles	Support shoulder circles	intermediate	bodyweight	dip station or parallel bars	push		back and chest
+e0of	Dip shrugs	Support elevation depression	beginner	bodyweight	dip station or parallel bars	pull		back and chest
+e1f3	Handstand kick-up	Kick up to handstand, Handstand kick	beginner	bodyweight	none	push		back, shoulders and neck
+e17n	Handstand scissor kick		intermediate	bodyweight	none	push		back, shoulders and neck
+e16c	Handstand shoulder shrugs	Handstand shoulder pushup, Overhead scapular elevation	intermediate	bodyweight	free wall	pull		back, shoulders and neck
+e04f	Handstand shoulder taps		advanced	bodyweight	none	push		back, shoulders and neck
+e04h	Handstand walk	Walking handstand	advanced	bodyweight	none	push		back, shoulders and neck
+e04l	Handstand with 4 fingers support	Handstand with one-arm support (4 fingers)	advanced	bodyweight	none	push		back, shoulders and neck
+e0qy	Handstand with 5 fingers support	Handstand with one-arm support (5 fingers)	advanced	bodyweight	none	push		back, shoulders and neck
+e0jf	Hanging L-scissors		intermediate	bodyweight	rings or pullup bar	pull		back, chest and abs
+e00x	Hanging active splits		beginner	bodyweight	rings or pullup bar	pull		back, chest and core
+e0ja	Hanging knees to elbows		intermediate	bodyweight	rings or pullup bar	pull		back, chest and abs
+e04s	Hanging leg raises	Hanging straight leg raises	beginner	bodyweight	rings or pullup bar	pull		
+e04t	Hanging leg raises toes-to-hands	Toes-to-bar	intermediate	bodyweight	rings or pullup bar	pull		back, chest and core
+e0jd	Hanging legs circle	Around the world	advanced	bodyweight	rings or pullup bar	pull		back, chest and abs
+e04u	Hanging plank	Horizontal hang	beginner	bodyweight	rings or dip station	pull		back and forearms
+e09q	Hanging plank shoulder circles	Horizontal row shoulder circles	beginner	bodyweight	rings or dip station	pull		back, neck and chest
+e0td	Hanging press flag	Decline human flag, Support press	intermediate	bodyweight	pullup bar	pull		back, chest and neck
+e0qd	Hanging shoulder circles		beginner	bodyweight	rings or pullup bar	pull		back and chest
+e0qc	Hanging shoulder retraction and protraction		beginner	bodyweight	rings or pullup bar	pull		back and chest
+e0jb	Hanging tuck circle	Around the world tucked	intermediate	bodyweight	rings or pullup bar	pull		back, chest and abs
+e04y	Headstand pushup	Half handstand pushup	advanced	bodyweight	none	push		back, shoulders and triceps
+e05h	Incline pike pushup		beginner	bodyweight	plyo box or chair	push		back, shoulders and triceps
+e05m	Incline shoulder row		beginner	bodyweight	rings or dip station	pull		back
+e11v	Inverted hang pike lifts	Inverted deadlift	intermediate	bodyweight	rings or pullup bar	pull		back, chest and core
+e05z	Jackknife pullup	Feet-elevated pullup	beginner	bodyweight	rings or pullup bar and plyo box or chair	pull		back, biceps and forearms
+e0jv	Kettlebell bottoms up press	Inverted kettlebell overhead press	beginner	dumbbells	kettlebell	push		back, shoulders and triceps
+e15m	Kettlebell gorilla row		beginner	dumbbells	kettlebell	pull		back, rotator cuff and shoulders
+e061	Kip pullup		beginner	bodyweight	pullup bar	pull		back, biceps and forearms
+e0t3	Kip release-regrip pullup		intermediate	bodyweight	pullup bar	pull		back, biceps and forearms
+e0t4	Kip switch-grip pullup		advanced	bodyweight	pullup bar	pull		back, biceps and forearms
+e16d	L-handstand leg lift	L-shape lift	intermediate	bodyweight	free wall	push		back, shoulders and neck
+e06b	L-sit active hang	Hanging l-sit, L-hang, L-sit hang	beginner	bodyweight	rings or pullup bar	pull		back, chest and abs
+e06e	L-sit dead hang	L-sit straight-arm hang	beginner	bodyweight	rings or pullup bar	pull		back, chest and abs
+e06h	L-sit one-arm hang		advanced	bodyweight	rings or pullup bar	pull		back, chest and core
+e06i	L-sit pullup		advanced	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e07y	Leg-assisted pullup	Seated pullup	beginner	bodyweight	rings or dip station	pull		back, biceps and forearms
+e04a	Narrow handstand	Hands-close-together handstand, Close grip handstand	advanced	bodyweight	none	pull		back, shoulders and neck
+e077	One-arm active hang	One-arm bar hang	advanced	bodyweight	rings or pullup bar	pull		back and chest
+e00m	One-arm bent-arm hang	Top of OAC hold, One-arm lock-off	advanced	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e0dy	One-arm bent-over row	One-arm weight row	beginner	dumbbells	kettlebell or dumbbell	pull		back, biceps and forearms
+e122	One-arm chinup eccentric	Negative one-arm chinup	advanced	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e124	One-arm chinup with 2 fingers support		advanced	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e123	One-arm chinup with 3 fingers support		advanced	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e078	One-arm hang	One-arm dead hang, One-arm straight-arm hang	intermediate	bodyweight	rings or pullup bar	pull		back and chest
+e07b	One-arm hang switches		advanced	bodyweight	rings or pullup bar	pull		back and chest
+e0qf	One-arm hang twist	Single-arm hang shoulder torsion, One arm rotation hang	advanced	bodyweight	pullup bar	pull		back, chest and rotator cuff
+e0q8	One-arm scapular pull		advanced	bodyweight	rings or pullup bar	pull		back and chest
+e118	Pullup circle		advanced	bodyweight	pullup bar	pull		back, chest and biceps
+e0h3	Push press		beginner	dumbbells	barbell	push		back, shoulders and triceps
+e0qe	Ribs-to-bar pullup	Explosive pullup	advanced	bodyweight	pullup bar	pull		back, biceps and forearms
+e0a6	Scapular pull	Arch hang	beginner	bodyweight	rings or pullup bar	pull		back and chest
+e05b	Shoulder row	Horizontal shoulder row, Row scapular retraction	beginner	bodyweight	rings or dip station	pull		back
+e1bg	Side crow with block support		beginner	bodyweight	yoga block	pull		back, shoulders and triceps
+e0r8	Side walk straddle handstand		advanced	bodyweight	none	push		back, shoulders and neck
+e13c	Single kettlebell overhead press	Kettlebell one-arm overhead press	beginner	dumbbells	kettlebell	push		back, shoulders and triceps
+e0tk	Single towel hang	Uneven hang	beginner	bodyweight	rings or pullup bar and towel	pull		back, chest and forearms
+e17o	Split legs handstand		advanced	bodyweight	none	push		
+e0tl	Split towel hang	Towel hang	beginner	bodyweight	rings or pullup bar and towel	pull		back, chest and forearms
+e0r9	Straddle handstand flag	Straddle handstand side lean, Straddle handstand weight shift	advanced	bodyweight	none	push		back, shoulders and neck
+e0qv	Straddle handstand shoulder taps		advanced	bodyweight	none	push		back, shoulders and neck
+e0bt	Straddle handstand with 4 fingers support	Straddled handstand with one-arm support (4 fingers)	advanced	bodyweight	none	push		back, shoulders and neck
+e0qx	Straddle handstand with 5 fingers support	Straddled handstand with one-arm support (5 fingers)	advanced	bodyweight	none	push		back, shoulders and neck
+e02u	Straight-arm hang	Passive hang, Dead hang	beginner	bodyweight	rings or pullup bar	pull		back, chest and forearms
+e14m	Straight-arm pulldown		beginner	machines	cable machine or double cable machine	pull		back
+e051	Tripod headstand to crow pose		intermediate	bodyweight	none	pull		back, shoulders and triceps
+e00y	Tuck hang		beginner	bodyweight	rings or pullup bar	pull		back, chest and abs
+e119	Tuck pullup	Chair pullup, Tuck L-sit pullup	intermediate	bodyweight	rings or pullup bar	pull		back, biceps and forearms
+e0tm	Twin towel hang		beginner	bodyweight	rings or pullup bar and towel	pull		back, chest and forearms
+e109	Wall L-handstand	Wall L-shape handstand	intermediate	bodyweight	free wall	push		back, shoulders and neck
+e108	Wall T-handstand	Wall one-leg L-handstand	intermediate	bodyweight	free wall	push		back, shoulders and neck
+e1f1	Wall diamond handstand flag	Wall baby flag, Chest-to-wall diamond handstand side shift	intermediate	bodyweight	free wall	push		back, shoulders and neck
+e0d0	Wall handstand heel pulls		intermediate	bodyweight	free wall	push		back, shoulders and neck
+e0d1	Wall handstand pushup		advanced	bodyweight	free wall	push		back, shoulders and triceps
+e0d3	Wall handstand shoulder taps		intermediate	bodyweight	free wall	push		back, shoulders and neck
+e0d4	Wall handstand toe pulls		intermediate	bodyweight	free wall	push		back, shoulders and neck
+e0d6	Wall headstand pushup	Handstand pushup	intermediate	bodyweight	free wall	push		back, shoulders and triceps
+e0r7	Wall one-arm handstand		advanced	bodyweight	free wall	push		back, shoulders and neck
+e0qu	Wall straddle handstand shoulder taps		intermediate	bodyweight	free wall	push		back, shoulders and neck
+e1fd	Wall straddle handstand weight shift	Wall penguin shift, One-arm handstand wall prep	beginner	bodyweight	free wall	push		back, shoulders and neck
+e0r6	Wall straddle one-arm handstand		advanced	bodyweight	free wall	push		back, shoulders and neck
+e0p3	Wall straddle press-to-handstand	Wall-assisted straight-arm straddle press-to-handstand	advanced	bodyweight	free wall	push		back, shoulders and neck
+e107	Wall tuck handstand hold	Wall knee handstand	intermediate	bodyweight	free wall	push		back, shoulders and neck
+e106	Wall tuck handstand slide		intermediate	bodyweight	free wall	push		back, shoulders and neck
+e0dl	Wide L-sit pullup		advanced	bodyweight	pullup bar	pull		
+e0dn	Wide pullup		advanced	bodyweight	pullup bar	pull		back, chest and biceps
+e1dk	Double cable chest fly downward	Double cable chest fly high to low, Cable crossover high to low	beginner	machines	double cable machine	push		chest, shoulders and back
+e1f0	Double cable chest fly upward	Double cable chest fly low to high	beginner	machines	double cable machine	push		chest, shoulders and biceps
+e0ph	Dumbbell fly	Dumbbell chest fly	beginner	dumbbells	bench and kettlebell or dumbbell	push		chest, shoulders and biceps
+e155	Incline dumbbell chest fly		beginner	dumbbells	bench and dumbbell	push		chest, shoulders and biceps
+e1f4	Lying handstand line hold	Floor handstand line, Prone handstand shape	beginner	bodyweight	none	push		chest, back and abs
+e15x	Mini band pulldown		beginner	bands	short resistance band	pull		chest, back and triceps
+e12b	Straight-arm banded lat pulldowns	Dorsal row with band, Banded straight-arm pulldown	beginner	bands	long resistance band	pull		chest and back
+e0ob	Straps rings chest fly		advanced	bodyweight	rings and strap	push		chest and shoulders
+e0qs	Fingertip pushup		beginner	bodyweight	none	push		forearms, shoulders and chest
+e09c	Hands-release fingertip pushup	Explosive fingertip pushup	intermediate	bodyweight	none	push		forearms, shoulders and chest
+e0tr	Incline fingertip pushup		beginner	bodyweight	plyo box or chair	push		forearms, shoulders and chest
+e0ts	Knee fingertip pushup		beginner	bodyweight	none	push		forearms, shoulders and chest
+e08j	Knee wrist pushup	Kneeling wrist extension	beginner	bodyweight	none	push		forearms, shoulders and chest
+e0to	One arm towel hang		advanced	bodyweight	rings or pullup bar and towel	pull		forearms, back and chest
+e08o	Palm raise pushup		beginner	bodyweight	none	push		forearms, shoulders and chest
+e09e	Spear pushup	Straight palm raise pushup	intermediate	bodyweight	none	push		forearms, shoulders and chest
+e0tq	Wall fingertip pushup		beginner	bodyweight	free wall	push		forearms, shoulders and chest
+e08r	Wrist pushup		intermediate	bodyweight	none	push		forearms, shoulders and chest
+e00s	Stability ball pike compression		beginner	bodyweight	stability ball	push		core, quadriceps and neck
+e0gv	Stability ball pike compression (OLD)		beginner	bodyweight	stability ball	push		core, quadriceps and neck
+e0rh	Standing straddle one-arm handstand leg lift	Standing lateral leg lifts with shoulder flexion and scapular elevation	beginner	bodyweight	free wall	push		glutes, neck and back
+e1f8	Headstand pike press	Headstand straight legs lift, Sirsasana pike press	beginner	bodyweight	none	push		neck, back and shoulders
+e15t	Neck hanging rotation		beginner	bodyweight	bench	pull		
+e1er	Cable pallof press hold	Pallof hold, Cable anti-rotation hold	beginner	machines	cable machine or double cable machine	push		core
+e014	45 deg dip		advanced	bodyweight	dip station or parallel bars	push		shoulders, chest and biceps
+e01g	Advanced tuck front lever		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0g8	Advanced tuck front lever raise		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e01h	Advanced tuck front lever row		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e01k	Advanced tuck planche		advanced	bodyweight	parallettes or dip station	push		shoulders, chest and biceps
+e0rq	Air pushup		advanced	bodyweight	none	push		
+e0rr	Air straddle pushup		intermediate	bodyweight	none	push		shoulders, chest and triceps
+e0ro	Arms up pushup	Explosive pushup	advanced	bodyweight	none	push		shoulders, chest and triceps
+e0rp	Arms up straddle pushup		intermediate	bodyweight	none	push		shoulders, chest and triceps
+e0j9	Assisted planche		intermediate	bands	long resistance band	push		shoulders, chest and biceps
+e0zj	Assisted tuck planche hold	Diamond hold	beginner	bodyweight	none	push		shoulders and chest
+e0zi	Assisted tuck planche raise	Diamond lift	beginner	bodyweight	none	push		shoulders and chest
+e088	Back straddle inverted hang		intermediate	bodyweight	rings or pullup bar	pull		neck, shoulders and chest
+e01y	Back-to-wall handstand		beginner	bodyweight	free wall	push		neck
+e12q	Band-assisted pushup		beginner	bands	parallettes and long resistance band	push		shoulders, chest and triceps
+e14g	Band-assisted rings dip		intermediate	bands	rings and long resistance band	push		shoulders and chest
+e14o	Band-resisted pushup		beginner	bands	parallettes and long resistance band	push		shoulders, chest and triceps
+e140	Banded bent-over row		beginner	bands	long resistance band	pull		rotator cuff, back and shoulders
+e0kn	Banded chest press		beginner	bands	long resistance band	push		shoulders, chest and triceps
+e0kt	Banded rear delt fly		beginner	bands	long resistance band	pull		rotator cuff and shoulders
+e025	Barbell bent-over row	Pendlay row	beginner	dumbbells	barbell	pull		rotator cuff, back and shoulders
+e13e	Barbell cuban press		beginner	dumbbells	barbell	push		rotator cuff
+e13p	Barbell upright row		beginner	dumbbells	barbell	pull		shoulders and rotator cuff
+e17b	Bent-arm tuck planche	90-degree tuck hold	advanced	bodyweight	parallettes or dip station	push		shoulders, chest and biceps
+e10j	Bent-legs bench dip	Triceps dip, Chair dip, Box dip	beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e0ql	Bottom dip hold		intermediate	bodyweight	dip station	push		shoulders and chest
+e1fh	Box pike shoulder shrugs	Pike stand scapular pushup, Elevated handstand shrugs	beginner	bodyweight	plyo box or chair	pull		neck, back and shoulders
+e1ec	Cable bent-over reverse fly single arm	Bayesian reverse fly single arm, Cable rear delt fly single arm	beginner	machines	cable machine or double cable machine	push		rotator cuff, shoulders and back
+e15c	Close grip bench press		beginner	dumbbells	bench and barbell	push		shoulders, chest and triceps
+e020	Curved handstand	Banana handstand	intermediate	bodyweight	none	push		neck, back and shoulders
+e15o	Decline diamond pushup		intermediate	bodyweight	plyo box	push		shoulders, chest and triceps
+e03s	Decline pushup		beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e034	Dip		intermediate	bodyweight	dip station	push		shoulders and chest
+e12j	Dip eccentric	Negative dip	beginner	bodyweight	dip station	push		shoulders and chest
+e1dm	Double cable chest press	Standing cable chest press	beginner	machines	double cable machine	push		shoulders, chest and triceps
+e1dn	Double cable rear delt fly	Cable reverse fly, Reverse cable crossover	beginner	machines	double cable machine	pull		rotator cuff, shoulders and back
+e13f	Dumbbell bench press		beginner	dumbbells	bench and dumbbell	push		shoulders, chest and triceps
+e02t	Dumbbell cuban press		beginner	dumbbells	dumbbell	push		rotator cuff
+e0h4	Dumbbell overhead carry		beginner	dumbbells	kettlebell or dumbbell	pull		neck
+e0t1	Elbow press		intermediate	bodyweight	none	push		rotator cuff, back and shoulders
+e1ba	Elevating active core compression		beginner	bodyweight	yoga block	push		core, quadriceps and abs
+e0dc	Feet on wall pushup		advanced	bodyweight	free wall	push		shoulders, chest and triceps
+e0rs	Feet up pushup	Flying legs pushup	intermediate	bodyweight	none	push		shoulders, chest and triceps
+e15f	Floor barbell press		beginner	dumbbells	barbell	push		shoulders, chest and triceps
+e0ue	Front lever lean		intermediate	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e03d	Front lever lean 15°		intermediate	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0hm	Front lever lean 30°		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0hn	Front lever lean 45°		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e03c	Front straddle inverted hang		intermediate	bodyweight	rings or pullup bar	pull		neck, rotator cuff and back
+e03x	German hang		beginner	bodyweight	rings or pullup bar	pull		shoulders and chest
+e0qk	Half dip		beginner	bodyweight	dip station or parallel bars	push		shoulders, chest and triceps
+e0sg	Half one-arm pushup		advanced	bodyweight	none	push		shoulders, chest and triceps
+e11w	Half-straddle front lever		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+w01f	Hand release pushup		beginner	bodyweight	none	push		
+e0qn	Hand-release dip		advanced	bodyweight	dip station or parallel bars	push		shoulders, chest and triceps
+e04v	Hanging prone plank	Inverted plank	beginner	bodyweight	rings or dip station	pull		
+e0je	Hanging tuck windshield wiper		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e15b	Incline barbell bench press		beginner	dumbbells	bench and barbell	push		shoulders, chest and triceps
+e15n	Incline diamond pushup		beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e157	Incline dumbbell bench press		beginner	dumbbells	bench and dumbbell	push		shoulders, chest and triceps
+e05g	Incline one-arm pushup		intermediate	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e016	Incline one-arm row		intermediate	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e05j	Incline pushup	Box pushup	beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e05l	Incline row	Horizontal pullups	beginner	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e0q9	Incline straddle one-arm row		intermediate	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e05n	Incline wall handstand	Wall plank 45°	beginner	bodyweight	free wall	push		neck
+e08z	Internally rotated pushup		beginner	bodyweight	none	push		shoulders, chest and triceps
+e11x	Inverted front splits	Rings inverted splits	beginner	bodyweight	rings or pullup bar	pull		neck
+e0bu	Inverted hang	Straight Inversion hang	beginner	bodyweight	rings or pullup bar	pull		neck
+e0gs	Inverted kettlebell carry	Inverted kettlebell overhead carry, KB bottom up carry walk	beginner	dumbbells	kettlebell	pull		neck
+e00w	Inverted pullup		intermediate	bodyweight	rings or pullup bar	pull		neck, biceps and forearms
+e0oh	Inverted shrugs		beginner	bodyweight	rings or dip station	pull		
+e14d	Jackknife rings dip	Feet-elevated rings dip	intermediate	bodyweight	rings and plyo box	push		shoulders, chest and triceps
+e141	Kettlebell bench press		beginner	dumbbells	bench and kettlebell	push		shoulders, chest and triceps
+e13d	Kettlebell overhead carry		beginner	dumbbells	kettlebell	pull		neck
+e13o	Kettlebell upright row		beginner	dumbbells	kettlebell	pull		shoulders and rotator cuff
+e0zq	Knee diamond pushup		beginner	bodyweight	none	push		shoulders, chest and triceps
+e064	Knee pushup	Kneeling pushup	beginner	bodyweight	none	push		shoulders, chest and triceps
+e16z	Knuckle pushup	Fist pushup	beginner	bodyweight	none	push		shoulders, chest and triceps
+e06f	L-sit dip		intermediate	bodyweight	dip station or parallel bars	push		shoulders, chest and triceps
+e0nw	Lying maltese press	Hollow dumbbell press, Dumbbell hollow press for planche	beginner	dumbbells	kettlebell or dumbbell	push		shoulders and chest
+e1bu	Machine chest press	Seated chest press, Chest press machine, Seated machine chest press	beginner	machines	chest press machine	push		shoulders, chest and triceps
+e1bt	Neutral-grip machine chest press	Neutral-grip seated chest press, Close-grip machine chest press, Neutral grip chest press machine	beginner	machines	chest press machine	push		shoulders, chest and triceps
+e0pn	One-arm scapular pushup	One-arm shoulder pushup	intermediate	bodyweight	none	pull		
+e0qq	One-hand hip-tap dip		advanced	bodyweight	dip station or parallel bars	push		shoulders, chest and triceps
+e0or	One-leg QDR pushup		intermediate	bodyweight	none	push		shoulders, rotator cuff and chest
+e03l	One-leg front lever		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0sj	One-leg pushup	Gecko pushup	beginner	bodyweight	none	push		shoulders, chest and triceps
+e0gu	Pike compression slide	Reverse ab rollout	beginner	bodyweight	rings or suspension straps (trx)	push		neck, abs and core
+e0pr	Pike straddle planche		advanced	bodyweight	parallettes or dip station	push		shoulders, chest and biceps
+e10u	Plates overhead lateral raise	Lu raise	beginner	dumbbells	weight plate	push		shoulders and rotator cuff
+e112	Pronated grip horizontal row	Overhand bodyrow	beginner	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e0ot	QDR pushup		advanced	bodyweight	none	push		shoulders, rotator cuff and chest
+e0zl	Rocking pushup		beginner	bodyweight	none	push		
+e0qm	Rotating dip	90-degrees dip	advanced	bodyweight	dip station	push		shoulders and chest
+e0ab	Scapular pushup	Shoulder pushup, Plank pushup	beginner	bodyweight	none	pull		
+e16k	Scarecrow arms		beginner	bodyweight	none	pull		rotator cuff and back
+e153	Seated bent-over dumbbell rear delt fly		beginner	dumbbells	bench and dumbbell	pull		rotator cuff, shoulders and triceps
+e0pi	Shoulder shrugs		beginner	dumbbells	kettlebell or dumbbell	pull		neck
+e0sl	Side-staggered pushup	Bent-arm archer pushup	beginner	bodyweight	none	push		shoulders, chest and triceps
+e0hq	Sitting band row		beginner	bands	long resistance band	pull		rotator cuff, back and shoulders
+e1do	Smith machine bench press		beginner	machines	bench and smith machine	push		shoulders, chest and triceps
+e1dt	Smith machine incline bench press	Smith machine incline press	beginner	machines	bench and smith machine	push		shoulders, chest and triceps
+e184	Spiderman pushup	Pushup jack	beginner	bodyweight	none	push		shoulders, chest and triceps
+e11f	Stability ball decline pushup		intermediate	bodyweight	stability ball	push		shoulders, chest and triceps
+e11k	Stability ball incline pushup		beginner	bodyweight	stability ball	push		shoulders, chest and triceps
+e0sk	Staggered pushup		beginner	bodyweight	none	push		shoulders, chest and triceps
+e0nv	Standing rear delt fly	Wide Y back, Reverse dumbbell fly	beginner	dumbbells	kettlebell or dumbbell	pull		rotator cuff and shoulders
+e0be	Straddle front lever		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0bk	Straddle one-arm pushup		advanced	bodyweight	none	push		shoulders, chest and triceps
+e0bl	Straddle one-arm row		advanced	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e0bo	Straddle pushup		beginner	bodyweight	none	push		shoulders, chest and triceps
+e0zh	Straight-legs bench dip	Triceps dip, Chair dip, Box dip	beginner	bodyweight	plyo box or chair	push		shoulders, chest and triceps
+e0o9	Straps rings planche lean	Straps rings plank	intermediate	bodyweight	rings and strap	push		shoulders, chest and rotator cuff
+e113	Supinated grip horizontal row	Australian chinup, Reverse grip australian pullup, Underhand bodyrow	beginner	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e0os	Supported QDR pushup		intermediate	bodyweight	none	push		shoulders, rotator cuff and chest
+w011	T-pushup	Pushup with rotation	beginner	bodyweight	none	push		shoulders, chest and triceps
+e0oq	Tuck QDR pushup		beginner	bodyweight	none	push		shoulders, rotator cuff and chest
+e0cj	Tuck front lever		intermediate	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0g7	Tuck front lever raise		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0ck	Tuck front lever row		advanced	bodyweight	rings or pullup bar	pull		rotator cuff, back and shoulders
+e0cn	Tuck inverted hang	Tuck Inversion hang	beginner	bodyweight	rings or pullup bar	pull		neck and forearms
+e0cq	Tuck planche		advanced	bodyweight	parallettes or dip station	push		shoulders, chest and biceps
+e0cr	Tuck planche pushup		advanced	bodyweight	parallettes or dip station	push		shoulders, chest and biceps
+e111	Tuck planche raise	Serratus knee raise	advanced	bodyweight	dip station or parallel bars	push		shoulders and chest
+e0si	Walking gecko pushup		intermediate	bodyweight	none	push		shoulders, chest and triceps
+e16b	Wall half layout planche lean		advanced	bodyweight	free wall	push		shoulders, chest and biceps
+e0d5	Wall handstand walk		beginner	bodyweight	free wall	push		neck
+e16a	Wall planche lean		advanced	bodyweight	free wall	push		shoulders, chest and biceps
+e0p4	Wall pushup		beginner	bodyweight	free wall	push		shoulders, chest and triceps
+e0zz	Wall rocking pushup	Mike Tyson pushup	beginner	bodyweight	free wall	push		shoulders, chest and triceps
+e1b5	Weighted T-pushup		intermediate	dumbbells	dumbbell	push		shoulders, chest and triceps
+e12k	Weighted dip		intermediate	bodyweight	dip station and weight belt	push		shoulders and chest
+e1b1	Weighted horizontal row		intermediate	bodyweight	rings and weight vest	pull		rotator cuff and back
+e12r	Weighted pushup		beginner	bodyweight	parallettes and weight vest	push		shoulders, chest and triceps
+e14f	Weighted rings dip		advanced	bodyweight	rings and weight belt	push		shoulders, chest and triceps
+e0do	Wide row		intermediate	bodyweight	rings or dip station	pull		rotator cuff, back and shoulders
+e0f8	Wobble board pushup		beginner	bodyweight	wobble balance board	push		shoulders, chest and triceps
+e00i	Jefferson curl		beginner	dumbbells	plyo box and kettlebell	pull		core and glutes
+e0g0	Renegade row		beginner	dumbbells	dumbbell	pull	name-exact	abs, core and back
+e085	Pullup	Pronated grip pullup, Full pullup, Pull up	intermediate	bodyweight	rings or pullup bar	pull	alt-fuzzy:assisted pull up dip	biceps, forearms and back
+e0fg	Banded overhead press	Banded shoulder press	beginner	bands	long resistance band	push	alt-fuzzy:shoulder press	back, shoulders and triceps
+e00g	Barbell overhead press	Shoulder press	beginner	dumbbells	barbell	push	alt-exact	back, shoulders and triceps
+e1e6	Behind-the-neck lat pulldown		beginner	machines	cable machine or double cable machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e13b	Double dumbbell overhead press	Shoulder press	beginner	dumbbells	dumbbell	push	name-fuzzy:dumbbell overhead press	back, shoulders and triceps
+e159	Dumbbell seated overhead press		beginner	dumbbells	bench and dumbbell	push	name-fuzzy:dumbbell overhead press	back, shoulders and triceps
+e1e4	Kneeling lat pulldown single arm		beginner	machines	cable machine or double cable machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e07j	Lat pulldown		beginner	machines	cable machine or double cable machine	pull	name-exact	back, biceps and forearms
+e1e7	Lat pulldown close grip	Close grip lat pulldown, V-bar lat pulldown	beginner	machines	cable machine or double cable machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e1e8	Lat pulldown neutral grip	Parallel grip lat pulldown	beginner	machines	cable machine or double cable machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e1e9	Lat pulldown single arm	One-arm lat pulldown	beginner	machines	cable machine or double cable machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e1ea	Lat pulldown supine grip	Reverse grip lat pulldown, Underhand lat pulldown	beginner	machines	cable machine or double cable machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e1bw	Machine lat pulldown	Lever lat pulldown, Lat pulldown machine, Plate-loaded lat pulldown	beginner	machines	lat pulldown machine	pull	name-fuzzy:lat pulldown	back, biceps and forearms
+e1cr	Machine shoulder press	Seated machine shoulder press, Shoulder press machine, Machine overhead press	beginner	machines	shoulder press machine	push	name-fuzzy:shoulder press	back, shoulders and triceps
+e1cs	Neutral-grip machine shoulder press	Close-grip machine shoulder press, Neutral grip shoulder press machine	beginner	machines	shoulder press machine	push	name-fuzzy:shoulder press	back, shoulders and triceps
+e154	Seated bent-over dumbbell row		beginner	dumbbells	bench and dumbbell	pull	name-fuzzy:dumbbell row	back, rotator cuff and shoulders
+e0jk	Single dumbbell overhead press	Shoulder press	beginner	dumbbells	dumbbell	push	name-fuzzy:dumbbell overhead press	back, shoulders and triceps
+e1dw	Smith machine military press	Smith machine standing shoulder press, Smith machine overhead press	beginner	machines	smith machine	push	alt-fuzzy:shoulder press	back, shoulders and triceps
+e161	Banded single lat pulldown		beginner	bands	long resistance band	pull	name-fuzzy:lat pulldown	chest, back and neck
+e1dl	Double cable chest fly	Cable crossover, Cable chest fly	beginner	machines	double cable machine	push	alt-fuzzy:chest press pec deck cable fly	chest, shoulders and biceps
+e1es	Cable pallof press	Cable anti-rotation press	beginner	machines	cable machine or double cable machine	push	name-fuzzy:cable woodchop pallof press	core, shoulders and chest
+e0dv	Pallof press		beginner	bands	long resistance band	push	name-fuzzy:cable woodchop pallof press	core
+e0af	Side plank dip		beginner	bodyweight	none	push	name-fuzzy:side plank	core, shoulders and rotator cuff
+e1ao	Erg Rowing	Rowing, Rowing machine	beginner	machines	rowing machine	pull	alt-exact	quadriceps, glutes and hamstrings
+e01p	Assisted dip		beginner	bands	dip station and long resistance band	push	name-fuzzy:assisted pull up dip	shoulders and chest
+e01x	Barbell bench press	Chest press	beginner	dumbbells	bench and barbell	push	alt-fuzzy:chest press pec deck cable fly	shoulders, chest and triceps
+e02x	Decline row	Feet-elevated row	intermediate	bodyweight	rings and plyo box	pull	alt-fuzzy:feet elevated inverted row	rotator cuff and back
+e131	Dumbbell bent-over row		beginner	dumbbells	dumbbell	pull	name-fuzzy:dumbbell row	rotator cuff, back and shoulders
+e13q	Dumbbell overhead lateral raise	Lu raise	beginner	dumbbells	dumbbell	push	name-fuzzy:dumbbell lateral raise	shoulders and rotator cuff
+e10v	Dumbbell upright row		beginner	dumbbells	dumbbell	pull	name-fuzzy:dumbbell row	shoulders and rotator cuff
+e15e	Floor dumbbell press		beginner	dumbbells	dumbbell	push	name-fuzzy:dumbbell floor press	shoulders, chest and triceps
+e059	Horizontal row	Row, Bodyrow, Australian pullup, Horizontal bent-arm pull, Horizontal pullup, Supine row, Neutral grip horizontal row, Inverted row	beginner	bodyweight	rings or dip station	pull	alt-fuzzy:feet elevated inverted row	rotator cuff, back and shoulders
+e10n	Lying incline dumbbell row		beginner	dumbbells	bench and dumbbell	pull	name-fuzzy:dumbbell row	rotator cuff, back and shoulders
+e1ch	Machine row	Seated row machine, Chest-supported machine row, Lever row, Seated machine row	beginner	machines	seated row machine	pull	alt-fuzzy:seated row	rotator cuff, back and shoulders
+e14l	Seated cable row		beginner	machines	cable machine or double cable machine	pull	name-fuzzy:seated row	rotator cuff, back and shoulders
+e1cg	Seated cable row with forward lean	Seated cable row with hip hinge, Seated row with torso lean, Stretch seated row, Dynamic seated cable row	beginner	machines	cable machine or double cable machine	pull	name-fuzzy:seated row	rotator cuff, back and shoulders
+e132	Single dumbbell bent-over row	Dumbbell one-arm bent-over row	beginner	dumbbells	dumbbell	pull	name-fuzzy:dumbbell row	rotator cuff, back and shoulders
