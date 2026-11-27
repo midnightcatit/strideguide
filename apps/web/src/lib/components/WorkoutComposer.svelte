@@ -8,6 +8,7 @@
 		RUN_ARCHETYPE_LABELS,
 		addItem,
 		cleanDraft,
+		imageForName,
 		presetDraft,
 		removeItem,
 		shiftItem,
@@ -295,7 +296,24 @@
 									<ul class="mt-2 space-y-1.5">
 										{#each draft.sections[section].items as item, i (i)}
 											{@const s = summary(item)}
+											{@const img = item.kind === 'run' ? undefined : imageForName(item.ref)}
 											<li class="flex items-center gap-2 rounded-lg border border-hairline bg-paper px-3 py-2">
+												{#if img}
+													<img
+														src={img}
+														alt=""
+														loading="lazy"
+														decoding="async"
+														class="h-11 w-11 shrink-0 rounded-md border border-hairline object-cover"
+													/>
+												{:else}
+													<span
+														aria-hidden="true"
+														class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-hairline bg-sunken text-xs text-steel"
+													>
+														{item.kind === 'run' ? '→' : '·'}
+													</span>
+												{/if}
 												<span class="min-w-0 flex-1">
 													<span class="block break-words text-sm">{s.label}</span>
 													<span class="tabular block break-words text-xs text-steel">{s.detail}</span>
