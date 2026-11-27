@@ -46,11 +46,15 @@
 		onNode,
 		focusedId = null,
 		onClose,
+		fill = false,
 	}: {
 		view: GraphView;
 		onNode: (node: GraphNode) => void;
 		focusedId?: string | null;
 		onClose?: () => void;
+		/** Fill the parent's height instead of the inline clamp. Used by the
+		 * full-screen overlay, where the canvas should take the space left. */
+		fill?: boolean;
 	} = $props();
 
 	const theme = graphTheme();
@@ -171,6 +175,7 @@
 
 <div
 	class="sg-graph"
+	class:sg-fill={fill}
 	style="{graphVars(theme.current)};{xyflowVars(theme.current)}"
 	data-engine={engine ?? 'pending'}
 >
@@ -234,6 +239,12 @@
 		color: var(--g-ink);
 		overflow: hidden;
 		touch-action: none;
+	}
+
+	/* In the full-screen overlay the canvas takes the space the flex column
+	   leaves, rather than the inline clamp that suits a page. */
+	.sg-graph.sg-fill {
+		height: 100%;
 	}
 
 	.sg-stage {

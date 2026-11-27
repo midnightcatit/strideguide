@@ -224,8 +224,9 @@
 	});
 
 	// Hold to finish (3 seconds). Shown while not running. Works from a pointer
-	// and from the keyboard (hold Space or Enter), and there is a plain tap path
-	// ("Tap to finish") that opens a confirm for anyone who cannot hold.
+	// and from the keyboard (hold Space or Enter). A plain activation from
+	// assistive tech arrives as a click with detail 0, so it opens the confirm
+	// instead of requiring a hold; a real pointer tap has detail 1 and is ignored.
 	function startHold() {
 		if (holdTimer || finished) return;
 		holdTimer = setInterval(() => {
@@ -302,8 +303,12 @@
 	tabindex="-1"
 	use:modal={{ onClose: close, enabled: !asPage }}
 >
-	<div class="mx-auto max-w-2xl px-4 {asPage ? 'pb-10' : 'pb-24'}">
-		<div class="sticky top-0 z-10 -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5" style={asPage ? 'padding-top: calc(env(safe-area-inset-top) + 1.25rem)' : undefined}>
+	<div class="mx-auto max-w-2xl px-4 {asPage ? 'pb-0' : 'pb-24'}">
+		<!-- As a page, the app's own header carries the breadcrumb trail, so the
+		     player does not draw a second Back / Close row and its title block
+		     sits in the page flow rather than sticking under the header. -->
+		<div class="{asPage ? '' : 'sticky top-0 z-10'} -mx-4 border-b border-hairline bg-paper px-4 pb-3 pt-5" style={asPage ? undefined : 'padding-top: calc(env(safe-area-inset-top) + 1.25rem)'}>
+		{#if !asPage}
 		<div class="flex items-center justify-between">
 			<button type="button" onclick={close} class="-ml-2 flex h-11 items-center px-2 text-sm text-steel hover:text-ink">‹ Back</button>
 			<div class="flex items-center gap-1">
@@ -311,6 +316,7 @@
 				<button type="button" onclick={close} class="tap-target rounded-md text-steel hover:text-ink" aria-label="Close">✕</button>
 			</div>
 		</div>
+		{/if}
 		<h1 id={titleId} class="font-display mt-1 text-xl font-bold">{sessionLabel(session)}</h1>
 		<p class="tabular mt-1 text-xs uppercase tracking-widest text-steel">{eyebrow}</p>
 		<div class="mt-2 flex flex-wrap items-center gap-2">
@@ -439,17 +445,11 @@
 							onpointercancel={cancelHold}
 							onkeydown={holdKeyDown}
 							onkeyup={holdKeyUp}
+							onclick={(e) => { if (e.detail === 0) confirmFinish = true; }}
 							class="relative flex-1 overflow-hidden rounded-md border border-hairline-strong px-4 py-2 text-sm text-steel hover:border-ok hover:text-ok-ink"
 						>
 							<span class="absolute inset-y-0 left-0 bg-ok/25 transition-[width] duration-100 ease-linear" style="width: {hold}%" aria-hidden="true"></span>
 							<span class="relative">{hold > 0 ? 'Keep holding…' : 'Hold to finish and log'}</span>
-						</button>
-						<button
-							type="button"
-							onclick={() => (confirmFinish = true)}
-							class="shrink-0 rounded-md border border-hairline px-4 py-2 text-sm text-signal-ink hover:border-signal"
-						>
-							Tap to finish
 						</button>
 					{/if}
 					{#if machine || drill}
