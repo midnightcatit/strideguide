@@ -26,7 +26,13 @@ A plan flows through these stages:
 2. **Generation** (`packages/shared/src/plan/engine.ts`) is deterministic. It picks the phase arc
    (base, build, peak, taper, post-race recovery), builds the weekly volume and long-run curve,
    derives training paces from VDOT, and lays out running, strength and mobility sessions. It
-   computes every distance, pace, duration and count.
+   computes every distance, pace, duration and count. A strength session is full-body with a lean
+   over a fixed lower-body spine (a squat pattern, a hip hinge, knee flexion, calf work), and each
+   set takes its rest from a band by phase and level, written into the sequence as an explicit rest
+   card after every set; the card after a move's final set is the pause before the next move, and
+   the final set of the final move runs into the cool-down, which takes no rest card. The session
+   length the schedule reserves is the sum of its parts, work plus rest. Mobility anchors on the
+   tight area the runner stated, and adds one roaming stretch that varies per session.
 3. **The AI shaping pass** never generates the plan. It reads the engine's plan and chooses within a
    closed set of typed intents: a quality kind and a volume, strength and mobility intent of `ease`,
    `hold` or `build`, plus a short emphasis line. An answer outside the set is dropped. The engine
