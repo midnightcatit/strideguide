@@ -48,7 +48,10 @@
 	// --- the runner's own workouts, from the #301 API ---
 	let customWorkouts = $state<CustomWorkout[]>([]);
 	let customLoading = $state(true);
+	/** A load failure, shown in place of the list with a retry. */
 	let customError = $state<string | null>(null);
+	/** A create, edit or delete failure, shown above the list so the list stays usable. */
+	let mutationError = $state<string | null>(null);
 	let pendingDeleteId = $state<string | null>(null);
 
 	// --- the temporary create and edit form (name and category only) ---
@@ -58,6 +61,11 @@
 	let formCategory = $state<CustomWorkoutCategory>('running');
 	let formSaving = $state(false);
 	let formError = $state<string | null>(null);
+	/**
+	 * Bumped every time a form session starts, so a slow save from an earlier
+	 * session cannot close or change a form opened afterwards.
+	 */
+	let formSession = $state(0);
 
 	onMount(() => {
 		void loadCustomWorkouts();
@@ -150,18 +158,22 @@
 	}
 
 	function openCreate() {
+		formSession += 1;
 		formEditingId = null;
 		formName = '';
 		formCategory = 'running';
 		formError = null;
+		formSaving = false;
 		formOpen = true;
 	}
 
 	function openEdit(workout: CustomWorkout) {
+		formSession += 1;
 		formEditingId = workout.id;
 		formName = workout.name;
 		formCategory = workout.category;
 		formError = null;
+		formSaving = false;
 		formOpen = true;
 	}
 
@@ -182,8 +194,12 @@
 			formError = 'Give the workout a name.';
 			return;
 		}
+		// The session this save belongs to, so a slow reply cannot close or
+		// change a form the runner opened after starting this one.
+		const session = formSession;
 		formSaving = true;
 		formError = null;
+		mutationError = null;
 		try {
 			if (formEditingId) {
 				const existing = customWorkouts.find((w) => w.id === formEditingId);
@@ -199,16 +215,19 @@
 				);
 				customWorkouts = [...customWorkouts, workout];
 			}
-			closeForm();
+			if (formSession === session) closeForm();
 		} catch (e) {
-			formError = e instanceof Error ? e.message : 'Could not save the workout. Try again.';
+			if (formSession === session) {
+				formError = e instanceof Error ? e.message : 'Could not save the workout. Try again.';
+			}
 		} finally {
-			formSaving = false;
+			if (formSession === session) formSaving = false;
 		}
 	}
 
 	async function confirmDelete(id: string) {
 		pendingDeleteId = null;
+		mutationError = null;
 		try {
 			await api.deleteCustomWorkout(id);
 			customWorkouts = customWorkouts.filter((w) => w.id !== id);
@@ -216,7 +235,7 @@
 				favoriteWorkouts = favoriteWorkouts.filter((f) => f !== id);
 			}
 		} catch (e) {
-			customError = e instanceof Error ? e.message : 'Could not delete the workout. Try again.';
+			mutationError = e instanceof Error ? e.message : 'Could not delete the workout. Try again.';
 		}
 	}
 </script>
@@ -414,7 +433,8 @@
 			<button
 				type="button"
 				onclick={openCreate}
-				class="flex min-h-11 items-center gap-1 rounded-lg border border-dashed border-hairline-strong px-3 text-xs font-medium text-signal-ink hover:border-signal"
+				disabled={customLoading}
+				class="flex min-h-11 items-center gap-1 rounded-lg border border-dashed border-hairline-strong px-3 text-xs font-medium text-signal-ink hover:border-signal disabled:opacity-60"
 			>
 				＋ New workout
 			</button>
@@ -471,10 +491,23 @@
 			</div>
 		{/if}
 
+		{#if mutationError}
+			<p role="alert" class="mt-2 text-xs text-danger">{mutationError}</p>
+		{/if}
+
 		{#if customLoading}
 			<p class="mt-2 text-xs text-steel">Loading your workouts...</p>
 		{:else if customError}
-			<p class="mt-2 text-xs text-danger">{customError}</p>
+			<div class="mt-2 flex items-center gap-2">
+				<p class="text-xs text-danger">{customError}</p>
+				<button
+					type="button"
+					onclick={() => void loadCustomWorkouts()}
+					class="min-h-11 shrink-0 rounded-lg border border-hairline px-3 text-xs text-steel hover:border-steel"
+				>
+					Try again
+				</button>
+			</div>
 		{:else if shownCustom.length === 0}
 			<p class="mt-2 text-xs text-steel">
 				{workoutQ || workoutFilter !== 'all'
