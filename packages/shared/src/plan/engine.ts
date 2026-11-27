@@ -2366,7 +2366,7 @@ function composedMobilitySession(
 		slot,
 		modality: 'mobility',
 		type: 'mobility',
-		title: `${FOCUS_AREA_TITLE[focus]}, ${minutes} minutes`,
+		title: FOCUS_AREA_TITLE[focus],
 		purpose:
 			focus === 'general'
 				? 'Range of motion across the areas running tightens, at the same holds every session, with one stretch that covers another area.'

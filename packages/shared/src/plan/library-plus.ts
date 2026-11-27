@@ -14,7 +14,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Running: more quality sessions ----------------------------------
 	{
 		id: 'ladder-intervals-60',
-		title: 'Ladder intervals, 60 minutes',
+		title: 'Ladder intervals',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 60,
@@ -88,7 +88,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'short-30-15-intervals-40',
-		title: '30/15 short intervals, 40 minutes',
+		title: '30/15 short intervals',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 40,
@@ -135,7 +135,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'tabata-run-35',
-		title: 'Tabata-style run, 35 minutes',
+		title: 'Tabata-style run',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 35,
@@ -173,7 +173,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'pyramid-fartlek-45',
-		title: 'Pyramid fartlek, 45 minutes',
+		title: 'Pyramid fartlek',
 		modality: 'running',
 		type: 'fartlek',
 		durationMin: 45,
@@ -213,7 +213,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'progression-long-run-90',
-		title: 'Progression long run, 90 minutes',
+		title: 'Progression long run',
 		modality: 'running',
 		type: 'long',
 		durationMin: 90,
@@ -243,7 +243,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'marathon-simulation-120',
-		title: 'Marathon simulation, 120 minutes',
+		title: 'Marathon simulation',
 		modality: 'running',
 		type: 'race-pace',
 		durationMin: 120,
@@ -285,7 +285,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Running: form and drills ----------------------------------------
 	{
 		id: 'posture-drills-20',
-		title: 'Posture and lean drills, 20 minutes',
+		title: 'Posture and lean drills',
 		modality: 'mobility',
 		type: 'drills',
 		durationMin: 20,
@@ -327,7 +327,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'cadence-quick-feet-drills-20',
-		title: 'Cadence and quick feet, 20 minutes',
+		title: 'Cadence and quick feet',
 		modality: 'mobility',
 		type: 'drills',
 		durationMin: 20,
@@ -374,7 +374,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'elastic-bounds-hops-20',
-		title: 'Elastic bounds and hops, 20 minutes',
+		title: 'Elastic bounds and hops',
 		modality: 'mobility',
 		type: 'drills',
 		durationMin: 20,
@@ -417,7 +417,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Strength --------------------------------------------------------
 	{
 		id: 'glute-hip-strength-30',
-		title: 'Glute and hip strength, 30 minutes',
+		title: 'Glute and hip strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -455,7 +455,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'posterior-chain-strength-35',
-		title: 'Posterior chain strength, 35 minutes',
+		title: 'Posterior chain strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 35,
@@ -492,7 +492,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'single-leg-strength-35',
-		title: 'Single-leg strength and balance, 35 minutes',
+		title: 'Single-leg strength and balance',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 35,
@@ -533,7 +533,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'plyometric-power-30',
-		title: 'Plyometric power, 30 minutes',
+		title: 'Plyometric power',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -564,7 +564,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'upper-body-strength-30',
-		title: 'Upper body strength, 30 minutes',
+		title: 'Upper body strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -596,7 +596,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'groin-adductor-strength-25',
-		title: 'Groin and adductor strength, 25 minutes',
+		title: 'Groin and adductor strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 25,
@@ -641,7 +641,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Cross-training --------------------------------------------------
 	{
 		id: 'bike-tempo-45',
-		title: 'Steady bike tempo, 45 minutes',
+		title: 'Steady bike tempo',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 45,
@@ -668,7 +668,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'road-bike-endurance-75',
-		title: 'Road bike endurance, 75 minutes',
+		title: 'Road bike endurance',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 75,
@@ -689,7 +689,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'row-intervals-25',
-		title: 'Row intervals, 25 minutes',
+		title: 'Row intervals',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 25,
@@ -718,7 +718,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'stair-climb-intervals-25',
-		title: 'Stair climb intervals, 25 minutes',
+		title: 'Stair climb intervals',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 25,
@@ -746,7 +746,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'ski-erg-intervals-30',
-		title: 'Ski erg intervals, 30 minutes',
+		title: 'Ski erg intervals',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 30,
@@ -774,7 +774,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'cross-country-ski-60',
-		title: 'Cross-country ski, 60 minutes',
+		title: 'Cross-country ski',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 60,
@@ -795,7 +795,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'aqua-run-maintenance-45',
-		title: 'Aqua run maintenance, 45 minutes',
+		title: 'Aqua run maintenance',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 45,
@@ -833,7 +833,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Mobility --------------------------------------------------------
 	{
 		id: 'dynamic-warmup-ramp-12',
-		title: 'Dynamic warm-up, 12 minutes',
+		title: 'Dynamic warm-up',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 12,
@@ -878,7 +878,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'pilates-core-25',
-		title: 'Pilates core control, 25 minutes',
+		title: 'Pilates core control',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 25,
@@ -921,7 +921,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Fun and viral formats (wave-6) ----------------------------------
 	{
 		id: 'ten-twenty-thirty-35',
-		title: '10-20-30 intervals, 35 minutes',
+		title: '10-20-30 intervals',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 35,
@@ -950,7 +950,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'ruck-walk-40',
-		title: 'Ruck walk, 40 minutes',
+		title: 'Ruck walk',
 		modality: 'walking',
 		type: 'walk',
 		durationMin: 40,
@@ -972,7 +972,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'cozy-cardio-30',
-		title: 'Cozy cardio, 30 minutes',
+		title: 'Cozy cardio',
 		modality: 'walking',
 		type: 'walk',
 		durationMin: 30,
@@ -993,7 +993,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	// ---- Gym equipment coverage (wave-6) ---------------------------------
 	{
 		id: 'recumbent-bike-35',
-		title: 'Recumbent bike, 35 minutes',
+		title: 'Recumbent bike',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 35,
@@ -1013,7 +1013,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'recumbent-stepper-30',
-		title: 'Recumbent stepper, 30 minutes',
+		title: 'Recumbent stepper',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 30,
@@ -1032,7 +1032,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'arm-ergometer-30',
-		title: 'Arm ergometer intervals, 30 minutes',
+		title: 'Arm ergometer intervals',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 30,
@@ -1061,7 +1061,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'arc-trainer-35',
-		title: 'Arc trainer, 35 minutes',
+		title: 'Arc trainer',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 35,
@@ -1080,7 +1080,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'functional-gym-circuit-35',
-		title: 'Functional gym circuit, 35 minutes',
+		title: 'Functional gym circuit',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 35,

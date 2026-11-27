@@ -12,7 +12,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	// ---- Running: quality sessions ---------------------------------------
 	{
 		id: 'norwegian-4x4-45',
-		title: 'Norwegian 4x4, 45 minutes',
+		title: 'Norwegian 4x4',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 45,
@@ -59,7 +59,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'cruise-intervals-55',
-		title: 'Cruise intervals, 55 minutes',
+		title: 'Cruise intervals',
 		modality: 'running',
 		type: 'threshold',
 		durationMin: 55,
@@ -96,7 +96,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'yasso-800s-50',
-		title: 'Yasso 800s, 50 minutes',
+		title: 'Yasso 800s',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 50,
@@ -137,7 +137,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'marathon-pace-run-70',
-		title: 'Marathon pace run, 70 minutes',
+		title: 'Marathon pace run',
 		modality: 'running',
 		type: 'race-pace',
 		durationMin: 70,
@@ -166,7 +166,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'half-marathon-pace-60',
-		title: 'Half-marathon pace run, 60 minutes',
+		title: 'Half-marathon pace run',
 		modality: 'running',
 		type: 'race-pace',
 		durationMin: 60,
@@ -195,7 +195,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'cut-down-run-50',
-		title: 'Cut-down run, 50 minutes',
+		title: 'Cut-down run',
 		modality: 'running',
 		type: 'progression',
 		durationMin: 50,
@@ -225,7 +225,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'broken-tempo-45',
-		title: 'Broken tempo, 45 minutes',
+		title: 'Broken tempo',
 		modality: 'running',
 		type: 'tempo',
 		durationMin: 45,
@@ -252,7 +252,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'pyramid-intervals-50',
-		title: 'Pyramid intervals, 50 minutes',
+		title: 'Pyramid intervals',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 50,
@@ -287,7 +287,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'short-rep-200s-35',
-		title: 'Short-rep speed, 35 minutes',
+		title: 'Short-rep speed',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 35,
@@ -316,7 +316,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hill-strides-35',
-		title: 'Hill strides, 35 minutes',
+		title: 'Hill strides',
 		modality: 'running',
 		type: 'hills',
 		durationMin: 35,
@@ -351,7 +351,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'downhill-reps-45',
-		title: 'Downhill reps, 45 minutes',
+		title: 'Downhill reps',
 		modality: 'running',
 		type: 'hills',
 		durationMin: 45,
@@ -411,7 +411,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	// ---- Running: form and drills ----------------------------------------
 	{
 		id: 'running-drills-form-25',
-		title: 'Running drills and form, 25 minutes',
+		title: 'Running drills and form',
 		modality: 'mobility',
 		type: 'drills',
 		durationMin: 25,
@@ -457,7 +457,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	// ---- Cross-training ---------------------------------------------------
 	{
 		id: 'easy-spin-flush-ride-40',
-		title: 'Easy spin flush ride, 40 minutes',
+		title: 'Easy spin flush ride',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 40,
@@ -483,7 +483,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'bike-threshold-45',
-		title: 'Bike threshold intervals, 45 minutes',
+		title: 'Bike threshold intervals',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 45,
@@ -512,7 +512,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'deep-water-running-40',
-		title: 'Deep water running, 40 minutes',
+		title: 'Deep water running',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 40,
@@ -545,7 +545,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'easy-swim-30',
-		title: 'Easy swim, 30 minutes',
+		title: 'Easy swim',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 30,
@@ -571,7 +571,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'steady-row-30',
-		title: 'Steady row, 30 minutes',
+		title: 'Steady row',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 30,
@@ -597,7 +597,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'elliptical-easy-35',
-		title: 'Elliptical, 35 minutes',
+		title: 'Elliptical',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 35,
@@ -619,7 +619,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'incline-walk-40',
-		title: 'Incline treadmill walk, 40 minutes',
+		title: 'Incline treadmill walk',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 40,
@@ -646,7 +646,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'stair-climber-25',
-		title: 'Stair climber, 25 minutes',
+		title: 'Stair climber',
 		modality: 'recovery',
 		type: 'cross-train',
 		durationMin: 25,
@@ -675,7 +675,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	// ---- Strength: home, dumbbell, kettlebell, bands ---------------------
 	{
 		id: 'dumbbell-full-body-35',
-		title: 'Dumbbell full-body, 35 minutes',
+		title: 'Dumbbell full-body',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 35,
@@ -723,7 +723,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'kettlebell-power-30',
-		title: 'Kettlebell power, 30 minutes',
+		title: 'Kettlebell power',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -763,7 +763,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'band-home-strength-30',
-		title: 'Band and home strength, 30 minutes',
+		title: 'Band and home strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -803,7 +803,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'runner-core-20',
-		title: 'Runner core, 20 minutes',
+		title: 'Runner core',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 20,
@@ -837,7 +837,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hamstring-calf-strength-30',
-		title: 'Hamstring and calf strength, 30 minutes',
+		title: 'Hamstring and calf strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -883,7 +883,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	// ---- Mobility and flexibility ----------------------------------------
 	{
 		id: 'flexibility-long-holds-25',
-		title: 'Flexibility, 25 minutes',
+		title: 'Flexibility',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 25,
@@ -941,7 +941,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'yoga-wind-down-20',
-		title: 'Yoga wind-down, 20 minutes',
+		title: 'Yoga wind-down',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 20,
@@ -995,7 +995,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	// ---- Recovery --------------------------------------------------------
 	{
 		id: 'full-body-foam-roll-15',
-		title: 'Full-body foam roll, 15 minutes',
+		title: 'Full-body foam roll',
 		modality: 'recovery',
 		type: 'recovery',
 		durationMin: 15,
@@ -1027,7 +1027,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'breath-and-settle-10',
-		title: 'Breathe and settle, 10 minutes',
+		title: 'Breathe and settle',
 		modality: 'recovery',
 		type: 'recovery',
 		durationMin: 10,

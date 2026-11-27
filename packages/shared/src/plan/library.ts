@@ -37,7 +37,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	// ---- Walks ------------------------------------------------------------
 	{
 		id: 'brisk-walk-30',
-		title: 'Brisk walk, 30 minutes',
+		title: 'Brisk walk',
 		modality: 'walking',
 		type: 'walk',
 		durationMin: 30,
@@ -64,7 +64,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hill-walk-40',
-		title: 'Hill walk, 40 minutes',
+		title: 'Hill walk',
 		modality: 'walking',
 		type: 'walk',
 		durationMin: 40,
@@ -89,7 +89,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'recovery-walk-20',
-		title: 'Recovery walk, 20 minutes',
+		title: 'Recovery walk',
 		modality: 'walking',
 		type: 'walk',
 		durationMin: 20,
@@ -107,7 +107,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'walk-run-intro-25',
-		title: 'Walk-run intro, 25 minutes',
+		title: 'Walk-run intro',
 		modality: 'running',
 		type: 'walk-run',
 		durationMin: 25,
@@ -140,7 +140,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	// ---- Runs -------------------------------------------------------------
 	{
 		id: 'easy-run-30',
-		title: 'Easy run, 30 minutes',
+		title: 'Easy run',
 		modality: 'running',
 		type: 'easy',
 		durationMin: 30,
@@ -161,7 +161,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'easy-run-45',
-		title: 'Easy run, 45 minutes',
+		title: 'Easy run',
 		modality: 'running',
 		type: 'easy',
 		durationMin: 45,
@@ -179,7 +179,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'recovery-jog-20',
-		title: 'Recovery jog, 20 minutes',
+		title: 'Recovery jog',
 		modality: 'running',
 		type: 'recovery',
 		durationMin: 20,
@@ -202,7 +202,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'steady-run-40',
-		title: 'Steady run, 40 minutes',
+		title: 'Steady run',
 		modality: 'running',
 		type: 'steady',
 		durationMin: 40,
@@ -228,7 +228,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'long-run-60',
-		title: 'Long run, 60 minutes',
+		title: 'Long run',
 		modality: 'running',
 		type: 'long',
 		durationMin: 60,
@@ -254,7 +254,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'long-run-90',
-		title: 'Long run, 90 minutes',
+		title: 'Long run',
 		modality: 'running',
 		type: 'long',
 		durationMin: 90,
@@ -280,7 +280,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'strides-30',
-		title: 'Easy run with strides, 30 minutes',
+		title: 'Easy run with strides',
 		modality: 'running',
 		type: 'strides',
 		durationMin: 30,
@@ -315,7 +315,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'fartlek-35',
-		title: 'Fartlek, 35 minutes',
+		title: 'Fartlek',
 		modality: 'running',
 		type: 'fartlek',
 		durationMin: 35,
@@ -350,7 +350,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'tempo-30',
-		title: 'Tempo run, 30 minutes',
+		title: 'Tempo run',
 		modality: 'running',
 		type: 'tempo',
 		durationMin: 30,
@@ -379,7 +379,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'threshold-intervals-40',
-		title: 'Threshold intervals, 40 minutes',
+		title: 'Threshold intervals',
 		modality: 'running',
 		type: 'threshold',
 		durationMin: 40,
@@ -414,7 +414,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'vo2-intervals-40',
-		title: 'Hard intervals, 40 minutes',
+		title: 'Hard intervals',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 40,
@@ -455,7 +455,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hill-reps-40',
-		title: 'Hill reps, 40 minutes',
+		title: 'Hill reps',
 		modality: 'running',
 		type: 'hills',
 		durationMin: 40,
@@ -493,7 +493,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'progression-run-40',
-		title: 'Progression run, 40 minutes',
+		title: 'Progression run',
 		modality: 'running',
 		type: 'progression',
 		durationMin: 40,
@@ -527,7 +527,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	// ---- Strength (bodyweight) -------------------------------------------
 	{
 		id: 'bodyweight-full-body-25',
-		title: 'Full-body bodyweight circuit, 25 minutes',
+		title: 'Full-body bodyweight circuit',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 25,
@@ -564,7 +564,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'lower-body-strength-30',
-		title: 'Lower-body strength, 30 minutes',
+		title: 'Lower-body strength',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 30,
@@ -606,7 +606,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'upper-core-20',
-		title: 'Upper body and core, 20 minutes',
+		title: 'Upper body and core',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 20,
@@ -637,7 +637,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'runners-strength-40',
-		title: "Runner's strength, 40 minutes",
+		title: "Runner's strength",
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 40,
@@ -672,7 +672,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	// ---- Mobility and stretching ------------------------------------------
 	{
 		id: 'pre-run-warmup-10',
-		title: 'Pre-run warm-up, 10 minutes',
+		title: 'Pre-run warm-up',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 10,
@@ -716,7 +716,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'post-run-cooldown-12',
-		title: 'Post-run stretch, 12 minutes',
+		title: 'Post-run stretch',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 12,
@@ -770,7 +770,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'full-body-mobility-20',
-		title: 'Full-body mobility, 20 minutes',
+		title: 'Full-body mobility',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 20,
@@ -816,7 +816,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hips-glutes-15',
-		title: 'Hips and glutes, 15 minutes',
+		title: 'Hips and glutes',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 15,
@@ -862,7 +862,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hamstrings-calves-15',
-		title: 'Hamstrings and calves, 15 minutes',
+		title: 'Hamstrings and calves',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 15,
@@ -903,7 +903,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'upper-back-shoulders-15',
-		title: 'Upper back and shoulders, 15 minutes',
+		title: 'Upper back and shoulders',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 15,
@@ -944,7 +944,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'desk-break-8',
-		title: 'Desk-break mobility, 8 minutes',
+		title: 'Desk-break mobility',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 8,
@@ -975,7 +975,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'mobility-stretch-8',
-		title: 'Mobility and stretching, 8 minutes',
+		title: 'Mobility and stretching',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 8,
@@ -990,7 +990,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'mobility-stretch-12',
-		title: 'Mobility and stretching, 12 minutes',
+		title: 'Mobility and stretching',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 12,
@@ -1007,7 +1007,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	// ---- Recovery ---------------------------------------------------------
 	{
 		id: 'foam-roll-breathe-10',
-		title: 'Foam roll and breathe, 10 minutes',
+		title: 'Foam roll and breathe',
 		modality: 'recovery',
 		type: 'recovery',
 		durationMin: 10,
@@ -1039,7 +1039,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'walk-and-breathe-20',
-		title: 'Walk and breathe, 20 minutes',
+		title: 'Walk and breathe',
 		modality: 'recovery',
 		type: 'recovery',
 		durationMin: 20,
@@ -1108,7 +1108,7 @@ const BUILD_MOBILITY: LibraryWorkout[] = (
 	] as { focus: StretchFocus; summary: string; purpose: string }[]
 ).map((entry) => ({
 	id: `mobility-build-${entry.focus}`,
-	title: `${FOCUS_AREA_TITLE[entry.focus]}, 20 minutes`,
+	title: FOCUS_AREA_TITLE[entry.focus],
 	modality: 'mobility',
 	type: 'mobility',
 	durationMin: 20,

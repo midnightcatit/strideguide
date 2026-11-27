@@ -57,7 +57,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'track-400m-repeats-45',
-		title: '400 m repeats, 45 minutes',
+		title: '400 m repeats',
 		modality: 'running',
 		type: 'interval',
 		durationMin: 45,
@@ -88,7 +88,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'kenyan-hills-45',
-		title: 'Kenyan hills, 45 minutes',
+		title: 'Kenyan hills',
 		modality: 'running',
 		type: 'hills',
 		durationMin: 45,
@@ -128,7 +128,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'mile-repeats-50',
-		title: 'Mile repeats, 50 minutes',
+		title: 'Mile repeats',
 		modality: 'running',
 		type: 'threshold',
 		durationMin: 50,
@@ -164,7 +164,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'hill-fartlek-45',
-		title: 'Hill fartlek, 45 minutes',
+		title: 'Hill fartlek',
 		modality: 'running',
 		type: 'fartlek',
 		durationMin: 45,
@@ -205,7 +205,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'lsd-long-slow-distance-120',
-		title: 'Long slow distance, 2 hours',
+		title: 'Long slow distance',
 		modality: 'running',
 		type: 'long',
 		durationMin: 120,
@@ -236,7 +236,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	// ---- Strength: named routines ----------------------------------------
 	{
 		id: 'five-by-five-full-body-60',
-		title: 'Five by five, full body, 60 minutes',
+		title: 'Five by five, full body',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 60,
@@ -314,7 +314,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'nordic-hamstring-and-calf-25',
-		title: 'Nordic and calf, 25 minutes',
+		title: 'Nordic and calf',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 25,
@@ -383,7 +383,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'medicine-ball-power-25',
-		title: 'Medicine ball power, 25 minutes',
+		title: 'Medicine ball power',
 		modality: 'strength',
 		type: 'full-body-strength',
 		durationMin: 25,
@@ -427,7 +427,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	// ---- Mobility: named routines ----------------------------------------
 	{
 		id: 'yoga-for-runners-25',
-		title: 'Yoga for runners, 25 minutes',
+		title: 'Yoga for runners',
 		modality: 'mobility',
 		type: 'mobility',
 		durationMin: 25,
@@ -525,7 +525,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	},
 	{
 		id: 'race-day-warmup-20',
-		title: 'Race day warm-up, 20 minutes',
+		title: 'Race day warm-up',
 		modality: 'mobility',
 		type: 'drills',
 		durationMin: 20,
@@ -584,7 +584,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 	// ---- Recovery: named routine -----------------------------------------
 	{
 		id: 'shakeout-jog-25',
-		title: 'Shakeout jog, 25 minutes',
+		title: 'Shakeout jog',
 		modality: 'running',
 		type: 'recovery',
 		durationMin: 25,
