@@ -51,6 +51,33 @@ budget. Stored sessions that predate the change get rest cards at load time
 
 ---
 
+## Plan warnings reach the runner
+
+2026-11-27
+
+Decided: the engine's `meta.warnings` are stored on the plan's params at
+generation and shown on the plan overview as written, and the preview rebuild's
+warnings ride on the preview response and show in onboarding on the screens the
+runner lands on after the rebuild. This supersedes the follow-up note in "A
+mid-week start opens with a short week, and the week floor follows the goal and
+the runner", which said the rebuild warning is returned but not shown; it is
+shown now.
+
+Why: both warning sources were computed and then dropped. The generate route
+built params without the engine's notes, and the preview route read only the
+weeks out of the rebuild. The notes are already plain sentences about the plan,
+so the surfaces show them as written, with no new wording of our own
+(`apps/api/src/routes/plans.ts`, `apps/web/src/routes/progress/plan/+page.svelte`,
+`apps/web/src/routes/onboarding/+page.svelte`).
+
+Rules out: a warning the engine or the rebuild computed that never reaches the
+runner, and reworded or invented warnings on the client. The stored engine
+warnings stay the ones from generation: a preview rebuild does not re-derive
+them, because the rebuild's own engine pass sits inside `rebuildFromWeekOne` and
+its meta is not returned.
+
+---
+
 ## Every PR waits for a complete CodeRabbit review before merge
 
 2026-11-27

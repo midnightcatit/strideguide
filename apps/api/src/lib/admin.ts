@@ -116,6 +116,7 @@ export const RATE_LIMIT_POLICIES: Record<string, { limit: number; windowSec: num
 	'generate:': { limit: 20, windowSec: 3600 },
 	'adapt:': { limit: 30, windowSec: 3600 },
 	'preview:': { limit: 30, windowSec: 3600 },
+	'insight:': { limit: 20, windowSec: 3600 },
 	'clienterr:': { limit: 60, windowSec: 3600 },
 	'ai:': { limit: 40, windowSec: 3600 },
 	'jev:': { limit: 40, windowSec: 3600 },

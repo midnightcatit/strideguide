@@ -1229,8 +1229,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		buildWeeks = clamp(rawWeeks, 1, 30);
 		raceWeekIndex = Math.floor(spanDays / 7);
 		if (rawWeeks < 4) {
+			// No total is claimed: the easy weeks that follow the race depend on the
+			// goal profile, so a count here would be wrong for most of them.
 			warnings.push(
-				'Your race is under four weeks away, so this plan runs for four. Treat it as a sharpening block more than a build.',
+				'Your race is under four weeks away, so this plan keeps the training short and adds easy weeks after the race. Treat it as a sharpening block more than a build.',
 			);
 		} else if (rawWeeks > 30) {
 			warnings.push(

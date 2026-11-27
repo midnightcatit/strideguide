@@ -30,6 +30,7 @@ import type { RecoverySignal } from '@strideguide/shared/plan';
 import type {
 	Baseline,
 	Modality,
+	PlanDraft,
 	PlannedWeek,
 	PlanInput,
 	QualityKind,
@@ -308,6 +309,39 @@ function loadModelState(read?: LoadRead) {
 		applied: read.mode === 'apply' && read.weekIntents.length > 0,
 		...(out ? { status: out.status } : {}),
 	};
+}
+
+/**
+ * The params JSON stored on a new plan: the engine's numbers, the review text
+ * and the load model's read, plus the engine's own warnings when it left any.
+ * Existing JSON column, so no schema change. The warnings ride back with the
+ * plan on GET /current and the plan overview reads them there.
+ */
+export function planParams(draft: PlanDraft, review: { text: string }, loadRead?: LoadRead) {
+	return {
+		vdot: draft.meta.vdot ?? null,
+		baseWeeklyKm: draft.meta.baseWeeklyKm,
+		totalWeeks: draft.meta.totalWeeks,
+		// The plan review shown in the review step. Unit-free, so it reads the
+		// same whatever units the runner later picks.
+		review: review.text,
+		// The engine's own notes about how the plan was shaped, when it left any.
+		...(draft.meta.warnings?.length ? { warnings: draft.meta.warnings } : {}),
+		// The load model's read, when it ran. Shadow records without applying.
+		...(loadModelState(loadRead) ? { loadModel: loadModelState(loadRead) } : {}),
+	};
+}
+
+/**
+ * The preview response body: the plan exactly as GET /current returns it, plus
+ * the rebuild's warnings when it left any, so the client can say what the
+ * rebuild did with the edited week one. No key when there is nothing to say.
+ */
+export function previewResponse<T extends object>(
+	current: T,
+	rebuildWarnings: string[],
+): T & { warnings?: string[] } {
+	return rebuildWarnings.length ? { ...current, warnings: rebuildWarnings } : current;
 }
 
 /**
@@ -989,16 +1023,7 @@ plans.post(
 			version: 1,
 			generatedAt: new Date(),
 			model: usedAi ? 'engine+ai' : 'engine',
-			params: {
-				vdot: draft.meta.vdot ?? null,
-				baseWeeklyKm: draft.meta.baseWeeklyKm,
-				totalWeeks: draft.meta.totalWeeks,
-				// The plan review shown in the review step. Unit-free, so it reads the
-				// same whatever units the runner later picks.
-				review: review.text,
-				// The load model's read, when it ran. Shadow records without applying.
-				...(loadModelState(loadRead) ? { loadModel: loadModelState(loadRead) } : {}),
-			},
+			params: planParams(draft, review, loadRead),
 			status: 'active',
 		});
 
@@ -1446,7 +1471,9 @@ async function replaceWeekOneSessions(db: Db, weekId: string, sessions: PreviewS
  * then the model shapes them within the profile's rules. Best-effort AI: when it
  * is unavailable the deterministic rebuild still stands. Week one is never
  * rewritten by the rebuild. Returns the current plan, the same shape as GET
- * /current, so the client can carry on.
+ * /current, so the client can carry on, plus the rebuild's warnings when it
+ * left any (for instance a week one too heavy to build from), so the client can
+ * say what the rebuild did.
  */
 plans.post(
 	'/preview',
@@ -1577,7 +1604,7 @@ plans.post(
 			})),
 			weekOne: pattern,
 		});
-		const { weeks: rebuilt } = rebuildFromWeekOne({
+		const { weeks: rebuilt, warnings: rebuildWarnings } = rebuildFromWeekOne({
 			existingWeeks,
 			weekOne: sessions,
 			plan: planInput,
@@ -1640,7 +1667,7 @@ plans.post(
 		// Narrate the rebuilt weeks after responding, so the user never waits.
 		c.executionCtx.waitUntil(narrateAndStore(c.env, db, weekRows));
 
-		return c.json(await currentPlanJson(db, user.id));
+		return c.json(previewResponse(await currentPlanJson(db, user.id), rebuildWarnings));
 	},
 );
 

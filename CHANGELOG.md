@@ -4,6 +4,9 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-27
+- research(wave-7): strength session structure and stretch dosing evidence (#294)
+- Surface plan warnings to the runner (#292)
+- fix(admin): add the missing insight rate-limit policy and keep the map in sync (#291)
 - docs(agents): wait for CodeRabbit and clear addressable artifacts before merging (#290)
 - fix(web): player nav, one finish control, full-screen map (#289)
 - chore(review): add CodeRabbit config and review documents (#288)

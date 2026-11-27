@@ -136,7 +136,14 @@ export interface CurrentPlan {
 		targetDate: string | null;
 		baseline?: Record<string, unknown> | null;
 	} | null;
-	plan: { id: string; params: Record<string, unknown> | null } | null;
+	plan: {
+		id: string;
+		/**
+		 * The generation params. The engine's own warnings about how the plan was
+		 * shaped ride here when it left any, so a plan surface can show them.
+		 */
+		params: ({ warnings?: string[] } & Record<string, unknown>) | null;
+	} | null;
 	weeks: ClientWeek[];
 	logs: ClientLog[];
 	/** Per-session started or skipped state, kept on the server. */
