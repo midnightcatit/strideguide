@@ -41,23 +41,16 @@ export interface ModalParams {
 }
 
 /**
- * Svelte action for full-screen overlays: Escape to close, background scroll lock,
- * focus moved in and returned on close, and a simple focus trap.
+ * Svelte action for a focus trap. Focus moves onto the overlay's panel on open,
+ * or its first real control when no panel is marked, Tab wraps at the ends so
+ * focus can never wander into the page behind, and focus returns to whatever
+ * held it before on close.
  *
- * Pass a function for the plain overlay case, or an object to switch the trap off
- * for a view that is a real page rather than an overlay.
+ * `modal` composes this with its scroll lock, background hiding and Escape
+ * handling. An anchored popover uses it on its own, so the page around the
+ * popover stays live while the popover still contains the keyboard.
  */
-export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
-	let onClose = typeof params === 'function' ? params : params.onClose;
-	const enabled = typeof params === 'function' ? true : (params.enabled ?? true);
-	if (!enabled) {
-		return {
-			update(next: (() => void) | ModalParams) {
-				onClose = typeof next === 'function' ? next : next.onClose;
-			},
-			destroy() {},
-		};
-	}
+export function focusTrap(node: HTMLElement) {
 	const previouslyFocused = (
 		typeof document !== 'undefined' ? document.activeElement : null
 	) as HTMLElement | null;
@@ -93,6 +86,59 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 			return;
 		}
 		(focusable()[0] ?? node).focus?.();
+	}
+
+	function onKeydown(e: KeyboardEvent) {
+		if (e.key !== 'Tab') return;
+		const els = focusable();
+		if (els.length === 0) return;
+		const first = els[0]!;
+		const last = els[els.length - 1]!;
+		const active = document.activeElement;
+		// Tab can start on the panel itself (or the container), which is not in the
+		// focusable list, so a backward wrap is anchored on those too.
+		const atStart = active === first || active === panel() || active === node;
+		if (e.shiftKey && atStart) {
+			e.preventDefault();
+			last.focus();
+		} else if (!e.shiftKey && active === last) {
+			e.preventDefault();
+			first.focus();
+		}
+	}
+
+	if (typeof document !== 'undefined') {
+		document.addEventListener('keydown', onKeydown);
+		// Focus before the caller hides the background, so aria-hidden is never put
+		// on an ancestor of the focused element (which browsers block and warn about).
+		focusIn();
+	}
+
+	return {
+		destroy() {
+			if (typeof document !== 'undefined') document.removeEventListener('keydown', onKeydown);
+			previouslyFocused?.focus?.();
+		},
+	};
+}
+
+/**
+ * Svelte action for full-screen overlays: Escape to close, background scroll lock,
+ * focus moved in and returned on close, and a simple focus trap (see `focusTrap`).
+ *
+ * Pass a function for the plain overlay case, or an object to switch the trap off
+ * for a view that is a real page rather than an overlay.
+ */
+export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
+	let onClose = typeof params === 'function' ? params : params.onClose;
+	const enabled = typeof params === 'function' ? true : (params.enabled ?? true);
+	if (!enabled) {
+		return {
+			update(next: (() => void) | ModalParams) {
+				onClose = typeof next === 'function' ? next : next.onClose;
+			},
+			destroy() {},
+		};
 	}
 
 	/**
@@ -135,32 +181,16 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 		if (e.key === 'Escape') {
 			e.preventDefault();
 			onClose();
-			return;
-		}
-		if (e.key !== 'Tab') return;
-		const els = focusable();
-		if (els.length === 0) return;
-		const first = els[0]!;
-		const last = els[els.length - 1]!;
-		const active = document.activeElement;
-		// Tab can start on the panel itself (or the container), which is not in the
-		// focusable list, so a backward wrap is anchored on those too.
-		const atStart = active === first || active === panel() || active === node;
-		if (e.shiftKey && atStart) {
-			e.preventDefault();
-			last.focus();
-		} else if (!e.shiftKey && active === last) {
-			e.preventDefault();
-			first.focus();
 		}
 	}
 
+	let trap: { destroy: () => void } | undefined;
 	if (typeof document !== 'undefined') {
 		document.addEventListener('keydown', onKeydown);
 		lockScroll();
-		// Focus before hiding the background, so aria-hidden is never put on an
-		// ancestor of the focused element (which browsers block and warn about).
-		focusIn();
+		// The trap moves focus in as it starts, before the background is hidden, so
+		// aria-hidden is never put on an ancestor of the focused element.
+		trap = focusTrap(node);
 		hideBackground();
 	}
 
@@ -173,8 +203,8 @@ export function modal(node: HTMLElement, params: (() => void) | ModalParams) {
 				document.removeEventListener('keydown', onKeydown);
 				unlockScroll();
 				showBackground();
+				trap?.destroy();
 			}
-			previouslyFocused?.focus?.();
 		},
 	};
 }

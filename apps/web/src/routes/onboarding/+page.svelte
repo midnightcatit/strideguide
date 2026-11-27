@@ -8,12 +8,12 @@
 	import ScheduleGrid from '$lib/components/ScheduleGrid.svelte';
 	import FavoritePicker from '$lib/components/FavoritePicker.svelte';
 	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
-	import SessionDetail from '$lib/components/SessionDetail.svelte';
 	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, type LibraryWorkout } from '@strideguide/shared/plan';
+	import { previewCategory, PREVIEW_CATEGORY_BLURB, PREVIEW_CATEGORY_LABEL } from '@strideguide/shared/plan';
 	import { milesToKm, type ScheduleBlock } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { modal } from '$lib/actions';
+	import { anchor, focusTrap, modal } from '$lib/actions';
 	import { dragToDay } from '$lib/actions';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setSchedule, setUnits, setVitals } from '$lib/prefs.svelte';
@@ -123,15 +123,18 @@
 
 	let draft = $state<CurrentPlan | null>(null);
 	let pickerDate = $state<string | null>(null);
-	let previewDetail = $state<ClientSession | null>(null);
+	// The tile whose category blurb is open, with the tile element to anchor to.
+	// The preview never opens the full session detail from here; a tap explains
+	// the category and the session page keeps the drill-in.
+	let previewInfo = $state<{ id: string; anchor: HTMLElement } | null>(null);
 
-	// The preview keeps WorkoutPicker and SessionDetail as overlays here, so the
-	// in-progress onboarding answers stay put. Back closes the top one instead of
-	// leaving the flow.
+	// The preview keeps WorkoutPicker and the category popover as overlays here,
+	// so the in-progress onboarding answers stay put. Back closes the top one
+	// instead of leaving the flow.
 	overlayHistory(
-		() => !!(pickerDate || previewDetail),
+		() => !!(pickerDate || previewInfo),
 		() => {
-			if (previewDetail) previewDetail = null;
+			if (previewInfo) previewInfo = null;
 			else pickerDate = null;
 		},
 	);
@@ -630,13 +633,58 @@
 	}
 	function moveSession(s: ClientSession, day: number) {
 		const d = Math.min(6, Math.max(0, day));
-		if (s.day !== d) s.day = d;
+		if (s.day !== d) {
+			// A moved tile keeps its id but its row is re-rendered, so the open
+			// popover would point at a detached tile. Close it on the drop.
+			if (previewInfo?.id === s.id) previewInfo = null;
+			s.day = d;
+		}
 	}
 	function removeSession(s: ClientSession) {
+		if (previewInfo?.id === s.id) previewInfo = null;
 		const week = draft?.weeks[0];
 		if (!week) return;
 		week.sessions = week.sessions.filter((x) => x.id !== s.id);
 	}
+	// The tile's popover: a tap explains the category, never the workout itself.
+	// A second tap on the same tile closes it, the way the info buttons toggle, so
+	// the card is never left open with focus parked on the tile outside it. The
+	// tile takes focus before the first open, so the focus trap hands focus back
+	// here when the card closes.
+	function openPreviewInfo(s: ClientSession, el: HTMLElement) {
+		if (previewInfo?.id === s.id) {
+			previewInfo = null;
+			return;
+		}
+		el.focus();
+		previewInfo = { id: s.id, anchor: el };
+	}
+	// The session the open popover points at, so a move or a removal keeps the
+	// card honest. It is null when the session is gone.
+	const previewInfoSession = $derived(
+		previewInfo ? (draft?.weeks[0]?.sessions ?? []).find((s) => s.id === previewInfo!.id) ?? null : null,
+	);
+	// One popover at a time. A tap outside or Escape closes it, and Back does too
+	// through the overlay history. The card is anchored, not full screen, so the
+	// page around it stays live; only the keyboard is held inside it.
+	$effect(() => {
+		if (!previewInfo) return;
+		const onPointerDown = (e: PointerEvent) => {
+			const target = e.target;
+			if (previewInfo && previewInfo.anchor.contains(target as Node)) return;
+			if (target instanceof Element && target.closest('[data-preview-info-card]')) return;
+			previewInfo = null;
+		};
+		const onKeydown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') previewInfo = null;
+		};
+		document.addEventListener('pointerdown', onPointerDown);
+		document.addEventListener('keydown', onKeydown);
+		return () => {
+			document.removeEventListener('pointerdown', onPointerDown);
+			document.removeEventListener('keydown', onKeydown);
+		};
+	});
 	// The plan stores a session's day as an offset from the week's first day, not
 	// a weekday. Derive it from week one's own start date, so an added workout
 	// lands on the day you picked whatever weekday that week begins on. Reading
@@ -989,7 +1037,7 @@
 		<section class="mx-auto max-w-xl">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
 			<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
-			<p class="mt-2 text-sm text-steel">Take a look at week one. Move a workout to another day, tap one for details, or add and remove sessions. When it looks right, we save this week and rebuild the weeks ahead around it.</p>
+			<p class="mt-2 text-sm text-steel">Take a look at week one. Move a workout to another day, tap one to see what it is for, or add and remove sessions. When it looks right, we save this week and rebuild the weeks ahead around it.</p>
 			<p class="mt-2 text-sm text-steel">Your plan starts {weekdayNameFor(resolvedStartDate)}, {fmtShortDate(resolvedStartDate)}.</p>
 
 			{#if planReview}
@@ -1015,8 +1063,15 @@
 									class="flex touch-manipulation select-none items-center gap-1 rounded-lg border border-hairline bg-paper px-2 py-1 text-sm"
 									use:dragToDay={{ onDropDay: (day) => moveSession(s, day) }}
 								>
-									<button type="button" onclick={() => (previewDetail = s)} class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink" title="Tap for details, drag to move">
-										{s.title ?? s.type}
+									<button
+										type="button"
+										onclick={(e) => openPreviewInfo(s, e.currentTarget)}
+										aria-expanded={previewInfo?.id === s.id}
+										aria-controls={previewInfo?.id === s.id ? 'preview-info-card' : undefined}
+										class="max-w-[10rem] cursor-grab truncate hover:text-signal-ink"
+										title="Tap for what it is, drag to move"
+									>
+										{PREVIEW_CATEGORY_LABEL[previewCategory(s)]}
 									</button>
 									<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-danger">✕</button>
 								</div>
@@ -1029,7 +1084,7 @@
 				{/each}
 			</div>
 
-			<p class="mt-4 text-xs text-steel">On a computer, click and drag a workout to another day. On a phone, press and hold it, then drag. Tap a workout for details, or add and remove them.</p>
+			<p class="mt-4 text-xs text-steel">On a computer, click and drag a workout to another day. On a phone, press and hold it, then drag. Tap a workout to see what it is for, or add and remove them.</p>
 
 			<button
 				type="button"
@@ -1056,13 +1111,25 @@
 			{#if pickerDate}
 				<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
 			{/if}
-			{#if previewDetail}
-				<SessionDetail
-					session={previewDetail}
-					eyebrow="Preview"
-					logged={null}
-					onClose={() => (previewDetail = null)}
-				/>
+			{#if previewInfo && previewInfoSession}
+				{@const category = previewCategory(previewInfoSession)}
+				<div
+					id="preview-info-card"
+					role="dialog"
+					aria-labelledby="preview-info-title"
+					tabindex="-1"
+					data-preview-info-card
+					data-modal-panel
+					use:focusTrap
+					use:anchor={{ anchor: previewInfo.anchor, width: 260 }}
+					class="fixed z-[60] w-[260px] rounded-lg border border-hairline bg-paper p-3 text-left shadow-lg outline-none"
+				>
+					<div class="flex items-start justify-between gap-2">
+						<strong id="preview-info-title" class="text-sm font-semibold">{PREVIEW_CATEGORY_LABEL[category]}</strong>
+						<button type="button" aria-label="Close" onclick={() => (previewInfo = null)} class="tap-target -mr-1 -mt-1 shrink-0 text-steel hover:text-danger">✕</button>
+					</div>
+					<p class="mt-1 text-xs leading-relaxed text-steel">{PREVIEW_CATEGORY_BLURB[category]}</p>
+				</div>
 			{/if}
 		</section>
 	{/if}
