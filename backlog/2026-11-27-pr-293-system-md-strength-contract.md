@@ -1,6 +1,7 @@
 # SYSTEM.md does not describe the new strength contract
 
-From CodeRabbit on PR #293 (thread PRRT_kwDOV3qHEs68oCbP).
+From CodeRabbit on PR #293 (thread
+[PRRT_kwDOV3qHEs68oCbP](https://github.com/midnightcatit/strideguide/pull/293#discussion_r4715153730)).
 
 **Finding.** SYSTEM.md is unchanged by the rest-card change, but the path
 instructions say the engine's description should move with the engine. The

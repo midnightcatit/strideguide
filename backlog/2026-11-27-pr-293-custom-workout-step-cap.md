@@ -1,6 +1,7 @@
 # Custom strength workouts can exceed the 200-step block cap
 
-From CodeRabbit on PR #293 (thread PRRT_kwDOV3qHEs68oCa_).
+From CodeRabbit on PR #293 (thread
+[PRRT_kwDOV3qHEs68oCa_](https://github.com/midnightcatit/strideguide/pull/293#discussion_r4715153706)).
 
 **Finding.** Custom strength workouts now emit one step per set and one rest
 step between sets, all in one block. A workout with 101 or more total sets

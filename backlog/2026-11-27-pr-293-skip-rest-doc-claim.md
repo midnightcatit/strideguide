@@ -1,6 +1,7 @@
 # The decision entry overstates the skip-rest confirmation guarantee
 
-From CodeRabbit on PR #293 (thread PRRT_kwDOV3qHEs68oCbL).
+From CodeRabbit on PR #293 (thread
+[PRRT_kwDOV3qHEs68oCbL](https://github.com/midnightcatit/strideguide/pull/293#discussion_r4715153725)).
 
 **Finding.** The "Rest between strength sets is a band, and rest is an
 explicit card" decision entry says the rest card "can only be skipped behind a
