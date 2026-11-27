@@ -6,14 +6,19 @@
 		groupByMuscleGroup,
 		moveCategory,
 		muscleGroupFor,
+		workoutLengthLabel,
+		type BodyPart,
 		type MachineExercise,
 	} from '@strideguide/shared/plan';
 	import type { CustomWorkout } from '@strideguide/shared';
 	import { api } from '$lib/api';
 	import WorkoutComposer from '$lib/components/WorkoutComposer.svelte';
+	import WorkoutFilter from '$lib/components/WorkoutFilter.svelte';
+	import FilterChips from '$lib/components/FilterChips.svelte';
 	import {
 		FAVORITE_CATEGORIES,
 		FAVORITE_CATEGORY_LABELS,
+		bodyPartsInRefs,
 		composerCategoryForFilter,
 		customRef,
 		filterFavoriteRefs,
@@ -37,6 +42,7 @@
 	let workoutQ = $state('');
 	let machineFilter = $state('all');
 	let workoutFilter = $state<FavoriteCategory | 'all'>('all');
+	let workoutPart = $state<BodyPart | 'all'>('all');
 
 	// --- the runner's own workouts, from the #301 API ---
 	let customWorkouts = $state<CustomWorkout[]>([]);
@@ -94,10 +100,22 @@
 		return MUSCLE_GROUPS.filter((g) => present.has(g));
 	});
 
-	const machineFilters = $derived([
+	const machineFilters = $derived<{ key: string; label: string }[]>([
 		{ key: 'all', label: 'All' },
 		...machineGroups.map((g) => ({ key: g as string, label: g })),
 	]);
+
+	/** The category chips a runner reads: All, then a run, strength, mobility or recovery pick. */
+	const workoutCategoryOptions = $derived<{ key: FavoriteCategory | 'all'; label: string }[]>([
+		{ key: 'all', label: 'All' },
+		...FAVORITE_CATEGORIES.map((c) => ({ key: c.key, label: c.label })),
+	]);
+
+	// The body-part row shows for the categories that file their entries by body
+	// part. A run or the All list keeps category-only, so the row never offers a
+	// part a run cannot carry.
+	const showWorkoutParts = $derived(workoutFilter === 'strength' || workoutFilter === 'mobility');
+	const activeWorkoutPart = $derived(showWorkoutParts ? workoutPart : 'all');
 
 	const machineTokens = $derived(tokens(machineQ));
 	const workoutTokens = $derived(tokens(workoutQ));
@@ -111,8 +129,15 @@
 
 	const shownMachineGroups = $derived(groupByMuscleGroup(shownMachines));
 
-	/** The curated recipes, filtered by the category chip and the search. */
-	const shownRecipes = $derived(filterFavoriteRefs(recipeRefs(), workoutFilter, workoutTokens));
+	/** The curated recipes, filtered by the category chip, the body part and the search. */
+	const shownRecipes = $derived(
+		filterFavoriteRefs(recipeRefs(), workoutFilter, workoutTokens, activeWorkoutPart),
+	);
+
+	/** The parts present in the category-matched recipes, so a chip is never empty. */
+	const recipeParts = $derived(
+		bodyPartsInRefs(filterFavoriteRefs(recipeRefs(), workoutFilter, workoutTokens, 'all')),
+	);
 
 	/** The runner's own workouts, filtered the same way. */
 	const shownCustom = $derived(
@@ -220,20 +245,12 @@
 			{/if}
 		</div>
 
-		<div class="mt-3 flex flex-wrap gap-1.5">
-			{#each machineFilters as g (g.key)}
-				<button
-					type="button"
-					aria-pressed={machineFilter === g.key}
-					onclick={() => (machineFilter = g.key)}
-					class="flex min-h-11 items-center rounded-full border px-3 text-xs {machineFilter === g.key
-						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-						: 'border-hairline text-steel hover:border-steel'}"
-				>
-					{g.label}
-				</button>
-			{/each}
-		</div>
+		<FilterChips
+			options={machineFilters}
+			bind:value={machineFilter}
+			label="Filter machines by muscle group"
+			class="mt-3"
+		/>
 
 		{#if pickedMachines.length}
 			<!-- A fixed-height strip: the picks grow sideways and scroll, so the
@@ -330,29 +347,14 @@
 			{/if}
 		</div>
 
-		<div class="mt-3 flex flex-wrap gap-1.5">
-			<button
-				type="button"
-				aria-pressed={workoutFilter === 'all'}
-				onclick={() => (workoutFilter = 'all')}
-				class="flex min-h-11 items-center rounded-full border px-3 text-xs {workoutFilter === 'all'
-					? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-					: 'border-hairline text-steel hover:border-steel'}"
-			>
-				All
-			</button>
-			{#each FAVORITE_CATEGORIES as g (g.key)}
-				<button
-					type="button"
-					aria-pressed={workoutFilter === g.key}
-					onclick={() => (workoutFilter = g.key)}
-					class="flex min-h-11 items-center rounded-full border px-3 text-xs {workoutFilter === g.key
-						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-						: 'border-hairline text-steel hover:border-steel'}"
-				>
-					{g.label}
-				</button>
-			{/each}
+		<div class="mt-3">
+			<WorkoutFilter
+				categories={workoutCategoryOptions}
+				bind:category={workoutFilter}
+				bodyParts={recipeParts}
+				bind:bodyPart={workoutPart}
+				showBodyParts={showWorkoutParts}
+			/>
 		</div>
 
 		{#if pickedRefs.length}
@@ -493,7 +495,7 @@
 		<!-- The curated recipes: the sessions a runner asks for by name. -->
 		<h4 class="mt-5 text-xs font-medium uppercase tracking-widest text-steel">Library</h4>
 		{#if shownRecipes.length === 0}
-			<p class="mt-2 text-xs text-steel">No library workouts match that search.</p>
+			<p class="mt-2 text-xs text-steel">No library workouts match. Try another word or filter.</p>
 		{:else}
 			<ul class="scroll-modern mt-2 grid gap-2 overflow-y-auto overflow-x-hidden sm:max-h-80">
 				{#each shownRecipes as ref (ref.id)}
@@ -523,10 +525,10 @@
 								</span>
 							{/if}
 							<span class="min-w-0 flex-1">
-								<span class="flex items-baseline justify-between gap-2">
-									<span class="min-w-0 font-display font-medium">{ref.title}</span>
-									{#if ref.durationMin}
-										<span class="tabular shrink-0 text-xs text-steel">{ref.durationMin} min</span>
+								<span class="block break-words text-sm">
+									<span class="font-display font-medium">{ref.title}</span>
+									{#if workoutLengthLabel(ref.durationMin)}
+										<span class="tabular text-xs text-steel">· {workoutLengthLabel(ref.durationMin)}</span>
 									{/if}
 								</span>
 								{#if ref.summary}

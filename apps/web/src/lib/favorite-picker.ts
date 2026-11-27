@@ -7,9 +7,13 @@
  */
 
 import {
+	BODY_PARTS,
 	exerciseImage,
 	NAMED_WORKOUTS,
+	bodyPartsForWorkout,
+	matchesBodyPart,
 	WORKOUT_LIBRARY,
+	type BodyPart,
 	type LibraryWorkout,
 } from '@strideguide/shared/plan';
 import type { CustomWorkout, CustomWorkoutCategory } from '@strideguide/shared';
@@ -42,6 +46,8 @@ export interface FavoriteWorkoutRef {
 	/** Minutes for a library recipe; a custom workout has no duration yet. */
 	durationMin?: number;
 	summary?: string;
+	/** The body parts a library recipe trains. Empty for a run and for a custom workout. */
+	bodyParts?: BodyPart[];
 	/** The exercise still to show, when the workout resolves to one. */
 	imagePath?: string;
 }
@@ -116,12 +122,12 @@ export function libraryRef(w: LibraryWorkout): FavoriteWorkoutRef {
 		source: 'library',
 		durationMin: w.durationMin,
 		summary: w.summary,
+		bodyParts: bodyPartsForWorkout(w),
 		imagePath: imageForLabels(libraryWorkLabels(w)),
 	};
 }
 
-/** The curated recipes, as picks. These are the named sessions a runner asks for by name. */
-export function recipeRefs(): FavoriteWorkoutRef[] {
+/** The curated recipes, as picks. These are the named sessions a runner asks for by name. */export function recipeRefs(): FavoriteWorkoutRef[] {
 	return NAMED_WORKOUTS.map(libraryRef);
 }
 
@@ -168,23 +174,33 @@ export function resolveFavoriteRefs(
 	return out;
 }
 
-/** True when a pick passes the category chip and every search token. */
+/** True when a pick passes the category chip, the body-part chip and every search token. */
 export function matchesFavorite(
 	ref: FavoriteWorkoutRef,
 	category: FavoriteCategory | 'all',
 	tokens: readonly string[],
+	bodyPart: BodyPart | 'all' = 'all',
 ): boolean {
 	if (category !== 'all' && ref.category !== category) return false;
+	if (!matchesBodyPart(ref.bodyParts, bodyPart)) return false;
 	if (tokens.length === 0) return true;
 	const hay = `${ref.title} ${ref.summary ?? ''} ${ref.category}`.toLowerCase();
 	return tokens.every((token) => hay.includes(token));
 }
 
-/** The picks that pass the category chip and the search. */
+/** The picks that pass the category chip, the body-part chip and the search. */
 export function filterFavoriteRefs(
 	refs: readonly FavoriteWorkoutRef[],
 	category: FavoriteCategory | 'all',
 	tokens: readonly string[],
+	bodyPart: BodyPart | 'all' = 'all',
 ): FavoriteWorkoutRef[] {
-	return refs.filter((ref) => matchesFavorite(ref, category, tokens));
+	return refs.filter((ref) => matchesFavorite(ref, category, tokens, bodyPart));
+}
+
+/** The body parts present across a list of picks, in the chip order. */
+export function bodyPartsInRefs(refs: readonly FavoriteWorkoutRef[]): BodyPart[] {
+	const found = new Set<BodyPart>();
+	for (const ref of refs) for (const part of ref.bodyParts ?? []) found.add(part);
+	return BODY_PARTS.filter((part) => found.has(part));
 }

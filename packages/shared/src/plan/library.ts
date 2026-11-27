@@ -9,6 +9,7 @@
 
 import type { Modality, StructuredWorkout } from '../types';
 import { block, MIN, step, wk } from './library-helpers';
+import type { BodyPart } from './workout-filters';
 import { EXTRA_WORKOUTS } from './library-extra';
 import { PLUS_WORKOUTS } from './library-plus';
 import { NAMED_WORKOUTS } from './library-recipes';
@@ -28,6 +29,14 @@ export interface LibraryWorkout {
 	purpose: string;
 	targetRpe?: [number, number];
 	workout: StructuredWorkout;
+	/**
+	 * The body parts the session trains, finer than the machine picker's muscle
+	 * groups. Set by hand only where the parts need naming (a whole-body session
+	 * carries just 'full body'); where it is left off, the parts are read from the
+	 * entry's own moves and drills by bodyPartsForWorkout. Runs and walks carry
+	 * none and are filtered by category alone.
+	 */
+	bodyParts?: BodyPart[];
 	/** Research explanation ids this workout draws on. */
 	refs: string[];
 	tags: string[];
@@ -532,6 +541,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'full-body-strength',
 		durationMin: 25,
 		intensity: 'steady',
+		bodyParts: ['full body'],
 		summary:
 			'Two rounds of six moves that cover legs, push, pull, hips and core. No equipment needed.',
 		purpose:
@@ -642,6 +652,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'full-body-strength',
 		durationMin: 40,
 		intensity: 'steady',
+		bodyParts: ['full body'],
 		summary: 'Two rounds of a balanced set: legs, hips, pushing, pulling and core.',
 		purpose:
 			'A complete session that covers what running asks for without taking more time than most runners have.',
@@ -677,6 +688,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 10,
 		intensity: 'easy',
+		bodyParts: ['quads', 'hamstrings', 'glutes', 'calves', 'hips'],
 		summary:
 			'Dynamic moves that warm up the hips, legs and ankles before a run. Keep them moving, no holds.',
 		purpose:
@@ -721,6 +733,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 12,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary:
 			'Six gentle holds after a run, each 30 to 45 seconds. Breathe slowly and stop before any pain.',
 		purpose:
@@ -775,6 +788,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 20,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary: 'Gentle movement and holds for the whole body. A good session on a rest day.',
 		purpose:
 			'Keeps your range of motion across the hips, back and shoulders, so running and daily life feel less stiff.',
@@ -821,6 +835,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 15,
 		intensity: 'easy',
+		bodyParts: ['glutes', 'adductors', 'hips'],
 		summary: 'Focused holds for the hips and glutes, the muscles that steer the stride.',
 		purpose:
 			'Tight hips limit stride length and load the knees. Gentle work here helps the stride stay smooth.',
@@ -867,6 +882,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 15,
 		intensity: 'easy',
+		bodyParts: ['hamstrings', 'calves'],
 		summary: 'Gentle holds for the back of the legs, which take the load of every stride.',
 		purpose:
 			'Hamstrings and calves tighten with running and hard efforts. Regular, gentle holds keep them supple.',
@@ -908,6 +924,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 15,
 		intensity: 'easy',
+		bodyParts: ['chest', 'back', 'shoulders'],
 		summary:
 			'Gentle openers for the upper back and shoulders, to counter the hunched posture of a long day or a long run.',
 		purpose: 'Keeps the arms swinging freely and the chest open, which helps breathing.',
@@ -949,6 +966,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 8,
 		intensity: 'easy',
+		bodyParts: ['hamstrings', 'hips', 'chest', 'back'],
 		summary: 'Quick moves you can do between tasks, with no equipment and no change of clothes.',
 		purpose:
 			'Breaks up long sitting, which stiffens the hips and back. Short and often beats long and rare.',
@@ -980,6 +998,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 8,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary: 'A short mobility session to keep the range you already have.',
 		purpose:
 			'Range of motion and activation to keep the stride healthy. The engine plans this one when your flexibility goal is already close.',
@@ -995,6 +1014,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 12,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary: 'A mobility session with a little more work toward your flexibility goal.',
 		purpose:
 			'Range of motion and activation to keep the stride healthy, with extra holds when your flexibility goal is further out.',
@@ -1012,6 +1032,7 @@ const CORE_WORKOUTS: LibraryWorkout[] = [
 		type: 'recovery',
 		durationMin: 10,
 		intensity: 'easy',
+		bodyParts: ['hamstrings', 'calves', 'glutes'],
 		summary:
 			'Slow rolling over the calves, back of the thighs and glutes, with slow breathing between.',
 		purpose:
@@ -1077,35 +1098,40 @@ const BUILD_MOBILITY: LibraryWorkout[] = (
 	[
 		{
 			focus: 'general',
+			bodyParts: ['full body'],
 			summary: 'A full mobility pass for the whole body, two short rounds of each gentle hold.',
 			purpose:
 				'Builds range of motion across the areas running tightens. It is the routine the plan picks when your flexibility goal is a large step up.',
 		},
 		{
 			focus: 'hips-glutes',
+			bodyParts: ['glutes', 'adductors', 'hips'],
 			summary: 'Gentle holds for the hips, glutes and groin, two short rounds of each.',
 			purpose:
 				'Tight hips and glutes limit stride length and steer load into the knee. Aims the work at the areas that drive your stride.',
 		},
 		{
 			focus: 'hamstrings-calves',
+			bodyParts: ['hamstrings', 'calves'],
 			summary: 'Gentle holds for the back of the legs and the calves, two short rounds of each.',
 			purpose:
 				'Hamstrings and calves take the load of every hill and every stride. Keeps the back line and the ankle supple.',
 		},
 		{
 			focus: 'ankles',
+			bodyParts: ['calves'],
 			summary: 'Holds and gentle rocking for the ankles, calves and feet, two short rounds of each.',
 			purpose:
 				'Ankle range shapes how you land and push off. Aims the work at the ankle when that is where your running lives.',
 		},
 		{
 			focus: 'upper-back',
+			bodyParts: ['chest', 'back', 'shoulders'],
 			summary: 'Openers for the mid-back, chest and shoulders, two short rounds of each.',
 			purpose:
 				'Keeps the upper back rotating and the chest open, so the arm swing stays free and breathing is not tied to a stiff spine.',
 		},
-	] as { focus: StretchFocus; summary: string; purpose: string }[]
+	] as { focus: StretchFocus; bodyParts: BodyPart[]; summary: string; purpose: string }[]
 ).map((entry) => ({
 	id: `mobility-build-${entry.focus}`,
 	title: FOCUS_AREA_TITLE[entry.focus],
@@ -1113,6 +1139,7 @@ const BUILD_MOBILITY: LibraryWorkout[] = (
 	type: 'mobility',
 	durationMin: 20,
 	intensity: 'easy',
+	bodyParts: entry.bodyParts,
 	summary: entry.summary,
 	purpose: entry.purpose,
 	targetRpe: [1, 3],

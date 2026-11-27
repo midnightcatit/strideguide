@@ -2,14 +2,20 @@
 	import {
 		ALL_MOVES,
 		WORKOUT_LIBRARY,
+		bodyPartsForWorkout,
+		bodyPartsIn,
 		findMove,
 		moveCategory,
+		matchesBodyPart,
+		workoutLengthLabel,
+		type BodyPart,
 		type LibraryWorkout,
 	} from '@strideguide/shared/plan';
 	import { milesToKm } from '@strideguide/shared/units';
 	import { formatIsoDay } from '$lib/plan';
 	import { prefs } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
+	import WorkoutFilter from '$lib/components/WorkoutFilter.svelte';
 	import type { CustomWorkoutInput } from '$lib/api';
 
 	let {
@@ -38,6 +44,7 @@
 	];
 	let mode = $state<'list' | 'custom'>('list');
 	let filter = $state('all');
+	let part = $state<BodyPart | 'all'>('all');
 	let q = $state('');
 	let myKit = $state(false);
 
@@ -94,7 +101,15 @@
 				? WORKOUT_LIBRARY.filter((w) => w.type === 'cross-train')
 				: WORKOUT_LIBRARY.filter((w) => w.modality === filter),
 	);
-	const shown = $derived(byFilter.filter((w) => matches(w) && (!myKit || fitsKit(w))));
+	// The body-part row shows for the two categories that file entries by part.
+	const showParts = $derived(filter === 'strength' || filter === 'mobility');
+	const activePart = $derived(showParts ? part : 'all');
+	const partsPresent = $derived(bodyPartsIn(byFilter.filter(matches)));
+	const shown = $derived(
+		byFilter.filter(
+			(w) => matches(w) && matchesBodyPart(bodyPartsForWorkout(w), activePart) && (!myKit || fitsKit(w)),
+		),
+	);
 
 	/** Every catalog move once, narrowed to the runner's kit when they have one. */
 	const kitMoves = $derived.by(() => {
@@ -322,25 +337,20 @@
 				/>
 			</div>
 
-			<div class="scroll-modern flex shrink-0 gap-2 overflow-x-auto border-b border-hairline px-4 py-2">
-				{#each FILTERS as g (g.key)}
-					<button
-						type="button"
-						aria-pressed={filter === g.key}
-						onclick={() => (filter = g.key)}
-						class="flex min-h-11 shrink-0 items-center rounded-full border px-3 text-xs {filter === g.key
-							? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-							: 'border-hairline text-steel hover:border-steel'}"
-					>
-						{g.label}
-					</button>
-				{/each}
+			<div class="shrink-0 space-y-2 border-b border-hairline px-4 py-2">
+				<WorkoutFilter
+					categories={FILTERS}
+					bind:category={filter}
+					bodyParts={partsPresent}
+					bind:bodyPart={part}
+					showBodyParts={showParts}
+				/>
 				{#if prefs.equipmentItems?.length}
 					<button
 						type="button"
 						aria-pressed={myKit}
 						onclick={() => (myKit = !myKit)}
-						class="ml-auto flex min-h-11 shrink-0 items-center rounded-full border px-3 text-xs {myKit
+						class="flex min-h-11 items-center rounded-full border px-3 text-xs {myKit
 							? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
 							: 'border-hairline text-steel hover:border-steel'}"
 					>
@@ -372,9 +382,11 @@
 								onclick={() => onPick(w)}
 								class="flex h-full w-full flex-col rounded-xl border border-hairline p-3 text-left transition-colors hover:border-signal-ink"
 							>
-								<span class="flex items-baseline justify-between gap-2">
+								<span class="flex flex-wrap items-baseline gap-x-2">
 									<span class="font-display font-medium">{w.title}</span>
-									<span class="tabular shrink-0 text-xs text-steel">{w.durationMin} min</span>
+									{#if workoutLengthLabel(w.durationMin)}
+										<span class="tabular text-xs text-steel">· {workoutLengthLabel(w.durationMin)}</span>
+									{/if}
 								</span>
 								<span class="mt-1 text-xs leading-relaxed text-steel">{w.summary}</span>
 							</button>
