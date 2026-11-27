@@ -36,9 +36,16 @@
 	async function runConfirm() {
 		if (confirming) return;
 		confirming = true;
-		await releaseHistory();
-		onConfirm();
-		onClose();
+		try {
+			await releaseHistory();
+			onConfirm();
+		} finally {
+			// The sheet stays mounted between uses, so this flag must come back
+			// down. Left up, the first confirm latches it on and every later
+			// confirm returns early, which reads as the sheet doing nothing.
+			confirming = false;
+			onClose();
+		}
 	}
 </script>
 
