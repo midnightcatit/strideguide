@@ -28,7 +28,7 @@ import {
 	mobilityPrescription,
 	mobilitySessionRoutine,
 	pickRoamingIndex,
-	roamingPool,
+	ROAMING_ORDER,
 	type StretchFocus,
 } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
@@ -1325,6 +1325,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	// far in the plan, which keeps the routine moving across weeks as well as
 	// across the sessions of one week.
 	let mobilityRotation = 0;
+	// The count of mobility sessions emitted so far in the whole plan. A favorite
+	// takes every other session, and that alternation carries across weeks, so a
+	// sparse week still alternates the favorite with a composed variant.
+	let mobilityEmitted = 0;
 	// The biggest long run the build reaches, so a week can say where its long
 	// run sits on the plan's arc. The taper is left out of the peak.
 	const peakLongKm = Math.max(...longTargets.slice(0, Math.max(1, buildWeeks)));
@@ -1866,14 +1870,20 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				7,
 			);
 			// A favorite mobility workout weights the rotation rather than overriding
-			// it: it takes every second session, and the composed variants still
-			// cycle around it.
+			// it: it takes every second session of the plan, and the composed
+			// variants still cycle through the weeks it does not take. The weekly
+			// counts below read the same plan-wide alternation the loop will.
 			const favorite = favoriteWorkout(input, 'mobility');
 			const { primary, secondary } = mobilityAnchorFocuses(input.baseline);
-			// The swap to the runner-up area runs only when at least two composed
-			// sessions carry the anchor, so the stated focus keeps the majority.
-			const composedCount = favorite ? Math.floor(perWeek / 2) : perWeek;
-			const swapToSecondary = perWeek >= 3 && composedCount >= 2;
+			let favoriteCount = 0;
+			if (favorite) {
+				for (let i = 0; i < perWeek; i++) if ((mobilityEmitted + i) % 2 === 0) favoriteCount++;
+			}
+			const composedCount = perWeek - favoriteCount;
+			// The swap to the runner-up area runs only when at least three composed
+			// sessions carry the anchor, so the stated focus keeps at least two of
+			// them and a clear majority after one swaps.
+			const swapToSecondary = perWeek >= 3 && composedCount >= 3;
 			// The week's dose ledger, in seconds per target muscle. The anchor holds
 			// and the favorite are committed up front, because they run no matter
 			// what, so every roaming pick projects the whole week and never plans
@@ -1888,7 +1898,6 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			anchorSessions(primary, swapToSecondary ? composedCount - 1 : composedCount);
 			anchorSessions(secondary, swapToSecondary ? 1 : 0);
 			if (favorite) {
-				const favoriteCount = perWeek - composedCount;
 				for (const step of favorite.workout.blocks.flatMap((b) => b.steps)) {
 					if (step.kind === 'cooldown') {
 						addHoldDose(dose, step.label, (step.durationSec ?? 0) * favoriteCount);
@@ -1910,12 +1919,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			for (const d of candidates) {
 				if (added >= perWeek) break;
 				const slot = sessions.some((s) => s.day === d) ? 'PM' : 'AM';
-				if (favorite && added % 2 === 0) {
+				if (favorite && mobilityEmitted % 2 === 0) {
 					sessions.push(mobilitySession(d, favorite.id, slot));
 				} else {
 					const anchor = swapToSecondary && composed === 0 ? secondary : primary;
 					const picked = pickRoamingIndex(anchor, dose, mobilityRotation);
-					const roaming = picked >= 0 ? roamingPool(anchor)[picked] : undefined;
+					const roaming = picked >= 0 ? ROAMING_ORDER[picked] : undefined;
 					const routine = mobilitySessionRoutine(anchor, roaming);
 					sessions.push(composedMobilitySession(d, slot, anchor, roaming, routine));
 					const roamHold = roaming ? routine.slice(2).at(-1) : undefined;
@@ -1923,10 +1932,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						addHoldDose(dose, roamHold.name, roamHold.durationSec * (roamHold.rounds ?? 1));
 					}
 					// The cursor moves past the stretch this session took, skips
-					// included, so no stretch roams twice before the pool has cycled.
+					// included, so no stretch roams twice before the order has cycled.
 					mobilityRotation = picked >= 0 ? picked + 1 : mobilityRotation + 1;
 					composed++;
 				}
+				mobilityEmitted++;
 				added++;
 			}
 		}

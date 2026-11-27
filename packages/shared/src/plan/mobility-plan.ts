@@ -296,16 +296,19 @@ export const FOCUS_AREA_PHRASE: Record<StretchFocus, string> = {
 };
 
 /**
- * The anchor: two holds per focus that repeat unchanged at every session (17b).
- * Each pair is chosen so no target muscle appears in both, which keeps a daily
- * anchor at about nine minutes a week per muscle, just under the ten-minute
- * static plateau, so rotation never has to shorten the anchor to respect it.
+ * The anchor: two static holds per focus that repeat unchanged at every session
+ * (17b). Each pair is chosen so no target muscle appears in both, which keeps a
+ * daily anchor at about nine minutes a week per muscle, just under the
+ * ten-minute static plateau, so rotation never has to shorten the anchor to
+ * respect it. The ankles pair uses the seated calf hold with the adductor hold,
+ * both in the ankles routine list, so the two rocking and circling drills stay
+ * in the dynamic portion instead of being timed as static holds.
  */
 export const ANCHOR_STRETCHES: Record<StretchFocus, string[]> = {
 	general: ['Standing straight-knee calf stretch', 'Kneeling hip flexor stretch'],
 	'hips-glutes': ['Seated glute figure-4 stretch', 'Kneeling hip flexor stretch'],
 	'hamstrings-calves': ['Standing straight-knee calf stretch', 'Standing hamstring stretch'],
-	ankles: ['Knee-to-wall ankle rock', 'Ankle circles and alphabet'],
+	ankles: ['Bent-knee calf stretch (soleus)', 'Seated butterfly adductor stretch'],
 	'upper-back': ['Open book thoracic rotation', 'Cross-body shoulder stretch'],
 };
 
@@ -315,56 +318,80 @@ export const HOLD_ROUNDS = 2;
 /** The static plateau: about ten minutes a week per target muscle (17b). */
 export const WEEKLY_STRETCH_PLATEAU_SEC = 600;
 
+/**
+ * Routines list a few drills that are movements, not holds: a rocking or
+ * circling drill belongs in the dynamic warm-up, so giving it hold rounds does
+ * not make it a static stretch and it must never count toward the static dose
+ * (17b measures static stretch time).
+ */
+export const MOVEMENT_DRILLS: string[] = [
+	'Knee-to-wall ankle rock',
+	'Ankle circles and alphabet',
+	'Side lunge adductor rock',
+	"World's greatest stretch",
+	'Cat-cow thoracic mobility',
+];
+
+const MOVEMENT_SET = new Set(MOVEMENT_DRILLS);
+
+/**
+ * Every static common-area hold in one order, the backing list for the roaming
+ * rotation. A session's candidates are this list minus its own anchors, and the
+ * cursor walks the one order across every session and every anchor, so a
+ * stretch never roams twice before the whole list has cycled, even where a
+ * different anchor changes what a session may pick.
+ */
+export const ROAMING_ORDER: string[] = (() => {
+	const seen = new Set<string>();
+	const order: string[] = [];
+	for (const focus of STRETCH_FOCUSES) {
+		for (const name of FOCUS_STRETCHES[focus]) {
+			if (MOVEMENT_SET.has(name) || seen.has(name)) continue;
+			seen.add(name);
+			order.push(name);
+		}
+	}
+	return order;
+})();
+
 /** Every muscle and structure a stretch names, for the weekly dose ledger. */
 export function stretchTargets(name: string): string[] {
 	return findDrill(name)?.targets ?? [];
 }
 
-/** Add one stretch's seconds for a session to every target it names. */
+/**
+ * Add one stretch's seconds for a session to every target it names. A movement
+ * drill never holds, so it adds nothing to the static dose.
+ */
 export function addHoldDose(ledger: Map<string, number>, name: string, seconds: number): void {
+	if (MOVEMENT_SET.has(name)) return;
 	for (const target of stretchTargets(name)) {
 		ledger.set(target, (ledger.get(target) ?? 0) + seconds);
 	}
 }
 
 /**
- * The roaming candidates for a focus: every hold the other areas' routines
- * carry, minus this focus's own anchors, in a stable order that walks the
- * common runner areas. One of these rotates through each session.
- */
-export function roamingPool(focus: StretchFocus): string[] {
-	const anchors = new Set(ANCHOR_STRETCHES[focus]);
-	const pool: string[] = [];
-	const seen = new Set<string>();
-	for (const other of STRETCH_FOCUSES) {
-		if (other === focus) continue;
-		for (const name of FOCUS_STRETCHES[other]) {
-			if (anchors.has(name) || seen.has(name)) continue;
-			seen.add(name);
-			pool.push(name);
-		}
-	}
-	return pool;
-}
-
-/**
- * The pool index of the roaming stretch for one session, or -1 when every
- * candidate would push a muscle past the weekly plateau. The index is a cursor:
- * the caller moves it past the stretch this session took, skips included, so
- * the next session roams somewhere new instead of replaying a skip's pick.
+ * The index into ROAMING_ORDER of the roaming stretch for one session, or -1
+ * when every candidate would push a muscle past the weekly plateau. The index
+ * is a cursor: the caller moves it past the stretch this session took, skips
+ * included, so the next session roams somewhere new. The scan walks the one
+ * shared order, so the next pick never names the same stretch as the last even
+ * when the anchor, and so the candidates, changed.
  */
 export function pickRoamingIndex(
 	focus: StretchFocus,
 	ledger: Map<string, number>,
 	startIndex: number,
 ): number {
-	const pool = roamingPool(focus);
-	for (let i = 0; i < pool.length; i++) {
-		const index = (startIndex + i) % pool.length;
-		const drill = findDrill(pool[index]!);
+	const anchors = new Set(ANCHOR_STRETCHES[focus]);
+	for (let i = 0; i < ROAMING_ORDER.length; i++) {
+		const index = (startIndex + i) % ROAMING_ORDER.length;
+		const name = ROAMING_ORDER[index]!;
+		if (anchors.has(name)) continue;
+		const drill = findDrill(name);
 		if (!drill) continue;
 		const add = drill.durationSec * HOLD_ROUNDS;
-		const fits = stretchTargets(pool[index]!).every(
+		const fits = stretchTargets(name).every(
 			(target) => (ledger.get(target) ?? 0) + add <= WEEKLY_STRETCH_PLATEAU_SEC,
 		);
 		if (fits) return index;

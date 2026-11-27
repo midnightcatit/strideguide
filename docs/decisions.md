@@ -17,20 +17,23 @@ out. It cites the file or PR that shows the decision.
 Decided: a generated mobility session is composed in the engine instead of
 naming one library workout. The runner's voted focus (from their niggles,
 terrain and sports, at any flexibility gap) anchors the session: the same two
-holds for that area at every session, two rounds of 30 to 45 seconds each,
-never shortened by rotation. One roaming stretch per session rotates through
-the other common runner areas by session count, so sessions and weeks differ
-while the tight area's dose stays fixed. A week the gap earns three or more
-mobility sessions anchors one of them on the runner-up vote instead (with no
-second vote, the next common runner area), while the stated focus keeps the
-majority. A favorite mobility workout now weights the rotation rather than
-overriding it: it takes every second session and the composed variants still
-cycle around it. Every stretch that targets a muscle counts toward that
-muscle's weekly dose, roaming overlaps included, and nothing is scaled up past
-the static plateau of about ten minutes a week per target muscle; lower weekly
-doses still produce gains. This annotates the earlier behaviour of aiming the
-mobility routine at the runner's stated areas: the aim stays, rotation is added
-around it.
+static holds for that area at every session, two rounds of 30 to 45 seconds
+each, never shortened by rotation. One roaming stretch per session rotates
+through the other common runner areas along one shared order, so sessions and
+weeks differ while the tight area's dose stays fixed, and a stretch never roams
+twice before the whole order has cycled. When a week carries at least three
+composed sessions, one of them anchors on the runner-up vote instead (with no
+second vote, the next common runner area), while the stated focus keeps a clear
+majority of the composed work. A favorite mobility workout weights the rotation
+rather than overriding it: it takes every second session of the plan, so the
+composed variants still cycle through the weeks it does not take. Every stretch
+that targets a muscle counts toward that muscle's weekly dose, roaming overlaps
+included; a drill that is a movement rather than a hold stays in the dynamic
+warm-up and never counts as static dose; and nothing is scaled up past the
+static plateau of about ten minutes a week per target muscle, though lower
+weekly doses still produce gains. This annotates the earlier behaviour of
+aiming the mobility routine at the runner's stated areas: the aim stays,
+rotation is added around it.
 
 Why: the engine named one library routine for every mobility session in the
 plan, so the same stretches repeated everywhere. Research/wave-7/17b found that
@@ -42,7 +45,8 @@ anchor plus one rotating roam (research/wave-7/17b-stretch-variety-dose.json).
 The anchor pair per focus is chosen so its targets do not overlap, which keeps
 a daily anchor just under the plateau and leaves rotation nothing to shorten.
 
-Rules out: shortening the anchor to make room for variety, scaling mobility
+Rules out: shortening the anchor to make room for variety, swapping a high
+frequency week down to a single session on the stated area, scaling mobility
 volume up past the static plateau the way running volume scales, and a favorite
 workout wiping out the variation it used to replace. The session detail's
 stretch list now varies per session by construction.

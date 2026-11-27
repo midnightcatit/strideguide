@@ -4,11 +4,12 @@ import { generatePlan } from './engine';
 import {
 	ANCHOR_STRETCHES,
 	FOCUS_AREA_TITLE,
+	MOVEMENT_DRILLS,
+	ROAMING_ORDER,
 	WEEKLY_STRETCH_PLATEAU_SEC,
 	addHoldDose,
 	mobilityAnchorFocuses,
 	pickRoamingIndex,
-	roamingPool,
 	stretchTargets,
 } from './mobility-plan';
 import type { PlannedSession, PlannedWeek } from './types';
@@ -154,42 +155,126 @@ describe('mobility variety and dose (17b)', () => {
 		}
 	});
 
+	it('keeps the stated focus in the majority of composed sessions', () => {
+		// Three sessions a week with a favorite leaves a single composed session,
+		// which stays on the stated area instead of swapping, since a swap would
+		// leave the stated focus a minority of the composed work.
+		const three = planWith(
+			{
+				experience: 'intermediate',
+				flexibility: { current: 2, goal: 5 },
+				niggles: 'sore knee',
+				terrain: 'hilly',
+			},
+			{ favoriteWorkouts: ['mobility-build-hips-glutes'] },
+		);
+		const w0Three = mobilitySessions(three.weeks[0]!);
+		expect(w0Three).toHaveLength(3);
+		const composedThree = w0Three.filter((s) => !s.prescription.libraryId);
+		expect(composedThree).toHaveLength(1);
+		expect(composedThree[0]!.title.startsWith('Hips and glutes')).toBe(true);
+		// Seven a week with a favorite leaves three composed sessions, so the swap
+		// runs and the stated focus keeps two of them.
+		const seven = planWith(daily, { favoriteWorkouts: ['mobility-build-hips-glutes'] });
+		const w0Seven = mobilitySessions(seven.weeks[0]!);
+		const composedSeven = w0Seven.filter((s) => !s.prescription.libraryId);
+		expect(composedSeven).toHaveLength(3);
+		expect(composedSeven.filter((s) => s.title.startsWith('Mobility and stretching'))).toHaveLength(2);
+		expect(composedSeven.filter((s) => s.title.startsWith('Hips and glutes'))).toHaveLength(1);
+	});
+
+	it('alternates the favorite across the whole plan, even in a one-session week', () => {
+		// A gap of one earns one mobility session a week, so the favorite must not
+		// run every week: the composed variant takes the weeks it does not.
+		const p = planWith(
+			{ experience: 'intermediate', flexibility: { current: 4, goal: 5 } },
+			{ favoriteWorkouts: ['mobility-build-general'] },
+		);
+		const sessions = p.weeks.flatMap((w) => mobilitySessions(w));
+		expect(sessions.length).toBeGreaterThan(3);
+		sessions.forEach((s, i) => {
+			const isFavorite = s.prescription.libraryId === 'mobility-build-general';
+			expect(isFavorite, `session ${i}`).toBe(i % 2 === 0);
+		});
+	});
+
 	it('counts a roaming stretch that overlaps the anchor toward the weekly dose', () => {
 		const ledger = new Map<string, number>();
-		// Three sessions of the hamstrings-and-calves anchor put the
-		// gastrocnemius at 80 seconds a session.
-		for (let i = 0; i < 3; i++) {
-			addHoldDose(ledger, 'Standing straight-knee calf stretch', 80);
-			addHoldDose(ledger, 'Standing hamstring stretch', 80);
-		}
-		expect(ledger.get('gastrocnemius')).toBe(240);
-		// The pool carries a stretch that also hits the gastrocnemius. With room
-		// under the plateau it is picked, and its seconds join the muscle's total.
-		const pool = roamingPool('hamstrings-calves');
-		const overlapping = pool.findIndex((name) => stretchTargets(name).includes('gastrocnemius'));
+		// Three sessions of the hips-and-glutes anchor put the glute max at 80
+		// seconds a session.
+		for (let i = 0; i < 3; i++) addHoldDose(ledger, 'Seated glute figure-4 stretch', 80);
+		expect(ledger.get('gluteus maximus')).toBe(240);
+		// The order carries a stretch that also hits the glute max. With room under
+		// the plateau it is picked, and its seconds join the muscle's total.
+		const overlapping = ROAMING_ORDER.indexOf('Supine figure-4 piriformis stretch');
 		expect(overlapping).toBeGreaterThan(-1);
-		const picked = pickRoamingIndex('hamstrings-calves', ledger, overlapping);
+		const picked = pickRoamingIndex('hips-glutes', ledger, overlapping);
 		expect(picked).toBe(overlapping);
-		addHoldDose(ledger, pool[picked]!, 80);
-		expect(ledger.get('gastrocnemius')).toBe(320);
+		addHoldDose(ledger, ROAMING_ORDER[picked]!, 80);
+		expect(ledger.get('gluteus maximus')).toBe(320);
 		// With the week nearly full, the same candidate would push the muscle
 		// past the plateau, so the cursor skips to the next one that fits and
 		// the anchor dose is never trimmed to make room.
 		const full = new Map<string, number>();
 		for (let i = 0; i < 7; i++) {
-			addHoldDose(full, 'Standing straight-knee calf stretch', 80);
-			addHoldDose(full, 'Standing hamstring stretch', 80);
+			addHoldDose(full, 'Seated glute figure-4 stretch', 80);
+			addHoldDose(full, 'Kneeling hip flexor stretch', 80);
 		}
-		expect(full.get('gastrocnemius')).toBe(560);
-		const skipped = pickRoamingIndex('hamstrings-calves', full, overlapping);
+		expect(full.get('gluteus maximus')).toBe(560);
+		const skipped = pickRoamingIndex('hips-glutes', full, overlapping);
 		expect(skipped).toBeGreaterThan(overlapping);
-		expect(stretchTargets(pool[skipped]!)).not.toContain('gastrocnemius');
+		expect(stretchTargets(ROAMING_ORDER[skipped]!)).not.toContain('gluteus maximus');
+	});
+
+	it('never repeats a roaming stretch across a change of anchor', () => {
+		// The cursor walks one shared order, so the pick that follows a pick is a
+		// different stretch even when the next session anchors on another area and
+		// therefore picks from different candidates. The engine carries the cursor
+		// past the stretch a session took, so the boundary pair to check is one
+		// pick and the pick that starts just after it.
+		const ledger = new Map<string, number>();
+		const faces = ['general', 'hips-glutes'] as const;
+		for (let c = 0; c < ROAMING_ORDER.length; c++) {
+			for (const first of faces) {
+				for (const second of faces) {
+					const picked = pickRoamingIndex(first, ledger, c);
+					const next = pickRoamingIndex(second, ledger, picked + 1);
+					expect(ROAMING_ORDER[next], `${first} then ${second} at ${c}`).not.toBe(
+						ROAMING_ORDER[picked],
+					);
+				}
+			}
+		}
+	});
+
+	it('anchors the ankles on static holds and never counts a movement as dose', () => {
+		// The two rocking and circling drills stay out of the anchor pair, and no
+		// anchor anywhere is a movement.
+		for (const anchors of Object.values(ANCHOR_STRETCHES)) {
+			for (const name of anchors) expect(MOVEMENT_DRILLS).not.toContain(name);
+		}
+		// The ankles anchor runs as two static holds at every session.
+		const p = planWith({ experience: 'intermediate', flexibility: { current: 1, goal: 5 }, terrain: 'flat' });
+		const sessions = p.weeks.flatMap((w) => mobilitySessions(w)).filter((s) => s.title.startsWith('Ankles'));
+		expect(sessions.length).toBeGreaterThan(0);
+		for (const s of sessions) {
+			for (const name of ANCHOR_STRETCHES.ankles) {
+				const steps = holds(s).filter((st) => st.label === name);
+				expect(steps, `${s.title}: ${name}`).toHaveLength(2);
+			}
+		}
+		// A movement drill adds nothing to the ledger, so the dose stays honest.
+		const ledger = new Map<string, number>();
+		for (const movement of MOVEMENT_DRILLS) addHoldDose(ledger, movement, 80);
+		expect(ledger.size).toBe(0);
 	});
 
 	it('never lets a week pass the static plateau on any target', () => {
 		for (const baseline of [
 			daily,
 			{ ...daily, niggles: 'sore knee', terrain: 'hilly' as const },
+			// The ankles anchor, whose two holds share no target.
+			{ experience: 'intermediate' as const, flexibility: { current: 1, goal: 5 }, terrain: 'flat' as const },
 		]) {
 			const p = planWith(baseline);
 			for (const week of p.weeks) {
