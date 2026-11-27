@@ -1,3 +1,6 @@
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
 	buildAdminAction,
@@ -11,6 +14,7 @@ import {
 	projectAdminUser,
 	projectAdminUserDetail,
 	projectLoadShadow,
+	RATE_LIMIT_POLICIES,
 	removalRefusal,
 	type AdminUserAggregate,
 	type AdminUserDetailAggregate,
@@ -447,5 +451,81 @@ describe('projectLoadShadow', () => {
 		const view = projectLoadShadow([row({ mode: 'apply' })], 10);
 		expect(view.decisions).toHaveLength(2);
 		expect(view.decisions.every((d) => d.mode === 'apply')).toBe(true);
+	});
+});
+
+/**
+ * The admin rate-limit view reads the limit and window length from
+ * RATE_LIMIT_POLICIES, so a limiter whose prefix is missing from the map renders
+ * without its limit or window end. This check reads the api sources and takes
+ * every limiter key with the numbers passed to it, in either shape a call site
+ * uses: a direct checkRateLimit call, or the rateLimit option handed to askJev,
+ * which forwards them to checkRateLimit. A prefix that drifts from the map, or
+ * one with no entry at all, fails here and names the file.
+ *
+ * What it would miss, so the limit is written down: a key assembled at runtime
+ * instead of a template literal that starts with its prefix, and a limiter added
+ * through a wrapper other than askJev. There is none today.
+ */
+describe('RATE_LIMIT_POLICIES covers every limiter call site', () => {
+	/** apps/api/src: this file lives at apps/api/src/lib/admin.test.ts. */
+	const SRC = fileURLToPath(new URL('../', import.meta.url));
+
+	/** Every non-test .ts file under routes/ and lib/, as path and text. */
+	const readSources = (): Map<string, string> => {
+		const files = new Map<string, string>();
+		const walk = (dir: string): void => {
+			for (const name of readdirSync(dir)) {
+				const path = join(dir, name);
+				if (statSync(path).isDirectory()) walk(path);
+				else if (name.endsWith('.ts') && !name.endsWith('.test.ts')) {
+					files.set(path, readFileSync(path, 'utf8'));
+				}
+			}
+		};
+		walk(join(SRC, 'routes'));
+		walk(join(SRC, 'lib'));
+		return files;
+	};
+
+	it('gives every call-site prefix a policy with the same limit and window', () => {
+		const shapes = [
+			// checkRateLimit(db, `prefix:${id}`, limit, windowSec)
+			/checkRateLimit\([^,]+,\s*`([^`]+)`,\s*(\d+),\s*(\d+)\s*\)/g,
+			// rateLimit: { db, key: `prefix:${id}`, limit, windowSec }
+			/\brateLimit:\s*\{[^}]*\bkey:\s*`([^`]+)`,\s*limit:\s*(\d+),\s*windowSec:\s*(\d+)/g,
+		];
+		const sites: Array<{ prefix: string; limit: number; windowSec: number; where: string }> = [];
+		for (const [path, text] of readSources()) {
+			for (const re of shapes) {
+				let m: RegExpExecArray | null;
+				while ((m = re.exec(text)) !== null) {
+					sites.push({
+						prefix: m[1]!.split('${')[0]!,
+						limit: Number(m[2]),
+						windowSec: Number(m[3]),
+						where: path,
+					});
+				}
+			}
+		}
+
+		expect(
+			sites.length,
+			'no rate-limit call sites found: the scan walked nothing, so it guards nothing',
+		).toBeGreaterThanOrEqual(10);
+
+		const failures: string[] = [];
+		for (const site of sites) {
+			const policy = RATE_LIMIT_POLICIES[site.prefix];
+			if (!policy) {
+				failures.push(`${site.where}: the "${site.prefix}" limiter has no policy entry`);
+			} else if (policy.limit !== site.limit || policy.windowSec !== site.windowSec) {
+				failures.push(
+					`${site.where}: "${site.prefix}" passes ${site.limit}/${site.windowSec} but the map says ${policy.limit}/${policy.windowSec}`,
+				);
+			}
+		}
+		expect(failures, failures.join('\n')).toEqual([]);
 	});
 });
