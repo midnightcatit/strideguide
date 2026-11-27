@@ -3,6 +3,9 @@
 Merged pull requests, newest first, grouped by the day they landed. The Changelog
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
+## 2026-11-27
+- chore(review): add CodeRabbit config and review documents (#288)
+
 ## 2026-11-26
 - fix(web): show distance and pace for run steps in What's to come (#287)
 - feat(web): full-screen workout player and an explicit countdown switch (#286)
