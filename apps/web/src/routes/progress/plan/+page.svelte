@@ -30,6 +30,10 @@
 	const plan = $derived(store.plan);
 	const weeks = $derived(plan?.weeks ?? []);
 	const totalWeeks = $derived(weeks.length);
+	// The engine's own notes about how the plan was shaped, stored with the plan
+	// at generation and absent when the engine had nothing to say. Shown as
+	// written: each one is already a plain sentence about this plan.
+	const planWarnings = $derived(plan?.plan?.params?.warnings ?? []);
 
 	const loggedIds = $derived(
 		new Set(store.logs.filter((l) => l.sessionId).map((l) => l.sessionId as string)),
@@ -169,6 +173,19 @@
 			</div>
 		</Card>
 	</section>
+
+	{#if planWarnings.length}
+		<section aria-labelledby="pl-notes" class="mb-7">
+			<SectionHeader id="pl-notes" eyebrow="About this plan" />
+			<Card>
+				<div class="space-y-2">
+					{#each planWarnings as w (w)}
+						<p class="text-sm leading-relaxed">{w}</p>
+					{/each}
+				</div>
+			</Card>
+		</section>
+	{/if}
 
 	{#if phaseSegments.length > 1}
 		<section aria-labelledby="pl-phases" class="mb-7">

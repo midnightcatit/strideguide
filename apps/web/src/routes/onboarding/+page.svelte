@@ -145,6 +145,10 @@
 	// Set while the completion screen plays its exit before the app opens.
 	let leaving = $state(false);
 	let rebuilding = $state(false);
+	// What the preview rebuild said about the edited week one, if anything. The
+	// rebuild only runs once the week is confirmed, so the note shows on the
+	// screens the runner lands on after it.
+	let rebuildWarnings = $state<string[]>([]);
 
 	let stepIndex = $state(0);
 	let dir = $state<1 | -1>(1);
@@ -697,8 +701,11 @@
 		if (!draft || rebuilding) return;
 		rebuilding = true;
 		error = null;
+		rebuildWarnings = [];
 		try {
-			draft = await api.rebuildFromPreview(previewSessions());
+			const response = await api.rebuildFromPreview(previewSessions());
+			draft = response;
+			rebuildWarnings = response.warnings ?? [];
 			// With a connector to offer, the last screen is the connect prompt.
 			// Without one, the plan is done, so go straight to the completion state.
 			if (showConnectStep) rebuilt = true;
@@ -908,6 +915,16 @@
 </script>
 
 {#if draft}
+	{#snippet rebuildNotice()}
+		{#if rebuildWarnings.length}
+			<div class="mt-4 rounded-xl border border-hairline bg-sunken p-4 text-left">
+				<p class="tabular text-xs uppercase tracking-widest text-steel">About this plan</p>
+				{#each rebuildWarnings as w (w)}
+					<p class="mt-2 text-sm leading-relaxed text-ink">{w}</p>
+				{/each}
+			</div>
+		{/if}
+	{/snippet}
 	{#if done}
 		<section class="sg-done-screen mx-auto max-w-xl text-center" class:sg-leaving={leaving}>
 			<div class="sg-done-mark mx-auto" aria-hidden="true">
@@ -940,6 +957,7 @@
 				Saved and ready. It keeps adapting as you train, so the plan meets the runner you are
 				becoming.
 			</p>
+			{@render rebuildNotice()}
 			<button
 				type="button"
 				onclick={enterApp}
@@ -957,6 +975,7 @@
 			<p class="mt-2 text-sm leading-relaxed text-steel">
 				Link Google Health to pull in the runs and rides you do outside the plan, so the work you actually do counts and the plan stays honest. It opens Google in a new tab, so this page stays put.
 			</p>
+			{@render rebuildNotice()}
 			<button type="button" onclick={connectFromFinish} class="mt-6 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">
 				Connect Google Health
 			</button>
