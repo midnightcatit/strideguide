@@ -2,15 +2,18 @@ import { describe, expect, it } from 'vitest';
 import {
 	CUSTOM_WORKOUT_LIMITS,
 	validateCustomWorkout,
+	type CustomWorkout,
 	type CustomWorkoutDraft,
 } from '@strideguide/shared';
 import { DEFAULT_PREFS } from '@strideguide/shared/units';
 import {
+	changeStoredWorkouts,
 	createCustomWorkout,
 	customWorkoutDraftSchema,
 	deleteCustomWorkout,
 	readCustomWorkouts,
 	updateCustomWorkout,
+	type PrefsStore,
 } from './custom-workouts';
 
 /** A minimal valid draft; each test bends one part of it. */
@@ -122,5 +125,50 @@ describe('customWorkoutDraftSchema', () => {
 		};
 		expect(customWorkoutDraftSchema.safeParse(monster).success).toBe(true);
 		expect(validateCustomWorkout(monster).some((p) => p.includes('step limit'))).toBe(true);
+	});
+});
+
+describe('changeStoredWorkouts', () => {
+	it('re-reads and retries when another write lands first, so neither workout is lost', async () => {
+		// A store that lets a second writer land between the read and the guarded
+		// write once, then guards every write on the text it last read.
+		let stored: string | null = null;
+		let raced = false;
+		const theirs: CustomWorkout = {
+			...draft('Theirs'),
+			id: 'theirs',
+			createdAt: 'x',
+			updatedAt: 'x',
+		};
+		const store: PrefsStore = {
+			read: async () => stored,
+			write: async (_userId, next, expected) => {
+				if (!raced) {
+					raced = true;
+					stored = JSON.stringify({ ...DEFAULT_PREFS, customWorkouts: [theirs] });
+					return false;
+				}
+				if (stored !== expected) return false;
+				stored = next;
+				return true;
+			},
+		};
+		const outcome = await changeStoredWorkouts(store, 'u1', (prefs) =>
+			createCustomWorkout(prefs, draft('Mine'), 'mine', 'now'),
+		);
+		expect(outcome.kind).toBe('ok');
+		const saved = JSON.parse(stored ?? '{}') as { customWorkouts: { id: string }[] };
+		expect(saved.customWorkouts.map((w) => w.id).sort()).toEqual(['mine', 'theirs']);
+	});
+
+	it('gives up with a conflict once the retries run out', async () => {
+		const store: PrefsStore = {
+			read: async () => null,
+			write: async () => false,
+		};
+		const outcome = await changeStoredWorkouts(store, 'u1', (prefs) =>
+			createCustomWorkout(prefs, draft(), 'w1', 'now'),
+		);
+		expect(outcome.kind).toBe('conflict');
 	});
 });

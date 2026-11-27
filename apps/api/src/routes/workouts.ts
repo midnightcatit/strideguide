@@ -2,10 +2,11 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { eq } from 'drizzle-orm';
 import { validateCustomWorkout } from '@strideguide/shared';
-import { DEFAULT_PREFS, type Prefs } from '@strideguide/shared/units';
 import {
+	changeStoredWorkouts,
 	createCustomWorkout,
 	customWorkoutDraftSchema,
+	d1PrefsStore,
 	deleteCustomWorkout,
 	readCustomWorkouts,
 	updateCustomWorkout,
@@ -16,84 +17,81 @@ import type { AppBindings } from '../types';
 /**
  * The runner's own workouts, stored in settings.prefs next to the favorites.
  * List, create, update and delete for the signed-in user; the workout shape and
- * its reference checks live in the shared package.
+ * its reference checks live in the shared package, and every mutation goes
+ * through a guarded read-modify-write so two requests cannot lose each other.
  */
 const workouts = new Hono<AppBindings>();
 
-/** The runner's settings row, or null when they have none yet. */
-async function loadSettings(db: AppBindings['Variables']['db'], userId: string) {
-	const rows = await db
-		.select()
-		.from(schema.settings)
-		.where(eq(schema.settings.userId, userId))
-		.limit(1);
-	return rows[0] ?? null;
-}
+const INVALID_BODY = {
+	error: 'invalid_input',
+	message: 'Some of the workout details did not look right. Check the name, sections and items, then try again.',
+};
 
-async function saveSettings(db: AppBindings['Variables']['db'], userId: string, prefs: Prefs) {
-	await db
-		.insert(schema.settings)
-		.values({ userId, prefs })
-		.onConflictDoUpdate({ target: schema.settings.userId, set: { prefs } });
-}
+const CONFLICT = { error: 'A change to your workouts was saving at the same time. Try again.' };
 
 workouts.get('/', async (c) => {
 	const user = c.get('user')!;
-	const row = await loadSettings(c.get('db'), user.id);
-	return c.json({ workouts: readCustomWorkouts(row?.prefs) });
+	const rows = await c
+		.get('db')
+		.select()
+		.from(schema.settings)
+		.where(eq(schema.settings.userId, user.id))
+		.limit(1);
+	return c.json({ workouts: readCustomWorkouts(rows[0]?.prefs) });
 });
 
 workouts.post(
 	'/',
-	zValidator('json', customWorkoutDraftSchema),
+	zValidator('json', customWorkoutDraftSchema, (result, c) => {
+		if (!result.success) return c.json(INVALID_BODY, 400);
+	}),
 	async (c) => {
 		const user = c.get('user')!;
-		const db = c.get('db');
 		const draft = c.req.valid('json');
 		const problems = validateCustomWorkout(draft);
 		if (problems.length) return c.json({ error: problems[0], problems }, 400);
-		const row = await loadSettings(db, user.id);
-		const base: Prefs = { ...DEFAULT_PREFS, ...(row?.prefs ?? {}) };
-		const result = createCustomWorkout(
-			base,
-			draft,
-			crypto.randomUUID(),
-			new Date().toISOString(),
+		// One id and time for the whole attempt, so a retry after a lost write
+		// stores the same workout rather than a new one.
+		const id = crypto.randomUUID();
+		const now = new Date().toISOString();
+		const outcome = await changeStoredWorkouts(d1PrefsStore(c.env.DB), user.id, (prefs) =>
+			createCustomWorkout(prefs, draft, id, now),
 		);
-		if (!result.ok) return c.json({ error: result.error }, 400);
-		await saveSettings(db, user.id, result.prefs);
-		return c.json({ workout: result.workout }, 201);
+		if (outcome.kind === 'refused') return c.json({ error: outcome.error }, 400);
+		if (outcome.kind === 'conflict') return c.json(CONFLICT, 409);
+		return c.json({ workout: outcome.workout }, 201);
 	},
 );
 
 workouts.put(
 	'/:id',
-	zValidator('json', customWorkoutDraftSchema),
+	zValidator('json', customWorkoutDraftSchema, (result, c) => {
+		if (!result.success) return c.json(INVALID_BODY, 400);
+	}),
 	async (c) => {
 		const user = c.get('user')!;
-		const db = c.get('db');
 		const id = c.req.param('id');
 		const draft = c.req.valid('json');
 		const problems = validateCustomWorkout(draft);
 		if (problems.length) return c.json({ error: problems[0], problems }, 400);
-		const row = await loadSettings(db, user.id);
-		const base: Prefs = { ...DEFAULT_PREFS, ...(row?.prefs ?? {}) };
-		const result = updateCustomWorkout(base, id, draft, new Date().toISOString());
-		if (!result.ok) return c.json({ error: result.error }, 404);
-		await saveSettings(db, user.id, result.prefs);
-		return c.json({ workout: result.workout });
+		const now = new Date().toISOString();
+		const outcome = await changeStoredWorkouts(d1PrefsStore(c.env.DB), user.id, (prefs) =>
+			updateCustomWorkout(prefs, id, draft, now),
+		);
+		if (outcome.kind === 'refused') return c.json({ error: outcome.error }, 404);
+		if (outcome.kind === 'conflict') return c.json(CONFLICT, 409);
+		return c.json({ workout: outcome.workout });
 	},
 );
 
 workouts.delete('/:id', async (c) => {
 	const user = c.get('user')!;
-	const db = c.get('db');
 	const id = c.req.param('id');
-	const row = await loadSettings(db, user.id);
-	const base: Prefs = { ...DEFAULT_PREFS, ...(row?.prefs ?? {}) };
-	const result = deleteCustomWorkout(base, id);
-	if (!result.ok) return c.json({ error: result.error }, 404);
-	await saveSettings(db, user.id, result.prefs);
+	const outcome = await changeStoredWorkouts(d1PrefsStore(c.env.DB), user.id, (prefs) =>
+		deleteCustomWorkout(prefs, id),
+	);
+	if (outcome.kind === 'refused') return c.json({ error: outcome.error }, 404);
+	if (outcome.kind === 'conflict') return c.json(CONFLICT, 409);
 	return c.json({ ok: true });
 });
 

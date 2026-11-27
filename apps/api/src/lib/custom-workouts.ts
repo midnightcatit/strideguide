@@ -1,11 +1,12 @@
 import { z } from 'zod';
+import type { D1Database } from '@cloudflare/workers-types';
 import {
 	CUSTOM_WORKOUT_CATEGORIES,
 	CUSTOM_WORKOUT_LIMITS,
 	type CustomWorkout,
 	type CustomWorkoutDraft,
 } from '@strideguide/shared';
-import type { Prefs } from '@strideguide/shared/units';
+import { DEFAULT_PREFS, type Prefs } from '@strideguide/shared/units';
 
 /**
  * The request shape for a runner-built custom workout, and the store that keeps
@@ -91,4 +92,79 @@ export function deleteCustomWorkout(prefs: Prefs, id: string): CustomWorkoutStor
 		return { ok: false, error: 'That custom workout is not in your list.' };
 	}
 	return { ok: true, prefs: { ...prefs, customWorkouts: list.filter((w) => w.id !== id) } };
+}
+
+/**
+ * The two operations a guarded workout mutation needs: a raw text read of the
+ * prefs column, and a compare-and-swap write that lands only while the stored
+ * text still equals what the caller read. The raw text is deliberate: the guard
+ * compares the stored JSON byte for byte, which a parsed value cannot do.
+ */
+export interface PrefsStore {
+	read: (userId: string) => Promise<string | null>;
+	write: (userId: string, nextPrefs: string, expectedText: string | null) => Promise<boolean>;
+}
+
+/** How many times a mutation re-reads and retries when another write lands first. */
+const WRITE_ATTEMPTS = 3;
+
+/**
+ * The outcome of a guarded workout mutation. `refused` is the change's own
+ * answer (the cap is full, or the workout is not there); `conflict` is the rare
+ * case of losing every retry to concurrent writers.
+ */
+export type CustomWorkoutChange =
+	| { kind: 'ok'; workout?: CustomWorkout }
+	| { kind: 'refused'; error: string }
+	| { kind: 'conflict' };
+
+/**
+ * Read the stored prefs, apply a pure change, and write the result back guarded
+ * on the text that was read. D1 has no interactive transaction, so this is a
+ * compare-and-swap: when another write lands between the read and the write, the
+ * write changes nothing, the loop re-reads and retries, and no workout is lost.
+ */
+export async function changeStoredWorkouts(
+	store: PrefsStore,
+	userId: string,
+	change: (prefs: Prefs) => CustomWorkoutStoreResult,
+): Promise<CustomWorkoutChange> {
+	for (let attempt = 0; attempt < WRITE_ATTEMPTS; attempt += 1) {
+		const text = await store.read(userId);
+		const result = change(storedPrefs(text));
+		if (!result.ok) return { kind: 'refused', error: result.error };
+		const wrote = await store.write(userId, JSON.stringify(result.prefs), text);
+		if (wrote) return { kind: 'ok', workout: result.workout };
+	}
+	return { kind: 'conflict' };
+}
+
+/** Parse a stored prefs text, with the defaults behind an empty row. */
+function storedPrefs(text: string | null): Prefs {
+	if (!text) return { ...DEFAULT_PREFS };
+	return { ...DEFAULT_PREFS, ...(JSON.parse(text) as Prefs) };
+}
+
+/** The D1-backed store: a raw text read and a guarded upsert on the prefs column. */
+export function d1PrefsStore(db: D1Database): PrefsStore {
+	return {
+		read: async (userId) => {
+			const row = await db
+				.prepare('SELECT prefs FROM settings WHERE user_id = ?1')
+				.bind(userId)
+				.first<{ prefs: string | null }>();
+			return row?.prefs ?? null;
+		},
+		write: async (userId, nextPrefs, expectedText) => {
+			const result = await db
+				.prepare(
+					`INSERT INTO settings (user_id, prefs) VALUES (?1, ?2)
+					 ON CONFLICT(user_id) DO UPDATE SET prefs = ?2
+					 WHERE settings.prefs = ?3`,
+				)
+				.bind(userId, nextPrefs, expectedText)
+				.run();
+			return result.meta.changes > 0;
+		},
+	};
 }
