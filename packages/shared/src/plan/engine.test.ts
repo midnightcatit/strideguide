@@ -1138,6 +1138,10 @@ describe('race date coverage and the race session', () => {
 		// in that time, so the plan says both rather than stretching in silence.
 		expect(p.meta.warnings?.some((w) => w.includes('under four weeks'))).toBe(true);
 		expect(p.meta.warnings?.some((w) => w.includes('close the gap'))).toBe(true);
+		// The easy weeks after the race depend on the goal, so the warning must not
+		// claim a total. The old text said the plan runs for four, which the real
+		// weeks do not match.
+		expect(p.meta.warnings?.every((w) => !w.includes('runs for four'))).toBe(true);
 	});
 });
 

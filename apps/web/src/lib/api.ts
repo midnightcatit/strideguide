@@ -457,9 +457,13 @@ export const api = {
 
 	/** Save the edited week one and rebuild the weeks ahead around it. The
 	 * sessions are the week exactly as it should be saved; removals are absent.
-	 * Returns the rebuilt plan, the same shape as currentPlan. */
+	 * Returns the rebuilt plan, the same shape as currentPlan, plus the rebuild's
+	 * warnings when it left any, so the flow can say what the rebuild did. */
 	rebuildFromPreview: (sessions: PreviewSessionInput[]) =>
-		req<CurrentPlan>('/plans/preview', { method: 'POST', body: JSON.stringify({ sessions }) }),
+		req<CurrentPlan & { warnings?: string[] }>('/plans/preview', {
+			method: 'POST',
+			body: JSON.stringify({ sessions }),
+		}),
 
 	/** Rebuild the weeks ahead from the runner's own logs and feedback. Optionally
 	 * change the equipment first, for a strength-equipment change. */
