@@ -253,7 +253,14 @@
 		}
 	}
 	function holdKeyUp(e: KeyboardEvent) {
-		if (e.key === ' ' || e.key === 'Enter') cancelHold();
+		if (e.key === ' ' || e.key === 'Enter') {
+			// A short press releases before the hold completes. holdKeyDown
+			// cancels Enter's default click, so this is the keyboard path to the
+			// confirmation. A completed hold already finished and unmounted.
+			const partial = hold > 0 && hold < 100;
+			cancelHold();
+			if (partial) confirmFinish = true;
+		}
 	}
 	// Save the place on the way out. The page mode no longer has a Close row, so
 	// leaving through the app's breadcrumb would otherwise drop the current step
