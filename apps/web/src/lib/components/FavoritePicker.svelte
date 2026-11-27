@@ -1,14 +1,26 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import {
 		ALL_MOVES,
-		WORKOUT_LIBRARY,
 		MUSCLE_GROUPS,
 		groupByMuscleGroup,
 		moveCategory,
 		muscleGroupFor,
-		type LibraryWorkout,
 		type MachineExercise,
 	} from '@strideguide/shared/plan';
+	import type { CustomWorkout, CustomWorkoutCategory } from '@strideguide/shared';
+	import { api } from '$lib/api';
+	import {
+		FAVORITE_CATEGORIES,
+		FAVORITE_CATEGORY_LABELS,
+		customRef,
+		filterFavoriteRefs,
+		matchesFavorite,
+		recipeRefs,
+		resolveFavoriteRefs,
+		starterCustomWorkoutDraft,
+		type FavoriteCategory,
+	} from '$lib/favorite-picker';
 
 	let {
 		favoriteMachines = $bindable<string[]>([]),
@@ -20,19 +32,48 @@
 		class?: string;
 	} = $props();
 
-	const WORKOUT_FILTERS: { key: string; label: string }[] = [
-		{ key: 'all', label: 'All' },
-		{ key: 'running', label: 'Run' },
-		{ key: 'walking', label: 'Walk' },
-		{ key: 'strength', label: 'Strength' },
-		{ key: 'mobility', label: 'Mobility' },
-		{ key: 'recovery', label: 'Recovery' },
+	/** The category choices the temporary custom form offers, in the custom vocabulary. */
+	const CUSTOM_CATEGORIES: { value: CustomWorkoutCategory; label: string }[] = [
+		{ value: 'running', label: 'Run' },
+		{ value: 'strength', label: 'Strength' },
+		{ value: 'mobility', label: 'Mobility' },
+		{ value: 'recovery', label: 'Recovery' },
 	];
 
 	let machineQ = $state('');
 	let workoutQ = $state('');
 	let machineFilter = $state('all');
-	let workoutFilter = $state('all');
+	let workoutFilter = $state<FavoriteCategory | 'all'>('all');
+
+	// --- the runner's own workouts, from the #301 API ---
+	let customWorkouts = $state<CustomWorkout[]>([]);
+	let customLoading = $state(true);
+	let customError = $state<string | null>(null);
+	let pendingDeleteId = $state<string | null>(null);
+
+	// --- the temporary create and edit form (name and category only) ---
+	let formOpen = $state(false);
+	let formEditingId = $state<string | null>(null);
+	let formName = $state('');
+	let formCategory = $state<CustomWorkoutCategory>('running');
+	let formSaving = $state(false);
+	let formError = $state<string | null>(null);
+
+	onMount(() => {
+		void loadCustomWorkouts();
+	});
+
+	async function loadCustomWorkouts() {
+		customLoading = true;
+		try {
+			customWorkouts = (await api.listCustomWorkouts()).workouts;
+			customError = null;
+		} catch (e) {
+			customError = e instanceof Error ? e.message : 'Could not load your workouts.';
+		} finally {
+			customLoading = false;
+		}
+	}
 
 	/** Every catalog move that belongs to the machines category, once each. */
 	const machineOptions = $derived.by(() => {
@@ -74,27 +115,18 @@
 
 	const shownMachineGroups = $derived(groupByMuscleGroup(shownMachines));
 
-	const byWorkoutFilter = $derived(
-		workoutFilter === 'all'
-			? WORKOUT_LIBRARY
-			: WORKOUT_LIBRARY.filter((w) => w.modality === workoutFilter),
-	);
-	const shownWorkouts = $derived(
-		byWorkoutFilter.filter((w) => {
-			if (workoutTokens.length === 0) return true;
-			const hay = [w.title, w.summary, w.purpose, w.type, w.modality, ...w.tags]
-				.join(' ')
-				.toLowerCase();
-			return workoutTokens.every((t) => hay.includes(t));
-		}),
+	/** The curated recipes, filtered by the category chip and the search. */
+	const shownRecipes = $derived(filterFavoriteRefs(recipeRefs(), workoutFilter, workoutTokens));
+
+	/** The runner's own workouts, filtered the same way. */
+	const shownCustom = $derived(
+		customWorkouts.filter((w) => matchesFavorite(customRef(w), workoutFilter, workoutTokens)),
 	);
 
+	/** The saved picks, resolved to labels in the order they were saved. */
+	const pickedRefs = $derived(resolveFavoriteRefs(favoriteWorkouts, customWorkouts));
+
 	const pickedMachines = $derived(machineOptions.filter((m) => favoriteMachines.includes(m.name)));
-	const pickedWorkouts = $derived(
-		favoriteWorkouts
-			.map((id) => WORKOUT_LIBRARY.find((w) => w.id === id))
-			.filter((w): w is LibraryWorkout => !!w),
-	);
 
 	function tokens(text: string): string[] {
 		return text
@@ -115,6 +147,77 @@
 
 	function toggleWorkout(id: string) {
 		favoriteWorkouts = toggle(favoriteWorkouts, id);
+	}
+
+	function openCreate() {
+		formEditingId = null;
+		formName = '';
+		formCategory = 'running';
+		formError = null;
+		formOpen = true;
+	}
+
+	function openEdit(workout: CustomWorkout) {
+		formEditingId = workout.id;
+		formName = workout.name;
+		formCategory = workout.category;
+		formError = null;
+		formOpen = true;
+	}
+
+	function closeForm() {
+		formOpen = false;
+		formSaving = false;
+		formError = null;
+	}
+
+	/**
+	 * Save the minimal form. The composer is not built yet, so a new workout and
+	 * a category change both write a valid starter draft; an edit that keeps the
+	 * category keeps the workout's own sections.
+	 */
+	async function saveForm() {
+		const name = formName.trim();
+		if (!name) {
+			formError = 'Give the workout a name.';
+			return;
+		}
+		formSaving = true;
+		formError = null;
+		try {
+			if (formEditingId) {
+				const existing = customWorkouts.find((w) => w.id === formEditingId);
+				const draft =
+					existing && existing.category === formCategory
+						? { name, category: formCategory, sections: existing.sections }
+						: starterCustomWorkoutDraft(name, formCategory);
+				const { workout } = await api.updateCustomWorkout(formEditingId, draft);
+				customWorkouts = customWorkouts.map((w) => (w.id === workout.id ? workout : w));
+			} else {
+				const { workout } = await api.createCustomWorkout(
+					starterCustomWorkoutDraft(name, formCategory),
+				);
+				customWorkouts = [...customWorkouts, workout];
+			}
+			closeForm();
+		} catch (e) {
+			formError = e instanceof Error ? e.message : 'Could not save the workout. Try again.';
+		} finally {
+			formSaving = false;
+		}
+	}
+
+	async function confirmDelete(id: string) {
+		pendingDeleteId = null;
+		try {
+			await api.deleteCustomWorkout(id);
+			customWorkouts = customWorkouts.filter((w) => w.id !== id);
+			if (favoriteWorkouts.includes(id)) {
+				favoriteWorkouts = favoriteWorkouts.filter((f) => f !== id);
+			}
+		} catch (e) {
+			customError = e instanceof Error ? e.message : 'Could not delete the workout. Try again.';
+		}
 	}
 </script>
 
@@ -237,7 +340,7 @@
 					Pick the sessions you like. The plan names one of these when it fits the day.
 				</p>
 			</div>
-			<span class="tabular shrink-0 text-xs text-steel">{favoriteWorkouts.length} selected</span>
+			<span class="tabular shrink-0 text-xs text-steel">{pickedRefs.length} selected</span>
 		</div>
 
 		<div class="relative mt-3">
@@ -262,7 +365,17 @@
 		</div>
 
 		<div class="mt-3 flex flex-wrap gap-1.5">
-			{#each WORKOUT_FILTERS as g (g.key)}
+			<button
+				type="button"
+				aria-pressed={workoutFilter === 'all'}
+				onclick={() => (workoutFilter = 'all')}
+				class="flex min-h-11 items-center rounded-full border px-3 text-xs {workoutFilter === 'all'
+					? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
+					: 'border-hairline text-steel hover:border-steel'}"
+			>
+				All
+			</button>
+			{#each FAVORITE_CATEGORIES as g (g.key)}
 				<button
 					type="button"
 					aria-pressed={workoutFilter === g.key}
@@ -276,48 +389,210 @@
 			{/each}
 		</div>
 
-		{#if pickedWorkouts.length}
+		{#if pickedRefs.length}
 			<div
 				class="scroll-modern relative mt-3 flex h-16 items-center gap-2 overflow-x-auto overflow-y-hidden"
 			>
-				{#each pickedWorkouts as w (w.id)}
+				{#each pickedRefs as ref (ref.id)}
 					<button
 						type="button"
-						onclick={() => toggleWorkout(w.id)}
-						class="no-press flex shrink-0 items-center gap-1.5 rounded-full border border-signal-ink bg-signal-wash px-3 py-1.5 text-xs font-medium text-signal-ink"
+						onclick={() => toggleWorkout(ref.id)}
+						class="no-press flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-signal-ink bg-signal-wash px-3 text-xs font-medium text-signal-ink"
 					>
-						{w.title}
+						{ref.title}
 						<span aria-hidden="true">×</span>
-						<span class="sr-only">Remove {w.title}</span>
+						<span class="sr-only">Remove {ref.title}</span>
 					</button>
 				{/each}
 			</div>
 		{/if}
 
-		{#if shownWorkouts.length === 0}
-			<p class="mt-3 text-xs text-steel">No workouts match that search.</p>
+		<!-- The runner's own workouts. These come from the #301 API and carry a
+		     create, edit and delete flow. -->
+		<div class="mt-4 flex items-center justify-between gap-2">
+			<h4 class="text-xs font-medium uppercase tracking-widest text-steel">Your workouts</h4>
+			<button
+				type="button"
+				onclick={openCreate}
+				class="flex min-h-11 items-center gap-1 rounded-lg border border-dashed border-hairline-strong px-3 text-xs font-medium text-signal-ink hover:border-signal"
+			>
+				＋ New workout
+			</button>
+		</div>
+
+		{#if formOpen}
+			<div class="mt-2 rounded-xl border border-hairline bg-sunken p-3">
+				<p class="text-xs font-medium text-ink">
+					{formEditingId ? 'Edit workout' : 'New workout'}
+				</p>
+				<label class="mt-2 block text-xs text-steel">
+					Name
+					<input
+						bind:value={formName}
+						maxlength="80"
+						placeholder="Morning hills"
+						class="mt-1 w-full rounded-md border border-hairline-strong bg-paper px-3 py-2 text-base text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none sm:text-sm"
+					/>
+				</label>
+				<label class="mt-2 block text-xs text-steel">
+					Category
+					<select
+						bind:value={formCategory}
+						class="mt-1 w-full rounded-md border border-hairline-strong bg-paper px-3 py-2 text-base text-ink focus:border-signal-ink focus:outline-none sm:text-sm"
+					>
+						{#each CUSTOM_CATEGORIES as c (c.value)}
+							<option value={c.value}>{c.label}</option>
+						{/each}
+					</select>
+				</label>
+				{#if formError}
+					<p role="alert" class="mt-2 text-sm text-danger">{formError}</p>
+				{/if}
+				<div class="mt-3 flex gap-2">
+					<button
+						type="button"
+						onclick={saveForm}
+						disabled={formSaving}
+						class="min-h-11 flex-1 rounded-lg bg-ink px-4 text-sm font-medium text-paper disabled:opacity-60"
+					>
+						{formSaving ? 'Saving...' : formEditingId ? 'Save' : 'Create'}
+					</button>
+					<button
+						type="button"
+						onclick={closeForm}
+						class="min-h-11 rounded-lg border border-hairline px-4 text-sm text-steel hover:border-steel"
+					>
+						Cancel
+					</button>
+				</div>
+				<p class="mt-2 text-xs text-steel">
+					The full composer is coming. For now this saves the name and category.
+				</p>
+			</div>
+		{/if}
+
+		{#if customLoading}
+			<p class="mt-2 text-xs text-steel">Loading your workouts...</p>
+		{:else if customError}
+			<p class="mt-2 text-xs text-danger">{customError}</p>
+		{:else if shownCustom.length === 0}
+			<p class="mt-2 text-xs text-steel">
+				{workoutQ || workoutFilter !== 'all'
+					? 'No workouts of yours match.'
+					: 'You have no workouts of your own yet.'}
+			</p>
 		{:else}
-			<!-- Same as the machine list: flows with the page on a phone, capped on
-			     a wider screen. -->
-			<ul class="scroll-modern mt-3 grid gap-2 overflow-y-auto overflow-x-hidden sm:max-h-80">
-				{#each shownWorkouts as w (w.id)}
+			<ul class="mt-2 grid gap-1">
+				{#each shownCustom as w (w.id)}
+					{@const ref = customRef(w)}
 					{@const picked = favoriteWorkouts.includes(w.id)}
-					<li>
+					<li
+						class="flex items-stretch gap-2 rounded-xl border p-2 {picked
+							? 'border-signal-ink bg-signal-wash'
+							: 'border-hairline'}"
+					>
 						<button
 							type="button"
 							aria-pressed={picked}
 							onclick={() => toggleWorkout(w.id)}
-							class="no-press flex w-full flex-col rounded-xl border p-3 text-left {picked
+							class="no-press flex min-h-11 flex-1 items-center gap-3 rounded-lg px-1 text-left"
+						>
+							{#if ref.imagePath}
+								<img
+									src={ref.imagePath}
+									alt=""
+									loading="lazy"
+									class="h-12 w-12 shrink-0 rounded-lg border border-hairline object-cover"
+								/>
+							{/if}
+							<span class="min-w-0">
+								<span class="block truncate font-display font-medium">{w.name}</span>
+								<span class="mt-0.5 block text-xs text-steel">{FAVORITE_CATEGORY_LABELS[ref.category]}</span>
+							</span>
+							{#if picked}
+								<span class="ml-auto shrink-0 text-signal-ink" aria-hidden="true">✓</span>
+							{/if}
+						</button>
+						{#if pendingDeleteId === w.id}
+							<button
+								type="button"
+								onclick={() => confirmDelete(w.id)}
+								class="min-h-11 shrink-0 rounded-lg bg-danger px-3 text-xs font-medium text-paper"
+							>
+								Delete
+							</button>
+							<button
+								type="button"
+								onclick={() => (pendingDeleteId = null)}
+								class="min-h-11 shrink-0 rounded-lg border border-hairline px-3 text-xs text-steel hover:border-steel"
+							>
+								Keep
+							</button>
+						{:else}
+							<button
+								type="button"
+								onclick={() => openEdit(w)}
+								aria-label="Edit {w.name}"
+								class="flex min-h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-hairline text-xs text-steel hover:border-steel"
+							>
+								Edit
+							</button>
+							<button
+								type="button"
+								onclick={() => (pendingDeleteId = w.id)}
+								aria-label="Delete {w.name}"
+								class="flex min-h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-hairline text-steel hover:border-danger hover:text-danger"
+							>
+								×
+							</button>
+						{/if}
+					</li>
+				{/each}
+			</ul>
+		{/if}
+		<p class="mt-2 text-xs text-steel">
+			Saved to your account. The plan does not use them yet.
+		</p>
+
+		<!-- The curated recipes: the sessions a runner asks for by name. -->
+		<h4 class="mt-5 text-xs font-medium uppercase tracking-widest text-steel">Library</h4>
+		{#if shownRecipes.length === 0}
+			<p class="mt-2 text-xs text-steel">No library workouts match that search.</p>
+		{:else}
+			<ul class="scroll-modern mt-2 grid gap-2 overflow-y-auto overflow-x-hidden sm:max-h-80">
+				{#each shownRecipes as ref (ref.id)}
+					{@const picked = favoriteWorkouts.includes(ref.id)}
+					<li>
+						<button
+							type="button"
+							aria-pressed={picked}
+							onclick={() => toggleWorkout(ref.id)}
+							class="no-press flex w-full items-center gap-3 rounded-xl border p-3 text-left {picked
 								? 'border-signal-ink bg-signal-wash'
 								: 'border-hairline hover:border-signal-ink'}"
 						>
-							<span class="flex items-baseline justify-between gap-2">
-								<span class="min-w-0 font-display font-medium">{w.title}</span>
-								<span class="shrink-0 text-xs text-steel">
-									{picked ? '✓ ' : ''}{w.durationMin} min
+							{#if ref.imagePath}
+								<img
+									src={ref.imagePath}
+									alt=""
+									loading="lazy"
+									class="h-12 w-12 shrink-0 rounded-lg border border-hairline object-cover"
+								/>
+							{/if}
+							<span class="min-w-0 flex-1">
+								<span class="flex items-baseline justify-between gap-2">
+									<span class="min-w-0 font-display font-medium">{ref.title}</span>
+									{#if ref.durationMin}
+										<span class="tabular shrink-0 text-xs text-steel">{ref.durationMin} min</span>
+									{/if}
 								</span>
+								{#if ref.summary}
+									<span class="mt-1 block text-xs leading-relaxed text-steel">{ref.summary}</span>
+								{/if}
 							</span>
-							<span class="mt-1 text-xs leading-relaxed text-steel">{w.summary}</span>
+							{#if picked}
+								<span class="shrink-0 text-signal-ink" aria-hidden="true">✓</span>
+							{/if}
 						</button>
 					</li>
 				{/each}

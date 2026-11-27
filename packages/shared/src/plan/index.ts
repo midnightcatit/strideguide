@@ -26,6 +26,7 @@ export * from './why';
 export * from './why-rephrase';
 export * from './library';
 export * from './library-extra';
+export * from './library-recipes';
 export * from './recommend';
 export * from './rest';
 export * from './preview-categories';
