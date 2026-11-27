@@ -4,6 +4,7 @@ Merged pull requests, newest first, grouped by the day they landed. The Changelo
 workflow writes this on each merge to main. Edit it by hand only if you mean to.
 
 ## 2026-11-27
+- docs(agents): apply or backlog CodeRabbit findings instead of hand-fixing (#295)
 - feat(plan): explicit strength rest cards, rest band by phase and level (#293)
 - research(wave-7): strength session structure and stretch dosing evidence (#294)
 - Surface plan warnings to the runner (#292)
