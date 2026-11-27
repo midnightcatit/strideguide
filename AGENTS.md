@@ -98,10 +98,12 @@ not just the blocking ones.
   turn or poll in a loop. The review is asynchronous and can take a few minutes.
 - **Read the review yourself.** The CodeRabbit check, its summary and its "no issues" line are
   evidence, not a review. Open the review comments and read them.
-- **Do not hand-fix findings in a loop.** CodeRabbit is the fixer where it can be: apply a comment's
-  suggested diff verbatim (its suggestion action), or hand the comment to CodeRabbit's fix when the
-  comment offers one. Verify the suggested diff first (read it, run the gate): the button applies
-  what the comment proposes, right or wrong.
+- **Do not hand-fix findings in a loop.** CodeRabbit is the fixer where it can be. When a comment
+  carries a suggested fix that makes sense, take it verbatim and continue: read the diff, and if it
+  holds up, apply it exactly as written, let the gate confirm, and move on. No rework, no extra fix
+  rounds waiting on the reviewer's blessing. Hand the comment to CodeRabbit's fix when the comment
+  offers one and no diff is present. A suggestion that does not hold up is treated like any other
+  finding: backlogged or reworked deliberately, not clicked through.
 - **Backlog what we do not apply.** A finding with no suggestion, a fix that needs a design call, or
   one deliberately out of scope goes to `backlog/` (see backlog/README.md): one file per finding
   with the finding, the reason, and the source link. Resolve the thread with a reply that points at
