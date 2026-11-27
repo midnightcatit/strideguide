@@ -36,6 +36,7 @@ import type {
 	QualityKind,
 	SessionArchetype,
 	SessionPrescription,
+	StepBlock,
 	WeekShape,
 	WorkoutStep,
 } from '@strideguide/shared';
@@ -511,12 +512,37 @@ const customWorkoutSchema = z.object({
 
 type CustomWorkout = z.infer<typeof customWorkoutSchema>;
 
+/** The most steps one workout block may hold, as prescriptionSchema enforces it. */
+const MAX_BLOCK_STEPS = 200;
+
+/**
+ * Pack a circuit's moves into blocks that each stay inside prescriptionSchema's
+ * 200-step block cap. A move holds at most 20 sets (the route schema), so its
+ * cards never exceed 39 steps and whole moves always fit somewhere; a long
+ * circuit continues into a second block instead of failing the week-one save.
+ */
+export function circuitBlocks(perMove: WorkoutStep[][]): StepBlock[] {
+	const blocks: StepBlock[] = [];
+	let current: WorkoutStep[] = [];
+	for (const steps of perMove) {
+		if (current.length && current.length + steps.length > MAX_BLOCK_STEPS) {
+			blocks.push({ repeat: 1, label: 'Your circuit', steps: current });
+			current = [];
+		}
+		current = [...current, ...steps];
+	}
+	if (current.length) blocks.push({ repeat: 1, label: 'Your circuit', steps: current });
+	return blocks;
+}
+
 /** A guided workout shape for a custom session, so the player and detail views render it. */
-function customStructuredWorkout(custom: CustomWorkout) {
+export function customStructuredWorkout(custom: CustomWorkout) {
 	if (custom.modality === 'strength') {
 		const moves = custom.blocks ?? [];
-		const steps: WorkoutStep[] = [];
-		moves.forEach((b, mi) => {
+		// One move's cards, kept per move so the packer can split the circuit
+		// between moves and never between a set and its rest card.
+		const perMove: WorkoutStep[][] = moves.map((b, mi) => {
+			const steps: WorkoutStep[] = [];
 			b.sets.forEach((s, i) => {
 				steps.push({
 					kind: 'work' as const,
@@ -538,9 +564,10 @@ function customStructuredWorkout(custom: CustomWorkout) {
 					});
 				}
 			});
+			return steps;
 		});
 		return {
-			blocks: [{ repeat: 1, label: 'Your circuit', steps }],
+			blocks: circuitBlocks(perMove),
 			estimatedDurationMin: custom.durationMin,
 		};
 	}

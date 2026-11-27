@@ -19,6 +19,7 @@ import recovery from './recovery';
 import sessionNotes from './session-notes';
 import settings from './settings';
 import summaries from './summaries';
+import workouts from './workouts';
 
 const api = new Hono<AppBindings>();
 
@@ -39,6 +40,7 @@ secured.route('/logs', logs);
 secured.route('/exercises', exercises);
 secured.route('/ai', ai);
 secured.route('/settings', settings);
+secured.route('/workouts', workouts);
 secured.route('/explanations', explanations);
 secured.route('/summaries', summaries);
 secured.route('/activities', activities);
