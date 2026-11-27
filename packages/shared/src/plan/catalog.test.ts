@@ -274,6 +274,37 @@ describe('circuitFor', () => {
 describe('circuitFor filters and phasing', () => {
 	const FREE = new Set(['dumbbells', 'barbell', 'kettlebell', 'bands']);
 
+	it('makes favorite hangs and hanging raises available at their full-gym progression levels', () => {
+		const favorites = ['Active hang', 'Hanging knees to elbows'];
+		const pick = (level: string) =>
+			circuitFor('full-gym', 60, undefined, false, level, undefined, favorites).map((m) => m.name);
+		expect(pick('beginner')).toContain('Active hang');
+		expect(pick('beginner')).not.toContain('Hanging knees to elbows');
+		expect(pick('intermediate')).toEqual(expect.arrayContaining(favorites));
+	});
+
+	it('reserves the full pistol for advanced runners and offers the half pistol earlier', () => {
+		const favorites = ['Pistol squat', 'Half pistol squat'];
+		const pick = (level: string) =>
+			circuitFor('bodyweight', 30, undefined, false, level, undefined, favorites)[0]?.name;
+		expect(pick('intermediate')).toBe('Half pistol squat');
+		expect(pick('advanced')).toBe('Pistol squat');
+	});
+
+	it('prescribes the lying leg extension only in loaded circuits with bands', () => {
+		const name = 'Lying leg extension';
+		const pick = (mode: 'bands' | 'full-gym' | 'bodyweight', loaded: boolean, items?: string[]) =>
+			circuitFor(mode, 30, items, loaded, 'beginner', undefined, [name], focusFor(0, 2)).find(
+				(m) => m.name === name,
+			);
+		for (const mode of ['bands', 'full-gym'] as const) {
+			expect(pick(mode, true, ['bands'])?.equipment).toBe('bands');
+			expect(pick(mode, false, ['bands'])).toBeUndefined();
+			expect(pick(mode, true, ['dumbbells'])).toBeUndefined();
+		}
+		expect(pick('bodyweight', true)).toBeUndefined();
+	});
+
 	it('never shows equipment the runner does not have', () => {
 		for (const m of circuitFor('machines', 45, ['bands'])) {
 			const cat = moveCategory(m);

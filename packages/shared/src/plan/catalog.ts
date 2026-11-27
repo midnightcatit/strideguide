@@ -200,7 +200,7 @@ function poolFor(mode: EquipmentPreference, level?: string, loaded = false): Mac
 		...freeByTool('barbell'),
 		...freeByTool('kettlebell'),
 	];
-	const bands = [...BAND_HOME_MOVES];
+	const bands = BAND_HOME_MOVES.filter((m) => loaded || !m.requiresLoaded);
 
 	switch (mode) {
 		case 'bodyweight':
