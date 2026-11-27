@@ -1,0 +1,401 @@
+id	name	alt_name	our_level	tier	equipment	pattern	have	primary_muscles
+e0ic	Box burpee (old)		intermediate	bodyweight	plyo box or chair	cardio		abs, core and quadriceps
+e0ia	Burpee (old)		beginner	bodyweight	none	cardio		abs, core and quadriceps
+e0id	Jack burpee (old)		intermediate	bodyweight	none	cardio		abs, core and quadriceps
+e1fy	Pilates	Pilates class, Mat Pilates, Reformer Pilates	beginner	bodyweight	none	core		abs, core and glutes
+w01b	Plank jack thrust		beginner	bodyweight	none	core		abs, core and quadriceps
+e0ie	Press burpee (old)	Devil press	intermediate	dumbbells	kettlebell or dumbbell	cardio		abs, core and quadriceps
+e0ib	Pushup burpee (old)		intermediate	bodyweight	none	cardio		abs, core and quadriceps
+e0if	Tuck jump burpee (old)		intermediate	bodyweight	none	cardio		abs, core and quadriceps
+e1fv	Calisthenics	Bodyweight training, Street workout	intermediate	bodyweight	rings or pullup bar	core		biceps, forearms and back
+e1ar	Climbing machine	VersaClimber	beginner	machines	climber machine	core		biceps, forearms and back
+e1g7	Backstroke	Backstroke swimming, Back crawl	beginner	bodyweight	swimming pool	core		back, chest and glutes
+e1d4	Bouldering		beginner	bodyweight	climbing wall	core		back, biceps and forearms
+e0i0	Bridge pushup	Head bridge, Half bridge	intermediate	bodyweight	none	hinge		back, shoulders and core
+e1g8	Butterfly stroke	Butterfly swimming	intermediate	bodyweight	swimming pool	push		back, chest and core
+e1bc	Dolphin kicks	Three-legged dolphin extensions	beginner	bodyweight	none	core		back, shoulders and glutes
+e02g	Elbow bridge	Dwi Pada Viparita Dandasana, Upward Facing Two-Foot Staff Pose	intermediate	bodyweight	none	hinge		back, shoulders and core
+e0hy	Feet-elevated bridge	Decline bridge	intermediate	bodyweight	plyo box or chair	hinge		back, shoulders and core
+e0i3	Forearm bridge	Dwi Pada Viparita Dandasana, Upward Facing Two-Foot Staff Pose	intermediate	bodyweight	none	hinge		back, shoulders and core
+e00x	Hanging active splits		beginner	bodyweight	rings or pullup bar	pull		back, chest and core
+e0hx	High bridge rotation	Bridge side entrance	intermediate	bodyweight	none	hinge		back, shoulders and core
+e0s7	Incline bridge	Angled bridge	intermediate	bodyweight	plyo box or chair	hinge		back, shoulders and core
+e1d5	Lead climbing		intermediate	bodyweight	climbing wall and climbing harness	core		back, biceps and forearms
+e0xi	Square forearm supine plank		beginner	bodyweight	none	core		back, rotator cuff and shoulders
+e1d6	Top rope climbing		beginner	bodyweight	climbing wall and climbing harness	core		back, biceps and forearms
+e0ys	Wall bridge raise		intermediate	bodyweight	free wall	hinge		back, shoulders and core
+e0z7	Ankle swivels	Heel toe shuffle	beginner	bodyweight	none	calf		legs
+w00x	Box burpee		beginner	bodyweight	plyo box	cardio		legs, quadriceps and abs
+w00v	Burpee	No pushup burpee	beginner	bodyweight	none	cardio		
+w01n	Burpee without jump	No jump no pushup burpee, Sprawl	beginner	bodyweight	none	cardio		legs, quadriceps and abs
+w01o	Half burpee		beginner	bodyweight	none	cardio		legs, quadriceps and abs
+e05t	Jump feet clap		beginner	bodyweight	none	plyometric		legs
+e05u	Jump feet double clap		beginner	bodyweight	none	plyometric		legs
+e1g2	Jump rope	Skipping rope, Rope skipping	beginner	bodyweight	jumping rope	cardio		legs
+e0gd	Jump rope basic skip		beginner	bodyweight	jumping rope	cardio		legs
+e0gf	Jump rope front-to-back		beginner	bodyweight	jumping rope	cardio		
+e0ge	Jump rope side-to-side		beginner	bodyweight	jumping rope	cardio		legs
+e009	Jumping tap foot crossing behind		beginner	bodyweight	none	plyometric		
+e00a	Jumping tap foot crossing front		beginner	bodyweight	none	plyometric		
+e00b	Jumping tap foot side		beginner	bodyweight	none	plyometric		
+e05y	Jumping trunk twists	Jump hip rotation	beginner	bodyweight	none	plyometric		legs
+e07m	One-step criss-cross jump		beginner	bodyweight	none	plyometric		legs
+e081	Plank squat thrust		beginner	bodyweight	none	squat		legs, quadriceps and abs
+e16l	Plie squat with tip toes		beginner	bodyweight	none	squat		legs, quadriceps and glutes
+w002	Press burpee	Devil press	intermediate	dumbbells	kettlebell or dumbbell	cardio		legs, quadriceps and abs
+w019	Roll burpee		beginner	bodyweight	none	cardio		legs, quadriceps and abs
+e0kq	Seated ankle pull	Band-resisted anterior tibialis raise	beginner	bands	long resistance band	calf		
+e0kp	Seated calf press		beginner	bands	long resistance band	calf		legs
+e09w	Side hop		beginner	bodyweight	none	plyometric		legs
+e0ai	Side to side jump		beginner	bodyweight	none	plyometric		legs
+e16i	Single-leg hop	Single-leg calf jump	beginner	bodyweight	none	plyometric		
+e17m	Skater jump	Side jump skater, Skater hop, Speed skater	beginner	bodyweight	none	plyometric		
+e0av	Standing ankle eversion and inversion		beginner	bodyweight	none	calf		
+e0b8	Standing toes to heels		beginner	bodyweight	none	core		
+e0z6	Tiptoe walk		beginner	bodyweight	none	calf		legs
+w00y	Tuck jump burpee		intermediate	bodyweight	none	cardio		
+e0cv	Two-step criss-cross jump		beginner	bodyweight	none	plyometric		legs
+e1g6	Breaststroke	Breaststroke swimming	beginner	bodyweight	swimming pool	core		chest, back and quadriceps
+e1g5	Front crawl	Freestyle swimming, Freestyle, Crawl stroke	beginner	bodyweight	swimming pool	core		chest, back and triceps
+e16f	Assisted hip airplane	Assisted runners hang	beginner	bodyweight	free wall	core		legs, glutes and core
+e170	Hip airplane	Runners hang	intermediate	bodyweight	none	core		legs, glutes and core
+e0au	Standing ankle circles		beginner	bodyweight	none	calf		legs
+e0i9	Active 90-90		beginner	bodyweight	none	core		
+e01c	Advanced shrimp squat		advanced	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0jg	Archer squat floor slap	Pubu Lunbi, Slap the floor while in half squat stance	intermediate	bodyweight	none	hinge		glutes, hamstrings and quadriceps
+e0y5	Assisted back scale		beginner	bodyweight	none	core		glutes, hamstrings and legs
+e0er	Back scale	Drinking bird	beginner	bodyweight	none	core		glutes, hamstrings and legs
+w007	Back squat press		beginner	dumbbells	barbell	squat		glutes, hamstrings and quadriceps
+e12a	Band-resisted pistol squat		advanced	bands	long resistance band	squat		glutes, hamstrings and quadriceps
+e166	Banded seated hip abduction		beginner	bands	plyo box or chair and short resistance band	core		glutes and core
+e12g	Banded side leg raise	Banded lateral leg raise	beginner	bands	short resistance band	core		glutes and legs
+w022	Basic Squats plus calves		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0kc	Bob and weave		beginner	dumbbells	kettlebell or dumbbell	core		glutes, hamstrings and quadriceps
+e0it	Bow stance	Gong Bu	beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e0fp	Bridge Pose	Setu Bandha Sarvangasana, Short bridge hold, Bridge	beginner	bodyweight	none	hinge		glutes, hamstrings and core
+e196	Bridge pose with legs half extended		beginner	bodyweight	none	hinge		glutes, hamstrings and core
+e0dg	Bunny hop		beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0q6	Butterfly squat		advanced	bodyweight	none	squat		glutes
+e1ef	Cable hip extension	Cable glute kick, Cable glute kickback	beginner	machines	cable machine or double cable machine	posterior-chain		glutes and hamstrings
+e1em	Cable straight leg abduction	Cable side leg raise, Cable hip abduction	beginner	machines	cable machine or double cable machine	core		glutes
+e0iv	Cat stance	Xu Bu, False stance, Empty stance	beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e0ff	Clamshell		beginner	bands	short resistance band	core		glutes and core
+e02o	Close squat	Narrow squat, Close-leg deep squat, Narrow stance squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e17z	Cook bridge		beginner	bodyweight	none	hinge		glutes, hamstrings and core
+e0q7	Corkscrew squat		intermediate	bodyweight	none	squat		glutes
+e0iu	Crouching stance	Pu Bu, Half squat stance	beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e0y4	Curtsy lunge		beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0e9	Curtsy shrimp squat		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e11n	Cyclist squat		beginner	bodyweight	slant board	squat		glutes, hamstrings and quadriceps
+w012	Deck squat		beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e02y	Deep archer squat	Cossack squat, Lateral lunge	intermediate	bodyweight	none	hinge		glutes and hamstrings
+e031	Deep squat	Full squat, Asian squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0xp	Deep squat hold	Asian resting squat, Low squat hold, Yogi squat, Primal squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e1a1	Depth jump		beginner	bodyweight	plyo box	plyometric		glutes, hamstrings and quadriceps
+e0l6	Diamond frog		beginner	bodyweight	none	core		glutes and core
+e0wk	Donkey kick	Kickback, Quadruped hip extension	beginner	bodyweight	none	hinge		glutes and hamstrings
+e13j	Double kettlebell front squat	Dual kettlebell front squat	beginner	dumbbells	kettlebell	squat		glutes, hamstrings and quadriceps
+e0ea	Dragon squat		advanced	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0dh	Duck walk		beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e1aj	Dumbbell deck squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e1b4	Dumbbell deck squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e13s	Dumbbell overhead squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e0eb	Elevated dragon squat		advanced	bodyweight	plyo box	squat		glutes, hamstrings and quadriceps
+e10g	Elevated pistol squat		intermediate	bodyweight	plyo box	squat		glutes, hamstrings and quadriceps
+w024	Extended deck squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e03m	Fire hydrant	Peeing dog, Quadruped hip abduction	beginner	bodyweight	none	posterior-chain		glutes
+w017	Flying knee lunge	Lunge to explosive knee drive, Lunge hop	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0gy	Foot-hold dragon squat		advanced	bodyweight	none	calf		glutes, hamstrings and quadriceps
+e0ec	Foot-hold hand-assisted dragon squat	Baby grasshopper pose, Bala Parsva Bhuja Dandasana	intermediate	bodyweight	none	calf		glutes, hamstrings and quadriceps
+e0df	Frog jump		beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0sr	Front-Staggered Squat	Cat stance squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0h2	Good morning		beginner	dumbbells	barbell	hinge		glutes, hamstrings and core
+e048	Half pistol squat	Chair pistol squat, Half one-leg squat	intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e049	Half squat	Parallel squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0py	Hand-assisted dragon squat		advanced	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e19p	Hip hike	Hip hitch	beginner	bodyweight	step platform	core		glutes and legs
+e1af	Horizontal plank leg lifts		beginner	bodyweight	plyo box or chair	core		glutes, hamstrings and abs
+e0is	Horse stance	Ma Bu	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e05x	Jumping deep squat		beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0ex	Jumping half squat		beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0ed	Jumping pistol squat		advanced	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e005	Jumping wide squat	Jumping sumo squat	beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0k2	Kettlebell deck squat		beginner	dumbbells	kettlebell	squat		glutes, hamstrings and quadriceps
+e0zr	Lateral leg raise	Side leg raise, Standing hip abduction	beginner	bodyweight	none	core		glutes and legs
+e08m	Long jump		beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e06k	Long jump to backward jumps		beginner	bodyweight	none	plyometric		glutes, hamstrings and quadriceps
+e0e3	Low side-to-side squat	Horse stance cossack squat, Lateral low squat	intermediate	bodyweight	none	squat		glutes and hamstrings
+e0k5	Lunge and press		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+w027	Lunge triplet		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0s4	Lying side leg raise	Side lying hip abduction	beginner	bodyweight	none	core		glutes and core
+e1g1	Martial arts	Judo, Jiu-jitsu, Karate, Taekwondo, Wrestling	intermediate	bodyweight	none	core		glutes and hamstrings
+e0ss	One Leg Chair Squat		beginner	bodyweight	plyo box or chair	squat		glutes, hamstrings and quadriceps
+e13y	One-leg hinge	Warrior 3 dynamic, One-leg romanian dealift	beginner	bodyweight	none	hinge		glutes, hamstrings and core
+w015	One-leg hinge hop	One-leg deadlift hop	beginner	bodyweight	none	plyometric		glutes, hamstrings and core
+e0k6	Overhead lunge		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e0he	Overhead squat		beginner	dumbbells	barbell	squat		glutes, hamstrings and quadriceps
+e0xn	Partial front split		intermediate	bodyweight	none	core		core, quadriceps and glutes
+e19v	Partial one-leg sissy squat	Peterson step	intermediate	bodyweight	step platform	knee-extension		glutes, hamstrings and quadriceps
+e0eq	Partner squat overhead ball throw		beginner	bodyweight	exercise partner and medicine ball	squat		glutes, hamstrings and quadriceps
+e0q5	Pigeon squat	Squat with one leg crossed over	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0e5	Pistol squat with leg raise		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e17r	Prying squat	Bottom of squat rock	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e180	Quadruped hip internal rotation		beginner	bodyweight	none	core		
+e0ev	Quarter squat		beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e10c	Reverse clamshell		beginner	bands	short resistance band	core		glutes
+e16x	Rolling pistol squat		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0a7	Scissor jump		beginner	bodyweight	none	plyometric		core, quadriceps and glutes
+e0pk	Seated good morning		beginner	dumbbells	bench and barbell	hinge		glutes, hamstrings and core
+e1a0	Seated vertical jump		beginner	bodyweight	plyo box	plyometric		glutes, hamstrings and quadriceps
+e0xz	Shiko		beginner	bodyweight	none	core		glutes, hamstrings and quadriceps
+e0ac	Shrimp squat		intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0sq	Side-Staggered Squat	Bent-leg archer squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e13x	Single dumbbell front squat		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e0jr	Single kettlebell front squat		beginner	dumbbells	kettlebell	squat		glutes, hamstrings and quadriceps
+e0al	Single-leg lunge	Skater squat, King deadlift, Knee-tap squat, Airborne lunge, Beginner shrimp squat	intermediate	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e19z	Slanted pistol squat		intermediate	bodyweight	slant board	squat		glutes, hamstrings and quadriceps
+e19x	Slanted quarter pistol squat	Poliquin step	beginner	bodyweight	slant board	squat		glutes, hamstrings and quadriceps
+e1fo	Sliding front split	Slider front split, Active sliding split	intermediate	bodyweight	slider or towel	core		glutes, hamstrings and core
+e0so	Sliding pistol squat	Uneven squat	intermediate	bodyweight	slider	squat		glutes, hamstrings and quadriceps
+e00n	Stability ball hamstring curl		beginner	bodyweight	stability ball	knee-flexion		glutes, hamstrings and core
+e11j	Stability ball wall squat		beginner	bodyweight	stability ball and free wall	squat		glutes and hamstrings
+e16v	Standing front split		beginner	bodyweight	none	core		glutes and hamstrings
+e17s	Standing hip axial rotation		beginner	bodyweight	none	core		glutes, core and legs
+e16m	Standing side leg lift	Standing hip abduction, Standing fire hydrant	intermediate	bodyweight	none	core		glutes
+e0rh	Standing straddle one-arm handstand leg lift	Standing lateral leg lifts with shoulder flexion and scapular elevation	beginner	bodyweight	free wall	push		glutes, neck and back
+e19u	Stepper touchdown squat		beginner	bodyweight	step platform	squat		glutes, hamstrings and quadriceps
+e0wl	Straight leg donkey kick		beginner	bodyweight	none	hinge		glutes and hamstrings
+e00u	Straight leg fire hydrant	Peeing dog, Quadruped hip abduction	beginner	bodyweight	none	posterior-chain		glutes
+e193	Straight legs neck bridge	Head bridge pose, Setu Bandhasana	intermediate	bodyweight	none	hinge		glutes, hamstrings and core
+e194	Straight legs neck bridge with hand support	Head bridge pose progression, Setu Bandhasana	intermediate	bodyweight	none	hinge		glutes, hamstrings and core
+e195	Straight legs neck bridge with straight arms support	Head bridge pose progression, Setu Bandhasana	intermediate	bodyweight	none	hinge		glutes, hamstrings and core
+w003	Thruster	Front squat press	beginner	dumbbells	barbell	squat		glutes, hamstrings and quadriceps
+e0ey	Touchdown squat	Box touchdown squat	intermediate	bodyweight	plyo box or chair	squat		glutes, hamstrings and quadriceps
+e0k4	Walking lunge		beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0ft	Warrior 3	Virabhadrasana 3	beginner	bodyweight	none	core		glutes, hamstrings and legs
+e1ck	Weighted 45-degree hip extension	Weighted Roman chair hip extension, Weighted 45-degree hyperextension, Kettlebell hip extension on Roman chair	beginner	machines	roman chair and kettlebell or dumbbell	posterior-chain		glutes, hamstrings and core
+e148	Weighted deep lunge		beginner	dumbbells	dumbbell	squat		glutes, hamstrings and quadriceps
+e19w	Weighted partial one-leg sissy squat	Weighted Peterson step	advanced	dumbbells	kettlebell or dumbbell	knee-extension		glutes, hamstrings and quadriceps
+e14r	Weighted pistol squat		intermediate	dumbbells	kettlebell	squat		glutes, hamstrings and quadriceps
+e19y	Weighted slanted quarter pistol squat	Weighted Poliquin step	beginner	dumbbells	slant board and kettlebell	squat		glutes and hamstrings
+e1b0	Weighted wall straddle stretch		intermediate	dumbbells	free wall and kettlebell	core		glutes and hip adductors
+e1fw	Weightlifting	Weight training, Strength training, Gym workout	intermediate	dumbbells	kettlebell or dumbbell	core		glutes, hamstrings and quadriceps
+e004	Wide squat	Sumo squat, Plie squat, Horse stance squat	beginner	bodyweight	none	squat		glutes, hamstrings and quadriceps
+e0zu	Wide squat good morning	Standing bent-legs good morning, Horse stance hinge	beginner	bodyweight	none	hinge		glutes, hamstrings and quadriceps
+e0f4	Wobble board deep squat		intermediate	bodyweight	wobble balance board	squat		glutes, hamstrings and quadriceps
+e0f3	Wobble board half squat		beginner	bodyweight	wobble balance board	squat		glutes, hamstrings and quadriceps
+e0fy	Wobble board pistol squat		advanced	bodyweight	wobble balance board	squat		glutes, hamstrings and quadriceps
+e1aa	Zercher squat		beginner	dumbbells	barbell	squat		glutes, hamstrings and quadriceps
+e12c	Banded hamstring curl lying	Resistance band knee flexion	beginner	bands	long resistance band	knee-flexion		hamstrings
+e12d	Banded hamstring curl standing	Resistance band knee flexion	beginner	bands	short resistance band	knee-flexion		hamstrings
+e0yb	Wide horse stance		beginner	bodyweight	none	squat		hip adductors, glutes and hamstrings
+e1f8	Headstand pike press	Headstand straight legs lift, Sirsasana pike press	beginner	bodyweight	none	push		neck, back and shoulders
+e0i4	Neck bridge		beginner	bodyweight	none	hinge		neck, core and glutes
+e1at	Assault bike	Air bike, Fan bike, Echo bike	beginner	machines	assault bike	core		quadriceps, glutes and hamstrings
+e1d9	Backpacking	Trekking, Rucking	beginner	bodyweight	backpack, trail and backpack	core		quadriceps and glutes
+e1cv	Backward treadmill walking	Reverse treadmill walking, Retro walking, Treadmill walking backward, Backward walking	beginner	machines	treadmill	core		quadriceps and legs
+e0yw	Banded wall sit		beginner	bands	free wall and short resistance band	squat		quadriceps, glutes and hamstrings
+e0uy	Block-support side angle		beginner	bodyweight	yoga block	core		quadriceps, glutes and hamstrings
+e0fl	Chair pose	Utkatasana	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e1da	Dancing	Dance	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0uz	Elbow-support side angle		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e1as	Elliptical	Cross trainer	beginner	machines	elliptical	core		quadriceps, glutes and hamstrings
+e0ux	Extended side angle pose	Utthita Parsvakonasana	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e1dc	Hiking		beginner	bodyweight	trail	core		quadriceps, glutes and hamstrings
+e063	Knee circles		beginner	bodyweight	none	core		quadriceps, legs and glutes
+e1an	Ladder climber	Jacobs ladder	beginner	machines	ladder machine	cardio		quadriceps, glutes and hamstrings
+e1ax	Lateral sled pull	Lateral sled drag, Side sled pull	beginner	machines	sled and weight plate	core		quadriceps, glutes and hamstrings
+w01g	Lunge tap and open	World's greatest stretch	intermediate	bodyweight	none	squat		quadriceps, glutes and hamstrings
+e0yv	One-leg wall sit		beginner	bodyweight	free wall	squat		quadriceps, glutes and hamstrings
+e1bf	Revolved chair pose	Parivrtta Utkatasana	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0v1	Revolved side angle hand inside		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0v3	Revolved side angle pose	Parivritta Parsvakonasana	intermediate	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0v2	Revolved side angle prayer hands		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e1dg	Slacklining		beginner	bodyweight	slackline	core		quadriceps, glutes and legs
+e1aw	Sled pull	Prowler pull, Sled drag	beginner	machines	sled and weight plate	core		quadriceps, core and legs
+e1av	Sled push	Prowler push	beginner	machines	sled and weight plate	core		quadriceps, glutes and hamstrings
+e1ap	Stair climbing	Stairs, Steps, Stairmaster	beginner	machines	stairs	core		quadriceps, glutes and hamstrings
+w00m	Sun salutation B	Surya Namaskara B	intermediate	bodyweight	none	core		quadriceps, glutes and hamstrings
+w00t	Sun salutation B simplified		beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e1cw	Treadmill sled push	Sled push on curved treadmill, Curved treadmill push, Manual treadmill push, Skillmill sled push	beginner	machines	sled push treadmill	core		quadriceps, glutes and hamstrings
+e1cu	Treadmill walking	Treadmill walk, Walking on treadmill, Incline treadmill walking	beginner	machines	treadmill	core		quadriceps, glutes and hamstrings
+e1al	Walking		beginner	bodyweight	trail	core		quadriceps, glutes and hamstrings
+e0yu	Wall sit		beginner	bodyweight	free wall	squat		quadriceps, glutes and hamstrings
+e0fs	Warrior 1	Virabhadrasana 1	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0fm	Warrior 2	Virabhadrasana 2	beginner	bodyweight	none	core		quadriceps, glutes and hamstrings
+e0di	Bear crawl	Cat walk, Traveling beast	beginner	bodyweight	none	cardio		triceps, glutes and hamstrings
+w018	Candle jump	Roll to candle	intermediate	bodyweight	none	plyometric		
+e0k1	Clean		beginner	dumbbells	barbell	plyometric		neck, core and glutes
+w005	Clean and press		intermediate	dumbbells	kettlebell or dumbbell	plyometric		neck, core and glutes
+w00a	Clean and push press		intermediate	dumbbells	barbell	plyometric		neck, core and glutes
+e13z	Dumbbell clean		beginner	dumbbells	dumbbell	plyometric		neck, core and glutes
+w01e	Navy seal burpee		beginner	bodyweight	none	cardio		
+w00w	Pushup burpee		beginner	bodyweight	none	cardio		
+e0zl	Rocking pushup		beginner	bodyweight	none	push		
+w01q	Single leg burpee		beginner	bodyweight	none	cardio		
+w011	T-pushup	Pushup with rotation	beginner	bodyweight	none	push		shoulders, chest and triceps
+e0zz	Wall rocking pushup	Mike Tyson pushup	beginner	bodyweight	free wall	push		shoulders, chest and triceps
+e1b5	Weighted T-pushup		intermediate	dumbbells	dumbbell	push		shoulders, chest and triceps
+e0jp	Alternate arm swing		beginner	dumbbells	kettlebell	plyometric		core, glutes and hamstrings
+e1b2	Arch body flutter kicks		beginner	bodyweight	none	hinge		core, glutes and hamstrings
+e0fd	Banded deadlift		beginner	bands	long resistance band	hinge		core, glutes and hamstrings
+e0fc	Banded single-leg deadlift		beginner	bands	long resistance band and long resistance band	hinge		core and glutes
+e02a	Bridge	Urdhva Dhanurasana, Wheel pose	intermediate	bodyweight	none	hinge		core, back and shoulders
+e0s9	Bridge raise	Full bridge	intermediate	bodyweight	none	hinge		core, back and shoulders
+e0dw	Deadlift		beginner	dumbbells	barbell	hinge		core, glutes and hamstrings
+e13v	Double dumbbell one-leg deadlift		intermediate	dumbbells	dumbbell	hinge		core, glutes and hamstrings
+e1b8	Elevated bridge kick-over		advanced	bodyweight	none	hinge		core, back and shoulders
+e0sa	Head tap bridge		advanced	bodyweight	none	hinge		core, back and shoulders
+e1b6	Horizontal supine plank		beginner	bodyweight	plyo box or chair	core		core, back and glutes
+e00i	Jefferson curl		beginner	dumbbells	plyo box and kettlebell	pull		core and glutes
+e14z	Kickstand deadlift	Staggered stance deadlift	beginner	dumbbells	kettlebell	hinge		core, glutes and hamstrings
+e0va	Locust pose	Shalabhasana B	beginner	bodyweight	none	core		core, glutes and hamstrings
+e0sc	One-arm bridge		advanced	bodyweight	none	hinge		core, back and shoulders
+w00b	One-arm clean and press		intermediate	dumbbells	kettlebell or dumbbell	plyometric		core, glutes and hamstrings
+w00c	One-arm clean, squat and press		intermediate	dumbbells	kettlebell or dumbbell	plyometric		core, glutes and hamstrings
+e0jo	One-hand kettlebell swing	Single-arm kettlebell swing, Single kettlebell swing	beginner	dumbbells	kettlebell	plyometric		core, glutes and hamstrings
+e0sd	One-leg bridge		intermediate	bodyweight	none	hinge		core, back and shoulders
+w014	One-leg deadlift knee crunch		intermediate	bodyweight	none	hinge		core, glutes and hamstrings
+e17y	One-leg supine arch body hold	Single leg reverse hamstrings plank	intermediate	bodyweight	none	hinge		core, glutes and hamstrings
+e0h6	Power clean		intermediate	dumbbells	barbell	plyometric		core, glutes and hamstrings
+w004	Power clean and jerk		intermediate	dumbbells	kettlebell or dumbbell	plyometric		core, glutes and hamstrings
+w006	Power clean and press		intermediate	dumbbells	kettlebell or dumbbell	plyometric		core, glutes and hamstrings
+w009	Power clean and push press		intermediate	dumbbells	barbell	plyometric		core, glutes and hamstrings
+e13u	Single dumbbell clean	Dumbbell one-arm clean	intermediate	dumbbells	dumbbell	plyometric		core, glutes and hamstrings
+e13w	Single dumbbell one-leg deadlift		intermediate	dumbbells	dumbbell	hinge		core, glutes and hamstrings
+e0jy	Single kettlebell clean	One-arm clean	intermediate	dumbbells	kettlebell	plyometric		core, glutes and hamstrings
+e0oy	Supine arch body hold		beginner	bodyweight	none	hinge		core, glutes and hamstrings
+w02a	Supine arch to hollow body crunch		beginner	bodyweight	none	hinge		core, glutes and hamstrings
+e0vb	Supported locust pose		beginner	bodyweight	none	core		core, glutes and hamstrings
+e0hz	Wall bridge rotation	Wall bridge side entrance	beginner	bodyweight	free wall	hinge		core, back and shoulders
+e0sb	Wall walk bridge		intermediate	bodyweight	free wall	hinge		core, back and shoulders
+e15l	Zercher deadlift		beginner	dumbbells	barbell	hinge		core, glutes and hamstrings
+e16e	Assisted bent-knee calf raise	KOT calf raise	beginner	bodyweight	free wall	calf	name-fuzzy:calf raise	legs, quadriceps and glutes
+e0zs	Bent-knee calf raise	Squat calf raise	beginner	bodyweight	none	calf	name-fuzzy:calf raise	legs, quadriceps and glutes
+e1c7	Bent-knee leg press calf raise	Bent-knee calf press, Soleus calf press, Bent-legs calf raise on leg press	beginner	machines	45-degree leg press	calf	name-fuzzy:leg press	legs
+e0zt	Bent-knee single-leg calf raise	One-leg squat calf raise	beginner	bodyweight	none	calf	name-fuzzy:calf raise	legs, quadriceps and glutes
+e001	Butt kicks		beginner	bodyweight	none	cardio	name-exact	legs
+e0eg	Calf raise	Calf raise off the floor	beginner	bodyweight	none	calf	name-fuzzy:standing calf raise	
+e149	Donkey calf raise		beginner	bodyweight	slant board	calf	name-fuzzy:calf raise	legs
+e0rw	Ledge calf raise	Calf raise off the step 	beginner	bodyweight	step platform	calf	name-fuzzy:calf raise	
+e1c4	Leg press calf raise	Calf press on leg press, Leg press calf press, Calf raise on leg press	beginner	machines	45-degree leg press	calf	name-fuzzy:leg press	legs
+e105	One-leg wall push calf raise	One-leg FHL calf raise	beginner	bodyweight	free wall	calf	name-fuzzy:calf raise	legs
+e1cc	Seated leg press calf raise	Horizontal calf press, Seated calf press on leg press, Calf raise on seated leg press	beginner	machines	seated leg press machine	calf	name-fuzzy:seated calf raise	legs
+e1c8	Single-leg bent-knee leg press calf raise	One-leg bent-knee calf press, Single-leg soleus calf press	beginner	machines	45-degree leg press	calf	name-fuzzy:leg press	legs
+e0ek	Single-leg calf raise	Single-leg calf raise off the floor	beginner	bodyweight	none	calf	name-fuzzy:single leg calf raise off a step	
+e0rx	Single-leg ledge calf raise	Single-leg calf raise off the step	intermediate	bodyweight	step platform	calf	name-fuzzy:calf raise	
+e1c6	Single-leg leg press calf raise	One-leg calf press on leg press, Single-leg calf press	beginner	machines	45-degree leg press	calf	name-fuzzy:leg press	legs
+e1ce	Single-leg seated leg press calf raise	One-leg seated calf press, Single-leg horizontal calf press	beginner	machines	seated leg press machine	calf	name-fuzzy:seated calf raise	legs
+e1dq	Smith machine calf raise		beginner	machines	smith machine	calf	name-fuzzy:calf raise	legs
+e1dp	Smith machine calf raise single leg		beginner	machines	smith machine	calf	name-fuzzy:calf raise	legs
+e1dv	Smith machine ledge calf raise		beginner	machines	step platform and smith machine	calf	name-fuzzy:calf raise	legs
+e1du	Smith machine ledge calf raise single leg		intermediate	machines	step platform and smith machine	calf	name-fuzzy:calf raise	legs
+e104	Wall push calf raise	FHL calf raise, Flexor Hallucis Longus calf raise	beginner	bodyweight	free wall	calf	name-fuzzy:calf raise	legs
+e14s	Weighted calf raise		beginner	dumbbells	dumbbell	calf	name-fuzzy:calf raise	legs
+e14a	Weighted donkey calf raise		intermediate	bodyweight	slant board and weight belt	calf	name-fuzzy:calf raise	legs
+e14u	Weighted ledge calf raise		beginner	dumbbells	step platform and dumbbell	calf	name-fuzzy:calf raise	
+e14t	Weighted single leg calf raise		beginner	dumbbells	dumbbell	calf	name-fuzzy:calf raise	
+e14v	Weighted single leg ledge calf raise		intermediate	dumbbells	step platform and dumbbell	calf	name-fuzzy:calf raise	legs
+e1ci	45-degree hip extension	Roman chair hip extension, 45-degree hyperextension, Hip-hinge hyperextension, Flat-back extension on Roman chair	beginner	machines	roman chair	posterior-chain	alt-fuzzy:back extension	glutes, hamstrings and core
+e0sv	Assisted deep lunge	Assisted deep split squat, Assisted ATG squat	beginner	bodyweight	plyo box or chair	squat	alt-fuzzy:split squat	glutes, hamstrings and quadriceps
+e0su	Assisted incline lunge	Assisted Leg Press Lunges, Assisted incline split squat	beginner	bodyweight	plyo box or chair	squat	alt-fuzzy:leg press	glutes, hamstrings and quadriceps
+e17d	Assisted standing hip circles	Wall-assisted hip rotations	beginner	bodyweight	free wall	core	name-fuzzy:hip circles	core, quadriceps and glutes
+e0h0	Back squat	Back rack squat, Back racked squat	beginner	dumbbells	barbell	squat	name-fuzzy:barbell back squat	glutes, hamstrings and quadriceps
+e0f9	Banded lateral step-out squat		beginner	bands	short resistance band	squat	name-fuzzy:banded squat	glutes, core and quadriceps
+e0km	Banded squat		beginner	bands	short resistance band	squat	name-exact	glutes, hamstrings and quadriceps
+e0fb	Banded squat with side step		beginner	bands	short resistance band	squat	name-fuzzy:banded squat	glutes and core
+e0h1	Barbell front squat	Front rack squat, Front racked squat	beginner	dumbbells	barbell	squat	name-exact	glutes, hamstrings and quadriceps
+e0in	Bird dog	Quadruped arm and leg raise	beginner	bodyweight	none	core	name-exact	glutes, hamstrings and back
+e0u4	Box jump		beginner	bodyweight	plyo box	plyometric	name-exact	glutes, hamstrings and quadriceps
+e0z1	Box shuffle	Jumping box side step, Lateral step up	beginner	bodyweight	plyo box or chair	core	alt-fuzzy:step up	glutes, hamstrings and quadriceps
+e02b	Bulgarian split squat	Chair lunge, Decline split squat	beginner	bodyweight	plyo box or chair	squat	name-fuzzy:split squat	glutes, hamstrings and quadriceps
+e1ee	Cable goblet squat		beginner	machines	cable machine	squat	name-fuzzy:goblet squat	glutes and hamstrings
+e1ek	Cable romanian deadlift single leg	Cable RDL single leg, Cable hip hinge single leg	intermediate	machines	cable machine	hinge	name-fuzzy:romanian deadlift	glutes and hamstrings
+e0q1	Deep lunge	ATG lunge, Deep split squat, Ass-to-grass lunge, Ass-to-grass split squat	beginner	bodyweight	none	squat	alt-fuzzy:split squat	glutes, hamstrings and quadriceps
+e032	Deep step up		intermediate	bodyweight	plyo box or chair	squat	name-fuzzy:step up	glutes, hamstrings and quadriceps
+e10l	Deficit hip thrust	Double deficit glute bridge	beginner	bodyweight	bench	hinge	alt-fuzzy:glute bridge	glutes, hamstrings and core
+e0pl	Elevated glute bridge	Decline hip thrust	beginner	bodyweight	plyo box or chair	hinge	name-fuzzy:glute bridge	glutes, hamstrings and core
+e03o	Forward lunge	Split squat, Bodyweight lunge	beginner	bodyweight	none	squat	alt-fuzzy:isometric split squat hold	glutes, hamstrings and quadriceps
+e0eh	Glute bridge	Glute-ham raise, Hip thrust, Hip raise, Short bridge	beginner	bodyweight	none	hinge	name-exact	glutes, hamstrings and core
+e1bv	Glute kickback machine	Machine glute kickback, Standing glute kickback machine, Machine hip extension, Glute press	beginner	machines	glute kickback machine	hinge	name-exact	glutes and hamstrings
+e11o	Goblet cyclist squat		beginner	dumbbells	slant board and kettlebell	squat	name-fuzzy:goblet squat	glutes and hamstrings
+e0jq	Goblet squat		beginner	dumbbells	kettlebell or dumbbell	squat	name-fuzzy:kettlebell goblet squat	glutes, hamstrings and quadriceps
+w008	Goblet squat press		beginner	dumbbells	kettlebell or dumbbell	squat	name-fuzzy:goblet squat	glutes, hamstrings and quadriceps
+e042	Half archer squat	Side lunge, Cossack squat, Lateral lunge	beginner	bodyweight	none	hinge	alt-fuzzy:side lunge adductor rock	glutes, hamstrings and quadriceps
+e002	High knees		beginner	bodyweight	none	cardio	name-exact	core, quadriceps and legs
+e1bn	Hip abduction machine	Seated hip abduction, Abductor machine, Machine hip abduction, Outer thigh machine	beginner	machines	hip abduction machine	core	name-exact	glutes
+e0pj	Hip thrust	Weighted glute bridge	beginner	dumbbells	bench and barbell	hinge	name-fuzzy:hip thrust glute drive machine	glutes, hamstrings and core
+e0sp	Incline lunge	Front foot elevated ATG Lunge, Front foot elevated split squat, Leg Press Lunge, Incline ATG lunge, Incline split squat	beginner	bodyweight	plyo box	squat	alt-fuzzy:split squat	glutes and hamstrings
+e10h	Jumping bulgarian split squat		beginner	bodyweight	plyo box or chair	plyometric	name-fuzzy:split squat	glutes, hamstrings and quadriceps
+e05w	Jumping lunge	Split squat jump	beginner	bodyweight	none	plyometric	alt-fuzzy:split squat	glutes, hamstrings and quadriceps
+e0z0	Jumping step-up		beginner	bodyweight	plyo box or chair	plyometric	name-fuzzy:step up	glutes, hamstrings and quadriceps
+e0q2	Kneeling lunge lifts	Kneeling lunge pulses, Low lunge back leg extension, Low lunge knee lifts	beginner	bodyweight	none	squat	alt-fuzzy:leg extension	glutes, hamstrings and quadriceps
+w016	Lunge knee crunch	Reverse lunge to knee drive	beginner	bodyweight	none	squat	alt-fuzzy:reverse lunge	glutes, hamstrings and quadriceps
+e15r	No-touch step up		intermediate	bodyweight	plyo box	squat	name-fuzzy:step up	glutes, hamstrings and quadriceps
+e10m	One-leg deficit hip thrust	One-leg double deficit glute bridge	intermediate	bodyweight	bench	hinge	alt-fuzzy:glute bridge	glutes, hamstrings and core
+e0pm	One-leg elevated glute bridge	One-leg decline hip thrust	beginner	bodyweight	plyo box or chair	hinge	name-fuzzy:glute bridge	glutes, hamstrings and core
+e0ei	One-leg glute bridge	Single-leg glute bridge, One-leg glute-ham raise, One-leg short bridge	beginner	bodyweight	none	hinge	name-fuzzy:glute bridge	glutes, hamstrings and core
+w02c	Patrick step to reverse lunge		beginner	bodyweight	none	squat	name-fuzzy:reverse lunge	glutes, hamstrings and quadriceps
+e07v	Pistol squat	One-leg squat	intermediate	bodyweight	none	squat	name-fuzzy:assisted pistol squat	glutes, hamstrings and quadriceps
+e0kf	Prying goblet squat		beginner	dumbbells	kettlebell	squat	name-fuzzy:goblet squat	glutes, hamstrings and quadriceps
+e19q	Quarter pistol squat	Patrick step up on floor	beginner	bodyweight	none	squat	alt-fuzzy:step up	glutes, hamstrings and quadriceps
+e19s	Quarter pistol squat touchdown	Patrick step up	beginner	bodyweight	step platform	squat	alt-fuzzy:step up	glutes, hamstrings and quadriceps
+e0k3	Reverse lunge		beginner	bodyweight	none	squat	name-fuzzy:dumbbell reverse lunge	glutes, hamstrings and quadriceps
+e1cj	Single-leg 45-degree hip extension	One-leg Roman chair hip extension, Single-leg hyperextension, One-leg 45-degree hip extension	beginner	machines	roman chair	posterior-chain	name-fuzzy:leg extension	glutes, hamstrings and core
+e15q	Single-leg box jump		intermediate	bodyweight	plyo box	plyometric	name-fuzzy:box jump	glutes, hamstrings and quadriceps
+e1ds	Smith machine hip thrust	Smith machine elevated glute bridge	beginner	machines	bench and smith machine	hinge	alt-fuzzy:glute bridge	glutes and hamstrings
+e1dr	Smith machine hip thrust single leg	Smith machine elevated glute bridge single leg	beginner	machines	bench and smith machine	hinge	alt-fuzzy:glute bridge	glutes and hamstrings
+e1dy	Smith machine romanian deadlift	Smith machine RDL	beginner	machines	smith machine	hinge	name-fuzzy:romanian deadlift	glutes, hamstrings and core
+e1dx	Smith machine romanian deadlift single leg	Smith machine RDL single leg, Smith machine hip hinge single leg	beginner	machines	smith machine	hinge	name-fuzzy:romanian deadlift	glutes, hamstrings and core
+e1dz	Smith machine split squat		beginner	machines	smith machine	squat	name-fuzzy:split squat	glutes, hamstrings and quadriceps
+e1e0	Smith machine squat		beginner	machines	smith machine	squat	name-exact	glutes, hamstrings and quadriceps
+w01k	Squat fold	Squat to hamstring stretch, Pike to squat	beginner	bodyweight	none	squat	alt-fuzzy:hamstring stretch	glutes, hamstrings and quadriceps
+e010	Stability ball glute bridge		beginner	bodyweight	stability ball	hinge	name-fuzzy:glute bridge	glutes, hamstrings and core
+e00o	Stability ball single leg glute bridge		intermediate	bodyweight	stability ball	hinge	name-fuzzy:glute bridge	glutes, hamstrings and core
+e16p	Standing hip circles	Hip rotations	beginner	bodyweight	none	core	name-fuzzy:hip circles	glutes, core and quadriceps
+e0bb	Step up		beginner	bodyweight	plyo box or chair	squat	name-fuzzy:dumbbell step up	glutes, hamstrings and quadriceps
+e0st	Wall lunge	Wall Press Lunges, Wall leg press, Wall split squat	beginner	bodyweight	free wall	squat	alt-fuzzy:leg press	glutes, hamstrings and quadriceps
+e133	Weighted bulgarian split squat		intermediate	dumbbells	plyo box and kettlebell	squat	name-fuzzy:split squat	glutes and hamstrings
+e147	Weighted lunge	Weighted split squat	beginner	dumbbells	dumbbell	squat	alt-fuzzy:split squat	glutes, hamstrings and quadriceps
+e19t	Weighted quarter pistol squat touchdown	Weighted Patrick step up	beginner	dumbbells	step platform and kettlebell	squat	alt-fuzzy:step up	glutes and hamstrings
+e1cl	Weighted single-leg 45-degree hip extension	Weighted one-leg Roman chair hip extension, Weighted single-leg hyperextension	beginner	machines	roman chair and kettlebell or dumbbell	posterior-chain	name-fuzzy:leg extension	glutes, hamstrings and core
+e1el	Cable standing hamstring curl single leg	Cable standing leg curl single leg	beginner	machines	cable machine or double cable machine	knee-flexion	name-fuzzy:leg curl	hamstrings
+e0ee	Nordic curl	Glute-ham raise	advanced	bodyweight	stall bars or low bar	knee-flexion	name-fuzzy:nordic hamstring curl	hamstrings
+e0en	One-leg sliding leg curl	One-leg hamstring curl, One-leg rings leg curl, One-leg slider	intermediate	bodyweight	rings or suspension straps (trx)	knee-flexion	name-fuzzy:sliding leg curl	hamstrings, glutes and core
+e1bx	Seated leg curl	Machine leg curl, Seated hamstring curl, Leg curl machine, Leg curl	beginner	machines	seated leg curl machine	knee-flexion	name-exact	hamstrings
+e1by	Single-leg seated leg curl	One-leg seated leg curl, Unilateral leg curl, Single-leg machine leg curl	beginner	machines	seated leg curl machine	knee-flexion	name-fuzzy:seated leg curl	hamstrings
+e0em	Sliding leg curl	Double leg slider, Hamstring curl	beginner	bodyweight	rings or suspension straps (trx)	knee-flexion	name-exact	hamstrings, glutes and core
+e0wb	Knee-support side plank		beginner	bodyweight	none	core	name-fuzzy:side plank	core, shoulders and rotator cuff
+e0ae	Side plank	Vasisthasana	beginner	bodyweight	none	core	name-exact	core, shoulders and rotator cuff
+e0af	Side plank dip		beginner	bodyweight	none	push	name-fuzzy:side plank	core, shoulders and rotator cuff
+e0ag	Side plank knee-to-elbow		beginner	bodyweight	none	core	name-fuzzy:side plank	core, shoulders and rotator cuff
+e0cy	Side plank leg raise		beginner	bodyweight	none	core	name-fuzzy:side plank	core and glutes
+e0ah	Side plank toe touch		intermediate	bodyweight	none	core	name-fuzzy:side plank	core, shoulders and rotator cuff
+e0ko	Banded leg press		beginner	bands	long resistance band	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+e0fa	Banded overhead squat		beginner	bands	long resistance band	squat	name-fuzzy:banded squat	quadriceps, glutes and hamstrings
+e15v	Decline downward dog one-leg squat		intermediate	bodyweight	plyo box or chair	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e15u	Decline downward dog squat		beginner	bodyweight	plyo box or chair	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e17k	Downward dog one-leg squat	Bodyweight one-leg extension	intermediate	bodyweight	none	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e17j	Downward dog squat	Bodyweight leg extension	beginner	bodyweight	none	squat	name-fuzzy:downward dog	quadriceps, legs and glutes
+e1ao	Erg Rowing	Rowing, Rowing machine	beginner	machines	rowing machine	pull	alt-exact	quadriceps, glutes and hamstrings
+e1c1	Leg press	45-degree leg press, Incline leg press, Machine leg press, Plate-loaded leg press	beginner	machines	45-degree leg press	squat	name-fuzzy:leg press single leg variation	quadriceps, glutes and hamstrings
+e1c2	Narrow-stance leg press	Close-stance leg press, Narrow leg press, Feet-together leg press	beginner	machines	45-degree leg press	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+e1ca	Narrow-stance seated leg press	Close-stance seated leg press, Narrow horizontal leg press	beginner	machines	seated leg press machine	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+e1c9	Seated leg press	Horizontal leg press, Machine seated leg press, Seated leg press machine	beginner	machines	seated leg press machine	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+e1c5	Single-leg leg press	One-leg leg press, Unilateral leg press	beginner	machines	45-degree leg press	squat	name-fuzzy:leg press single leg variation	quadriceps, glutes and hamstrings
+e1cd	Single-leg seated leg press	One-leg seated leg press, Single-leg horizontal leg press	beginner	machines	seated leg press machine	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+e103	Wall sit calf raise		beginner	bodyweight	free wall	calf	name-fuzzy:calf raise	quadriceps, glutes and hamstrings
+e1c3	Wide-stance leg press	Sumo leg press, Wide leg press	beginner	machines	45-degree leg press	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+e1cb	Wide-stance seated leg press	Wide horizontal leg press, Sumo seated leg press	beginner	machines	seated leg press machine	squat	name-fuzzy:leg press	quadriceps, glutes and hamstrings
+w029	Deep push-up press burpee		intermediate	dumbbells	parallettes and dumbbell	cardio	name-fuzzy:push up	shoulders and chest
+e0gr	Farmer's walk	Loaded carry, Suitcase carry	beginner	dumbbells	kettlebell or dumbbell	core	alt-exact	neck, quadriceps and glutes
+e0jt	Half Turkish get up		beginner	dumbbells	kettlebell or dumbbell	core	name-fuzzy:turkish get up	neck, back and chest
+e13g	One-arm farmer's walk	Suitcase carry	beginner	dumbbells	kettlebell or dumbbell	core	alt-exact	neck, quadriceps and glutes
+e1cg	Seated cable row with forward lean	Seated cable row with hip hinge, Seated row with torso lean, Stretch seated row, Dynamic seated cable row	beginner	machines	cable machine or double cable machine	pull	name-fuzzy:seated row	rotator cuff, back and shoulders
+e0ju	Turkish get up		beginner	dumbbells	kettlebell or dumbbell	core	name-exact	neck, back and chest
+e13r	Dumbbell deadlift		beginner	dumbbells	dumbbell	hinge	name-fuzzy:dumbbell romanian deadlift	core, glutes and hamstrings
+e0ji	One-leg deadlift	Single-leg deadlift	intermediate	dumbbells	barbell	hinge	alt-fuzzy:single leg kettlebell deadlift	core, glutes and hamstrings
+e0dx	Romanian deadlift	RDL	beginner	dumbbells	barbell	hinge	name-exact	core, glutes and hamstrings
+e0jj	Single kettlebell one-leg deadlift	One-leg one-arm deadlift, Single-leg single-arm deadlift	intermediate	dumbbells	kettlebell	hinge	name-fuzzy:single leg kettlebell deadlift	core, glutes and hamstrings
+e0jn	Two-hand kettlebell swing	Double kettlebell swing	beginner	dumbbells	kettlebell	plyometric	name-exact	core, glutes and hamstrings
+e1cy	Weighted Roman chair back extension	Weighted 45-degree back extension, Weighted hyperextension, Kettlebell back extension on Roman chair	beginner	machines	roman chair and kettlebell or dumbbell	hinge	name-fuzzy:back extension	core, glutes and hamstrings

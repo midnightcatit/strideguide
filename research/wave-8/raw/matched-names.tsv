@@ -1,0 +1,261 @@
+id	name	alt_name	have
+e001	Butt kicks		name-exact
+e002	High knees		name-exact
+e00g	Barbell overhead press	Shoulder press	alt-fuzzy:dumbbell shoulder press
+e00o	Stability ball single leg glute bridge		name-fuzzy:glute bridge
+e010	Stability ball glute bridge		name-fuzzy:glute bridge
+e017	Rings rollout	Ab rollout, Ab wheel	alt-fuzzy:ab wheel rollout
+e01p	Assisted dip		name-fuzzy:assisted pull up dip
+e01t	Assisted pistol squat	Assisted one-leg squat	name-exact
+e01x	Barbell bench press	Chest press	alt-fuzzy:chest press pec deck cable fly
+e02b	Bulgarian split squat	Chair lunge, Decline split squat	name-exact
+e02d	Butterfly stretch	Bound Ankle Pose, Baddha Konasana	name-fuzzy:seated butterfly adductor stretch
+e02x	Decline row	Feet-elevated row	alt-fuzzy:feet elevated inverted row
+e032	Deep step up		name-fuzzy:step up
+e037	Downward dog	Adho Mukha Svanasana	name-exact
+e03o	Forward lunge	Split squat, Bodyweight lunge	alt-fuzzy:isometric split squat hold
+e041	Gripping side plank	Flag plank	name-fuzzy:side plank
+e042	Half archer squat	Side lunge, Cossack squat, Lateral lunge	alt-fuzzy:side lunge adductor rock
+e04w	Hanging side plank		name-fuzzy:side plank
+e059	Horizontal row	Row, Bodyrow, Australian pullup, Horizontal bent-arm pull, Horizontal pullup, Supine row, Neutral grip horizontal row, Inverted row	alt-fuzzy:feet elevated inverted row
+e05w	Jumping lunge	Split squat jump	alt-fuzzy:split squat
+e067	Kneeling quad stretch	Kneeling lunge foot hold	name-fuzzy:quad stretch
+e06d	Assisted jumping pistol squat		name-fuzzy:assisted pistol squat
+e06t	Lying quad stretch		name-fuzzy:quad stretch
+e07g	One-arm row		name-fuzzy:one arm dumbbell row
+e07j	Lat pulldown		name-exact
+e07v	Pistol squat	One-leg squat	name-fuzzy:assisted pistol squat
+e07z	Plank	Kumbhakasana	name-exact
+e085	Pullup	Pronated grip pullup, Full pullup, Pull up	alt-fuzzy:assisted pull up dip
+e087	Pushup	Full pushup, Push up	alt-exact
+e08a	Rings glute bridge bent legs		name-fuzzy:glute bridge
+e08b	Rings glute bridge straight legs		name-fuzzy:glute bridge
+e0aa	Opposite arm circles		name-fuzzy:arm circles
+e0ae	Side plank	Vasisthasana	name-exact
+e0af	Side plank dip		name-fuzzy:side plank
+e0ag	Side plank knee-to-elbow		name-fuzzy:side plank
+e0ah	Side plank toe touch		name-fuzzy:side plank
+e0b2	Standing quad stretch		name-exact
+e0bb	Step up		name-fuzzy:dumbbell step up
+e0bh	Straddle gripping side plank	Flag plank	name-fuzzy:side plank
+e0c1	Pigeon pose	Eka Pada Rajakapotasana	name-fuzzy:pigeon pose figure 4 hip stretch
+e0cy	Side plank leg raise		name-fuzzy:side plank
+e0d2	Inchworm		name-exact
+e0dv	Pallof press		name-fuzzy:cable woodchop pallof press
+e0dx	Romanian deadlift	RDL	name-fuzzy:dumbbell romanian deadlift
+e0e4	Lateral delt raise	Side raise	name-fuzzy:rear delt lateral raise machine
+e0ee	Nordic curl	Glute-ham raise	name-fuzzy:nordic hamstring curl
+e0ef	Reverse nordic	Reverse nordic curl, Natural leg extension, Kneeling leg extension	alt-fuzzy:leg extension
+e0eg	Calf raise	Calf raise off the floor	name-fuzzy:single leg calf raise off a step
+e0eh	Glute bridge	Glute-ham raise, Hip thrust, Hip raise, Short bridge	name-exact
+e0ei	One-leg glute bridge	Single-leg glute bridge, One-leg glute-ham raise, One-leg short bridge	name-fuzzy:glute bridge
+e0ek	Single-leg calf raise	Single-leg calf raise off the floor	name-fuzzy:single leg calf raise off a step
+e0em	Sliding leg curl	Double leg slider, Hamstring curl	name-fuzzy:leg curl
+e0en	One-leg sliding leg curl	One-leg hamstring curl, One-leg rings leg curl, One-leg slider	name-fuzzy:leg curl
+e0ep	Back extension	Hyperextension	name-fuzzy:back extension reverse hyper
+e0ew	Dead bug		name-exact
+e0f7	Wobble board calf stretch		name-fuzzy:calf stretch
+e0f9	Banded lateral step-out squat		name-fuzzy:banded squat
+e0fa	Banded overhead squat		name-fuzzy:banded squat
+e0fb	Banded squat with side step		name-fuzzy:banded squat
+e0fg	Banded overhead press	Banded shoulder press	alt-fuzzy:shoulder press
+e0g0	Renegade row		name-exact
+e0g4	Copenhagen plank		name-fuzzy:copenhagen adductor plank
+e0gc	Assisted sitting leg extensions	V-sit ab leg extension, Seated in and out	alt-fuzzy:leg extension
+e0gk	Jump rope butt kicks		name-fuzzy:butt kicks
+e0gl	Jump rope high knees		name-fuzzy:high knees
+e0gr	Farmer's walk	Loaded carry, Suitcase carry	alt-exact
+e0gt	Band pull apart	Horizontal arm extension	name-exact
+e0gw	Sitting leg extensions	V-sit ab leg extension, Knee tuck	alt-fuzzy:leg extension
+e0h0	Back squat	Back rack squat, Back racked squat	name-fuzzy:barbell back squat
+e0h1	Barbell front squat	Front rack squat, Front racked squat	name-exact
+e0ii	Cat Cow		name-exact
+e0im	Seiza jump to squat	Kneeling jump	name-fuzzy:jump squat
+e0in	Bird dog	Quadruped arm and leg raise	name-exact
+e0iq	Dead bug crunch		name-fuzzy:dead bug
+e0j7	Weighted front arm circles		name-fuzzy:arm circles
+e0j8	Weighted side arm circles		name-fuzzy:arm circles
+e0jh	Twisting arm circles	Lunbi	name-fuzzy:arm circles
+e0ji	One-leg deadlift	Single-leg deadlift	alt-fuzzy:single leg romanian deadlift
+e0jj	Single kettlebell one-leg deadlift	One-leg one-arm deadlift, Single-leg single-arm deadlift	name-fuzzy:single leg kettlebell deadlift
+e0jk	Single dumbbell overhead press	Shoulder press	name-fuzzy:dumbbell overhead press
+e0jn	Two-hand kettlebell swing	Double kettlebell swing	name-exact
+e0jq	Goblet squat		name-fuzzy:kettlebell goblet squat
+e0jt	Half Turkish get up		name-fuzzy:turkish get up
+e0ju	Turkish get up		name-exact
+e0k3	Reverse lunge		name-exact
+e0ke	Kneeling thread the needle	Parsva Balasana, Reach back, Quadruped thoracic rotation	alt-fuzzy:thoracic rotation
+e0kf	Prying goblet squat		name-fuzzy:goblet squat
+e0km	Banded squat		name-exact
+e0ko	Banded leg press		name-fuzzy:leg press
+e0kz	Kneeling lunge chest up	Hip flexor stretch	alt-fuzzy:kneeling hip flexor stretch
+e0lf	Double bird-dog		name-fuzzy:bird dog
+e0m3	Double-plank flyer push-up	Double plank fly pushup	name-fuzzy:push up
+e0om	Side plank pulls		name-fuzzy:side plank
+e0pj	Hip thrust	Weighted glute bridge	name-fuzzy:barbell hip thrust
+e0pl	Elevated glute bridge	Decline hip thrust	name-fuzzy:glute bridge
+e0pm	One-leg elevated glute bridge	One-leg decline hip thrust	name-fuzzy:glute bridge
+e0q1	Deep lunge	ATG lunge, Deep split squat, Ass-to-grass lunge, Ass-to-grass split squat	alt-fuzzy:split squat
+e0q2	Kneeling lunge lifts	Kneeling lunge pulses, Low lunge back leg extension, Low lunge knee lifts	alt-fuzzy:leg extension
+e0q4	Kneeling forward fold	Kneeling pike stretch, Kneeling hamstring stretch	alt-fuzzy:hamstring stretch
+e0rw	Ledge calf raise	Calf raise off the step 	name-fuzzy:calf raise
+e0rx	Single-leg ledge calf raise	Single-leg calf raise off the step	name-fuzzy:single leg calf raise
+e0sp	Incline lunge	Front foot elevated ATG Lunge, Front foot elevated split squat, Leg Press Lunge, Incline ATG lunge, Incline split squat	alt-fuzzy:split squat
+e0st	Wall lunge	Wall Press Lunges, Wall leg press, Wall split squat	alt-fuzzy:leg press
+e0su	Assisted incline lunge	Assisted Leg Press Lunges, Assisted incline split squat	alt-fuzzy:leg press
+e0sv	Assisted deep lunge	Assisted deep split squat, Assisted ATG squat	alt-fuzzy:split squat
+e0u4	Box jump		name-exact
+e0u5	Supine hip flexor stretch		name-fuzzy:hip flexor stretch
+e0w6	One-leg downward dog	Eka Pada Adho Mukha Svanasana	name-fuzzy:downward dog
+e0wb	Knee-support side plank		name-fuzzy:side plank
+e0wu	Dead bug march	Pilates toe taps	name-fuzzy:dead bug
+e0wv	Alternating dead bug		name-fuzzy:dead bug
+e0x0	Supine one-leg fold	Supine hamstring stretch, Supta Padangusthasana, Reclining Hand to Big Toe Pose	alt-fuzzy:hamstring stretch
+e0xb	Assisted supine one-leg fold	Supine hamstring stretch, Supta Padangusthasana, Reclining Hand to Big Toe Pose	alt-fuzzy:hamstring stretch
+e0xq	Extended puppy pose	Uttana Shishosana, Shoulder stretch	alt-fuzzy:sleeper shoulder internal rotation stretch
+e0yq	Wall push one-leg calf stretch		name-fuzzy:calf stretch
+e0yr	Wall push calf stretch		name-fuzzy:calf stretch
+e0yx	Assisted diagonal stretch	Assisted split sissy squat	alt-fuzzy:split squat
+e0yy	Wall quad stretch	Couch stretch	name-fuzzy:quad stretch
+e0yz	Knee to wall		name-fuzzy:knee to wall ankle rock
+e0z0	Jumping step-up		name-fuzzy:step up
+e0z1	Box shuffle	Jumping box side step, Lateral step up	alt-fuzzy:step up
+e0zm	Raised arm circles	Small arm circles	name-fuzzy:arm circles
+e0zs	Bent-knee calf raise	Squat calf raise	name-fuzzy:calf raise
+e0zt	Bent-knee single-leg calf raise	One-leg squat calf raise	name-fuzzy:single leg calf raise
+e0zx	Side child pose	Lat stretch	alt-fuzzy:kneeling lat stretch
+e0zy	Downward dog foot pedal	Walk the dog	name-fuzzy:downward dog
+e103	Wall sit calf raise		name-fuzzy:calf raise
+e104	Wall push calf raise	FHL calf raise, Flexor Hallucis Longus calf raise	name-fuzzy:calf raise
+e105	One-leg wall push calf raise	One-leg FHL calf raise	name-fuzzy:calf raise
+e10b	Lying trunk twist	Supine thoracic rotation, Lumbar spine torsion, Supine spinal twist post	alt-fuzzy:thoracic rotation
+e10h	Jumping bulgarian split squat		name-fuzzy:bulgarian split squat
+e10l	Deficit hip thrust	Double deficit glute bridge	alt-fuzzy:glute bridge
+e10m	One-leg deficit hip thrust	One-leg double deficit glute bridge	alt-fuzzy:glute bridge
+e10n	Lying incline dumbbell row		name-fuzzy:dumbbell row
+e10v	Dumbbell upright row		name-fuzzy:dumbbell row
+e11d	Stability ball alternating dead bug		name-fuzzy:dead bug
+e11o	Goblet cyclist squat		name-fuzzy:goblet squat
+e11q	Ring Lunge	Rings split squat	alt-fuzzy:split squat
+e11r	Assisted ring lunge	Rings-assisted lunge, Assisted rings split squat	alt-fuzzy:split squat
+e12h	Banded reverse squat	Banded double knee drive	name-fuzzy:banded squat
+e131	Dumbbell bent-over row		name-fuzzy:dumbbell row
+e132	Single dumbbell bent-over row	Dumbbell one-arm bent-over row	name-fuzzy:dumbbell row
+e133	Weighted bulgarian split squat		name-fuzzy:bulgarian split squat
+e13b	Double dumbbell overhead press	Shoulder press	name-fuzzy:dumbbell overhead press
+e13g	One-arm farmer's walk	Suitcase carry	alt-exact
+e13q	Dumbbell overhead lateral raise	Lu raise	name-fuzzy:dumbbell lateral raise
+e13r	Dumbbell deadlift		name-fuzzy:dumbbell romanian deadlift
+e147	Weighted lunge	Weighted split squat	alt-fuzzy:split squat
+e149	Donkey calf raise		name-fuzzy:calf raise
+e14a	Weighted donkey calf raise		name-fuzzy:calf raise
+e14e	Rings horizontal row	Rings inverted row	alt-fuzzy:inverted row
+e14h	Quads foam roll		name-fuzzy:foam roll quads
+e14i	Glutes foam roll		name-fuzzy:foam roll glutes
+e14j	Hamstrings foam roll		name-fuzzy:foam roll hamstrings
+e14l	Seated cable row		name-fuzzy:seated row
+e14s	Weighted calf raise		name-fuzzy:calf raise
+e14t	Weighted single leg calf raise		name-fuzzy:single leg calf raise
+e14u	Weighted ledge calf raise		name-fuzzy:calf raise
+e14v	Weighted single leg ledge calf raise		name-fuzzy:single leg calf raise
+e154	Seated bent-over dumbbell row		name-fuzzy:seated row
+e159	Dumbbell seated overhead press		name-fuzzy:dumbbell overhead press
+e15e	Floor dumbbell press		name-fuzzy:dumbbell floor press
+e15q	Single-leg box jump		name-fuzzy:box jump
+e15r	No-touch step up		name-fuzzy:step up
+e15u	Decline downward dog squat		name-fuzzy:downward dog
+e15v	Decline downward dog one-leg squat		name-fuzzy:downward dog
+e161	Banded single lat pulldown		name-fuzzy:lat pulldown
+e167	Banded half-kneeling thoracic rotation		name-fuzzy:thoracic rotation
+e16e	Assisted bent-knee calf raise	KOT calf raise	name-fuzzy:calf raise
+e16o	Cat cow circle	Spinal roll	name-fuzzy:cat cow
+e16p	Standing hip circles	Hip rotations	name-fuzzy:hip circles
+e16q	Standing cat cow		name-fuzzy:cat cow
+e17d	Assisted standing hip circles	Wall-assisted hip rotations	name-fuzzy:hip circles
+e17g	One-leg cat-cow	Tiger Pose, Vyaghrasana	name-fuzzy:cat cow
+e17h	Lateral plank walk	Plank side walk	alt-fuzzy:side plank
+e17j	Downward dog squat	Bodyweight leg extension	name-fuzzy:downward dog
+e17k	Downward dog one-leg squat	Bodyweight one-leg extension	name-fuzzy:downward dog
+e17t	Kneeling hamstring stretch	Half front split, Ardha Hanumanasana	name-fuzzy:hamstring stretch
+e17w	Lying leg extension	Double leg extension	name-fuzzy:leg extension
+e19q	Quarter pistol squat	Patrick step up on floor	alt-fuzzy:step up
+e19s	Quarter pistol squat touchdown	Patrick step up	alt-fuzzy:step up
+e19t	Weighted quarter pistol squat touchdown	Weighted Patrick step up	alt-fuzzy:step up
+e1ab	Knees ab wheel rollout		name-fuzzy:ab wheel rollout
+e1ac	Straddle ab wheel rollout		name-fuzzy:ab wheel rollout
+e1ad	Ab wheel rollout		name-exact
+e1ao	Erg Rowing	Rowing, Rowing machine	alt-exact
+e1bn	Hip abduction machine	Seated hip abduction, Abductor machine, Machine hip abduction, Outer thigh machine	name-exact
+e1bo	Ab crunch machine	Machine crunch, Seated crunch machine, Abdominal crunch machine, Abs machine	name-exact
+e1bp	Hip adduction machine	Seated hip adduction, Adductor machine, Machine hip adduction, Inner thigh machine	name-exact
+e1bs	Pec deck	Chest fly machine, Machine chest fly, Pec deck fly, Pec fly machine, Butterfly	name-fuzzy:chest press pec deck cable fly
+e1bv	Glute kickback machine	Machine glute kickback, Standing glute kickback machine, Machine hip extension, Glute press	name-exact
+e1bw	Machine lat pulldown	Lever lat pulldown, Lat pulldown machine, Plate-loaded lat pulldown	name-fuzzy:lat pulldown
+e1bx	Seated leg curl	Machine leg curl, Seated hamstring curl, Leg curl machine, Leg curl	name-fuzzy:leg curl
+e1by	Single-leg seated leg curl	One-leg seated leg curl, Unilateral leg curl, Single-leg machine leg curl	name-fuzzy:leg curl
+e1bz	Leg extension	Machine leg extension, Seated leg extension, Leg extension machine, Quad extension	name-exact
+e1c0	Single-leg leg extension	One-leg leg extension, Unilateral leg extension, Single-leg machine leg extension	name-fuzzy:leg extension
+e1c1	Leg press	45-degree leg press, Incline leg press, Machine leg press, Plate-loaded leg press	name-fuzzy:leg press single leg variation
+e1c2	Narrow-stance leg press	Close-stance leg press, Narrow leg press, Feet-together leg press	name-fuzzy:leg press
+e1c3	Wide-stance leg press	Sumo leg press, Wide leg press	name-fuzzy:leg press
+e1c4	Leg press calf raise	Calf press on leg press, Leg press calf press, Calf raise on leg press	name-fuzzy:leg press
+e1c5	Single-leg leg press	One-leg leg press, Unilateral leg press	name-fuzzy:leg press single leg variation
+e1c6	Single-leg leg press calf raise	One-leg calf press on leg press, Single-leg calf press	name-fuzzy:single leg calf raise
+e1c7	Bent-knee leg press calf raise	Bent-knee calf press, Soleus calf press, Bent-legs calf raise on leg press	name-fuzzy:leg press
+e1c8	Single-leg bent-knee leg press calf raise	One-leg bent-knee calf press, Single-leg soleus calf press	name-fuzzy:single leg calf raise
+e1c9	Seated leg press	Horizontal leg press, Machine seated leg press, Seated leg press machine	name-fuzzy:leg press
+e1ca	Narrow-stance seated leg press	Close-stance seated leg press, Narrow horizontal leg press	name-fuzzy:leg press
+e1cb	Wide-stance seated leg press	Wide horizontal leg press, Sumo seated leg press	name-fuzzy:leg press
+e1cc	Seated leg press calf raise	Horizontal calf press, Seated calf press on leg press, Calf raise on seated leg press	name-fuzzy:seated calf raise
+e1cd	Single-leg seated leg press	One-leg seated leg press, Single-leg horizontal leg press	name-fuzzy:leg press
+e1ce	Single-leg seated leg press calf raise	One-leg seated calf press, Single-leg horizontal calf press	name-fuzzy:single leg calf raise
+e1cg	Seated cable row with forward lean	Seated cable row with hip hinge, Seated row with torso lean, Stretch seated row, Dynamic seated cable row	name-fuzzy:seated row
+e1ch	Machine row	Seated row machine, Chest-supported machine row, Lever row, Seated machine row	alt-fuzzy:seated row
+e1ci	45-degree hip extension	Roman chair hip extension, 45-degree hyperextension, Hip-hinge hyperextension, Flat-back extension on Roman chair	alt-fuzzy:back extension
+e1cj	Single-leg 45-degree hip extension	One-leg Roman chair hip extension, Single-leg hyperextension, One-leg 45-degree hip extension	name-fuzzy:leg extension
+e1cl	Weighted single-leg 45-degree hip extension	Weighted one-leg Roman chair hip extension, Weighted single-leg hyperextension	name-fuzzy:leg extension
+e1cm	Weighted Roman chair side bend	Weighted 45-degree side bend, Weighted oblique hyperextension, Weighted side hyperextension, Weighted lateral back extension	alt-fuzzy:back extension
+e1cn	Roman chair back extension	45-degree back extension, Hyperextension, Rounded-back extension on Roman chair, Spinal extension on Roman chair	name-fuzzy:back extension
+e1co	Roman chair back extension with twist	Twisting back extension, Rotational hyperextension, 45-degree back extension with rotation, Twisting hyperextension	name-fuzzy:back extension
+e1cp	Weighted Roman chair back extension with twist	Weighted twisting back extension, Weighted rotational hyperextension	name-fuzzy:back extension
+e1cq	Roman chair side bend	45-degree side bend, Oblique hyperextension, Side hyperextension, Lateral back extension	alt-fuzzy:back extension
+e1cr	Machine shoulder press	Seated machine shoulder press, Shoulder press machine, Machine overhead press	name-fuzzy:shoulder press
+e1cs	Neutral-grip machine shoulder press	Close-grip machine shoulder press, Neutral grip shoulder press machine	name-fuzzy:shoulder press
+e1cy	Weighted Roman chair back extension	Weighted 45-degree back extension, Weighted hyperextension, Kettlebell back extension on Roman chair	name-fuzzy:back extension
+e1dl	Double cable chest fly	Cable crossover, Cable chest fly	alt-fuzzy:chest press pec deck cable fly
+e1dp	Smith machine calf raise single leg		name-fuzzy:single leg calf raise
+e1dq	Smith machine calf raise		name-fuzzy:calf raise
+e1dr	Smith machine hip thrust single leg	Smith machine elevated glute bridge single leg	alt-fuzzy:glute bridge
+e1ds	Smith machine hip thrust	Smith machine elevated glute bridge	alt-fuzzy:glute bridge
+e1du	Smith machine ledge calf raise single leg		name-fuzzy:single leg calf raise
+e1dv	Smith machine ledge calf raise		name-fuzzy:calf raise
+e1dw	Smith machine military press	Smith machine standing shoulder press, Smith machine overhead press	alt-fuzzy:shoulder press
+e1dx	Smith machine romanian deadlift single leg	Smith machine RDL single leg, Smith machine hip hinge single leg	name-fuzzy:romanian deadlift
+e1dy	Smith machine romanian deadlift	Smith machine RDL	name-fuzzy:romanian deadlift
+e1dz	Smith machine split squat		name-fuzzy:split squat
+e1e0	Smith machine squat		name-exact
+e1e1	Assisted reverse nordic	Assisted reverse nordic curl, Cable-assisted reverse nordic	alt-fuzzy:assisted nordic curl
+e1e4	Kneeling lat pulldown single arm		name-fuzzy:lat pulldown
+e1e6	Behind-the-neck lat pulldown		name-fuzzy:lat pulldown
+e1e7	Lat pulldown close grip	Close grip lat pulldown, V-bar lat pulldown	name-fuzzy:lat pulldown
+e1e8	Lat pulldown neutral grip	Parallel grip lat pulldown	name-fuzzy:lat pulldown
+e1e9	Lat pulldown single arm	One-arm lat pulldown	name-fuzzy:lat pulldown
+e1ea	Lat pulldown supine grip	Reverse grip lat pulldown, Underhand lat pulldown	name-fuzzy:lat pulldown
+e1ee	Cable goblet squat		name-fuzzy:goblet squat
+e1ek	Cable romanian deadlift single leg	Cable RDL single leg, Cable hip hinge single leg	name-fuzzy:romanian deadlift
+e1el	Cable standing hamstring curl single leg	Cable standing leg curl single leg	name-fuzzy:leg curl
+e1es	Cable pallof press	Cable anti-rotation press	name-fuzzy:cable woodchop pallof press
+e1fm	Weighted elevated one-leg pike stretch	Box hamstring stretch with weight	alt-fuzzy:hamstring stretch
+e1fp	Banded supine leg extensions	Split prep stretch, Supine knee-to-chest leg extension	alt-fuzzy:leg extension
+w008	Goblet squat press		name-fuzzy:goblet squat
+w016	Lunge knee crunch	Reverse lunge to knee drive	alt-fuzzy:reverse lunge
+w01j	Hamstring rock	Dynamic hip flexor and hamstring stretch	alt-fuzzy:hamstring stretch
+w01k	Squat fold	Squat to hamstring stretch, Pike to squat	alt-fuzzy:hamstring stretch
+w028	Downward dog to Upward dog	Dogs	name-fuzzy:downward dog
+w029	Deep push-up press burpee		name-fuzzy:push up
+w02c	Patrick step to reverse lunge		name-fuzzy:reverse lunge
+w02d	One-leg dog to plank	Plank knee-to-elbow to downward dog	alt-fuzzy:downward dog
+w02e	Low lunge to pyramid	Lizard & leg extension	alt-fuzzy:leg extension
+w02f	Downward dog pushup	Downward dog to chaturanga	name-fuzzy:downward dog
+w02g	One-leg dog plank to figure-4 table top	Downward Dog to Figure-4 Side Support Flow	alt-fuzzy:downward dog
+w02h	Downward dog to figure-4 table top	Figure-4 flip, Downward dog figure-4 to reverse table top	name-fuzzy:downward dog
