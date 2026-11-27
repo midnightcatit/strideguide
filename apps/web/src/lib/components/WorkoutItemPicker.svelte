@@ -37,6 +37,13 @@
 	let equipment = $state<CatalogFilter['equipment']>('all');
 	let level = $state<CatalogFilter['level']>('all');
 
+	let searchEl: HTMLInputElement | undefined;
+	// Move focus into the picker when it opens, so a keyboard user lands on the
+	// search box instead of the top of the page.
+	$effect(() => {
+		searchEl?.focus();
+	});
+
 	const sectionLabel = $derived(CUSTOM_WORKOUT_SECTION_LABELS[section]);
 	const options = $derived(catalogForSection(category, section));
 	const hasStrength = $derived(options.some((o) => o.kind === 'strength'));
@@ -70,6 +77,7 @@
 
 	<input
 		type="search"
+		bind:this={searchEl}
 		bind:value={q}
 		enterkeyhint="search"
 		aria-label="Search the catalog"
@@ -173,11 +181,11 @@
 								{o.kind === 'run' ? '→' : '·'}
 							</span>
 						{/if}
-						<span class="min-w-0">
-							<span class="block truncate text-sm">{o.label}</span>
-							<span class="block truncate text-xs text-steel">{subtitle(o)}</span>
+						<span class="min-w-0 flex-1">
+							<span class="block break-words text-sm">{o.label}</span>
+							<span class="block break-words text-xs text-steel">{subtitle(o)}</span>
 						</span>
-						<span class="ml-auto shrink-0 text-xs text-signal-ink">Add</span>
+						<span class="ml-auto shrink-0 self-start text-xs text-signal-ink">Add</span>
 					</button>
 				</li>
 			{/each}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import {
 		CUSTOM_WORKOUT_CATEGORIES,
 		CUSTOM_WORKOUT_LIMITS,
@@ -67,22 +67,42 @@
 	let pickerSection = $state<CustomWorkoutSectionId | null>(null);
 	let saving = $state(false);
 	let error = $state<string | null>(null);
+	/** True once the runner has changed the name themselves. */
+	let nameEdited = $state(false);
+	/** The id the current draft saves to; null until a new workout is created. */
+	let editingId = $state<string | null>(null);
+	/** The workout id the current draft was seeded from, so a prop change reseeds. */
+	let seededFrom: string | null = null;
+	/** Bumped on every seed, so a save that lands after a newer edit is ignored. */
+	let session = 0;
 	let wasOpen = false;
+	const addRefs: Record<string, HTMLButtonElement | undefined> = {};
 
-	// The draft seeds when the sheet opens, so opening it again for another
-	// workout does not keep the last one's edits.
+	/**
+	 * Load a draft: an existing workout's contents (snapshotted so a reactive prop
+	 * cannot be mutated through the draft), or the category's preset. Ties the
+	 * update id to the draft, so a save can never land on a different workout.
+	 */
+	function seed(next: CustomWorkout | null) {
+		const source = next ? $state.snapshot(next) : null;
+		draft = source
+			? { name: source.name, category: source.category, sections: source.sections }
+			: presetDraft(category, untrack(() => context));
+		editingId = source?.id ?? null;
+		seededFrom = source?.id ?? null;
+		nameEdited = source !== null;
+		pickerSection = null;
+		error = null;
+		saving = false;
+		session += 1;
+	}
+
+	// Seed when the sheet opens, and reseed if the parent swaps to another
+	// workout while it stays open, so Save always writes the workout on screen.
 	$effect(() => {
-		if (open && !wasOpen) {
-			draft = workout
-				? structuredClone({
-						name: workout.name,
-						category: workout.category,
-						sections: workout.sections,
-					})
-				: presetDraft(category, untrack(() => context));
-			pickerSection = null;
-			error = null;
-			saving = false;
+		const incoming = workout?.id ?? null;
+		if (open && (!wasOpen || incoming !== seededFrom)) {
+			seed(workout);
 		}
 		wasOpen = open;
 	});
@@ -91,35 +111,51 @@
 	const canSave = $derived(problems.length === 0 && !saving);
 	const titleId = `composer-title-${crypto.randomUUID()}`;
 
+	/** Seconds as a short length: 20s, 12 min, or 12 min 30s. */
+	function fmtDuration(sec: number): string {
+		if (sec < 60) return `${sec}s`;
+		const min = Math.floor(sec / 60);
+		const rest = sec % 60;
+		return rest ? `${min} min ${rest}s` : `${min} min`;
+	}
+
 	/** The two lines a saved item shows: its name and its dose. */
 	function summary(item: CustomWorkoutItem): { label: string; detail: string } {
 		if (item.kind === 'strength') {
 			const parts = [`${item.sets ?? 1} ${item.sets === 1 ? 'set' : 'sets'}`];
 			if (item.reps) parts.push(`${item.reps} reps`);
-			if (item.durationSec) parts.push(`${item.durationSec}s`);
+			if (item.durationSec) parts.push(fmtDuration(item.durationSec));
 			return { label: item.ref, detail: parts.join(' · ') };
 		}
 		if (item.kind === 'mobility') {
 			const parts: string[] = [];
 			if (item.sets && item.sets > 1) parts.push(`${item.sets} rounds`);
-			if (item.durationSec) parts.push(`${item.durationSec}s`);
+			if (item.durationSec) parts.push(fmtDuration(item.durationSec));
 			return { label: item.ref, detail: parts.join(' · ') || 'Hold' };
 		}
 		const parts: string[] = [];
 		if (item.distanceKm) parts.push(fmtDistance(item.distanceKm));
-		if (item.durationSec) parts.push(`${Math.round(item.durationSec / 60)} min`);
-		return { label: RUN_ARCHETYPE_LABELS[item.ref as keyof typeof RUN_ARCHETYPE_LABELS] ?? item.ref, detail: parts.join(' · ') || 'Run step' };
+		if (item.durationSec) parts.push(fmtDuration(item.durationSec));
+		const label = RUN_ARCHETYPE_LABELS[item.ref as keyof typeof RUN_ARCHETYPE_LABELS] ?? item.ref;
+		return { label, detail: parts.join(' · ') || 'Run step' };
 	}
 
 	function changeCategory(next: CustomWorkoutCategory) {
 		if (next === draft.category) return;
 		const preset = presetDraft(next, context);
-		draft = { ...preset, name: draft.name.trim() ? draft.name : preset.name };
+		draft = { ...preset, name: nameEdited ? draft.name : preset.name };
 		pickerSection = null;
 	}
 
 	function setItem(section: CustomWorkoutSectionId, index: number, delta: number) {
 		draft = shiftItem(draft, section, index, delta);
+	}
+
+	/** Close the picker and put focus back on the section's add control. */
+	function closePicker() {
+		const prev = pickerSection;
+		pickerSection = null;
+		if (prev) tick().then(() => addRefs[prev]?.focus());
 	}
 
 	async function save() {
@@ -130,18 +166,25 @@
 			error = found[0]!;
 			return;
 		}
+		// Capture the session and id, so a request that lands after the sheet
+		// reopened (or after another save started) cannot touch the newer draft.
+		const mySession = session;
+		const id = editingId;
 		saving = true;
 		error = null;
 		try {
-			const res = workout?.id
-				? await api.updateCustomWorkout(workout.id, cleaned)
+			const res = id
+				? await api.updateCustomWorkout(id, cleaned)
 				: await api.createCustomWorkout(cleaned);
+			if (mySession !== session) return;
+			editingId = res.workout.id;
 			onSaved(res.workout);
 			onClose();
 		} catch (e) {
+			if (mySession !== session) return;
 			error = e instanceof Error ? e.message : 'Could not save the workout. Try again.';
 		} finally {
-			saving = false;
+			if (mySession === session) saving = false;
 		}
 	}
 </script>
@@ -190,143 +233,163 @@
 			</div>
 
 			<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
-				<label class="block text-xs text-steel">
-					Name
-					<input
-						bind:value={draft.name}
-						maxlength={CUSTOM_WORKOUT_LIMITS.maxNameLen}
-						placeholder="Machine circuit"
-						class="mt-1 w-full rounded-lg border border-hairline bg-paper px-3 py-2 text-base text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none sm:text-sm"
-					/>
-				</label>
+				<!-- Every draft control sits in one fieldset, so a save in flight
+				     locks the draft instead of letting an edit be overwritten. -->
+				<fieldset disabled={saving} class="contents">
+					<label class="block text-xs text-steel">
+						Name
+						<input
+							bind:value={draft.name}
+							oninput={() => (nameEdited = true)}
+							maxlength={CUSTOM_WORKOUT_LIMITS.maxNameLen}
+							placeholder="Machine circuit"
+							class="mt-1 w-full rounded-lg border border-hairline bg-paper px-3 py-2 text-base text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none sm:text-sm"
+						/>
+					</label>
 
-				<p class="mt-4 text-xs text-steel">Category</p>
-				<div class="mt-1 inline-flex rounded-lg border border-hairline p-0.5" role="group" aria-label="Workout category">
-					{#each CUSTOM_WORKOUT_CATEGORIES as c (c)}
-						<button
-							type="button"
-							aria-pressed={draft.category === c}
-							onclick={() => changeCategory(c)}
-							class="min-h-11 rounded-md px-3 text-sm {draft.category === c
-								? 'bg-ink font-medium text-paper'
-								: 'text-steel hover:text-ink'}"
-						>
-							{CATEGORY_LABELS[c]}
-						</button>
-					{/each}
-				</div>
-				<p class="mt-1 text-xs text-steel">Switching category starts that category's preset; you can change anything after.</p>
-
-				{#each CUSTOM_WORKOUT_SECTION_IDS as section (section)}
-					<section class="mt-5">
-						<h3 class="font-display text-sm font-medium">{CUSTOM_WORKOUT_SECTION_LABELS[section]}</h3>
-
-						{#if pickerSection === section}
-							<div class="mt-2">
-								<WorkoutItemPicker
-									category={draft.category}
-									{section}
-									onAdd={(item) => {
-										draft = addItem(draft, section, item);
-										pickerSection = null;
-									}}
-									onClose={() => (pickerSection = null)}
-								/>
-							</div>
-						{:else}
-							{#if draft.sections[section].items.length === 0}
-								<p class="mt-2 rounded-lg bg-sunken p-3 text-sm text-steel">
-									No items yet. Add at least one.
-								</p>
-							{:else}
-								<ul class="mt-2 space-y-1.5">
-									{#each draft.sections[section].items as item, i (i)}
-										{@const s = summary(item)}
-										<li class="flex items-center gap-2 rounded-lg border border-hairline bg-paper px-3 py-2">
-											<span class="min-w-0 flex-1">
-												<span class="block truncate text-sm">{s.label}</span>
-												<span class="tabular block truncate text-xs text-steel">{s.detail}</span>
-											</span>
-											<button
-												type="button"
-												onclick={() => setItem(section, i, -1)}
-												disabled={i === 0}
-												aria-label="Move {s.label} up"
-												class="tap-target shrink-0 rounded-md text-steel hover:text-ink disabled:opacity-30"
-											>
-												↑
-											</button>
-											<button
-												type="button"
-												onclick={() => setItem(section, i, 1)}
-												disabled={i === draft.sections[section].items.length - 1}
-												aria-label="Move {s.label} down"
-												class="tap-target shrink-0 rounded-md text-steel hover:text-ink disabled:opacity-30"
-											>
-												↓
-											</button>
-											<button
-												type="button"
-												onclick={() => (draft = removeItem(draft, section, i))}
-												aria-label="Remove {s.label}"
-												class="tap-target shrink-0 rounded-md text-steel hover:text-danger"
-											>
-												✕
-											</button>
-										</li>
-									{/each}
-								</ul>
-							{/if}
-
+					<p class="mt-4 text-xs text-steel">Category</p>
+					<div
+						class="mt-1 inline-flex rounded-lg border border-hairline p-0.5"
+						role="group"
+						aria-label="Workout category"
+					>
+						{#each CUSTOM_WORKOUT_CATEGORIES as c (c)}
 							<button
 								type="button"
-								onclick={() => (pickerSection = section)}
-								class="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-hairline-strong py-2 text-sm text-signal-ink hover:border-signal"
+								aria-pressed={draft.category === c}
+								onclick={() => changeCategory(c)}
+								class="min-h-11 rounded-md px-3 text-sm {draft.category === c
+									? 'bg-ink font-medium text-paper'
+									: 'text-steel hover:text-ink'}"
 							>
-								＋ Add an item
+								{CATEGORY_LABELS[c]}
 							</button>
+						{/each}
+					</div>
+					<p class="mt-1 text-xs text-steel">
+						Switching category starts that category's preset; you can change anything after.
+					</p>
 
-							<label class="mt-2 block text-xs text-steel">
-								Note (optional)
-								<textarea
-									bind:value={draft.sections[section].note}
-									rows="2"
-									maxlength={CUSTOM_WORKOUT_LIMITS.maxNoteLen}
-									placeholder="Anything to remember for this part."
-									class="mt-1 w-full resize-none rounded-lg border border-hairline bg-paper px-3 py-2 text-sm text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none"
-								></textarea>
-							</label>
-						{/if}
-					</section>
-				{/each}
+					{#each CUSTOM_WORKOUT_SECTION_IDS as section (section)}
+						<section class="mt-5">
+							<h3 class="font-display text-sm font-medium">{CUSTOM_WORKOUT_SECTION_LABELS[section]}</h3>
 
-				{#if problems.length}
-					<ul role="alert" class="mt-4 space-y-1 rounded-lg border border-danger/40 bg-danger/5 p-3 text-sm text-danger">
-						{#each problems as p (p)}<li>{p}</li>{/each}
-					</ul>
-				{/if}
+							{#if pickerSection === section}
+								<div class="mt-2">
+									<WorkoutItemPicker
+										category={draft.category}
+										{section}
+										onAdd={(item) => {
+											draft = addItem(draft, section, item);
+											closePicker();
+										}}
+										onClose={closePicker}
+									/>
+								</div>
+							{:else}
+								{#if draft.sections[section].items.length === 0}
+									<p class="mt-2 rounded-lg bg-sunken p-3 text-sm text-steel">
+										No items yet. Add at least one.
+									</p>
+								{:else}
+									<ul class="mt-2 space-y-1.5">
+										{#each draft.sections[section].items as item, i (i)}
+											{@const s = summary(item)}
+											<li class="flex items-center gap-2 rounded-lg border border-hairline bg-paper px-3 py-2">
+												<span class="min-w-0 flex-1">
+													<span class="block break-words text-sm">{s.label}</span>
+													<span class="tabular block break-words text-xs text-steel">{s.detail}</span>
+												</span>
+												<button
+													type="button"
+													onclick={() => setItem(section, i, -1)}
+													disabled={i === 0}
+													aria-label="Move {s.label} up"
+													class="tap-target shrink-0 rounded-md text-steel hover:text-ink disabled:opacity-30"
+												>
+													↑
+												</button>
+												<button
+													type="button"
+													onclick={() => setItem(section, i, 1)}
+													disabled={i === draft.sections[section].items.length - 1}
+													aria-label="Move {s.label} down"
+													class="tap-target shrink-0 rounded-md text-steel hover:text-ink disabled:opacity-30"
+												>
+													↓
+												</button>
+												<button
+													type="button"
+													onclick={() => (draft = removeItem(draft, section, i))}
+													aria-label="Remove {s.label}"
+													class="tap-target shrink-0 rounded-md text-steel hover:text-danger"
+												>
+													✕
+												</button>
+											</li>
+										{/each}
+									</ul>
+								{/if}
+
+								<button
+									type="button"
+									bind:this={addRefs[section]}
+									onclick={() => (pickerSection = section)}
+									class="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-hairline-strong py-2 text-sm text-signal-ink hover:border-signal"
+								>
+									＋ Add an item
+								</button>
+
+								<label class="mt-2 block text-xs text-steel">
+									Note (optional)
+									<textarea
+										bind:value={draft.sections[section].note}
+										rows="2"
+										maxlength={CUSTOM_WORKOUT_LIMITS.maxNoteLen}
+										placeholder="Anything to remember for this part."
+										class="mt-1 w-full resize-none rounded-lg border border-hairline bg-paper px-3 py-2 text-sm text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none"
+									></textarea>
+								</label>
+							{/if}
+						</section>
+					{/each}
+
+					{#if problems.length}
+						<ul
+							role="alert"
+							class="mt-4 space-y-1 rounded-lg border border-danger/40 bg-danger/5 p-3 text-sm text-danger"
+						>
+							{#each problems as p (p)}<li>{p}</li>{/each}
+						</ul>
+					{/if}
+				</fieldset>
 			</div>
 
 			<div
-				class="sg-overlay-pad sticky bottom-0 flex gap-2 border-t border-hairline bg-paper px-4 py-3"
+				class="sg-overlay-pad sticky bottom-0 border-t border-hairline bg-paper px-4 py-3"
 				style="--overlay-pad: 0.75rem"
 			>
-				<button
-					type="button"
-					onclick={onClose}
-					class="flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
-				>
-					Cancel
-				</button>
-				<button
-					type="button"
-					onclick={save}
-					disabled={!canSave}
-					aria-busy={saving}
-					class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
-				>
-					{saving ? 'Saving…' : 'Save workout'}
-				</button>
+				{#if error}
+					<p role="alert" class="mb-2 text-sm text-danger">{error}</p>
+				{/if}
+				<div class="flex gap-2">
+					<button
+						type="button"
+						onclick={onClose}
+						class="flex-1 rounded-md border border-hairline px-4 py-3 text-sm hover:border-signal hover:text-signal-ink"
+					>
+						Cancel
+					</button>
+					<button
+						type="button"
+						onclick={save}
+						disabled={!canSave}
+						aria-busy={saving}
+						class="flex-1 rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-60"
+					>
+						{saving ? 'Saving…' : 'Save workout'}
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>

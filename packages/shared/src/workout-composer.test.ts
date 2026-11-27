@@ -74,8 +74,11 @@ describe('workout composer helpers', () => {
 		expect(machines.length).toBeGreaterThan(0);
 		expect(machines.every((o) => o.kind === 'strength' && o.equipment === 'machines')).toBe(true);
 
-		// A move with no level is not level-gated, so it survives the level filter.
+		// A move with no level is not level-gated, so it survives the level filter,
+		// and an advanced move still passes it; only beginner-gated moves drop.
 		const advanced = filterCatalog(moves, { level: 'advanced' });
+		expect(advanced.some((o) => o.kind === 'strength' && o.level === 'advanced')).toBe(true);
+		expect(advanced.some((o) => o.kind === 'strength' && o.level === undefined)).toBe(true);
 		expect(advanced.some((o) => o.kind === 'strength' && o.level === 'beginner')).toBe(false);
 
 		const searched = filterCatalog(moves, { query: 'leg press' });
@@ -121,6 +124,18 @@ describe('workout composer helpers', () => {
 		]);
 		// A shift off either end is a no-op, so a button at the end is safe.
 		expect(shiftItem(three, 'main', 0, -1).sections.main.items.map((i) => i.ref)).toEqual([
+			'Leg press',
+			'Leg curl',
+			'Leg extension',
+		]);
+		// A non-integer position is rejected, so NaN cannot be read by splice as
+		// position zero and quietly move an item.
+		expect(moveItem(three, 'main', Number.NaN, 1).sections.main.items.map((i) => i.ref)).toEqual([
+			'Leg press',
+			'Leg curl',
+			'Leg extension',
+		]);
+		expect(moveItem(three, 'main', 1.5, 2).sections.main.items.map((i) => i.ref)).toEqual([
 			'Leg press',
 			'Leg curl',
 			'Leg extension',

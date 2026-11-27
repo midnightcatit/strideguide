@@ -164,16 +164,18 @@ export function runOptions(): RunOption[] {
 	return RUN_ARCHETYPES.map((ref) => ({ kind: 'run', ref, label: RUN_ARCHETYPE_LABELS[ref] }));
 }
 
-/** The options a given section accepts, by the category's item kinds. */
+/** The options a given section accepts, by the category's item kinds. Run steps
+ * come before the mobility library, so a warm-up or cool-down browse reaches
+ * them without a search. */
 export function catalogForSection(
 	category: CustomWorkoutCategory,
 	section: CustomWorkoutSectionId,
 ): CatalogOption[] {
 	const kinds = sectionKinds(category, section);
 	const out: CatalogOption[] = [];
-	if (kinds.includes('strength')) out.push(...strengthOptions());
-	if (kinds.includes('mobility')) out.push(...mobilityOptions());
 	if (kinds.includes('run')) out.push(...runOptions());
+	if (kinds.includes('mobility')) out.push(...mobilityOptions());
+	if (kinds.includes('strength')) out.push(...strengthOptions());
 	return out;
 }
 
@@ -273,6 +275,7 @@ export function moveItem(
 	to: number,
 ): CustomWorkoutDraft {
 	return withSection(draft, section, (s) => {
+		if (!Number.isInteger(from) || !Number.isInteger(to)) return s;
 		if (from === to || from < 0 || to < 0 || from >= s.items.length || to >= s.items.length)
 			return s;
 		const items = [...s.items];
