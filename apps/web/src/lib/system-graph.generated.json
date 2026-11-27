@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-26T19:45:09.956Z",
-  "fingerprint": "d4b59a872f969a46",
+  "generatedAt": "2026-11-27T05:22:11.411Z",
+  "fingerprint": "611afdafc331899b",
   "views": [
     {
       "id": "pipeline",
@@ -1920,6 +1920,133 @@
           ]
         },
         {
+          "id": "decision:strength-sessions-are-full-body-with-a-lean-not-split-days",
+          "label": "Strength sessions are full-body with a lean, not split days",
+          "kind": "decision",
+          "note": "2026-11-27. every generated strength session keeps a lower-body spine in a fixed priority order (a squat or leg-press pattern, a hip hinge, knee flexion, calf work), followed by the lean's extra move for its area and then one or two upper-body or core accessories. The day's focus adds to this spine rather than replacing it. With two weekly strength sessions both lean legs and hips (their first accessory alternating push and pull across the week); with three, two lean legs and hips and one leans upper body and core; a single scheduled strength day stays full-body with no lean. An upper-body accessory never displaces a lower-body pattern: the spine leads every sequence, so a short session (a heavy sport week trims the circuit to four moves) loses accessories before it loses leg patterns. A chosen heuristic keeps about two thirds or more of the working sets in the lower body, stated as a heuristic in the session's why. Lean days carry plain titles (\"Leg day\", \"Upper body day\") and whys in plain body-part words, with no \"upper push\" or \"upper pull\" jargon. Each why names only the accessory work the built circuit actually holds, so a session too short for an accessory says so instead of claiming whole-body work, and the why keeps the day honest about what it does carry. The phase arc follows the research too: the full requested count in base, at most two maintenance sessions through a race build and peak with a set cut and the load kept, one short session in the first taper week, and none in the final days before the race. When a phase asks for fewer sessions, the dropped strength day goes quiet (a rest day) instead of becoming more running, so the week's running days stay the same from the first week to the last. This supersedes \"The week rotates the strength focus across the body\" (2026-11-26): its focus vocabulary survives as the lean, but the layout it produced (a legs day, an upper push day, an upper pull day) concentrated most muscles into about one weekly exposure at the runner's two to three sessions. Its rule-out lines (the same circuit every day, a bodybuilding split that ignores running) still hold.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Strength sessions are full-body with a lean, not split days",
+              "href": "docs/decisions.md#strength-sessions-are-full-body-with-a-lean-not-split-days"
+            }
+          ]
+        },
+        {
+          "id": "decision:mobility-anchors-on-the-stated-tight-area-and-roams-one-stretch-around-it",
+          "label": "Mobility anchors on the stated tight area and roams one stretch around it",
+          "kind": "decision",
+          "note": "2026-11-27. a generated mobility session is composed in the engine instead of naming one library workout. The runner's voted focus (from their niggles, terrain and sports, at any flexibility gap) anchors the session: the same two static holds for that area at every session, two rounds of 30 to 45 seconds each, never shortened by rotation. One roaming stretch per session rotates through the other common runner areas along one shared order, so sessions and weeks differ while the tight area's dose stays fixed, and a stretch never roams twice before the whole order has cycled. When a week carries at least three composed sessions, one of them anchors on the runner-up vote instead (with no second vote, the next common runner area), while the stated focus keeps a clear majority of the composed work. A favorite mobility workout weights the rotation rather than overriding it: it takes every second session of the plan, so the composed variants still cycle through the weeks it does not take. Every stretch that targets a muscle counts toward that muscle's weekly dose, roaming overlaps included; a drill that is a movement rather than a hold stays in the dynamic warm-up and never counts as static dose; and nothing is scaled up past the static plateau of about ten minutes a week per target muscle, though lower weekly doses still produce gains. This annotates the earlier behaviour of aiming the mobility routine at the runner's stated areas: the aim stays, rotation is added around it.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Mobility anchors on the stated tight area and roams one stretch around it",
+              "href": "docs/decisions.md#mobility-anchors-on-the-stated-tight-area-and-roams-one-stretch-around-it"
+            }
+          ]
+        },
+        {
+          "id": "decision:coderabbit-findings-are-applied-by-suggestion-or-backlogged-not-hand-fixed",
+          "label": "CodeRabbit findings are applied by suggestion or backlogged, not hand-fixed",
+          "kind": "decision",
+          "note": "2026-11-27. review findings are cleared in two ways, and the main session stops rewriting code in a loop for them. A comment that carries a suggested diff is applied verbatim (its suggestion action) after the diff is read and the gate passes; a comment CodeRabbit can fix itself is handed to it; and a finding we do not apply is recorded in `backlog/` with the reason and the source link. Only non-blocking findings are backlogged: a release-blocking one (a security hole, data loss, a broken auth path) is fixed before merge, whatever the review's severity tag says. Threads resolve against one of those two outcomes, and a PR merges with the review green and no comment left open (AGENTS.md \"CodeRabbit review\", backlog/README.md).",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "CodeRabbit findings are applied by suggestion or backlogged, not hand-fixed",
+              "href": "docs/decisions.md#coderabbit-findings-are-applied-by-suggestion-or-backlogged-not-hand-fixed"
+            },
+            {
+              "kind": "pr",
+              "label": "PR #293",
+              "href": "https://github.com/midnightcatit/strideguide/pull/293"
+            }
+          ]
+        },
+        {
+          "id": "decision:rest-between-strength-sets-is-a-band-and-rest-is-an-explicit-card",
+          "label": "Rest between strength sets is a band, and rest is an explicit card",
+          "kind": "decision",
+          "note": "2026-11-27. the engine gives every strength move its rest from a phase band instead of a flat 75 seconds: 45 to 60 seconds in base, 75 to 90 in build, 90 to 120 in peak, with the runner's level nudging inside the band (a beginner at the short end, an advanced runner at the long end), snapped to five seconds. A plyometric move always takes at least 90 seconds so every contact stays sharp. A taper week keeps the build band and the post-race recovery weeks rest like the base. The rest is now an explicit step in the guided sequence (`kind: 'rest'`): one card after each set, where the card after a move's final set is the pause before the next move, and the final set of the final move runs straight into the cool-down, which stays rest-free. The player's implicit rest machinery is gone: the \"Rest now\" button and the countdown it armed are replaced by the rest card, which ticks by itself and can be extended 30 seconds at a time. The Skip rest control confirms first and names what skipping costs, while moving through the stage list passes a rest card with no prompt. The session's length estimate is the sum of its parts (drills, work at about four seconds a rep plus setup, and rest) instead of a flat 50 minutes. The detail page's \"What's to come\" list stays work-focused, one row per move, with rest cards visible only in the player's flow.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Rest between strength sets is a band, and rest is an explicit card",
+              "href": "docs/decisions.md#rest-between-strength-sets-is-a-band-and-rest-is-an-explicit-card"
+            }
+          ]
+        },
+        {
+          "id": "decision:plan-warnings-reach-the-runner",
+          "label": "Plan warnings reach the runner",
+          "kind": "decision",
+          "note": "2026-11-27. the engine's `meta.warnings` are stored on the plan's params at generation and shown on the plan overview as written, and the preview rebuild's warnings ride on the preview response and show in onboarding on the screens the runner lands on after the rebuild. This supersedes the follow-up note in \"A mid-week start opens with a short week, and the week floor follows the goal and the runner\", which said the rebuild warning is returned but not shown; it is shown now.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Plan warnings reach the runner",
+              "href": "docs/decisions.md#plan-warnings-reach-the-runner"
+            }
+          ]
+        },
+        {
+          "id": "decision:every-pr-waits-for-a-complete-coderabbit-review-before-merge",
+          "label": "Every PR waits for a complete CodeRabbit review before merge",
+          "kind": "decision",
+          "note": "2026-11-27. every PR gets a CodeRabbit review. After opening a PR, wait for the review rather than merging on the CI gate alone, by scheduling a wakeup instead of blocking the turn. Read the review comments yourself, resolve every addressable artifact (nitpicks, outside-diff comments, inline comments and review summaries), and merge only when the review is complete and clean and the CI gate passes. A subagent's PR follows the same rule.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Every PR waits for a complete CodeRabbit review before merge",
+              "href": "docs/decisions.md#every-pr-waits-for-a-complete-coderabbit-review-before-merge"
+            },
+            {
+              "kind": "pr",
+              "label": "PR #290",
+              "href": "https://github.com/midnightcatit/strideguide/pull/290"
+            }
+          ]
+        },
+        {
+          "id": "decision:the-week-rotates-the-strength-focus-across-the-body",
+          "label": "The week rotates the strength focus across the body",
+          "kind": "decision",
+          "note": "2026-11-26. a strength day leans on a focus (legs and hips, upper push, upper pull, core and stability) chosen by the session's position among the week's strength days, and the moves within a focus rotate by the session index. One strength day stays a full-body circuit, two split into legs and upper body, and three or more rotate legs, upper push, upper pull and core. The why names the focus.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "The week rotates the strength focus across the body",
+              "href": "docs/decisions.md#the-week-rotates-the-strength-focus-across-the-body"
+            }
+          ]
+        },
+        {
+          "id": "decision:the-system-maps-selected-view-is-component-state-not-a-derive-of-the-hash",
+          "label": "The system map's selected view is component state, not a derive of the hash",
+          "kind": "decision",
+          "note": "2026-11-26. the admin system map holds the selected view and node in component state, seeds them from the URL hash on mount, writes the hash with `replaceState` for the deep link, and reads the hash back through a `hashchange` listener. It no longer derives the view from `page.url.hash`.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "The system map's selected view is component state, not a derive of the hash",
+              "href": "docs/decisions.md#the-system-maps-selected-view-is-component-state-not-a-derive-of-the-hash"
+            }
+          ]
+        },
+        {
+          "id": "decision:a-system-map-edge-carries-a-kind-and-its-long-label-shows-only-on-the-edge-you-are-on",
+          "label": "A system-map edge carries a kind, and its long label shows only on the edge you are on",
+          "kind": "decision",
+          "note": "2026-11-26. every edge in the system map has a `kind` (flow, enforced, guarded, decision, foreign-key), the canvas strokes it and the legend names it by that kind, and the long condition label is drawn only on the edge under the pointer or focus instead of on every edge at once. The authored pipeline and path views stay hand-kept without a kind and the parser fills `flow`; the generated views set their own. `validateGraph` now fails an edge with no kind.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "A system-map edge carries a kind, and its long label shows only on the edge you are on",
+              "href": "docs/decisions.md#a-system-map-edge-carries-a-kind-and-its-long-label-shows-only-on-the-edge-you-are-on"
+            }
+          ]
+        },
+        {
           "id": "decision:a-day-insight-is-grounded-in-the-facts-and-stored-once-per-day",
           "label": "A day insight is grounded in the facts and stored once per day",
           "kind": "decision",
@@ -2125,6 +2252,60 @@
         }
       ],
       "edges": [
+        {
+          "from": "decision:log",
+          "to": "decision:strength-sessions-are-full-body-with-a-lean-not-split-days",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:mobility-anchors-on-the-stated-tight-area-and-roams-one-stretch-around-it",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:coderabbit-findings-are-applied-by-suggestion-or-backlogged-not-hand-fixed",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:rest-between-strength-sets-is-a-band-and-rest-is-an-explicit-card",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:plan-warnings-reach-the-runner",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:every-pr-waits-for-a-complete-coderabbit-review-before-merge",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-week-rotates-the-strength-focus-across-the-body",
+          "kind": "decision",
+          "label": "2026-11-26"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-system-maps-selected-view-is-component-state-not-a-derive-of-the-hash",
+          "kind": "decision",
+          "label": "2026-11-26"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:a-system-map-edge-carries-a-kind-and-its-long-label-shows-only-on-the-edge-you-are-on",
+          "kind": "decision",
+          "label": "2026-11-26"
+        },
         {
           "from": "decision:log",
           "to": "decision:a-day-insight-is-grounded-in-the-facts-and-stored-once-per-day",
