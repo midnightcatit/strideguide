@@ -33,6 +33,74 @@ describe('exercise catalog', () => {
 	});
 });
 
+describe('move data integrity', () => {
+	// The circuit builder and the picker read pattern and equipment by value, so
+	// a typo in a new entry would silently drop the move from every pool or hide
+	// it from the picker. Validate every catalog entry against the known sets.
+	const PATTERNS = new Set<MovePattern>([
+		'pull',
+		'push',
+		'squat',
+		'hinge',
+		'knee-extension',
+		'knee-flexion',
+		'posterior-chain',
+		'calf',
+		'core',
+		'plyometric',
+		'cardio',
+	]);
+	const EQUIPMENT = new Set([
+		'dumbbells',
+		'barbell',
+		'kettlebell',
+		'bands',
+		'home',
+		'cable',
+		'machine',
+		'bodyweight',
+		'battle ropes',
+		'medicine ball',
+		'suspension trainer',
+	]);
+	const LEVELS = new Set(['beginner', 'intermediate', 'advanced']);
+
+	it('uses a known pattern, equipment and level on every move', () => {
+		for (const m of ALL_MOVES) {
+			expect(PATTERNS.has(m.pattern), `${m.name} pattern: ${m.pattern}`).toBe(true);
+			if (m.equipment !== undefined) {
+				expect(EQUIPMENT.has(m.equipment), `${m.name} equipment: ${m.equipment}`).toBe(true);
+			}
+			if (m.level !== undefined) {
+				expect(LEVELS.has(m.level), `${m.name} level: ${m.level}`).toBe(true);
+			}
+		}
+	});
+
+	it('carries the user-facing copy every entry needs', () => {
+		for (const m of ALL_MOVES) {
+			expect(m.muscles.length, `${m.name} has no muscles`).toBeGreaterThan(0);
+			expect(String(m.why ?? '').trim().length, `${m.name} has no why`).toBeGreaterThan(0);
+			expect(String(m.feel ?? '').trim().length, `${m.name} has no feel`).toBeGreaterThan(0);
+			expect(m.form.length, `${m.name} has no form cues`).toBeGreaterThan(0);
+			expect(m.mistakes.length, `${m.name} has no mistakes`).toBeGreaterThan(0);
+			for (const line of [...m.form, ...m.mistakes]) {
+				expect(String(line).trim().length, `${m.name} has an empty cue`).toBeGreaterThan(0);
+			}
+		}
+	});
+
+	it('writes no em dashes in user-facing copy', () => {
+		// AGENTS.md bans em dashes in every visible string; a stray one would ship
+		// in the app and the coach output.
+		for (const m of ALL_MOVES) {
+			for (const text of [m.why, m.feel, ...m.form, ...m.mistakes, m.name]) {
+				expect(String(text).includes('\u2014'), `${m.name} has an em dash: ${text}`).toBe(false);
+			}
+		}
+	});
+});
+
 describe('strength focus lean', () => {
 	const SPINE: MovePattern[] = ['squat', 'hinge', 'knee-flexion', 'calf'];
 
