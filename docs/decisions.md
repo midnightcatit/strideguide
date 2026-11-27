@@ -152,9 +152,9 @@ card after each set, where the card after a move's final set is the pause
 before the next move, and the final set of the final move runs straight into
 the cool-down, which stays rest-free. The player's implicit rest machinery is
 gone: the "Rest now" button and the countdown it armed are replaced by the rest
-card, which ticks by itself, can be extended 30 seconds at a time, and is
-skipped only through the Skip rest control, which confirms first and names what
-skipping costs. The session's
+card, which ticks by itself and can be extended 30 seconds at a time. The Skip
+rest control confirms first and names what skipping costs, while moving through
+the stage list passes a rest card with no prompt. The session's
 length estimate is the sum of its parts (drills, work at about four seconds a
 rep plus setup, and rest) instead of a flat 50 minutes. The detail page's
 "What's to come" list stays work-focused, one row per move, with rest cards

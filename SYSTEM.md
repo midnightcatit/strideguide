@@ -29,10 +29,12 @@ A plan flows through these stages:
    computes every distance, pace, duration and count. A strength session is full-body with a lean
    over a fixed lower-body spine (a squat pattern, a hip hinge, knee flexion, calf work), and each
    set takes its rest from a band by phase and level, written into the sequence as an explicit rest
-   card after every set; the card after a move's final set is the pause before the next move, and
-   the final set of the final move runs into the cool-down, which takes no rest card. The session
-   length the schedule reserves is the sum of its parts, work plus rest. Mobility anchors on the
-   tight area the runner stated, and adds one roaming stretch that varies per session.
+   card after every set. A plyometric set always takes at least 90 seconds, above the band. The
+   card after a move's final set is the pause before the next move, and the final set of the final
+   move runs into the cool-down, which takes no rest card. The session length the schedule reserves
+   is the sum of its parts, work plus rest. Mobility picks the focus from the runner's answers (a
+   named niggle counts most, then terrain, then the sports they do), and adds one roaming stretch
+   that varies per session.
 3. **The AI shaping pass** never generates the plan. It reads the engine's plan and chooses within a
    closed set of typed intents: a quality kind and a volume, strength and mobility intent of `ease`,
    `hold` or `build`, plus a short emphasis line. An answer outside the set is dropped. The engine

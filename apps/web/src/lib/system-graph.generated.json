@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-27T04:43:01.377Z",
-  "fingerprint": "1d9e068ba744bbc5",
+  "generatedAt": "2026-11-27T05:22:11.411Z",
+  "fingerprint": "611afdafc331899b",
   "views": [
     {
       "id": "pipeline",
@@ -1967,7 +1967,7 @@
           "id": "decision:rest-between-strength-sets-is-a-band-and-rest-is-an-explicit-card",
           "label": "Rest between strength sets is a band, and rest is an explicit card",
           "kind": "decision",
-          "note": "2026-11-27. the engine gives every strength move its rest from a phase band instead of a flat 75 seconds: 45 to 60 seconds in base, 75 to 90 in build, 90 to 120 in peak, with the runner's level nudging inside the band (a beginner at the short end, an advanced runner at the long end), snapped to five seconds. A plyometric move always takes at least 90 seconds so every contact stays sharp. A taper week keeps the build band and the post-race recovery weeks rest like the base. The rest is now an explicit step in the guided sequence (`kind: 'rest'`): one card after each set, where the card after a move's final set is the pause before the next move, and the final set of the final move runs straight into the cool-down, which stays rest-free. The player's implicit rest machinery is gone: the \"Rest now\" button and the countdown it armed are replaced by the rest card, which ticks by itself, can be extended 30 seconds at a time, and is skipped only through the Skip rest control, which confirms first and names what skipping costs. The session's length estimate is the sum of its parts (drills, work at about four seconds a rep plus setup, and rest) instead of a flat 50 minutes. The detail page's \"What's to come\" list stays work-focused, one row per move, with rest cards visible only in the player's flow.",
+          "note": "2026-11-27. the engine gives every strength move its rest from a phase band instead of a flat 75 seconds: 45 to 60 seconds in base, 75 to 90 in build, 90 to 120 in peak, with the runner's level nudging inside the band (a beginner at the short end, an advanced runner at the long end), snapped to five seconds. A plyometric move always takes at least 90 seconds so every contact stays sharp. A taper week keeps the build band and the post-race recovery weeks rest like the base. The rest is now an explicit step in the guided sequence (`kind: 'rest'`): one card after each set, where the card after a move's final set is the pause before the next move, and the final set of the final move runs straight into the cool-down, which stays rest-free. The player's implicit rest machinery is gone: the \"Rest now\" button and the countdown it armed are replaced by the rest card, which ticks by itself and can be extended 30 seconds at a time. The Skip rest control confirms first and names what skipping costs, while moving through the stage list passes a rest card with no prompt. The session's length estimate is the sum of its parts (drills, work at about four seconds a rep plus setup, and rest) instead of a flat 50 minutes. The detail page's \"What's to come\" list stays work-focused, one row per move, with rest cards visible only in the player's flow.",
           "links": [
             {
               "kind": "decision",
