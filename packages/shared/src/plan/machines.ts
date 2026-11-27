@@ -15,7 +15,9 @@ export type MovePattern =
 	| 'squat'
 	| 'hinge'
 	| 'knee-extension'
+	| 'knee-flexion'
 	| 'posterior-chain'
+	| 'calf'
 	| 'core'
 	| 'plyometric'
 	| 'cardio';
@@ -55,7 +57,7 @@ export const PF_MACHINES: MachineExercise[] = [
 	{
 		name: 'Leg curl',
 		muscles: ['hamstrings'],
-		pattern: 'posterior-chain',
+		pattern: 'knee-flexion',
 		why: 'Hamstrings brake every stride and carry the load on downhills.',
 		feel: 'Back of the thighs.',
 		form: [
@@ -260,7 +262,7 @@ export const PF_MACHINES: MachineExercise[] = [
 	{
 		name: 'Seated calf raise',
 		muscles: ['soleus', 'gastrocnemius'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'machine',
 		why: 'Trains the soleus, a major force producer in running, by bending the knee and shifting work away from the gastrocnemius.',
 		feel: 'Deep work in the lower calf and near the Achilles.',
@@ -278,7 +280,7 @@ export const PF_MACHINES: MachineExercise[] = [
 	{
 		name: 'Standing calf raise',
 		muscles: ['gastrocnemius', 'soleus'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		equipment: 'machine',
 		why: 'Trains both calf muscles with the knee straight, adding the gastrocnemius that the seated version leaves out; the two positions together cover the calf.',
 		feel: 'Work high in the calf and a stretch down near the heel.',
@@ -440,7 +442,7 @@ export const PF_MACHINES: MachineExercise[] = [
 	{
 		name: 'Seated leg curl',
 		muscles: ['hamstrings', 'gastrocnemius'],
-		pattern: 'posterior-chain',
+		pattern: 'knee-flexion',
 		equipment: 'machine',
 		why: 'Isolates the hamstrings through knee flexion; emphasise the lowering phase to train the eccentric quality that protects against hamstring strains.',
 		feel: 'Work in the back of the thigh, not the calf.',
@@ -500,7 +502,7 @@ export const PF_MACHINES: MachineExercise[] = [
 	{
 		name: 'Lying leg curl',
 		muscles: ['hamstrings', 'gastrocnemius'],
-		pattern: 'posterior-chain',
+		pattern: 'knee-flexion',
 		equipment: 'machine',
 		why: 'Trains the hamstrings through knee flexion on a flat bench, the setup some runners find easier to control than the seated version.',
 		feel: 'Work in the back of the thigh, not the calf.',

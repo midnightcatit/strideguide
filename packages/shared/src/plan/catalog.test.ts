@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MOVES, circuitFor, findMove, focusFor, moveCategory, strengthShape } from './catalog';
-import { PF_MACHINES } from './machines';
+import { PF_MACHINES, type MovePattern } from './machines';
 import { GYM_PRESETS } from './gyms';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
 import { DYNAMIC_DRILLS, RECOVERY_DRILLS, STRETCHES, findDrill } from './stretches';
@@ -33,25 +33,70 @@ describe('exercise catalog', () => {
 	});
 });
 
-describe('strength focus rotation', () => {
-	it('gives one strength day a full-body circuit and splits two days into legs and upper body', () => {
+describe('strength focus lean', () => {
+	const SPINE: MovePattern[] = ['squat', 'hinge', 'knee-flexion', 'calf'];
+
+	it('keeps one strength day full-body and leans both days of a two-day week on legs', () => {
 		expect(focusFor(0, 1)).toBeNull();
 		expect(focusFor(0, 2)?.id).toBe('legs');
-		expect(focusFor(1, 2)?.id).toBe('upper');
+		expect(focusFor(1, 2)?.id).toBe('legs');
 	});
 
-	it('rotates legs, push, pull and core across three or more days', () => {
-		expect([0, 1, 2].map((i) => focusFor(i, 3)?.id)).toEqual(['legs', 'upper-push', 'upper-pull']);
+	it('leans two of three days on legs and one on upper body and core', () => {
+		expect([0, 1, 2].map((i) => focusFor(i, 3)?.id)).toEqual(['legs', 'legs', 'upper-core']);
 		expect([0, 1, 2, 3].map((i) => focusFor(i, 4)?.id)).toEqual([
 			'legs',
-			'upper-push',
-			'upper-pull',
-			'core',
+			'legs',
+			'upper-core',
+			'legs',
 		]);
 	});
 
+	it('carries the whole lower-body spine in the bodyweight and band pools', () => {
+		// The spine promises knee flexion, so every pool a session can be built
+		// from must carry a knee-flexion move at the level's rung; otherwise the
+		// slot falls back to the next unused move in pool order.
+		for (const mode of ['bodyweight', 'bands', 'bodyweight-dumbbells'] as const) {
+			const circuit = circuitFor(
+				mode,
+				undefined,
+				undefined,
+				false,
+				'beginner',
+				undefined,
+				undefined,
+				focusFor(0, 2),
+				0,
+			);
+			const patterns = new Set(circuit.map((m) => m.pattern));
+			for (const p of SPINE) {
+				expect(patterns.has(p), `${mode} circuit misses ${p}`).toBe(true);
+			}
+		}
+	});
+
+	it('runs the lower-body spine first, so a short session cuts the accessory before a spine move', () => {
+		// A 30-minute legs-lean session is all lower body: the spine and the
+		// lean's extra move fill it, and no accessory takes a slot.
+		const short = circuitFor(
+			'machines',
+			30,
+			undefined,
+			false,
+			'intermediate',
+			undefined,
+			undefined,
+			focusFor(0, 2),
+			0,
+		);
+		expect(short.map((m) => m.pattern)).toEqual([...SPINE, 'knee-extension']);
+		// A short session with no lean keeps one accessory after the spine.
+		const plain = circuitFor('machines', 30);
+		expect(plain.slice(0, 4).map((m) => m.pattern)).toEqual(SPINE);
+	});
+
 	it('leans the circuit on the focus and rotates the move by the variant', () => {
-		const lower = new Set(['squat', 'hinge', 'knee-extension', 'posterior-chain']);
+		const lower = new Set([...SPINE, 'knee-extension']);
 		const legs = circuitFor(
 			'machines',
 			45,
@@ -74,11 +119,31 @@ describe('strength focus rotation', () => {
 			focusFor(0, 3),
 			1,
 		);
-		// The legs focus draws mostly lower-body patterns.
-		expect(legs.filter((m) => lower.has(m.pattern)).length).toBeGreaterThanOrEqual(4);
+		// The legs-lean day draws mostly lower-body patterns: at the default
+		// circuit size five of six moves are lower body, one accessory.
+		expect(legs.filter((m) => lower.has(m.pattern)).length).toBe(5);
+		expect(legs.some((m) => m.pattern === 'push' || m.pattern === 'pull')).toBe(true);
 		// A different variant picks a different circuit, so the same squat is not
 		// chosen every time.
 		expect(legsNext.map((m) => m.name)).not.toEqual(legs.map((m) => m.name));
+	});
+
+	it('keeps the upper-body accessories last, so the legs still carry the session', () => {
+		const upper = circuitFor(
+			'machines',
+			45,
+			undefined,
+			false,
+			'intermediate',
+			undefined,
+			undefined,
+			focusFor(2, 3),
+			2,
+		);
+		const patterns = upper.map((m) => m.pattern);
+		// The spine leads, then the core and push accessories.
+		expect(patterns.slice(0, 4)).toEqual(SPINE);
+		expect(patterns.slice(4)).toEqual(['core', 'push']);
 	});
 });
 

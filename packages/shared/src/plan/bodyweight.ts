@@ -88,9 +88,26 @@ export const BODYWEIGHT_MOVES: MachineExercise[] = [
 		mistakes: ['Arching the lower back instead of using the glutes', 'Pushing through the toes'],
 	},
 	{
+		name: 'Sliding leg curl',
+		muscles: ['hamstrings', 'glutes'],
+		pattern: 'knee-flexion',
+		why: 'Trains the hamstrings as knee flexors, the side that bends the knee and takes load on downhills, with nothing more than a smooth floor.',
+		feel: 'A hard pull in the back of the thighs as you draw the heels in, with the hips staying up.',
+		form: [
+			'Lie on your back, heels on a towel or sliders, knees bent and hips lifted.',
+			'Keep the hips level as you slide the heels away until the legs are almost straight.',
+			'Curl the heels back toward the glutes, then slide out slowly.',
+		],
+		mistakes: [
+			'Letting the hips drop as the heels slide out.',
+			'Pushing through the toes so the calves take over.',
+			'Rushing the slide out instead of resisting it.',
+		],
+	},
+	{
 		name: 'Calf raise',
 		muscles: ['calves', 'Achilles'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		why: 'Calves and Achilles take the load of every step, and are where many runners get sore.',
 		feel: 'Calves, with a stretch at the bottom.',
 		form: [
@@ -241,7 +258,7 @@ export const DUMBBELL_MOVES: MachineExercise[] = [
 	{
 		name: 'Dumbbell calf raise',
 		muscles: ['calves', 'Achilles'],
-		pattern: 'posterior-chain',
+		pattern: 'calf',
 		why: 'Loads the calves and Achilles that take every step.',
 		feel: 'Calves, with a stretch at the bottom.',
 		form: [

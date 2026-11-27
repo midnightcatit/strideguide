@@ -8,7 +8,14 @@ import type {
 	StructuredWorkout,
 	WorkoutStep,
 } from '../types';
-import { circuitFor, findMove, focusFor, moveAvailable, strengthShape } from './catalog';
+import {
+	circuitFor,
+	findMove,
+	focusFor,
+	moveAvailable,
+	strengthShape,
+	type StrengthFocus,
+} from './catalog';
 import type { MachineExercise } from './machines';
 import {
 	COOLDOWN_STRETCHES,
@@ -117,9 +124,12 @@ const TITLE: Record<SessionArchetype, string> = {
 	hills: 'Hill reps',
 	fartlek: 'Fartlek',
 	race: 'Race',
-	// Strength is labelled neutrally, since a session can mix machines, free
-	// weights and bodyweight moves. The equipment wording lives in the summary and
-	// the load note, which are built from the moves actually selected.
+	// Strength is labelled neutrally when no lean applies (a single strength
+	// day, a favorite workout, or a session trimmed for a heavy sport week),
+	// since a session can mix machines, free weights and bodyweight moves. A
+	// leaned day takes its plain title from the focus ("Leg day"), and the
+	// equipment wording lives in the summary and the load note, which are built
+	// from the moves actually selected.
 	'machine-circuit': 'Strength',
 	'full-body-strength': 'Strength',
 	mobility: 'Mobility',
@@ -1310,6 +1320,13 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			: input.profile.slug === 'whole-fitness'
 				? Math.min(3, Math.max(1, Math.floor(days.length / 2)))
 				: 2;
+	// How many taper weeks the plan runs, so the strength arc can tell the first
+	// taper week (one short session) from the final days (none), and how fast the
+	// taper rule steps down, so the weeks come down from the built peak.
+	const taperWeeks = phases.filter((p) => p === 'taper').length;
+	const taperStep =
+		input.profile.progressionRules.find((r) => r.phase === 'taper')?.volumeStep ??
+		DEFAULT_TAPER_STEP;
 
 	// Goal race pace, and the weekday the race falls on, shared by every week's
 	// quality picks and by the race session itself.
@@ -1336,6 +1353,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
 		const isRecovery = phase === 'recovery';
+		// Which taper week this is, 0 for the first, so the volume and the strength
+		// arc can tell the early taper from the final days.
+		const taperIdx = phases.slice(0, w).filter((p) => p === 'taper').length;
 		// The first week is partial only when the plan starts after Monday: its
 		// target is pro-rated, and it drops runs rather than shrinking them below a
 		// real length, so a short week is one or two real runs, never a token jog.
@@ -1373,13 +1393,45 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			const recoveryIdx = phases.slice(0, w).filter((p) => p === 'recovery').length;
 			volume = clamp(round1(buildPeak * (0.3 + 0.15 * recoveryIdx)), 5, buildPeak);
 		}
+		if (phase === 'taper') {
+			// The taper comes down from the peak the build actually reached, not the
+			// internal curve: a build that spends days on strength cannot express its
+			// whole curve in sessions, and a first taper week with one fewer
+			// strength day then builds more running than any build week did. The
+			// same fraction, applied to the built peak, keeps the taper a real step
+			// down (the same correction the recovery weeks apply).
+			const builtPeak = Math.max(
+				5,
+				...weeks
+					.filter((wk) => wk.phase === 'base' || wk.phase === 'build' || wk.phase === 'peak')
+					.map((wk) => wk.targetVolumeKm),
+			);
+			volume = round1(builtPeak * taperFraction(taperStep, taperIdx));
+		}
 		volume = clamp(round1(volume), weekFloor, 160);
 		// Each week is seven days from the start day: week one runs from the chosen
 		// start date, and every later week follows it, so the stored dates roll with
 		// the start day rather than snapping to a Monday.
 		const weekStart = addDays(input.startDate, w * 7);
 		const weekEnd = addDays(weekStart, 6);
-		let strengthLeft = strengthCount;
+		// The strength phase arc (research/wave-7/17a): the full count in base, a
+		// maintenance dose through a race build and peak (at most two sessions,
+		// with the sets cut below), one short session in the first taper week and
+		// none in the final days before the race. A single-week taper is all final
+		// days, so it carries none. A profile with no taper has no race build to
+		// maintain through, so it keeps its full count; post-race recovery weeks
+		// carry none, as before.
+		const strengthArc =
+			phase === 'base'
+				? strengthCount
+				: phase === 'build' || phase === 'peak'
+					? taperWeeks > 0
+						? Math.min(strengthCount, 2)
+						: strengthCount
+					: taperWeeks > 1 && taperIdx === 0
+						? 1
+						: 0;
+		let strengthLeft = strengthArc;
 
 		// A profile with no hard session types (general fitness) never gets a
 		// quality day. Every other profile keeps a constant number of quality slots
@@ -1454,28 +1506,48 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// so a strength day yields to an easy run instead.
 		const wantStrength = isRecovery ? 0 : Math.min(strengthLeft, runFree.length);
 		let strengthDays = runFree.slice(0, wantStrength);
+		// The run-free days beyond the runner's strength habit stay easy runs, in
+		// every phase, and the days that carry strength in the fullest week (the
+		// first run-free days) go quiet when a phase asks for fewer sessions: a
+		// maintenance phase leaves the dropped strength day a rest day, and the
+		// taper removes work rather than moving it to more running. This keeps the
+		// week's running days the same from the first week to the last
+		// (research/wave-7/17a).
+		const habitDays = isRecovery ? wantStrength : Math.min(strengthCount, runFree.length);
 		let easyDays = [
 			...softDays,
 			...(recoveryDay !== undefined ? [recoveryDay] : []),
-			...runFree.slice(wantStrength),
+			...runFree.slice(habitDays),
 		];
 		const nonLongRuns =
 			qualityDays.length +
 			softDays.length +
 			(recoveryDay !== undefined ? 1 : 0) +
-			(runFree.length - wantStrength);
-		if (
-			longKm > 0 &&
-			nonLongRuns <= 1 &&
-			strengthDays.length >= 1 &&
-			(hasQuality || strengthDays.length >= 2)
-		) {
-			strengthDays = strengthDays.slice(0, -1);
-			easyDays = [
-				...softDays,
-				...(recoveryDay !== undefined ? [recoveryDay] : []),
-				...runFree.slice(strengthDays.length),
-			];
+			(runFree.length - habitDays);
+		// A week with a long run needs another run to hold the long run's half of
+		// what the runner sees. A quiet day, one the strength habit covers but this
+		// phase leaves unfilled, takes the easy run at the place the habit's last
+		// strength day would sit, so the phase keeps its own strength session and
+		// the week's running days hold their shape. With no quiet day, a strength
+		// day yields to an easy run instead, as before. Both paths read the same
+		// allocation the arc produced, so they agree in every phase.
+		if (longKm > 0 && nonLongRuns <= 1) {
+			const quiet = runFree.slice(wantStrength, habitDays);
+			if (quiet.length) {
+				easyDays = [
+					...softDays,
+					...(recoveryDay !== undefined ? [recoveryDay] : []),
+					...quiet.slice(-1),
+					...runFree.slice(habitDays),
+				];
+			} else if (strengthDays.length >= 1 && (hasQuality || strengthDays.length >= 2)) {
+				strengthDays = strengthDays.slice(0, -1);
+				easyDays = [
+					...softDays,
+					...(recoveryDay !== undefined ? [recoveryDay] : []),
+					...runFree.slice(strengthDays.length),
+				];
+			}
 		}
 		strengthLeft -= strengthDays.length;
 
@@ -1792,8 +1864,9 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			}
 		});
 
-		// Strength on its own days, in the morning. The week rotates the focus
-		// across the body, so the index and the count go into the session.
+		// Strength on its own days, in the morning. Every session runs the
+		// full-body lower spine with the day's lean, so the index and the count
+		// go into the session.
 		strengthDays.forEach((day, i) => {
 			sessions.push(strengthSession(day, 'AM', phase, input, strengthIntent, i, strengthDays.length));
 		});
@@ -2085,11 +2158,15 @@ export function generatePlan(input: PlanInput): PlanDraft {
  * The sets a strength session runs, from the runner's level, nudged one notch by
  * the model's week emphasis. The model only names an intent; the engine owns the
  * count and keeps it in a sane band, so a shaped week never writes a number.
+ * Base carries the full dose; build and peak cut a set for the maintenance dose
+ * with the load kept; the taper's single session is short
+ * (research/wave-7/17a).
  */
-function strengthSetCount(level: string, intent?: StrengthIntent): number {
+function strengthSetCount(level: string, phase: string, intent?: StrengthIntent): number {
 	const base = level === 'beginner' ? 2 : level === 'advanced' ? 4 : 3;
+	const anchor = phase === 'base' ? base : phase === 'taper' ? 2 : Math.max(2, base - 1);
 	const delta = intent === 'build' ? 1 : intent === 'ease' ? -1 : 0;
-	return clamp(base + delta, 2, 5);
+	return clamp(anchor + delta, 2, 5);
 }
 
 function strengthSession(
@@ -2108,11 +2185,13 @@ function strengthSession(
 	const loaded = phase !== 'base';
 	const focus = focusFor(index, count);
 	// A favorite strength workout wins when the runner has one and it fits, since
-	// it is their own choice of session. Otherwise the generated circuit leans on
-	// the day's focus, rotates the moves by the session index, and prefers their
-	// favorite machines.
+	// it is their own choice of session; it carries no lean of ours, so the title
+	// and why stay neutral below. Otherwise the generated circuit runs the
+	// full-body spine with the day's lean, and the session index rotates the
+	// moves so the week's strength days are not identical.
+	const own = favoriteStrengthMoves(input);
 	const fullCircuit =
-		favoriteStrengthMoves(input) ??
+		own ??
 		circuitFor(
 			mode,
 			input.baseline.sessionMinutes,
@@ -2125,11 +2204,15 @@ function strengthSession(
 			index,
 		);
 	// A heavy sport week already carries load, so the circuit comes down a size.
+	// The lower-body spine sits at the front of every sequence, so the trim keeps
+	// the leg patterns and drops the accessories: an upper-body accessory never
+	// displaces a lower-body pattern (research/wave-7/17a).
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
 	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
-	// Level sets the volume: a beginner does fewer sets, an advanced runner more.
-	// The model's week emphasis may lean it one notch up or down.
-	const setCount = strengthSetCount(level, strengthIntent);
+	// Level sets the volume, the phase cuts it to a maintenance dose through
+	// build and peak and shortens the taper session, and the model's week
+	// emphasis may lean it one notch up or down inside the band.
+	const setCount = strengthSetCount(level, phase, strengthIntent);
 	const sets = circuit.map((m) => ({
 		machine: m.name,
 		sets: Array.from({ length: setCount }, () => ({ reps, weightKg: 0 })),
@@ -2140,10 +2223,16 @@ function strengthSession(
 	const shape = strengthShape(circuit);
 	const type: SessionArchetype = shape === 'machines' ? 'machine-circuit' : 'full-body-strength';
 	const noun = shape === 'machines' ? 'machines' : 'moves';
+	// The lean names the day in plain words and the why states the lean, the
+	// two-thirds working-set heuristic and how the week spreads the work. A
+	// favorite workout or a circuit trimmed for a heavy sport week carries no
+	// lean, so both fall back to the neutral title.
+	const leaned = !own && !heavySport;
+	const title = leaned && focus ? focus.title : TITLE[type];
 	const why = heavySport
 		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
-		: focus
-			? `Today leans on ${focus.label}. The week spreads strength across the body, so each strength day covers a different area.`
+		: leaned && focus
+			? leanWhy(focus, count, circuit)
 			: undefined;
 	const workout = strengthWorkout(circuit, reps, setCount, level, phase);
 	return {
@@ -2151,10 +2240,10 @@ function strengthSession(
 		slot,
 		modality: 'strength',
 		type,
-		title: TITLE[type],
+		title,
 		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} ${noun} · ${setCount} × ${reps}${focus ? ` · ${focus.label}` : ''}, control the lowering phase.`,
+			summary: `${sets.length} ${noun} · ${setCount} × ${reps}${leaned && focus ? ` · ${focus.label}` : ''}, control the lowering phase.`,
 			blocks: sets,
 			targetRpe: [7, 8],
 			notes: copy.load,
@@ -2165,6 +2254,41 @@ function strengthSession(
 		// schedule and the length shown both account for the rest cards.
 		durationMin: workout.estimatedDurationMin ?? input.baseline.sessionMinutes ?? 45,
 	};
+}
+
+/**
+ * The lean's reason, in plain body-part words: what today leans on, the
+ * two-thirds working-set heuristic, and how the week spreads the work. The
+ * coverage line is read from the circuit that was actually built, so a short
+ * session never claims work it has no room for
+ * (research/wave-7/17a).
+ */
+function leanWhy(focus: StrengthFocus, count: number, circuit: MachineExercise[]): string {
+	const upper = circuit.some((m) => m.pattern === 'push' || m.pattern === 'pull');
+	const core = circuit.some((m) => m.pattern === 'core');
+	const accessory =
+		upper && core
+			? 'The upper-body and core moves are a small accessory dose.'
+			: upper
+				? 'The upper-body moves are a small accessory dose.'
+				: core
+					? 'The core work is a small accessory dose.'
+					: 'No upper-body or core move fits at this length, so the leg patterns take the session.';
+	const spread =
+		count === 2
+			? 'Both strength days this week lean legs, so your legs get worked twice.'
+			: 'The week runs two leg-leaning strength days and one that leans upper body and core.';
+	if (focus.id === 'legs') {
+		return `Legs and hips lead today: the leg patterns come first and about two thirds or more of the working sets are lower body. ${accessory} ${spread}`;
+	}
+	const opener = upper
+		? core
+			? 'Upper body and core get the lean today'
+			: 'The upper-body work gets the lean today'
+		: core
+			? 'Core gets the lean today'
+			: 'Today trains the whole body';
+	return `${opener}, and the legs still lead: about two thirds of the working sets stay lower body. ${accessory} ${spread}`;
 }
 
 /** Cross-training load tiers, from the last seven days of logged sports. */

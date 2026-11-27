@@ -74,74 +74,79 @@ export function circuitSize(minutes?: number): number {
 }
 
 /**
- * A strength day's focus. The week rotates through these so each strength day
- * leans on a different part of the body and the why can name it. The patterns
- * are a priority order, not a filter: the circuit leans on them and tops up with
- * the balanced sequence, so a session still covers the body.
+ * The lower-body spine of every strength session, in priority order: a squat or
+ * leg-press pattern, a hip hinge, knee flexion and calf work. The spine leads
+ * every sequence, so an upper-body or core accessory never displaces a
+ * lower-body pattern; when a session is short, the accessory is the first thing
+ * cut (research/wave-7/17a).
+ */
+const LOWER_SPINE: MovePattern[] = ['squat', 'hinge', 'knee-flexion', 'calf'];
+
+/**
+ * A strength day's lean within a full-body session. `patterns` is a priority
+ * order, not a filter: the lower-body spine first, then the lean's extra move
+ * for its area, then one or two upper-body or core accessories, then a second
+ * round of the spine to fill a long session. Every session keeps the spine, so
+ * the day still trains the whole body whatever it leans on.
  */
 export interface StrengthFocus {
 	id: string;
 	label: string;
+	/** A plain day title for a session with this lean, e.g. "Leg day". */
+	title: string;
 	patterns: MovePattern[];
 }
 
-const LEGS_FOCUS: StrengthFocus = {
+// The two legs-lean days alternate their first accessory between push and
+// pull, so the week still covers the upper body both ways.
+const LEGS_LEAN_PUSH: StrengthFocus = {
 	id: 'legs',
 	label: 'legs and hips',
-	patterns: ['squat', 'hinge', 'knee-extension', 'posterior-chain'],
+	title: 'Leg day',
+	// Spine, the lean's extra lower move, then the accessories, then a second
+	// squat, so a long session stays lower-heavy.
+	patterns: [...LOWER_SPINE, 'knee-extension', 'push', 'core', 'squat'],
 };
-const UPPER_PUSH_FOCUS: StrengthFocus = {
-	id: 'upper-push',
-	label: 'chest, shoulders and triceps',
-	patterns: ['push', 'push', 'core'],
+const LEGS_LEAN_PULL: StrengthFocus = {
+	id: 'legs',
+	label: 'legs and hips',
+	title: 'Leg day',
+	patterns: [...LOWER_SPINE, 'knee-extension', 'pull', 'core', 'squat'],
 };
-const UPPER_PULL_FOCUS: StrengthFocus = {
-	id: 'upper-pull',
-	label: 'back and biceps',
-	patterns: ['pull', 'pull', 'core'],
+const UPPER_CORE_LEAN: StrengthFocus = {
+	id: 'upper-core',
+	label: 'upper body and core',
+	title: 'Upper body day',
+	// The spine still leads, so the legs keep their share; the lean adds the
+	// core and push accessories, and a second squat fills a long session before
+	// the pull dose, keeping the lower body about two thirds of the work.
+	patterns: [...LOWER_SPINE, 'core', 'push', 'squat', 'pull'],
 };
-const CORE_FOCUS: StrengthFocus = {
-	id: 'core',
-	label: 'core and stability',
-	patterns: ['core', 'posterior-chain', 'plyometric'],
-};
-const UPPER_FOCUS: StrengthFocus = {
-	id: 'upper',
-	label: 'upper body',
-	patterns: ['push', 'pull', 'core'],
-};
-
-/** The order the week rotates through when there are three or more strength days. */
-const FOCUS_ROTATION: StrengthFocus[] = [
-	LEGS_FOCUS,
-	UPPER_PUSH_FOCUS,
-	UPPER_PULL_FOCUS,
-	CORE_FOCUS,
-];
 
 /**
- * The focus for the `index`-th strength day of a week with `count` strength days.
- * One strength day is a full-body circuit (no focus), two split into legs and
- * upper body, and three or more rotate legs, upper push, upper pull and core so
- * the week covers the body. Legs lead, since running loads them most.
+ * The week's lean rotation: with two strength days both lean legs and hips
+ * (one pushing, one pulling accessory), with three or more the first two lean
+ * legs and hips and the next leans upper body and core. Legs lead twice
+ * because running loads them most, and every session still touches the whole
+ * body (research/wave-7/17a).
+ */
+const LEAN_ROTATION: StrengthFocus[] = [LEGS_LEAN_PUSH, LEGS_LEAN_PULL, UPPER_CORE_LEAN];
+
+/**
+ * The lean for the `index`-th strength day of a week with `count` strength
+ * days. One strength day a week stays full-body with no lean. With two, both
+ * lean legs and hips. With three or more, two lean legs and hips and the next
+ * leans upper body and core, so the week spreads the work while every session
+ * keeps the lower-body spine (research/wave-7/17a).
  */
 export function focusFor(index: number, count: number): StrengthFocus | null {
 	if (count <= 1) return null;
-	if (count === 2) return index === 0 ? LEGS_FOCUS : UPPER_FOCUS;
-	return FOCUS_ROTATION[index % FOCUS_ROTATION.length] ?? null;
+	return LEAN_ROTATION[index % LEAN_ROTATION.length] ?? null;
 }
 
-// Running-relevant pattern order: legs and hips first, then push/pull, then core.
-const PATTERN_SEQUENCE: MovePattern[] = [
-	'squat',
-	'hinge',
-	'pull',
-	'push',
-	'core',
-	'posterior-chain',
-	'knee-extension',
-	'plyometric',
-];
+// The full-body session with no lean: the spine, then a pull and a push
+// accessory, then core and a second squat to fill a long session.
+const PATTERN_SEQUENCE: MovePattern[] = [...LOWER_SPINE, 'pull', 'push', 'core', 'squat'];
 
 const LEVELS: Record<string, string[]> = {
 	beginner: ['beginner'],
