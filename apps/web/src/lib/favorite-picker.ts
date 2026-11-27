@@ -12,12 +12,7 @@ import {
 	WORKOUT_LIBRARY,
 	type LibraryWorkout,
 } from '@strideguide/shared/plan';
-import type {
-	CustomWorkout,
-	CustomWorkoutCategory,
-	CustomWorkoutDraft,
-	CustomWorkoutSection,
-} from '@strideguide/shared';
+import type { CustomWorkout, CustomWorkoutCategory } from '@strideguide/shared';
 
 /** The categories the picker groups by: a run, strength, mobility or recovery session. */
 export type FavoriteCategory = 'run' | 'strength' | 'mobility' | 'recovery';
@@ -68,6 +63,16 @@ export function categoryForLibraryWorkout(
 /** The category a custom workout belongs to; its own vocabulary names running "running". */
 export function categoryForCustomWorkout(category: CustomWorkoutCategory): FavoriteCategory {
 	return category === 'running' ? 'run' : category;
+}
+
+/**
+ * The composer category a new workout opens in for the filter a runner is
+ * browsing. The run filter maps back to the custom vocabulary, and All falls
+ * back to the composer's own default, strength.
+ */
+export function composerCategoryForFilter(filter: FavoriteCategory | 'all'): CustomWorkoutCategory {
+	if (filter === 'all') return 'strength';
+	return filter === 'run' ? 'running' : filter;
 }
 
 /** Lowercase a name to the slug shape the exercise image manifest uses. */
@@ -182,36 +187,4 @@ export function filterFavoriteRefs(
 	tokens: readonly string[],
 ): FavoriteWorkoutRef[] {
 	return refs.filter((ref) => matchesFavorite(ref, category, tokens));
-}
-
-/** A valid starter item per section, so the temporary create form passes validation. */
-const STARTER_RUN_REF = 'easy';
-const STARTER_STRENGTH_REF = 'Leg press';
-const STARTER_MOBILITY_REF = 'Leg swings (front to back)';
-
-/**
- * The draft the temporary create form writes from a name and a category. The
- * composer is not built yet, so this fills one placeholder item per section that
- * the custom workout validation accepts, and the composer session replaces the
- * placeholder items later. Temporary: remove this once the composer lands.
- */
-export function starterCustomWorkoutDraft(
-	name: string,
-	category: CustomWorkoutCategory,
-): CustomWorkoutDraft {
-	const runSection: CustomWorkoutSection = { items: [{ kind: 'run', ref: STARTER_RUN_REF }] };
-	const mobilitySection: CustomWorkoutSection = {
-		items: [{ kind: 'mobility', ref: STARTER_MOBILITY_REF }],
-	};
-	const strengthSection: CustomWorkoutSection = {
-		items: [{ kind: 'strength', ref: STARTER_STRENGTH_REF }],
-	};
-	const bookend = category === 'running' ? runSection : mobilitySection;
-	const main =
-		category === 'strength' ? strengthSection : category === 'running' ? runSection : mobilitySection;
-	return {
-		name: name.trim(),
-		category,
-		sections: { warmup: bookend, main, cooldown: bookend },
-	};
 }

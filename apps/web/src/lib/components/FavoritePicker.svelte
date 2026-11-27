@@ -8,17 +8,18 @@
 		muscleGroupFor,
 		type MachineExercise,
 	} from '@strideguide/shared/plan';
-	import type { CustomWorkout, CustomWorkoutCategory } from '@strideguide/shared';
+	import type { CustomWorkout } from '@strideguide/shared';
 	import { api } from '$lib/api';
+	import WorkoutComposer from '$lib/components/WorkoutComposer.svelte';
 	import {
 		FAVORITE_CATEGORIES,
 		FAVORITE_CATEGORY_LABELS,
+		composerCategoryForFilter,
 		customRef,
 		filterFavoriteRefs,
 		matchesFavorite,
 		recipeRefs,
 		resolveFavoriteRefs,
-		starterCustomWorkoutDraft,
 		type FavoriteCategory,
 	} from '$lib/favorite-picker';
 
@@ -32,14 +33,6 @@
 		class?: string;
 	} = $props();
 
-	/** The category choices the temporary custom form offers, in the custom vocabulary. */
-	const CUSTOM_CATEGORIES: { value: CustomWorkoutCategory; label: string }[] = [
-		{ value: 'running', label: 'Run' },
-		{ value: 'strength', label: 'Strength' },
-		{ value: 'mobility', label: 'Mobility' },
-		{ value: 'recovery', label: 'Recovery' },
-	];
-
 	let machineQ = $state('');
 	let workoutQ = $state('');
 	let machineFilter = $state('all');
@@ -50,22 +43,17 @@
 	let customLoading = $state(true);
 	/** A load failure, shown in place of the list with a retry. */
 	let customError = $state<string | null>(null);
-	/** A create, edit or delete failure, shown above the list so the list stays usable. */
+	/** A delete failure, shown above the list so the list stays usable. */
 	let mutationError = $state<string | null>(null);
 	let pendingDeleteId = $state<string | null>(null);
 
-	// --- the temporary create and edit form (name and category only) ---
-	let formOpen = $state(false);
-	let formEditingId = $state<string | null>(null);
-	let formName = $state('');
-	let formCategory = $state<CustomWorkoutCategory>('running');
-	let formSaving = $state(false);
-	let formError = $state<string | null>(null);
-	/**
-	 * Bumped every time a form session starts, so a slow save from an earlier
-	 * session cannot close or change a form opened afterwards.
-	 */
-	let formSession = $state(0);
+	// --- the composer, opened for a new workout or an edit ---
+	/** True while the composer sheet is open. */
+	let composerOpen = $state(false);
+	/** The workout the composer edits; null means a new one from a preset. */
+	let composerWorkout = $state<CustomWorkout | null>(null);
+	/** The category a new workout opens in, following the filter the runner is browsing. */
+	const newWorkoutCategory = $derived(composerCategoryForFilter(workoutFilter));
 
 	onMount(() => {
 		void loadCustomWorkouts();
@@ -157,72 +145,31 @@
 		favoriteWorkouts = toggle(favoriteWorkouts, id);
 	}
 
+	/** Open the composer on a new workout, seeded from the category preset. */
 	function openCreate() {
-		formSession += 1;
-		formEditingId = null;
-		formName = '';
-		formCategory = 'running';
-		formError = null;
-		formSaving = false;
-		formOpen = true;
+		composerWorkout = null;
+		composerOpen = true;
 	}
 
+	/** Open the composer on a workout of the runner's own, to edit its items. */
 	function openEdit(workout: CustomWorkout) {
-		formSession += 1;
-		formEditingId = workout.id;
-		formName = workout.name;
-		formCategory = workout.category;
-		formError = null;
-		formSaving = false;
-		formOpen = true;
+		composerWorkout = workout;
+		composerOpen = true;
 	}
 
-	function closeForm() {
-		formOpen = false;
-		formSaving = false;
-		formError = null;
+	function closeComposer() {
+		composerOpen = false;
+		composerWorkout = null;
 	}
 
 	/**
-	 * Save the minimal form. The composer is not built yet, so a new workout and
-	 * a category change both write a valid starter draft; an edit that keeps the
-	 * category keeps the workout's own sections.
+	 * Fold a workout the composer saved back into the list. An edit replaces the
+	 * row in place; a new workout is appended, so the list keeps its order.
 	 */
-	async function saveForm() {
-		const name = formName.trim();
-		if (!name) {
-			formError = 'Give the workout a name.';
-			return;
-		}
-		// The session this save belongs to, so a slow reply cannot close or
-		// change a form the runner opened after starting this one.
-		const session = formSession;
-		formSaving = true;
-		formError = null;
-		mutationError = null;
-		try {
-			if (formEditingId) {
-				const existing = customWorkouts.find((w) => w.id === formEditingId);
-				const draft =
-					existing && existing.category === formCategory
-						? { name, category: formCategory, sections: existing.sections }
-						: starterCustomWorkoutDraft(name, formCategory);
-				const { workout } = await api.updateCustomWorkout(formEditingId, draft);
-				customWorkouts = customWorkouts.map((w) => (w.id === workout.id ? workout : w));
-			} else {
-				const { workout } = await api.createCustomWorkout(
-					starterCustomWorkoutDraft(name, formCategory),
-				);
-				customWorkouts = [...customWorkouts, workout];
-			}
-			if (formSession === session) closeForm();
-		} catch (e) {
-			if (formSession === session) {
-				formError = e instanceof Error ? e.message : 'Could not save the workout. Try again.';
-			}
-		} finally {
-			if (formSession === session) formSaving = false;
-		}
+	function handleSaved(workout: CustomWorkout) {
+		customWorkouts = customWorkouts.some((w) => w.id === workout.id)
+			? customWorkouts.map((w) => (w.id === workout.id ? workout : w))
+			: [...customWorkouts, workout];
 	}
 
 	async function confirmDelete(id: string) {
@@ -440,57 +387,6 @@
 			</button>
 		</div>
 
-		{#if formOpen}
-			<div class="mt-2 rounded-xl border border-hairline bg-sunken p-3">
-				<p class="text-xs font-medium text-ink">
-					{formEditingId ? 'Edit workout' : 'New workout'}
-				</p>
-				<label class="mt-2 block text-xs text-steel">
-					Name
-					<input
-						bind:value={formName}
-						maxlength="80"
-						placeholder="Morning hills"
-						class="mt-1 w-full rounded-md border border-hairline-strong bg-paper px-3 py-2 text-base text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none sm:text-sm"
-					/>
-				</label>
-				<label class="mt-2 block text-xs text-steel">
-					Category
-					<select
-						bind:value={formCategory}
-						class="mt-1 w-full rounded-md border border-hairline-strong bg-paper px-3 py-2 text-base text-ink focus:border-signal-ink focus:outline-none sm:text-sm"
-					>
-						{#each CUSTOM_CATEGORIES as c (c.value)}
-							<option value={c.value}>{c.label}</option>
-						{/each}
-					</select>
-				</label>
-				{#if formError}
-					<p role="alert" class="mt-2 text-sm text-danger">{formError}</p>
-				{/if}
-				<div class="mt-3 flex gap-2">
-					<button
-						type="button"
-						onclick={saveForm}
-						disabled={formSaving}
-						class="min-h-11 flex-1 rounded-lg bg-ink px-4 text-sm font-medium text-paper disabled:opacity-60"
-					>
-						{formSaving ? 'Saving...' : formEditingId ? 'Save' : 'Create'}
-					</button>
-					<button
-						type="button"
-						onclick={closeForm}
-						class="min-h-11 rounded-lg border border-hairline px-4 text-sm text-steel hover:border-steel"
-					>
-						Cancel
-					</button>
-				</div>
-				<p class="mt-2 text-xs text-steel">
-					The full composer is coming. For now this saves the name and category.
-				</p>
-			</div>
-		{/if}
-
 		{#if mutationError}
 			<p role="alert" class="mt-2 text-xs text-danger">{mutationError}</p>
 		{/if}
@@ -537,6 +433,13 @@
 									loading="lazy"
 									class="h-12 w-12 shrink-0 rounded-lg border border-hairline object-cover"
 								/>
+							{:else}
+								<span
+									aria-hidden="true"
+									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-hairline bg-sunken text-xs text-steel"
+								>
+									·
+								</span>
 							{/if}
 							<span class="min-w-0">
 								<span class="block truncate font-display font-medium">{w.name}</span>
@@ -611,6 +514,13 @@
 									loading="lazy"
 									class="h-12 w-12 shrink-0 rounded-lg border border-hairline object-cover"
 								/>
+							{:else}
+								<span
+									aria-hidden="true"
+									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-hairline bg-sunken text-xs text-steel"
+								>
+									·
+								</span>
 							{/if}
 							<span class="min-w-0 flex-1">
 								<span class="flex items-baseline justify-between gap-2">
@@ -632,4 +542,15 @@
 			</ul>
 		{/if}
 	</section>
+
+	<!-- The composer, so a workout created or edited here is built the same way
+	     as anywhere else: warm-up, main work and cool-down from the catalog. -->
+	<WorkoutComposer
+		open={composerOpen}
+		workout={composerWorkout}
+		category={newWorkoutCategory}
+		context={{ favoriteMachines }}
+		onSaved={handleSaved}
+		onClose={closeComposer}
+	/>
 </div>

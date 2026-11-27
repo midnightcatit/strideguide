@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { CUSTOM_WORKOUT_CATEGORIES, validateCustomWorkout, type CustomWorkout } from '@strideguide/shared';
+import { type CustomWorkout } from '@strideguide/shared';
 import { NAMED_WORKOUTS } from '@strideguide/shared/plan';
 import {
 	categoryForCustomWorkout,
 	categoryForLibraryWorkout,
+	composerCategoryForFilter,
 	customRef,
 	filterFavoriteRefs,
 	imageForLabels,
@@ -11,7 +12,6 @@ import {
 	recipeRefs,
 	resolveFavoriteRefs,
 	slugifyExercise,
-	starterCustomWorkoutDraft,
 	type FavoriteWorkoutRef,
 } from './favorite-picker';
 
@@ -46,6 +46,16 @@ describe('favourite workout categories', () => {
 		expect(categoryForCustomWorkout('strength')).toBe('strength');
 		expect(categoryForCustomWorkout('mobility')).toBe('mobility');
 		expect(categoryForCustomWorkout('recovery')).toBe('recovery');
+	});
+
+	it('opens a new composer workout in the custom category behind the filter', () => {
+		// A new workout opened from the Run filter must start as a run, not a run
+		// step the composer cannot build.
+		expect(composerCategoryForFilter('run')).toBe('running');
+		expect(composerCategoryForFilter('strength')).toBe('strength');
+		expect(composerCategoryForFilter('mobility')).toBe('mobility');
+		expect(composerCategoryForFilter('recovery')).toBe('recovery');
+		expect(composerCategoryForFilter('all')).toBe('strength');
 	});
 });
 
@@ -121,16 +131,5 @@ describe('filtering picks', () => {
 		expect(matchesFavorite(refs[0]!, 'all', ['parkrun'])).toBe(true);
 		expect(matchesFavorite(refs[0]!, 'all', ['parkrun', 'strength'])).toBe(false);
 		expect(filterFavoriteRefs(refs, 'all', ['runners']).map((r) => r.id)).toEqual(['c']);
-	});
-});
-
-describe('starter custom workout drafts', () => {
-	it('builds a draft that passes validation for every category', () => {
-		for (const category of CUSTOM_WORKOUT_CATEGORIES) {
-			const draft = starterCustomWorkoutDraft('  My session  ', category);
-			expect(draft.name, category).toBe('My session');
-			expect(draft.category, category).toBe(category);
-			expect(validateCustomWorkout(draft), category).toEqual([]);
-		}
 	});
 });
