@@ -7,9 +7,10 @@
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import ScheduleGrid from '$lib/components/ScheduleGrid.svelte';
 	import FavoritePicker from '$lib/components/FavoritePicker.svelte';
-	import WorkoutPicker from '$lib/components/WorkoutPicker.svelte';
-	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, type LibraryWorkout } from '@strideguide/shared/plan';
+	import WorkoutComposer from '$lib/components/WorkoutComposer.svelte';
+	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, NAMED_WORKOUTS, type LibraryWorkout } from '@strideguide/shared/plan';
 	import { previewCategory, PREVIEW_CATEGORY_BLURB, PREVIEW_CATEGORY_LABEL } from '@strideguide/shared/plan';
+	import { customWorkoutArchetype, customWorkoutNotes, customWorkoutToStructured, type ComposerContext, type CustomWorkout } from '@strideguide/shared';
 	import { milesToKm, type ScheduleBlock } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
@@ -122,20 +123,35 @@
 	}
 
 	let draft = $state<CurrentPlan | null>(null);
-	let pickerDate = $state<string | null>(null);
+	// The day the add action is adding to, and which step it is on: the choice
+	// between a curated recipe and the composer, or the composer itself.
+	let addDay = $state<string | null>(null);
+	let addMode = $state<'choose' | 'compose' | null>(null);
+	// The runner's own context, so the composer's preset fits their answers.
+	const composerContext = $derived<ComposerContext>({
+		sessionMinutes,
+		equipment,
+		equipmentItems,
+		level: experience,
+		favoriteMachines,
+	});
 	// The tile whose category blurb is open, with the tile element to anchor to.
 	// The preview never opens the full session detail from here; a tap explains
 	// the category and the session page keeps the drill-in.
 	let previewInfo = $state<{ id: string; anchor: HTMLElement } | null>(null);
 
-	// The preview keeps WorkoutPicker and the category popover as overlays here,
+	// The preview keeps the add sheet and the category popover as overlays here,
 	// so the in-progress onboarding answers stay put. Back closes the top one
 	// instead of leaving the flow.
+	function closeAdd() {
+		addMode = null;
+		addDay = null;
+	}
 	overlayHistory(
-		() => !!(pickerDate || previewInfo),
+		() => !!(addMode || previewInfo),
 		() => {
 			if (previewInfo) previewInfo = null;
-			else pickerDate = null;
+			else closeAdd();
 		},
 	);
 	// True once the weeks ahead have been rebuilt from the edited week one. When
@@ -696,8 +712,8 @@
 	}
 	function addFromLibrary(w: LibraryWorkout) {
 		const week = draft?.weeks[0];
-		const date = pickerDate;
-		pickerDate = null;
+		const date = addDay;
+		closeAdd();
 		if (!week || !date) return;
 		week.sessions = [
 			...week.sessions,
@@ -718,6 +734,38 @@
 					libraryId: w.id,
 				},
 				durationMin: w.durationMin,
+			},
+		];
+	}
+
+	// The composer saved a workout to the profile; put a preview session on the
+	// day the runner opened it from, built the same way the API builds one.
+	function addFromComposer(workout: CustomWorkout) {
+		const week = draft?.weeks[0];
+		const date = addDay;
+		closeAdd();
+		if (!week || !date) return;
+		const structured = customWorkoutToStructured(workout);
+		const notes = customWorkoutNotes(workout);
+		week.sessions = [
+			...week.sessions,
+			{
+				id: `preview-custom-${workout.id}-${Date.now()}`,
+				day: dayOf(date),
+				slot: 'AM',
+				modality: workout.category,
+				type: customWorkoutArchetype(workout),
+				title: workout.name,
+				purpose: 'You added this one yourself.',
+				prescription: {
+					summary: 'A workout you built yourself.',
+					intensity: workout.category === 'strength' ? 'steady' : 'easy',
+					workout: structured,
+					added: true,
+					custom: true,
+					...(notes ? { notes } : {}),
+				},
+				durationMin: structured.estimatedDurationMin ?? 45,
 			},
 		];
 	}
@@ -1076,7 +1124,7 @@
 									<button type="button" aria-label="Remove" onclick={() => removeSession(s)} class="px-1 text-steel hover:text-danger">✕</button>
 								</div>
 							{/each}
-							<button type="button" onclick={() => (pickerDate = addDaysIso(week0?.startDate ?? todayIso, d))} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-signal-ink hover:border-signal">
+							<button type="button" onclick={() => { addDay = addDaysIso(week0?.startDate ?? todayIso, d); addMode = 'choose'; }} class="rounded-lg border border-dashed border-hairline px-2 py-1 text-xs text-signal-ink hover:border-signal">
 								＋ Add workout
 							</button>
 						</div>
@@ -1108,9 +1156,65 @@
 				<p class="mt-3 text-sm text-signal-ink">{error}</p>
 			{/if}
 
-			{#if pickerDate}
-				<WorkoutPicker date={pickerDate} onPick={addFromLibrary} onClose={() => (pickerDate = null)} />
+			{#if addMode === 'choose' && addDay}
+				<div
+					class="sg-sheet fixed inset-0 flex items-end justify-center sm:items-center sm:p-4"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="add-workout-title"
+					use:modal={{ onClose: closeAdd }}
+				>
+					<button type="button" aria-label="Close" data-modal-backdrop onclick={closeAdd} class="absolute inset-0 bg-ink/40"></button>
+					<div
+						data-modal-panel
+						tabindex="-1"
+						class="relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl border-t border-hairline bg-paper outline-none sm:rounded-2xl"
+						style="padding-bottom: env(safe-area-inset-bottom)"
+					>
+						<div class="flex items-center justify-between gap-3 border-b border-hairline p-4">
+							<div class="min-w-0">
+								<p class="tabular text-xs uppercase tracking-widest text-steel">Add to {weekdayNameFor(addDay)}</p>
+								<h2 id="add-workout-title" class="font-display text-lg font-bold">Add a workout</h2>
+							</div>
+							<button type="button" onclick={closeAdd} aria-label="Close" class="flex h-11 w-11 shrink-0 items-center justify-center text-steel hover:text-ink">✕</button>
+						</div>
+						<div class="scroll-modern min-h-0 flex-1 overflow-y-auto p-4">
+							<button
+								type="button"
+								onclick={() => (addMode = 'compose')}
+								class="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-hairline-strong py-3 text-sm text-signal-ink hover:border-signal"
+							>
+								＋ Build a custom workout
+							</button>
+							<p class="mb-2 text-xs uppercase tracking-widest text-steel">From the library</p>
+							<ul class="grid gap-2 sm:grid-cols-2">
+								{#each NAMED_WORKOUTS as w (w.id)}
+									<li>
+										<button
+											type="button"
+											onclick={() => addFromLibrary(w)}
+											class="flex h-full w-full flex-col rounded-xl border border-hairline p-3 text-left transition-colors hover:border-signal-ink"
+										>
+											<span class="flex items-baseline justify-between gap-2">
+												<span class="font-display font-medium">{w.title}</span>
+												<span class="tabular shrink-0 text-xs text-steel">{w.durationMin} min</span>
+											</span>
+											<span class="mt-1 text-xs leading-relaxed text-steel">{w.summary}</span>
+										</button>
+									</li>
+								{/each}
+							</ul>
+						</div>
+					</div>
+				</div>
 			{/if}
+			<WorkoutComposer
+				open={addMode === 'compose'}
+				category="strength"
+				context={composerContext}
+				onSaved={addFromComposer}
+				onClose={closeAdd}
+			/>
 			{#if previewInfo && previewInfoSession}
 				{@const category = previewCategory(previewInfoSession)}
 				<div

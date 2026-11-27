@@ -503,6 +503,12 @@ export const api = {
 			method: 'POST',
 			body: JSON.stringify({ date, custom }),
 		}),
+	/** Add a workout the runner built in the composer, stored on their profile. */
+	addSavedWorkout: (date: string, customWorkoutId: string) =>
+		req<{ session: { id: string } }>('/plans/sessions', {
+			method: 'POST',
+			body: JSON.stringify({ date, customWorkoutId }),
+		}),
 	removeWorkout: (id: string) =>
 		req<{ ok: boolean }>(`/plans/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
