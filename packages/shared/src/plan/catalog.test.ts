@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MOVES, circuitFor, findMove, focusFor, moveCategory, strengthShape } from './catalog';
-import { PF_MACHINES } from './machines';
+import { PF_MACHINES, type MovePattern } from './machines';
 import { GYM_PRESETS } from './gyms';
 import { COOLDOWN_STRETCHES, EXTRA_STRETCHES, WARMUP_DRILLS } from './mobility';
 import { DYNAMIC_DRILLS, RECOVERY_DRILLS, STRETCHES, findDrill } from './stretches';
@@ -34,7 +34,7 @@ describe('exercise catalog', () => {
 });
 
 describe('strength focus lean', () => {
-	const SPINE = ['squat', 'hinge', 'knee-flexion', 'calf'];
+	const SPINE: MovePattern[] = ['squat', 'hinge', 'knee-flexion', 'calf'];
 
 	it('keeps one strength day full-body and leans both days of a two-day week on legs', () => {
 		expect(focusFor(0, 1)).toBeNull();
@@ -50,6 +50,29 @@ describe('strength focus lean', () => {
 			'upper-core',
 			'legs',
 		]);
+	});
+
+	it('carries the whole lower-body spine in the bodyweight and band pools', () => {
+		// The spine promises knee flexion, so every pool a session can be built
+		// from must carry a knee-flexion move at the level's rung; otherwise the
+		// slot falls back to the next unused move in pool order.
+		for (const mode of ['bodyweight', 'bands', 'bodyweight-dumbbells'] as const) {
+			const circuit = circuitFor(
+				mode,
+				undefined,
+				undefined,
+				false,
+				'beginner',
+				undefined,
+				undefined,
+				focusFor(0, 2),
+				0,
+			);
+			const patterns = new Set(circuit.map((m) => m.pattern));
+			for (const p of SPINE) {
+				expect(patterns.has(p), `${mode} circuit misses ${p}`).toBe(true);
+			}
+		}
 	});
 
 	it('runs the lower-body spine first, so a short session cuts the accessory before a spine move', () => {

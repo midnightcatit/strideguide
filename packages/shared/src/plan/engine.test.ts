@@ -344,6 +344,62 @@ describe('generatePlan (preferences)', () => {
 		expect(patterns).toEqual([...SPINE, 'core', 'push']);
 	});
 
+	it('keeps the taper strength session and the running days when the long run needs a partner', () => {
+		// Four days off Monday: the week holds a long run, a quality run and a
+		// strength habit of two. The long run needs a second run to hold its half of
+		// the week, so the base week turns the habit's last day into an easy run.
+		// The taper must keep its one short session and the same running days rather
+		// than dropping the session for another easy run.
+		const p = generatePlan({
+			...base,
+			availableDays: [1, 2, 4, 6],
+			baseline: { experience: 'intermediate', strengthDays: 2 },
+		});
+		const runDays = (w: PlannedWeek) =>
+			w.sessions
+				.filter((s) => s.modality === 'running' && s.type !== 'race')
+				.map((s) => s.day)
+				.join(',');
+		const strengthCount = (w: PlannedWeek) =>
+			w.sessions.filter((s) => s.modality === 'strength').length;
+		const first = runDays(p.weeks[0]!);
+		expect(strengthCount(p.weeks[0]!)).toBe(1);
+		for (const w of p.weeks.filter((x) => x.phase !== 'recovery')) {
+			expect(runDays(w)).toBe(first);
+		}
+		const taperWeeks = p.weeks.filter((x) => x.phase === 'taper');
+		expect(strengthCount(taperWeeks[0]!)).toBe(1);
+	});
+
+	it('states only the coverage a strength session actually carries', () => {
+		// The why must not claim accessory or whole-body work a short session has no
+		// room for, so the coverage line is checked against the built circuit.
+		for (const sessionMinutes of [30, 45, 60]) {
+			const p = generatePlan({
+				...base,
+				availableDays: [1, 2, 3, 4, 5, 6],
+				baseline: { experience: 'intermediate', strengthDays: 3, sessionMinutes },
+			});
+			for (const s of p.weeks[0]!.sessions.filter((x) => x.modality === 'strength')) {
+				const why = s.prescription.why ?? '';
+				const patterns = new Set(
+					(s.prescription.blocks ?? []).map((b) => findMove(b.machine)?.pattern),
+				);
+				const accessory = (['push', 'pull', 'core'] as MovePattern[]).some((pt) =>
+					patterns.has(pt),
+				);
+				expect(why).not.toMatch(/every area gets worked/);
+				if (accessory) {
+					expect(why).toMatch(/accessory dose/);
+					expect(why).not.toMatch(/no upper-body or core move/i);
+				} else {
+					expect(why).toMatch(/no upper-body or core move/i);
+					expect(why).not.toMatch(/accessory dose/);
+				}
+			}
+		}
+	});
+
 	it('cuts an upper-body accessory before a lower-body pattern when the session is short', () => {
 		// A heavy sport week trims the circuit to four moves; the spine sits first
 		// in every sequence, so the trim takes the accessories and keeps the leg

@@ -599,6 +599,24 @@ export const BAND_HOME_MOVES: MachineExercise[] = [
 		],
 	},
 	{
+		name: 'Banded leg curl',
+		muscles: ['hamstrings'],
+		pattern: 'knee-flexion',
+		equipment: 'bands',
+		why: 'Trains the hamstrings as knee flexors, the side that bends the knee and takes load on downhills, with the band adding resistance through the curl.',
+		feel: 'The back of the thigh pulling the heel in against the band.',
+		form: [
+			'Anchor a long band low, lie face down, and loop it round one ankle.',
+			'Keep the hips flat and curl the heel toward the glute against the band.',
+			'Lower slowly, resisting the band all the way, then swap sides.',
+		],
+		mistakes: [
+			'Lifting the hips to swing the leg instead of curling.',
+			'Letting the band snap the leg back to the floor.',
+			'Using a band so heavy the knee bends only a little.',
+		],
+	},
+	{
 		name: 'Band pull-apart',
 		muscles: ['upper back', 'rear deltoids', 'rotator cuff'],
 		pattern: 'pull',
@@ -805,7 +823,7 @@ export const BODYWEIGHT_PROGRESSIONS: MachineExercise[] = [
 	{
 		name: 'Assisted Nordic curl',
 		muscles: ['hamstrings'],
-		pattern: 'hinge',
+		pattern: 'knee-flexion',
 		equipment: 'bodyweight',
 		level: 'advanced',
 		why: 'Builds the eccentric hamstring strength linked to fewer hamstring injuries, starting with hands ready to catch.',

@@ -1504,18 +1504,30 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			softDays.length +
 			(recoveryDay !== undefined ? 1 : 0) +
 			(runFree.length - habitDays);
-		if (
-			longKm > 0 &&
-			nonLongRuns <= 1 &&
-			strengthDays.length >= 1 &&
-			(hasQuality || strengthDays.length >= 2)
-		) {
-			strengthDays = strengthDays.slice(0, -1);
-			easyDays = [
-				...softDays,
-				...(recoveryDay !== undefined ? [recoveryDay] : []),
-				...runFree.slice(strengthDays.length),
-			];
+		// A week with a long run needs another run to hold the long run's half of
+		// what the runner sees. A quiet day, one the strength habit covers but this
+		// phase leaves unfilled, takes the easy run at the place the habit's last
+		// strength day would sit, so the phase keeps its own strength session and
+		// the week's running days hold their shape. With no quiet day, a strength
+		// day yields to an easy run instead, as before. Both paths read the same
+		// allocation the arc produced, so they agree in every phase.
+		if (longKm > 0 && nonLongRuns <= 1) {
+			const quiet = runFree.slice(wantStrength, habitDays);
+			if (quiet.length) {
+				easyDays = [
+					...softDays,
+					...(recoveryDay !== undefined ? [recoveryDay] : []),
+					...quiet.slice(-1),
+					...runFree.slice(habitDays),
+				];
+			} else if (strengthDays.length >= 1 && (hasQuality || strengthDays.length >= 2)) {
+				strengthDays = strengthDays.slice(0, -1);
+				easyDays = [
+					...softDays,
+					...(recoveryDay !== undefined ? [recoveryDay] : []),
+					...runFree.slice(strengthDays.length),
+				];
+			}
 		}
 		strengthLeft -= strengthDays.length;
 
@@ -2146,7 +2158,7 @@ function strengthSession(
 	const why = heavySport
 		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
 		: leaned && focus
-			? leanWhy(focus, count)
+			? leanWhy(focus, count, circuit)
 			: undefined;
 	const workout = strengthWorkout(circuit, reps, setCount, level, phase);
 	return {
@@ -2172,17 +2184,37 @@ function strengthSession(
 
 /**
  * The lean's reason, in plain body-part words: what today leans on, the
- * two-thirds working-set heuristic, and how the week spreads the work, so a
- * leaned day stays honest about still training the whole body
+ * two-thirds working-set heuristic, and how the week spreads the work. The
+ * coverage line is read from the circuit that was actually built, so a short
+ * session never claims work it has no room for
  * (research/wave-7/17a).
  */
-function leanWhy(focus: StrengthFocus, count: number): string {
+function leanWhy(focus: StrengthFocus, count: number, circuit: MachineExercise[]): string {
+	const upper = circuit.some((m) => m.pattern === 'push' || m.pattern === 'pull');
+	const core = circuit.some((m) => m.pattern === 'core');
+	const accessory =
+		upper && core
+			? 'The upper-body and core moves are a small accessory dose.'
+			: upper
+				? 'The upper-body moves are a small accessory dose.'
+				: core
+					? 'The core work is a small accessory dose.'
+					: 'No upper-body or core move fits at this length, so the leg patterns take the session.';
+	const spread =
+		count === 2
+			? 'Both strength days this week lean legs, so your legs get worked twice.'
+			: 'The week runs two leg-leaning strength days and one that leans upper body and core.';
 	if (focus.id === 'legs') {
-		return count === 2
-			? 'Legs and hips lead today, and the whole body still gets worked: about two thirds of the working sets are lower body, and the upper-body and core work stays a small accessory dose. Both strength days this week lean legs, so your legs get worked twice.'
-			: 'Legs and hips lead today, and the whole body still gets worked: about two thirds of the working sets are lower body. The week runs two leg-leaning strength days and one that leans upper body and core, so every area gets worked at least twice.';
+		return `Legs and hips lead today: the leg patterns come first and about two thirds or more of the working sets are lower body. ${accessory} ${spread}`;
 	}
-	return 'Upper body and core get the lean today, and the legs still lead: about two thirds of the working sets stay lower body, and the upper-body and core work is the accessory dose. The week runs two leg-leaning strength days and this one, so every area gets worked at least twice.';
+	const opener = upper
+		? core
+			? 'Upper body and core get the lean today'
+			: 'The upper-body work gets the lean today'
+		: core
+			? 'Core gets the lean today'
+			: 'Today trains the whole body';
+	return `${opener}, and the legs still lead: about two thirds of the working sets stay lower body. ${accessory} ${spread}`;
 }
 
 /** Cross-training load tiers, from the last seven days of logged sports. */

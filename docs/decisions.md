@@ -27,8 +27,10 @@ sport week trims the circuit to four moves) loses accessories before it loses
 leg patterns. A chosen heuristic keeps about two thirds or more of the working
 sets in the lower body, stated as a heuristic in the session's why. Lean days
 carry plain titles ("Leg day", "Upper body day") and whys in plain body-part
-words, with no "upper push" or "upper pull" jargon, and each why keeps the day
-honest about still training the whole body. The phase arc follows the research
+words, with no "upper push" or "upper pull" jargon. Each why names only the
+accessory work the built circuit actually holds, so a session too short for an
+accessory says so instead of claiming whole-body work, and the why keeps the day
+honest about what it does carry. The phase arc follows the research
 too: the full requested count in base, at most two maintenance sessions through
 a race build and peak with a set cut and the load kept, one short session in the
 first taper week, and none in the final days before the race. When a phase asks
