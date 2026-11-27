@@ -46,16 +46,17 @@ describe('mobilityPrescription', () => {
 		});
 	});
 
-	it('aims a big gap at the area chosen from the answers', () => {
+	it('aims the anchor at the area chosen from the answers, at any gap', () => {
 		expect(mobilityPrescription(4, { niggles: 'tight hips' })).toMatchObject({
 			perWeek: 7,
 			libraryId: 'mobility-build-hips-glutes',
 			focus: 'hips-glutes',
 		});
-		// A gap too small to aim stays general even with a niggle.
+		// A named area anchors the work even on a small gap, since the dose pays
+		// where the runner is tight (17b).
 		expect(mobilityPrescription(2, { niggles: 'tight hips' })).toMatchObject({
-			libraryId: 'mobility-stretch-12',
-			focus: 'general',
+			libraryId: 'mobility-build-hips-glutes',
+			focus: 'hips-glutes',
 		});
 	});
 });

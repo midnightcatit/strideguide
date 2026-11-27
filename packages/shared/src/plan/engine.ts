@@ -16,9 +16,21 @@ import {
 	STRIDES,
 	WARMUP_DRILLS,
 	drillBlock,
+	mobilityWorkout,
+	type Drill,
 } from './mobility';
 import { WORKOUT_LIBRARY, type LibraryWorkout } from './library';
-import { mobilityPrescription } from './mobility-plan';
+import {
+	addHoldDose,
+	FOCUS_AREA_PHRASE,
+	FOCUS_AREA_TITLE,
+	mobilityAnchorFocuses,
+	mobilityPrescription,
+	mobilitySessionRoutine,
+	pickRoamingIndex,
+	ROAMING_ORDER,
+	type StretchFocus,
+} from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
 import { PLYO_REST_CARD_NOTE, REST_CARD_NOTE, strengthRestForMove } from './rest';
 import { placeSessions, scheduleWarnings, type UnplacedSession } from './schedule';
@@ -1309,6 +1321,14 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	// here and deduped into one warning each before they reach meta.warnings.
 	const unplacedSessions: UnplacedSession[] = [];
 	let noWindowsOnTrainingDays = false;
+	// The roaming stretch rotates by the count of composed mobility sessions so
+	// far in the plan, which keeps the routine moving across weeks as well as
+	// across the sessions of one week.
+	let mobilityRotation = 0;
+	// The count of mobility sessions emitted so far in the whole plan. A favorite
+	// takes every other session, and that alternation carries across weeks, so a
+	// sparse week still alternates the favorite with a composed variant.
+	let mobilityEmitted = 0;
 	// The biggest long run the build reaches, so a week can say where its long
 	// run sits on the plan's arc. The taper is left out of the peak.
 	const peakLongKm = Math.max(...longTargets.slice(0, Math.max(1, buildWeeks)));
@@ -1832,22 +1852,58 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		}
 
 		// Mobility follows the flexibility gap. The gap sets how often and how much
-		// (one short session for a small gap, a session every day for the biggest),
-		// and a big gap also aims the routine at the runner's terrain, niggles and
-		// sports. The rules and the routine data live in mobility-plan.ts.
+		// (one short session for a small gap, a session every day for the biggest).
+		// The runner's stated tight area anchors every session: two holds that
+		// never change, at two rounds each, and one roaming stretch per session
+		// rotates through the other common runner areas. A week with three or more
+		// sessions anchors one of them on the runner-up area instead. The dose
+		// rules and the routine data live in mobility-plan.ts.
 		const flex = input.baseline.flexibility;
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
 		const mobility = mobilityPrescription(flexGap, input.baseline);
 		if (mobility && phase !== 'taper') {
 			// The gap sets how often the runner stretches; the model may lean that
-			// frequency by one session either way, kept inside the week. A favorite
-			// mobility workout sets which routine, so the plan names the one they chose.
+			// frequency by one session either way, kept inside the week.
 			const perWeek = clamp(
 				mobility.perWeek + (mobilityIntent === 'build' ? 1 : mobilityIntent === 'ease' ? -1 : 0),
 				0,
 				7,
 			);
-			const routineId = favoriteWorkout(input, 'mobility')?.id ?? mobility.libraryId;
+			// A favorite mobility workout weights the rotation rather than overriding
+			// it: it takes every second session of the plan, and the composed
+			// variants still cycle through the weeks it does not take. The weekly
+			// counts below read the same plan-wide alternation the loop will.
+			const favorite = favoriteWorkout(input, 'mobility');
+			const { primary, secondary } = mobilityAnchorFocuses(input.baseline);
+			let favoriteCount = 0;
+			if (favorite) {
+				for (let i = 0; i < perWeek; i++) if ((mobilityEmitted + i) % 2 === 0) favoriteCount++;
+			}
+			const composedCount = perWeek - favoriteCount;
+			// The swap to the runner-up area runs only when at least three composed
+			// sessions carry the anchor, so the stated focus keeps at least two of
+			// them and a clear majority after one swaps.
+			const swapToSecondary = perWeek >= 3 && composedCount >= 3;
+			// The week's dose ledger, in seconds per target muscle. The anchor holds
+			// and the favorite are committed up front, because they run no matter
+			// what, so every roaming pick projects the whole week and never plans
+			// minutes on top of a muscle the week is already covering to the plateau.
+			const dose = new Map<string, number>();
+			const anchorSessions = (focus: StretchFocus, count: number) => {
+				if (!count) return;
+				for (const hold of mobilitySessionRoutine(focus, undefined).slice(2)) {
+					addHoldDose(dose, hold.name, hold.durationSec * (hold.rounds ?? 1) * count);
+				}
+			};
+			anchorSessions(primary, swapToSecondary ? composedCount - 1 : composedCount);
+			anchorSessions(secondary, swapToSecondary ? 1 : 0);
+			if (favorite) {
+				for (const step of favorite.workout.blocks.flatMap((b) => b.steps)) {
+					if (step.kind === 'cooldown') {
+						addHoldDose(dose, step.label, (step.durationSec ?? 0) * favoriteCount);
+					}
+				}
+			}
 			// Mobility is short, so it pairs with a day that already has a session,
 			// easing onto an easy or strength day first. A rest day is the fallback.
 			const rank = (d: number) => {
@@ -1859,10 +1915,28 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			};
 			const candidates = [2, 4, 1, 3, 0, 5, 6].sort((a, b) => rank(a) - rank(b));
 			let added = 0;
+			let composed = 0;
 			for (const d of candidates) {
 				if (added >= perWeek) break;
 				const slot = sessions.some((s) => s.day === d) ? 'PM' : 'AM';
-				sessions.push(mobilitySession(d, routineId, slot));
+				if (favorite && mobilityEmitted % 2 === 0) {
+					sessions.push(mobilitySession(d, favorite.id, slot));
+				} else {
+					const anchor = swapToSecondary && composed === 0 ? secondary : primary;
+					const picked = pickRoamingIndex(anchor, dose, mobilityRotation);
+					const roaming = picked >= 0 ? ROAMING_ORDER[picked] : undefined;
+					const routine = mobilitySessionRoutine(anchor, roaming);
+					sessions.push(composedMobilitySession(d, slot, anchor, roaming, routine));
+					const roamHold = roaming ? routine.slice(2).at(-1) : undefined;
+					if (roamHold) {
+						addHoldDose(dose, roamHold.name, roamHold.durationSec * (roamHold.rounds ?? 1));
+					}
+					// The cursor moves past the stretch this session took, skips
+					// included, so no stretch roams twice before the order has cycled.
+					mobilityRotation = picked >= 0 ? picked + 1 : mobilityRotation + 1;
+					composed++;
+				}
+				mobilityEmitted++;
 				added++;
 			}
 		}
@@ -2143,5 +2217,50 @@ function mobilitySession(day: number, libraryId: string, slot = 'AM'): PlannedSe
 			added: false,
 		},
 		durationMin: workout.durationMin,
+	};
+}
+
+/**
+ * A composed mobility session: the anchor holds for the runner's stated tight
+ * area at the same two rounds every session, plus the roaming stretch when
+ * there is one. Built from the drill data rather than one library workout, so
+ * the routine can vary per session while the anchor's dose stays fixed (17b).
+ */
+function composedMobilitySession(
+	day: number,
+	slot: string,
+	focus: StretchFocus,
+	roaming: string | undefined,
+	routine: Drill[],
+): PlannedSession {
+	// Each hold carries its own length in the drill data, and two rounds of it is
+	// the anchor dose, so the session runs about five minutes.
+	const totalSec = routine.reduce((sum, d) => sum + d.durationSec * (d.rounds ?? 1), 0);
+	const minutes = Math.max(1, Math.round(totalSec / 60));
+	return {
+		day,
+		slot,
+		modality: 'mobility',
+		type: 'mobility',
+		title: `${FOCUS_AREA_TITLE[focus]}, ${minutes} minutes`,
+		purpose:
+			focus === 'general'
+				? 'Range of motion across the areas running tightens, at the same holds every session, with one stretch that covers another area.'
+				: 'Range of motion for the area you said is tight, at the same holds every session, with one stretch that covers another area.',
+		prescription: {
+			summary: roaming
+				? `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, plus one stretch that changes from session to session.`
+				: `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, held steady every session.`,
+			intensity: 'easy',
+			targetRpe: [1, 3],
+			workout: { ...mobilityWorkout(routine), estimatedDurationMin: minutes },
+			notes: roaming
+				? 'The first two holds never change. The last one moves around the body from session to session.'
+				: 'Both holds stay the same every session, so your tight area keeps its full dose.',
+			// The engine's own session, not one the runner added, so the rebuild
+			// does not treat it as an added workout to repeat.
+			added: false,
+		},
+		durationMin: minutes,
 	};
 }
