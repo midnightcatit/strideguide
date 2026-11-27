@@ -4,6 +4,9 @@ export * from './tokens';
 export * from './notes';
 export * from './dates';
 
+// Runner-built custom workouts
+export * from './workouts';
+
 // The admin system map's data model
 export * from './system-graph';
 

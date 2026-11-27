@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { GOAL_PROFILES, generatePlan, type PlanInput } from '@strideguide/shared';
 import { rebuildFromWeekOne, type WeekOneSession } from '@strideguide/shared/plan';
-import { planParams, previewResponse, weekRowValues } from './plans';
+import { customStructuredWorkout, planParams, previewResponse, weekRowValues } from './plans';
 
 it('keeps the phase on the week rows the plan route inserts', () => {
 	// A plan week row carries its phase through the insert. Dropping it here left
@@ -91,4 +91,32 @@ it('returns the preview response unchanged when the rebuild has nothing to say',
 	const current = { goal: null, plan: null, weeks: [], logs: [] };
 	// No stray key: the response keeps the exact GET /current shape.
 	expect(previewResponse(current, warnings)).toEqual(current);
+});
+
+it('splits a long custom strength circuit into blocks under the step cap', () => {
+	// 120 sets emit 239 cards once each set takes a rest card; a single block
+	// would break prescriptionSchema's 200-step cap and fail the week-one save.
+	const custom = {
+		modality: 'strength' as const,
+		type: 'full-body-strength',
+		title: 'Big circuit',
+		durationMin: 60,
+		summary: 'A long one.',
+		blocks: Array.from({ length: 6 }, (_, i) => ({
+			machine: `Machine ${i + 1}`,
+			sets: Array.from({ length: 20 }, () => ({ reps: 10, weightKg: 0 })),
+		})),
+	};
+	const workout = customStructuredWorkout(custom);
+	expect(workout.blocks.length).toBeGreaterThan(1);
+	for (const block of workout.blocks) {
+		expect(block.steps.length).toBeLessThanOrEqual(200);
+	}
+	const steps = workout.blocks.flatMap((b) => b.steps);
+	expect(steps.filter((s) => s.kind === 'work')).toHaveLength(120);
+	expect(steps.filter((s) => s.kind === 'rest')).toHaveLength(119);
+	// The packer splits between moves, so no block opens on a rest card.
+	for (const block of workout.blocks) {
+		expect(block.steps[0]?.kind).toBe('work');
+	}
 });

@@ -1,5 +1,5 @@
 /** Thin typed client for the Hono API. Same-origin: /api/* on the Worker. */
-import type { GoalProfileData } from '@strideguide/shared';
+import type { CustomWorkout, CustomWorkoutDraft, GoalProfileData } from '@strideguide/shared';
 import type { Prefs } from '@strideguide/shared/units';
 import type { RecoverySignal, HealthDay } from '@strideguide/shared/plan';
 import type { ClientActivity, ClientLog, CurrentPlan } from './plan';
@@ -505,6 +505,18 @@ export const api = {
 		}),
 	removeWorkout: (id: string) =>
 		req<{ ok: boolean }>(`/plans/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+	/** The runner's own saved workouts: list, create, update and delete. */
+	listCustomWorkouts: () => req<{ workouts: CustomWorkout[] }>('/workouts'),
+	createCustomWorkout: (draft: CustomWorkoutDraft) =>
+		req<{ workout: CustomWorkout }>('/workouts', { method: 'POST', body: JSON.stringify(draft) }),
+	updateCustomWorkout: (id: string, draft: CustomWorkoutDraft) =>
+		req<{ workout: CustomWorkout }>(`/workouts/${encodeURIComponent(id)}`, {
+			method: 'PUT',
+			body: JSON.stringify(draft),
+		}),
+	deleteCustomWorkout: (id: string) =>
+		req<{ ok: boolean }>(`/workouts/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 
 	/** Set or clear a session's started or skipped state, and its progress. */
 	setSessionState: (id: string, state: 'started' | 'skipped' | null, progress?: string | null) =>

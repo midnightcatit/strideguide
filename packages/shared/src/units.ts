@@ -6,6 +6,7 @@
 export type Units = 'metric' | 'imperial';
 
 import type { EquipmentItem, EquipmentPreference } from './types';
+import type { CustomWorkout } from './workouts';
 
 /**
  * One free window on a weekday: the day (0 = Monday, the app's convention) and
@@ -58,6 +59,11 @@ export interface Prefs {
 	favoriteMachines?: string[];
 	/** Library workout ids the runner likes. The plan names one when it fits the day. */
 	favoriteWorkouts?: string[];
+	/**
+	 * The workouts the runner built themselves, in the same prefs JSON the
+	 * favorites live in. Optional: a runner who never opens the builder has none.
+	 */
+	customWorkouts?: CustomWorkout[];
 	/** True once the runner dismisses the Connect Google Health nudge, so it stays gone. */
 	connectNudgeDismissed?: boolean;
 	/**

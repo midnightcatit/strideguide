@@ -12,6 +12,7 @@ import {
 	machineItemsSchema,
 	scheduleSchema,
 } from '../lib/prefs-schema';
+import { changeStoredPrefs, d1PrefsStore } from '../lib/prefs-store';
 import { schema } from '../db';
 import type { AppBindings } from '../types';
 
@@ -61,27 +62,22 @@ settings.put(
 	),
 	async (c) => {
 		const user = c.get('user')!;
-		const db = c.get('db');
 		const body = c.req.valid('json');
-		const rows = await db
-			.select()
-			.from(schema.settings)
-			.where(eq(schema.settings.userId, user.id))
-			.limit(1);
 		// Nulls mean "clear this value", so they are dropped rather than stored.
 		const clean = Object.fromEntries(
 			Object.entries({ ...body }).filter(([, v]) => v !== null && v !== undefined),
 		);
-		const prefs: Prefs = {
-			...DEFAULT_PREFS,
-			...(rows[0]?.prefs ?? {}),
-			...clean,
-		};
-		await db
-			.insert(schema.settings)
-			.values({ userId: user.id, prefs })
-			.onConflictDoUpdate({ target: schema.settings.userId, set: { prefs } });
-		return c.json({ prefs });
+		// A guarded merge, so a prefs change landing at the same time (a workout
+		// save, say) is never overwritten by this stale snapshot.
+		let saved: Prefs = { ...DEFAULT_PREFS };
+		const outcome = await changeStoredPrefs(d1PrefsStore(c.env.DB), user.id, (prefs) => {
+			saved = { ...prefs, ...clean };
+			return { ok: true, prefs: saved };
+		});
+		if (outcome.kind === 'conflict') {
+			return c.json({ error: 'Another change was saving at the same time. Try again.' }, 409);
+		}
+		return c.json({ prefs: saved });
 	},
 );
 

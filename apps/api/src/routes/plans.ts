@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import type { D1Database } from '@cloudflare/workers-types';
 import { asc, and, desc, eq, gte, inArray, isNotNull, isNull, or } from 'drizzle-orm';
 import { GOAL_PROFILES, generatePlan } from '@strideguide/shared';
 import {
@@ -36,6 +37,7 @@ import type {
 	QualityKind,
 	SessionArchetype,
 	SessionPrescription,
+	StepBlock,
 	WeekShape,
 	WorkoutStep,
 } from '@strideguide/shared';
@@ -46,6 +48,7 @@ import { narrateAndStore, reviewPlan, templateWeekSummary } from '../lib/narrati
 import { rephraseAndStore, type StoredWhyInput } from '../lib/session-why';
 import { shapePlan } from '../lib/plan-shape';
 import { equipmentPrefsPatchSchema } from '../lib/prefs-schema';
+import { changeStoredPrefs, d1PrefsStore, type PrefsChange } from '../lib/prefs-store';
 import { availableDaysSchema, goalSlugSchema, targetDateSchema } from '../lib/goal-schema';
 import { syncGoalProfiles } from '../lib/goal-profiles';
 import { prescriptionSchema } from '../lib/prescription-schema';
@@ -201,22 +204,16 @@ export async function loadPrefs(db: Db, userId: string): Promise<Prefs> {
 	return { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}) };
 }
 
-/** Merge a partial prefs patch into the runner's settings. */
-async function upsertPrefs(db: Db, userId: string, patch: Partial<Prefs>): Promise<void> {
-	const rows = await db
-		.select()
-		.from(schema.settings)
-		.where(eq(schema.settings.userId, userId))
-		.limit(1);
-	const merged = { ...DEFAULT_PREFS, ...(rows[0]?.prefs ?? {}), ...patch };
-	if (rows[0]) {
-		await db
-			.update(schema.settings)
-			.set({ prefs: merged })
-			.where(eq(schema.settings.userId, userId));
-	} else {
-		await db.insert(schema.settings).values({ userId, prefs: merged });
-	}
+/** Merge a partial prefs patch into the runner's settings, guarded so a prefs write landing at the same time (a workout save, say) is never clobbered. */
+async function upsertPrefs(
+	db: D1Database,
+	userId: string,
+	patch: Partial<Prefs>,
+): Promise<PrefsChange> {
+	return changeStoredPrefs(d1PrefsStore(db), userId, (prefs) => ({
+		ok: true,
+		prefs: { ...prefs, ...patch },
+	}));
 }
 
 /** The machines to build a circuit from: an explicit override, else the gym preset. */
@@ -511,12 +508,37 @@ const customWorkoutSchema = z.object({
 
 type CustomWorkout = z.infer<typeof customWorkoutSchema>;
 
+/** The most steps one workout block may hold, as prescriptionSchema enforces it. */
+const MAX_BLOCK_STEPS = 200;
+
+/**
+ * Pack a circuit's moves into blocks that each stay inside prescriptionSchema's
+ * 200-step block cap. A move holds at most 20 sets (the route schema), so its
+ * cards never exceed 39 steps and whole moves always fit somewhere; a long
+ * circuit continues into a second block instead of failing the week-one save.
+ */
+export function circuitBlocks(perMove: WorkoutStep[][]): StepBlock[] {
+	const blocks: StepBlock[] = [];
+	let current: WorkoutStep[] = [];
+	for (const steps of perMove) {
+		if (current.length && current.length + steps.length > MAX_BLOCK_STEPS) {
+			blocks.push({ repeat: 1, label: 'Your circuit', steps: current });
+			current = [];
+		}
+		current = [...current, ...steps];
+	}
+	if (current.length) blocks.push({ repeat: 1, label: 'Your circuit', steps: current });
+	return blocks;
+}
+
 /** A guided workout shape for a custom session, so the player and detail views render it. */
-function customStructuredWorkout(custom: CustomWorkout) {
+export function customStructuredWorkout(custom: CustomWorkout) {
 	if (custom.modality === 'strength') {
 		const moves = custom.blocks ?? [];
-		const steps: WorkoutStep[] = [];
-		moves.forEach((b, mi) => {
+		// One move's cards, kept per move so the packer can split the circuit
+		// between moves and never between a set and its rest card.
+		const perMove: WorkoutStep[][] = moves.map((b, mi) => {
+			const steps: WorkoutStep[] = [];
 			b.sets.forEach((s, i) => {
 				steps.push({
 					kind: 'work' as const,
@@ -538,9 +560,10 @@ function customStructuredWorkout(custom: CustomWorkout) {
 					});
 				}
 			});
+			return steps;
 		});
 		return {
-			blocks: [{ repeat: 1, label: 'Your circuit', steps }],
+			blocks: circuitBlocks(perMove),
 			estimatedDurationMin: custom.durationMin,
 		};
 	}
@@ -1141,7 +1164,12 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 	if (body.equipmentItems !== undefined) patch.equipmentItems = body.equipmentItems;
 	if (body.gymPreset !== undefined) patch.gymPreset = body.gymPreset;
 	if (body.machineItems !== undefined) patch.machineItems = body.machineItems;
-	if (Object.keys(patch).length) await upsertPrefs(db, user.id, patch);
+	if (Object.keys(patch).length) {
+		const saved = await upsertPrefs(c.env.DB, user.id, patch);
+		if (saved.kind === 'conflict') {
+			return c.json({ error: 'Another change was saving at the same time. Try again.' }, 409);
+		}
+	}
 	const prefs = await loadPrefs(db, user.id);
 
 	const found = await currentPlanWithWeeks(db, user.id);
