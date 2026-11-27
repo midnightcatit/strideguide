@@ -8,7 +8,9 @@
 	import ScheduleGrid from '$lib/components/ScheduleGrid.svelte';
 	import FavoritePicker from '$lib/components/FavoritePicker.svelte';
 	import WorkoutComposer from '$lib/components/WorkoutComposer.svelte';
-	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, NAMED_WORKOUTS, type LibraryWorkout } from '@strideguide/shared/plan';
+	import WorkoutFilter from '$lib/components/WorkoutFilter.svelte';
+	import { recommendSessionMinutes, recommendStrengthDays, recommendWeeklyKm, recommendBuildPreference, GYM_PRESETS, NAMED_WORKOUTS, bodyPartsForWorkout, bodyPartsIn, matchesBodyPart, workoutLengthLabel, type BodyPart, type LibraryWorkout } from '@strideguide/shared/plan';
+	import { FAVORITE_CATEGORIES, categoryForLibraryWorkout, type FavoriteCategory } from '$lib/favorite-picker';
 	import { previewCategory, PREVIEW_CATEGORY_BLURB, PREVIEW_CATEGORY_LABEL } from '@strideguide/shared/plan';
 	import { customWorkoutArchetype, customWorkoutNotes, customWorkoutToStructured, type ComposerContext, type CustomWorkout } from '@strideguide/shared';
 	import { milesToKm, type ScheduleBlock } from '@strideguide/shared/units';
@@ -127,6 +129,36 @@
 	// between a curated recipe and the composer, or the composer itself.
 	let addDay = $state<string | null>(null);
 	let addMode = $state<'choose' | 'compose' | null>(null);
+	// The library list's own filter, so a recipe is easy to find by category,
+	// body part or name. The body-part row shows only for strength and mobility.
+	let libCategory = $state<FavoriteCategory | 'all'>('all');
+	let libPart = $state<BodyPart | 'all'>('all');
+	let libQ = $state('');
+	const libCategoryOptions: { key: FavoriteCategory | 'all'; label: string }[] = [
+		{ key: 'all', label: 'All' },
+		...FAVORITE_CATEGORIES.map((c) => ({ key: c.key, label: c.label })),
+	];
+	const libTokens = $derived(
+		libQ
+			.trim()
+			.toLowerCase()
+			.split(/\s+/)
+			.filter((t) => t.length > 0),
+	);
+	const showLibParts = $derived(libCategory === 'strength' || libCategory === 'mobility');
+	const activeLibPart = $derived(showLibParts ? libPart : 'all');
+	/** The recipes the category chip and the search let through, before the body part. */
+	const libCategoryMatched = $derived(
+		NAMED_WORKOUTS.filter(
+			(w) =>
+				(libCategory === 'all' || categoryForLibraryWorkout(w) === libCategory) &&
+				libTokens.every((t) => `${w.title} ${w.summary}`.toLowerCase().includes(t)),
+		),
+	);
+	const libParts = $derived(bodyPartsIn(libCategoryMatched));
+	const shownLibrary = $derived(
+		libCategoryMatched.filter((w) => matchesBodyPart(bodyPartsForWorkout(w), activeLibPart)),
+	);
 	// The runner's own context, so the composer's preset fits their answers.
 	const composerContext = $derived<ComposerContext>({
 		sessionMinutes,
@@ -1187,23 +1219,48 @@
 								＋ Build a custom workout
 							</button>
 							<p class="mb-2 text-xs uppercase tracking-widest text-steel">From the library</p>
-							<ul class="grid gap-2 sm:grid-cols-2">
-								{#each NAMED_WORKOUTS as w (w.id)}
-									<li>
-										<button
-											type="button"
-											onclick={() => addFromLibrary(w)}
-											class="flex h-full w-full flex-col rounded-xl border border-hairline p-3 text-left transition-colors hover:border-signal-ink"
-										>
-											<span class="flex items-baseline justify-between gap-2">
-												<span class="font-display font-medium">{w.title}</span>
-												<span class="tabular shrink-0 text-xs text-steel">{w.durationMin} min</span>
-											</span>
-											<span class="mt-1 text-xs leading-relaxed text-steel">{w.summary}</span>
-										</button>
-									</li>
-								{/each}
-							</ul>
+							<input
+								type="search"
+								bind:value={libQ}
+								enterkeyhint="search"
+								aria-label="Search workouts"
+								placeholder="Search workouts"
+								class="w-full rounded-xl border border-hairline bg-paper px-3 py-2 text-base text-ink placeholder:text-steel focus:border-signal-ink focus:outline-none sm:text-sm"
+							/>
+							<div class="mt-3">
+								<WorkoutFilter
+									categories={libCategoryOptions}
+									bind:category={libCategory}
+									bodyParts={libParts}
+									bind:bodyPart={libPart}
+									showBodyParts={showLibParts}
+								/>
+							</div>
+							{#if shownLibrary.length === 0}
+								<p class="mt-3 px-1 py-6 text-center text-sm text-steel">
+									No workouts match. Try another word or filter, or build your own.
+								</p>
+							{:else}
+								<ul class="mt-3 grid gap-2 sm:grid-cols-2">
+									{#each shownLibrary as w (w.id)}
+										<li>
+											<button
+												type="button"
+												onclick={() => addFromLibrary(w)}
+												class="flex h-full w-full flex-col rounded-xl border border-hairline p-3 text-left transition-colors hover:border-signal-ink"
+											>
+												<span class="flex flex-wrap items-baseline gap-x-2">
+													<span class="font-display font-medium">{w.title}</span>
+													{#if workoutLengthLabel(w.durationMin)}
+														<span class="tabular text-xs text-steel">· {workoutLengthLabel(w.durationMin)}</span>
+													{/if}
+												</span>
+												<span class="mt-1 text-xs leading-relaxed text-steel">{w.summary}</span>
+											</button>
+										</li>
+									{/each}
+								</ul>
+							{/if}
 						</div>
 					</div>
 				</div>

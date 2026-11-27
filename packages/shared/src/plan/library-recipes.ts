@@ -241,6 +241,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 		type: 'full-body-strength',
 		durationMin: 60,
 		intensity: 'steady',
+		bodyParts: ['full body'],
 		summary:
 			'Five sets of five on a squat, a deadlift, a press and a row, with heavy but controlled reps and long rests.',
 		purpose:
@@ -432,6 +433,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 25,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary:
 			'A runner-focused flow: gentle movement for the hips, back and shoulders, a few steady poses, then slow breathing.',
 		purpose:
@@ -530,6 +532,7 @@ export const NAMED_WORKOUTS: LibraryWorkout[] = [
 		type: 'drills',
 		durationMin: 20,
 		intensity: 'steady',
+		bodyParts: ['quads', 'hamstrings', 'calves', 'hips'],
 		summary:
 			'The warm-up you run before a race or a hard time trial: an easy jog, dynamic drills, then a few strides to sharpen up.',
 		purpose:

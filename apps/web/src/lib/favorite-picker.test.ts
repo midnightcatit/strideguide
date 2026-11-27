@@ -132,4 +132,28 @@ describe('filtering picks', () => {
 		expect(matchesFavorite(refs[0]!, 'all', ['parkrun', 'strength'])).toBe(false);
 		expect(filterFavoriteRefs(refs, 'all', ['runners']).map((r) => r.id)).toEqual(['c']);
 	});
+
+	it('keeps only the chosen body part, and a partless pick never matches one', () => {
+		const withParts: FavoriteWorkoutRef[] = [
+			{ id: 'a', title: 'Easy run', category: 'run', source: 'library' },
+			{
+				id: 'b',
+				title: 'Hamstrings and calves',
+				category: 'mobility',
+				source: 'library',
+				bodyParts: ['hamstrings', 'calves'],
+			},
+			{
+				id: 'c',
+				title: 'Glute and hip strength',
+				category: 'strength',
+				source: 'library',
+				bodyParts: ['glutes'],
+			},
+		];
+		expect(filterFavoriteRefs(withParts, 'all', [], 'hamstrings').map((r) => r.id)).toEqual(['b']);
+		expect(filterFavoriteRefs(withParts, 'all', [], 'glutes').map((r) => r.id)).toEqual(['c']);
+		expect(filterFavoriteRefs(withParts, 'mobility', [], 'all').map((r) => r.id)).toEqual(['b']);
+		expect(matchesFavorite(withParts[0]!, 'run', [], 'calves')).toBe(false);
+	});
 });

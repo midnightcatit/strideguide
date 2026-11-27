@@ -6,19 +6,22 @@
 		defaultItemFor,
 		filterCatalog,
 		muscleGroupFilters,
-		type CatalogFilter,
 		type CatalogOption,
 		type CustomWorkoutCategory,
 		type CustomWorkoutItem,
 		type CustomWorkoutSectionId,
+		type EquipmentItem,
 	} from '@strideguide/shared';
+	import type { MuscleGroup } from '@strideguide/shared/plan';
+	import FilterChips from '$lib/components/FilterChips.svelte';
 
 	/**
 	 * The item picker: draws on the catalog for the section being edited, with a
 	 * search box and, for strength moves, filters by muscle group, equipment and
 	 * level. It shows the exercise still when the manifest has one and hands the
 	 * chosen item back through onAdd. Rendered inline in the composer, never as a
-	 * second sheet, so it does not stack a modal on a modal.
+	 * second sheet, so it does not stack a modal on a modal. Its filter rows use
+	 * the same chips as the workout filter control, so the two read the same way.
 	 */
 	let {
 		category,
@@ -32,10 +35,12 @@
 		onClose: () => void;
 	} = $props();
 
+	type LevelFilter = 'beginner' | 'intermediate' | 'advanced' | 'all';
+
 	let q = $state('');
-	let muscleGroup = $state<CatalogFilter['muscleGroup']>('all');
-	let equipment = $state<CatalogFilter['equipment']>('all');
-	let level = $state<CatalogFilter['level']>('all');
+	let muscleGroup = $state<MuscleGroup | 'all'>('all');
+	let equipment = $state<EquipmentItem | 'bodyweight' | 'all'>('all');
+	let level = $state<LevelFilter>('all');
 
 	let searchEl: HTMLInputElement | undefined;
 	// Move focus into the picker when it opens, so a keyboard user lands on the
@@ -50,6 +55,21 @@
 	const shown = $derived(
 		filterCatalog(options, { query: q, muscleGroup, equipment, level }).slice(0, 60),
 	);
+
+	const groupOptions = $derived<{ key: MuscleGroup | 'all'; label: string }[]>([
+		{ key: 'all', label: 'All groups' },
+		...muscleGroupFilters().map((g) => ({ key: g, label: g })),
+	]);
+	const equipmentOptions = $derived<{ key: EquipmentItem | 'bodyweight' | 'all'; label: string }[]>([
+		{ key: 'all', label: 'Any kit' },
+		...EQUIPMENT_FILTERS.map((e) => ({ key: e.value, label: e.label })),
+	]);
+	const levelOptions: { key: LevelFilter; label: string }[] = [
+		{ key: 'all', label: 'Any level' },
+		{ key: 'beginner', label: 'Beginner' },
+		{ key: 'intermediate', label: 'Intermediate' },
+		{ key: 'advanced', label: 'Advanced' },
+	];
 
 	/** The line under an option's name: what it works or needs. */
 	function subtitle(o: CatalogOption): string {
@@ -86,69 +106,10 @@
 	/>
 
 	{#if hasStrength}
-		<div class="scroll-modern mt-2 flex gap-1.5 overflow-x-auto pb-1">
-			<button
-				type="button"
-				aria-pressed={muscleGroup === 'all'}
-				onclick={() => (muscleGroup = 'all')}
-				class="min-h-11 shrink-0 rounded-full border px-3 text-xs {muscleGroup === 'all'
-					? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-					: 'border-hairline text-steel hover:border-steel'}"
-			>
-				All groups
-			</button>
-			{#each muscleGroupFilters() as g (g)}
-				<button
-					type="button"
-					aria-pressed={muscleGroup === g}
-					onclick={() => (muscleGroup = g)}
-					class="min-h-11 shrink-0 rounded-full border px-3 text-xs {muscleGroup === g
-						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-						: 'border-hairline text-steel hover:border-steel'}"
-				>
-					{g}
-				</button>
-			{/each}
-		</div>
-
-		<div class="scroll-modern mt-1 flex gap-1.5 overflow-x-auto pb-1">
-			<button
-				type="button"
-				aria-pressed={equipment === 'all'}
-				onclick={() => (equipment = 'all')}
-				class="min-h-11 shrink-0 rounded-full border px-3 text-xs {equipment === 'all'
-					? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-					: 'border-hairline text-steel hover:border-steel'}"
-			>
-				Any kit
-			</button>
-			{#each EQUIPMENT_FILTERS as e (e.value)}
-				<button
-					type="button"
-					aria-pressed={equipment === e.value}
-					onclick={() => (equipment = e.value)}
-					class="min-h-11 shrink-0 rounded-full border px-3 text-xs {equipment === e.value
-						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-						: 'border-hairline text-steel hover:border-steel'}"
-				>
-					{e.label}
-				</button>
-			{/each}
-		</div>
-
-		<div class="scroll-modern mt-1 flex gap-1.5 overflow-x-auto pb-1">
-			{#each [{ value: 'all', label: 'Any level' }, { value: 'beginner', label: 'Beginner' }, { value: 'intermediate', label: 'Intermediate' }, { value: 'advanced', label: 'Advanced' }] as l (l.value)}
-				<button
-					type="button"
-					aria-pressed={level === l.value}
-					onclick={() => (level = l.value as CatalogFilter['level'])}
-					class="min-h-11 shrink-0 rounded-full border px-3 text-xs {level === l.value
-						? 'border-signal-ink bg-signal-wash font-medium text-signal-ink'
-						: 'border-hairline text-steel hover:border-steel'}"
-				>
-					{l.label}
-				</button>
-			{/each}
+		<div class="mt-2 space-y-1.5">
+			<FilterChips options={groupOptions} bind:value={muscleGroup} label="Filter by muscle group" />
+			<FilterChips options={equipmentOptions} bind:value={equipment} label="Filter by equipment" />
+			<FilterChips options={levelOptions} bind:value={level} label="Filter by level" />
 		</div>
 	{/if}
 

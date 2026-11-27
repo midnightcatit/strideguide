@@ -416,6 +416,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		type: 'drills',
 		durationMin: 25,
 		intensity: 'easy',
+		bodyParts: ['quads', 'hamstrings', 'calves', 'hips'],
 		summary: 'A set of running drills that train a tall posture and a quick, quiet foot strike.',
 		purpose:
 			'Drills are skill work: they build the feel of good form and add a little bounce and stiffness, which supports running economy. Keep them light and snappy.',
@@ -680,6 +681,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		type: 'full-body-strength',
 		durationMin: 35,
 		intensity: 'steady',
+		bodyParts: ['full body'],
 		summary:
 			'A balanced dumbbell session covering legs, hips, push and pull, at a load you can control.',
 		purpose:
@@ -888,6 +890,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 25,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary: 'A longer set of gentle holds across the whole body, two short rounds each.',
 		purpose:
 			'Builds range of motion over time. Short holds work as well as long ones, and two rounds meet the total time without the power cost of a single long hold.',
@@ -946,6 +949,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 20,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary: 'A short, calming flow of yoga poses and slow breathing.',
 		purpose:
 			'Yoga improves flexibility and balance and lowers tension after training. Breathe slowly and stop short of any pain.',
@@ -1000,6 +1004,7 @@ export const EXTRA_WORKOUTS: LibraryWorkout[] = [
 		type: 'recovery',
 		durationMin: 15,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary: 'Slow rolling over the main running muscles, pausing on tender spots.',
 		purpose:
 			'Rolling gives a small boost to flexibility and soreness and helps you feel loose. It is comfort and recovery, not a fix for tight tissue.',

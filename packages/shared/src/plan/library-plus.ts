@@ -290,6 +290,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'drills',
 		durationMin: 20,
 		intensity: 'easy',
+		bodyParts: ['quads', 'calves', 'hips', 'shoulders'],
 		summary:
 			'Wall lean, A-march and arm swing drills that train a tall posture and a light footstrike under the hips.',
 		purpose:
@@ -332,6 +333,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'drills',
 		durationMin: 20,
 		intensity: 'easy',
+		bodyParts: ['quads', 'hamstrings', 'calves', 'hips'],
 		summary:
 			'Metronome cadence work and light quick-feet drills that build a quicker, quieter running rhythm.',
 		purpose:
@@ -379,6 +381,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'drills',
 		durationMin: 20,
 		intensity: 'easy',
+		bodyParts: ['quads', 'glutes', 'calves'],
 		summary:
 			'Short bounds, hops and ankle work that train stiff, springy legs and quick ground contacts.',
 		purpose:
@@ -601,6 +604,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'full-body-strength',
 		durationMin: 25,
 		intensity: 'steady',
+		bodyParts: ['glutes', 'adductors', 'core'],
 		summary:
 			'Adductor work, including the Copenhagen plank, that builds the inner-thigh strength linked to fewer groin problems.',
 		purpose:
@@ -838,6 +842,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 12,
 		intensity: 'easy',
+		bodyParts: ['full body'],
 		summary:
 			'A raise, activate and mobilise warm-up that gets the hips, ankles and shoulders ready to run.',
 		purpose:
@@ -883,6 +888,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'mobility',
 		durationMin: 25,
 		intensity: 'easy',
+		bodyParts: ['glutes', 'core'],
 		summary: 'Slow Pilates-style trunk work that builds control of the deep core and hips.',
 		purpose:
 			'Pilates improves core control and balance without heavy load. Move slowly, breathe steadily and keep the lower back calm.',
@@ -1085,6 +1091,7 @@ export const PLUS_WORKOUTS: LibraryWorkout[] = [
 		type: 'full-body-strength',
 		durationMin: 35,
 		intensity: 'steady',
+		bodyParts: ['full body'],
 		summary:
 			'Three rounds through the functional kit: battle ropes, medicine-ball throws, TRX rows and a cable pull-through.',
 		purpose:
