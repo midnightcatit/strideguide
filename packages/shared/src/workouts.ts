@@ -160,6 +160,18 @@ const MAIN_KINDS: Record<CustomWorkoutCategory, readonly CustomWorkoutItemKind[]
 };
 const BOOKEND_KINDS: readonly CustomWorkoutItemKind[] = ['run', 'mobility'];
 
+/**
+ * The item kinds a section accepts, by workout category: main work matches the
+ * category, and the warm-up and cool-down take drills or easy running. One
+ * source, so the picker and the validator cannot disagree.
+ */
+export function sectionKinds(
+	category: CustomWorkoutCategory,
+	section: CustomWorkoutSectionId,
+): readonly CustomWorkoutItemKind[] {
+	return section === 'main' ? MAIN_KINDS[category] : BOOKEND_KINDS;
+}
+
 /** The dose fields each item kind must not carry; the supported sets are the rest. */
 const FORBIDDEN_FIELDS: Record<CustomWorkoutItemKind, readonly string[]> = {
 	strength: ['distanceKm'],
@@ -220,12 +232,12 @@ function itemProblems(
 		problems.push(`"${item.kind}" is not an item type we know.`);
 		return problems;
 	}
-	if (section === 'main') {
-		if (!MAIN_KINDS[category].includes(item.kind)) {
-			problems.push(`${label} for a ${category} workout holds ${kindWords(category)}.`);
-		}
-	} else if (!BOOKEND_KINDS.includes(item.kind)) {
-		problems.push(`${label} holds drills or easy running, not strength moves.`);
+	if (!sectionKinds(category, section).includes(item.kind)) {
+		problems.push(
+			section === 'main'
+				? `${label} for a ${category} workout holds ${kindWords(category)}.`
+				: `${label} holds drills or easy running, not strength moves.`,
+		);
 	}
 	// A draft arrives as JSON, so a field the type leaves out can still be
 	// present in the data. Read the values through a plain record and reject
