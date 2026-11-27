@@ -296,6 +296,33 @@ export interface SessionDrills {
 }
 
 /**
+ * The steps a detail list shows: rest cards are left out, since they live in
+ * the player's flow, and consecutive sets of the same move merge into one, so
+ * a set-by-set sequence reads one row per move again. A step that already
+ * carries its own set count (sessions stored before rest became explicit)
+ * passes through untouched.
+ */
+export function collapseRests(steps: ClientStep[]): ClientStep[] {
+	const out: ClientStep[] = [];
+	for (const s of steps) {
+		if (s.kind === 'rest') continue;
+		const prev = out[out.length - 1];
+		if (
+			s.kind === 'work' &&
+			(s.sets ?? 0) <= 1 &&
+			prev?.kind === 'work' &&
+			(prev.sets ?? 0) <= 1 &&
+			(prev.machine ?? prev.label) === (s.machine ?? s.label)
+		) {
+			out[out.length - 1] = { ...prev, sets: (prev.sets ?? 1) + 1 };
+		} else {
+			out.push(s);
+		}
+	}
+	return out;
+}
+
+/**
  * Pull the named drills back out of a workout so the detail view and the
  * preview can show a demo for each. Warm-up steps land in `warmups`, every
  * other drill-named step (the cool-down and mobility holds) in `stretches`.

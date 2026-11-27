@@ -304,6 +304,102 @@ describe('generatePlan (preferences)', () => {
 		expect(new Set(circuits).size).toBe(2);
 	});
 
+	it('puts a rest card after each strength set, none in the warm-up or cool-down', () => {
+		const strength = plan.weeks[0]!.sessions.find((s) => s.modality === 'strength')!;
+		const blocks = strength.prescription.workout!.blocks;
+		const warmup = blocks.find((b) => b.label === 'Warm-up')!;
+		const cooldown = blocks.find((b) => b.label === 'Cool-down')!;
+		const circuit = blocks.find((b) => b.label === 'Circuit')!;
+		expect(warmup.steps.every((s) => s.kind !== 'rest')).toBe(true);
+		expect(cooldown.steps.every((s) => s.kind !== 'rest')).toBe(true);
+		const steps = circuit.steps;
+		expect(steps.some((s) => s.kind === 'rest')).toBe(true);
+		// Every set is followed by a rest card, except the final set of the final
+		// move, which runs straight into the cool-down.
+		const lastWork = steps.map((s) => s.kind === 'work').lastIndexOf(true);
+		steps.forEach((s, i) => {
+			if (s.kind !== 'work') return;
+			if (i === lastWork) expect(steps[i + 1]).toBeUndefined();
+			else expect(steps[i + 1]!.kind).toBe('rest');
+		});
+	});
+
+	it('shifts the strength rest band with the phase', () => {
+		const restSecs = (phase: string) => {
+			const week = plan.weeks.find((w) => w.phase === phase)!;
+			const strength = week.sessions.find((s) => s.modality === 'strength')!;
+			const secs = strength.prescription.workout!.blocks
+				.flatMap((b) => b.steps)
+				.filter((s) => s.kind === 'rest')
+				.map((s) => s.durationSec ?? 0);
+			expect(secs.length).toBeGreaterThan(0);
+			return secs;
+		};
+		const baseRests = restSecs('base');
+		const buildRests = restSecs('build');
+		const peakRests = restSecs('peak');
+		for (const sec of baseRests) {
+			expect(sec).toBeGreaterThanOrEqual(45);
+			expect(sec).toBeLessThanOrEqual(60);
+		}
+		for (const sec of buildRests) {
+			expect(sec).toBeGreaterThanOrEqual(75);
+			expect(sec).toBeLessThanOrEqual(90);
+		}
+		for (const sec of peakRests) {
+			expect(sec).toBeGreaterThanOrEqual(90);
+			expect(sec).toBeLessThanOrEqual(120);
+		}
+		// The bands sit apart for the same runner: a base week never rests longer
+		// than a peak week.
+		expect(Math.min(...peakRests)).toBeGreaterThan(Math.max(...baseRests));
+		expect(Math.min(...buildRests)).toBeGreaterThan(Math.max(...baseRests));
+	});
+
+	it('rests a stronger runner a little longer inside the band', () => {
+		const rests = (experience: 'beginner' | 'advanced') => {
+			const p = generatePlan({
+				...base,
+				baseline: { experience, equipment: 'machines' },
+			});
+			const strength = p.weeks[0]!.sessions.find((s) => s.modality === 'strength')!;
+			return strength.prescription.workout!.blocks
+				.flatMap((b) => b.steps)
+				.filter((s) => s.kind === 'rest')
+				.map((s) => s.durationSec ?? 0);
+		};
+		const beginner = rests('beginner');
+		const advanced = rests('advanced');
+		expect(beginner.length).toBeGreaterThan(0);
+		expect(Math.max(...beginner)).toBeLessThanOrEqual(Math.max(...advanced));
+		expect(Math.max(...advanced)).toBeGreaterThan(Math.max(...beginner));
+	});
+
+	it('estimates a strength session from work plus rest', () => {
+		const estimate = (experience: 'beginner' | 'advanced') => {
+			const p = generatePlan({
+				...base,
+				baseline: { experience, equipment: 'machines' },
+			});
+			const strength = p.weeks[0]!.sessions.find((s) => s.modality === 'strength')!;
+			const w = strength.prescription.workout!;
+			const steps = w.blocks.flatMap((b) => b.steps);
+			const restSec = steps.filter((s) => s.kind === 'rest').reduce((t, s) => t + (s.durationSec ?? 0), 0);
+			const workSteps = steps.filter((s) => s.kind === 'work');
+			// About four seconds a rep plus setup per set, so the estimate covers
+			// everything the session asks for.
+			const workSec = workSteps.reduce((t, s) => t + Math.round((s.reps ?? 0) * 4 + 10), 0);
+			return { estimate: w.estimatedDurationMin ?? 0, restSec, workSec };
+		};
+		const beginner = estimate('beginner');
+		const advanced = estimate('advanced');
+		expect(beginner.estimate).toBeGreaterThanOrEqual(Math.round((beginner.restSec + beginner.workSec) / 60));
+		expect(advanced.estimate).toBeGreaterThanOrEqual(Math.round((advanced.restSec + advanced.workSec) / 60));
+		// More sets and longer rests take longer: the session is never shrunk to
+		// fit a time budget.
+		expect(advanced.estimate).toBeGreaterThan(beginner.estimate);
+	});
+
 	it('prefers hill reps on hilly terrain', () => {
 		const p = generatePlan({ ...base, baseline: { experience: 'intermediate', terrain: 'hilly' } });
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'hills')).toBe(true);

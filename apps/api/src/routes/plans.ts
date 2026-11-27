@@ -19,6 +19,7 @@ import {
 	weekChangeNote,
 	weekOnePattern,
 	recoverySignal,
+	REST_CARD_NOTE,
 } from '@strideguide/shared/plan';
 import { compareDaySessions } from '../lib/session-order';
 import { reconcileSessions } from '../lib/plan-reconcile';
@@ -35,6 +36,7 @@ import type {
 	SessionArchetype,
 	SessionPrescription,
 	WeekShape,
+	WorkoutStep,
 } from '@strideguide/shared';
 import { DEFAULT_PREFS, ageFromBirthYear, type Prefs } from '@strideguide/shared/units';
 import { schema } from '../db';
@@ -478,16 +480,31 @@ type CustomWorkout = z.infer<typeof customWorkoutSchema>;
 /** A guided workout shape for a custom session, so the player and detail views render it. */
 function customStructuredWorkout(custom: CustomWorkout) {
 	if (custom.modality === 'strength') {
-		const steps = (custom.blocks ?? []).map((b) => ({
-			kind: 'work' as const,
-			label: b.machine,
-			machine: b.machine,
-			sets: b.sets.length,
-			reps: b.sets[0]?.reps ?? 10,
-			restSec: 75,
-			targetRpe: [7, 8] as [number, number],
-			note: 'Rest 60 to 90 seconds between sets.',
-		}));
+		const moves = custom.blocks ?? [];
+		const steps: WorkoutStep[] = [];
+		moves.forEach((b, mi) => {
+			b.sets.forEach((s, i) => {
+				steps.push({
+					kind: 'work' as const,
+					label: b.machine,
+					machine: b.machine,
+					sets: 1,
+					reps: s.reps,
+					targetRpe: [7, 8] as [number, number],
+				});
+				// A rest card after every set; the last set of the last move runs
+				// straight into the finish, so it takes no rest card.
+				const last = mi === moves.length - 1 && i === b.sets.length - 1;
+				if (!last) {
+					steps.push({
+						kind: 'rest' as const,
+						label: 'Rest',
+						durationSec: 75,
+						note: REST_CARD_NOTE,
+					});
+				}
+			});
+		});
 		return {
 			blocks: [{ repeat: 1, label: 'Your circuit', steps }],
 			estimatedDurationMin: custom.durationMin,

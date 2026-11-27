@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { countdownEnabledFor, countdownSeconds, formatClock } from '@strideguide/shared/units';
 	import { goto } from '$app/navigation';
-	import { findDrill, findMove, mediaForMove } from '@strideguide/shared/plan';
+	import { findDrill, findMove, mediaForMove, withRestCards } from '@strideguide/shared/plan';
 	import { onMount, onDestroy } from 'svelte';
 	import type { ClientSession, ClientStep } from '$lib/plan';
 	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance, setCountdownEnabled } from '$lib/prefs.svelte';
@@ -47,37 +47,92 @@
 		sets?: number;
 	}
 
+	/** One playable slot: a step, and when it is one set of several, its number. */
+	interface Slot {
+		step: ClientStep;
+		setNo?: number;
+		totalSets?: number;
+	}
+
+	/**
+	 * Expand a block's steps into playable slots. Consecutive work steps for the
+	 * same move form one run, with the rest cards between them left inside it, so
+	 * each set knows its number and the total; a single work step that carries
+	 * its own set count (sessions stored before rest became explicit) multiplies
+	 * the same way. Rest cards and everything else pass through as their own
+	 * slot, in order.
+	 */
+	function expandSteps(steps: ClientStep[]): Slot[] {
+		const slots: Slot[] = [];
+		let i = 0;
+		while (i < steps.length) {
+			const s = steps[i]!;
+			if (s.kind !== 'work') {
+				slots.push({ step: s });
+				i++;
+				continue;
+			}
+			const key = s.machine ?? s.label;
+			let j = i;
+			let total = 0;
+			while (j < steps.length) {
+				const t = steps[j]!;
+				// A rest card sits inside a run: the sets either side are the same move.
+				if (t.kind === 'rest') {
+					j++;
+					continue;
+				}
+				if (t.kind !== 'work' || (t.machine ?? t.label) !== key) break;
+				total += (t.sets ?? 0) > 1 ? (t.sets as number) : 1;
+				j++;
+			}
+			let n = 0;
+			for (let k = i; k < j; k++) {
+				const t = steps[k]!;
+				const own = (t.sets ?? 0) > 1 ? (t.sets as number) : 1;
+				for (let q = 0; q < own; q++) {
+					n++;
+					slots.push(total > 1 ? { step: t, setNo: n, totalSets: total } : { step: t });
+				}
+			}
+			i = j;
+		}
+		return slots;
+	}
+
 	const countdownFrom = () => countdownSeconds(prefs);
 
-	const workout = $derived(session.prescription?.workout);
+	const workout = $derived(withRestCards(session.prescription?.workout));
 	const expanded = $derived.by(() => {
 		const instances: Instance[] = [];
 		const rows: StepRow[] = [];
 		(workout?.blocks ?? []).forEach((b, bi) => {
 			const reps = Math.max(1, b.repeat ?? 1);
 			for (let r = 0; r < reps; r++) {
-				b.steps.forEach((s, si) => {
-					const sets = s.kind === 'work' && (s.sets ?? 0) > 1 ? (s.sets as number) : 1;
+				expandSteps(b.steps).forEach((slot, si) => {
 					const firstIndex = instances.length;
-					for (let k = 0; k < sets; k++) {
-						instances.push({
-							blockLabel: b.label,
-							rep: reps > 1 ? r + 1 : undefined,
-							totalReps: reps > 1 ? reps : undefined,
-							setNo: sets > 1 ? k + 1 : undefined,
-							totalSets: sets > 1 ? sets : undefined,
-							step: s,
-						});
-					}
-					if (r === 0) {
+					instances.push({
+						blockLabel: b.label,
+						rep: reps > 1 ? r + 1 : undefined,
+						totalReps: reps > 1 ? reps : undefined,
+						setNo: slot.setNo,
+						totalSets: slot.totalSets,
+						step: slot.step,
+					});
+					// The stage list stays work-focused: one row per move (the first
+					// set of a run), rest cards live in the flow itself.
+					if (r === 0 && slot.step.kind !== 'rest' && (!slot.setNo || slot.setNo === 1)) {
 						rows.push({
 							key: `${bi}-${si}`,
-							label: s.label,
-							target: stepTarget(s),
+							label: slot.step.label,
+							target:
+								slot.totalSets && slot.step.reps
+									? `${slot.totalSets} × ${slot.step.reps} reps`
+									: stepTarget(slot.step),
 							index: firstIndex,
 							blockLabel: reps > 1 ? b.label : undefined,
 							repeat: reps > 1 ? reps : undefined,
-							sets,
+							sets: slot.totalSets ?? slot.step.sets,
 						});
 					}
 				});
@@ -96,37 +151,36 @@
 	let countdown = $state(0);
 	let awaitingNext = $state(false);
 	let finished = $state(false);
-	let restLeft = $state(0);
-	let restThenAdvance = $state(false);
 	let showForm = $state(false);
 	let autoNext = $state(prefs.autoAdvance ?? true);
 	let hold = $state(0);
 	let holdTimer: ReturnType<typeof setInterval> | undefined;
 	let confirmFinish = $state(false);
+	let confirmSkipRest = $state(false);
 
 	const current = $derived(instances[idx]);
 	const machine = $derived(findMove(current?.step.machine ?? current?.step.label));
 	const drill = $derived(findDrill(current?.step.label));
 	const timed = $derived(current?.step.durationSec != null);
+	const isRestCard = $derived(current?.step.kind === 'rest');
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
-	const resting = $derived(restLeft > 0);
 	const countdownOn = $derived(countdownEnabledFor(prefs));
 
 	function save() {
 		if (instances.length) setProgress(session.id, { idx, elapsed });
 	}
 
-	/** Go to a step and run its countdown before it starts. */
+	/** Go to a step and run its countdown before it starts. A rest card starts
+	 * straight away: it follows the set the runner just finished, so waiting for
+	 * a countdown would only stall the clock. */
 	function armStep(i: number) {
 		idx = Math.max(0, Math.min(instances.length - 1, i));
 		elapsed = 0;
-		restLeft = 0;
-		restThenAdvance = false;
 		awaitingNext = false;
 		finished = false;
 		running = false;
-		countdown = countdownFrom();
+		countdown = current?.step.kind === 'rest' ? 0 : countdownFrom();
 		// With the countdown off there is nothing to wait for, so a timed step
 		// starts straight away instead of sitting on its Start button.
 		if (countdown <= 0) startStep();
@@ -137,19 +191,15 @@
 		running = current?.step.durationSec != null;
 	}
 
-	/** The current step is done: rest if there is any, otherwise move on. */
+	/** The current step is done: move on. Rest is its own card, so a completed
+	 * step never starts one here. */
 	function complete() {
 		running = false;
-		const rest = current?.step.restSec ?? 0;
-		if (rest > 0 && idx < instances.length - 1) {
-			restLeft = rest;
-			restThenAdvance = true;
-			return;
-		}
 		afterStep();
 	}
 
-	/** After a step (and any rest): auto-advance, or wait for the user. */
+	/** After a step: auto-advance, or wait for the user. A rest card arms by
+	 * itself even with auto next off, since it follows the set just finished. */
 	function afterStep() {
 		if (idx >= instances.length - 1) {
 			finished = true;
@@ -157,15 +207,20 @@
 			save();
 			return;
 		}
-		if (autoNext) armStep(idx + 1);
+		if (autoNext || instances[idx + 1]?.step.kind === 'rest') armStep(idx + 1);
 		else awaitingNext = true;
 	}
 
-	/** Skip the rest and move on now. */
-	function skipRest() {
-		restLeft = 0;
-		restThenAdvance = false;
-		afterStep();
+	/** Leave a rest card early, behind the confirmation. */
+	function skipRestCard() {
+		confirmSkipRest = false;
+		if (idx >= instances.length - 1) {
+			finished = true;
+			running = false;
+			save();
+			return;
+		}
+		armStep(idx + 1);
 	}
 
 	function toggleAuto() {
@@ -196,9 +251,10 @@
 		return () => clearInterval(t);
 	});
 
-	// Timed step countdown -> auto-complete.
+	// Timed step countdown -> auto-complete. A rest card ticks by itself, so it
+	// keeps running even where it was resumed without a Start press.
 	$effect(() => {
-		if (!running || resting || !timed || countdown > 0) return;
+		if ((!running && !isRestCard) || !timed || countdown > 0) return;
 		const step = instances[idx]?.step;
 		if (step?.durationSec == null) return;
 		const t = setInterval(() => {
@@ -208,25 +264,10 @@
 		return () => clearInterval(t);
 	});
 
-	// Rest countdown -> move on when it ends.
-	$effect(() => {
-		if (restLeft > 0) {
-			const t = setInterval(() => {
-				restLeft = Math.max(0, restLeft - 1);
-			}, 1000);
-			return () => clearInterval(t);
-		}
-		if (restThenAdvance) {
-			restThenAdvance = false;
-			afterStep();
-		}
-		return;
-	});
-
-	// Hold to finish (3 seconds). Shown while not running. Works from a pointer
-	// and from the keyboard (hold Space or Enter). A plain activation from
-	// assistive tech arrives as a click with detail 0, so it opens the confirm
-	// instead of requiring a hold; a real pointer tap has detail 1 and is ignored.
+	// Hold to finish (3 seconds). Works from a pointer and from the keyboard
+	// (hold Space or Enter). A plain activation from assistive tech arrives as a
+	// click with detail 0, so it opens the confirm instead of requiring a hold; a
+	// real pointer tap has detail 1 and is ignored.
 	function startHold() {
 		if (holdTimer || finished) return;
 		holdTimer = setInterval(() => {
@@ -362,20 +403,6 @@
 				<p class="mt-1 text-sm text-steel">Log how it went, or hold the button below.</p>
 				<button type="button" onclick={onFinish} class="mt-4 w-full rounded-md bg-ink px-5 py-3 text-sm font-medium text-paper hover:opacity-90">Log it</button>
 			</div>
-		{:else if resting}
-			<div class="mt-6 rounded-xl border border-hairline bg-sunken p-6 text-center">
-				<p class="text-xs uppercase tracking-widest text-steel">Rest, next up</p>
-				<p class="tabular mt-1 text-4xl font-medium">{formatClock(restLeft)}</p>
-				{#if instances[idx + 1]}
-					<p class="mt-2 text-sm text-steel">
-						Next: {instances[idx + 1]!.step.label}{instances[idx + 1]!.setNo ? ` (set ${instances[idx + 1]!.setNo}/${instances[idx + 1]!.totalSets})` : ''}
-					</p>
-				{/if}
-				<div class="mt-4 flex justify-center gap-2">
-					<button type="button" onclick={() => (restLeft = restLeft + 30)} class="rounded-md border border-hairline px-4 py-2 text-sm">+30s</button>
-					<button type="button" onclick={skipRest} class="rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
-				</div>
-			</div>
 		{:else if awaitingNext}
 			<div class="mt-6 rounded-xl border border-hairline bg-sunken p-6 text-center">
 				<p class="text-xs uppercase tracking-widest text-ok-ink">Step complete</p>
@@ -390,6 +417,25 @@
 						Finish
 					</button>
 				{/if}
+			</div>
+		{:else if isRestCard}
+			<div class="mt-6 rounded-xl border border-hairline bg-sunken p-6 text-center">
+				<p class="text-xs uppercase tracking-widest text-steel">
+					Rest{current.rep ? ` · round ${current.rep}/${current.totalReps}` : ''}
+				</p>
+				<p class="tabular mt-1 text-4xl font-medium">{formatClock(remaining ?? 0)}</p>
+				{#if instances[idx + 1]}
+					<p class="mt-2 text-sm text-steel">
+						Next: {instances[idx + 1]!.step.label}{instances[idx + 1]!.setNo ? ` (set ${instances[idx + 1]!.setNo}/${instances[idx + 1]!.totalSets})` : ''}
+					</p>
+				{/if}
+				{#if current.step.note}<p class="mt-2 text-sm text-steel">{current.step.note}</p>{/if}
+				<div class="mt-4 flex justify-center gap-2">
+					<!-- Elapsed may go negative here on purpose: it stretches this rest
+					     card's remaining time, even when tapped at its start. -->
+					<button type="button" onclick={() => (elapsed = elapsed - 30)} class="rounded-md border border-hairline px-4 py-2 text-sm">+30s</button>
+					<button type="button" onclick={() => (confirmSkipRest = true)} class="rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
+				</div>
 			</div>
 		{:else if current}
 			<div class="relative mt-6 overflow-hidden rounded-xl border border-hairline bg-paper p-4">
@@ -447,24 +493,20 @@
 					{/if}
 				</div>
 				<div class="mt-2 flex gap-2">
-					{#if running}
-						<button type="button" onclick={() => { restLeft = current?.step.restSec ?? 90; restThenAdvance = true; running = false; }} class="flex-1 rounded-md border border-hairline px-4 py-2 text-sm text-steel hover:text-ink">Rest now</button>
-					{:else}
-						<button
-							type="button"
-							onpointerdown={startHold}
-							onpointerup={cancelHold}
-							onpointerleave={cancelHold}
-							onpointercancel={cancelHold}
-							onkeydown={holdKeyDown}
-							onkeyup={holdKeyUp}
-							onclick={(e) => { if (e.detail === 0) confirmFinish = true; }}
-							class="relative flex-1 overflow-hidden rounded-md border border-hairline-strong px-4 py-2 text-sm text-steel hover:border-ok hover:text-ok-ink"
-						>
-							<span class="absolute inset-y-0 left-0 bg-ok/25 transition-[width] duration-100 ease-linear" style="width: {hold}%" aria-hidden="true"></span>
-							<span class="relative">{hold > 0 ? 'Keep holding…' : 'Hold to finish and log'}</span>
-						</button>
-					{/if}
+					<button
+						type="button"
+						onpointerdown={startHold}
+						onpointerup={cancelHold}
+						onpointerleave={cancelHold}
+						onpointercancel={cancelHold}
+						onkeydown={holdKeyDown}
+						onkeyup={holdKeyUp}
+						onclick={(e) => { if (e.detail === 0) confirmFinish = true; }}
+						class="relative flex-1 overflow-hidden rounded-md border border-hairline-strong px-4 py-2 text-sm text-steel hover:border-ok hover:text-ok-ink"
+					>
+						<span class="absolute inset-y-0 left-0 bg-ok/25 transition-[width] duration-100 ease-linear" style="width: {hold}%" aria-hidden="true"></span>
+						<span class="relative">{hold > 0 ? 'Keep holding…' : 'Hold to finish and log'}</span>
+					</button>
 					{#if machine || drill}
 						{@const fname = machine?.name ?? drill?.name ?? ''}
 						{@const mm = mediaForMove(fname)}
@@ -512,7 +554,7 @@
 			</ul>
 		</details>
 		<p class="mt-4 text-xs text-steel">
-			With the countdown on, each step waits a few seconds before it starts; with it off, it starts straight away. With auto next on, steps move on by themselves; with it off, you tap Go to next. Your place is saved, so you can leave and come back. Form cues are guidance, not medical advice.
+			With the countdown on, each step waits a few seconds before it starts; with it off, it starts straight away. Rest cards run by themselves: take the full rest, add 30 seconds, or skip one if you have to. With auto next on, steps move on by themselves; with it off, you tap Go to next. Your place is saved, so you can leave and come back. Form cues are guidance, not medical advice.
 		</p>
 	</div>
 
@@ -526,5 +568,15 @@
 			onFinish();
 		}}
 		onClose={() => (confirmFinish = false)}
+	/>
+
+	<ConfirmSheet
+		open={confirmSkipRest}
+		title="Skip this rest?"
+		body="Rest is where a large part of the strength and growth stimulus sits. Cutting it short trades that away, since the next set is only as good as the break before it."
+		confirmLabel="Skip rest"
+		cancelLabel="Keep resting"
+		onConfirm={skipRestCard}
+		onClose={() => (confirmSkipRest = false)}
 	/>
 </div>
