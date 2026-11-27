@@ -298,28 +298,99 @@ export interface SessionDrills {
 /**
  * The steps a detail list shows: rest cards are left out, since they live in
  * the player's flow, and consecutive sets of the same move merge into one, so
- * a set-by-set sequence reads one row per move again. A step that already
- * carries its own set count (sessions stored before rest became explicit)
- * passes through untouched.
+ * a set-by-set sequence reads one row per move again. A run is gathered across
+ * any rest cards between the sets, so three sets merge into one row even with a
+ * rest between each pair. A step that already carries its own set count
+ * (sessions stored before rest became explicit) passes through untouched.
  */
 export function collapseRests(steps: ClientStep[]): ClientStep[] {
 	const out: ClientStep[] = [];
-	for (const s of steps) {
-		if (s.kind === 'rest') continue;
-		const prev = out[out.length - 1];
-		if (
-			s.kind === 'work' &&
-			(s.sets ?? 0) <= 1 &&
-			prev?.kind === 'work' &&
-			(prev.sets ?? 0) <= 1 &&
-			(prev.machine ?? prev.label) === (s.machine ?? s.label)
-		) {
-			out[out.length - 1] = { ...prev, sets: (prev.sets ?? 1) + 1 };
+	let i = 0;
+	while (i < steps.length) {
+		const s = steps[i]!;
+		if (s.kind === 'rest') {
+			i++;
+			continue;
+		}
+		if (s.kind === 'work' && (s.sets ?? 0) <= 1) {
+			const key = s.machine ?? s.label;
+			let count = 0;
+			let j = i;
+			while (j < steps.length) {
+				const t = steps[j]!;
+				if (t.kind === 'rest') {
+					j++;
+					continue;
+				}
+				if (t.kind !== 'work' || (t.machine ?? t.label) !== key || (t.sets ?? 0) > 1) break;
+				count++;
+				j++;
+			}
+			out.push(count > 1 ? { ...s, sets: count } : s);
+			i = j;
 		} else {
 			out.push(s);
+			i++;
 		}
 	}
 	return out;
+}
+
+/** One playable slot: a step, and when it is one set of several, its number. */
+export interface StepSlot {
+	step: ClientStep;
+	setNo?: number;
+	totalSets?: number;
+}
+
+/**
+ * Expand a block's steps into playable slots. Consecutive work steps for the
+ * same move form one run, with the rest cards between them left inside it, so
+ * each set knows its number and the total; a single work step that carries its
+ * own set count (sessions stored before rest became explicit) multiplies the
+ * same way. A rest card is its own slot and never takes a set number, so the
+ * work sets read 1/3, 2/3, 3/3 and a rest announces the right next set.
+ */
+export function expandSteps(steps: ClientStep[]): StepSlot[] {
+	const slots: StepSlot[] = [];
+	let i = 0;
+	while (i < steps.length) {
+		const s = steps[i]!;
+		if (s.kind !== 'work') {
+			slots.push({ step: s });
+			i++;
+			continue;
+		}
+		const key = s.machine ?? s.label;
+		let j = i;
+		let total = 0;
+		while (j < steps.length) {
+			const t = steps[j]!;
+			// A rest card sits inside a run: the sets either side are the same move.
+			if (t.kind === 'rest') {
+				j++;
+				continue;
+			}
+			if (t.kind !== 'work' || (t.machine ?? t.label) !== key) break;
+			total += (t.sets ?? 0) > 1 ? (t.sets as number) : 1;
+			j++;
+		}
+		let n = 0;
+		for (let k = i; k < j; k++) {
+			const t = steps[k]!;
+			if (t.kind !== 'work') {
+				slots.push({ step: t });
+				continue;
+			}
+			const own = (t.sets ?? 0) > 1 ? (t.sets as number) : 1;
+			for (let q = 0; q < own; q++) {
+				n++;
+				slots.push(total > 1 ? { step: t, setNo: n, totalSets: total } : { step: t });
+			}
+		}
+		i = j;
+	}
+	return slots;
 }
 
 /**

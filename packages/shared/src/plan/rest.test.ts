@@ -128,4 +128,45 @@ describe('withRestCards', () => {
 		expect(withRestCards(undefined)).toBeUndefined();
 		expect(withRestCards(null)).toBeUndefined();
 	});
+
+	it('keeps a transition rest before a later block and drops only the true last set', () => {
+		const w: StructuredWorkout = {
+			blocks: [
+				{
+					repeat: 1,
+					label: 'Circuit',
+					steps: [{ kind: 'work', label: 'Leg press', machine: 'Leg press', sets: 3, reps: 10, restSec: 75 }],
+				},
+				{
+					repeat: 1,
+					label: 'Finisher',
+					steps: [{ kind: 'work', label: 'Plank', machine: 'Plank', sets: 2, reps: 1, restSec: 45 }],
+				},
+			],
+		};
+		const blocks = withRestCards(w)!.blocks;
+		// Block one's final set is a transition into the next block, so it keeps
+		// its rest. Only the last set of the whole workout drops it.
+		expect(blocks[0]!.steps.map((s) => s.kind)).toEqual(['work', 'rest', 'work', 'rest', 'work', 'rest']);
+		expect(blocks[1]!.steps.map((s) => s.kind)).toEqual(['work', 'rest', 'work']);
+		expect(blocks[0]!.steps.filter((s) => s.kind === 'rest').every((s) => s.durationSec === 75)).toBe(true);
+		expect(blocks[1]!.steps.filter((s) => s.kind === 'rest').every((s) => s.durationSec === 45)).toBe(true);
+	});
+
+	it('inserts no rest before a cool-down step that shares the block', () => {
+		const w: StructuredWorkout = {
+			blocks: [
+				{
+					repeat: 1,
+					steps: [
+						{ kind: 'work', label: 'Leg press', machine: 'Leg press', sets: 2, reps: 10, restSec: 75 },
+						{ kind: 'cooldown', label: 'Calf stretch', durationSec: 40 },
+					],
+				},
+			],
+		};
+		const steps = withRestCards(w)!.blocks[0]!.steps;
+		// Work, rest, work, then straight into the cool-down.
+		expect(steps.map((s) => s.kind)).toEqual(['work', 'rest', 'work', 'cooldown']);
+	});
 });

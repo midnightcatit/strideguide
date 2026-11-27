@@ -55,29 +55,34 @@ export const PLYO_REST_CARD_NOTE = 'Full recovery keeps the jumps springy. Take 
 /**
  * Turn a workout stored with implicit rest, where a work step carries `sets`
  * and `restSec`, into one with explicit rest cards: one rest step after each
- * set, none after the final set of the final move, since the cool-down that
- * follows is rest-free by design. A workout that already carries explicit rest
- * cards passes through unchanged, so callers can run it on every session.
+ * set, none after the final set of the final move in playback order, since the
+ * cool-down that follows is rest-free by design. A rest is kept before a later
+ * block that still has work. A workout that already carries explicit rest cards
+ * passes through unchanged, so callers can run it on every session.
  */
 export function withRestCards(workout?: StructuredWorkout | null): StructuredWorkout | undefined {
 	if (!workout) return undefined;
 	const implicit = (s: WorkoutStep) => s.kind === 'work' && ((s.sets ?? 0) > 1 || (s.restSec ?? 0) > 0);
 	if (!workout.blocks.some((b) => b.steps.some(implicit))) return workout;
+	// The last work step in playback order takes no rest card: nothing follows it
+	// but the finish, or a rest-free cool-down. Read across every block, so the
+	// rest before a following block survives and only the true end drops it.
+	let lastWork: WorkoutStep | undefined;
+	for (const b of workout.blocks) for (const s of b.steps) if (s.kind === 'work') lastWork = s;
 	const blocks = workout.blocks.map((b) => {
 		if (!b.steps.some(implicit)) return b;
 		const steps: WorkoutStep[] = [];
-		b.steps.forEach((s, si) => {
+		b.steps.forEach((s) => {
 			if (!implicit(s)) {
 				steps.push(s);
 				return;
 			}
 			const sets = Math.max(1, s.sets ?? 1);
 			const rest = s.restSec ?? 0;
-			const lastMove = si === b.steps.length - 1;
 			for (let k = 0; k < sets; k++) {
 				steps.push({ ...s, sets: 1, restSec: undefined });
 				const finalSet = k === sets - 1;
-				if (rest > 0 && !(finalSet && lastMove)) {
+				if (rest > 0 && !(finalSet && s === lastWork)) {
 					steps.push({ kind: 'rest', label: 'Rest', durationSec: rest, note: REST_CARD_NOTE });
 				}
 			}

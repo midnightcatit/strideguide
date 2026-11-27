@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { findDrill, findMove, mediaForMove, withRestCards } from '@strideguide/shared/plan';
 	import { onMount, onDestroy } from 'svelte';
-	import type { ClientSession, ClientStep } from '$lib/plan';
+	import { expandSteps, type ClientSession, type ClientStep } from '$lib/plan';
 	import { fmtPaceBand, fmtStepDistance, prefs, sessionLabel, setAutoAdvance, setCountdownEnabled } from '$lib/prefs.svelte';
 	import { modal } from '$lib/actions';
 	import FormSheet from '$lib/components/FormSheet.svelte';
@@ -47,62 +47,10 @@
 		sets?: number;
 	}
 
-	/** One playable slot: a step, and when it is one set of several, its number. */
-	interface Slot {
-		step: ClientStep;
-		setNo?: number;
-		totalSets?: number;
-	}
-
-	/**
-	 * Expand a block's steps into playable slots. Consecutive work steps for the
-	 * same move form one run, with the rest cards between them left inside it, so
-	 * each set knows its number and the total; a single work step that carries
-	 * its own set count (sessions stored before rest became explicit) multiplies
-	 * the same way. Rest cards and everything else pass through as their own
-	 * slot, in order.
-	 */
-	function expandSteps(steps: ClientStep[]): Slot[] {
-		const slots: Slot[] = [];
-		let i = 0;
-		while (i < steps.length) {
-			const s = steps[i]!;
-			if (s.kind !== 'work') {
-				slots.push({ step: s });
-				i++;
-				continue;
-			}
-			const key = s.machine ?? s.label;
-			let j = i;
-			let total = 0;
-			while (j < steps.length) {
-				const t = steps[j]!;
-				// A rest card sits inside a run: the sets either side are the same move.
-				if (t.kind === 'rest') {
-					j++;
-					continue;
-				}
-				if (t.kind !== 'work' || (t.machine ?? t.label) !== key) break;
-				total += (t.sets ?? 0) > 1 ? (t.sets as number) : 1;
-				j++;
-			}
-			let n = 0;
-			for (let k = i; k < j; k++) {
-				const t = steps[k]!;
-				const own = (t.sets ?? 0) > 1 ? (t.sets as number) : 1;
-				for (let q = 0; q < own; q++) {
-					n++;
-					slots.push(total > 1 ? { step: t, setNo: n, totalSets: total } : { step: t });
-				}
-			}
-			i = j;
-		}
-		return slots;
-	}
-
 	const countdownFrom = () => countdownSeconds(prefs);
 
-	const workout = $derived(withRestCards(session.prescription?.workout));
+	const rawWorkout = $derived(session.prescription?.workout);
+	const workout = $derived(withRestCards(rawWorkout));
 	const expanded = $derived.by(() => {
 		const instances: Instance[] = [];
 		const rows: StepRow[] = [];
@@ -157,6 +105,8 @@
 	let holdTimer: ReturnType<typeof setInterval> | undefined;
 	let confirmFinish = $state(false);
 	let confirmSkipRest = $state(false);
+	/** The rest card the skip confirmation belongs to, or -1 when it is closed. */
+	let skipRestIdx = $state(-1);
 
 	const current = $derived(instances[idx]);
 	const machine = $derived(findMove(current?.step.machine ?? current?.step.label));
@@ -168,7 +118,7 @@
 	const countdownOn = $derived(countdownEnabledFor(prefs));
 
 	function save() {
-		if (instances.length) setProgress(session.id, { idx, elapsed });
+		if (instances.length) setProgress(session.id, { idx, elapsed, steps: instances.length });
 	}
 
 	/** Go to a step and run its countdown before it starts. A rest card starts
@@ -180,6 +130,10 @@
 		awaitingNext = false;
 		finished = false;
 		running = false;
+		// Any step change ends a pending skip: it belonged to the rest that has
+		// now passed.
+		confirmSkipRest = false;
+		skipRestIdx = -1;
 		countdown = current?.step.kind === 'rest' ? 0 : countdownFrom();
 		// With the countdown off there is nothing to wait for, so a timed step
 		// starts straight away instead of sitting on its Start button.
@@ -214,6 +168,10 @@
 	/** Leave a rest card early, behind the confirmation. */
 	function skipRestCard() {
 		confirmSkipRest = false;
+		// The rest may have run out while the confirmation was open. Then the
+		// player has moved on, and skipping must not touch the step it now shows.
+		if (idx !== skipRestIdx) return;
+		skipRestIdx = -1;
 		if (idx >= instances.length - 1) {
 			finished = true;
 			running = false;
@@ -315,8 +273,15 @@
 		markStarted(session.id);
 		const saved = getProgress(session.id);
 		if (saved && saved.idx > 0 && saved.idx < (instances.length || 1)) {
-			idx = saved.idx;
-			elapsed = saved.elapsed ?? 0;
+			// A saved place is only trusted when the workout still has the same
+			// number of steps. A save from before the rest cards existed has no
+			// count, so it is trusted only when this session gained no rest cards,
+			// which is the case where its layout did not change.
+			const sameLayout = saved.steps != null ? saved.steps === instances.length : workout === rawWorkout;
+			if (sameLayout) {
+				idx = saved.idx;
+				elapsed = saved.elapsed ?? 0;
+			}
 		}
 		countdown = 0;
 	});
@@ -433,8 +398,8 @@
 				<div class="mt-4 flex justify-center gap-2">
 					<!-- Elapsed may go negative here on purpose: it stretches this rest
 					     card's remaining time, even when tapped at its start. -->
-					<button type="button" onclick={() => (elapsed = elapsed - 30)} class="rounded-md border border-hairline px-4 py-2 text-sm">+30s</button>
-					<button type="button" onclick={() => (confirmSkipRest = true)} class="rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
+					<button type="button" onclick={() => (elapsed = elapsed - 30)} class="tap-target rounded-md border border-hairline px-4 py-2 text-sm">+30s</button>
+					<button type="button" onclick={() => { skipRestIdx = idx; confirmSkipRest = true; }} class="tap-target rounded-md bg-ink px-5 py-2 text-sm font-medium text-paper">Skip rest</button>
 				</div>
 			</div>
 		{:else if current}

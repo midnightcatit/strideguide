@@ -2069,6 +2069,7 @@ function strengthSession(
 		: focus
 			? `Today leans on ${focus.label}. The week spreads strength across the body, so each strength day covers a different area.`
 			: undefined;
+	const workout = strengthWorkout(circuit, reps, setCount, level, phase);
 	return {
 		day,
 		slot,
@@ -2082,9 +2083,11 @@ function strengthSession(
 			targetRpe: [7, 8],
 			notes: copy.load,
 			why,
-			workout: strengthWorkout(circuit, reps, setCount, level, phase),
+			workout,
 		},
-		durationMin: input.baseline.sessionMinutes ?? 45,
+		// The reserved time is the session's real length, work plus rest, so the
+		// schedule and the length shown both account for the rest cards.
+		durationMin: workout.estimatedDurationMin ?? input.baseline.sessionMinutes ?? 45,
 	};
 }
 

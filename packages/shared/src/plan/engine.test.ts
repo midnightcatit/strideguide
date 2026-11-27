@@ -389,7 +389,7 @@ describe('generatePlan (preferences)', () => {
 			// About four seconds a rep plus setup per set, so the estimate covers
 			// everything the session asks for.
 			const workSec = workSteps.reduce((t, s) => t + Math.round((s.reps ?? 0) * 4 + 10), 0);
-			return { estimate: w.estimatedDurationMin ?? 0, restSec, workSec };
+			return { estimate: w.estimatedDurationMin ?? 0, restSec, workSec, reserved: strength.durationMin };
 		};
 		const beginner = estimate('beginner');
 		const advanced = estimate('advanced');
@@ -398,6 +398,10 @@ describe('generatePlan (preferences)', () => {
 		// More sets and longer rests take longer: the session is never shrunk to
 		// fit a time budget.
 		expect(advanced.estimate).toBeGreaterThan(beginner.estimate);
+		// The time the plan reserves is the real length, so the schedule and the
+		// length shown both count the rest.
+		expect(beginner.reserved).toBe(beginner.estimate);
+		expect(advanced.reserved).toBe(advanced.estimate);
 	});
 
 	it('prefers hill reps on hilly terrain', () => {
