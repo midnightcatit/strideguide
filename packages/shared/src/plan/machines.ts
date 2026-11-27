@@ -28,6 +28,8 @@ export interface MachineExercise {
 	pattern: MovePattern;
 	/** Training tool, when the move belongs to one (dumbbells, barbell, kettlebell, bands, home, cable, machine). */
 	equipment?: string;
+	/** Whether the circuit can prescribe this move only after the base phase. */
+	requiresLoaded?: boolean;
 	/** Difficulty rung, used by the bodyweight progression ladder. */
 	level?: 'beginner' | 'intermediate' | 'advanced';
 	/** One plain sentence on why this matters for running. */
