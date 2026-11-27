@@ -6,6 +6,7 @@ export * from './dates';
 
 // Runner-built custom workouts
 export * from './workouts';
+export * from './workout-composer';
 
 // The admin system map's data model
 export * from './system-graph';
