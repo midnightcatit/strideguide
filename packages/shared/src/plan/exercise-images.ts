@@ -231,5 +231,7 @@ export const EXERCISE_IMAGES_MISSING: string[] = [
 
 /** The image for an exercise slug, or undefined when it has none. */
 export function exerciseImage(slug?: string): ExerciseImage | undefined {
-	return slug ? EXERCISE_IMAGES[slug] : undefined;
+	return slug && Object.prototype.hasOwnProperty.call(EXERCISE_IMAGES, slug)
+		? EXERCISE_IMAGES[slug]
+		: undefined;
 }
