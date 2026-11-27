@@ -13,7 +13,7 @@
 	import { milesToKm, type ScheduleBlock } from '@strideguide/shared/units';
 	import { api, type GeneratePlanInput, type PreviewSessionInput } from '$lib/api';
 	import { reportClientError } from '$lib/clientErrors';
-	import { anchor, modal } from '$lib/actions';
+	import { anchor, focusTrap, modal } from '$lib/actions';
 	import { dragToDay } from '$lib/actions';
 	import { overlayHistory } from '$lib/overlayHistory.svelte';
 	import { prefs, distanceUnit, fmtPace, fmtPaceBand, setEquipment, setEquipmentItems, setFavoriteMachines, setFavoriteWorkouts, setGymPreset, setPersonal, setSchedule, setUnits, setVitals } from '$lib/prefs.svelte';
@@ -127,7 +127,6 @@
 	// The preview never opens the full session detail from here; a tap explains
 	// the category and the session page keeps the drill-in.
 	let previewInfo = $state<{ id: string; anchor: HTMLElement } | null>(null);
-	let previewInfoCard = $state<HTMLElement | null>(null);
 
 	// The preview keeps WorkoutPicker and the category popover as overlays here,
 	// so the in-progress onboarding answers stay put. Back closes the top one
@@ -648,20 +647,20 @@
 		week.sessions = week.sessions.filter((x) => x.id !== s.id);
 	}
 	// The tile's popover: a tap explains the category, never the workout itself.
+	// Focus the tile first, so the focus trap the card runs hands focus back here
+	// when it closes.
 	function openPreviewInfo(s: ClientSession, el: HTMLElement) {
+		el.focus();
 		previewInfo = { id: s.id, anchor: el };
-	}
-	function closePreviewInfo() {
-		previewInfo?.anchor.focus();
-		previewInfo = null;
 	}
 	// The session the open popover points at, so a move or a removal keeps the
 	// card honest. It is null when the session is gone.
 	const previewInfoSession = $derived(
 		previewInfo ? (draft?.weeks[0]?.sessions ?? []).find((s) => s.id === previewInfo!.id) ?? null : null,
 	);
-	// One popover at a time: dismiss on a tap outside, Escape, or Back. Escape
-	// and the close button hand focus back to the tile, an outside tap does not.
+	// One popover at a time. A tap outside or Escape closes it, and Back does too
+	// through the overlay history. The card is anchored, not full screen, so the
+	// page around it stays live; only the keyboard is held inside it.
 	$effect(() => {
 		if (!previewInfo) return;
 		const onPointerDown = (e: PointerEvent) => {
@@ -671,7 +670,7 @@
 			previewInfo = null;
 		};
 		const onKeydown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') closePreviewInfo();
+			if (e.key === 'Escape') previewInfo = null;
 		};
 		document.addEventListener('pointerdown', onPointerDown);
 		document.addEventListener('keydown', onKeydown);
@@ -679,9 +678,6 @@
 			document.removeEventListener('pointerdown', onPointerDown);
 			document.removeEventListener('keydown', onKeydown);
 		};
-	});
-	$effect(() => {
-		if (previewInfo && previewInfoCard) previewInfoCard.focus();
 	});
 	// The plan stores a session's day as an offset from the week's first day, not
 	// a weekday. Derive it from week one's own start date, so an added workout
@@ -1105,17 +1101,18 @@
 			{#if previewInfo && previewInfoSession}
 				{@const category = previewCategory(previewInfoSession)}
 				<div
-					bind:this={previewInfoCard}
 					role="dialog"
 					aria-labelledby="preview-info-title"
 					tabindex="-1"
 					data-preview-info-card
+					data-modal-panel
+					use:focusTrap
 					use:anchor={{ anchor: previewInfo.anchor, width: 260 }}
 					class="fixed z-[60] w-[260px] rounded-lg border border-hairline bg-paper p-3 text-left shadow-lg outline-none"
 				>
 					<div class="flex items-start justify-between gap-2">
 						<strong id="preview-info-title" class="text-sm font-semibold">{PREVIEW_CATEGORY_LABEL[category]}</strong>
-						<button type="button" aria-label="Close" onclick={closePreviewInfo} class="-mr-1 -mt-1 flex h-6 w-6 items-center justify-center text-steel hover:text-danger">✕</button>
+						<button type="button" aria-label="Close" onclick={() => (previewInfo = null)} class="tap-target -mr-1 -mt-1 shrink-0 text-steel hover:text-danger">✕</button>
 					</div>
 					<p class="mt-1 text-xs leading-relaxed text-steel">{PREVIEW_CATEGORY_BLURB[category]}</p>
 				</div>
