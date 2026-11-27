@@ -638,7 +638,8 @@ describe('generatePlan (preferences)', () => {
 		});
 		const mobility = p.weeks.flatMap((w) => w.sessions).filter((s) => s.type === 'mobility');
 		expect(mobility.length).toBeGreaterThan(0);
-		for (const s of mobility) expect(s.title).toBe('Mobility and stretching, 12 minutes');
+		// The bike points the anchor at the hips, so the title names the area.
+		for (const s of mobility) expect(s.title).toBe('Hips and glutes, 5 minutes');
 		const cross = p.weeks[0]!.sessions.find((s) => s.type === 'cross-train');
 		expect(cross?.title).toBe('Bike');
 	});
@@ -665,7 +666,7 @@ describe('generatePlan (preferences)', () => {
 		expect(p.weeks.flatMap((w) => w.sessions).some((s) => s.type === 'mobility')).toBe(false);
 	});
 
-	it('gives a longer mobility routine when the flexibility goal is higher', () => {
+	it('gives more mobility sessions when the flexibility goal is higher', () => {
 		const growing = generatePlan({
 			...base,
 			availableDays: [0, 2, 4],
@@ -676,10 +677,10 @@ describe('generatePlan (preferences)', () => {
 			availableDays: [0, 2, 4],
 			baseline: { experience: 'intermediate', flexibility: { current: 3, goal: 4 } },
 		});
+		// The session's dose is fixed (two holds, two rounds each), so a bigger gap
+		// earns more sessions rather than a longer one.
 		const count = (p: typeof growing) =>
-			p.weeks[0]!.sessions.find((s) => s.type === 'mobility')!.prescription.workout!.blocks.flatMap(
-				(b) => b.steps,
-			).length;
+			p.weeks[0]!.sessions.filter((s) => s.type === 'mobility').length;
 		expect(count(growing)).toBeGreaterThan(count(holding));
 	});
 
@@ -692,7 +693,12 @@ describe('generatePlan (preferences)', () => {
 		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
 		expect(mobility).toHaveLength(7);
 		expect(new Set(mobility.map((s) => s.day)).size).toBe(7);
-		for (const s of mobility) expect(s.title).toBe('Mobility and stretching, 20 minutes');
+		// Six sessions anchor on the general routine and one swaps to a common
+		// runner area, since the runner named no area to take the second slot.
+		const general = mobility.filter((s) => s.title === 'Mobility and stretching, 5 minutes');
+		const swapped = mobility.filter((s) => s.title === 'Hips and glutes, 5 minutes');
+		expect(general).toHaveLength(6);
+		expect(swapped).toHaveLength(1);
 	});
 
 	it('keeps a small flexibility gap light', () => {
@@ -703,32 +709,41 @@ describe('generatePlan (preferences)', () => {
 		});
 		const mobility = p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
 		expect(mobility).toHaveLength(1);
-		expect(mobility[0]!.title).toBe('Mobility and stretching, 8 minutes');
+		expect(mobility[0]!.title).toBe('Mobility and stretching, 5 minutes');
+		// Two dynamic drills, then the two anchor holds and the roaming stretch,
+		// each hold run twice.
 		expect(
 			mobility[0]!.prescription.workout!.blocks.flatMap((b) => b.steps),
-		).toHaveLength(6);
+		).toHaveLength(8);
 	});
 
 	it('aims the stretches at what the runner told us', () => {
 		const mobilityFor = (baseline: Parameters<typeof generatePlan>[0]['baseline']) => {
 			const p = generatePlan({ ...base, availableDays: [0, 2, 4], baseline });
-			return p.weeks[0]!.sessions.find((s) => s.type === 'mobility')!;
+			return p.weeks[0]!.sessions.filter((s) => s.type === 'mobility');
 		};
-		const labels = (s: ReturnType<typeof mobilityFor>) =>
-			s.prescription.workout!.blocks.flatMap((b) => b.steps).map((st) => st.label);
+		const holds = (sessions: ReturnType<typeof mobilityFor>) =>
+			sessions.flatMap((s) =>
+				s.prescription.workout!.blocks.flatMap((b) => b.steps.map((st) => st.label)),
+			);
 		const flex = { current: 1, goal: 5 };
 		const plain = mobilityFor({ experience: 'intermediate', flexibility: flex });
 		const knee = mobilityFor({ experience: 'intermediate', flexibility: flex, niggles: 'sore knee' });
 		const hilly = mobilityFor({ experience: 'intermediate', flexibility: flex, terrain: 'hilly' });
-		expect(plain.title).toBe('Mobility and stretching, 20 minutes');
-		expect(knee.title).toBe('Hips and glutes, 20 minutes');
-		expect(hilly.title).toBe('Hamstrings and calves, 20 minutes');
-		// Two dynamic drills plus eight holds run twice: a real step up from the
-		// short routine, and the aimed routines differ from each other.
-		expect(labels(plain)).toHaveLength(18);
-		expect(labels(knee)).not.toEqual(labels(plain));
-		expect(labels(hilly)).not.toEqual(labels(plain));
-		expect(labels(hilly)).not.toEqual(labels(knee));
+		// The voted area anchors most of the week; one session swaps to the
+		// runner-up area, which for a single vote is the next common runner area.
+		const anchored = (sessions: ReturnType<typeof mobilityFor>, area: string) =>
+			sessions.filter((s) => s.title.startsWith(area)).length;
+		expect(anchored(plain, 'Mobility and stretching')).toBe(6);
+		expect(anchored(plain, 'Hips and glutes')).toBe(1);
+		expect(anchored(knee, 'Hips and glutes')).toBe(6);
+		expect(anchored(knee, 'Hamstrings and calves')).toBe(1);
+		expect(anchored(hilly, 'Hamstrings and calves')).toBe(6);
+		expect(anchored(hilly, 'Hips and glutes')).toBe(1);
+		// The anchor holds themselves differ between the areas.
+		expect(holds(knee)).not.toEqual(holds(plain));
+		expect(holds(hilly)).not.toEqual(holds(plain));
+		expect(holds(hilly)).not.toEqual(holds(knee));
 	});
 });
 
@@ -1093,9 +1108,9 @@ describe('favorites', () => {
 			...base,
 			baseline: { experience: 'intermediate' as const, flexibility: { current: 2, goal: 4 } },
 		};
-		// The gap alone earns the 12 minute routine.
-		expect(mobilityTitle(flexible)).toBe('Mobility and stretching, 12 minutes');
-		// A favorite mobility workout is used instead.
+		// The gap alone earns the composed routine around the general anchor.
+		expect(mobilityTitle(flexible)).toBe('Mobility and stretching, 5 minutes');
+		// A favorite mobility workout takes the first session of the week.
 		expect(mobilityTitle({ ...flexible, favoriteWorkouts: ['mobility-build-general'] })).toBe(
 			'Mobility and stretching, 20 minutes',
 		);
@@ -1109,7 +1124,7 @@ describe('favorites', () => {
 		})
 			.weeks.flatMap((w) => w.sessions)
 			.find((s) => s.type === 'mobility')!.title;
-		expect(title).toBe('Mobility and stretching, 12 minutes');
+		expect(title).toBe('Mobility and stretching, 5 minutes');
 	});
 
 	it('builds a favorite strength workout when the runner has one', () => {

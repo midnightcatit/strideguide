@@ -119,7 +119,7 @@ export const ACTIVITY_FOCUS: { keyword: string; focus: StretchFocus }[] = [
  * runner has clearly stacked another signal against it. Values are added per
  * focus and the highest wins, with ties broken by STRETCH_FOCUSES order.
  */
-export function mobilityFocus(baseline: Baseline): StretchFocus {
+function mobilityVotes(baseline: Baseline): Map<StretchFocus, number> {
 	const votes = new Map<StretchFocus, number>();
 	const add = (focus: StretchFocus, weight: number) =>
 		votes.set(focus, (votes.get(focus) ?? 0) + weight);
@@ -138,6 +138,16 @@ export function mobilityFocus(baseline: Baseline): StretchFocus {
 		.toLowerCase();
 	for (const { keyword, focus } of ACTIVITY_FOCUS) if (activities.includes(keyword)) add(focus, 1);
 
+	return votes;
+}
+
+/**
+ * Pick the area to work on from the runner's answers: the focus with the most
+ * votes, ties broken by STRETCH_FOCUSES order, and general when nothing was
+ * named.
+ */
+export function mobilityFocus(baseline: Baseline): StretchFocus {
+	const votes = mobilityVotes(baseline);
 	let best: StretchFocus = 'general';
 	let bestScore = 0;
 	for (const focus of STRETCH_FOCUSES) {
@@ -162,8 +172,9 @@ export interface MobilityPrescription {
 /**
  * The dedicated mobility a runner earns from the flexibility gap: none when the
  * goal is already met, one short session for a small gap, up to a session every
- * day for the biggest. A gap of three or more also aims the routine at the area
- * chosen from the runner's answers; a smaller gap keeps the general routine.
+ * day for the biggest. The focus comes from the runner's answers whenever they
+ * named an area, at any gap, because the dose pays where they are tight (17b);
+ * with nothing named it stays general.
  */
 export function mobilityPrescription(
 	gap: number,
@@ -172,8 +183,7 @@ export function mobilityPrescription(
 	if (gap <= 0) return undefined;
 	const level = MOBILITY_LEVELS.find((l) => gap >= l.minGap);
 	if (!level) return undefined;
-	const focused = gap >= 3;
-	const focus = focused ? mobilityFocus(baseline) : 'general';
+	const focus = mobilityFocus(baseline);
 	return {
 		perWeek: level.perWeek,
 		libraryId: focus === 'general' ? level.libraryId : FOCUS_LIBRARY_ID[focus],
@@ -263,4 +273,170 @@ export function focusRoutine(focus: StretchFocus): Drill[] {
 		.filter((d): d is Drill => Boolean(d))
 		.map((d) => ({ ...d, rounds: 2 }));
 	return [...dynamic, ...holds];
+}
+
+/* ------------- anchor, roaming and dose (research/wave-7/17b) ------------- */
+
+/** The area name a session title carries, matching the library's own wording. */
+export const FOCUS_AREA_TITLE: Record<StretchFocus, string> = {
+	general: 'Mobility and stretching',
+	'hips-glutes': 'Hips and glutes',
+	'hamstrings-calves': 'Hamstrings and calves',
+	ankles: 'Ankles and feet',
+	'upper-back': 'Upper back and shoulders',
+};
+
+/** The same areas, phrased to sit inside a sentence. */
+export const FOCUS_AREA_PHRASE: Record<StretchFocus, string> = {
+	general: 'the areas running tightens most',
+	'hips-glutes': 'hips and glutes',
+	'hamstrings-calves': 'hamstrings and calves',
+	ankles: 'ankles and feet',
+	'upper-back': 'the upper back and shoulders',
+};
+
+/**
+ * The anchor: two static holds per focus that repeat unchanged at every session
+ * (17b). Each pair is chosen so no target muscle appears in both, which keeps a
+ * daily anchor at about nine minutes a week per muscle, just under the
+ * ten-minute static plateau, so rotation never has to shorten the anchor to
+ * respect it. The ankles pair uses the seated calf hold with the adductor hold,
+ * both in the ankles routine list, so the two rocking and circling drills stay
+ * in the dynamic portion instead of being timed as static holds.
+ */
+export const ANCHOR_STRETCHES: Record<StretchFocus, string[]> = {
+	general: ['Standing straight-knee calf stretch', 'Kneeling hip flexor stretch'],
+	'hips-glutes': ['Seated glute figure-4 stretch', 'Kneeling hip flexor stretch'],
+	'hamstrings-calves': ['Standing straight-knee calf stretch', 'Standing hamstring stretch'],
+	ankles: ['Bent-knee calf stretch (soleus)', 'Seated butterfly adductor stretch'],
+	'upper-back': ['Open book thoracic rotation', 'Cross-body shoulder stretch'],
+};
+
+/** Sets per hold: the 17b prescription of two sets of 30 to 45 seconds. */
+export const HOLD_ROUNDS = 2;
+
+/** The static plateau: about ten minutes a week per target muscle (17b). */
+export const WEEKLY_STRETCH_PLATEAU_SEC = 600;
+
+/**
+ * Routines list a few drills that are movements, not holds: a rocking or
+ * circling drill belongs in the dynamic warm-up, so giving it hold rounds does
+ * not make it a static stretch and it must never count toward the static dose
+ * (17b measures static stretch time).
+ */
+export const MOVEMENT_DRILLS: string[] = [
+	'Knee-to-wall ankle rock',
+	'Ankle circles and alphabet',
+	'Side lunge adductor rock',
+	"World's greatest stretch",
+	'Cat-cow thoracic mobility',
+];
+
+const MOVEMENT_SET = new Set(MOVEMENT_DRILLS);
+
+/**
+ * Every static common-area hold in one order, the backing list for the roaming
+ * rotation. A session's candidates are this list minus its own anchors, and the
+ * cursor walks the one order across every session and every anchor, so a
+ * stretch never roams twice before the whole list has cycled, even where a
+ * different anchor changes what a session may pick.
+ */
+export const ROAMING_ORDER: string[] = (() => {
+	const seen = new Set<string>();
+	const order: string[] = [];
+	for (const focus of STRETCH_FOCUSES) {
+		for (const name of FOCUS_STRETCHES[focus]) {
+			if (MOVEMENT_SET.has(name) || seen.has(name)) continue;
+			seen.add(name);
+			order.push(name);
+		}
+	}
+	return order;
+})();
+
+/** Every muscle and structure a stretch names, for the weekly dose ledger. */
+export function stretchTargets(name: string): string[] {
+	return findDrill(name)?.targets ?? [];
+}
+
+/**
+ * Add one stretch's seconds for a session to every target it names. A movement
+ * drill never holds, so it adds nothing to the static dose.
+ */
+export function addHoldDose(ledger: Map<string, number>, name: string, seconds: number): void {
+	if (MOVEMENT_SET.has(name)) return;
+	for (const target of stretchTargets(name)) {
+		ledger.set(target, (ledger.get(target) ?? 0) + seconds);
+	}
+}
+
+/**
+ * The index into ROAMING_ORDER of the roaming stretch for one session, or -1
+ * when every candidate would push a muscle past the weekly plateau. The index
+ * is a cursor: the caller moves it past the stretch this session took, skips
+ * included, so the next session roams somewhere new. The scan walks the one
+ * shared order, so the next pick never names the same stretch as the last even
+ * when the anchor, and so the candidates, changed.
+ */
+export function pickRoamingIndex(
+	focus: StretchFocus,
+	ledger: Map<string, number>,
+	startIndex: number,
+): number {
+	const anchors = new Set(ANCHOR_STRETCHES[focus]);
+	for (let i = 0; i < ROAMING_ORDER.length; i++) {
+		const index = (startIndex + i) % ROAMING_ORDER.length;
+		const name = ROAMING_ORDER[index]!;
+		if (anchors.has(name)) continue;
+		const drill = findDrill(name);
+		if (!drill) continue;
+		const add = drill.durationSec * HOLD_ROUNDS;
+		const fits = stretchTargets(name).every(
+			(target) => (ledger.get(target) ?? 0) + add <= WEEKLY_STRETCH_PLATEAU_SEC,
+		);
+		if (fits) return index;
+	}
+	return -1;
+}
+
+/**
+ * One session's routine: the focus's two dynamic drills, then the anchor holds
+ * at two rounds each, then the roaming stretch when there is one. The anchor is
+ * never shortened; the roam only adds.
+ */
+export function mobilitySessionRoutine(focus: StretchFocus, roaming: string | undefined): Drill[] {
+	const dynamic = FOCUS_DYNAMIC[focus]
+		.map((name) => findDrill(name))
+		.filter((d): d is Drill => Boolean(d))
+		.slice(0, 2);
+	const holds = [...ANCHOR_STRETCHES[focus], ...(roaming ? [roaming] : [])]
+		.map((name) => findDrill(name))
+		.filter((d): d is Drill => Boolean(d))
+		.map((d) => ({ ...d, rounds: HOLD_ROUNDS }));
+	return [...dynamic, ...holds];
+}
+
+/** The two areas a week's sessions anchor on: the top vote and the runner-up. */
+export interface MobilityAnchorFocuses {
+	primary: StretchFocus;
+	secondary: StretchFocus;
+}
+
+/**
+ * The areas the mobility sessions anchor on: the focus the runner's answers
+ * voted highest, and the runner-up for the high-frequency swap. With no second
+ * vote the swap borrows the first common runner area the primary is not, so the
+ * swap always covers somewhere new.
+ */
+export function mobilityAnchorFocuses(baseline: Baseline): MobilityAnchorFocuses {
+	const votes = mobilityVotes(baseline);
+	// STRETCH_FOCUSES order is the tie-break, and sort is stable, so a filtered
+	// pass keeps the same order mobilityFocus would pick with.
+	const ranked = STRETCH_FOCUSES.filter((f) => (votes.get(f) ?? 0) > 0).sort(
+		(a, b) => (votes.get(b) ?? 0) - (votes.get(a) ?? 0),
+	);
+	const primary = ranked[0] ?? 'general';
+	const secondary =
+		ranked[1] ?? STRETCH_FOCUSES.find((f) => f !== 'general' && f !== primary) ?? primary;
+	return { primary, secondary };
 }
