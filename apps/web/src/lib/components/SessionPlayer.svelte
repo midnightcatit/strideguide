@@ -194,6 +194,18 @@
 		armStep(i);
 	}
 
+	/**
+	 * Where the Back control lands: the previous work step, never a rest card.
+	 * Only Next moves into a rest, so stepping back skips them rather than
+	 * dropping the runner onto a rest screen they did not ask for.
+	 */
+	function prevStepIndex(from: number): number {
+		for (let i = from - 1; i > 0; i -= 1) {
+			if (instances[i]?.step.kind !== 'rest') return i;
+		}
+		return 0;
+	}
+
 	function close() {
 		save();
 		onCloseProp();
@@ -213,8 +225,10 @@
 	// keeps running even where it was resumed without a Start press. It stops the
 	// moment the player leaves the step: a workout that ends on a rest card would
 	// otherwise keep completing and saving every second behind the finish screen.
+	// It also stops while the skip-rest confirmation is open, so the rest cannot
+	// run out under the sheet and leave a confirmed skip with nothing to skip.
 	$effect(() => {
-		if ((!running && !isRestCard) || !timed || countdown > 0 || finished || awaitingNext) return;
+		if ((!running && !isRestCard) || !timed || countdown > 0 || finished || awaitingNext || confirmSkipRest) return;
 		const step = instances[idx]?.step;
 		if (step?.durationSec == null) return;
 		const t = setInterval(() => {
@@ -452,7 +466,7 @@
 							{/if}
 						</button>
 					{/if}
-					<button type="button" onclick={() => jump(Math.max(0, idx - 1))} disabled={idx === 0} class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40" aria-label="Previous step">‹</button>
+					<button type="button" onclick={() => jump(prevStepIndex(idx))} disabled={idx === 0} class="rounded-md border border-hairline px-4 py-3 text-sm disabled:opacity-40" aria-label="Previous step">‹</button>
 					{#if idx >= instances.length - 1}
 						<button type="button" onclick={() => { finished = true; running = false; save(); }} class="rounded-md border border-hairline px-4 py-3 text-sm font-medium">Finish</button>
 					{:else}
