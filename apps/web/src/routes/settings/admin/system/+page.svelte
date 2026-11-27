@@ -432,7 +432,7 @@
 
 		<div class="min-h-0 flex-1">
 			{#if Canvas}
-				<Canvas view={currentView} onNode={(node) => focusNode(node.id)} focusedId={focusedId} />
+				<Canvas view={currentView} onNode={(node) => focusNode(node.id)} focusedId={focusedId} fill />
 			{/if}
 		</div>
 
