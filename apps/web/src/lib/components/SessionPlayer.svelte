@@ -255,7 +255,13 @@
 	function holdKeyUp(e: KeyboardEvent) {
 		if (e.key === ' ' || e.key === 'Enter') cancelHold();
 	}
-	onDestroy(() => cancelHold());
+	// Save the place on the way out. The page mode no longer has a Close row, so
+	// leaving through the app's breadcrumb would otherwise drop the current step
+	// and elapsed time.
+	onDestroy(() => {
+		cancelHold();
+		save();
+	});
 
 	onMount(() => {
 		markStarted(session.id);
