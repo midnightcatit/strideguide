@@ -10,6 +10,28 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## Every PR waits for a complete CodeRabbit review before merge
+
+2026-11-27
+
+Decided: every PR gets a CodeRabbit review. After opening a PR, wait for the review
+rather than merging on the CI gate alone, by scheduling a wakeup instead of blocking
+the turn. Read the review comments yourself, resolve every addressable artifact
+(nitpicks, outside-diff comments, inline comments and review summaries), and merge
+only when the review is complete and clean and the CI gate passes. A subagent's PR
+follows the same rule.
+
+Why: the CodeRabbit check status alone does not show whether comments are still
+open, so a passing check is not a review. The review is asynchronous and can take a
+few minutes, so the wait is scheduled and the turn is not blocked. This applies to
+delegated work too, because a subagent's PR is not ready to merge until the same
+pass is done (`AGENTS.md`, PR #290).
+
+Rules out: merging on a passing check alone, merging while CodeRabbit is still
+reviewing, and merging with an addressable comment left open.
+
+---
+
 ## The week rotates the strength focus across the body
 
 2026-11-26
