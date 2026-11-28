@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-27T05:22:11.411Z",
-  "fingerprint": "611afdafc331899b",
+  "generatedAt": "2026-11-28T05:01:39.740Z",
+  "fingerprint": "d5d37feda8cd811c",
   "views": [
     {
       "id": "pipeline",
@@ -1920,6 +1920,45 @@
           ]
         },
         {
+          "id": "decision:a-mobility-hold-reads-once-at-its-dose-and-the-title-stays-the-stated-focus",
+          "label": "A mobility hold reads once at its dose, and the title stays the stated focus",
+          "kind": "decision",
+          "note": "2026-11-28. a mobility hold is one step in the workout, carrying its rounds as the step's `sets` and its length as `durationSec`, so the detail shows one row per hold reading \"2 x 40s\" and the player still runs both rounds through the existing set mechanism (a round counter on the card). The engine's drill-to-step mapping stops emitting one step per round, so a hold never appears as two identical rows. The dose is untouched: a hold's time under stretch is still `durationSec * rounds` and a session's length is still the sum of its parts. The second anchor hold already rotates within the focus by a stable hash of the plan seed, the week and the session index, so it changes session to session; the session summary now names both anchor holds, so a run of same-focus sessions reads as different sessions instead of one routine. The session title stays the stated focus area and never names the roaming stretch. This annotates \"Mobility and run drills rotate visibly while the anchor holds\" (2026-11-28): the anchor, its dose, the second-hold rotation and the run drill rotation all stay; only the presentation of a hold and the summary wording change.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "A mobility hold reads once at its dose, and the title stays the stated focus",
+              "href": "docs/decisions.md#a-mobility-hold-reads-once-at-its-dose-and-the-title-stays-the-stated-focus"
+            }
+          ]
+        },
+        {
+          "id": "decision:mobility-and-run-drills-rotate-visibly-while-the-anchor-holds",
+          "label": "Mobility and run drills rotate visibly while the anchor holds",
+          "kind": "decision",
+          "note": "2026-11-28. a composed mobility session still anchors on the runner's stated focus at the 17b dose, two holds of two rounds at 30 to 45 seconds each, but only the first hold is fixed. The first hold is the focus's signature and repeats at every session; the second rotates within the same focus by a stable hash of the plan seed, the week and the session index, drawn only from holds that share no target with the first, so the session changes while it keeps the stated area and stays under the static plateau. The roaming stretch now cycles the whole mobility library, the focus holds plus the extra and cool-down holds the library carries, so a stretch never roams twice before the pool has cycled. Run warm-up and cool-down drills rotate by the same seed: the warm-up draws its fixed count from the dynamic drills (the banded ones, which need equipment, are left out) and the cool-down its fixed count from the whole static library, each keeping the block's own duration, so the warm-up and cool-down counts and total time are unchanged and only which drills change. The seed is the plan seed the strength rotation already uses (input.seed, default 1), so the same seed rebuilds the same plan and every week and session differs. This annotates \"Mobility anchors on the stated tight area and roams one stretch around it\" (2026-11-27): its anchor and its roam both stay, and the fixed second hold becomes a rotating one inside the same focus.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Mobility and run drills rotate visibly while the anchor holds",
+              "href": "docs/decisions.md#mobility-and-run-drills-rotate-visibly-while-the-anchor-holds"
+            }
+          ]
+        },
+        {
+          "id": "decision:strength-sessions-rotate-moves-by-a-seed-and-the-lean-becomes-a-pill",
+          "label": "Strength sessions rotate moves by a seed, and the lean becomes a pill",
+          "kind": "decision",
+          "note": "2026-11-28. the strength builder stops repeating one fixed circuit. Within each pattern slot the move is a seeded pick from that slot's pool, seeded by a stable hash of (plan seed, week, day, slot): the same seed always gives the same plan, and different weeks or days differ. A move used in the last three strength sessions is deprioritized, and when a tier's pattern pool is spent the builder widens to bodyweight and then to any move rather than repeat, so nothing repeats inside that window while the pools allow. The lower-body spine keeps its pattern order (squat or leg press, hinge, knee flexion, calf) and its own exercise rotates within its pattern, so the squat slot moves from leg press to hack squat across weeks instead of staying fixed. The accessories are shuffled by the same seed. A session picks its equipment tier first, from the runner's kit and prefs (machines, dumbbell, band, bodyweight; barbell and kettlebell sit with dumbbell), and takes its moves from that tier, topping up from bodyweight only when a pattern has no move there, which is what makes a two-tier session. The session title is now a composition read from the tiers the moves actually hold: one tier reads \"Machine circuit\", \"Bodyweight circuit\", \"Band circuit\" or \"Dumbbell circuit\"; two read \"<A> and <B> circuit\"; three or more read \"Mixed circuit\". The lean is no longer the title. It becomes a prescription `focus` pill naming the parts the lean adds, in the finer body-part vocabulary the workout filters already use, joined with \" + \", most-emphasized first, at most three parts, and \"full body\" for an unleaned day; the card and the session detail render it as a pill. Reps now climb across a phase's own weeks rather than stepping only at the boundary: base runs 10 then 11 then 12, the phase change resets with its drop to build's 8 and peak's 6, and RPE drifts up a point across the phase (6 at the low end to 7 at the top). Sets keep the existing rule. The two weekly strength days differ by more than the lean: their accessory moves and order differ by the seed, and the spine stays.",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "Strength sessions rotate moves by a seed, and the lean becomes a pill",
+              "href": "docs/decisions.md#strength-sessions-rotate-moves-by-a-seed-and-the-lean-becomes-a-pill"
+            }
+          ]
+        },
+        {
           "id": "decision:strength-sessions-are-full-body-with-a-lean-not-split-days",
           "label": "Strength sessions are full-body with a lean, not split days",
           "kind": "decision",
@@ -1942,6 +1981,19 @@
               "kind": "decision",
               "label": "Mobility anchors on the stated tight area and roams one stretch around it",
               "href": "docs/decisions.md#mobility-anchors-on-the-stated-tight-area-and-roams-one-stretch-around-it"
+            }
+          ]
+        },
+        {
+          "id": "decision:the-coderabbit-review-is-advisory-not-a-merge-gate",
+          "label": "The CodeRabbit review is advisory, not a merge gate",
+          "kind": "decision",
+          "note": "2026-11-27. a PR merges on a green CI gate. The CodeRabbit review still runs and its findings are still handled, but nothing waits on the review cycle. A comment carrying a suggested diff is applied verbatim when it holds up; every other finding goes to `backlog/` with the reason and a permalink, and the thread is resolved pointing at the entry. The one exception is a release blocker (a security hole, data loss, a broken build or auth path), which is fixed before merge whatever the tag says. `reviews.auto_review.auto_pause_after_reviewed_commits` is 0, so a branch with several quick commits still gets reviewed instead of having its review paused (AGENTS.md \"CodeRabbit review\").",
+          "links": [
+            {
+              "kind": "decision",
+              "label": "The CodeRabbit review is advisory, not a merge gate",
+              "href": "docs/decisions.md#the-coderabbit-review-is-advisory-not-a-merge-gate"
             }
           ]
         },
@@ -2254,6 +2306,24 @@
       "edges": [
         {
           "from": "decision:log",
+          "to": "decision:a-mobility-hold-reads-once-at-its-dose-and-the-title-stays-the-stated-focus",
+          "kind": "decision",
+          "label": "2026-11-28"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:mobility-and-run-drills-rotate-visibly-while-the-anchor-holds",
+          "kind": "decision",
+          "label": "2026-11-28"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:strength-sessions-rotate-moves-by-a-seed-and-the-lean-becomes-a-pill",
+          "kind": "decision",
+          "label": "2026-11-28"
+        },
+        {
+          "from": "decision:log",
           "to": "decision:strength-sessions-are-full-body-with-a-lean-not-split-days",
           "kind": "decision",
           "label": "2026-11-27"
@@ -2261,6 +2331,12 @@
         {
           "from": "decision:log",
           "to": "decision:mobility-anchors-on-the-stated-tight-area-and-roams-one-stretch-around-it",
+          "kind": "decision",
+          "label": "2026-11-27"
+        },
+        {
+          "from": "decision:log",
+          "to": "decision:the-coderabbit-review-is-advisory-not-a-merge-gate",
           "kind": "decision",
           "label": "2026-11-27"
         },

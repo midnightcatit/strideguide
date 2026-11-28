@@ -35,8 +35,10 @@ A plan flows through these stages:
    is the sum of its parts, work plus rest. Mobility picks the focus from the runner's answers (a
    named niggle counts most, then terrain, then the sports they do), anchors it on a fixed first
    hold and a second hold that rotates within the focus, and adds one roaming stretch that cycles
-   the whole mobility library. The run warm-up and cool-down drills rotate from the same plan seed,
-   so the same plan inputs rebuild the same plan.
+   the whole mobility library. Each hold is one step in the workout, with its length in
+   `durationSec` and its rounds in `sets`, so the dose calculation and the player's playback both
+   multiply the length by the sets. The run warm-up and cool-down drills rotate from the same plan
+   seed, so the same plan inputs rebuild the same plan.
 3. **The AI shaping pass** never generates the plan. It reads the engine's plan and chooses within a
    closed set of typed intents: a quality kind and a volume, strength and mobility intent of `ease`,
    `hold` or `build`, plus a short emphasis line. An answer outside the set is dropped. The engine

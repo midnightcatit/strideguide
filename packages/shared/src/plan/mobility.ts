@@ -252,21 +252,22 @@ export function mobilityRoutine(building: boolean): Drill[] {
 
 /**
  * Map drills to a block of timed steps. A drill that carries rounds becomes one
- * step per round, so a long hold is shown as the shorter rounds it is built from.
+ * step whose `sets` is that round count, so a hold reads once at its full dose
+ * ("2 x 40s") instead of as two identical rows. The player still runs every
+ * round, and the total time under stretch stays durationSec * rounds.
  */
 export function drillBlock(label: string, drills: Drill[], kind: StepKind): StepBlock {
 	const steps: WorkoutStep[] = [];
 	for (const d of drills) {
 		const rounds = d.rounds ?? 1;
-		for (let i = 0; i < rounds; i++) {
-			steps.push({
-				kind,
-				label: d.name,
-				durationSec: d.durationSec,
-				targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
-				note: d.why,
-			});
-		}
+		steps.push({
+			kind,
+			label: d.name,
+			durationSec: d.durationSec,
+			sets: rounds > 1 ? rounds : undefined,
+			targetRpe: kind === 'warmup' ? [2, 3] : [1, 2],
+			note: d.why,
+		});
 	}
 	return { repeat: 1, label, steps };
 }
