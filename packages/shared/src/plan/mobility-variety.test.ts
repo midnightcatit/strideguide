@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { GOAL_PROFILES } from '../goal-profiles';
 import { generatePlan } from './engine';
 import {
+	ANCHOR_SECOND_OPTIONS,
 	ANCHOR_STRETCHES,
 	FOCUS_AREA_TITLE,
 	MOVEMENT_DRILLS,
@@ -70,10 +71,20 @@ describe('mobility variety and dose (17b)', () => {
 		const sessions = p.weeks.flatMap((w) => mobilitySessions(w));
 		expect(sessions.length).toBeGreaterThan(0);
 		for (const s of sessions) {
-			const anchors = ANCHOR_STRETCHES[focusOf(s)];
-			for (const name of anchors) {
-				// Two sets of the hold, each inside the 30 to 45 second band, at
-				// every session, whatever the rotation or the swap did around it.
+			const focus = focusOf(s);
+			const first = ANCHOR_STRETCHES[focus][0]!;
+			// The first hold is the focus's signature and repeats at every session.
+			expect(
+				holds(s).filter((st) => st.label === first),
+				`${s.title}: ${first}`,
+			).toHaveLength(2);
+			// The second hold rotates within the focus, so it is always one of the
+			// focus's own holds and the session keeps the stated area.
+			const second = holds(s).find((st) => st.label !== first)!.label;
+			expect(ANCHOR_SECOND_OPTIONS[focus], `${s.title}: ${second}`).toContain(second);
+			// Both holds run two rounds each, inside the 30 to 45 second band, at
+			// every session, whatever the rotation or the swap did around it.
+			for (const name of [first, second]) {
 				const steps = holds(s).filter((st) => st.label === name);
 				expect(steps, `${s.title}: ${name}`).toHaveLength(2);
 				for (const st of steps) {
@@ -81,10 +92,10 @@ describe('mobility variety and dose (17b)', () => {
 					expect(st.durationSec).toBeLessThanOrEqual(45);
 				}
 			}
-			// The roaming stretch never replaces an anchor: the holds run the anchor
-			// pair first, each hold's two rounds back to back, in order.
+			// The two anchor holds run first, in order, each hold's two rounds back
+			// to back. The roaming stretch never replaces an anchor.
 			const labels = holds(s).map((st) => st.label);
-			expect(labels.slice(0, anchors.length * 2)).toEqual(anchors.flatMap((n) => [n, n]));
+			expect(labels.slice(0, 4)).toEqual([first, first, second, second]);
 		}
 	});
 
@@ -148,10 +159,12 @@ describe('mobility variety and dose (17b)', () => {
 		// each keeps the full anchor dose.
 		expect(new Set(variants.map(roamOf)).size).toBeGreaterThan(1);
 		for (const s of variants) {
-			const anchors = ANCHOR_STRETCHES[focusOf(s)];
-			for (const name of anchors) {
-				expect(holds(s).filter((st) => st.label === name)).toHaveLength(2);
-			}
+			const focus = focusOf(s);
+			const first = ANCHOR_STRETCHES[focus][0]!;
+			expect(holds(s).filter((st) => st.label === first)).toHaveLength(2);
+			const second = holds(s).find((st) => st.label !== first)!.label;
+			expect(ANCHOR_SECOND_OPTIONS[focus]).toContain(second);
+			expect(holds(s).filter((st) => st.label === second)).toHaveLength(2);
 		}
 	});
 
@@ -258,10 +271,11 @@ describe('mobility variety and dose (17b)', () => {
 		const sessions = p.weeks.flatMap((w) => mobilitySessions(w)).filter((s) => s.title.startsWith('Ankles'));
 		expect(sessions.length).toBeGreaterThan(0);
 		for (const s of sessions) {
-			for (const name of ANCHOR_STRETCHES.ankles) {
-				const steps = holds(s).filter((st) => st.label === name);
-				expect(steps, `${s.title}: ${name}`).toHaveLength(2);
-			}
+			const first = ANCHOR_STRETCHES.ankles[0]!;
+			expect(holds(s).filter((st) => st.label === first)).toHaveLength(2);
+			const second = holds(s).find((st) => st.label !== first)!.label;
+			expect(ANCHOR_SECOND_OPTIONS.ankles).toContain(second);
+			expect(holds(s).filter((st) => st.label === second)).toHaveLength(2);
 		}
 		// A movement drill adds nothing to the ledger, so the dose stays honest.
 		const ledger = new Map<string, number>();
@@ -293,5 +307,76 @@ describe('mobility variety and dose (17b)', () => {
 				}
 			}
 		}
+	});
+
+	it('cycles the whole roaming pool before it repeats', () => {
+		// The pool is wider than the focus routines alone: it carries the extra and
+		// cool-down holds the mobility library keeps, so the roam reaches the whole
+		// library.
+		expect(ROAMING_ORDER.length).toBeGreaterThan(17);
+		expect(ROAMING_ORDER).toContain('Glute stretch');
+		expect(ROAMING_ORDER).toContain('Adductor stretch');
+		// Walk the cursor with an empty ledger: it names a fresh stretch on every
+		// step until the whole candidate pool has cycled, then it starts again.
+		const focus = 'hips-glutes' as const;
+		const candidates = ROAMING_ORDER.filter((name) => !ANCHOR_STRETCHES[focus].includes(name));
+		const ledger = new Map<string, number>();
+		const seen = new Set<string>();
+		let cursor = 0;
+		for (let i = 0; i < candidates.length; i++) {
+			const picked = pickRoamingIndex(focus, ledger, cursor);
+			expect(picked).toBeGreaterThanOrEqual(0);
+			const name = ROAMING_ORDER[picked]!;
+			expect(seen.has(name), `${i}: ${name}`).toBe(false);
+			seen.add(name);
+			cursor = picked + 1;
+		}
+		expect(seen.size).toBe(candidates.length);
+	});
+
+	it('regenerates the same plan from the same seed', () => {
+		const baseline = { ...daily, niggles: 'sore knee' };
+		expect(planWith(baseline)).toEqual(planWith(baseline));
+	});
+
+	it('rotates the run warm-up and cool-down drills while holding their time', () => {
+		const p = planWith(daily);
+		const block = (s: PlannedSession, label: string) =>
+			s.prescription.workout!.blocks.find((b) => b.label === label);
+		const runs = p.weeks.flatMap((w) => w.sessions.filter((s) => s.modality === 'running'));
+		expect(runs.length).toBeGreaterThan(0);
+		const warmupSeconds = new Set<number>();
+		const cooldownSeconds = new Set<number>();
+		const warmupLabels = new Set<string>();
+		const cooldownLabels = new Set<string>();
+		for (const s of runs) {
+			const warmup = block(s, 'Dynamic warm-up');
+			if (warmup) {
+				// Five drills at one dose, so the warm-up time is unchanged run to
+				// run; only which drills change.
+				expect(warmup.steps, s.title).toHaveLength(5);
+				warmupSeconds.add(warmup.steps.reduce((n, st) => n + (st.durationSec ?? 0), 0));
+				for (const st of warmup.steps) warmupLabels.add(st.label);
+			}
+			const cooldown = block(s, 'Cool-down stretches');
+			if (cooldown) {
+				expect(cooldown.steps, s.title).toHaveLength(4);
+				cooldownSeconds.add(cooldown.steps.reduce((n, st) => n + (st.durationSec ?? 0), 0));
+				for (const st of cooldown.steps) cooldownLabels.add(st.label);
+			}
+		}
+		// Five warm-up drills of 30 seconds on easy and long runs and 50 on quality,
+		// four cool-down stretches of 40 seconds, so the totals never drift.
+		for (const seconds of warmupSeconds) expect([150, 250]).toContain(seconds);
+		expect([...cooldownSeconds]).toEqual([160]);
+		// The drills vary: more labels appear across the plan than one fixed block
+		// would carry.
+		expect(warmupLabels.size).toBeGreaterThan(5);
+		expect(cooldownLabels.size).toBeGreaterThan(4);
+		// The same run in a later week carries a different set of drills.
+		const longOf = (week: PlannedWeek) => week.sessions.find((s) => s.type === 'long');
+		const warmupOf = (s: PlannedSession | undefined) =>
+			block(s!, 'Dynamic warm-up')?.steps.map((st) => st.label);
+		expect(warmupOf(longOf(p.weeks[0]!))).not.toEqual(warmupOf(longOf(p.weeks[1]!)));
 	});
 });
