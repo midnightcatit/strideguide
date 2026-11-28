@@ -295,3 +295,210 @@ export function circuitFor(
 		: bodyweightPool(level);
 	return selectBalanced(pool, size, favorites, focus, variant);
 }
+
+/* ------------------------- strength variety (seeded) ---------------------- */
+
+/**
+ * The equipment tier a session is built from. A session picks one tier first and
+ * takes its moves from it, so the composition title reads true. Barbell and
+ * kettlebell moves are free weights, so they sit with the dumbbell tier; the
+ * four tiers are the four plain circuit titles the runner sees.
+ */
+export type StrengthTier = 'machine' | 'dumbbell' | 'band' | 'bodyweight';
+
+/** The plain word each tier shows as a circuit title. */
+export const STRENGTH_TIER_LABELS: Record<StrengthTier, string> = {
+	machine: 'Machine',
+	dumbbell: 'Dumbbell',
+	band: 'Band',
+	bodyweight: 'Bodyweight',
+};
+
+/** The tiers in the order a mixed title lists them, most-specific first. */
+const TIER_ORDER: StrengthTier[] = ['machine', 'dumbbell', 'band', 'bodyweight'];
+
+/** The tier a move belongs to, read from its equipment through moveCategory. */
+export function strengthTierOf(m: MachineExercise): StrengthTier {
+	const cat = moveCategory(m);
+	if (cat === 'machines') return 'machine';
+	if (cat === 'bands') return 'band';
+	if (cat === 'bodyweight') return 'bodyweight';
+	return 'dumbbell';
+}
+
+/**
+ * The composition title of a strength circuit, derived from the tiers its moves
+ * are actually made of: one tier is "Machine circuit" and the like, two read
+ * "<A> and <B> circuit", and three or more read "Mixed circuit". So the title can
+ * never claim a tier the circuit does not hold.
+ */
+export function compositionTitle(moves: readonly MachineExercise[]): string {
+	const present = new Set(moves.map((m) => strengthTierOf(m)));
+	const tiers = TIER_ORDER.filter((t) => present.has(t));
+	if (tiers.length >= 3) return 'Mixed circuit';
+	if (tiers.length === 2) return `${STRENGTH_TIER_LABELS[tiers[0]!]} and ${STRENGTH_TIER_LABELS[tiers[1]!]} circuit`;
+	if (tiers.length === 1) return `${STRENGTH_TIER_LABELS[tiers[0]!]} circuit`;
+	return 'Strength circuit';
+}
+
+/**
+ * A stable 32-bit hash of the parts, used to seed the session's rotation. FNV-1a
+ * over the string form of each part, so the same (plan seed, week, day, slot)
+ * always gives the same plan and different weeks or days differ.
+ */
+export function hashSeed(...parts: (string | number)[]): number {
+	let h = 2166136261 >>> 0;
+	for (const part of parts) {
+		const s = String(part);
+		for (let i = 0; i < s.length; i++) {
+			h ^= s.charCodeAt(i);
+			h = Math.imul(h, 16777619) >>> 0;
+		}
+		h ^= 0x2c;
+		h = Math.imul(h, 16777619) >>> 0;
+	}
+	return h >>> 0;
+}
+
+/** A small deterministic PRNG (mulberry32), so a seed always replays the same picks. */
+function mulberry32(seed: number): () => number {
+	let a = seed >>> 0;
+	return () => {
+		a = (a + 0x6d2b79f5) | 0;
+		let t = Math.imul(a ^ (a >>> 15), 1 | a);
+		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+	};
+}
+
+/** A copy of the list in a seeded order, so accessories shuffle but replay. */
+function seededShuffle<T>(items: readonly T[], rng: () => number): T[] {
+	const out = [...items];
+	for (let i = out.length - 1; i > 0; i--) {
+		const j = Math.floor(rng() * (i + 1));
+		[out[i], out[j]] = [out[j]!, out[i]!];
+	}
+	return out;
+}
+
+/** How many recent strength sessions a move is kept out of. */
+export const STRENGTH_RECENT_SESSIONS = 3;
+
+/** The moves a tier can offer, before the kit filter. */
+function tierPool(tier: StrengthTier, level: string | undefined, loaded: boolean): MachineExercise[] {
+	switch (tier) {
+		case 'machine':
+			return dedupeByName([...PF_MACHINES, ...EXTRA_MACHINES]).filter(
+				(m) => strengthTierOf(m) === 'machine',
+			);
+		case 'band':
+			return BAND_HOME_MOVES.filter((m) => loaded || !m.requiresLoaded);
+		case 'dumbbell':
+			return dedupeByName([
+				...DUMBBELL_MOVES,
+				...freeByTool('dumbbells'),
+				...freeByTool('barbell'),
+				...freeByTool('kettlebell'),
+			]);
+		case 'bodyweight':
+		default:
+			return bodyweightPool(level);
+	}
+}
+
+/**
+ * The tier a session is built from, chosen before any move so the composition
+ * stays true: the runner's equipment mode decides it. A full gym still leads on
+ * machines, the mode the app was built for, and tops up from bodyweight only when
+ * a pattern has no machine.
+ */
+export function primaryTierFor(mode: EquipmentPreference, loaded = false): StrengthTier {
+	switch (mode) {
+		case 'bodyweight':
+			return 'bodyweight';
+		case 'bodyweight-dumbbells':
+			return loaded ? 'dumbbell' : 'bodyweight';
+		case 'dumbbells':
+		case 'barbell':
+		case 'kettlebell':
+			return 'dumbbell';
+		case 'bands':
+			return 'band';
+		case 'both':
+		case 'machines':
+		case 'full-gym':
+		default:
+			return 'machine';
+	}
+}
+
+export interface StrengthCircuitOptions {
+	mode?: EquipmentPreference;
+	minutes?: number;
+	items?: string[];
+	loaded?: boolean;
+	level?: string;
+	machines?: string[];
+	favorites?: string[];
+	focus?: StrengthFocus | null;
+	/** Seed for the rotation, from a stable hash of (plan seed, week, day, slot). */
+	seed?: number;
+	/** Move names used in the last few sessions, deprioritized in every slot. */
+	recent?: string[];
+}
+
+/**
+ * The seeded circuit builder the engine uses. The spine's pattern order is kept,
+ * the accessories are shuffled by the seed, and each pattern's move is a seeded
+ * pick from its tier's pool. A move used in the last few sessions is
+ * deprioritized, so nothing repeats inside that window while pools allow. The
+ * tier is chosen first, and a pattern with no move in that tier tops up from
+ * bodyweight, which is what makes a two-tier composition.
+ */
+export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise[] {
+	const size = circuitSize(o.minutes);
+	const patternSeq = o.focus?.patterns ?? PATTERN_SEQUENCE;
+	const spine = patternSeq.slice(0, LOWER_SPINE.length);
+	const accessories = patternSeq.slice(LOWER_SPINE.length);
+	const rng = mulberry32(o.seed ?? 0);
+	const orderedPatterns = [...spine, ...seededShuffle(accessories, rng)];
+
+	const tier = primaryTierFor(o.mode ?? 'machines', o.loaded ?? false);
+	const primary = tierPool(tier, o.level, o.loaded ?? false).filter((m) =>
+		moveAvailable(m, o.items, o.machines),
+	);
+	const bw = bodyweightPool(o.level).filter((m) => moveAvailable(m, o.items, o.machines));
+	const anyMove = ALL_MOVES.filter((m) => moveAvailable(m, o.items, o.machines));
+	const recent = new Set(o.recent ?? []);
+	const fav = new Set(o.favorites ?? []);
+	const used = new Set<string>();
+	const out: MachineExercise[] = [];
+
+	for (let i = 0; i < size; i++) {
+		const pattern = orderedPatterns[i % orderedPatterns.length]!;
+		const fresh = (pool: MachineExercise[]) =>
+			pool.filter((m) => m.pattern === pattern && !used.has(m.name));
+		const primaryFresh = fresh(primary);
+		const bwFresh = fresh(bw);
+		const anyFresh = fresh(anyMove);
+		const notRecent = (list: MachineExercise[]) => list.filter((m) => !recent.has(m.name));
+		// Prefer a move the runner has not used this window, widening the tier when
+		// the tier's pattern pool is spent: the primary tier first, then bodyweight,
+		// then any move. Only when every pool is recent or empty does a repeat fall
+		// back in, which is what keeps nothing repeating inside the window.
+		const pools = [
+			notRecent(primaryFresh),
+			notRecent(bwFresh),
+			notRecent(anyFresh),
+			primaryFresh,
+			bwFresh,
+			anyFresh,
+		];
+		const pool = pools.find((p) => p.length) ?? [];
+		if (!pool.length) break;
+		const pick = pool.find((m) => fav.has(m.name)) ?? pool[Math.floor(rng() * pool.length)]!;
+		used.add(pick.name);
+		out.push(pick);
+	}
+	return out;
+}

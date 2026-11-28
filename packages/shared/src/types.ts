@@ -293,6 +293,12 @@ export interface SessionPrescription {
 	timeStart?: string;
 	/** For strength sessions. */
 	blocks?: StrengthSet[];
+	/**
+	 * The day's lean, as the body parts it adds, joined with " + " and most
+	 * emphasized first (at most three), or "full body" for an unleaned day.
+	 * Shown as a pill so the composition title and the lean never clash.
+	 */
+	focus?: string;
 	notes?: string;
 	/** Why this session has the amount it has (shown on the card). */
 	why?: string;

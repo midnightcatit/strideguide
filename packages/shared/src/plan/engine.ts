@@ -9,14 +9,18 @@ import type {
 	WorkoutStep,
 } from '../types';
 import {
-	circuitFor,
+	buildStrengthCircuit,
+	compositionTitle,
 	findMove,
 	focusFor,
+	hashSeed,
 	moveAvailable,
 	strengthShape,
+	STRENGTH_RECENT_SESSIONS,
 	type StrengthFocus,
 } from './catalog';
 import type { MachineExercise } from './machines';
+import { leanFocusLabel } from './strength-focus';
 import {
 	COOLDOWN_STRETCHES,
 	QUALITY_WARMUP_DRILLS,
@@ -1084,6 +1088,7 @@ function strengthWorkout(
 	sets: number,
 	level: string,
 	phase: string,
+	rpe: [number, number],
 ): StructuredWorkout {
 	const warmup = drillBlock('Warm-up', WARMUP_DRILLS, 'warmup');
 	const cooldown = drillBlock('Cool-down', COOLDOWN_STRETCHES, 'cooldown');
@@ -1099,7 +1104,7 @@ function strengthWorkout(
 				machine: m.name,
 				sets: 1,
 				reps,
-				targetRpe: [7, 8],
+				targetRpe: rpe,
 				note:
 					m.pattern === 'plyometric'
 						? `Explosive: stop the set when your speed drops. ${m.muscles.join(', ')}.`
@@ -1281,6 +1286,31 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	];
 	const { volumes, longKm: longTargets, warnings: shapeWarnings } = planTargets(input, phases);
 	warnings.push(...shapeWarnings);
+
+	// The strength rotation is seeded by (plan seed, week, day, slot). A fixed
+	// default keeps a plan stable while still varying week to week and day to
+	// day; a caller can pass its own seed to reproduce or compare plans.
+	const planSeed = input.seed ?? 1;
+	// How long each phase runs and where each week sits inside it, so the reps
+	// and RPE can ramp across a phase rather than step only at its boundary.
+	const phaseLengths = new Map<string, number>();
+	for (const p of phases) phaseLengths.set(p, (phaseLengths.get(p) ?? 0) + 1);
+	const weekInPhase: number[] = [];
+	{
+		let run = '';
+		let n = 0;
+		for (const p of phases) {
+			if (p === run) n++;
+			else {
+				run = p;
+				n = 0;
+			}
+			weekInPhase.push(n);
+		}
+	}
+	// The moves of the last few strength sessions, deprioritized by the builder
+	// so nothing repeats inside that window while the pools allow.
+	const recentStrengthSessions: string[][] = [];
 
 	// A given race time is the most trustworthy anchor. Failing that, an effective
 	// VDOT read from the runner's own logged hard efforts, so paces follow what
@@ -1866,9 +1896,21 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		// Strength on its own days, in the morning. Every session runs the
 		// full-body lower spine with the day's lean, so the index and the count
-		// go into the session.
+		// go into the session, along with the week and phase position that seed
+		// the rotation.
 		strengthDays.forEach((day, i) => {
-			sessions.push(strengthSession(day, 'AM', phase, input, strengthIntent, i, strengthDays.length));
+			const session = strengthSession(day, 'AM', phase, input, strengthIntent, i, strengthDays.length, {
+				week: w,
+				weekInPhase: weekInPhase[w]!,
+				phaseWeeks: phaseLengths.get(phase) ?? 1,
+				seed: planSeed,
+				recent: recentStrengthSessions.slice(-STRENGTH_RECENT_SESSIONS).flat(),
+			});
+			sessions.push(session);
+			recentStrengthSessions.push(
+				(session.prescription.blocks ?? []).flatMap((b) => (b.machine ? [b.machine] : [])),
+			);
+			if (recentStrengthSessions.length > STRENGTH_RECENT_SESSIONS) recentStrengthSessions.shift();
 		});
 
 		// Cross-training: when the user has it and the profile allows it, swap the
@@ -2169,6 +2211,29 @@ function strengthSetCount(level: string, phase: string, intent?: StrengthIntent)
 	return clamp(anchor + delta, 2, 5);
 }
 
+/**
+ * The rep band for a phase. Base runs higher and light, build sits in the
+ * middle, and peak drops to the lowest reps and heaviest effort, so a phase
+ * change resets with its drop. Reps then climb from the low to the high end
+ * across the phase's own weeks (research/wave-9 adds the progression note).
+ */
+const REP_BANDS: Record<string, [number, number]> = {
+	base: [10, 12],
+	build: [8, 10],
+	peak: [6, 8],
+	taper: [8, 8],
+	recovery: [8, 8],
+};
+
+/** The strength session context: where the week sits, and the seed and recent moves. */
+interface StrengthContext {
+	week: number;
+	weekInPhase: number;
+	phaseWeeks: number;
+	seed: number;
+	recent: string[];
+}
+
 function strengthSession(
 	day: number,
 	slot: string,
@@ -2177,6 +2242,7 @@ function strengthSession(
 	strengthIntent?: StrengthIntent,
 	index = 0,
 	count = 1,
+	ctx: StrengthContext = { week: 0, weekInPhase: 0, phaseWeeks: 1, seed: 1, recent: [] },
 ): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
 	const level = input.baseline.experience ?? 'beginner';
@@ -2184,31 +2250,43 @@ function strengthSession(
 	const heavySport = load.heavy;
 	const loaded = phase !== 'base';
 	const focus = focusFor(index, count);
+	// The session's own seed, from the plan seed, week, day and slot, so the same
+	// plan always picks the same moves and different weeks and days differ.
+	const slotSeed = hashSeed(ctx.seed, ctx.week, day, slot, index);
 	// A favorite strength workout wins when the runner has one and it fits, since
-	// it is their own choice of session; it carries no lean of ours, so the title
-	// and why stay neutral below. Otherwise the generated circuit runs the
-	// full-body spine with the day's lean, and the session index rotates the
-	// moves so the week's strength days are not identical.
+	// it is their own choice of session; it carries no lean of ours, so the why
+	// stays neutral below. Otherwise the seeded builder picks the day's circuit:
+	// the lower-body spine in its fixed pattern order, the accessories shuffled
+	// by the same seed, and each move a seeded pick from the tier's pool with the
+	// last few sessions' moves deprioritized.
 	const own = favoriteStrengthMoves(input);
 	const fullCircuit =
 		own ??
-		circuitFor(
+		buildStrengthCircuit({
 			mode,
-			input.baseline.sessionMinutes,
-			input.equipment,
+			minutes: input.baseline.sessionMinutes,
+			items: input.equipment,
 			loaded,
 			level,
-			input.machines,
-			input.favoriteMachines,
+			machines: input.machines,
+			favorites: input.favoriteMachines,
 			focus,
-			index,
-		);
+			seed: slotSeed,
+			recent: ctx.recent,
+		});
 	// A heavy sport week already carries load, so the circuit comes down a size.
 	// The lower-body spine sits at the front of every sequence, so the trim keeps
 	// the leg patterns and drops the accessories: an upper-body accessory never
 	// displaces a lower-body pattern (research/wave-7/17a).
 	const circuit = heavySport ? fullCircuit.slice(0, 4) : fullCircuit;
-	const reps = phase === 'base' ? 10 : phase === 'peak' ? 6 : 8;
+	// Reps climb across the phase's weeks, so a base block runs 10 then 11 then
+	// 12; the phase change resets with its drop to build's 8 and peak's 6. RPE
+	// drifts up a point across the phase as the reps climb.
+	const band = REP_BANDS[phase] ?? [8, 10];
+	const progress = ctx.phaseWeeks > 1 ? ctx.weekInPhase / (ctx.phaseWeeks - 1) : 0;
+	const reps = Math.round(band[0] + (band[1] - band[0]) * progress);
+	const rpeLow = 6 + Math.round(progress);
+	const rpe: [number, number] = [rpeLow, rpeLow + 1];
 	// Level sets the volume, the phase cuts it to a maintenance dose through
 	// build and peak and shortens the taper session, and the model's week
 	// emphasis may lean it one notch up or down inside the band.
@@ -2223,18 +2301,21 @@ function strengthSession(
 	const shape = strengthShape(circuit);
 	const type: SessionArchetype = shape === 'machines' ? 'machine-circuit' : 'full-body-strength';
 	const noun = shape === 'machines' ? 'machines' : 'moves';
+	// The title reads the composition, so it can never claim an equipment tier the
+	// moves do not hold; the lean becomes a pill below instead of the title.
+	const title = compositionTitle(circuit);
 	// The lean names the day in plain words and the why states the lean, the
 	// two-thirds working-set heuristic and how the week spreads the work. A
 	// favorite workout or a circuit trimmed for a heavy sport week carries no
-	// lean, so both fall back to the neutral title.
+	// lean, so both carry no pill and keep the lean out of the why.
 	const leaned = !own && !heavySport;
-	const title = leaned && focus ? focus.title : TITLE[type];
+	const focusLabel = leaned ? leanFocusLabel(focus?.id, circuit) : undefined;
 	const why = heavySport
 		? `Trimmed to ${circuit.length} ${noun}. In the last week you logged ${load.describe}, which already counts as training.`
 		: leaned && focus
 			? leanWhy(focus, count, circuit)
 			: undefined;
-	const workout = strengthWorkout(circuit, reps, setCount, level, phase);
+	const workout = strengthWorkout(circuit, reps, setCount, level, phase, rpe);
 	return {
 		day,
 		slot,
@@ -2243,9 +2324,10 @@ function strengthSession(
 		title,
 		purpose: PURPOSE[type],
 		prescription: {
-			summary: `${sets.length} ${noun} · ${setCount} × ${reps}${leaned && focus ? ` · ${focus.label}` : ''}, control the lowering phase.`,
+			summary: `${sets.length} ${noun} · ${setCount} × ${reps}, control the lowering phase.`,
 			blocks: sets,
-			targetRpe: [7, 8],
+			targetRpe: rpe,
+			...(focusLabel ? { focus: focusLabel } : {}),
 			notes: copy.load,
 			why,
 			workout,

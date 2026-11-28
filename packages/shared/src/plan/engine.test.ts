@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GOAL_PROFILES } from '../goal-profiles';
 import { generatePlan } from './engine';
-import { findMove } from './catalog';
+import { findMove, moveCategory } from './catalog';
 import type { MovePattern } from './machines';
 import { WORKOUT_LIBRARY } from './library';
 import type { PlannedSession, PlannedWeek } from './types';
@@ -189,7 +189,8 @@ describe('generatePlan (preferences)', () => {
 		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
 		expect(strength.type).toBe('full-body-strength');
 		const names = strength.prescription.blocks!.map((b) => b.machine);
-		expect(names).toContain('Bodyweight squat');
+		// Every move is bodyweight, so the circuit reads honestly as one tier.
+		expect(names.every((n) => moveCategory(findMove(n)!) === 'bodyweight')).toBe(true);
 		expect(names).not.toContain('Leg press');
 	});
 
@@ -200,7 +201,12 @@ describe('generatePlan (preferences)', () => {
 		});
 		const strength = p.weeks.flatMap((w) => w.sessions).find((s) => s.modality === 'strength')!;
 		expect(strength.type).toBe('machine-circuit');
-		expect(strength.prescription.blocks!.some((b) => b.machine === 'Leg press')).toBe(true);
+		expect(strength.title).toBe('Machine circuit');
+		// The composition title follows the moves: a machine circuit holds only
+		// machine moves, though which machine rotates with the seed.
+		expect(
+			strength.prescription.blocks!.every((b) => moveCategory(findMove(b.machine)!) === 'machines'),
+		).toBe(true);
 	});
 
 	it('uses the chosen equipment for a strength session', () => {
@@ -216,9 +222,10 @@ describe('generatePlan (preferences)', () => {
 
 	it('labels a strength session from the moves it contains, not the mode', () => {
 		// A machines-mode circuit whose kit has no machines fills with bodyweight, so
-		// the card must not read as a machine circuit over a bodyweight move. The kit
-		// is the top-level PlanInput.equipment, as the API passes it. Seven available
-		// days fit two strength sessions, so the first day carries the legs lean.
+		// the composition title must read bodyweight, not a machine circuit over a
+		// bodyweight move. The kit is the top-level PlanInput.equipment, as the API
+		// passes it. Seven available days fit two strength sessions, so the first day
+		// carries the lean.
 		const bodyweightOnly = generatePlan({
 			...base,
 			availableDays: [0, 1, 2, 3, 4, 5, 6],
@@ -228,12 +235,12 @@ describe('generatePlan (preferences)', () => {
 		const bw = bodyweightOnly.weeks
 			.flatMap((w) => w.sessions)
 			.find((s) => s.modality === 'strength')!;
-		expect(bw.title).toBe('Leg day');
+		expect(bw.title).toBe('Bodyweight circuit');
 		expect(bw.type).toBe('full-body-strength');
 		expect(bw.prescription.summary).toContain('moves');
 
-		// A genuine all-machine circuit keeps the machine-circuit archetype, and the
-		// leaned day keeps its plain title either way.
+		// A genuine all-machine circuit keeps the machine-circuit archetype and reads
+		// as a machine circuit whatever lean the day carries.
 		const machineOnly = generatePlan({
 			...base,
 			availableDays: [0, 1, 2, 3, 4, 5, 6],
@@ -242,7 +249,7 @@ describe('generatePlan (preferences)', () => {
 		const mc = machineOnly.weeks
 			.flatMap((w) => w.sessions)
 			.find((s) => s.modality === 'strength')!;
-		expect(mc.title).toBe('Leg day');
+		expect(mc.title).toBe('Machine circuit');
 		expect(mc.type).toBe('machine-circuit');
 		expect(mc.prescription.summary).toContain('machines');
 	});
@@ -307,18 +314,26 @@ describe('generatePlan (preferences)', () => {
 		const strength = p.weeks[0]!.sessions.filter((s) => s.modality === 'strength');
 		expect(strength.length).toBe(2);
 		for (const s of strength) {
-			// Both days lean legs and hips in plain words and keep the spine: a
-			// squat or leg-press pattern, a hip hinge, knee flexion and calf work.
-			expect(s.title).toBe('Leg day');
+			// Both days lean legs and hips, shown as a pill of the parts the lean
+			// adds, and keep the spine: a squat or leg-press pattern, a hip hinge,
+			// knee flexion and calf work. The title is the composition now.
+			expect(s.title).toBe('Machine circuit');
+			expect(s.prescription.focus).toMatch(/quads|hamstrings|glutes|calves/);
 			expect(s.prescription.why).toMatch(/legs and hips/i);
 			expect(coversSpine(s)).toBe(true);
 		}
 		// The two days still draw different circuits, so the week is not the same
-		// session twice: the first accessory alternates push and pull.
+		// session twice: the accessory moves and their order differ by the seed.
 		const circuits = strength.map((s) =>
 			(s.prescription.blocks ?? []).map((b) => b.machine).join('|'),
 		);
 		expect(new Set(circuits).size).toBe(2);
+		// The spine is the same four patterns in every session, so the days differ
+		// by more than the lean: at least two moves change between them.
+		const a = (strength[0]!.prescription.blocks ?? []).map((b) => b.machine);
+		const b = (strength[1]!.prescription.blocks ?? []).map((b) => b.machine);
+		const changed = a.filter((x) => !b.includes(x)).length + b.filter((x) => !a.includes(x)).length;
+		expect(changed).toBeGreaterThanOrEqual(2);
 	});
 
 	it('leans two of three strength days on legs and one on upper body and core', () => {
@@ -330,18 +345,29 @@ describe('generatePlan (preferences)', () => {
 			baseline: { experience: 'intermediate', strengthDays: 3 },
 		});
 		const strength = p.weeks[0]!.sessions.filter((s) => s.modality === 'strength');
-		expect(strength.map((s) => s.title)).toEqual(['Leg day', 'Leg day', 'Upper body day']);
+		expect(strength.map((s) => s.title)).toEqual([
+			'Machine circuit',
+			'Machine circuit',
+			'Machine circuit',
+		]);
 		for (const s of strength) {
 			expect(coversSpine(s)).toBe(true);
 			// Plain body-part words only: no upper push or upper pull jargon.
 			expect(s.prescription.why ?? '').toMatch(/legs and hips|upper body and core/i);
 			expect(s.prescription.why ?? '').not.toMatch(/upper push|upper pull|push day|pull day/);
 		}
-		// The upper-lean day still keeps the legs in the lead: the spine is four of
-		// the six moves, with the core and push accessories after it.
+		// The upper-lean day still keeps the legs in the lead: the spine is the
+		// first four moves, with the core and push accessories after it, whatever
+		// order the shuffle gives them.
 		const upper = strength[2]!;
 		const patterns = (upper.prescription.blocks ?? []).map((b) => findMove(b.machine)?.pattern);
-		expect(patterns).toEqual([...SPINE, 'core', 'push']);
+		expect(patterns.slice(0, 4)).toEqual(SPINE);
+		// The accessories come from the upper-lean set, shuffled by the seed.
+		expect(
+			patterns.slice(4).every((p) => ['core', 'push', 'squat', 'pull'].includes(p as string)),
+		).toBe(true);
+		// The upper lean shows an upper or core part in the pill, never a legs part.
+		expect(upper.prescription.focus).toMatch(/core|chest|back|shoulders|arms/);
 	});
 
 	it('keeps the taper strength session and the running days when the long run needs a partner', () => {
@@ -414,7 +440,10 @@ describe('generatePlan (preferences)', () => {
 		for (const s of strength) {
 			const patterns = (s.prescription.blocks ?? []).map((b) => findMove(b.machine)?.pattern);
 			expect(patterns).toEqual(SPINE);
-			expect(s.title).toBe('Strength');
+			// The composition title stays honest about the trimmed machine circuit.
+			expect(s.title).toBe('Machine circuit');
+			// No lean on a trimmed session, so no lean pill.
+			expect(s.prescription.focus).toBeUndefined();
 		}
 	});
 
@@ -1062,14 +1091,16 @@ describe('favorites', () => {
 			.prescription.blocks!.map((b) => b.machine);
 
 	it('chooses a favorite machine when it fits the circuit', () => {
+		// A 60-minute session holds every accessory pattern, so the favorite's pull
+		// slot is present for the seeded pick to honor.
 		const plain = strengthMoves({
 			...base,
-			baseline: { experience: 'intermediate', equipment: 'machines' },
+			baseline: { experience: 'intermediate', equipment: 'machines', sessionMinutes: 60 },
 		});
 		expect(plain).not.toContain('Bicep curl');
 		const favored = strengthMoves({
 			...base,
-			baseline: { experience: 'intermediate', equipment: 'machines' },
+			baseline: { experience: 'intermediate', equipment: 'machines', sessionMinutes: 60 },
 			favoriteMachines: ['Bicep curl'],
 		});
 		expect(favored).toContain('Bicep curl');

@@ -128,6 +128,12 @@ export interface PlanInput {
 	schedule?: ScheduleBlock[];
 	/** ISO date, yyyy-mm-dd. */
 	startDate: string;
+	/**
+	 * A stable seed for the plan's rotation. The same seed, week, day and slot
+	 * always pick the same moves, so two runs on one seed give the same plan and
+	 * different weeks or days differ. Absent, the engine uses a fixed default.
+	 */
+	seed?: number;
 	/** ISO date, yyyy-mm-dd. Optional (profiles like whole-fitness may not race). */
 	targetDate?: string;
 	/** Equipment categories the runner has (defaults to everything). */
