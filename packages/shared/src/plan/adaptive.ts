@@ -46,6 +46,9 @@ export function adaptPlan(input: AdaptInput): AdaptResult {
 		profile: input.profile,
 		availableDays: input.availableDays,
 		startDate: input.startDate,
+		// The plan's own seed, so an adapt rebuilds the same rotations the plan was
+		// generated with rather than falling back to the default.
+		seed: input.seed,
 		targetDate: input.targetDate,
 		equipment: input.equipment,
 		machines: input.machines,

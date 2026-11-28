@@ -1117,7 +1117,7 @@
 		<section class="mx-auto max-w-xl">
 			<p class="tabular text-xs uppercase tracking-widest text-steel">Preview</p>
 			<h1 class="font-display mt-1 text-2xl font-bold">Your first week</h1>
-			<p class="mt-2 text-sm text-steel">Take a look at week one. Move a workout to another day, tap one to see what it is for, or add and remove sessions. When it looks right, we save this week and rebuild the weeks ahead around it.</p>
+			<p class="mt-2 text-sm text-steel">This is a model of your first week, built around what you told us. The training science comes first, then the engine's own choices and variety, then your preferences. Move a workout, add or remove a session, and the weeks ahead rebuild around your changes.</p>
 			<p class="mt-2 text-sm text-steel">Your plan starts {weekdayNameFor(resolvedStartDate)}, {fmtShortDate(resolvedStartDate)}.</p>
 
 			{#if planReview}

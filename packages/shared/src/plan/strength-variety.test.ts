@@ -5,6 +5,7 @@ import {
 	buildStrengthCircuit,
 	compositionTitle,
 	findMove,
+	planSeed,
 	strengthTierOf,
 } from './catalog';
 import { leanFocusLabel } from './strength-focus';
@@ -115,6 +116,57 @@ describe('strength variety: rotation', () => {
 		const aMoves = a.weeks.flatMap((w) => w.sessions.filter((s) => s.modality === 'strength')).flatMap(movesOf);
 		const oMoves = other.weeks.flatMap((w) => w.sessions.filter((s) => s.modality === 'strength')).flatMap(movesOf);
 		expect(oMoves).not.toEqual(aMoves);
+	});
+
+	it('derives a stable plan seed from the runner and start date, different per runner', () => {
+		// Stable: the same runner and start date always give the same seed, so a
+		// regeneration rebuilds the plan identically.
+		expect(planSeed('runner-a', '2026-12-01')).toBe(planSeed('runner-a', '2026-12-01'));
+		// Different runners, or a different start date, give a different seed.
+		expect(planSeed('runner-a', '2026-12-01')).not.toBe(planSeed('runner-b', '2026-12-01'));
+		expect(planSeed('runner-a', '2026-12-01')).not.toBe(planSeed('runner-a', '2026-12-08'));
+	});
+
+	it('walks each pattern so no circuit repeats within six weeks', () => {
+		// Two strength sessions a week, so six weeks is twelve circuits. The
+		// machine tier gives every spine pattern a pool of four or more, and the
+		// walking cursor cycles a pattern's order before a move comes back, so a
+		// whole circuit does not recur inside the window.
+		const twoDay: PlanInput = { ...base, baseline: { ...base.baseline, strengthDays: 2 } };
+		const circuits = strengthOf(twoDay).map((s) => movesOf(s).join('|'));
+		const window = 12;
+		expect(circuits.length).toBeGreaterThan(window);
+		for (let i = 0; i < circuits.length; i++) {
+			for (let j = i + 1; j < Math.min(i + window, circuits.length); j++) {
+				expect(circuits[i], `circuit repeated at session ${i} and ${j}`).not.toBe(circuits[j]);
+			}
+		}
+	});
+
+	it('keeps every move inside the level and loaded gates while it walks a pool', () => {
+		// Walk a beginner bodyweight rotation well past its tier pool, so the
+		// any-move fallback is reached, and check no move is above the beginner
+		// rung. A base-phase band walk must not reach a move that needs loading.
+		const walk = (mode: 'bodyweight' | 'bands', loaded: boolean) => {
+			const cursors = new Map<MovePattern, number>();
+			for (let s = 0; s < 30; s++) {
+				const circuit = buildStrengthCircuit({
+					mode,
+					minutes: 60,
+					level: 'beginner',
+					loaded,
+					seed: 1,
+					sessionSeed: s,
+					cursors,
+				});
+				for (const m of circuit) {
+					expect(!m.level || m.level === 'beginner', `${m.name} is ${m.level} for a beginner`).toBe(true);
+					if (!loaded) expect(m.requiresLoaded, `${m.name} needs loading in base`).toBeFalsy();
+				}
+			}
+		};
+		walk('bodyweight', false);
+		walk('bands', false);
 	});
 
 	it('picks deterministically from a seed and differently from another seed', () => {

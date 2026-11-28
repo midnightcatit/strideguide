@@ -1283,6 +1283,79 @@ describe('week anchoring when the plan starts on a non-Monday', () => {
 	});
 });
 
+describe('first week starts at the start date and eases in', () => {
+	// Every weekday as a start, so a session can never land on a day before the
+	// runner begins, whatever day the plan opens on.
+	it('never dates a session before the plan start, in any week', () => {
+		const starts = [
+			'2026-11-30',
+			'2026-12-01',
+			'2026-12-02',
+			'2026-12-03',
+			'2026-12-04',
+			'2026-12-05',
+			'2026-12-06',
+		];
+		for (const startDate of starts) {
+			const p = generatePlan({
+				profile: marathon,
+				baseline: { experience: 'intermediate' },
+				availableDays: [0, 2, 4, 6],
+				startDate,
+				targetDate: '2027-05-01',
+			});
+			for (const w of p.weeks) {
+				for (const s of w.sessions) {
+					const date = addDays(w.startDate, s.day);
+					expect(
+						date >= startDate,
+						`week ${w.weekNumber} ${s.type} on ${date} is before the start ${startDate}`,
+					).toBe(true);
+				}
+			}
+		}
+	});
+
+	it('holds the long run out of an ease-in first week and lands it in week two', () => {
+		const build = (buildPreference: 'ease-in' | 'steady') =>
+			generatePlan({
+				profile: marathon,
+				baseline: { experience: 'intermediate', buildPreference },
+				availableDays: [0, 2, 4, 6],
+				startDate: '2026-11-30',
+				targetDate: '2027-05-01',
+			});
+		// Ease-in: no long run in week one, the first long run in week two.
+		const ease = build('ease-in');
+		expect(ease.weeks[0]!.sessions.some((s) => s.type === 'long')).toBe(false);
+		expect(ease.weeks[1]!.sessions.some((s) => s.type === 'long')).toBe(true);
+		// Without ease-in the first week keeps its long run, as before.
+		const steady = build('steady');
+		expect(steady.weeks[0]!.sessions.some((s) => s.type === 'long')).toBe(true);
+	});
+
+	it('never shares an ease-in first-week day between strength and the easy-run fallback', () => {
+		// availableDays [0, 4] with two strength days: ease-in week one has no long
+		// run, and the released long-run day takes the easy run, so strength must
+		// not also land on it.
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { experience: 'beginner', weeklyKm: 30, strengthDays: 2, buildPreference: 'ease-in' },
+			availableDays: [0, 4],
+			startDate: '2026-11-30',
+			targetDate: '2027-05-01',
+		});
+		const w1 = p.weeks[0]!;
+		for (const day of [0, 4]) {
+			const modalities = w1.sessions.filter((s) => s.day === day).map((s) => s.modality);
+			expect(
+				modalities.includes('strength') && modalities.includes('running'),
+				`day ${day} carries ${modalities.join(', ')}`,
+			).toBe(false);
+		}
+	});
+});
+
 describe('ramp shape (step pattern with stepbacks)', () => {
 	// A half-marathon beginner easing in. The ramp should build for about three
 	// weeks and then take a lighter one, in base as well as build, rather than
