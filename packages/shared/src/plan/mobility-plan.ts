@@ -452,7 +452,7 @@ export const ANCHOR_SECOND_OPTIONS: Record<StretchFocus, string[]> = (() => {
  */
 export function anchorHolds(
 	focus: StretchFocus,
-	seed: string,
+	seed: string | number,
 	week: number,
 	sessionIndex: number,
 ): [string, string] {
@@ -594,7 +594,7 @@ function drillsFrom(names: string[], durationSec: number): Drill[] {
  * same number of drills for the same total time; only which drills change.
  */
 export function rotatedWarmup(
-	seed: string,
+	seed: string | number,
 	week: number,
 	index: number,
 	durationSec: number,
@@ -609,7 +609,7 @@ export function rotatedWarmup(
  * so the cool-down keeps its count and its total time and only the stretches
  * change.
  */
-export function rotatedCooldown(seed: string, week: number, index: number): Drill[] {
+export function rotatedCooldown(seed: string | number, week: number, index: number): Drill[] {
 	const start = stableHash(seed, week, index) % COOLDOWN_ROTATION_POOL.length;
 	return drillsFrom(
 		poolWindow(COOLDOWN_ROTATION_POOL, COOLDOWN_DRILL_COUNT, start),

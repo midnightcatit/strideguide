@@ -115,6 +115,9 @@
 		out.push({ text: p.timeStart ?? (session.slot === 'PM' ? 'Evening' : 'Morning') });
 		if (isStrength) {
 			for (const text of strengthPills(p.blocks)) out.push({ text });
+			// The day's lean, as the parts it adds, so the composition title and
+			// the lean read together instead of contradicting each other.
+			if (p.focus) out.push({ text: p.focus });
 			return out;
 		}
 		const scheme = repSchemeLabel(session);

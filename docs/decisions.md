@@ -27,12 +27,12 @@ and cool-down drills rotate by the same seed: the warm-up draws its fixed count
 from the dynamic drills (the banded ones, which need equipment, are left out)
 and the cool-down its fixed count from the whole static library, each keeping
 the block's own duration, so the warm-up and cool-down counts and total time are
-unchanged and only which drills change. The seed is the plan's own identity (its
-dates, goal and training days), so the same plan inputs always rebuild the same
-plan and every week and session differs. This annotates "Mobility anchors on the
-stated tight area and roams one stretch around it" (2026-11-27): its anchor and
-its roam both stay, and the fixed second hold becomes a rotating one inside the
-same focus.
+unchanged and only which drills change. The seed is the plan seed the strength
+rotation already uses (input.seed, default 1), so the same seed rebuilds the
+same plan and every week and session differs. This annotates "Mobility anchors
+on the stated tight area and roams one stretch around it" (2026-11-27): its
+anchor and its roam both stay, and the fixed second hold becomes a rotating one
+inside the same focus.
 
 Why: a real 25-week plan carried 161 mobility sessions across only 14 routines
 and 79 runs that shared 12 warm-up and cool-down drill labels, each appearing 78
@@ -47,6 +47,63 @@ Rules out: shortening or dropping the anchor, moving the anchor off the stated
 focus, choosing a drill that is not deterministic from the plan seed, changing
 the run work steps, their paces, distances or durations, and changing the
 warm-up or cool-down count or total time.
+
+---
+
+## Strength sessions rotate moves by a seed, and the lean becomes a pill
+
+2026-11-28
+
+Decided: the strength builder stops repeating one fixed circuit. Within each
+pattern slot the move is a seeded pick from that slot's pool, seeded by a stable
+hash of (plan seed, week, day, slot): the same seed always gives the same plan,
+and different weeks or days differ. A move used in the last three strength
+sessions is deprioritized, and when a tier's pattern pool is spent the builder
+widens to bodyweight and then to any move rather than repeat, so nothing repeats
+inside that window while the pools allow. The lower-body spine keeps its pattern
+order (squat or leg press, hinge, knee flexion, calf) and its own exercise rotates
+within its pattern, so the squat slot moves from leg press to hack squat across
+weeks instead of staying fixed. The accessories are shuffled by the same seed. A
+session picks its equipment tier first, from the runner's kit and prefs (machines,
+dumbbell, band, bodyweight; barbell and kettlebell sit with dumbbell), and takes
+its moves from that tier, topping up from bodyweight only when a pattern has no
+move there, which is what makes a two-tier session. The session title is now a
+composition read from the tiers the moves actually hold: one tier reads "Machine
+circuit", "Bodyweight circuit", "Band circuit" or "Dumbbell circuit"; two read
+"<A> and <B> circuit"; three or more read "Mixed circuit". The lean is no longer
+the title. It becomes a prescription `focus` pill naming the parts the lean adds,
+in the finer body-part vocabulary the workout filters already use, joined with
+" + ", most-emphasized first, at most three parts, and "full body" for an unleaned
+day; the card and the session detail render it as a pill. Reps now climb across a
+phase's own weeks rather than stepping only at the boundary: base runs 10 then 11
+then 12, the phase change resets with its drop to build's 8 and peak's 6, and RPE
+drifts up a point across the phase (6 at the low end to 7 at the top). Sets keep
+the existing rule. The two weekly strength days differ by more than the lean:
+their accessory moves and order differ by the seed, and the spine stays.
+
+Why: the owner saw a real 25-week production plan use 14 distinct moves across 336
+slots, the same 8 moves in the same order for 40 of 42 strength sessions, and 2
+sets of 10 reps everywhere, because a beginner sits at 2 sets and reps only moved
+at phase boundaries, while the catalog now holds 227 moves. The phase arc, rest
+bands and set rule are kept because they are the researched parts
+(research/wave-7/17a, the 2009 ACSM position stand). The within-phase rep ramp is
+not covered by the corpus, so it is backed by a wave-9 note
+(research/wave-9/within-phase-progression.md) that cites the real progression
+sources: the 2009 ACSM position stand (8 to 12 RM for novices, and a load increase
+when the current load is performed for one to two reps over target, the
+reps-before-load rule) and Kraemer and Ratamess, 2004. The exact numeric path is a
+chosen encoding of that rule plus the phase arc, not a trial-tested curve, and the
+note says so.
+
+Rules out: one fixed circuit on every strength day; a fixed squat in the spine;
+the lean as the title; a title that claims an equipment tier the moves do not
+hold; a session whose mix the equipment mode cannot explain; a flat rep count
+across a phase; and reading the ramp as research it is not. Supersedes the title
+and the fixed-rotation parts of "Strength sessions are full-body with a lean, not
+split days" and of "The week rotates the strength focus across the body": the lean
+still exists and still adds rather than replaces coverage, the lower-body spine
+still leads every session and still carries about two thirds or more of the
+working sets, and the arc and set rule are unchanged.
 
 ---
 

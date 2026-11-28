@@ -403,6 +403,9 @@
 						/>
 					</span>
 				{/if}
+				{#if p.focus}
+					<span class="rounded-full border border-hairline bg-sunken px-2.5 py-1 text-xs font-medium text-steel">{p.focus}</span>
+				{/if}
 			</div>
 			{#if p.summary}<p class="mt-3 text-sm text-steel">{p.summary}</p>{/if}
 			{#if p.why}
