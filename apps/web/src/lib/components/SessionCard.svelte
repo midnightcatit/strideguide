@@ -1,13 +1,14 @@
 <script lang="ts">
 	import type { ClientLog, ClientSession } from '$lib/plan';
 	import { formatDuration } from '$lib/plan';
-	import { fmtDistance, fmtPace, repSchemeLabel, sessionLabel } from '$lib/prefs.svelte';
+	import { fmtDistance, fmtPace, prefs, repSchemeLabel, sessionLabel } from '$lib/prefs.svelte';
 	import IntensityLadder from '$lib/components/IntensityLadder.svelte';
 	import { isStarted } from '$lib/started.svelte';
 	import { isSkipped } from '$lib/skipped.svelte';
 	import SessionIcon from '$lib/components/SessionIcon.svelte';
 	import { sessionWhyLine } from '$lib/sessionWhy';
 	import { strengthPills } from '$lib/sessionPills';
+	import { sessionScheduleLabel } from '$lib/sessionSchedule';
 
 	let {
 		session,
@@ -110,9 +111,6 @@
 	// Facts that fit, as pills, so the card reads at a glance.
 	const pills = $derived.by(() => {
 		const out: { text: string }[] = [];
-		// A scheduled start time, when the runner blocked out a window, says more
-		// than the bare morning or evening slot, so it takes that pill's place.
-		out.push({ text: p.timeStart ?? (session.slot === 'PM' ? 'Evening' : 'Morning') });
 		if (isStrength) {
 			for (const text of strengthPills(p.blocks)) out.push({ text });
 			// The day's lean, as the parts it adds, so the composition title and
@@ -131,6 +129,9 @@
 		}
 		return out;
 	});
+	// The day and time the runner's preferences plan this for: the engine's own
+	// assigned start, or the window they saved for the day.
+	const when = $derived(sessionScheduleLabel(session.day, p.timeStart, prefs.schedule));
 	// One line for every card, so run and strength cards stay the same height.
 	const metaLine = $derived.by(() => {
 		if (logged) {
@@ -143,8 +144,10 @@
 			}
 			return `${lead}${sync}`;
 		}
-		if (isStrength && machines.length) return machines.map((m) => m.machine).join(' · ');
-		return '';
+		const parts: string[] = [];
+		if (when) parts.push(when);
+		if (isStrength && machines.length) parts.push(machines.map((m) => m.machine).join(' · '));
+		return parts.join(' · ');
 	});
 	// One clause for the card, from the shared reason: the plan's own reason with
 	// the model's rewording where it passed the gate, the static amount note last.
@@ -211,20 +214,24 @@
 			? 'text-steel line-through decoration-2 decoration-steel/50'
 			: ''}">{sessionLabel(session)}</h2>
 
-		<hr class="my-3 border-hairline" />
+		{#if pills.length || whyLine || p.changeNote}
+			<hr class="my-3 border-hairline" />
 
-		<div class="scroll-modern flex gap-1.5 overflow-x-auto" role="list" aria-label="Session facts">
-			{#each pills as pill (pill.text)}
-				<span class="shrink-0 whitespace-nowrap rounded-full border border-badge bg-badge-wash px-2.5 py-1 text-xs font-medium text-badge" role="listitem">{pill.text}</span>
-			{/each}
-		</div>
+			{#if pills.length}
+				<div class="flex min-w-0 flex-wrap gap-1.5" role="list" aria-label="Session facts">
+					{#each pills as pill (pill.text)}
+						<span class="shrink-0 whitespace-nowrap rounded-full border border-badge bg-badge-wash px-2.5 py-1 text-xs font-medium text-badge" role="listitem">{pill.text}</span>
+					{/each}
+				</div>
+			{/if}
 
-		{#if whyLine}
-			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-steel">{whyLine}</p>
-		{/if}
+			{#if whyLine}
+				<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-steel">{whyLine}</p>
+			{/if}
 
-		{#if p.changeNote}
-			<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-signal-ink">{p.changeNote}</p>
+			{#if p.changeNote}
+				<p class="mt-2 line-clamp-2 text-xs leading-relaxed text-signal-ink">{p.changeNote}</p>
+			{/if}
 		{/if}
 
 		<hr class="my-3 border-hairline" />
