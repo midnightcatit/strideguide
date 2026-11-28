@@ -143,6 +143,32 @@ describe('strength variety: rotation', () => {
 		}
 	});
 
+	it('keeps every move inside the level and loaded gates while it walks a pool', () => {
+		// Walk a beginner bodyweight rotation well past its tier pool, so the
+		// any-move fallback is reached, and check no move is above the beginner
+		// rung. A base-phase band walk must not reach a move that needs loading.
+		const walk = (mode: 'bodyweight' | 'bands', loaded: boolean) => {
+			const cursors = new Map<MovePattern, number>();
+			for (let s = 0; s < 30; s++) {
+				const circuit = buildStrengthCircuit({
+					mode,
+					minutes: 60,
+					level: 'beginner',
+					loaded,
+					seed: 1,
+					sessionSeed: s,
+					cursors,
+				});
+				for (const m of circuit) {
+					expect(!m.level || m.level === 'beginner', `${m.name} is ${m.level} for a beginner`).toBe(true);
+					if (!loaded) expect(m.requiresLoaded, `${m.name} needs loading in base`).toBeFalsy();
+				}
+			}
+		};
+		walk('bodyweight', false);
+		walk('bands', false);
+	});
+
 	it('picks deterministically from a seed and differently from another seed', () => {
 		const one = buildStrengthCircuit({ mode: 'machines', minutes: 60, level: 'intermediate', seed: 42 });
 		const same = buildStrengthCircuit({ mode: 'machines', minutes: 60, level: 'intermediate', seed: 42 });

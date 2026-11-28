@@ -501,11 +501,20 @@ export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise
 				: o.mode === 'dumbbells' || o.mode === 'bodyweight-dumbbells'
 					? 'dumbbells'
 					: undefined;
-	const primary = tierPool(tier, o.level, o.loaded ?? false).filter((m) =>
-		moveAvailable(m, o.items, o.machines),
-	);
-	const bw = bodyweightPool(o.level).filter((m) => moveAvailable(m, o.items, o.machines));
-	const anyMove = ALL_MOVES.filter((m) => moveAvailable(m, o.items, o.machines));
+	// The level rungs the runner may use, and the base-phase gate on loaded moves,
+	// so a beginner never draws an advanced progression and a base week never
+	// draws a move that needs loading. Applied to every pool, including the
+	// any-move fallback, so the widening from a thin tier never breaks the gate.
+	const allowedLevels = LEVELS[o.level ?? 'beginner'] ?? LEVELS.beginner!;
+	const withinGates = (m: MachineExercise) =>
+		(!m.level || allowedLevels.includes(m.level)) && ((o.loaded ?? false) || !m.requiresLoaded);
+	const primary = tierPool(tier, o.level, o.loaded ?? false)
+		.filter((m) => moveAvailable(m, o.items, o.machines))
+		.filter(withinGates);
+	const bw = bodyweightPool(o.level)
+		.filter((m) => moveAvailable(m, o.items, o.machines))
+		.filter(withinGates);
+	const anyMove = ALL_MOVES.filter((m) => moveAvailable(m, o.items, o.machines)).filter(withinGates);
 	const recent = new Set(o.recent ?? []);
 	const fav = new Set(o.favorites ?? []);
 	const used = new Set<string>();
@@ -514,8 +523,10 @@ export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise
 	// One stable order per pattern, fixed for the plan by a hash of the plan seed
 	// and the pattern: the runner's own tool first, then the rest of the tier,
 	// then bodyweight, then any move, each group shuffled so the order itself
-	// differs per pattern. `solidEnd` is where the any-move fallback starts, so a
-	// favorite is only honored from the moves the runner actually has.
+	// differs per pattern. `solidEnd` is where the any-move fallback starts. The
+	// cursor walks only the proper pool before `solidEnd`; the fallback after it is
+	// a last resort for a pattern whose proper pool has no fresh move, so a slot
+	// never widens while an allowed move is still available.
 	const orderCache = new Map<MovePattern, { order: MachineExercise[]; solidEnd: number }>();
 	const orderFor = (pattern: MovePattern): { order: MachineExercise[]; solidEnd: number } => {
 		const cached = orderCache.get(pattern);
@@ -547,11 +558,14 @@ export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise
 		const pattern = orderedPatterns[i % orderedPatterns.length]!;
 		const { order, solidEnd } = orderFor(pattern);
 		if (!order.length) break;
-		const start = (o.cursors?.get(pattern) ?? 0) % order.length;
+		const solid = order.slice(0, solidEnd);
+		const fallback = order.slice(solidEnd);
+		const start = solid.length ? (o.cursors?.get(pattern) ?? 0) % solid.length : 0;
 		const fresh = (m: MachineExercise) => !used.has(m.name) && !recent.has(m.name);
+		const usable = (m: MachineExercise) => !used.has(m.name);
 		// A favorite move the runner has wins when it is fresh, as before; the
-		// search stays inside the tier and bodyweight moves, so a favorite the
-		// runner's kit cannot make is never forced in from the any-move fallback.
+		// search stays inside the proper pool, so a favorite the runner's kit
+		// cannot make is never forced in from the any-move fallback.
 		let index = -1;
 		for (let k = 0; k < solidEnd; k++) {
 			if (fav.has(order[k]!.name) && fresh(order[k]!)) {
@@ -559,23 +573,42 @@ export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise
 				break;
 			}
 		}
-		if (index < 0) {
-			// Walk the order from the cursor to the next fresh move.
-			for (let k = 0; k < order.length; k++) {
-				const j = (start + k) % order.length;
-				if (fresh(order[j]!)) {
+		// Walk the proper pool from the cursor to the next fresh move.
+		if (index < 0 && solid.length) {
+			for (let k = 0; k < solid.length; k++) {
+				const j = (start + k) % solid.length;
+				if (fresh(solid[j]!)) {
 					index = j;
 					break;
 				}
 			}
 		}
-		// Every move this slot can take is used or recent: take the next unused one
-		// rather than dropping the slot, which keeps the spine whole.
+		// The proper pool has no fresh move: widen to the any-move fallback, which
+		// still respects the level and loaded gates.
 		if (index < 0) {
-			for (let k = 0; k < order.length; k++) {
-				const j = (start + k) % order.length;
-				if (!used.has(order[j]!.name)) {
+			for (let k = 0; k < fallback.length; k++) {
+				if (fresh(fallback[k]!)) {
+					index = solidEnd + k;
+					break;
+				}
+			}
+		}
+		// Every move is used or recent: take the next unused from the proper pool,
+		// then the fallback, rather than dropping the slot, which keeps the spine
+		// whole.
+		if (index < 0 && solid.length) {
+			for (let k = 0; k < solid.length; k++) {
+				const j = (start + k) % solid.length;
+				if (usable(solid[j]!)) {
 					index = j;
+					break;
+				}
+			}
+		}
+		if (index < 0) {
+			for (let k = 0; k < fallback.length; k++) {
+				if (usable(fallback[k]!)) {
+					index = solidEnd + k;
 					break;
 				}
 			}
@@ -584,9 +617,10 @@ export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise
 		const pick = order[index]!;
 		used.add(pick.name);
 		out.push(pick);
-		// The cursor moves past the move this slot took, so the order is walked and
-		// a move does not return until the whole order has cycled.
-		o.cursors?.set(pattern, index + 1);
+		// The cursor moves past the move this slot took from the proper pool, so a
+		// move does not return until that pool has cycled. A fallback pick leaves
+		// the cursor in place, so the walk resumes where it left off.
+		if (solid.length && index < solidEnd) o.cursors?.set(pattern, index + 1);
 	}
 	return out;
 }

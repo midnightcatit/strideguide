@@ -1333,6 +1333,27 @@ describe('first week starts at the start date and eases in', () => {
 		const steady = build('steady');
 		expect(steady.weeks[0]!.sessions.some((s) => s.type === 'long')).toBe(true);
 	});
+
+	it('never shares an ease-in first-week day between strength and the easy-run fallback', () => {
+		// availableDays [0, 4] with two strength days: ease-in week one has no long
+		// run, and the released long-run day takes the easy run, so strength must
+		// not also land on it.
+		const p = generatePlan({
+			profile: marathon,
+			baseline: { experience: 'beginner', weeklyKm: 30, strengthDays: 2, buildPreference: 'ease-in' },
+			availableDays: [0, 4],
+			startDate: '2026-11-30',
+			targetDate: '2027-05-01',
+		});
+		const w1 = p.weeks[0]!;
+		for (const day of [0, 4]) {
+			const modalities = w1.sessions.filter((s) => s.day === day).map((s) => s.modality);
+			expect(
+				modalities.includes('strength') && modalities.includes('running'),
+				`day ${day} carries ${modalities.join(', ')}`,
+			).toBe(false);
+		}
+	});
 });
 
 describe('ramp shape (step pattern with stepbacks)', () => {

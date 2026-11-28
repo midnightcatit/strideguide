@@ -27,15 +27,16 @@ therefore does not return until the pattern's order has been walked, and the
 three-session recency window stays as a guard. The cursor is kept for the whole
 plan, so it walks across weeks rather than resetting each session, and the
 accessory order still varies by the session seed so the week's two days differ in
-order. Where a tier's pool is thin, the order widens to bodyweight and then any
-move, so the rotation runs longer than the tier alone allows; the machine tier's
-knee-extension pool is two moves and the band tier has two or three for most
-patterns, so a slot there still returns sooner. Week one already begins at the
-start date; this pins it with a test that no session is dated before the start in
-any week, across every start weekday. An ease-in plan now holds the long run out
-of week one, with the first long run in week two, and the long-run day holds easy
-running instead so the week keeps its volume, the same way a recovery week holds
-its volume.
+order. The any-move fallback widens from a thin tier only when the pattern's
+proper pool has no fresh move, and it respects the runner's level and the
+base-phase loaded gate, so a beginner never draws an advanced progression; the
+machine tier's knee-extension pool is two moves and the band tier has two or
+three for most patterns, so a slot there still returns sooner. Week one already
+begins at the start date; this pins it with a test that no session is dated
+before the start in any week, across every start weekday. An ease-in plan now
+holds the long run out of week one, with the first long run in week two, and the
+long-run day takes the easy run that replaces it, so strength never lands on that
+day, the same way a recovery week holds its volume.
 
 Why: a real 21-week plan returned the same strength circuits every two to four
 weeks (weeks 4 and 5 repeated weeks 2 and 3 exactly, and week 9 came back at week

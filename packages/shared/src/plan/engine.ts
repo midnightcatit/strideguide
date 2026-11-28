@@ -1576,14 +1576,18 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					),
 				)
 			: 0;
-		// A week with no long run (a recovery week, or an ease-in first week) does
-		// not reserve the long-run day: it can take an easy run, so the easy runs
-		// cover the whole week rather than leaving that day empty. Otherwise the
+		// A recovery week carries no long run, so the long-run day is not reserved:
+		// it can take an easy run, so the easy runs cover the whole week rather than
+		// leaving that day empty. An ease-in first week has no long run either, but
+		// its long-run day is reserved for the easy run that replaces it, so
+		// strength never takes that day and then shares it with a run. Otherwise the
 		// long run, the quality slots and the recovery day are reserved for running,
 		// so strength never takes them.
 		const reservedRunDays = hasLongRun
 			? [longDay, ...slotDays, ...(recoveryDay !== undefined ? [recoveryDay] : [])]
-			: [...slotDays];
+			: easeInWeekOne
+				? [longDay, ...slotDays]
+				: [...slotDays];
 		const usedForRun = new Set(reservedRunDays);
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
@@ -1605,6 +1609,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		let easyDays = [
 			...softDays,
 			...(recoveryDay !== undefined ? [recoveryDay] : []),
+			...(easeInWeekOne ? [longDay] : []),
 			...runFree.slice(habitDays),
 		];
 		const nonLongRuns =
