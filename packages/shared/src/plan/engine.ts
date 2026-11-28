@@ -19,7 +19,7 @@ import {
 	STRENGTH_RECENT_SESSIONS,
 	type StrengthFocus,
 } from './catalog';
-import type { MachineExercise } from './machines';
+import type { MachineExercise, MovePattern } from './machines';
 import { leanFocusLabel } from './strength-focus';
 import {
 	COOLDOWN_STRETCHES,
@@ -1354,6 +1354,10 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	// The moves of the last few strength sessions, deprioritized by the builder
 	// so nothing repeats inside that window while the pools allow.
 	const recentStrengthSessions: string[][] = [];
+	// The walking cursor per pattern, kept for the whole plan, so each pattern
+	// slot walks its own stable order rather than returning to the same move every
+	// few weeks. The order is seeded once per plan, so the same seed replays it.
+	const strengthCursors = new Map<MovePattern, number>();
 
 	// A given race time is the most trustworthy anchor. Failing that, an effective
 	// VDOT read from the runner's own logged hard efforts, so paces follow what
@@ -1530,11 +1534,16 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// own, so neither is worth prescribing. The taper keeps its intensity, so it
 		// is left out of this.
 		const easyOnlyWeek = !isRecovery && phase !== 'taper' && volume < MIN_RUN_KM * 2;
+		// An ease-in plan holds the long run out of the first week, so the runner
+		// opens with easy running and the first long run lands in week two. Every
+		// other week keeps the long run, and a recovery week never has one.
+		const easeInWeekOne = w === 0 && (input.baseline.buildPreference ?? 'steady') === 'ease-in';
+		const hasLongRun = !isRecovery && !easeInWeekOne;
 		// The day after the long run is the recovery day. When the long run sits on
 		// the week's last day and the first run day follows it directly, that first
 		// day is kept off the hard work (research/wave-6, sections 2 and 3: the day
 		// after a long run is rest, easy or cross-training, not a hard session).
-		const recoveryDay = !isRecovery && longDay === 6 && days.includes(0) ? 0 : undefined;
+		const recoveryDay = hasLongRun && longDay === 6 && days.includes(0) ? 0 : undefined;
 		// Hard sessions are chosen from the non-long-run days, keeping two easy days
 		// between them and staying off the recovery day.
 		const hardPool = rest.filter((d) => d !== recoveryDay);
@@ -1558,22 +1567,27 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		// of a genuinely short week can be under the standard minimum length. Every
 		// other week keeps the floor.
 		const longMinKm = isPartialFirstWeek ? 0 : 3;
-		let longKm = isRecovery
-			? 0
-			: round1(
+		let longKm = hasLongRun
+			? round1(
 					clamp(
 						Math.min(longTargets[w]! * longEase, volume * LONG_RUN_SHARE_CEILING),
 						longMinKm,
 						38,
 					),
-				);
+				)
+			: 0;
 		// A recovery week carries no long run, so the long-run day is not reserved:
 		// it can take an easy run, so the easy runs cover the whole week rather than
-		// leaving that day empty. Otherwise the long run, the quality slots and the
-		// recovery day are reserved for running, so strength never takes them.
-		const reservedRunDays = isRecovery
-			? [...slotDays]
-			: [longDay, ...slotDays, ...(recoveryDay !== undefined ? [recoveryDay] : [])];
+		// leaving that day empty. An ease-in first week has no long run either, but
+		// its long-run day is reserved for the easy run that replaces it, so
+		// strength never takes that day and then shares it with a run. Otherwise the
+		// long run, the quality slots and the recovery day are reserved for running,
+		// so strength never takes them.
+		const reservedRunDays = hasLongRun
+			? [longDay, ...slotDays, ...(recoveryDay !== undefined ? [recoveryDay] : [])]
+			: easeInWeekOne
+				? [longDay, ...slotDays]
+				: [...slotDays];
 		const usedForRun = new Set(reservedRunDays);
 		const runFree = days.filter((d) => !usedForRun.has(d));
 
@@ -1595,6 +1609,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		let easyDays = [
 			...softDays,
 			...(recoveryDay !== undefined ? [recoveryDay] : []),
+			...(easeInWeekOne ? [longDay] : []),
 			...runFree.slice(habitDays),
 		];
 		const nonLongRuns =
@@ -1676,23 +1691,21 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			(d) => d !== recoveryDay && d !== longDay - 1 && d !== longDay,
 		);
 		const mediumLongDay =
-			!isRecovery && volume >= MEDIUM_LONG_MIN_VOLUME_KM && mediumLongCandidates.length
+			hasLongRun && volume >= MEDIUM_LONG_MIN_VOLUME_KM && mediumLongCandidates.length
 				? mediumLongCandidates[mediumLongCandidates.length - 1]
 				: undefined;
 		const mediumLongKm =
 			mediumLongDay !== undefined
 				? round1(clamp(volume * MEDIUM_LONG_SHARE, 8, Math.min(longKm - 0.5, 24)))
 				: 0;
-		// A recovery week has no long run, so its easy runs take the whole week.
-		// Otherwise an easy run may reach just under the long run, so a week with
-		// few other runs (a short week, or a cross-heavy one) can still hold the
-		// long run to half of what the runner sees. The long run stays the longest.
-		// A short first week with no long run lets its single easy run take the whole
-		// (small) week, so the run is real rather than a token jog.
-		const easyCap =
-			isRecovery || skipLongRun
-				? Math.max(1, round1(volume))
-				: Math.max(1, round1(longKm - 0.1));
+		// A week with no long run (a recovery week, or an ease-in first week) lets
+		// its easy runs take the whole week. Otherwise an easy run may reach just
+		// under the long run, so a week with few other runs (a short week, or a
+		// cross-heavy one) can still hold the long run to half of what the runner
+		// sees. The long run stays the longest. A short first week with no long run
+		// lets its single easy run take the whole (small) week, so the run is real
+		// rather than a token jog.
+		const easyCap = !hasLongRun || skipLongRun ? Math.max(1, round1(volume)) : Math.max(1, round1(longKm - 0.1));
 		const otherEasyDays = easyDays.filter((d) => d !== mediumLongDay);
 		// Quality bookends scale with the session, and the reps fill what is left.
 		const { wu: qWu, cd: qCd } = qualityWarmupCooldown(qualityKm);
@@ -1701,7 +1714,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 		const sessions: PlannedSession[] = [];
 
 		// long run
-		if (!isRecovery && !skipLongRun) {
+		if (hasLongRun && !skipLongRun) {
 			sessions.push({
 				day: longDay,
 				slot: 'AM',
@@ -1953,6 +1966,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				weekInPhase: weekInPhase[w]!,
 				phaseWeeks: phaseLengths.get(phase) ?? 1,
 				seed: planSeed,
+				cursors: strengthCursors,
 				recent: recentStrengthSessions.slice(-STRENGTH_RECENT_SESSIONS).flat(),
 			});
 			sessions.push(session);
@@ -2296,6 +2310,8 @@ interface StrengthContext {
 	weekInPhase: number;
 	phaseWeeks: number;
 	seed: number;
+	/** The walking cursor per pattern, advanced as each pattern is used. */
+	cursors: Map<MovePattern, number>;
 	recent: string[];
 }
 
@@ -2307,7 +2323,14 @@ function strengthSession(
 	strengthIntent?: StrengthIntent,
 	index = 0,
 	count = 1,
-	ctx: StrengthContext = { week: 0, weekInPhase: 0, phaseWeeks: 1, seed: 1, recent: [] },
+	ctx: StrengthContext = {
+		week: 0,
+		weekInPhase: 0,
+		phaseWeeks: 1,
+		seed: 1,
+		cursors: new Map(),
+		recent: [],
+	},
 ): PlannedSession {
 	const mode = input.baseline.equipment ?? 'machines';
 	const level = input.baseline.experience ?? 'beginner';
@@ -2315,15 +2338,17 @@ function strengthSession(
 	const heavySport = load.heavy;
 	const loaded = phase !== 'base';
 	const focus = focusFor(index, count);
-	// The session's own seed, from the plan seed, week, day and slot, so the same
-	// plan always picks the same moves and different weeks and days differ.
+	// The session's own seed, from the plan seed, week, day and slot, so the
+	// accessory order differs day to day and week to week; the move each pattern
+	// slot picks comes from the plan-seeded walking cursor below, so a slot does
+	// not return to a move until its order has been walked.
 	const slotSeed = hashSeed(ctx.seed, ctx.week, day, slot, index);
 	// A favorite strength workout wins when the runner has one and it fits, since
 	// it is their own choice of session; it carries no lean of ours, so the why
 	// stays neutral below. Otherwise the seeded builder picks the day's circuit:
 	// the lower-body spine in its fixed pattern order, the accessories shuffled
-	// by the same seed, and each move a seeded pick from the tier's pool with the
-	// last few sessions' moves deprioritized.
+	// by the session seed, and each pattern walked through its own stable order
+	// with the last few sessions' moves skipped.
 	const own = favoriteStrengthMoves(input);
 	const fullCircuit =
 		own ??
@@ -2336,7 +2361,9 @@ function strengthSession(
 			machines: input.machines,
 			favorites: input.favoriteMachines,
 			focus,
-			seed: slotSeed,
+			seed: ctx.seed,
+			sessionSeed: slotSeed,
+			cursors: ctx.cursors,
 			recent: ctx.recent,
 		});
 	// A heavy sport week already carries load, so the circuit comes down a size.

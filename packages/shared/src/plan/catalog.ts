@@ -360,6 +360,16 @@ export function hashSeed(...parts: (string | number)[]): number {
 	return h >>> 0;
 }
 
+/**
+ * The stable seed for a plan, from its own identity: the runner's id and the
+ * plan's start date. Two runners, or one runner's two plans with different
+ * start dates, get different seeds, so their rotations differ; regenerating the
+ * same plan gives the same seed, so it rebuilds identically.
+ */
+export function planSeed(userId: string, startDate: string): number {
+	return hashSeed(userId, startDate);
+}
+
 /** A small deterministic PRNG (mulberry32), so a seed always replays the same picks. */
 function mulberry32(seed: number): () => number {
 	let a = seed >>> 0;
@@ -441,64 +451,176 @@ export interface StrengthCircuitOptions {
 	machines?: string[];
 	favorites?: string[];
 	focus?: StrengthFocus | null;
-	/** Seed for the rotation, from a stable hash of (plan seed, week, day, slot). */
+	/**
+	 * The plan seed. Each pattern's move order is a stable seeded shuffle of this,
+	 * so the same plan always walks the same order.
+	 */
 	seed?: number;
+	/**
+	 * A per-session seed for the accessory order, so the week's two strength days
+	 * differ in the order of their work. Defaults to `seed`, so a direct call with
+	 * one seed is still one deterministic circuit.
+	 */
+	sessionSeed?: number;
+	/**
+	 * The walking cursor per pattern, advanced in place as the pattern is used, so
+	 * a slot returns to a move only after its order has been walked. Absent, every
+	 * pattern starts at the head of its order.
+	 */
+	cursors?: Map<MovePattern, number>;
 	/** Move names used in the last few sessions, deprioritized in every slot. */
 	recent?: string[];
 }
 
 /**
  * The seeded circuit builder the engine uses. The spine's pattern order is kept,
- * the accessories are shuffled by the seed, and each pattern's move is a seeded
- * pick from its tier's pool. A move used in the last few sessions is
- * deprioritized, so nothing repeats inside that window while pools allow. The
- * tier is chosen first, and a pattern with no move in that tier tops up from
- * bodyweight, which is what makes a two-tier composition.
+ * the accessories are shuffled by the session seed, and each pattern walks its
+ * own stable, plan-seeded order so a slot returns to a move only after the order
+ * has been walked. A move used in the last few sessions is skipped, so nothing
+ * repeats inside that window while the pools allow. The order lists the runner's
+ * own tool first, then the rest of the tier, then bodyweight, then any move, so
+ * a thin tier pool widens rather than repeating early, which is what makes a
+ * two-tier composition.
  */
 export function buildStrengthCircuit(o: StrengthCircuitOptions): MachineExercise[] {
 	const size = circuitSize(o.minutes);
 	const patternSeq = o.focus?.patterns ?? PATTERN_SEQUENCE;
 	const spine = patternSeq.slice(0, LOWER_SPINE.length);
 	const accessories = patternSeq.slice(LOWER_SPINE.length);
-	const rng = mulberry32(o.seed ?? 0);
-	const orderedPatterns = [...spine, ...seededShuffle(accessories, rng)];
+	const sessionRng = mulberry32(o.sessionSeed ?? o.seed ?? 0);
+	const orderedPatterns = [...spine, ...seededShuffle(accessories, sessionRng)];
 
 	const tier = primaryTierFor(o.mode ?? 'machines', o.loaded ?? false);
-	const primary = tierPool(tier, o.level, o.loaded ?? false).filter((m) =>
-		moveAvailable(m, o.items, o.machines),
-	);
-	const bw = bodyweightPool(o.level).filter((m) => moveAvailable(m, o.items, o.machines));
-	const anyMove = ALL_MOVES.filter((m) => moveAvailable(m, o.items, o.machines));
+	// The runner's own tool, when they named one, leads the tier: a kettlebell
+	// runner sees kettlebell moves first rather than a plain dumbbell draw.
+	const preferredTool =
+		o.mode === 'kettlebell'
+			? 'kettlebell'
+			: o.mode === 'barbell'
+				? 'barbell'
+				: o.mode === 'dumbbells' || o.mode === 'bodyweight-dumbbells'
+					? 'dumbbells'
+					: undefined;
+	// The level rungs the runner may use, and the base-phase gate on loaded moves,
+	// so a beginner never draws an advanced progression and a base week never
+	// draws a move that needs loading. Applied to every pool, including the
+	// any-move fallback, so the widening from a thin tier never breaks the gate.
+	const allowedLevels = LEVELS[o.level ?? 'beginner'] ?? LEVELS.beginner!;
+	const withinGates = (m: MachineExercise) =>
+		(!m.level || allowedLevels.includes(m.level)) && ((o.loaded ?? false) || !m.requiresLoaded);
+	const primary = tierPool(tier, o.level, o.loaded ?? false)
+		.filter((m) => moveAvailable(m, o.items, o.machines))
+		.filter(withinGates);
+	const bw = bodyweightPool(o.level)
+		.filter((m) => moveAvailable(m, o.items, o.machines))
+		.filter(withinGates);
+	const anyMove = ALL_MOVES.filter((m) => moveAvailable(m, o.items, o.machines)).filter(withinGates);
 	const recent = new Set(o.recent ?? []);
 	const fav = new Set(o.favorites ?? []);
 	const used = new Set<string>();
 	const out: MachineExercise[] = [];
 
+	// One stable order per pattern, fixed for the plan by a hash of the plan seed
+	// and the pattern: the runner's own tool first, then the rest of the tier,
+	// then bodyweight, then any move, each group shuffled so the order itself
+	// differs per pattern. `solidEnd` is where the any-move fallback starts. The
+	// cursor walks only the proper pool before `solidEnd`; the fallback after it is
+	// a last resort for a pattern whose proper pool has no fresh move, so a slot
+	// never widens while an allowed move is still available.
+	const orderCache = new Map<MovePattern, { order: MachineExercise[]; solidEnd: number }>();
+	const orderFor = (pattern: MovePattern): { order: MachineExercise[]; solidEnd: number } => {
+		const cached = orderCache.get(pattern);
+		if (cached) return cached;
+		const rng = mulberry32(hashSeed(o.seed ?? 0, pattern));
+		const seen = new Set<string>();
+		const take = (list: MachineExercise[]) => {
+			const group: MachineExercise[] = [];
+			for (const m of list) {
+				if (m.pattern !== pattern || seen.has(m.name)) continue;
+				seen.add(m.name);
+				group.push(m);
+			}
+			return seededShuffle(group, rng);
+		};
+		const primaryGroup = take(primary);
+		const preferred = preferredTool
+			? primaryGroup.filter((m) => m.equipment === preferredTool)
+			: [];
+		const rest = primaryGroup.filter((m) => !preferred.includes(m));
+		const bwGroup = take(bw);
+		const order = [...preferred, ...rest, ...bwGroup, ...take(anyMove)];
+		const entry = { order, solidEnd: preferred.length + rest.length + bwGroup.length };
+		orderCache.set(pattern, entry);
+		return entry;
+	};
+
 	for (let i = 0; i < size; i++) {
 		const pattern = orderedPatterns[i % orderedPatterns.length]!;
-		const fresh = (pool: MachineExercise[]) =>
-			pool.filter((m) => m.pattern === pattern && !used.has(m.name));
-		const primaryFresh = fresh(primary);
-		const bwFresh = fresh(bw);
-		const anyFresh = fresh(anyMove);
-		const notRecent = (list: MachineExercise[]) => list.filter((m) => !recent.has(m.name));
-		// Prefer a move the runner has not used this window, widening the tier when
-		// the tier's pattern pool is spent: the primary tier first, then bodyweight,
-		// then any move. Only when every pool is recent or empty does a repeat fall
-		// back in, which is what keeps nothing repeating inside the window.
-		const pools = [
-			notRecent(primaryFresh),
-			notRecent(bwFresh),
-			notRecent(anyFresh),
-			primaryFresh,
-			bwFresh,
-			anyFresh,
-		];
-		const pool = pools.find((p) => p.length) ?? [];
-		if (!pool.length) break;
-		const pick = pool.find((m) => fav.has(m.name)) ?? pool[Math.floor(rng() * pool.length)]!;
+		const { order, solidEnd } = orderFor(pattern);
+		if (!order.length) break;
+		const solid = order.slice(0, solidEnd);
+		const fallback = order.slice(solidEnd);
+		const start = solid.length ? (o.cursors?.get(pattern) ?? 0) % solid.length : 0;
+		const fresh = (m: MachineExercise) => !used.has(m.name) && !recent.has(m.name);
+		const usable = (m: MachineExercise) => !used.has(m.name);
+		// A favorite move the runner has wins when it is fresh, as before; the
+		// search stays inside the proper pool, so a favorite the runner's kit
+		// cannot make is never forced in from the any-move fallback.
+		let index = -1;
+		for (let k = 0; k < solidEnd; k++) {
+			if (fav.has(order[k]!.name) && fresh(order[k]!)) {
+				index = k;
+				break;
+			}
+		}
+		// Walk the proper pool from the cursor to the next fresh move.
+		if (index < 0 && solid.length) {
+			for (let k = 0; k < solid.length; k++) {
+				const j = (start + k) % solid.length;
+				if (fresh(solid[j]!)) {
+					index = j;
+					break;
+				}
+			}
+		}
+		// The proper pool has no fresh move: widen to the any-move fallback, which
+		// still respects the level and loaded gates.
+		if (index < 0) {
+			for (let k = 0; k < fallback.length; k++) {
+				if (fresh(fallback[k]!)) {
+					index = solidEnd + k;
+					break;
+				}
+			}
+		}
+		// Every move is used or recent: take the next unused from the proper pool,
+		// then the fallback, rather than dropping the slot, which keeps the spine
+		// whole.
+		if (index < 0 && solid.length) {
+			for (let k = 0; k < solid.length; k++) {
+				const j = (start + k) % solid.length;
+				if (usable(solid[j]!)) {
+					index = j;
+					break;
+				}
+			}
+		}
+		if (index < 0) {
+			for (let k = 0; k < fallback.length; k++) {
+				if (usable(fallback[k]!)) {
+					index = solidEnd + k;
+					break;
+				}
+			}
+		}
+		if (index < 0) break;
+		const pick = order[index]!;
 		used.add(pick.name);
 		out.push(pick);
+		// The cursor moves past the move this slot took from the proper pool, so a
+		// move does not return until that pool has cycled. A fallback pick leaves
+		// the cursor in place, so the walk resumes where it left off.
+		if (solid.length && index < solidEnd) o.cursors?.set(pattern, index + 1);
 	}
 	return out;
 }

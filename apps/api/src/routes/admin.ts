@@ -8,7 +8,7 @@ import type {
 	SessionArchetype,
 	SessionPrescription,
 } from '@strideguide/shared';
-import { rebuildFromWeekOne, type WeekOneSession } from '@strideguide/shared/plan';
+import { rebuildFromWeekOne, planSeed, type WeekOneSession } from '@strideguide/shared/plan';
 import { ageFromBirthYear } from '@strideguide/shared/units';
 import { schema } from '../db';
 import { deleteUserAccount } from '../lib/account';
@@ -476,6 +476,7 @@ async function rebuildUserPlanFromWeekOne(
 			? (goal.availableDays as number[])
 			: [0, 2, 4],
 		startDate: firstWeek.startDate ?? new Date().toISOString().slice(0, 10),
+		seed: planSeed(userId, firstWeek.startDate ?? new Date().toISOString().slice(0, 10)),
 		targetDate: goal.targetDate ?? undefined,
 		equipment: baseline.equipmentItems,
 		machines: resolveMachines(prefs),
