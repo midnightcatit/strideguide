@@ -309,6 +309,27 @@ describe('mobility variety and dose (17b)', () => {
 		}
 	});
 
+	it('refuses a roaming stretch that shares an aliased target with an anchor', () => {
+		// 'Calf stretch' names 'Achilles' and 'calves'; the anchor names 'Achilles
+		// tendon' and 'gastrocnemius'. They fold to the same keys, so a week near
+		// the plateau on the calf refuses the roam instead of reading zero on the
+		// alias and slipping past the plateau.
+		expect(stretchTargets('Calf stretch')).toContain('Achilles tendon');
+		expect(stretchTargets('Calf stretch')).toContain('gastrocnemius');
+		const calf = ROAMING_ORDER.indexOf('Calf stretch');
+		expect(calf).toBeGreaterThan(-1);
+		// With room on the calf, the roam is taken.
+		expect(pickRoamingIndex('hamstrings-calves', new Map(), calf)).toBe(calf);
+		// With the calf near the plateau, it is refused and the scan moves on to a
+		// stretch whose targets are clear.
+		const near = new Map<string, number>();
+		near.set('Achilles tendon', WEEKLY_STRETCH_PLATEAU_SEC - 40);
+		near.set('gastrocnemius', WEEKLY_STRETCH_PLATEAU_SEC - 40);
+		const picked = pickRoamingIndex('hamstrings-calves', near, calf);
+		expect(picked).not.toBe(calf);
+		expect(picked).toBeGreaterThanOrEqual(0);
+	});
+
 	it('cycles the whole roaming pool before it repeats', () => {
 		// The pool is wider than the focus routines alone: it carries the extra and
 		// cool-down holds the mobility library keeps, so the roam reaches the whole

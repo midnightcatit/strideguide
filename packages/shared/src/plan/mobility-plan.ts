@@ -360,9 +360,38 @@ export const ROAMING_ORDER: string[] = (() => {
 	return order;
 })();
 
-/** Every muscle and structure a stretch names, for the weekly dose ledger. */
+/**
+ * One canonical key per muscle or structure. The stretch library names some
+ * targets more precisely than the cool-down and extra holds do ('Achilles
+ * tendon' beside 'Achilles', 'gastrocnemius' beside 'calves'), and the weekly
+ * plateau is counted per target, so the aliases fold to one key before any dose
+ * is counted. Without this a hold could read zero against a muscle the week has
+ * already filled and slip past the plateau on an alias.
+ */
+const TARGET_ALIASES: Record<string, string> = {
+	calves: 'gastrocnemius',
+	calf: 'gastrocnemius',
+	Achilles: 'Achilles tendon',
+	'Achilles area': 'Achilles tendon',
+	glutes: 'gluteus maximus',
+	quads: 'quadriceps',
+	'inner thigh': 'adductors',
+	'mid-back': 'thoracic spine',
+};
+
+/** One target's canonical key: the alias table when it names an alias. */
+export function canonicalTarget(target: string): string {
+	return TARGET_ALIASES[target] ?? target;
+}
+
+/**
+ * Every muscle and structure a stretch names, for the weekly dose ledger, folded
+ * to canonical keys and deduped so an alias and its canonical name never count
+ * the same seconds twice.
+ */
 export function stretchTargets(name: string): string[] {
-	return findDrill(name)?.targets ?? [];
+	const targets = (findDrill(name)?.targets ?? []).map(canonicalTarget);
+	return [...new Set(targets)];
 }
 
 /**
