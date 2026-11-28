@@ -33,6 +33,7 @@ import {
 import { WORKOUT_LIBRARY, type LibraryWorkout } from './library';
 import {
 	addHoldDose,
+	anchorHolds,
 	FOCUS_AREA_PHRASE,
 	FOCUS_AREA_TITLE,
 	mobilityAnchorFocuses,
@@ -40,6 +41,8 @@ import {
 	mobilitySessionRoutine,
 	pickRoamingIndex,
 	ROAMING_ORDER,
+	rotatedCooldown,
+	rotatedWarmup,
 	type StretchFocus,
 } from './mobility-plan';
 import { ageBuildFactor, suggestedWeeklyKm } from './recommend';
@@ -568,6 +571,36 @@ function cooldownStep(paces: TrainingPaces | undefined, km = COOLDOWN_KM): Worko
 }
 
 /**
+ * Where a session sits in the plan, for the run drill rotation: the plan seed,
+ * the week and an index. The engine passes it so a run's warm-up and cool-down
+ * drills rotate the same deterministic way the mobility holds do. With none the
+ * builders keep the fixed drills they always carried.
+ */
+interface DrillRotation {
+	seed: number;
+	week: number;
+	index: number;
+}
+
+/** The warm-up drills for one run: the rotated pool, or the fixed set. */
+function warmupDrills(rotation: DrillRotation | undefined, quality: boolean): Drill[] {
+	if (rotation) {
+		const durationSec = quality
+			? QUALITY_WARMUP_DRILLS[0]!.durationSec
+			: WARMUP_DRILLS[1]!.durationSec;
+		return rotatedWarmup(rotation.seed, rotation.week, rotation.index, durationSec);
+	}
+	return quality ? QUALITY_WARMUP_DRILLS : WARMUP_DRILLS.slice(1);
+}
+
+/** The cool-down stretches for one run: the rotated pool, or the fixed set. */
+function cooldownDrills(rotation: DrillRotation | undefined): Drill[] {
+	return rotation
+		? rotatedCooldown(rotation.seed, rotation.week, rotation.index)
+		: COOLDOWN_STRETCHES;
+}
+
+/**
  * The run warm-up and cool-down for a quality session, scaled to the session so
  * a light week is not mostly warm-up. A short session gets short, easy bookends.
  */
@@ -614,11 +647,12 @@ function singleRunWorkout(
 	type: SessionArchetype,
 	distanceKm: number,
 	paces?: TrainingPaces,
+	rotation?: DrillRotation,
 ): StructuredWorkout {
 	const p = paces ?? DEFAULT_PACES;
 	return {
 		blocks: [
-			drillBlock('Dynamic warm-up', WARMUP_DRILLS.slice(1), 'warmup'),
+			drillBlock('Dynamic warm-up', warmupDrills(rotation, false), 'warmup'),
 			{
 				repeat: 1,
 				steps: [
@@ -637,7 +671,7 @@ function singleRunWorkout(
 					},
 				],
 			},
-			drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
+			drillBlock('Cool-down stretches', cooldownDrills(rotation), 'cooldown'),
 		],
 		totalDistanceKm: distanceKm,
 	};
@@ -648,10 +682,11 @@ function tempoWorkout(
 	wuKm: number,
 	cdKm: number,
 	paces?: TrainingPaces,
+	rotation?: DrillRotation,
 ): StructuredWorkout {
 	const blocks: StepBlock[] = [
 		raiseBlock(paces, wuKm),
-		drillBlock('Dynamic warm-up', QUALITY_WARMUP_DRILLS, 'warmup'),
+		drillBlock('Dynamic warm-up', warmupDrills(rotation, true), 'warmup'),
 		stridesBlock(),
 		{
 			repeat: 1,
@@ -670,7 +705,7 @@ function tempoWorkout(
 			],
 		},
 		{ repeat: 1, steps: [cooldownStep(paces, cdKm)] },
-		drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
+		drillBlock('Cool-down stretches', cooldownDrills(rotation), 'cooldown'),
 	];
 	return {
 		blocks,
@@ -867,6 +902,7 @@ function raceSession(
 	raceKm: number,
 	goalPace: number,
 	paces?: TrainingPaces,
+	rotation?: DrillRotation,
 ): PlannedSession {
 	const raceM = Math.round(raceKm * 1000);
 	const workout: StructuredWorkout = {
@@ -887,7 +923,7 @@ function raceSession(
 				],
 			},
 			{ repeat: 1, steps: [cooldownStep(paces, 1)] },
-			drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
+			drillBlock('Cool-down stretches', cooldownDrills(rotation), 'cooldown'),
 		],
 		totalDistanceKm: raceKm,
 	};
@@ -932,6 +968,7 @@ function repWorkout(opts: {
 	recoveryM?: number;
 	recoveryPace?: [number, number];
 	paces?: TrainingPaces;
+	rotation?: DrillRotation;
 }): StructuredWorkout {
 	const recoveryM = opts.recoveryM ?? opts.distanceM;
 	const workPace = opts.pace ? (opts.pace[0] + opts.pace[1]) / 2 : opts.fallbackPace;
@@ -940,7 +977,7 @@ function repWorkout(opts: {
 		: (opts.paces ?? DEFAULT_PACES).easy[1];
 	const blocks: StepBlock[] = [
 		raiseBlock(opts.paces, opts.wuKm),
-		drillBlock('Dynamic warm-up', QUALITY_WARMUP_DRILLS, 'warmup'),
+		drillBlock('Dynamic warm-up', warmupDrills(opts.rotation, true), 'warmup'),
 		stridesBlock(),
 		{
 			repeat: opts.reps,
@@ -967,7 +1004,7 @@ function repWorkout(opts: {
 			],
 		},
 		{ repeat: 1, steps: [cooldownStep(opts.paces, opts.cdKm)] },
-		drillBlock('Cool-down stretches', COOLDOWN_STRETCHES, 'cooldown'),
+		drillBlock('Cool-down stretches', cooldownDrills(opts.rotation), 'cooldown'),
 	];
 	return {
 		blocks,
@@ -1004,6 +1041,7 @@ function intervalWorkout(
 	wuKm: number,
 	cdKm: number,
 	paces?: TrainingPaces,
+	rotation?: DrillRotation,
 ): StructuredWorkout {
 	return repWorkout({
 		reps,
@@ -1017,6 +1055,7 @@ function intervalWorkout(
 		recoveryM: recM,
 		recoveryPace: paces?.easy,
 		paces,
+		rotation,
 	});
 }
 
@@ -1029,6 +1068,7 @@ function racePaceWorkout(
 	cdKm: number,
 	goalPace: number,
 	paces?: TrainingPaces,
+	rotation?: DrillRotation,
 ): StructuredWorkout {
 	return repWorkout({
 		reps,
@@ -1042,6 +1082,7 @@ function racePaceWorkout(
 		recoveryM: recM,
 		recoveryPace: paces?.easy,
 		paces,
+		rotation,
 	});
 }
 
@@ -1052,6 +1093,7 @@ function hillsWorkout(
 	wuKm: number,
 	cdKm: number,
 	paces?: TrainingPaces,
+	rotation?: DrillRotation,
 ): StructuredWorkout {
 	return repWorkout({
 		reps,
@@ -1065,6 +1107,7 @@ function hillsWorkout(
 		recoveryM: recM,
 		recoveryPace: paces?.easy,
 		paces,
+		rotation,
 	});
 }
 
@@ -1383,6 +1426,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 	for (let w = 0; w < totalWeeks; w++) {
 		const phase = phases[w]!;
 		const isRecovery = phase === 'recovery';
+		// A run's warm-up and cool-down drills rotate from the plan seed, the week
+		// and the session's day, so two runs in a week and the same run across weeks
+		// carry different drills while the blocks keep their count and their total
+		// time.
+		const runRotation = (day: number): DrillRotation => ({ seed: planSeed, week: w, index: day });
 		// Which taper week this is, 0 for the first, so the volume and the strength
 		// arc can tell the early taper from the final days.
 		const taperIdx = phases.slice(0, w).filter((p) => p === 'taper').length;
@@ -1667,7 +1715,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					targetPaceSecPerKm: paces ? paces.easy : undefined,
 					targetZone: 'Z2',
 					targetRpe: [4, 5],
-					workout: singleRunWorkout('long', longKm, paces),
+					workout: singleRunWorkout('long', longKm, paces, runRotation(longDay)),
 				},
 				durationMin: estDuration(longKm, paces ? paces.easy[1] : easyPace + 15),
 			});
@@ -1737,6 +1785,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					qCd,
 					goalPace,
 					paces,
+					runRotation(day),
 				);
 				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
@@ -1759,7 +1808,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				});
 			} else if (kind === 'interval') {
 				const { reps, repM, recM } = sizeReps(qualityWorkKm, 800, 400, 12);
-				const workout = intervalWorkout(reps, repM, recM, qWu, qCd, paces);
+				const workout = intervalWorkout(reps, repM, recM, qWu, qCd, paces, runRotation(day));
 				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
@@ -1781,7 +1830,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				});
 			} else if (kind === 'hills') {
 				const { reps, repM, recM } = sizeReps(qualityWorkKm, 400, 400, 16);
-				const workout = hillsWorkout(reps, repM, recM, qWu, qCd, paces);
+				const workout = hillsWorkout(reps, repM, recM, qWu, qCd, paces, runRotation(day));
 				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
@@ -1801,7 +1850,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 					durationMin: estDuration(total, paces ? paces.interval : easyPace - 60) + 10,
 				});
 			} else {
-				const workout = tempoWorkout(qualityWorkKm, qWu, qCd, paces);
+				const workout = tempoWorkout(qualityWorkKm, qWu, qCd, paces, runRotation(day));
 				const total = workout.totalDistanceKm ?? qualityKm;
 				sessions.push({
 					day,
@@ -1861,7 +1910,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						targetPaceSecPerKm: paces ? paces.easy : undefined,
 						targetZone: 'Z2',
 						targetRpe: [4, 5],
-						workout: singleRunWorkout('easy', mediumLongKm, paces),
+						workout: singleRunWorkout('easy', mediumLongKm, paces, runRotation(day)),
 					},
 					durationMin: estDuration(mediumLongKm, easyPace),
 				});
@@ -1887,7 +1936,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 						notes: afterLongRun
 							? 'The day after your long run. If you are sore, rest or cross-train easily for 30 to 60 minutes instead.'
 							: undefined,
-						workout: singleRunWorkout('easy', easyPer, paces),
+						workout: singleRunWorkout('easy', easyPer, paces, runRotation(day)),
 					},
 					durationMin: estDuration(easyPer, easyPace),
 				});
@@ -1968,11 +2017,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 
 		// Mobility follows the flexibility gap. The gap sets how often and how much
 		// (one short session for a small gap, a session every day for the biggest).
-		// The runner's stated tight area anchors every session: two holds that
-		// never change, at two rounds each, and one roaming stretch per session
-		// rotates through the other common runner areas. A week with three or more
-		// sessions anchors one of them on the runner-up area instead. The dose
-		// rules and the routine data live in mobility-plan.ts.
+		// The runner's stated tight area anchors every session: the focus's
+		// signature hold, then a second hold that rotates within the focus by the
+		// plan seed, the week and the session index, at two rounds each, and one
+		// roaming stretch per session rotates through the whole mobility library. A
+		// week with three or more sessions anchors one of them on the runner-up
+		// area instead. The dose rules and the routine data live in mobility-plan.ts.
 		const flex = input.baseline.flexibility;
 		const flexGap = flex ? Math.max(0, flex.goal - flex.current) : 0;
 		const mobility = mobilityPrescription(flexGap, input.baseline);
@@ -2004,14 +2054,23 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			// what, so every roaming pick projects the whole week and never plans
 			// minutes on top of a muscle the week is already covering to the plateau.
 			const dose = new Map<string, number>();
-			const anchorSessions = (focus: StretchFocus, count: number) => {
-				if (!count) return;
-				for (const hold of mobilitySessionRoutine(focus, undefined).slice(2)) {
-					addHoldDose(dose, hold.name, hold.durationSec * (hold.rounds ?? 1) * count);
+			// The session's anchor pair: the focus's signature hold, then the second
+			// hold rotated by the plan seed, the week and the session index. The swap
+			// session anchors on the runner-up area. Precomputing every pair keeps the
+			// ledger honest, so a roam never lands on top of a hold the week will run.
+			const sessionFocus = (i: number): StretchFocus =>
+				swapToSecondary && i === 0 ? secondary : primary;
+			const sessionAnchors = (i: number): [string, string] =>
+				anchorHolds(sessionFocus(i), planSeed, w, i);
+			for (let i = 0; i < composedCount; i++) {
+				for (const hold of mobilitySessionRoutine(
+					sessionFocus(i),
+					undefined,
+					sessionAnchors(i),
+				).slice(2)) {
+					addHoldDose(dose, hold.name, hold.durationSec * (hold.rounds ?? 1));
 				}
-			};
-			anchorSessions(primary, swapToSecondary ? composedCount - 1 : composedCount);
-			anchorSessions(secondary, swapToSecondary ? 1 : 0);
+			}
 			if (favorite) {
 				for (const step of favorite.workout.blocks.flatMap((b) => b.steps)) {
 					if (step.kind === 'cooldown') {
@@ -2037,10 +2096,11 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				if (favorite && mobilityEmitted % 2 === 0) {
 					sessions.push(mobilitySession(d, favorite.id, slot));
 				} else {
-					const anchor = swapToSecondary && composed === 0 ? secondary : primary;
-					const picked = pickRoamingIndex(anchor, dose, mobilityRotation);
+					const anchor = sessionFocus(composed);
+					const anchors = sessionAnchors(composed);
+					const picked = pickRoamingIndex(anchor, dose, mobilityRotation, anchors);
 					const roaming = picked >= 0 ? ROAMING_ORDER[picked] : undefined;
-					const routine = mobilitySessionRoutine(anchor, roaming);
+					const routine = mobilitySessionRoutine(anchor, roaming, anchors);
 					sessions.push(composedMobilitySession(d, slot, anchor, roaming, routine));
 					const roamHold = roaming ? routine.slice(2).at(-1) : undefined;
 					if (roamHold) {
@@ -2072,7 +2132,7 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				for (let i = sessions.length - 1; i >= 0; i--) {
 					if (sessions[i]!.day === raceDay) sessions.splice(i, 1);
 				}
-				sessions.push(raceSession(raceDay, raceKm, goalPace, paces));
+				sessions.push(raceSession(raceDay, raceKm, goalPace, paces, runRotation(raceDay)));
 			}
 		}
 
@@ -2093,7 +2153,12 @@ export function generatePlan(input: PlanInput): PlanDraft {
 				if (longIdx >= 0 && otherRunKm >= MIN_EASY_KM) {
 					const long = sessions[longIdx]!;
 					long.prescription.targetDistanceKm = otherRunKm;
-					long.prescription.workout = singleRunWorkout('long', otherRunKm, paces);
+					long.prescription.workout = singleRunWorkout(
+						'long',
+						otherRunKm,
+						paces,
+						runRotation(long.day),
+					);
 					long.durationMin = estDuration(otherRunKm, paces ? paces.easy[1] : easyPace + 15);
 					longKm = otherRunKm;
 				} else if (longIdx >= 0) {
@@ -2451,18 +2516,18 @@ function composedMobilitySession(
 		title: FOCUS_AREA_TITLE[focus],
 		purpose:
 			focus === 'general'
-				? 'Range of motion across the areas running tightens, at the same holds every session, with one stretch that covers another area.'
-				: 'Range of motion for the area you said is tight, at the same holds every session, with one stretch that covers another area.',
+				? 'Range of motion across the areas running tightens, on the same area every session, with one stretch that covers another area.'
+				: 'Range of motion for the area you said is tight, on that area every session, with one stretch that covers another area.',
 		prescription: {
 			summary: roaming
 				? `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, plus one stretch that changes from session to session.`
-				: `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, held steady every session.`,
+				: `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, on your tight area every session.`,
 			intensity: 'easy',
 			targetRpe: [1, 3],
 			workout: { ...mobilityWorkout(routine), estimatedDurationMin: minutes },
 			notes: roaming
-				? 'The first two holds never change. The last one moves around the body from session to session.'
-				: 'Both holds stay the same every session, so your tight area keeps its full dose.',
+				? 'The first hold never changes. The second keeps the same area, and the last one moves around the body from session to session.'
+				: 'Both holds keep your tight area every session, so it gets its full dose.',
 			// The engine's own session, not one the runner added, so the rebuild
 			// does not treat it as an added workout to repeat.
 			added: false,

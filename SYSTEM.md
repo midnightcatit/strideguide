@@ -33,8 +33,10 @@ A plan flows through these stages:
    card after a move's final set is the pause before the next move, and the final set of the final
    move runs into the cool-down, which takes no rest card. The session length the schedule reserves
    is the sum of its parts, work plus rest. Mobility picks the focus from the runner's answers (a
-   named niggle counts most, then terrain, then the sports they do), and adds one roaming stretch
-   that varies per session.
+   named niggle counts most, then terrain, then the sports they do), anchors it on a fixed first
+   hold and a second hold that rotates within the focus, and adds one roaming stretch that cycles
+   the whole mobility library. The run warm-up and cool-down drills rotate from the same plan seed,
+   so the same plan inputs rebuild the same plan.
 3. **The AI shaping pass** never generates the plan. It reads the engine's plan and chooses within a
    closed set of typed intents: a quality kind and a volume, strength and mobility intent of `ease`,
    `hold` or `build`, plus a short emphasis line. An answer outside the set is dropped. The engine

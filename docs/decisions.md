@@ -10,6 +10,46 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## Mobility and run drills rotate visibly while the anchor holds
+
+2026-11-28
+
+Decided: a composed mobility session still anchors on the runner's stated focus
+at the 17b dose, two holds of two rounds at 30 to 45 seconds each, but only the
+first hold is fixed. The first hold is the focus's signature and repeats at
+every session; the second rotates within the same focus by a stable hash of the
+plan seed, the week and the session index, drawn only from holds that share no
+target with the first, so the session changes while it keeps the stated area and
+stays under the static plateau. The roaming stretch now cycles the whole
+mobility library, the focus holds plus the extra and cool-down holds the library
+carries, so a stretch never roams twice before the pool has cycled. Run warm-up
+and cool-down drills rotate by the same seed: the warm-up draws its fixed count
+from the dynamic drills (the banded ones, which need equipment, are left out)
+and the cool-down its fixed count from the whole static library, each keeping
+the block's own duration, so the warm-up and cool-down counts and total time are
+unchanged and only which drills change. The seed is the plan seed the strength
+rotation already uses (input.seed, default 1), so the same seed rebuilds the
+same plan and every week and session differs. This annotates "Mobility anchors
+on the stated tight area and roams one stretch around it" (2026-11-27): its
+anchor and its roam both stay, and the fixed second hold becomes a rotating one
+inside the same focus.
+
+Why: a real 25-week plan carried 161 mobility sessions across only 14 routines
+and 79 runs that shared 12 warm-up and cool-down drill labels, each appearing 78
+or 79 times. Research/wave-7/17b says variety's value is coverage and adherence,
+not more range, and never at the anchor's expense, so the fix widens the roaming
+pool and rotates one anchor hold without touching the dose or the run work. The
+run drill rotation is for coverage and adherence, not a new training claim. The
+roam and the second hold both keep counting toward the weekly dose, and the
+plateau still holds.
+
+Rules out: shortening or dropping the anchor, moving the anchor off the stated
+focus, choosing a drill that is not deterministic from the plan seed, changing
+the run work steps, their paces, distances or durations, and changing the
+warm-up or cool-down count or total time.
+
+---
+
 ## Strength sessions rotate moves by a seed, and the lean becomes a pill
 
 2026-11-28
