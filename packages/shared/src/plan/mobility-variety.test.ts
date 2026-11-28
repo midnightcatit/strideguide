@@ -5,6 +5,7 @@ import {
 	ANCHOR_SECOND_OPTIONS,
 	ANCHOR_STRETCHES,
 	FOCUS_AREA_TITLE,
+	HOLD_ROUNDS,
 	MOVEMENT_DRILLS,
 	ROAMING_ORDER,
 	WEEKLY_STRETCH_PLATEAU_SEC,
@@ -77,25 +78,51 @@ describe('mobility variety and dose (17b)', () => {
 			expect(
 				holds(s).filter((st) => st.label === first),
 				`${s.title}: ${first}`,
-			).toHaveLength(2);
+			).toHaveLength(1);
 			// The second hold rotates within the focus, so it is always one of the
 			// focus's own holds and the session keeps the stated area.
 			const second = holds(s).find((st) => st.label !== first)!.label;
 			expect(ANCHOR_SECOND_OPTIONS[focus], `${s.title}: ${second}`).toContain(second);
-			// Both holds run two rounds each, inside the 30 to 45 second band, at
-			// every session, whatever the rotation or the swap did around it.
+			// Each hold is one row carrying its rounds, so the dose reads as a dose:
+			// two rounds inside the 30 to 45 second band, at every session, whatever
+			// the rotation or the swap did around it.
 			for (const name of [first, second]) {
 				const steps = holds(s).filter((st) => st.label === name);
-				expect(steps, `${s.title}: ${name}`).toHaveLength(2);
-				for (const st of steps) {
-					expect(st.durationSec).toBeGreaterThanOrEqual(30);
-					expect(st.durationSec).toBeLessThanOrEqual(45);
-				}
+				expect(steps, `${s.title}: ${name}`).toHaveLength(1);
+				expect(steps[0]!.sets, `${s.title}: ${name}`).toBe(HOLD_ROUNDS);
+				expect(steps[0]!.durationSec).toBeGreaterThanOrEqual(30);
+				expect(steps[0]!.durationSec).toBeLessThanOrEqual(45);
 			}
-			// The two anchor holds run first, in order, each hold's two rounds back
-			// to back. The roaming stretch never replaces an anchor.
+			// The two anchor holds run first, in order, the roaming stretch last.
 			const labels = holds(s).map((st) => st.label);
-			expect(labels.slice(0, 4)).toEqual([first, first, second, second]);
+			expect(labels.slice(0, 2)).toEqual([first, second]);
+		}
+	});
+
+	it('shows one row per hold at its full dose, without changing the time under stretch', () => {
+		const p = planWith(daily);
+		const sessions = p.weeks.flatMap((w) => mobilitySessions(w));
+		expect(sessions.length).toBeGreaterThan(0);
+		for (const s of sessions) {
+			const hs = holds(s);
+			// One step per hold, so no hold reads twice: the detail shows one row
+			// per hold and the player runs its rounds from the step's own count.
+			const labels = hs.map((st) => st.label);
+			expect(new Set(labels).size, s.title).toBe(labels.length);
+			for (const st of hs) {
+				expect(st.durationSec, s.title).toBeGreaterThanOrEqual(30);
+				expect(st.durationSec, s.title).toBeLessThanOrEqual(45);
+				expect(st.sets, s.title).toBe(HOLD_ROUNDS);
+			}
+			// The session's declared length is the sum of the dynamic drills and
+			// every hold at its full rounds, so folding the rounds into one row
+			// changed no time under stretch.
+			const totalSec = s.prescription.workout!.blocks
+				.flatMap((b) => b.steps)
+				.reduce((n, st) => n + (st.durationSec ?? 0) * (st.sets ?? 1), 0);
+			expect(s.prescription.workout!.estimatedDurationMin, s.title).toBe(
+				Math.max(1, Math.round(totalSec / 60)),
+			);
 		}
 	});
 
@@ -161,10 +188,11 @@ describe('mobility variety and dose (17b)', () => {
 		for (const s of variants) {
 			const focus = focusOf(s);
 			const first = ANCHOR_STRETCHES[focus][0]!;
-			expect(holds(s).filter((st) => st.label === first)).toHaveLength(2);
+			expect(holds(s).filter((st) => st.label === first)).toHaveLength(1);
 			const second = holds(s).find((st) => st.label !== first)!.label;
 			expect(ANCHOR_SECOND_OPTIONS[focus]).toContain(second);
-			expect(holds(s).filter((st) => st.label === second)).toHaveLength(2);
+			expect(holds(s).filter((st) => st.label === second)).toHaveLength(1);
+			expect(holds(s).find((st) => st.label === second)!.sets).toBe(HOLD_ROUNDS);
 		}
 	});
 
@@ -272,10 +300,11 @@ describe('mobility variety and dose (17b)', () => {
 		expect(sessions.length).toBeGreaterThan(0);
 		for (const s of sessions) {
 			const first = ANCHOR_STRETCHES.ankles[0]!;
-			expect(holds(s).filter((st) => st.label === first)).toHaveLength(2);
+			expect(holds(s).filter((st) => st.label === first)).toHaveLength(1);
 			const second = holds(s).find((st) => st.label !== first)!.label;
 			expect(ANCHOR_SECOND_OPTIONS.ankles).toContain(second);
-			expect(holds(s).filter((st) => st.label === second)).toHaveLength(2);
+			expect(holds(s).filter((st) => st.label === second)).toHaveLength(1);
+			expect(holds(s).find((st) => st.label === second)!.sets).toBe(HOLD_ROUNDS);
 		}
 		// A movement drill adds nothing to the ledger, so the dose stays honest.
 		const ledger = new Map<string, number>();
@@ -295,9 +324,10 @@ describe('mobility variety and dose (17b)', () => {
 				const totals = new Map<string, number>();
 				for (const s of mobilitySessions(week)) {
 					for (const st of holds(s)) {
-						// One add per step: the ledger splits the step's seconds across
+						// One add per hold: the step carries its rounds as `sets`, so
+						// the dose is the step's seconds times its rounds, split across
 						// every target the stretch names.
-						addHoldDose(totals, st.label, st.durationSec ?? 0);
+						addHoldDose(totals, st.label, (st.durationSec ?? 0) * (st.sets ?? 1));
 					}
 				}
 				for (const [target, seconds] of totals) {

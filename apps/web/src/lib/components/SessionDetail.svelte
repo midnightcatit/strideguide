@@ -261,6 +261,8 @@
 			return compact ? `${d} @ ${compact}` : d;
 		}
 		if (step.sets && step.reps) return `${step.sets} × ${step.reps}`;
+		// A hold carries its rounds as `sets`, so its row reads as its dose.
+		if (step.sets && step.sets > 1 && step.durationSec != null) return `${step.sets} × ${step.durationSec}s`;
 		if (step.durationSec != null) return formatClock(step.durationSec);
 		return '';
 	}

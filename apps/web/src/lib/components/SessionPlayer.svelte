@@ -45,6 +45,7 @@
 		blockLabel?: string;
 		repeat?: number;
 		sets?: number;
+		kind?: ClientStep['kind'];
 	}
 
 	const countdownFrom = () => countdownSeconds(prefs);
@@ -81,6 +82,7 @@
 							blockLabel: reps > 1 ? b.label : undefined,
 							repeat: reps > 1 ? reps : undefined,
 							sets: slot.totalSets ?? slot.step.sets,
+							kind: slot.step.kind,
 						});
 					}
 				});
@@ -113,6 +115,9 @@
 	const drill = $derived(findDrill(current?.step.label));
 	const timed = $derived(current?.step.durationSec != null);
 	const isRestCard = $derived(current?.step.kind === 'rest');
+	// A warm-up or cool-down drill is a hold, so its repeated rounds read as
+	// rounds on the card, not sets.
+	const holdStep = $derived(current?.step.kind === 'warmup' || current?.step.kind === 'cooldown');
 	const repBased = $derived(!timed && (current?.step.reps ?? 0) > 0);
 	const remaining = $derived(timed ? Math.max(0, (current!.step.durationSec as number) - elapsed) : null);
 	const countdownOn = $derived(countdownEnabledFor(prefs));
@@ -313,6 +318,8 @@
 		if (dist && pace) return `${dist} @ ${pace}`;
 		if (dist) return dist;
 		if (step.sets && step.reps) return `${step.sets} × ${step.reps} reps`;
+		// A hold carries its rounds as `sets`, so its target reads as its dose.
+		if (step.sets && step.sets > 1 && step.durationSec) return `${step.sets} × ${step.durationSec}s`;
 		if (step.durationSec) return formatClock(step.durationSec);
 		return step.label;
 	}
@@ -423,7 +430,7 @@
 				<div class="absolute right-0 top-0 h-full w-1.5 bg-signal" aria-hidden="true"></div>
 				<div class="flex items-baseline justify-between">
 					<span class="tabular text-xs uppercase tracking-widest text-steel">
-						{current.blockLabel ?? ''}{current.setNo ? ` · set ${current.setNo}/${current.totalSets}` : ''}{current.rep ? ` · rep ${current.rep}/${current.totalReps}` : ''}
+						{current.blockLabel ?? ''}{current.setNo ? ` · ${holdStep ? 'round' : 'set'} ${current.setNo}/${current.totalSets}` : ''}{current.rep ? ` · rep ${current.rep}/${current.totalReps}` : ''}
 					</span>
 					<span class="tabular text-xs uppercase tracking-widest text-signal-ink">{current.step.kind}</span>
 				</div>
@@ -526,7 +533,7 @@
 					<li>
 						<button type="button" onclick={() => jump(row.index)} class="flex w-full items-center justify-between gap-3 py-2.5 text-left {row.index === idx ? 'text-signal-ink' : 'text-ink'} hover:text-signal-ink">
 							<span class="min-w-0 truncate text-sm">
-								{row.blockLabel ? `${row.blockLabel} × ${row.repeat}: ` : ''}{row.label}{row.sets && row.sets > 1 ? ` (${row.sets} sets)` : ''}
+								{row.blockLabel ? `${row.blockLabel} × ${row.repeat}: ` : ''}{row.label}{row.kind === 'work' && row.sets && row.sets > 1 ? ` (${row.sets} sets)` : ''}
 							</span>
 							<span class="tabular max-w-[45%] shrink-0 truncate text-xs text-steel">{row.target}</span>
 						</button>

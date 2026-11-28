@@ -740,10 +740,10 @@ describe('generatePlan (preferences)', () => {
 		expect(mobility).toHaveLength(1);
 		expect(mobility[0]!.title).toBe('Mobility and stretching');
 		// Two dynamic drills, then the two anchor holds and the roaming stretch,
-		// each hold run twice.
+		// each hold one row carrying its two rounds.
 		expect(
 			mobility[0]!.prescription.workout!.blocks.flatMap((b) => b.steps),
-		).toHaveLength(8);
+		).toHaveLength(5);
 	});
 
 	it('aims the stretches at what the runner told us', () => {

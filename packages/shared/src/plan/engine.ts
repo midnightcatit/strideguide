@@ -2074,7 +2074,13 @@ export function generatePlan(input: PlanInput): PlanDraft {
 			if (favorite) {
 				for (const step of favorite.workout.blocks.flatMap((b) => b.steps)) {
 					if (step.kind === 'cooldown') {
-						addHoldDose(dose, step.label, (step.durationSec ?? 0) * favoriteCount);
+						// A hold step carries its rounds as `sets`, so the dose is the
+						// step's length times those rounds, as before.
+						addHoldDose(
+							dose,
+							step.label,
+							(step.durationSec ?? 0) * (step.sets ?? 1) * favoriteCount,
+						);
 					}
 				}
 			}
@@ -2508,6 +2514,15 @@ function composedMobilitySession(
 	// the anchor dose, so the session runs about five minutes.
 	const totalSec = routine.reduce((sum, d) => sum + d.durationSec * (d.rounds ?? 1), 0);
 	const minutes = Math.max(1, Math.round(totalSec / 60));
+	// Name the two anchor holds in the summary, so a run of same-focus sessions
+	// reads as different sessions: the first hold is the focus's signature and the
+	// second rotates within the focus (17b). The title stays the stated focus.
+	const holds = routine.slice(2);
+	const anchorNames = holds.slice(0, 2).map((d) => d.name);
+	const anchorLine =
+		anchorNames.length === 2
+			? `${anchorNames[0]} and ${anchorNames[1]}`
+			: `Two holds for ${FOCUS_AREA_PHRASE[focus]}`;
 	return {
 		day,
 		slot,
@@ -2520,8 +2535,8 @@ function composedMobilitySession(
 				: 'Range of motion for the area you said is tight, on that area every session, with one stretch that covers another area.',
 		prescription: {
 			summary: roaming
-				? `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, plus one stretch that changes from session to session.`
-				: `Two holds for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, on your tight area every session.`,
+				? `${anchorLine} for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, plus one stretch that changes each session.`
+				: `${anchorLine} for ${FOCUS_AREA_PHRASE[focus]}, two rounds each, every session.`,
 			intensity: 'easy',
 			targetRpe: [1, 3],
 			workout: { ...mobilityWorkout(routine), estimatedDurationMin: minutes },

@@ -357,8 +357,11 @@ export interface StepSlot {
  * same move form one run, with the rest cards between them left inside it, so
  * each set knows its number and the total; a single work step that carries its
  * own set count (sessions stored before rest became explicit) multiplies the
- * same way. A rest card is its own slot and never takes a set number, so the
- * work sets read 1/3, 2/3, 3/3 and a rest announces the right next set.
+ * same way. A hold (a warm-up or cool-down drill) can carry its rounds as `sets`
+ * too, so it expands into one slot per round without a rest card, which is how a
+ * stretch shows once at its dose and still runs every round. A rest card is its
+ * own slot and never takes a set number, so the work sets read 1/3, 2/3, 3/3 and
+ * a rest announces the right next set.
  */
 export function expandSteps(steps: ClientStep[]): StepSlot[] {
 	const slots: StepSlot[] = [];
@@ -366,7 +369,14 @@ export function expandSteps(steps: ClientStep[]): StepSlot[] {
 	while (i < steps.length) {
 		const s = steps[i]!;
 		if (s.kind !== 'work') {
-			slots.push({ step: s });
+			// A hold carries its rounds as `sets`, so it expands into one slot per
+			// round the way a work step does, and the player runs every round.
+			const own = (s.sets ?? 0) > 1 ? (s.sets as number) : 1;
+			if (own > 1) {
+				for (let q = 0; q < own; q++) slots.push({ step: s, setNo: q + 1, totalSets: own });
+			} else {
+				slots.push({ step: s });
+			}
 			i++;
 			continue;
 		}

@@ -10,6 +10,46 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## A mobility hold reads once at its dose, and the title stays the stated focus
+
+2026-11-28
+
+Decided: a mobility hold is one step in the workout, carrying its rounds as the
+step's `sets` and its length as `durationSec`, so the detail shows one row per
+hold reading "2 x 40s" and the player still runs both rounds through the existing
+set mechanism (a round counter on the card). The engine's drill-to-step mapping
+stops emitting one step per round, so a hold never appears as two identical rows.
+The dose is untouched: a hold's time under stretch is still `durationSec * rounds`
+and a session's length is still the sum of its parts. The second anchor hold
+already rotates within the focus by a stable hash of the plan seed, the week and
+the session index, so it changes session to session; the session summary now names
+both anchor holds, so a run of same-focus sessions reads as different sessions
+instead of one routine. The session title stays the stated focus area and never
+names the roaming stretch. This annotates "Mobility and run drills rotate visibly
+while the anchor holds" (2026-11-28): the anchor, its dose, the second-hold
+rotation and the run drill rotation all stay; only the presentation of a hold and
+the summary wording change.
+
+Why: a real 25-week plan listed every hold twice in a row, the same stretch and
+then the same stretch again, because the mapping wrote one step per round, and a
+run of sessions titled "Hips and glutes" (114 of 233 in a real plan) read as one
+routine. Research/wave-7/17b prescribes 2 to 3 sets of 30 to 45 seconds per
+stretch with 60 seconds as a ceiling, so the dose was already right and only the
+presentation read as a bug. Naming the roaming area in the title was rejected
+because the roam is a coverage and adherence device that deliberately reaches
+outside the runner's stated area, and 17b says variety must never come at the
+anchor's expense; the title names the anchor, which stays the stated tight area,
+and the session's changing parts belong in the summary and the hold list.
+
+Rules out: one step per round for a hold, a session that lists the same hold
+twice, a title that names the roaming area, and any change to the time under
+stretch, the anchor's dose or the stated focus. See
+research/wave-7/17b-stretch-variety-dose.json,
+`packages/shared/src/plan/mobility.ts` and `engine.ts`, and the hold rows in
+`apps/web/src/lib/components/SessionDetail.svelte` and `SessionPlayer.svelte`.
+
+---
+
 ## Mobility and run drills rotate visibly while the anchor holds
 
 2026-11-28
