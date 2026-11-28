@@ -33,3 +33,9 @@ it('drops unknown prescription keys and rejects an oversized string', () => {
 	expect('evil' in parsed).toBe(false);
 	expect(prescriptionSchema.safeParse({ summary: 'x'.repeat(601) }).success).toBe(false);
 });
+
+it('keeps the strength lean pill through validation', () => {
+	const parsed = prescriptionSchema.parse({ summary: 'Machine circuit.', focus: 'quads + glutes + hamstrings' });
+	expect(parsed.focus).toBe('quads + glutes + hamstrings');
+	expect(prescriptionSchema.safeParse({ focus: 'x'.repeat(121) }).success).toBe(false);
+});

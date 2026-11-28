@@ -69,6 +69,8 @@ export const prescriptionSchema = z.object({
 	targetDistanceKm: z.number().min(0).max(1000).optional(),
 	timeStart: clockSchema.optional(),
 	blocks: z.array(strengthSetSchema).max(100).optional(),
+	/** The strength day's lean as body parts, or "full body". Shown as a pill. */
+	focus: z.string().max(120).optional(),
 	notes: z.string().max(2000).optional(),
 	why: z.string().max(2000).optional(),
 	whyStructured: sessionWhySchema.optional(),
