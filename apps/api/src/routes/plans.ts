@@ -18,6 +18,7 @@ import {
 	fitnessState,
 	loadReadout,
 	machinesForPreset,
+	planSeed,
 	readLoad,
 	rebuildFromWeekOne,
 	resolveLoadConfig,
@@ -993,6 +994,10 @@ plans.post(
 			baseline: seededBaseline,
 			availableDays,
 			startDate,
+			// The rotation seed comes from the plan's own identity, the runner and
+			// the start date, so a regeneration of this plan rebuilds the same
+			// rotations while two runners get different ones.
+			seed: planSeed(user.id, startDate),
 			targetDate: body.targetDate,
 			crossLoad,
 			equipment: seededBaseline.equipmentItems,
@@ -1372,6 +1377,7 @@ plans.post('/adapt', zValidator('json', adaptBodySchema), async (c) => {
 			? (goal.availableDays as number[])
 			: [0, 2, 4],
 		startDate: existingWeeks[0]?.startDate || todayIso,
+		seed: planSeed(user.id, existingWeeks[0]?.startDate || todayIso),
 		targetDate: goal.targetDate ?? undefined,
 		existingWeeks,
 		today: todayIso,
@@ -1640,6 +1646,7 @@ plans.post(
 			baseline,
 			availableDays,
 			startDate: firstWeek.startDate ?? new Date().toISOString().slice(0, 10),
+			seed: planSeed(user.id, firstWeek.startDate ?? new Date().toISOString().slice(0, 10)),
 			targetDate: goal.targetDate ?? undefined,
 			equipment: baseline.equipmentItems,
 			machines: resolveMachines(prefs),

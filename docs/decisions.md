@@ -10,6 +10,54 @@ out. It cites the file or PR that shows the decision.
 
 ---
 
+## Plans are seeded per runner, strength walks a longer rotation, and week one starts at the start date
+
+2026-11-28
+
+Decided: the plan seed stops being the constant 1. The API derives it from the
+plan's own identity, a hash of the runner's id and the plan's start date
+(`planSeed` in `catalog.ts`), and passes it as `input.seed` on generate, preview,
+adapt and the admin rebuild, so a regeneration of the same plan rebuilds the same
+rotations while two runners get different ones. The strength builder replaces its
+per-slot hash into the tier pool with a walking cursor per pattern: each pattern
+has one stable, plan-seeded order (the runner's own tool first, then the rest of
+the tier, then bodyweight, then any move), and a slot takes the next fresh move
+by walking that order from the cursor, which advances past the move taken. A move
+therefore does not return until the pattern's order has been walked, and the
+three-session recency window stays as a guard. The cursor is kept for the whole
+plan, so it walks across weeks rather than resetting each session, and the
+accessory order still varies by the session seed so the week's two days differ in
+order. Where a tier's pool is thin, the order widens to bodyweight and then any
+move, so the rotation runs longer than the tier alone allows; the machine tier's
+knee-extension pool is two moves and the band tier has two or three for most
+patterns, so a slot there still returns sooner. Week one already begins at the
+start date; this pins it with a test that no session is dated before the start in
+any week, across every start weekday. An ease-in plan now holds the long run out
+of week one, with the first long run in week two, and the long-run day holds easy
+running instead so the week keeps its volume, the same way a recovery week holds
+its volume.
+
+Why: a real 21-week plan returned the same strength circuits every two to four
+weeks (weeks 4 and 5 repeated weeks 2 and 3 exactly, and week 9 came back at week
+13), every runner's rotation used seed 1, and week one laid its sessions from the
+week's first day even when the plan started mid-week, long run included. A seeded
+hash into a small pool returns to a move within a few weeks by chance, while a
+walking cursor walks the pool, so the rotation is as long as the pool allows.
+Research/wave-7/17a keeps the lower-body spine and the lean, and
+research/wave-1/3b has the opening weeks ramp rather than open at the peak, which
+an ease-in long run in week one worked against.
+
+Rules out: a constant seed for every runner, a rotation that resets each session,
+dropping the recency guard, moving the spine's pattern order, changing the volume
+curve or the phase rules for the ease-in week, and any session on a date before
+the plan's start.
+
+Files: `packages/shared/src/plan/catalog.ts`, `engine.ts`, `adaptive.ts`;
+`apps/api/src/routes/plans.ts`, `admin.ts`. Tests:
+`packages/shared/src/plan/engine.test.ts`, `strength-variety.test.ts`.
+
+---
+
 ## Mobility and run drills rotate visibly while the anchor holds
 
 2026-11-28
