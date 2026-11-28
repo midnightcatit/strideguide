@@ -220,7 +220,7 @@
 			{#if pills.length}
 				<div class="flex min-w-0 flex-wrap gap-1.5" role="list" aria-label="Session facts">
 					{#each pills as pill (pill.text)}
-						<span class="shrink-0 whitespace-nowrap rounded-full border border-badge bg-badge-wash px-2.5 py-1 text-xs font-medium text-badge" role="listitem">{pill.text}</span>
+						<span class="min-w-0 max-w-full break-words rounded-full border border-badge bg-badge-wash px-2.5 py-1 text-xs font-medium text-badge" role="listitem">{pill.text}</span>
 					{/each}
 				</div>
 			{/if}
